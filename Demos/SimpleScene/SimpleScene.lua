@@ -27,5 +27,5 @@ project "SimpleScene"
 	}
 
 	links {
-		"FlintLowLevel"
+		"LowLevel"
 	}

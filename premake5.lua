@@ -69,7 +69,7 @@ group "HighLevel"
 group "LowLevel"
 include "Source/LowLevel/Core/Core.lua"
 include "Source/LowLevel/VulkanBackend/VulkanBackend.lua"
-include "Source/LowLevel/FlintLowLevel/FlintLowLevel.lua"
+include "Source/LowLevel/LowLevel/LowLevel.lua"
 
 group "ThirdParty"
 

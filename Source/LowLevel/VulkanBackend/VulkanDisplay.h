@@ -26,6 +26,8 @@ namespace Flint
 			VkSurfaceKHR GetSurface() const { return vSurface; }
 			Inputs::InputCenter* GetInputCenter() { return &mInputCenter; }
 
+			VulkanInstance* GetInstance() const { return const_cast<VulkanInstance*>(pInstance); }
+
 		private:
 			void SetupInputs();
 			void SetupCallbacks();

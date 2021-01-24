@@ -1,7 +1,7 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#include "FlintLowLevel/Display.h"
+#include "LowLevel/Display.h"
 #include "Core/Backend/Interface/Display.h"
 
 namespace Flint

@@ -4,8 +4,7 @@
 #pragma once
 
 #include "Core/Backend/Interface/Instance.h"
-
-#include <vulkan/vulkan.h>
+#include "MetaLoader/volk.h"  
 
 namespace Flint
 {
@@ -32,6 +31,7 @@ namespace Flint
 		public:
 			VkInstance GetInstance() const { return vInstance; }
 			std::vector<const char*>& GetValidationLayers() { return mValidationLayers; }
+			bool IsValidationEnabled() const { return mEnableValidation; }
 
 		private:
 			std::vector<const char*> mValidationLayers;

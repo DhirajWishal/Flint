@@ -9,6 +9,9 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
+#define VOLK_IMPLEMENTATION
+#include "VulkanBackend/MetaLoader/volk.h"   
+
 namespace Flint
 {
 	namespace VulkanBackend
@@ -23,7 +26,7 @@ namespace Flint
 			 */
 			static void GLFWErrorCallback(I32 errorCode, const char* pDescription)
 			{
-				FLINT_LOG_ERROR((TEXT("GLFW -> ") + StringToWString(pDescription)).c_str());
+				FLINT_LOG_ERROR(("GLFW -> " + String(pDescription)).c_str());
 			}
 
 			/**
@@ -203,8 +206,8 @@ namespace Flint
 			// Check if the validation layers are supported.
 			FLINT_ASSERT(mEnableValidation && !_Helpers::CheckValidationLayerSupport(mValidationLayers), TEXT("Requested validation layers are not available!"))
 
-			// Application info.
-			VkApplicationInfo appInfo = {};
+				// Application info.
+				VkApplicationInfo appInfo = {};
 			appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 			appInfo.pApplicationName = "Dynamik Engine";
 			appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
@@ -240,6 +243,9 @@ namespace Flint
 
 			// Create the instance handle.
 			FLINT_VK_ASSERT(vkCreateInstance(&createInfo, nullptr, &vInstance), "Failed to create instance!");
+
+			// Load the instance functions.
+			volkLoadInstance(vInstance);
 		}
 
 		void VulkanInstance::DestroyInstance()

@@ -33,12 +33,10 @@ project "VulkanBackend"
 	}
 
 	libdirs {
-		"%{IncludeLib.Vulkan}",
 		"%{IncludeLib.GLFW}",
 	}
 
 	links { 
 		"Core",
-		"vulkan-1",
 		"glfw3dll",
 	}

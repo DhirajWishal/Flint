@@ -10,7 +10,7 @@ namespace Flint
 	namespace Interface
 	{
 		/**
-		 * Create a new graphics and compute device.
+		 * Create a new device capable of graphics and compute.
 		 *
 		 * @param displayHandle: The display handle which the device is bound to.
 		 * @return The device handle.

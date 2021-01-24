@@ -35,6 +35,7 @@ namespace Flint
 
 		public:
 			Inputs::InputCenter* GetInputCenter() const { return const_cast<Inputs::InputCenter*>(pInputCenter); }
+			Interface::DisplayHandle GetHandle() const { return mHandle; }
 
 		private:
 			Interface::DisplayHandle mHandle = {};

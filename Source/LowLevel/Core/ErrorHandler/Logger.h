@@ -21,6 +21,14 @@ namespace Flint
 		void LogInfo(const wchar* message);
 
 		/**
+		 * Log basic information to the console.
+		 * Color: Green.
+		 *
+		* @param message: The message to be logged.
+		 */
+		void LogInfo(const char* message);
+
+		/**
 		 * Log a warning message to the console.
 		 * Color: Yellow.
 		 *
@@ -29,12 +37,28 @@ namespace Flint
 		void LogWarn(const wchar* message);
 
 		/**
+		 * Log a warning message to the console.
+		 * Color: Yellow.
+		 *
+		* @param message: The message to be logged.
+		 */
+		void LogWarn(const char* message);
+
+		/**
 		 * Log an error message to the console.
 		 * Color: Red.
 		 *
 		* @param message: The message to be logged.
 		 */
 		void LogError(const wchar* message);
+
+		/**
+		 * Log an error message to the console.
+		 * Color: Red.
+		 *
+		* @param message: The message to be logged.
+		 */
+		void LogError(const char* message);
 
 		/**
 		 * Log a fatal error message to the console.
@@ -47,12 +71,30 @@ namespace Flint
 		void LogFatal(const wchar* message, const wchar* file, UI32 line);
 
 		/**
+		 * Log a fatal error message to the console.
+		 * Color: Red + underlined.
+		 *
+		* @param message: The message to be logged.
+		* @param file: The file the error had occurred.
+		* @param line: The line of the error.
+		 */
+		void LogFatal(const char* message, const char* file, UI32 line);
+
+		/**
 		 * Log a debug information to the console.
 		 * Color: Blue.
 		 *
 		* @param message: The message to be logged.
 		 */
 		void LogDebug(const wchar* message);
+
+		/**
+		 * Log a debug information to the console.
+		 * Color: Blue.
+		 *
+		* @param message: The message to be logged.
+		 */
+		void LogDebug(const char* message);
 	}
 }
 
@@ -67,7 +109,7 @@ namespace Flint
 #define FLINT_LOG_ERROR(...)		::Flint::Logger::LogError(__VA_ARGS__);
 #define FLINT_LOG_FATAL(...)		::Flint::Logger::LogFatal(__VA_ARGS__, WIDE1(__FILE__), __LINE__), __debugbreak();
 
-#define FLINT_ASSERT(exp, ...)		if(exp)	FLINT_LOG_FATAL(__VA_ARGS__)
+#define FLINT_ASSERT(exp, ...)		if(!exp)	FLINT_LOG_FATAL(__VA_ARGS__)
 
 #else
 

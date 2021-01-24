@@ -1,9 +1,9 @@
 -- Copyright 2021 Dhiraj Wishal
 -- SPDX-License-Identifier: Apache-2.0
 
----------- Fline Low Level project description ----------
+---------- Low Level project description ----------
 
-project "FlintLowLevel"
+project "LowLevel"
 	kind "StaticLib"
 	language "C++"
 	systemversion "latest"
