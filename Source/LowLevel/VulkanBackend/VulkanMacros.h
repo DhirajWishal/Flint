@@ -27,4 +27,4 @@
   *
   * @param condition: The boolean condition.
   */
-#define GET_VK_BOOL(condition)		condition ? VK_TRUE : VK_FALSE
+#define GET_VK_BOOL(condition)			condition ? VK_TRUE : VK_FALSE

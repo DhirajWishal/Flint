@@ -27,8 +27,11 @@ namespace Flint
 			virtual VkAttachmentDescription GetAttachmentDescription() const { return VkAttachmentDescription(); }
 			virtual VkImageLayout GetAttachmentLayout() const { return VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED; }
 
+			VkImageView GetImageView(UI32 index) const { return vImageViews[index]; }
+
 		public:
 			RenderTargetAttachmenType GetType() const { return mType; }
+			VkFormat GetFormat() const { return vFormat; }
 
 		protected:
 			std::vector<VkImage> vImages;

@@ -24,38 +24,32 @@ namespace Flint
 			vAI.commandPool = vPool;
 			vAI.commandBufferCount = 1;
 
-			FLINT_VK_ASSERT(pDevice->AllocateCommandBuffers(&vAI, { vBuffer }), "Failed to allocate command buffers!");
+			{
+				std::vector<VkCommandBuffer> vCommandBuffers(1);
+				FLINT_VK_ASSERT(pDevice->AllocateCommandBuffers(&vAI, vCommandBuffers), "Failed to allocate command buffers!");
+				vBuffer = vCommandBuffers[0];
+			}
 
 			VkCommandBufferBeginInfo vBI = {};
 			vBI.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 			vBI.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-			FLINT_VK_ASSERT(vkBeginCommandBuffer(vBuffer, &vBI), "Failed to begin command buffer recording!");
+			FLINT_VK_ASSERT(pDevice->BeginCommandBuffer(vBuffer, &vBI), "Failed to begin command buffer recording!");
 		}
 
 		VulkanOneTimeCommandBuffer::~VulkanOneTimeCommandBuffer()
 		{
-			vkEndCommandBuffer(vBuffer);
+			FLINT_VK_ASSERT(pDevice->EndCommandBuffer(vBuffer), "Failed to end command buffer recording!");
 
 			VkSubmitInfo vSI = {};
 			vSI.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 			vSI.commandBufferCount = 1;
 			vSI.pCommandBuffers = &vBuffer;
 
-			vkQueueSubmit(pDevice->GetGraphcisQueue(), 1, &vSI, VK_NULL_HANDLE);
-			vkQueueWaitIdle(pDevice->GetTransferQueue());
+			FLINT_VK_ASSERT(pDevice->SubmitQueue(pDevice->GetGraphcisQueue(), { vSI }, VK_NULL_HANDLE), "Failed to submit queue!");
+			FLINT_VK_ASSERT(pDevice->QueueWait(pDevice->GetTransferQueue()), "Failed to wait for queue completion!");
 
 			pDevice->FreeComandBuffers(vPool, { vBuffer });
 			pDevice->DestroyCommandPool(vPool);
-		}
-
-		VulkanOneTimeCommandBuffer::operator VkCommandBuffer() const
-		{
-			return vBuffer;
-		}
-
-		VulkanOneTimeCommandBuffer::operator VkCommandPool() const
-		{
-			return vPool;
 		}
 	}
 }

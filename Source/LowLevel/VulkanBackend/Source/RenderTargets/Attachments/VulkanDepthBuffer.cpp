@@ -4,6 +4,7 @@
 #include "VulkanBackend/RenderTargets/Attachments/VulkanDepthBuffer.h"
 #include "VulkanBackend/VulkanMacros.h"
 #include "VulkanBackend/VulkanUtilities.h"
+#include "VulkanBackend/VulkanOneTimeCommandBuffer.h"
 
 namespace Flint
 {
@@ -38,11 +39,14 @@ namespace Flint
 			for (UI32 i = 0; i < bufferCount; i++)
 				FLINT_VK_ASSERT(pDevice->CreateImage(&vCI, vImages.data() + i), "Failed to create Vulkan Image!")
 
-				vImageViews = std::move(Utilities::CreateImageViews(vImages, vFormat, *pDevice, VK_IMAGE_ASPECT_DEPTH_BIT));
-			FLINT_VK_ASSERT(pDevice->CreateImageMemory(vImages, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &vBufferMemory), "Failed to bind image memory!");
-		
-			for (auto itr = vImages.begin(); itr != vImages.end(); itr++)
-				pDevice->SetImageLayout(*itr, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, vFormat);
+				FLINT_VK_ASSERT(pDevice->CreateImageMemory(vImages, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &vBufferMemory), "Failed to bind image memory!");
+			vImageViews = std::move(Utilities::CreateImageViews(vImages, vFormat, pDevice, VK_IMAGE_ASPECT_DEPTH_BIT));
+
+			{
+				VulkanOneTimeCommandBuffer vCommandBuffer(pDevice);
+				for (auto itr = vImages.begin(); itr != vImages.end(); itr++)
+					pDevice->SetImageLayout(vCommandBuffer, *itr, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, vFormat);
+			}
 		}
 
 		void VulkanDepthBuffer::Terminate()

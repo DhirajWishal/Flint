@@ -29,11 +29,6 @@ namespace Flint
 				? VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR
 				: VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR;
 
-			//UI32 bufferCount = vCapabilities.minImageCount + 1;
-			//if (vCapabilities.maxImageCount > 0
-			//	&& bufferCount > vCapabilities.maxImageCount)
-			//	bufferCount = vCapabilities.maxImageCount;
-
 			vFormat = surfaceFormat.format;
 
 			VkSwapchainCreateInfoKHR vCI = {};
@@ -81,7 +76,7 @@ namespace Flint
 			vImages.resize(vCI.minImageCount);
 			FLINT_VK_ASSERT(pDevice->GetSwapChainImages(vSwapChain, &vCI.minImageCount, vImages), "Failed to get the Vulkan Swap Chain Images!");
 
-			vImageViews = std::move(Utilities::CreateImageViews(vImages, vCI.imageFormat, *pDevice));
+			vImageViews = std::move(Utilities::CreateImageViews(vImages, vCI.imageFormat, pDevice));
 		}
 
 		void VulkanSwapChain::Terminate()

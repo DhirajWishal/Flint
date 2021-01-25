@@ -19,5 +19,9 @@ namespace Flint
 		FLINT_DEFINE_HANDLE(RenderTargetHandleOS2D);	// Off Screen 2D
 		FLINT_DEFINE_HANDLE(RenderTargetHandleOS3D);	// Off Screen 3D
 		FLINT_DEFINE_HANDLE(RenderTargetHandleOSRT);	// Off Screen Ray Traced
+
+		FLINT_DEFINE_HANDLE(GraphicsPipelineHandle);
+		FLINT_DEFINE_HANDLE(ComputePipelineHandle);
+		FLINT_DEFINE_HANDLE(RayTracingPipelineHandle);
 	}
 }

@@ -14,8 +14,11 @@ namespace Flint
 			VulkanOneTimeCommandBuffer(const VulkanDevice* pDevice);
 			~VulkanOneTimeCommandBuffer();
 
-			operator VkCommandBuffer() const;
-			operator VkCommandPool() const;
+			operator VkCommandBuffer() const { return vBuffer; }
+			operator VkCommandPool() const { return vPool; }
+
+			VkCommandBuffer GetBuffer() const { return vBuffer; }
+			VkCommandPool GetPool() const { return vPool; }
 
 		private:
 			VulkanDevice* pDevice = nullptr;

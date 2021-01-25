@@ -51,30 +51,30 @@ namespace Flint
 				return actualExtent;
 			}
 
-			std::vector<VkImageView> CreateImageViews(const std::vector<VkImage>& vImages, VkFormat imageFormat, VulkanDevice& device, VkImageAspectFlags aspectFlags)
+			std::vector<VkImageView> CreateImageViews(const std::vector<VkImage>& vImages, VkFormat imageFormat, VulkanDevice* pDevice, VkImageAspectFlags aspectFlags)
 			{
-				VkImageViewCreateInfo createInfo = {};
-				createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-				createInfo.flags = VK_NULL_HANDLE;
-				createInfo.pNext = VK_NULL_HANDLE;
-				createInfo.viewType = VkImageViewType::VK_IMAGE_VIEW_TYPE_2D;
-				createInfo.format = imageFormat;
+				VkImageViewCreateInfo vCI = {};
+				vCI.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+				vCI.flags = VK_NULL_HANDLE;
+				vCI.pNext = VK_NULL_HANDLE;
+				vCI.viewType = VkImageViewType::VK_IMAGE_VIEW_TYPE_2D;
+				vCI.format = imageFormat;
 
-				VkImageSubresourceRange vSubRange = {};
-				vSubRange.baseArrayLayer = 1;
-				vSubRange.layerCount = 1;
-				vSubRange.levelCount = 1;
-				vSubRange.aspectMask = aspectFlags;
-				vSubRange.baseMipLevel = 0;
+				VkImageSubresourceRange vSR = {};
+				vSR.layerCount = 1;
+				vSR.baseArrayLayer = 0;
+				vSR.levelCount = 1;
+				vSR.baseMipLevel = 0;
+				vSR.aspectMask = aspectFlags;
 
-				createInfo.subresourceRange = vSubRange;
+				vCI.subresourceRange = vSR;
 
-				std::vector<VkImageView> vImageViews(vImages.size());
 				UI8 counter = 0;
+				std::vector<VkImageView> vImageViews(vImages.size());
 				for (auto itr = vImages.begin(); itr != vImages.end(); itr++)
 				{
-					createInfo.image = *itr;
-					FLINT_VK_ASSERT(device.CreateImageView(&createInfo, vImageViews.data() + counter), "Failed to create Vulkan Image Views for the Swap Chain images!");
+					vCI.image = *itr;
+					FLINT_VK_ASSERT(pDevice->CreateImageView(&vCI, vImageViews.data() + counter), "Failed to create Vulkan Image Views for the Swap Chain images!");
 					counter++;
 				}
 
@@ -107,7 +107,7 @@ namespace Flint
 					vPhysicalDevice
 				);
 			}
-			
+
 			bool HasStencilComponent(VkFormat vFormat)
 			{
 				return vFormat == VK_FORMAT_D32_SFLOAT_S8_UINT || vFormat == VK_FORMAT_D24_UNORM_S8_UINT;

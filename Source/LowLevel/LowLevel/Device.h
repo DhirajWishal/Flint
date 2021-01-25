@@ -30,6 +30,9 @@ namespace Flint
 			 */
 			void Terminate();
 
+		public:
+			Interface::DeviceHandle GetHandle() const { return mHandle; }
+
 		private:
 			Interface::DeviceHandle mHandle = {};
 		};

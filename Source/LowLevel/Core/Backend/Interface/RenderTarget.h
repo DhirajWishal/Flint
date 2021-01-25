@@ -4,6 +4,7 @@
 #pragma once
 
 #include "Device.h"
+#include "Core/Maths/Vector/Vector2.h"
 
 /**
  * The render target is the object which holds information about where the objects are rendered to. There are two
@@ -29,6 +30,8 @@ namespace Flint
 		struct RenderTargetExtent {
 			RenderTargetExtent() = default;
 			RenderTargetExtent(UI32 width, UI32 height) : mWidth(width), mHeight(height) {}
+			RenderTargetExtent(const Vector2& vector)
+				: mWidth(static_cast<UI32>(vector.x)), mHeight(static_cast<UI32>(vector.y)) {}
 
 			UI32 mWidth = 0;
 			UI32 mHeight = 0;

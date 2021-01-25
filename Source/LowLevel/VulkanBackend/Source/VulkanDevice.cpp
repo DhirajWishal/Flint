@@ -131,6 +131,23 @@ namespace Flint
 			DestroyLogicalDevice();
 		}
 
+		UI32 VulkanDevice::FindSupporterBufferCount(UI32 count) const
+		{
+			if (count == std::numeric_limits<UI32>::max())
+				return vSurfaceCapabilities.maxImageCount - 1;
+			else if (count == 0)
+			{
+				UI32 bufferCount = vSurfaceCapabilities.minImageCount + 1;
+				if (vSurfaceCapabilities.maxImageCount > 0
+					&& bufferCount > vSurfaceCapabilities.maxImageCount)
+					bufferCount = vSurfaceCapabilities.maxImageCount;
+
+				return bufferCount;
+			}
+
+			return count;
+		}
+
 		void VulkanDevice::CreatePhysicalDevice()
 		{
 			VulkanDisplay& display = *pDisplay;
@@ -141,8 +158,8 @@ namespace Flint
 
 			if (deviceCount == 0)
 			{
-				FLINT_LOG_ERROR(TEXT("Failed to find GPUs with Vulkan support!"));
-				return;
+				FLINT_LOG_ERROR(TEXT("Failed to find GPUs with Vulkan support!"))
+					return;
 			}
 
 			std::vector<VkPhysicalDevice> devices(deviceCount);
@@ -171,8 +188,8 @@ namespace Flint
 			//  Check if a physical device was found.
 			if (vPhysicalDevice == VK_NULL_HANDLE)
 			{
-				FLINT_LOG_ERROR(TEXT("A suitable physical device was not found!"));
-				return;
+				FLINT_LOG_ERROR(TEXT("A suitable physical device was not found!"))
+					return;
 			}
 
 #ifdef FLINT_DEBUG
@@ -264,10 +281,10 @@ namespace Flint
 				createInfo.enabledLayerCount = 0;
 
 			// Create the logical device.
-			FLINT_VK_ASSERT(vkCreateDevice(vPhysicalDevice, &createInfo, nullptr, &vLogicalDevice), "Failed to create logical device!");
+			FLINT_VK_ASSERT(vkCreateDevice(vPhysicalDevice, &createInfo, nullptr, &vLogicalDevice), "Failed to create logical device!")
 
-			// Load the device table.
-			volkLoadDeviceTable(&mTable, vLogicalDevice);
+				// Load the device table.
+				volkLoadDeviceTable(&mTable, vLogicalDevice);
 
 			// Get graphics queue.
 			mTable.vkGetDeviceQueue(GetLogicalDevice(), vQueue.mGraphicsFamily.value(), 0, &vQueue.vGraphicsQueue);
@@ -287,6 +304,21 @@ namespace Flint
 		void VulkanDevice::FreeMemory(VkDeviceMemory vDeviceMemory) const
 		{
 			mTable.vkFreeMemory(GetLogicalDevice(), vDeviceMemory, nullptr);
+		}
+
+		VkResult VulkanDevice::SubmitQueue(VkQueue vQueue, const std::vector<VkSubmitInfo>& vSubmitInfos, VkFence vFence) const
+		{
+			return mTable.vkQueueSubmit(vQueue, static_cast<UI32>(vSubmitInfos.size()), vSubmitInfos.data(), vFence);
+		}
+
+		VkResult VulkanDevice::QueueWait(VkQueue vQueue) const
+		{
+			return mTable.vkQueueWaitIdle(vQueue);
+		}
+
+		VkResult VulkanDevice::WaitIdle() const
+		{
+			return mTable.vkDeviceWaitIdle(GetLogicalDevice());
 		}
 
 		VkResult VulkanDevice::CreateSwapChain(VkSwapchainCreateInfoKHR* pCreateInfo, VkSwapchainKHR* pSwapChain) const
@@ -333,9 +365,9 @@ namespace Flint
 				}
 			}
 
-			FLINT_VK_ASSERT(mTable.vkAllocateMemory(GetLogicalDevice(), &vAI, nullptr, pDeviceMemory), "Failed to allocate image memory!");
+			FLINT_VK_ASSERT(mTable.vkAllocateMemory(GetLogicalDevice(), &vAI, nullptr, pDeviceMemory), "Failed to allocate image memory!")
 
-			VkResult result = VkResult::VK_ERROR_UNKNOWN;
+				VkResult result = VkResult::VK_ERROR_UNKNOWN;
 			for (UI32 i = 0; i < vImages.size(); i++)
 				result = mTable.vkBindImageMemory(GetLogicalDevice(), vImages[i], *pDeviceMemory, vMR.size * i);
 
@@ -347,10 +379,8 @@ namespace Flint
 			mTable.vkDestroyImage(GetLogicalDevice(), vImage, nullptr);
 		}
 
-		void VulkanDevice::SetImageLayout(VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, UI32 layerCount, UI32 currentLayer, UI32 mipLevels) const
+		void VulkanDevice::SetImageLayout(VkCommandBuffer vCommandBuffer, VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, UI32 layerCount, UI32 currentLayer, UI32 mipLevels) const
 		{
-			VulkanOneTimeCommandBuffer vCommandBuffer(this);
-
 			VkImageMemoryBarrier vMB = {};
 			vMB.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
 			vMB.oldLayout = vOldLayout;
@@ -412,8 +442,8 @@ namespace Flint
 				vMB.srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
 				break;
 			default:
-				FLINT_LOG_FATAL(TEXT("unsupported layout transition!"));
-				break;
+				FLINT_LOG_FATAL(TEXT("Unsupported layout transition!"))
+					break;
 			}
 
 			switch (vNewLayout)
@@ -449,11 +479,17 @@ namespace Flint
 				destinationStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
 				break;
 			default:
-				FLINT_LOG_FATAL(TEXT("unsupported layout transition!"));
-				break;
+				FLINT_LOG_FATAL(TEXT("Unsupported layout transition!"))
+					break;
 			}
 
-			vkCmdPipelineBarrier(vCommandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &vMB);
+			mTable.vkCmdPipelineBarrier(vCommandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &vMB);
+		}
+
+		void VulkanDevice::SetImageLayout(VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, UI32 layerCount, UI32 currentLayer, UI32 mipLevels) const
+		{
+			VulkanOneTimeCommandBuffer vCommandBuffer(this);
+			SetImageLayout(vCommandBuffer, vImage, vOldLayout, vNewLayout, vFormat, layerCount, currentLayer, mipLevels);
 		}
 
 		VkResult VulkanDevice::CreateImageView(const VkImageViewCreateInfo* pCreateInfo, VkImageView* pImageView) const
@@ -471,19 +507,55 @@ namespace Flint
 			return mTable.vkCreateCommandPool(GetLogicalDevice(), pCreateInfo, nullptr, pPool);
 		}
 
-		VkResult VulkanDevice::AllocateCommandBuffers(VkCommandBufferAllocateInfo* pAllicateInfo, std::vector<VkCommandBuffer>& commandBuffers) const
+		VkResult VulkanDevice::AllocateCommandBuffers(VkCommandBufferAllocateInfo* pAllicateInfo, const std::vector<VkCommandBuffer>& commandBuffers) const
 		{
-			return mTable.vkAllocateCommandBuffers(GetLogicalDevice(), pAllicateInfo, commandBuffers.data());
+			return mTable.vkAllocateCommandBuffers(GetLogicalDevice(), pAllicateInfo, const_cast<VkCommandBuffer*>(commandBuffers.data()));
 		}
 
-		void VulkanDevice::FreeComandBuffers(VkCommandPool vCommandPool, std::vector<VkCommandBuffer>& vCommandBuffers) const
+		VkResult VulkanDevice::BeginCommandBuffer(VkCommandBuffer vCommandBuffer, const VkCommandBufferBeginInfo* pBeginInfo) const
 		{
-			mTable.vkFreeCommandBuffers(GetLogicalDevice(), vCommandPool, vCommandBuffers.size(), vCommandBuffers.data());
+			return mTable.vkBeginCommandBuffer(vCommandBuffer, pBeginInfo);
+		}
+
+		VkResult VulkanDevice::EndCommandBuffer(VkCommandBuffer vCommandBuffer) const
+		{
+			return mTable.vkEndCommandBuffer(vCommandBuffer);
+		}
+
+		VkResult VulkanDevice::ResetCommandBuffer(VkCommandBuffer vCommandBuffer, VkCommandBufferResetFlags vResetFlags) const
+		{
+			return mTable.vkResetCommandBuffer(vCommandBuffer, vResetFlags);
+		}
+
+		void VulkanDevice::FreeComandBuffers(VkCommandPool vCommandPool, const std::vector<VkCommandBuffer>& vCommandBuffers) const
+		{
+			mTable.vkFreeCommandBuffers(GetLogicalDevice(), vCommandPool, static_cast<UI32>(vCommandBuffers.size()), vCommandBuffers.data());
 		}
 
 		void VulkanDevice::DestroyCommandPool(VkCommandPool vCommandPool) const
 		{
 			mTable.vkDestroyCommandPool(GetLogicalDevice(), vCommandPool, nullptr);
+		}
+
+		VkResult VulkanDevice::CreateRenderPass(const VkRenderPassCreateInfo* pCreateInfo, VkRenderPass* pRenderPass) const
+		{
+			return mTable.vkCreateRenderPass(GetLogicalDevice(), pCreateInfo, nullptr, pRenderPass);
+		}
+
+		void VulkanDevice::DestroyRenderPass(VkRenderPass vRenderPass) const
+		{
+			mTable.vkDestroyRenderPass(GetLogicalDevice(), vRenderPass, nullptr);
+		}
+
+		VkResult VulkanDevice::CreateFrameBuffer(const VkFramebufferCreateInfo* pCreateInfo, VkFramebuffer* pFrameBuffer) const
+		{
+			return mTable.vkCreateFramebuffer(GetLogicalDevice(), pCreateInfo, nullptr, pFrameBuffer);
+		}
+
+		void VulkanDevice::DestroyFrameBuffers(const std::vector<VkFramebuffer>& vFrameBuffers) const
+		{
+			for (auto itr = vFrameBuffers.begin(); itr != vFrameBuffers.end(); itr++)
+				mTable.vkDestroyFramebuffer(GetLogicalDevice(), *itr, nullptr);
 		}
 
 		Interface::DeviceHandle CreateDevice(const Interface::DisplayHandle& displayHandle)

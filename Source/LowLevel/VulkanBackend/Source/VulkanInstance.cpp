@@ -173,7 +173,9 @@ namespace Flint
 			InitializeGLFW();
 
 			if (enableValidation)
+			{
 				INSERT_INTO_VECTOR(mValidationLayers, "VK_LAYER_KHRONOS_validation");
+			}
 
 			CreateInstance();
 
@@ -229,8 +231,8 @@ namespace Flint
 			VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo = {};
 			if (mEnableValidation)
 			{
-				createInfo.enabledLayerCount = static_cast<UI32>(mValidationLayers.size());
-				createInfo.ppEnabledLayerNames = mValidationLayers.data();
+				//createInfo.enabledLayerCount = static_cast<UI32>(mValidationLayers.size());
+				//createInfo.ppEnabledLayerNames = mValidationLayers.data();
 
 				debugCreateInfo = _Helpers::CreateDebugMessengerCreateInfo();
 				createInfo.pNext = static_cast<VkDebugUtilsMessengerCreateInfoEXT*>(&debugCreateInfo);

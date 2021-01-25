@@ -13,10 +13,19 @@ namespace Flint
 		public:
 			VulkanRenderTarget() {}
 
-			virtual void Initialize(VulkanDevice* pDevice, std::vector<VulkanRenderTargetAttachment*> pAttachments, UI32 bufferCount) {}
+			virtual void Initialize(VulkanDevice* pDevice, const Interface::RenderTargetExtent& extent, UI32 bufferCount) {}
 
 		protected:
-			std::vector<VulkanRenderTargetAttachment*> pAttachments;
+			void CreateRenderPass(std::vector<VulkanRenderTargetAttachment*> pAttachments, VkPipelineBindPoint vBindPoint);
+			void DestroyRenderPass();
+
+			void CreateFrameBuffer(std::vector<VulkanRenderTargetAttachment*> pAttachments);
+			void DestroyFrameBuffers();
+
+		protected:
+			std::vector<VkFramebuffer> vFrameBuffers;
+			VkRenderPass vRenderPass = VK_NULL_HANDLE;
+
 			Interface::RenderTargetExtent mExtent = {};
 			UI32 mBufferCount = 0;
 		};

@@ -3,6 +3,7 @@
 
 #include "LowLevel/Backend.h"
 #include "LowLevel/Device.h"
+#include "LowLevel/RenderTargets/RenderTargetSB3D.h"
 #include "Core/Benchmark/Timer.h"
 
 #include <thread>
@@ -29,8 +30,12 @@ int main()
 	Flint::LowLevel::Device device = {};
 	device.Initialize(display);
 
-	std::this_thread::sleep_for(std::chrono::microseconds(5000000));
+	Flint::LowLevel::RenderTargetSB3D renderTarget = {};
+	renderTarget.Initialize(device, Flint::Vector2(1280, 720));
 
+	//std::this_thread::sleep_for(std::chrono::microseconds(5000000));
+
+	renderTarget.Terminate();
 	device.Terminate();
 
 	display.Terminate();

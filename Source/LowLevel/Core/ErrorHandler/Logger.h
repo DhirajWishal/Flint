@@ -119,7 +119,7 @@ namespace Flint
 #define FLINT_LOG_ERROR(...)
 #define FLINT_LOG_FATAL(...)
 
-#define FLINT_ASSERT(exp, ...)	//
+#define FLINT_ASSERT(exp, ...)		
 
 #endif // FLINT_DEBUG
 
