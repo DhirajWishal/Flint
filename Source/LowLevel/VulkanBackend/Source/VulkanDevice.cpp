@@ -301,6 +301,16 @@ namespace Flint
 			mTable.vkDestroyDevice(vLogicalDevice, nullptr);
 		}
 
+		VkResult VulkanDevice::MapMemory(VkDeviceMemory vDeviceMemory, UI64 size, UI64 offset, void** ppData) const
+		{
+			return mTable.vkMapMemory(GetLogicalDevice(), vDeviceMemory, offset, size, 0, ppData);
+		}
+
+		void VulkanDevice::UnmapMemory(VkDeviceMemory vDeviceMemory) const
+		{
+			mTable.vkUnmapMemory(GetLogicalDevice(), vDeviceMemory);
+		}
+
 		void VulkanDevice::FreeMemory(VkDeviceMemory vDeviceMemory) const
 		{
 			mTable.vkFreeMemory(GetLogicalDevice(), vDeviceMemory, nullptr);
@@ -341,7 +351,7 @@ namespace Flint
 			return mTable.vkCreateImage(GetLogicalDevice(), pCreateInfo, nullptr, pImage);
 		}
 
-		VkResult VulkanDevice::CreateImageMemory(std::vector<VkImage>& vImages, VkMemoryPropertyFlags vMemoryflags, VkDeviceMemory* pDeviceMemory) const
+		VkResult VulkanDevice::CreateImageMemory(const std::vector<VkImage>& vImages, VkMemoryPropertyFlags vMemoryflags, VkDeviceMemory* pDeviceMemory) const
 		{
 			if (!vImages.size())
 				return VkResult::VK_ERROR_UNKNOWN;
@@ -556,6 +566,49 @@ namespace Flint
 		{
 			for (auto itr = vFrameBuffers.begin(); itr != vFrameBuffers.end(); itr++)
 				mTable.vkDestroyFramebuffer(GetLogicalDevice(), *itr, nullptr);
+		}
+
+		VkResult VulkanDevice::CreateBuffer(const VkBufferCreateInfo* pCreateInfo, VkBuffer* pBuffer) const
+		{
+			return mTable.vkCreateBuffer(GetLogicalDevice(), pCreateInfo, nullptr, pBuffer);
+		}
+
+		VkResult VulkanDevice::CreateBufferMemory(const std::vector<VkBuffer>& vBuffers, VkMemoryPropertyFlags vMemoryflags, VkDeviceMemory* pDeviceMemory) const
+		{
+			if (!vBuffers.size())
+				return VkResult::VK_ERROR_UNKNOWN;
+
+			VkMemoryRequirements vMR = {};
+			mTable.vkGetBufferMemoryRequirements(GetLogicalDevice(), vBuffers[0], &vMR);
+
+			VkPhysicalDeviceMemoryProperties vMP = {};
+			vkGetPhysicalDeviceMemoryProperties(GetPhysicalDevice(), &vMP);
+
+			VkMemoryAllocateInfo vAI = {};
+			vAI.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+			vAI.allocationSize = vMR.size * vBuffers.size();
+
+			for (UI32 i = 0; i < vMP.memoryTypeCount; i++)
+			{
+				if ((vMR.memoryTypeBits & (1 << i)) && (vMP.memoryTypes[i].propertyFlags & vMemoryflags) == vMemoryflags)
+				{
+					vAI.memoryTypeIndex = i;
+					break;
+				}
+			}
+
+			FLINT_VK_ASSERT(mTable.vkAllocateMemory(GetLogicalDevice(), &vAI, nullptr, pDeviceMemory), "Failed to allocate image memory!")
+
+				VkResult result = VkResult::VK_ERROR_UNKNOWN;
+			for (UI32 i = 0; i < vBuffers.size(); i++)
+				result = mTable.vkBindBufferMemory(GetLogicalDevice(), vBuffers[i], *pDeviceMemory, vMR.size * i);
+
+			return result;
+		}
+
+		void VulkanDevice::DestroyBuffer(VkBuffer vBuffer) const
+		{
+			mTable.vkDestroyBuffer(GetLogicalDevice(), vBuffer, nullptr);
 		}
 
 		Interface::DeviceHandle CreateDevice(const Interface::DisplayHandle& displayHandle)

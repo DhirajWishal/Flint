@@ -1,18 +1,14 @@
 -- Copyright 2021 Dhiraj Wishal
 -- SPDX-License-Identifier: Apache-2.0
 
----------- Low Level project description ----------
+---------- Shader Tools project description ----------
 
-project "LowLevel"
+project "ShaderTools"
 	kind "StaticLib"
 	language "C++"
 	systemversion "latest"
 	cppdialect "C++17"
 	staticruntime "On"
-
-	defines {
-		"GLFW_INCLUDE_VULKAN"
-	}
 
 	targetdir "$(SolutionDir)Builds/LowLevel/Binaries/$(Configuration)-$(Platform)"
 	objdir "$(SolutionDir)Builds/LowLevel/Intermediate/$(Configuration)-$(Platform)/$(ProjectName)"
@@ -29,14 +25,12 @@ project "LowLevel"
 	includedirs {
 		"$(SolutionDir)Source/LowLevel/",
 		"$(SolutionDir)Source/Tools/",
-		"%{IncludeDir.Vulkan}",
-		"%{IncludeDir.GLFW}",
+		"$(SolutionDir)Dependencies/ThirdParty/SPIRV-Cross/",
 	}
 
 	libdirs {
 	}
 
 	links { 
-		"ShaderTools",
-		"VulkanBackend",
+		"SPIRV-Cross"
 	}

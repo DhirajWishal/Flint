@@ -72,7 +72,9 @@ include "Source/LowLevel/VulkanBackend/VulkanBackend.lua"
 include "Source/LowLevel/LowLevel/LowLevel.lua"
 
 group "ThirdParty"
+include "Dependencies/ThirdParty/SPIRV-Cross/SPIRV-Cross.lua"
 
 group "Tools"
+include "Source/Tools/ShaderTools/ShaderTools.lua"
 
 group ""

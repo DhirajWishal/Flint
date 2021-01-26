@@ -6,6 +6,8 @@
 #include "VulkanBackend/RenderTargets/VulkanRenderTargetSB2D.h"
 #include "VulkanBackend/RenderTargets/VulkanRenderTargetSB3D.h"
 
+#include "VulkanBackend/Buffers/VulkanStaggingBuffer.h"
+
 #include "Core/ErrorHandler/Logger.h"
 
 namespace Flint
@@ -33,6 +35,11 @@ namespace Flint
 
 			Interface::CreateRenderTargetSB3D = CreateRenderTargetSB3D;
 			Interface::DestroyRenderTargetSB3D = DestroyRenderTargetSB3D;
+
+			Interface::CreateStaggingBuffer = CreateStaggingBuffer;
+			Interface::MapStaggingBufferMemory = MapBufferMempory;
+			Interface::UnmapStaggingBufferMemory = UnmapBufferMemory;
+			Interface::DestroyStaggingBuffer = DestroyBuffer;
 		}
 	}
 }

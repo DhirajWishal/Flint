@@ -83,6 +83,8 @@ namespace Flint
 			VkSampleCountFlags vSampleCount = VkSampleCountFlagBits::VK_SAMPLE_COUNT_64_BIT;
 
 		public:
+			VkResult MapMemory(VkDeviceMemory vDeviceMemory, UI64 size, UI64 offset, void** ppData) const;
+			void UnmapMemory(VkDeviceMemory vDeviceMemory) const;
 			void FreeMemory(VkDeviceMemory vDeviceMemory) const;
 
 			VkResult SubmitQueue(VkQueue vQueue, const std::vector<VkSubmitInfo>& vSubmitInfos, VkFence vFence) const;
@@ -94,7 +96,7 @@ namespace Flint
 			void DestroySwapChain(VkSwapchainKHR vSwapChain) const;
 
 			VkResult CreateImage(const VkImageCreateInfo* pCreateInfo, VkImage* pImage) const;
-			VkResult CreateImageMemory(std::vector<VkImage>& vImages, VkMemoryPropertyFlags vMemoryflags, VkDeviceMemory* pDeviceMemory) const;
+			VkResult CreateImageMemory(const std::vector<VkImage>& vImages, VkMemoryPropertyFlags vMemoryflags, VkDeviceMemory* pDeviceMemory) const;
 			void DestroyImage(VkImage vImage) const;
 
 			void SetImageLayout(VkCommandBuffer vCommandBuffer, VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, UI32 layerCount = 1, UI32 currentLayer = 0, UI32 mipLevels = 1) const;
@@ -118,6 +120,10 @@ namespace Flint
 
 			VkResult CreateFrameBuffer(const VkFramebufferCreateInfo* pCreateInfo, VkFramebuffer* pFrameBuffer) const;
 			void DestroyFrameBuffers(const std::vector<VkFramebuffer>& vFrameBuffers) const;
+
+			VkResult CreateBuffer(const VkBufferCreateInfo* pCreateInfo, VkBuffer* pBuffer) const;
+			VkResult CreateBufferMemory(const std::vector<VkBuffer>& vBuffers, VkMemoryPropertyFlags vMemoryflags, VkDeviceMemory* pDeviceMemory) const;
+			void DestroyBuffer(VkBuffer vBuffer) const;
 		};
 
 		Interface::DeviceHandle CreateDevice(const Interface::DisplayHandle& displayHandle);

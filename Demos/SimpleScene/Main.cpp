@@ -3,7 +3,9 @@
 
 #include "LowLevel/Backend.h"
 #include "LowLevel/Device.h"
+#include "LowLevel/ShaderCode.h"
 #include "LowLevel/RenderTargets/RenderTargetSB3D.h"
+#include "LowLevel/Buffers/StaggingBuffer.h"
 #include "Core/Benchmark/Timer.h"
 
 #include <thread>
@@ -33,8 +35,17 @@ int main()
 	Flint::LowLevel::RenderTargetSB3D renderTarget = {};
 	renderTarget.Initialize(device, Flint::Vector2(1280, 720));
 
+	Flint::ShaderCode vShaderCode;
+	vShaderCode.Initialize("E:\\Dynamik\\Version\\Dynamik\\Assets\\Shaders\\3D\\frag.spv", Flint::ShaderLocation::VERTEX, Flint::ShaderCodeType::SPIR_V);
+
+	auto vShaderDigest = vShaderCode.Digest();
+
+	Flint::LowLevel::StaggingBuffer vStaggingBuffer = {};
+	vStaggingBuffer.Initialize(device, 1280);
+
 	//std::this_thread::sleep_for(std::chrono::microseconds(5000000));
 
+	vStaggingBuffer.Terminate();
 	renderTarget.Terminate();
 	device.Terminate();
 

@@ -23,5 +23,12 @@ namespace Flint
 		FLINT_DEFINE_HANDLE(GraphicsPipelineHandle);
 		FLINT_DEFINE_HANDLE(ComputePipelineHandle);
 		FLINT_DEFINE_HANDLE(RayTracingPipelineHandle);
+
+		FLINT_DEFINE_HANDLE(ShaderModule);
+
+		FLINT_DEFINE_HANDLE(StaggingBufferHandle);
+		FLINT_DEFINE_HANDLE(VertexBufferHandle);
+		FLINT_DEFINE_HANDLE(IndexBufferHandle);
+		FLINT_DEFINE_HANDLE(UniformBufferHandle);
 	}
 }
