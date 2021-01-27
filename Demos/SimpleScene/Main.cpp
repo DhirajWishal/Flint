@@ -6,10 +6,10 @@
 #include "LowLevel/ShaderCode.h"
 #include "LowLevel/RenderTargets/RenderTargetSB3D.h"
 #include "LowLevel/Buffers/StaggingBuffer.h"
+#include "LowLevel/Buffers/UniformBuffer.h"
 #include "Core/Benchmark/Timer.h"
 
 #include <thread>
-#include <Windows.h>
 
 int main()
 {
@@ -40,11 +40,17 @@ int main()
 
 	auto vShaderDigest = vShaderCode.Digest();
 
+
 	Flint::LowLevel::StaggingBuffer vStaggingBuffer = {};
-	vStaggingBuffer.Initialize(device, 1280);
+	vStaggingBuffer.Initialize(device, sizeof(int));
+
+	Flint::LowLevel::UniformBuffer vUniformBuffer = {};
+	vUniformBuffer.Initialize(device, 1280);
+
 
 	//std::this_thread::sleep_for(std::chrono::microseconds(5000000));
 
+	vUniformBuffer.Terminate();
 	vStaggingBuffer.Terminate();
 	renderTarget.Terminate();
 	device.Terminate();

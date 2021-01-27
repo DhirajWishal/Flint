@@ -24,24 +24,24 @@ namespace Flint
 		Interface::StaggingBufferHandle CreateStaggingBuffer(const Interface::DeviceHandle& deviceHandle, UI64 size)
 		{
 			VulkanStaggingBuffer* pBuffer = new VulkanStaggingBuffer();
-			pBuffer->Initialize(reinterpret_cast<VulkanDevice*>(HandleToPointer(deviceHandle)), size);
+			pBuffer->Initialize(static_cast<VulkanDevice*>(HandleToPointer(deviceHandle)), size);
 
 			return PointerToHandle<Interface::StaggingBufferHandle>(pBuffer);
 		}
 
-		void* MapBufferMempory(const Interface::StaggingBufferHandle& handle, UI64 size, UI64 offset)
+		void* MapStaggingBufferMempory(const Interface::StaggingBufferHandle& handle, UI64 size, UI64 offset)
 		{
-			return reinterpret_cast<VulkanStaggingBuffer*>(HandleToPointer(handle))->MapMemory(size, offset);
+			return static_cast<VulkanStaggingBuffer*>(HandleToPointer(handle))->MapMemory(size, offset);
 		}
 
-		void UnmapBufferMemory(const Interface::StaggingBufferHandle& handle)
+		void UnmapStaggingBufferMemory(const Interface::StaggingBufferHandle& handle)
 		{
-			reinterpret_cast<VulkanStaggingBuffer*>(HandleToPointer(handle))->UnmapMemory();
+			static_cast<VulkanStaggingBuffer*>(HandleToPointer(handle))->UnmapMemory();
 		}
 
-		void DestroyBuffer(const Interface::StaggingBufferHandle& handle)
+		void DestroyStaggingBuffer(const Interface::StaggingBufferHandle& handle)
 		{
-			VulkanStaggingBuffer* pBuffer = reinterpret_cast<VulkanStaggingBuffer*>(HandleToPointer(handle));
+			VulkanStaggingBuffer* pBuffer = static_cast<VulkanStaggingBuffer*>(HandleToPointer(handle));
 			pBuffer->Terminate();
 
 			delete pBuffer;

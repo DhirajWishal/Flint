@@ -19,8 +19,8 @@ namespace Flint
 		};
 
 		Interface::StaggingBufferHandle CreateStaggingBuffer(const Interface::DeviceHandle& deviceHandle, UI64 size);
-		void* MapBufferMempory(const Interface::StaggingBufferHandle& handle, UI64 size, UI64 offset);
-		void UnmapBufferMemory(const Interface::StaggingBufferHandle& handle);
-		void DestroyBuffer(const Interface::StaggingBufferHandle& handle);
+		void* MapStaggingBufferMempory(const Interface::StaggingBufferHandle& handle, UI64 size, UI64 offset);
+		void UnmapStaggingBufferMemory(const Interface::StaggingBufferHandle& handle);
+		void DestroyStaggingBuffer(const Interface::StaggingBufferHandle& handle);
 	}
 }

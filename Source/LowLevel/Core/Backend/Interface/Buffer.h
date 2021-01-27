@@ -74,5 +74,71 @@ namespace Flint
 		 * @param handle: The vertex buffer handle.
 		 */
 		inline void (*DestroyVertexBuffer)(const VertexBufferHandle& handle) = nullptr;
+
+		/**
+		 * Create a index buffer object.
+		 *
+		 * @param deviceHandle: The device to which the buffer is bound to.
+		 * @param size: The size of the buffer in bytes.
+		 * @return The index buffer handle.
+		 */
+		inline IndexBufferHandle(*CreateIndexBuffer)(const DeviceHandle& deviceHandle, UI64 size) = nullptr;
+
+		/**
+		 * Map the buffer memory to the local address space and return its address.
+		 *
+		 * @param handle: The index buffer handle.
+		 * @param size: The size in bytes to be mapped.
+		 * @param offset: The offset of the buffer to be mapped.
+		 * @return The mapped memory pointer.
+		 */
+		inline void* (*MapIndexBufferMemory)(const IndexBufferHandle& handle, UI64 size, UI64 offset) = nullptr;
+
+		/**
+		 * Unmap the mapped memory from the device address space.
+		 *
+		 * @param handle: The index buffer handle.
+		 */
+		inline void (*UnmapIndexBufferMemory)(const IndexBufferHandle& handle) = nullptr;
+
+		/**
+		 * Destroy a created buffer.
+		 *
+		 * @param handle: The index buffer handle.
+		 */
+		inline void (*DestroyIndexBuffer)(const IndexBufferHandle& handle) = nullptr;
+
+		/**
+		 * Create a uniform buffer object.
+		 *
+		 * @param deviceHandle: The device to which the buffer is bound to.
+		 * @param size: The size of the buffer in bytes.
+		 * @return The uniform buffer handle.
+		 */
+		inline UniformBufferHandle(*CreateUniformBuffer)(const DeviceHandle& deviceHandle, UI64 size) = nullptr;
+
+		/**
+		 * Map the buffer memory to the local address space and return its address.
+		 *
+		 * @param handle: The uniform buffer handle.
+		 * @param size: The size in bytes to be mapped.
+		 * @param offset: The offset of the buffer to be mapped.
+		 * @return The mapped memory pointer.
+		 */
+		inline void* (*MapUniformBufferMemory)(const UniformBufferHandle& handle, UI64 size, UI64 offset) = nullptr;
+
+		/**
+		 * Unmap the mapped memory from the device address space.
+		 *
+		 * @param handle: The uniform buffer handle.
+		 */
+		inline void (*UnmapUniformBufferMemory)(const UniformBufferHandle& handle) = nullptr;
+
+		/**
+		 * Destroy a created buffer.
+		 *
+		 * @param handle: The uniform buffer handle.
+		 */
+		inline void (*DestroyUniformBuffer)(const UniformBufferHandle& handle) = nullptr;
 	}
 }

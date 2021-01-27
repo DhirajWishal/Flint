@@ -10,24 +10,25 @@ namespace Flint
 	namespace LowLevel
 	{
 		/**
-		 * Flint Stagging Buffer object.
-		 * Stagging buffers are used to copy data to the GPU.
+		 * Flint Index Buffer object.
+		 * Index buffers store grometry indexes.
 		 */
-		class StaggingBuffer {
+		class IndexBuffer {
 		public:
-			StaggingBuffer() {}
-			~StaggingBuffer() {}
+			IndexBuffer() {}
+			~IndexBuffer() {}
 
 			/**
-			 * Initialize the stagging buffer with the size.
+			 * Initialize the index buffer using the index size and the index count.
 			 *
 			 * @param device: The device to which the buffer is bound to.
-			 * @param size: The size of the buffer in bytes.
+			 * @param vertexSize: The size of a single index.
+			 * @param vertexCount: The number of indexes the buffer will contain.
 			 */
-			void Initialize(const Device& device, UI64 size);
+			void Initialize(const Device& device, UI64 indexSize, UI64 indexCount);
 
 			/**
-			 * Terminate the stagging buffer.
+			 * Terminate the buffer.
 			 */
 			void Terminate();
 
@@ -47,11 +48,12 @@ namespace Flint
 			void UnmapMemory();
 
 		public:
-			Interface::StaggingBufferHandle GetHandle() const { return mHandle; }
+			Interface::IndexBufferHandle GetHandle() const { return mHandle; }
 
 		private:
-			Interface::StaggingBufferHandle mHandle = {};
-			UI64 mSize = 0;
+			UI64 mIndexSize = 0;
+			UI64 mIndexCount = 0;
+			Interface::IndexBufferHandle mHandle = {};
 		};
 	}
 }

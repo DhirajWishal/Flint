@@ -256,14 +256,14 @@ namespace Flint
 		Interface::DisplayHandle CreateDisplay(const Interface::InstanceHandle& instanceHandle, UI32 width, UI32 height, const char* pTitle)
 		{
 			VulkanDisplay* pDisplay = new VulkanDisplay();
-			pDisplay->Initialize(reinterpret_cast<VulkanInstance*>(HandleToPointer(instanceHandle)), width, height, pTitle);
+			pDisplay->Initialize(static_cast<VulkanInstance*>(HandleToPointer(instanceHandle)), width, height, pTitle);
 
 			return PointerToHandle<Interface::DisplayHandle>(pDisplay);
 		}
 
 		void DestroyDisplay(const Interface::DisplayHandle& handle)
 		{
-			VulkanDisplay* pDisplay = reinterpret_cast<VulkanDisplay*>(HandleToPointer(handle));
+			VulkanDisplay* pDisplay = static_cast<VulkanDisplay*>(HandleToPointer(handle));
 			pDisplay->Terminate();
 
 			delete pDisplay;
@@ -271,7 +271,7 @@ namespace Flint
 
 		Inputs::InputCenter* GetInputCenter(const Interface::DisplayHandle& handle)
 		{
-			return reinterpret_cast<VulkanDisplay*>(HandleToPointer(handle))->GetInputCenter();
+			return static_cast<VulkanDisplay*>(HandleToPointer(handle))->GetInputCenter();
 		}
 	}
 }

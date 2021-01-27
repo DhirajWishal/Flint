@@ -34,14 +34,14 @@ namespace Flint
 		Interface::RenderTargetHandleSB3D CreateRenderTargetSB3D(const Interface::DeviceHandle& deviceHandle, const Interface::RenderTargetExtent& extent, UI32 bufferCount)
 		{
 			VulkanRenderTargetSB3D* pRenderTarget = new VulkanRenderTargetSB3D();
-			pRenderTarget->Initialize(reinterpret_cast<VulkanDevice*>(HandleToPointer(deviceHandle)), extent, bufferCount);
+			pRenderTarget->Initialize(static_cast<VulkanDevice*>(HandleToPointer(deviceHandle)), extent, bufferCount);
 
 			return PointerToHandle<Interface::RenderTargetHandleSB3D>(pRenderTarget);
 		}
 
 		void DestroyRenderTargetSB3D(const Interface::RenderTargetHandleSB3D& handle)
 		{
-			VulkanRenderTargetSB3D* pRenderTarget = reinterpret_cast<VulkanRenderTargetSB3D*>(HandleToPointer(handle));
+			VulkanRenderTargetSB3D* pRenderTarget = static_cast<VulkanRenderTargetSB3D*>(HandleToPointer(handle));
 			pRenderTarget->Terminate();
 
 			delete pRenderTarget;

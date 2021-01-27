@@ -32,14 +32,14 @@ namespace Flint
 		Interface::RenderTargetHandleSB2D CreateRenderTargetSB2D(const Interface::DeviceHandle& deviceHandle, const Interface::RenderTargetExtent& extent, UI32 bufferCount)
 		{
 			VulkanRenderTargetSB2D* pRenderTarget = new VulkanRenderTargetSB2D();
-			pRenderTarget->Initialize(reinterpret_cast<VulkanDevice*>(HandleToPointer(deviceHandle)), extent, bufferCount);
+			pRenderTarget->Initialize(static_cast<VulkanDevice*>(HandleToPointer(deviceHandle)), extent, bufferCount);
 
 			return PointerToHandle<Interface::RenderTargetHandleSB2D>(pRenderTarget);
 		}
 
 		void DestroyRenderTargetSB2D(const Interface::RenderTargetHandleSB2D& handle)
 		{
-			VulkanRenderTargetSB2D* pRenderTarget = reinterpret_cast<VulkanRenderTargetSB2D*>(HandleToPointer(handle));
+			VulkanRenderTargetSB2D* pRenderTarget = static_cast<VulkanRenderTargetSB2D*>(HandleToPointer(handle));
 			pRenderTarget->Terminate();
 
 			delete pRenderTarget;

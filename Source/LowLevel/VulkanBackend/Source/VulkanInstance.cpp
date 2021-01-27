@@ -283,7 +283,7 @@ namespace Flint
 
 		void DestroyInstance(const Interface::InstanceHandle& handle)
 		{
-			VulkanInstance* pInstance = reinterpret_cast<VulkanInstance*>(HandleToPointer(handle));
+			VulkanInstance* pInstance = static_cast<VulkanInstance*>(HandleToPointer(handle));
 			pInstance->Terminate();
 
 			delete pInstance;

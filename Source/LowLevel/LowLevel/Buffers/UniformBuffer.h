@@ -10,24 +10,24 @@ namespace Flint
 	namespace LowLevel
 	{
 		/**
-		 * Flint Stagging Buffer object.
-		 * Stagging buffers are used to copy data to the GPU.
+		 * Flint Uniform Buffer object.
+		 * Uniform buffers are used to submit resources to the shaders to be computed.
 		 */
-		class StaggingBuffer {
+		class UniformBuffer {
 		public:
-			StaggingBuffer() {}
-			~StaggingBuffer() {}
+			UniformBuffer() {}
+			~UniformBuffer() {}
 
 			/**
-			 * Initialize the stagging buffer with the size.
+			 * Initialize the uniform buffer using the size.
 			 *
-			 * @param device: The device to which the buffer is bound to.
+			 * @param device: The device to which the unform buffer is bound to.
 			 * @param size: The size of the buffer in bytes.
 			 */
 			void Initialize(const Device& device, UI64 size);
 
 			/**
-			 * Terminate the stagging buffer.
+			 * Terminate the buffer.
 			 */
 			void Terminate();
 
@@ -47,11 +47,11 @@ namespace Flint
 			void UnmapMemory();
 
 		public:
-			Interface::StaggingBufferHandle GetHandle() const { return mHandle; }
+			Interface::UniformBufferHandle GetHandle() const { return mHandle; }
 
 		private:
-			Interface::StaggingBufferHandle mHandle = {};
 			UI64 mSize = 0;
+			Interface::UniformBufferHandle mHandle = {};
 		};
 	}
 }

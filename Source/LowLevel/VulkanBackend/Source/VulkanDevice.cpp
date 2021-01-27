@@ -614,14 +614,14 @@ namespace Flint
 		Interface::DeviceHandle CreateDevice(const Interface::DisplayHandle& displayHandle)
 		{
 			VulkanDevice* pDevice = new VulkanDevice();
-			pDevice->Initialize(reinterpret_cast<VulkanDisplay*>(HandleToPointer(displayHandle)));
+			pDevice->Initialize(static_cast<VulkanDisplay*>(HandleToPointer(displayHandle)));
 
 			return PointerToHandle<Interface::DeviceHandle>(pDevice);
 		}
 
 		void DestroyDevice(const Interface::DeviceHandle& handle)
 		{
-			VulkanDevice* pDevice = reinterpret_cast<VulkanDevice*>(HandleToPointer(handle));
+			VulkanDevice* pDevice = static_cast<VulkanDevice*>(HandleToPointer(handle));
 			pDevice->Terminate();
 
 			delete pDevice;

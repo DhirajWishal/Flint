@@ -10,24 +10,25 @@ namespace Flint
 	namespace LowLevel
 	{
 		/**
-		 * Flint Stagging Buffer object.
-		 * Stagging buffers are used to copy data to the GPU.
+		 * Flint Vertex Buffer object.
+		 * Vertex buffers are special buffers in which the vertex geometry is passed to the pipeline.
 		 */
-		class StaggingBuffer {
+		class VertexBuffer {
 		public:
-			StaggingBuffer() {}
-			~StaggingBuffer() {}
+			VertexBuffer() {}
+			~VertexBuffer() {}
 
 			/**
-			 * Initialize the stagging buffer with the size.
+			 * Initialize the vertex buffer using the vertex size and the vertex count.
 			 *
 			 * @param device: The device to which the buffer is bound to.
-			 * @param size: The size of the buffer in bytes.
+			 * @param vertexSize: The size of a single vertex.
+			 * @param vertexCount: The number of vertexes the buffer will contain.
 			 */
-			void Initialize(const Device& device, UI64 size);
+			void Initialize(const Device& device, UI64 vertexSize, UI64 vertexCount);
 
 			/**
-			 * Terminate the stagging buffer.
+			 * Terminate the buffer.
 			 */
 			void Terminate();
 
@@ -47,11 +48,12 @@ namespace Flint
 			void UnmapMemory();
 
 		public:
-			Interface::StaggingBufferHandle GetHandle() const { return mHandle; }
+			Interface::VertexBufferHandle GetHandle() const { return mHandle; }
 
 		private:
-			Interface::StaggingBufferHandle mHandle = {};
-			UI64 mSize = 0;
+			UI64 mVertexSize = 0;
+			UI64 mVertexCount = 0;
+			Interface::VertexBufferHandle mHandle = {};
 		};
 	}
 }
