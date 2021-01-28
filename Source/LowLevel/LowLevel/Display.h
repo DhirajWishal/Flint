@@ -38,7 +38,7 @@ namespace Flint
 			Interface::DisplayHandle GetHandle() const { return mHandle; }
 
 		private:
-			Interface::DisplayHandle mHandle = {};
+			Interface::DisplayHandle mHandle = FLINT_NULL_HANDLE;
 			Inputs::InputCenter* pInputCenter = nullptr;
 		};
 	}

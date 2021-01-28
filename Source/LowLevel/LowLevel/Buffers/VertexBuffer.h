@@ -53,7 +53,7 @@ namespace Flint
 		private:
 			UI64 mVertexSize = 0;
 			UI64 mVertexCount = 0;
-			Interface::VertexBufferHandle mHandle = {};
+			Interface::VertexBufferHandle mHandle = FLINT_NULL_HANDLE;
 		};
 	}
 }

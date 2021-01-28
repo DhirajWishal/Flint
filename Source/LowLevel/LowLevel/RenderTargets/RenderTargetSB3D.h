@@ -22,7 +22,7 @@ namespace Flint
 			void Terminate();
 
 		private:
-			Interface::RenderTargetHandleSB3D mHandle = {};
+			Interface::RenderTargetHandleSB3D mHandle = FLINT_NULL_HANDLE;
 		};
 	}
 }

@@ -50,7 +50,7 @@ namespace Flint
 			Interface::StaggingBufferHandle GetHandle() const { return mHandle; }
 
 		private:
-			Interface::StaggingBufferHandle mHandle = {};
+			Interface::StaggingBufferHandle mHandle = FLINT_NULL_HANDLE;
 			UI64 mSize = 0;
 		};
 	}

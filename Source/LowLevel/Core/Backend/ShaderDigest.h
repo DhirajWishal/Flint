@@ -4,6 +4,7 @@
 #pragma once
 
 #include "Core/Types/DataTypes.h"
+#include "Interface/Handles.h"
 
 namespace Flint
 {
@@ -58,6 +59,7 @@ namespace Flint
 		UniformLayout() = default;
 		UniformLayout(UniformType type, UI32 binding) : mType(type), mBinding(binding) {}
 
+		String mName = {};
 		UI64 mSize = 0;
 		UI32 mBinding = 0;
 		UI32 mLayerCount = 1;
@@ -98,6 +100,15 @@ namespace Flint
 			std::vector<UniformLayout>&& uniformLayouts,
 			std::vector<UI32>&& code)
 			: mLocation(std::move(location)), mUniforms(std::move(uniformLayouts)), mCode(std::move(code)) {}
+
+		/**
+		 * Create uniform buffers using the digest.
+		 * These uniform buffers are identified by their name which are given to them by the shader.
+		 *
+		 * @param deviceHandle: The device to which the uniform buffers are bound.
+		 * @return The uniform buffer storage.
+		 */
+		UniformBufferStorage CreatUniformBuffers(const Interface::DeviceHandle& deviceHandle);
 
 		ShaderLocation mLocation = ShaderLocation::UNDEFINED;
 		std::vector<UniformLayout> mUniforms;

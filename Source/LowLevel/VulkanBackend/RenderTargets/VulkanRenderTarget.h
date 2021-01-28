@@ -15,6 +15,9 @@ namespace Flint
 
 			virtual void Initialize(VulkanDevice* pDevice, const Interface::RenderTargetExtent& extent, UI32 bufferCount) {}
 
+		public:
+			VkRenderPass GetRenderPass() const { return vRenderPass; }
+
 		protected:
 			void CreateRenderPass(std::vector<VulkanRenderTargetAttachment*> pAttachments, VkPipelineBindPoint vBindPoint);
 			void DestroyRenderPass();

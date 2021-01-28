@@ -30,5 +30,9 @@ namespace Flint
 		FLINT_DEFINE_HANDLE(VertexBufferHandle);
 		FLINT_DEFINE_HANDLE(IndexBufferHandle);
 		FLINT_DEFINE_HANDLE(UniformBufferHandle);
+
+		FLINT_DEFINE_HANDLE(PipelineResourceHandle);
 	}
+
+	typedef std::unordered_map<String, Interface::UniformBufferHandle> UniformBufferStorage;
 }

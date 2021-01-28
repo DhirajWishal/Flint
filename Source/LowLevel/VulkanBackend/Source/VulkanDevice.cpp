@@ -611,6 +611,16 @@ namespace Flint
 			mTable.vkDestroyBuffer(GetLogicalDevice(), vBuffer, nullptr);
 		}
 
+		VkResult VulkanDevice::CreateShaderModule(const VkShaderModuleCreateInfo* pCreateInfo, VkShaderModule* pModule) const
+		{
+			return mTable.vkCreateShaderModule(GetLogicalDevice(), pCreateInfo, nullptr, pModule);
+		}
+
+		void VulkanDevice::DestroyShaderModule(VkShaderModule vModule) const
+		{
+			mTable.vkDestroyShaderModule(GetLogicalDevice(), vModule, nullptr);
+		}
+
 		Interface::DeviceHandle CreateDevice(const Interface::DisplayHandle& displayHandle)
 		{
 			VulkanDevice* pDevice = new VulkanDevice();

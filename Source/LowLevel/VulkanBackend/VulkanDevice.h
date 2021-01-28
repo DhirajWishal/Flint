@@ -124,6 +124,9 @@ namespace Flint
 			VkResult CreateBuffer(const VkBufferCreateInfo* pCreateInfo, VkBuffer* pBuffer) const;
 			VkResult CreateBufferMemory(const std::vector<VkBuffer>& vBuffers, VkMemoryPropertyFlags vMemoryflags, VkDeviceMemory* pDeviceMemory) const;
 			void DestroyBuffer(VkBuffer vBuffer) const;
+
+			VkResult CreateShaderModule(const VkShaderModuleCreateInfo* pCreateInfo, VkShaderModule* pModule) const;
+			void DestroyShaderModule(VkShaderModule vModule) const;
 		};
 
 		Interface::DeviceHandle CreateDevice(const Interface::DisplayHandle& displayHandle);

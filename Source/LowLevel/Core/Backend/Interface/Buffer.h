@@ -4,6 +4,7 @@
 #pragma once
 
 #include "Device.h"
+#include "Core/Backend/ShaderDigest.h"
 
 namespace Flint
 {

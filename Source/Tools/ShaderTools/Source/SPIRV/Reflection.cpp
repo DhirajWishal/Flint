@@ -31,6 +31,8 @@ namespace Flint
 			{
 				// Create the uniform buffer object.
 				UniformLayout mUniform(UniformType::UNIFORM_BUFFER, mCompiler.get_decoration(resource.id, spv::DecorationBinding));
+				mUniform.mLayerCount = mCompiler.get_type(resource.base_type_id).vecsize;
+				mUniform.mName = std::move(mCompiler.get_name(resource.id));
 
 				UI32 byteSize = 0;
 				// Resolve the uniform attributes.
@@ -51,6 +53,8 @@ namespace Flint
 			{
 				// Create the storage buffer object.
 				UniformLayout mUniform(UniformType::STORAGE_BUFFER, mCompiler.get_decoration(resource.id, spv::DecorationBinding));
+				mUniform.mLayerCount = mCompiler.get_type(resource.base_type_id).vecsize;
+				mUniform.mName = std::move(mCompiler.get_name(resource.id));
 
 				UI32 byteSize = 0;
 				// Resolve the uniform attributes.
@@ -107,6 +111,8 @@ namespace Flint
 			{
 				// Create the storage image uniform object.
 				UniformLayout mUniform(UniformType::STORAGE_IMAGE, mCompiler.get_decoration(resource.id, spv::DecorationBinding));
+				mUniform.mLayerCount = mCompiler.get_type(resource.base_type_id).vecsize;
+				mUniform.mName = std::move(mCompiler.get_name(resource.id));
 				INSERT_INTO_VECTOR(mDigest.mUniforms, std::move(mUniform));
 			}
 
@@ -115,6 +121,8 @@ namespace Flint
 			{
 				// Create the image sampler uniform object.
 				UniformLayout mUniform(UniformType::SAMPLER_2D, mCompiler.get_decoration(resource.id, spv::DecorationBinding));
+				mUniform.mLayerCount = mCompiler.get_type(resource.base_type_id).vecsize;
+				mUniform.mName = std::move(mCompiler.get_name(resource.id));
 				INSERT_INTO_VECTOR(mDigest.mUniforms, std::move(mUniform));
 			}
 
@@ -123,6 +131,8 @@ namespace Flint
 			{
 				// Create the seperate image uniform object.
 				UniformLayout mUniform(UniformType::SAMPLER_2D, mCompiler.get_decoration(resource.id, spv::DecorationBinding));
+				mUniform.mLayerCount = mCompiler.get_type(resource.base_type_id).vecsize;
+				mUniform.mName = std::move(mCompiler.get_name(resource.id));
 				INSERT_INTO_VECTOR(mDigest.mUniforms, std::move(mUniform));
 			}
 
@@ -131,6 +141,8 @@ namespace Flint
 			{
 				// Create the seperate sampler uniform object.
 				UniformLayout mUniform(UniformType::SAMPLER_2D, mCompiler.get_decoration(resource.id, spv::DecorationBinding));
+				mUniform.mLayerCount = mCompiler.get_type(resource.base_type_id).vecsize;
+				mUniform.mName = std::move(mCompiler.get_name(resource.id));
 				INSERT_INTO_VECTOR(mDigest.mUniforms, std::move(mUniform));
 			}
 
@@ -139,6 +151,8 @@ namespace Flint
 			{
 				// Create the acceleration structure uniform.
 				UniformLayout mUniform(UniformType::ACCELERATION_STRUCTURE, mCompiler.get_decoration(resource.id, spv::DecorationBinding));
+				mUniform.mLayerCount = mCompiler.get_type(resource.base_type_id).vecsize;
+				mUniform.mName = std::move(mCompiler.get_name(resource.id));
 
 				UI32 byteSize = 0;
 				// Resolve the structure attributes.
@@ -158,6 +172,8 @@ namespace Flint
 			{
 				// Create the push constant object.
 				UniformLayout mUniform(UniformType::CONSTANT, mCompiler.get_decoration(resource.id, spv::DecorationBinding));
+				mUniform.mLayerCount = mCompiler.get_type(resource.base_type_id).vecsize;
+				mUniform.mName = std::move(mCompiler.get_name(resource.id));
 
 				UI32 byteSize = 0;
 				// Resolve the buffer attributes.

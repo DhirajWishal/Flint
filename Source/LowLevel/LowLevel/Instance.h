@@ -34,7 +34,7 @@ namespace Flint
 			Interface::InstanceHandle GetHandle() const { return mHandle; }
 
 		private:
-			Interface::InstanceHandle mHandle = {};
+			Interface::InstanceHandle mHandle = FLINT_NULL_HANDLE;
 		};
 	}
 }

@@ -51,7 +51,14 @@ namespace Flint
 
 		private:
 			UI64 mSize = 0;
-			Interface::UniformBufferHandle mHandle = {};
+			Interface::UniformBufferHandle mHandle = FLINT_NULL_HANDLE;
 		};
+
+		/**
+		 * Destroy a created uniform buffer storage.
+		 *
+		 * @param storage: The unform buffer storage to be destroyed.
+		 */
+		void DestroyUniformBufferStorage(UniformBufferStorage& storage);
 	}
 }

@@ -53,7 +53,7 @@ namespace Flint
 		private:
 			UI64 mIndexSize = 0;
 			UI64 mIndexCount = 0;
-			Interface::IndexBufferHandle mHandle = {};
+			Interface::IndexBufferHandle mHandle = FLINT_NULL_HANDLE;
 		};
 	}
 }

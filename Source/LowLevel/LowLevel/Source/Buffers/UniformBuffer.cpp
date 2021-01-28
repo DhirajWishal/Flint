@@ -35,5 +35,13 @@ namespace Flint
 		{
 			Interface::UnmapUniformBufferMemory(mHandle);
 		}
+		
+		void DestroyUniformBufferStorage(UniformBufferStorage& storage)
+		{
+			for(auto itr = storage.begin(); itr != storage.end(); itr++)
+				Interface::DestroyUniformBuffer(itr->second);
+
+			storage.clear();
+		}
 	}
 }
