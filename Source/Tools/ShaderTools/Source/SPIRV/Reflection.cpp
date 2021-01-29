@@ -32,7 +32,7 @@ namespace Flint
 				// Create the uniform buffer object.
 				UniformLayout mUniform(UniformType::UNIFORM_BUFFER, mCompiler.get_decoration(resource.id, spv::DecorationBinding));
 				mUniform.mLayerCount = mCompiler.get_type(resource.base_type_id).vecsize;
-				mUniform.mName = std::move(mCompiler.get_name(resource.id));
+				mUniform.mName = mCompiler.get_name(resource.id);
 
 				UI32 byteSize = 0;
 				// Resolve the uniform attributes.
@@ -43,7 +43,6 @@ namespace Flint
 				}
 
 				mUniform.mSize = byteSize;
-
 				INSERT_INTO_VECTOR(mDigest.mUniforms, std::move(mUniform));
 				mShaderOffset += byteSize;
 			}
@@ -54,7 +53,7 @@ namespace Flint
 				// Create the storage buffer object.
 				UniformLayout mUniform(UniformType::STORAGE_BUFFER, mCompiler.get_decoration(resource.id, spv::DecorationBinding));
 				mUniform.mLayerCount = mCompiler.get_type(resource.base_type_id).vecsize;
-				mUniform.mName = std::move(mCompiler.get_name(resource.id));
+				mUniform.mName = mCompiler.get_name(resource.id);
 
 				UI32 byteSize = 0;
 				// Resolve the uniform attributes.
@@ -69,42 +68,36 @@ namespace Flint
 				mShaderOffset += byteSize;
 			}
 
-			//// Resolve shader inputs.
-			//ShaderIOLayout mInputAttribute = {};
-			//for (auto& resource : mResources.stage_inputs)
-			//{
-			//	// Create the input attribute.
-			//	mInputAttribute.mLocation = mCompiler.get_decoration(resource.id, spv::DecorationLocation);
-			//	//mInputAttribute.mBinding = mCompiler.get_decoration(resource.id, spv::DecorationBinding);
-			//	mInputAttribute.mName = std::move(mCompiler.get_name(resource.id));
-			//
-			//	auto& Ty = mCompiler.get_type(resource.base_type_id);
-			//	mInputAttribute.mLayerCount = Ty.columns;
-			//	mInputAttribute.mDataType = static_cast<DataType>((Ty.width / 8) * (Ty.vecsize == 3 ? 4 : Ty.vecsize));
-			//
-			//	mDigest.mInputAttributes.insert(mDigest.mInputAttributes.end(), std::move(mInputAttribute));
-			//
-			//	mInputAttribute.mOffset += mInputAttribute.mLayerCount * (Ty.width / 8) * (Ty.vecsize == 3 ? 4 : Ty.vecsize);
-			//}
-			//
-			//
-			//// Resolve shader outputs.
-			//ShaderIOLayout mOutputAttribute = {};
-			//for (auto& resource : mResources.stage_outputs)
-			//{
-			//	// Create the output attribute.
-			//	mOutputAttribute.mLocation = mCompiler.get_decoration(resource.id, spv::DecorationLocation);
-			//	//mOutputAttribute.mBinding = mCompiler.get_decoration(resource.id, spv::DecorationBinding);
-			//	mOutputAttribute.mName = std::move(mCompiler.get_name(resource.id));
-			//
-			//	auto& Ty = mCompiler.get_type(resource.base_type_id);
-			//	mOutputAttribute.mLayerCount = Ty.columns;
-			//	mOutputAttribute.mDataType = static_cast<DataType>((Ty.width / 8) * (Ty.vecsize == 3 ? 4 : Ty.vecsize));
-			//
-			//	mDigest.mOutputAttributes.insert(mDigest.mOutputAttributes.end(), std::move(mOutputAttribute));
-			//
-			//	mOutputAttribute.mOffset += mOutputAttribute.mLayerCount * (Ty.width / 8) * (Ty.vecsize == 3 ? 4 : Ty.vecsize);
-			//}
+			// Resolve shader inputs.
+			ShaderAttribute mInputAttribute = {};
+			for (auto& resource : mResources.stage_inputs)
+			{
+				// Create the input attribute.
+				mInputAttribute.mLocation = mCompiler.get_decoration(resource.id, spv::DecorationLocation);
+				mInputAttribute.mName = mCompiler.get_name(resource.id);
+
+				auto& Ty = mCompiler.get_type(resource.base_type_id);
+				mInputAttribute.mLayerCount = Ty.columns;
+				mInputAttribute.mSize = (static_cast<UI64>(Ty.width) / 8) * (Ty.vecsize == 3 ? 4 : Ty.vecsize);
+
+				INSERT_INTO_VECTOR(mDigest.mInputAttributes, std::move(mInputAttribute));
+			}
+
+
+			// Resolve shader outputs.
+			ShaderAttribute mOutputAttribute = {};
+			for (auto& resource : mResources.stage_outputs)
+			{
+				// Create the output attribute.
+				mOutputAttribute.mLocation = mCompiler.get_decoration(resource.id, spv::DecorationLocation);
+				mOutputAttribute.mName = mCompiler.get_name(resource.id);
+
+				auto& Ty = mCompiler.get_type(resource.base_type_id);
+				mOutputAttribute.mLayerCount = Ty.columns;
+				mOutputAttribute.mSize = (static_cast<UI64>(Ty.width) / 8) * (Ty.vecsize == 3 ? 4 : Ty.vecsize);
+
+				INSERT_INTO_VECTOR(mDigest.mOutputAttributes, std::move(mOutputAttribute));
+			}
 
 			// Resolve storage images.
 			for (auto& resource : mResources.storage_images)
@@ -112,7 +105,7 @@ namespace Flint
 				// Create the storage image uniform object.
 				UniformLayout mUniform(UniformType::STORAGE_IMAGE, mCompiler.get_decoration(resource.id, spv::DecorationBinding));
 				mUniform.mLayerCount = mCompiler.get_type(resource.base_type_id).vecsize;
-				mUniform.mName = std::move(mCompiler.get_name(resource.id));
+				mUniform.mName = mCompiler.get_name(resource.id);
 				INSERT_INTO_VECTOR(mDigest.mUniforms, std::move(mUniform));
 			}
 
@@ -122,7 +115,7 @@ namespace Flint
 				// Create the image sampler uniform object.
 				UniformLayout mUniform(UniformType::SAMPLER_2D, mCompiler.get_decoration(resource.id, spv::DecorationBinding));
 				mUniform.mLayerCount = mCompiler.get_type(resource.base_type_id).vecsize;
-				mUniform.mName = std::move(mCompiler.get_name(resource.id));
+				mUniform.mName = mCompiler.get_name(resource.id);
 				INSERT_INTO_VECTOR(mDigest.mUniforms, std::move(mUniform));
 			}
 
@@ -132,7 +125,7 @@ namespace Flint
 				// Create the seperate image uniform object.
 				UniformLayout mUniform(UniformType::SAMPLER_2D, mCompiler.get_decoration(resource.id, spv::DecorationBinding));
 				mUniform.mLayerCount = mCompiler.get_type(resource.base_type_id).vecsize;
-				mUniform.mName = std::move(mCompiler.get_name(resource.id));
+				mUniform.mName = mCompiler.get_name(resource.id);
 				INSERT_INTO_VECTOR(mDigest.mUniforms, std::move(mUniform));
 			}
 
@@ -142,7 +135,7 @@ namespace Flint
 				// Create the seperate sampler uniform object.
 				UniformLayout mUniform(UniformType::SAMPLER_2D, mCompiler.get_decoration(resource.id, spv::DecorationBinding));
 				mUniform.mLayerCount = mCompiler.get_type(resource.base_type_id).vecsize;
-				mUniform.mName = std::move(mCompiler.get_name(resource.id));
+				mUniform.mName = mCompiler.get_name(resource.id);
 				INSERT_INTO_VECTOR(mDigest.mUniforms, std::move(mUniform));
 			}
 
@@ -152,7 +145,7 @@ namespace Flint
 				// Create the acceleration structure uniform.
 				UniformLayout mUniform(UniformType::ACCELERATION_STRUCTURE, mCompiler.get_decoration(resource.id, spv::DecorationBinding));
 				mUniform.mLayerCount = mCompiler.get_type(resource.base_type_id).vecsize;
-				mUniform.mName = std::move(mCompiler.get_name(resource.id));
+				mUniform.mName = mCompiler.get_name(resource.id);
 
 				UI32 byteSize = 0;
 				// Resolve the structure attributes.
@@ -173,7 +166,7 @@ namespace Flint
 				// Create the push constant object.
 				UniformLayout mUniform(UniformType::CONSTANT, mCompiler.get_decoration(resource.id, spv::DecorationBinding));
 				mUniform.mLayerCount = mCompiler.get_type(resource.base_type_id).vecsize;
-				mUniform.mName = std::move(mCompiler.get_name(resource.id));
+				mUniform.mName = mCompiler.get_name(resource.id);
 
 				UI32 byteSize = 0;
 				// Resolve the buffer attributes.

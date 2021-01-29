@@ -40,15 +40,10 @@ namespace Flint
 	 * This defines how a single Shader attribute is made up of.
 	 */
 	struct ShaderAttribute {
+		String mName = {};
 		UI64 mSize = 0;
-		ShaderAttribueType mType = ShaderAttribueType::UNDEFINED;
-
-		/**
-		 * Get the size of the attribute.
-		 *
-		 * @return The size in bytes.
-		 */
-		UI64 Size() const { return mSize; }
+		UI32 mLocation = 0;
+		UI32 mLayerCount = 1;
 	};
 
 	/**
@@ -110,8 +105,10 @@ namespace Flint
 		 */
 		UniformBufferStorage CreatUniformBuffers(const Interface::DeviceHandle& deviceHandle);
 
-		ShaderLocation mLocation = ShaderLocation::UNDEFINED;
+		std::vector<ShaderAttribute> mInputAttributes;
+		std::vector<ShaderAttribute> mOutputAttributes;
 		std::vector<UniformLayout> mUniforms;
 		std::vector<UI32> mCode;
+		ShaderLocation mLocation = ShaderLocation::UNDEFINED;
 	};
 }

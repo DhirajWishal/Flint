@@ -127,6 +127,9 @@ namespace Flint
 
 			VkResult CreateShaderModule(const VkShaderModuleCreateInfo* pCreateInfo, VkShaderModule* pModule) const;
 			void DestroyShaderModule(VkShaderModule vModule) const;
+
+			VkResult CreateDescriptorSetLayout(const VkDescriptorSetLayoutCreateInfo* pCreateInfo, VkDescriptorSetLayout* pLayout) const;
+			void DestroyDescriptorSetLayout(VkDescriptorSetLayout vLayout) const;
 		};
 
 		Interface::DeviceHandle CreateDevice(const Interface::DisplayHandle& displayHandle);

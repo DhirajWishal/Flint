@@ -10,10 +10,10 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class ShaderModule final : VulkanDeviceBoundObject {
+		class VulkanShaderModule final : VulkanDeviceBoundObject {
 		public:
-			ShaderModule() {}
-			~ShaderModule() {}
+			VulkanShaderModule() {}
+			~VulkanShaderModule() {}
 
 			void Initialize(VulkanDevice* pDevice, const ShaderDigest& digest);
 			void Terminate() override final;

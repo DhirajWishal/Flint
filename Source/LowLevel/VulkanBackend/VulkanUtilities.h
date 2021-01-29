@@ -21,6 +21,8 @@ namespace Flint
 			bool HasStencilComponent(VkFormat vFormat);
 			VkShaderStageFlagBits GetShaderStage(ShaderLocation location);
 			VkDescriptorType GetDescriptorType(UniformType type);
+			std::vector<VkVertexInputAttributeDescription> GetInputAttributeDescriptions(const ShaderDigest& digest);
+			UI64 GetStride(const ShaderDigest& digest);
 		}
 	}
 }

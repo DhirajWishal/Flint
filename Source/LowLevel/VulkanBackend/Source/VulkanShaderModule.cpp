@@ -9,7 +9,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		void ShaderModule::Initialize(VulkanDevice* pDevice, const ShaderDigest& digest)
+		void VulkanShaderModule::Initialize(VulkanDevice* pDevice, const ShaderDigest& digest)
 		{
 			this->pDevice = pDevice;
 			vShaderStage = Utilities::GetShaderStage(digest.mLocation);
@@ -22,14 +22,16 @@ namespace Flint
 			vCI.pCode = digest.mCode.data();
 
 			FLINT_VK_ASSERT(pDevice->CreateShaderModule(&vCI, &vShaderModule), "Failed to create shader module!")
+
+				SetupResources(digest);
 		}
 
-		void ShaderModule::Terminate()
+		void VulkanShaderModule::Terminate()
 		{
 			pDevice->DestroyShaderModule(vShaderModule);
 		}
 
-		void ShaderModule::SetupResources(const ShaderDigest& digest)
+		void VulkanShaderModule::SetupResources(const ShaderDigest& digest)
 		{
 			VkDescriptorSetLayoutBinding vBinding = {};
 			vBinding.stageFlags = vShaderStage;

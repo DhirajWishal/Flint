@@ -191,6 +191,61 @@ namespace Flint
 
 				return VkDescriptorType();
 			}
+
+			VkFormat GetFormatFromSize(UI64 size)
+			{
+				switch (size)
+				{
+					case sizeof(UI8) :
+						return VkFormat::VK_FORMAT_R8_SINT;
+
+					case sizeof(UI8) * 2:
+						return VkFormat::VK_FORMAT_R8G8_SINT;
+
+					case sizeof(UI32) :
+						return VkFormat::VK_FORMAT_R32_SFLOAT;
+
+					case sizeof(UI32) * 2:
+						return VkFormat::VK_FORMAT_R32G32_SFLOAT;
+
+					case sizeof(UI32) * 4:
+						return VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT;
+
+					default:
+						FLINT_LOG_ERROR(TEXT("Invalid or Unsupported size!"))
+						break;
+				}
+
+				return VkFormat::VK_FORMAT_UNDEFINED;
+			}
+
+			std::vector<VkVertexInputAttributeDescription> GetInputAttributeDescriptions(const ShaderDigest& digest)
+			{
+				std::vector<VkVertexInputAttributeDescription> vDescriptions = {};
+				VkVertexInputAttributeDescription vDesc = {};
+				vDesc.binding = 0;
+				vDesc.offset = 0;
+
+				for (auto itr = digest.mInputAttributes.begin(); itr != digest.mInputAttributes.end(); itr++)
+				{
+					vDesc.location = itr->mLocation;
+					vDesc.format = GetFormatFromSize(itr->mSize);
+
+					INSERT_INTO_VECTOR(vDescriptions, vDesc);
+					vDesc.offset += static_cast<UI32>(itr->mSize);
+				}
+
+				return vDescriptions;
+			}
+			
+			UI64 GetStride(const ShaderDigest& digest)
+			{
+				UI64 size = 0;
+				for (auto itr = digest.mInputAttributes.begin(); itr != digest.mInputAttributes.end(); itr++)
+					size += itr->mSize;
+
+				return size;
+			}
 		}
 	}
 }
