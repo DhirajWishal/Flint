@@ -3,6 +3,9 @@
 
 #include "VulkanBackend/VulkanExporter.h"
 
+#include "Core/Backend/Interface/ScreenBoundRenderTarget.h"
+#include "Core/Backend/Interface/OffScreenRenderTarget.h"
+
 #include "VulkanBackend/RenderTargets/VulkanRenderTargetSB2D.h"
 #include "VulkanBackend/RenderTargets/VulkanRenderTargetSB3D.h"
 

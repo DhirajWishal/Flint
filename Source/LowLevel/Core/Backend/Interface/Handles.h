@@ -4,6 +4,7 @@
 #pragma once
 
 #include "Core/Types/Handle.h"
+#include "Core/Maths/Vector/Vector2.h"
 
 namespace Flint
 {
@@ -32,7 +33,22 @@ namespace Flint
 		FLINT_DEFINE_HANDLE(UniformBufferHandle);
 
 		FLINT_DEFINE_HANDLE(PipelineResourceHandle);
+
+		/**
+		 * Render Target Extent structure.
+		 */
+		struct RenderTargetExtent {
+			RenderTargetExtent() = default;
+			RenderTargetExtent(UI32 width, UI32 height) : mWidth(width), mHeight(height) {}
+			RenderTargetExtent(const Vector2& vector)
+				: mWidth(static_cast<UI32>(vector.x)), mHeight(static_cast<UI32>(vector.y)) {}
+
+			UI32 mWidth = 0;
+			UI32 mHeight = 0;
+		};
 	}
 
 	typedef std::unordered_map<String, Interface::UniformBufferHandle> UniformBufferStorage;
 }
+
+#define FLINT_DEFINE_FUNCTION_POINTER(ret, name, ...)	inline ret (*name)(__VA_ARGS__) = nullptr

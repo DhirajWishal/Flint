@@ -4,7 +4,7 @@
 #pragma once
 
 #include "VulkanBackend/VulkanDevice.h"
-#include "Core/Backend/Interface/RenderTarget.h"
+#include "Core/Backend/Interface/Handles.h"
 
 namespace Flint
 {

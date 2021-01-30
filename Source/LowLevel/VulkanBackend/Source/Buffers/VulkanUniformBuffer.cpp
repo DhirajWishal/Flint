@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "VulkanBackend/Buffers/VulkanUniformBuffer.h"
+#include "VulkanBackend/VulkanResourceContainer.h"
 
 namespace Flint
 {
@@ -12,6 +13,9 @@ namespace Flint
 			this->pDevice = pDevice;
 			CreateBuffer(VkBufferUsageFlagBits::VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT, size);
 			AllocateBufferMemory(VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+		
+			if (pContainer)
+				pContainer->RegisterBuffer(this);
 		}
 
 		void VulkanUniformBuffer::Terminate()

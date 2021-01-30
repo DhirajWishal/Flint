@@ -16,6 +16,9 @@ namespace Flint
 
 			virtual void Initialize(VulkanDevice* pDevice, VulkanRenderTarget* pRenderTarget, const std::vector<ShaderDigest>& shaderDigest);
 			virtual void Terminate();
+
+		private:
+			std::vector<VkDescriptorPoolSize> vPoolSizes;
 		};
 	}
 }

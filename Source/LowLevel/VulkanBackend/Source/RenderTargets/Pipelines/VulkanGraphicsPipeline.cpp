@@ -21,13 +21,12 @@ namespace Flint
 			// Create the descriptor set layout.
 			{
 				std::vector<VkDescriptorSetLayoutBinding> vBindings = {};
-				std::vector<VkDescriptorPoolSize> vPools = {};
 				for (auto itr = shaderDigest.begin(); itr != shaderDigest.end(); itr++)
 				{
 					VulkanShaderModule sModule = {};
 					sModule.Initialize(pDevice, *itr);
 					vBindings.insert(vBindings.end(), sModule.mBindings.begin(), sModule.mBindings.end());
-					vPools.insert(vPools.end(), sModule.mPoolSizes.begin(), sModule.mPoolSizes.end());
+					vPoolSizes.insert(vPoolSizes.end(), sModule.mPoolSizes.begin(), sModule.mPoolSizes.end());
 
 					if (itr->mLocation == ShaderLocation::VERTEX)
 					{

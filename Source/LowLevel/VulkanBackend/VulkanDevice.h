@@ -107,7 +107,7 @@ namespace Flint
 
 			VkResult CreateCommanPool(VkCommandPoolCreateInfo* pCreateInfo, VkCommandPool* pPool) const;
 			VkResult AllocateCommandBuffers(VkCommandBufferAllocateInfo* pAllicateInfo, const std::vector<VkCommandBuffer>& commandBuffers) const;
-			
+
 			VkResult BeginCommandBuffer(VkCommandBuffer vCommandBuffer, const VkCommandBufferBeginInfo* pBeginInfo) const;
 			VkResult EndCommandBuffer(VkCommandBuffer vCommandBuffer) const;
 			VkResult ResetCommandBuffer(VkCommandBuffer vCommandBuffer, VkCommandBufferResetFlags vResetFlags) const;
@@ -130,6 +130,11 @@ namespace Flint
 
 			VkResult CreateDescriptorSetLayout(const VkDescriptorSetLayoutCreateInfo* pCreateInfo, VkDescriptorSetLayout* pLayout) const;
 			void DestroyDescriptorSetLayout(VkDescriptorSetLayout vLayout) const;
+
+			VkResult CreateDescriptorPool(const VkDescriptorPoolCreateInfo* pCreateInfo, VkDescriptorPool* pPool) const;
+			void DestroyDescriptorPool(VkDescriptorPool vPool) const;
+
+			VkResult AllocateDescriptorSet(const VkDescriptorSetAllocateInfo* pAllocateInfo, VkDescriptorSet* pSet) const;
 		};
 
 		Interface::DeviceHandle CreateDevice(const Interface::DisplayHandle& displayHandle);

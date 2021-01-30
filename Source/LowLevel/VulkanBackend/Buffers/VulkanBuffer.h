@@ -17,6 +17,8 @@ namespace Flint
 
 			virtual void Initialize(VulkanDevice* pDevice, UI64 size) {}
 
+			VkBuffer GetBuffer() const { return vBuffer; }
+
 		public:
 			void* MapMemory(UI64 size, UI64 offset);
 			void UnmapMemory();

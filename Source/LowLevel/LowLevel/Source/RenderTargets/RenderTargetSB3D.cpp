@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "LowLevel/RenderTargets/RenderTargetSB3D.h"
-#include "Core/Backend/Interface/RenderTarget.h"
+#include "Core/Backend/Interface/ScreenBoundRenderTarget.h"
 
 namespace Flint
 {

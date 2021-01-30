@@ -19,14 +19,14 @@ namespace Flint
 		 * @param pTitle: The title of the display.
 		 * @return The display Handle.
 		 */
-		inline DisplayHandle(*CreateDisplay)(const InstanceHandle& instanceHandle, UI32 width, UI32 height, const char* pTitle) = nullptr;
+		FLINT_DEFINE_FUNCTION_POINTER(DisplayHandle, CreateDisplay, const InstanceHandle& instanceHandle, UI32 width, UI32 height, const char* pTitle);
 
 		/**
 		 * Destroy a created display.
 		 *
 		 * @param handle: The display handle.
 		 */
-		inline void (*DestroyDisplay)(const DisplayHandle& handle) = nullptr;
+		FLINT_DEFINE_FUNCTION_POINTER(void, DestroyDisplay, const DisplayHandle& handle);
 
 		/**
 		 * Get the input center of a display object.
@@ -34,6 +34,6 @@ namespace Flint
 		 * @param handle: The display handle.
 		 * @return The input center pointer.
 		 */
-		inline Inputs::InputCenter* (*GetInputCenter)(const DisplayHandle& handle) = nullptr;
+		FLINT_DEFINE_FUNCTION_POINTER(Inputs::InputCenter*, GetInputCenter, const DisplayHandle& handle);
 	}
 }

@@ -15,13 +15,13 @@ namespace Flint
 		 * @param enableValidation: Enable backend validation.
 		 * @return The instance handle.
 		 */
-		inline InstanceHandle(*CreateInstance)(bool enableValidation) = nullptr;
+		FLINT_DEFINE_FUNCTION_POINTER(InstanceHandle, CreateInstance, bool enableValidation);
 
 		/**
 		 * Destroy a created backend instance.
 		 *
 		 * @param instance: The instance handle.
 		 */
-		inline void (*DestroyInstance)(const InstanceHandle& instance) = nullptr;
+		FLINT_DEFINE_FUNCTION_POINTER(void, DestroyInstance, const InstanceHandle& instance);
 	}
 }

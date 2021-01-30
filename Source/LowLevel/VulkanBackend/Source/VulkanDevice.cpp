@@ -631,6 +631,21 @@ namespace Flint
 			mTable.vkDestroyDescriptorSetLayout(GetLogicalDevice(), vLayout, nullptr);
 		}
 
+		VkResult VulkanDevice::CreateDescriptorPool(const VkDescriptorPoolCreateInfo* pCreateInfo, VkDescriptorPool* pPool) const
+		{
+			return mTable.vkCreateDescriptorPool(GetLogicalDevice(), pCreateInfo, nullptr, pPool);
+		}
+
+		void VulkanDevice::DestroyDescriptorPool(VkDescriptorPool vPool) const
+		{
+			mTable.vkDestroyDescriptorPool(GetLogicalDevice(), vPool, nullptr);
+		}
+
+		VkResult VulkanDevice::AllocateDescriptorSet(const VkDescriptorSetAllocateInfo* pAllocateInfo, VkDescriptorSet* pSet) const
+		{
+			return mTable.vkAllocateDescriptorSets(GetLogicalDevice(), pAllocateInfo, pSet);
+		}
+
 		Interface::DeviceHandle CreateDevice(const Interface::DisplayHandle& displayHandle)
 		{
 			VulkanDevice* pDevice = new VulkanDevice();

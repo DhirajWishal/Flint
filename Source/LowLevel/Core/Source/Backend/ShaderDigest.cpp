@@ -6,20 +6,5 @@
 
 namespace Flint
 {
-	UniformBufferStorage ShaderDigest::CreatUniformBuffers(const Interface::DeviceHandle& deviceHandle)
-	{
-		UniformBufferStorage storage = {};
 
-		for (auto itr = mUniforms.begin(); itr != mUniforms.end(); itr++)
-		{
-			UniformType type = itr->mType;
-			if (type == UniformType::UNIFORM_BUFFER ||
-				type == UniformType::UNIFORM_BUFFER_DYNAMIC ||
-				type == UniformType::STORAGE_BUFFER ||
-				type == UniformType::STORAGE_BUFFER_DYNAMIC)
-				storage[itr->mName] = Interface::CreateUniformBuffer(deviceHandle, itr->mSize);
-		}
-
-		return storage;
-	}
 }

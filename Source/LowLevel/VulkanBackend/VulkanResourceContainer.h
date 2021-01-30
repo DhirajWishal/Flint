@@ -5,6 +5,8 @@
 
 #include "VulkanDevice.h"
 
+#include "Buffers/VulkanUniformBuffer.h"
+
 namespace Flint
 {
 	namespace VulkanBackend
@@ -14,10 +16,16 @@ namespace Flint
 			VulkanResourceContainer() {}
 			~VulkanResourceContainer() {}
 
-			void Initialize(VulkanDevice* pDevice, const std::vector<VkDescriptorPoolSize>& sizes);
+			void Initialize(VulkanDevice* pDevice, const std::vector<VkDescriptorPoolSize>& sizes, VkDescriptorSetLayout vLayout);
 			virtual void Terminate() override final;
 
 		public:
+			void RegisterBuffer(VulkanUniformBuffer* pUniformBuffer);
+
+		public:
+			std::unordered_map<String, VulkanUniformBuffer> mUniformBuffers;
+
+		private:
 			VkDescriptorPool vPool = VK_NULL_HANDLE;
 			VkDescriptorSet vSet = VK_NULL_HANDLE;
 		};

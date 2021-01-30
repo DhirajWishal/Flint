@@ -39,11 +39,8 @@ int main()
 	vShaderCode.Initialize("E:\\Dynamik\\Version\\Dynamik\\Assets\\Shaders\\3D\\vert.spv", Flint::ShaderLocation::VERTEX, Flint::ShaderCodeType::SPIR_V);
 
 	auto vShaderDigest = vShaderCode.Digest();
-	auto storage = vShaderDigest.CreatUniformBuffers(device.GetHandle());
 
 	//std::this_thread::sleep_for(std::chrono::microseconds(5000000));
-
-	Flint::LowLevel::DestroyUniformBufferStorage(storage);
 
 	renderTarget.Terminate();
 	device.Terminate();
@@ -56,15 +53,9 @@ int main()
 
 /**
  * auto pipeline  = renderTarget.CreateGraphicsPipeline({ vShaderD, fShaderD });
- * auto vUniforms = vShaderD.CreateUniformBuffers(device);
- * auto fUniforms = fShaderD.CreateUniformBuffers(device);
  * 
- * auto pipelineResource = pipeline.CreateNewResourceContainer();
- * pipelineResource.RegisterBuffers(vUniforms);
- * pipelineResource.RegisterBuffers(fUniforms);
+ * auto uniformMVP = CreateUniformMVP("uniformMVP", GetDefaultBinding());
+ * auto image = CreateImage("sampledImage", GetImageBinding());
  * 
- * auto image = device.CreateTexture("background.jpg");
- * pipelineResource.RegisterImage(image);
- * 
- * renderTarget.AddToRenderList(pipline, pipelineResource, vertexBufferRef, indexBufferRef);
+ * pRenderTarget->AddToRenderQueue(pipeline, { uniformMVP }, { image }, vBuffer, iBuffer);
  */

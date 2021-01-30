@@ -96,15 +96,6 @@ namespace Flint
 			std::vector<UI32>&& code)
 			: mLocation(std::move(location)), mUniforms(std::move(uniformLayouts)), mCode(std::move(code)) {}
 
-		/**
-		 * Create uniform buffers using the digest.
-		 * These uniform buffers are identified by their name which are given to them by the shader.
-		 *
-		 * @param deviceHandle: The device to which the uniform buffers are bound.
-		 * @return The uniform buffer storage.
-		 */
-		UniformBufferStorage CreatUniformBuffers(const Interface::DeviceHandle& deviceHandle);
-
 		std::vector<ShaderAttribute> mInputAttributes;
 		std::vector<ShaderAttribute> mOutputAttributes;
 		std::vector<UniformLayout> mUniforms;

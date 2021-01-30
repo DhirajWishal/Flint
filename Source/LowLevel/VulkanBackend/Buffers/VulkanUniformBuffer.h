@@ -9,6 +9,8 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
+		class VulkanResourceContainer;
+
 		class VulkanUniformBuffer final : public VulkanBuffer {
 		public:
 			VulkanUniformBuffer() {}
@@ -16,6 +18,11 @@ namespace Flint
 
 			virtual void Initialize(VulkanDevice* pDevice, UI64 size) override final;
 			virtual void Terminate() override final;
+
+			void SetContainer(VulkanResourceContainer* pContainer) { this->pContainer = pContainer; }
+
+		private:
+			VulkanResourceContainer* pContainer = nullptr;
 		};
 
 		Interface::UniformBufferHandle CreateUniformBuffer(const Interface::DeviceHandle& deviceHandle, UI64 size);
