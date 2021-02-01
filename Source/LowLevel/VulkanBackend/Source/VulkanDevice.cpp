@@ -117,7 +117,7 @@ namespace Flint
 			return supportDetails;
 		}
 
-		void VulkanDevice::Initialize(VulkanDisplay* pDisplay)
+		void VulkanDevice::Initialize(Backend::Display* pDisplay)
 		{
 			this->pDisplay = pDisplay;
 			INSERT_INTO_VECTOR(mDeviceExtensions, VK_KHR_SWAPCHAIN_EXTENSION_NAME);
@@ -150,8 +150,8 @@ namespace Flint
 
 		void VulkanDevice::CreatePhysicalDevice()
 		{
-			VulkanDisplay& display = *pDisplay;
-			VulkanInstance& instance = *display.GetInstance();
+			VulkanDisplay& display = *pDisplay->Derive<VulkanDisplay>();
+			VulkanInstance& instance = *display.GetInstance()->Derive<VulkanInstance>();
 
 			UI32 deviceCount = 0;
 			vkEnumeratePhysicalDevices(instance.GetInstance(), &deviceCount, nullptr);
@@ -234,8 +234,8 @@ namespace Flint
 
 		void VulkanDevice::CreateLogicalDevice()
 		{
-			VulkanDisplay& display = *pDisplay;
-			VulkanInstance& instance = *display.GetInstance();
+			VulkanDisplay& display = *pDisplay->Derive<VulkanDisplay>();
+			VulkanInstance& instance = *display.GetInstance()->Derive<VulkanInstance>();
 
 			vQueue.Initialize(vPhysicalDevice, display.GetSurface());
 
@@ -644,6 +644,16 @@ namespace Flint
 		VkResult VulkanDevice::AllocateDescriptorSet(const VkDescriptorSetAllocateInfo* pAllocateInfo, VkDescriptorSet* pSet) const
 		{
 			return mTable.vkAllocateDescriptorSets(GetLogicalDevice(), pAllocateInfo, pSet);
+		}
+
+		VkResult VulkanDevice::CreatePipelineLayout(const VkPipelineLayoutCreateInfo* pCreateInfo, VkPipelineLayout* pLayout) const
+		{
+			return mTable.vkCreatePipelineLayout(GetLogicalDevice(), pCreateInfo, nullptr, pLayout);
+		}
+
+		void VulkanDevice::DestroyPipelineLayout(VkPipelineLayout vLayout) const
+		{
+			mTable.vkDestroyPipelineLayout(GetLogicalDevice(), vLayout, nullptr);
 		}
 
 		Interface::DeviceHandle CreateDevice(const Interface::DisplayHandle& displayHandle)

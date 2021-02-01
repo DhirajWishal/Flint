@@ -19,7 +19,7 @@ namespace Flint
 
 			/**
 			 * Initialize the backend instance.
-			 * 
+			 *
 			 * @param enableValidation: Whether or not to enable backend validation. We recommend not to enable this on
 			 * the release mode as itll use up some performance.
 			 */

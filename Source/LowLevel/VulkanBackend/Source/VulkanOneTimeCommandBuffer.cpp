@@ -45,7 +45,7 @@ namespace Flint
 			vSI.commandBufferCount = 1;
 			vSI.pCommandBuffers = &vBuffer;
 
-			FLINT_VK_ASSERT(pDevice->SubmitQueue(pDevice->GetGraphcisQueue(), { vSI }, VK_NULL_HANDLE), "Failed to submit queue!");
+			FLINT_VK_ASSERT(pDevice->SubmitQueue(pDevice->GetGraphicsQueue(), { vSI }, VK_NULL_HANDLE), "Failed to submit queue!");
 			FLINT_VK_ASSERT(pDevice->QueueWait(pDevice->GetTransferQueue()), "Failed to wait for queue completion!");
 
 			pDevice->FreeComandBuffers(vPool, { vBuffer });

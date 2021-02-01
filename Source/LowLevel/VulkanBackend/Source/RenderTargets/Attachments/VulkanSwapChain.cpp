@@ -35,7 +35,7 @@ namespace Flint
 			vCI.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
 			vCI.flags = VK_NULL_HANDLE;
 			vCI.pNext = VK_NULL_HANDLE;
-			vCI.surface = pDevice->GetDisplay()->GetSurface();
+			vCI.surface = pDevice->GetDisplay()->Derive<VulkanDisplay>()->GetSurface();
 			vCI.minImageCount = bufferCount;
 			vCI.imageFormat = vFormat;
 			vCI.imageColorSpace = surfaceFormat.colorSpace;

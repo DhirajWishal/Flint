@@ -5,6 +5,7 @@
 
 #include "Core/Backend/Interface/Display.h"
 #include "Core/Inputs/InputCenter.h"
+#include "Core/Backend/Display.h"
 
 #include "VulkanInstance.h"
 
@@ -14,19 +15,16 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanDisplay {
+		class VulkanDisplay : public Backend::Display {
 		public:
 			VulkanDisplay() {}
 			~VulkanDisplay() {}
 
-			virtual void Initialize(VulkanInstance* pInstance, UI32 width, UI32 height, const char* pTitle);
-			virtual void Terminate();
+			virtual void Initialize(Backend::Instance* pInstance, UI32 width, UI32 height, const char* pTitle) override final;
+			virtual void Terminate() override final;
 
 		public:
 			VkSurfaceKHR GetSurface() const { return vSurface; }
-			Inputs::InputCenter* GetInputCenter() { return &mInputCenter; }
-
-			VulkanInstance* GetInstance() const { return const_cast<VulkanInstance*>(pInstance); }
 
 		private:
 			void SetupInputs();
@@ -36,9 +34,6 @@ namespace Flint
 			void DestroySurface();
 
 		private:
-			VulkanInstance* pInstance = nullptr;
-			Inputs::InputCenter mInputCenter = {};
-
 			GLFWwindow* pWindowHandle = nullptr;
 			VkSurfaceKHR vSurface = VK_NULL_HANDLE;
 		};

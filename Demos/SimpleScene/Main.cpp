@@ -7,6 +7,8 @@
 #include "LowLevel/RenderTargets/RenderTargetSB3D.h"
 #include "LowLevel/Buffers/StaggingBuffer.h"
 #include "LowLevel/Buffers/UniformBuffer.h"
+#include "LowLevel/RenderTargets/Pipelines/GraphicsPipeline.h"
+
 #include "Core/Benchmark/Timer.h"
 
 #include <thread>
@@ -38,9 +40,14 @@ int main()
 	Flint::ShaderCode vShaderCode;
 	vShaderCode.Initialize("E:\\Dynamik\\Version\\Dynamik\\Assets\\Shaders\\3D\\vert.spv", Flint::ShaderLocation::VERTEX, Flint::ShaderCodeType::SPIR_V);
 
-	auto vShaderDigest = vShaderCode.Digest();
+	Flint::ShaderCode fShaderCode;
+	fShaderCode.Initialize("E:\\Dynamik\\Version\\Dynamik\\Assets\\Shaders\\3D\\frag.spv", Flint::ShaderLocation::FRAGMENT, Flint::ShaderCodeType::SPIR_V);
+
+	Flint::LowLevel::GraphicsPipeline gPipeline = {};
+	gPipeline.Initialize(renderTarget, { vShaderCode, fShaderCode });
 
 	//std::this_thread::sleep_for(std::chrono::microseconds(5000000));
+	gPipeline.Terminate();
 
 	renderTarget.Terminate();
 	device.Terminate();
@@ -53,9 +60,9 @@ int main()
 
 /**
  * auto pipeline  = renderTarget.CreateGraphicsPipeline({ vShaderD, fShaderD });
- * 
+ *
  * auto uniformMVP = CreateUniformMVP("uniformMVP", GetDefaultBinding());
  * auto image = CreateImage("sampledImage", GetImageBinding());
- * 
+ *
  * pRenderTarget->AddToRenderQueue(pipeline, { uniformMVP }, { image }, vBuffer, iBuffer);
  */

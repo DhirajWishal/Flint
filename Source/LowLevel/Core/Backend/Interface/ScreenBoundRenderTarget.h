@@ -33,14 +33,8 @@ namespace Flint
 		 * @param digests: The shader digests to use.
 		 * @return The graphics pipeline handle.
 		 */
-		FLINT_DEFINE_FUNCTION_POINTER(GraphicsPipelineHandle, CreateGraphicsPipelineSB2D, const RenderTargetHandleSB2D& renderTargetHandle, const std::vector<ShaderDigest>& digests);
+		FLINT_DEFINE_FUNCTION_POINTER(GraphicsPipelineHandle, CreateGraphicsPipelineSB2D, const RenderTargetHandleSB2D& renderTargetHandle, const std::vector<ShaderDigest>& digests, const GraphicsPipelineSpecification& spec);
 
-		/**
-		 * Destroy a created graphics pipeline.
-		 *
-		 * @param handle: The graphics pipeline handle.
-		 */
-		FLINT_DEFINE_FUNCTION_POINTER(void, DestroyGraphicsPipelineSB2D, const GraphicsPipelineHandle& handle);
 
 		/**
 		 * Create a screen bound 2D compute pipeline.
@@ -52,13 +46,6 @@ namespace Flint
 		FLINT_DEFINE_FUNCTION_POINTER(ComputePipelineHandle, CreateComputePipelineSB2D, const RenderTargetHandleSB2D& renderTargetHandle, const std::vector<ShaderDigest>& digests);
 
 		/**
-		 * Destroy a created compute pipeline.
-		 *
-		 * @param handle: The compute pipeline handle.
-		 */
-		FLINT_DEFINE_FUNCTION_POINTER(void, DestroyComputePipelineSB2D, const ComputePipelineHandle& handle);
-
-		/**
 		 * Create a screen bound 2D ray tracing pipeline.
 		 *
 		 * @param renderTargetHandle: The render target handle to which the pipeline is bound to.
@@ -66,13 +53,6 @@ namespace Flint
 		 * @return The ray tracing pipeline handle.
 		 */
 		FLINT_DEFINE_FUNCTION_POINTER(RayTracingPipelineHandle, CreateRayTracingPipelineSB2D, const RenderTargetHandleSB2D& renderTargetHandle, const std::vector<ShaderDigest>& digests);
-
-		/**
-		 * Destroy a created ray tracing pipeline.
-		 *
-		 * @param handle: The ray tracing pipeline handle.
-		 */
-		FLINT_DEFINE_FUNCTION_POINTER(void, DestroyRayTracingPipelineSB2D, const RayTracingPipelineHandle& handle);
 
 		/**
 		 * Destroy a created screen bound 2D render target.
@@ -104,14 +84,7 @@ namespace Flint
 		 * @param digests: The shader digests to use.
 		 * @return The graphics pipeline handle.
 		 */
-		FLINT_DEFINE_FUNCTION_POINTER(GraphicsPipelineHandle, CreateGraphicsPipelineSB3D, const RenderTargetHandleSB3D& renderTargetHandle, const std::vector<ShaderDigest>& digests);
-
-		/**
-		 * Destroy a created graphics pipeline.
-		 *
-		 * @param handle: The graphics pipeline handle.
-		 */
-		FLINT_DEFINE_FUNCTION_POINTER(void, DestroyGraphicsPipelineSB3D, const GraphicsPipelineHandle& handle);
+		FLINT_DEFINE_FUNCTION_POINTER(GraphicsPipelineHandle, CreateGraphicsPipelineSB3D, const RenderTargetHandleSB3D& renderTargetHandle, const std::vector<ShaderDigest>& digests, const GraphicsPipelineSpecification& spec);
 
 		/**
 		 * Create a screen bound 3D compute pipeline.
@@ -123,13 +96,6 @@ namespace Flint
 		FLINT_DEFINE_FUNCTION_POINTER(ComputePipelineHandle, CreateComputePipelineSB3D, const RenderTargetHandleSB3D& renderTargetHandle, const std::vector<ShaderDigest>& digests);
 
 		/**
-		 * Destroy a created compute pipeline.
-		 *
-		 * @param handle: The compute pipeline handle.
-		 */
-		FLINT_DEFINE_FUNCTION_POINTER(void, DestroyComputePipelineSB3D, const ComputePipelineHandle& handle);
-
-		/**
 		 * Create a screen bound 3D ray tracing pipeline.
 		 *
 		 * @param renderTargetHandle: The render target handle to which the pipeline is bound to.
@@ -137,13 +103,6 @@ namespace Flint
 		 * @return The ray tracing pipeline handle.
 		 */
 		FLINT_DEFINE_FUNCTION_POINTER(RayTracingPipelineHandle, CreateRayTracingPipelineSB3D, const RenderTargetHandleSB3D& renderTargetHandle, const std::vector<ShaderDigest>& digests);
-
-		/**
-		 * Destroy a created ray tracing pipeline.
-		 *
-		 * @param handle: The ray tracing pipeline handle.
-		 */
-		FLINT_DEFINE_FUNCTION_POINTER(void, DestroyRayTracingPipelineSB3D, const RayTracingPipelineHandle& handle);
 
 		/**
 		 * Destroy a created screen bound 3D render target.
@@ -175,14 +134,7 @@ namespace Flint
 		 * @param digests: The shader digests to use.
 		 * @return The graphics pipeline handle.
 		 */
-		FLINT_DEFINE_FUNCTION_POINTER(GraphicsPipelineHandle, CreateGraphicsPipelineSBRT, const RenderTargetHandleSBRT& renderTargetHandle, const std::vector<ShaderDigest>& digests);
-
-		/**
-		 * Destroy a created graphics pipeline.
-		 *
-		 * @param handle: The graphics pipeline handle.
-		 */
-		FLINT_DEFINE_FUNCTION_POINTER(void, DestroyGraphicsPipelineSBRT, const GraphicsPipelineHandle& handle);
+		FLINT_DEFINE_FUNCTION_POINTER(GraphicsPipelineHandle, CreateGraphicsPipelineSBRT, const RenderTargetHandleSBRT& renderTargetHandle, const std::vector<ShaderDigest>& digests, const GraphicsPipelineSpecification& spec);
 
 		/**
 		 * Create a screen bound RT compute pipeline.
@@ -194,13 +146,6 @@ namespace Flint
 		FLINT_DEFINE_FUNCTION_POINTER(ComputePipelineHandle, CreateComputePipelineSBRT, const RenderTargetHandleSBRT& renderTargetHandle, const std::vector<ShaderDigest>& digests);
 
 		/**
-		 * Destroy a created compute pipeline.
-		 *
-		 * @param handle: The compute pipeline handle.
-		 */
-		FLINT_DEFINE_FUNCTION_POINTER(void, DestroyComputePipelineSBRT, const ComputePipelineHandle& handle);
-
-		/**
 		 * Create a screen bound RT ray tracing pipeline.
 		 *
 		 * @param renderTargetHandle: The render target handle to which the pipeline is bound to.
@@ -208,13 +153,6 @@ namespace Flint
 		 * @return The ray tracing pipeline handle.
 		 */
 		FLINT_DEFINE_FUNCTION_POINTER(RayTracingPipelineHandle, CreateRayTracingPipelineSBRT, const RenderTargetHandleSBRT& renderTargetHandle, const std::vector<ShaderDigest>& digests);
-
-		/**
-		 * Destroy a created ray tracing pipeline.
-		 *
-		 * @param handle: The ray tracing pipeline handle.
-		 */
-		FLINT_DEFINE_FUNCTION_POINTER(void, DestroyRayTracingPipelineSBRT, const RayTracingPipelineHandle& handle);
 
 		/**
 		 * Destroy a created screen bound RT render target.

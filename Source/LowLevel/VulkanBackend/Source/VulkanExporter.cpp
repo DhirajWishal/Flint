@@ -9,6 +9,8 @@
 #include "VulkanBackend/RenderTargets/VulkanRenderTargetSB2D.h"
 #include "VulkanBackend/RenderTargets/VulkanRenderTargetSB3D.h"
 
+#include "VulkanBackend/RenderTargets/Pipelines/VulkanGraphicsPipeline.h"
+
 #include "VulkanBackend/Buffers/VulkanStaggingBuffer.h"
 #include "VulkanBackend/Buffers/VulkanVertexBuffer.h"
 #include "VulkanBackend/Buffers/VulkanIndexBuffer.h"
@@ -61,6 +63,16 @@ namespace Flint
 			Interface::MapUniformBufferMemory = MapUniformBufferMempory;
 			Interface::UnmapUniformBufferMemory = UnmapUniformBufferMemory;
 			Interface::DestroyUniformBuffer = DestroyUniformBuffer;
+
+			Interface::CreateGraphicsPipelineSB2D = CreateGraphicsPipelineSB2D;
+			Interface::CreateGraphicsPipelineSB3D = CreateGraphicsPipelineSB3D;
+			Interface::CreateGraphicsPipelineSBRT = CreateGraphicsPipelineSBRT;
+
+			Interface::CreateGraphicsPipelineOS2D = CreateGraphicsPipelineOS2D;
+			Interface::CreateGraphicsPipelineOS3D = CreateGraphicsPipelineOS3D;
+			Interface::CreateGraphicsPipelineOSRT = CreateGraphicsPipelineOSRT;
+
+			Interface::DestroyGraphicsPipeline = DestroyGraphicsPipeline;
 		}
 	}
 }

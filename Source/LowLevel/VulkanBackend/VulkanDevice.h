@@ -5,6 +5,7 @@
 
 #include "VulkanDisplay.h"
 #include "VulkanQueue.h"
+#include "Core/Backend/Device.h"
 #include "Core/Backend/Interface/Device.h"
 
 namespace Flint
@@ -29,13 +30,13 @@ namespace Flint
 			static SwapChainSupportDetails Query(VkPhysicalDevice vPhysicalDevice, VkSurfaceKHR vSurface);
 		};
 
-		class VulkanDevice {
+		class VulkanDevice : public Backend::Device {
 		public:
 			VulkanDevice() {}
 			~VulkanDevice() {}
 
-			virtual void Initialize(VulkanDisplay* pDisplay);
-			virtual void Terminate();
+			virtual void Initialize(Backend::Display* pDisplay) override final;
+			virtual void Terminate() override final;
 
 		public:
 			VkPhysicalDeviceProperties& GetPhysicalDeviceProperties() { return vPhysicalDeviceProperties; }
@@ -44,7 +45,7 @@ namespace Flint
 
 			VulkanQueue& GetQueue() { return vQueue; }
 
-			VkQueue GetGraphcisQueue() const { return vQueue.vGraphicsQueue; }
+			VkQueue GetGraphicsQueue() const { return vQueue.vGraphicsQueue; }
 			VkQueue GetComputeQueue() const { return vQueue.vComputeQueue; }
 			VkQueue GetTransferQueue() const { return vQueue.vTransferQueue; }
 
@@ -52,8 +53,6 @@ namespace Flint
 			VkDevice GetLogicalDevice() const { return vLogicalDevice; }
 
 			VolkDeviceTable* GetDeviceTable() const { return const_cast<VolkDeviceTable*>(&mTable); }
-
-			VulkanDisplay* GetDisplay() const { return pDisplay; }
 
 			VkSampleCountFlags GetSampleCount() const { return vSampleCount; }
 
@@ -74,8 +73,6 @@ namespace Flint
 
 			VulkanQueue vQueue = {};
 			std::vector<const char*> mDeviceExtensions;
-
-			VulkanDisplay* pDisplay = nullptr;
 
 			VkPhysicalDevice vPhysicalDevice = VK_NULL_HANDLE;
 			VkDevice vLogicalDevice = VK_NULL_HANDLE;
@@ -135,6 +132,9 @@ namespace Flint
 			void DestroyDescriptorPool(VkDescriptorPool vPool) const;
 
 			VkResult AllocateDescriptorSet(const VkDescriptorSetAllocateInfo* pAllocateInfo, VkDescriptorSet* pSet) const;
+
+			VkResult CreatePipelineLayout(const VkPipelineLayoutCreateInfo* pCreateInfo, VkPipelineLayout* pLayout) const;
+			void DestroyPipelineLayout(VkPipelineLayout vLayout) const;
 		};
 
 		Interface::DeviceHandle CreateDevice(const Interface::DisplayHandle& displayHandle);
@@ -145,6 +145,9 @@ namespace Flint
 			VulkanDeviceBoundObject() {}
 
 			virtual void Terminate() {}
+
+		public:
+			VulkanDevice* GetDevice() const { return pDevice; }
 
 		protected:
 			VkDevice GetLogicalDevice() const { return pDevice->GetLogicalDevice(); }

@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "RenderTarget.h"
+#include "Handles.h"
 #include "Core/Backend/ShaderDigest.h"
 
 namespace Flint
@@ -25,5 +25,9 @@ namespace Flint
 		 * @param handle: The shader module handle.
 		 */
 		FLINT_DEFINE_FUNCTION_POINTER(void, DestroyShaderModule, const ShaderModule& handle);
+
+		FLINT_DEFINE_FUNCTION_POINTER(void, DestroyGraphicsPipeline, const GraphicsPipelineHandle& handle);
+		FLINT_DEFINE_FUNCTION_POINTER(void, DestroyComputePipeline, const ComputePipelineHandle& handle);
+		FLINT_DEFINE_FUNCTION_POINTER(void, DestroyRayTracingPipeline, const RayTracingPipelineHandle& handle);
 	}
 }

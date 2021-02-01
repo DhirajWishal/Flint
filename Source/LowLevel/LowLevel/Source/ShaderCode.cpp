@@ -31,7 +31,7 @@ namespace Flint
 		file.close();
 	}
 
-	ShaderDigest ShaderCode::Digest()
+	ShaderDigest ShaderCode::Digest() const
 	{
 		switch (mType)
 		{

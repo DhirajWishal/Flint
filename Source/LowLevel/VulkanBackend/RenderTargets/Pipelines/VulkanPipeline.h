@@ -3,9 +3,13 @@
 
 #pragma once
 
-#include "VulkanBackend/RenderTargets/VulkanRenderTarget.h"
 #include "Core/Backend/ShaderDigest.h"
+#include "Core/Backend/Interface/Resources.h"
+#include "Core/Backend/Interface/ScreenBoundRenderTarget.h"
+#include "Core/Backend/Interface/OffScreenRenderTarget.h"
+
 #include "VulkanBackend/VulkanResourceContainer.h"
+#include "VulkanBackend/RenderTargets/VulkanRenderTarget.h"
 
 namespace Flint
 {
@@ -19,10 +23,10 @@ namespace Flint
 			virtual void Initialize(VulkanDevice* pDevice, VulkanRenderTarget* pRenderTarget, const std::vector<ShaderDigest>& shaderDigests) {}
 
 		protected:
-			void CreateDescriptorSetLayout();
+			void ResolveUniformLayouts(const std::vector<ShaderDigest>& shaderDigests);
 
 		protected:
-			std::vector<ShaderDigest> mDigests;
+			std::unordered_map<String, UniformLayout> mUniformLayouts;
 
 			VkPipeline vPipeline = VK_NULL_HANDLE;
 			VkPipelineLayout vPipelineLayout = VK_NULL_HANDLE;

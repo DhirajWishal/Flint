@@ -33,7 +33,7 @@ namespace Flint
 		/**
 		 * Perform digestion and get the shader digest to create the shader module
 		 */
-		ShaderDigest Digest();
+		ShaderDigest Digest() const;
 
 		/**
 		 * Terminate the shader code by dumping the code.

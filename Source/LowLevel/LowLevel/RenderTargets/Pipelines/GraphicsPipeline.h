@@ -3,7 +3,9 @@
 
 #pragma once
 
-#include "LowLevel/Device.h"
+#include "LowLevel/RenderTargets/RenderTargetSB2D.h"
+#include "LowLevel/RenderTargets/RenderTargetSB3D.h"
+#include "LowLevel/ShaderCode.h"
 
 namespace Flint
 {
@@ -17,6 +19,10 @@ namespace Flint
 		public:
 			GraphicsPipeline() {}
 			~GraphicsPipeline() {}
+
+			void Initialize(const RenderTargetSB2D& renderTarget, const std::vector<ShaderCode>& shaders, const GraphicsPipelineSpecification& spec = {});
+			void Initialize(const RenderTargetSB3D& renderTarget, const std::vector<ShaderCode>& shaders, const GraphicsPipelineSpecification& spec = {});
+			void Terminate();
 
 		public:
 			Interface::GraphicsPipelineHandle mHandle = FLINT_NULL_HANDLE;

@@ -21,6 +21,9 @@ namespace Flint
 			void Initialize(const Device& device, Vector2 extent, UI32 bufferCount = 0);
 			void Terminate();
 
+		public:
+			Interface::RenderTargetHandleSB2D GetHandle() const { return mHandle; }
+
 		private:
 			Interface::RenderTargetHandleSB2D mHandle = FLINT_NULL_HANDLE;
 		};

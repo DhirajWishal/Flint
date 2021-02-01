@@ -48,6 +48,35 @@ namespace Flint
 		};
 	}
 
+	enum class PrimitiveTopology : UI8 {
+		POINT_LIST,
+		LINE_LIST,
+		LINE_STRIP,
+		TRIANGLE_LIST,
+		TRIANGLE_STRIP,
+		TRIANGLE_FAN,
+		LINE_LIST_WITH_ADJACENCY,
+		LINE_STRIP_WITH_ADJACENCY,
+		TRIANGLE_LIST_WITH_ADJACENCY,
+		TRIANGLE_STRIP_WITH_ADJACENCY,
+		PATCH_LIST,
+	};
+
+	enum class CullMode : UI8 {
+		NONE,
+		FRONT,
+		BACK,
+		FRONT_AND_BACK
+	};
+
+	struct GraphicsPipelineSpecification {
+		bool bEnablePrimitiveRestart = false;
+		PrimitiveTopology mPrimitiveTopology = PrimitiveTopology::LINE_LIST;
+
+		CullMode mCullMode = CullMode::BACK;
+		float mDepthBiasFactor = 0.0f;
+	};
+
 	typedef std::unordered_map<String, Interface::UniformBufferHandle> UniformBufferStorage;
 }
 

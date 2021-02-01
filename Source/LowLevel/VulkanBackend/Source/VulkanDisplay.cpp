@@ -72,7 +72,7 @@ namespace Flint
 			}
 		}
 
-		void VulkanDisplay::Initialize(VulkanInstance* pInstance, UI32 width, UI32 height, const char* pTitle)
+		void VulkanDisplay::Initialize(Backend::Instance* pInstance, UI32 width, UI32 height, const char* pTitle)
 		{
 			this->pInstance = pInstance;
 
@@ -245,12 +245,12 @@ namespace Flint
 
 		void VulkanDisplay::CreateSurface()
 		{
-			FLINT_VK_ASSERT(glfwCreateWindowSurface(pInstance->GetInstance(), pWindowHandle, nullptr, &vSurface), "Failed to create the Vulkan Surface!");
+			FLINT_VK_ASSERT(glfwCreateWindowSurface(pInstance->Derive<VulkanInstance>()->GetInstance(), pWindowHandle, nullptr, &vSurface), "Failed to create the Vulkan Surface!");
 		}
 
 		void VulkanDisplay::DestroySurface()
 		{
-			vkDestroySurfaceKHR(pInstance->GetInstance(), vSurface, nullptr);
+			vkDestroySurfaceKHR(pInstance->Derive<VulkanInstance>()->GetInstance(), vSurface, nullptr);
 		}
 
 		Interface::DisplayHandle CreateDisplay(const Interface::InstanceHandle& instanceHandle, UI32 width, UI32 height, const char* pTitle)
