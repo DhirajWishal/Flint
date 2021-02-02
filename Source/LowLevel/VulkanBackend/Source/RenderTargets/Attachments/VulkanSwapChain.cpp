@@ -9,7 +9,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		void VulkanSwapChain::Initialize(VulkanDevice* pDevice, const Interface::RenderTargetExtent& extent, UI32 bufferCount)
+		void VulkanSwapChain::Initialize(VulkanDevice* pDevice, const Vector2& extent, UI32 bufferCount)
 		{
 			this->pDevice = pDevice;
 			this->mExtent = extent;
@@ -39,7 +39,7 @@ namespace Flint
 			vCI.minImageCount = bufferCount;
 			vCI.imageFormat = vFormat;
 			vCI.imageColorSpace = surfaceFormat.colorSpace;
-			vCI.imageExtent = { static_cast<UI32>(extent.mWidth), static_cast<UI32>(extent.mHeight) };
+			vCI.imageExtent = { static_cast<UI32>(extent.x), static_cast<UI32>(extent.y) };
 			vCI.imageArrayLayers = 1;
 			vCI.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 

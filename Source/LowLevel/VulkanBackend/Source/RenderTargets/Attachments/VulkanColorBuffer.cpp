@@ -10,7 +10,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		void VulkanColorBuffer::Initialize(VulkanDevice* pDevice, const Interface::RenderTargetExtent& extent, VkFormat format, UI32 bufferCount)
+		void VulkanColorBuffer::Initialize(VulkanDevice* pDevice, const Vector2& extent, VkFormat format, UI32 bufferCount)
 		{
 			this->pDevice = pDevice;
 			this->vFormat = format;
@@ -27,7 +27,7 @@ namespace Flint
 			vCI.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 			vCI.tiling = VK_IMAGE_TILING_OPTIMAL;
 			vCI.usage = VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-			vCI.extent = { extent.mWidth, extent.mHeight, 1 };
+			vCI.extent = { static_cast<UI32>(extent.x), static_cast<UI32>(extent.y), 1 };
 			vCI.samples = static_cast<VkSampleCountFlagBits>(vSampleCount);
 			vCI.format = vFormat;
 			vCI.arrayLayers = 1;

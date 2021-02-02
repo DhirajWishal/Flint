@@ -6,8 +6,7 @@
 #include "VulkanBackend/VulkanUtilities.h"
 #include "VulkanBackend/VulkanMacros.h"
 
-#include "VulkanBackend/RenderTargets/VulkanRenderTargetSB2D.h"
-#include "VulkanBackend/RenderTargets/VulkanRenderTargetSB3D.h"
+#include "VulkanBackend/RenderTargets/VulkanScreenBoundRenderTargetS.h"
 
 namespace Flint
 {
@@ -172,52 +171,6 @@ namespace Flint
 		{
 			pDevice->DestroyPipelineLayout(vPipelineLayout);
 			pDevice->DestroyDescriptorSetLayout(vSetLayout);
-		}
-
-		Interface::GraphicsPipelineHandle CreateGraphicsPipelineSB2D(const Interface::RenderTargetHandleSB2D& renderTargetHandle, const std::vector<ShaderDigest>& digests, const GraphicsPipelineSpecification& spec)
-		{
-			VulkanRenderTargetSB2D* pRenderTarget = static_cast<VulkanRenderTargetSB2D*>(HandleToPointer(renderTargetHandle));
-			VulkanGraphicsPipeline* pPipeline = new VulkanGraphicsPipeline();
-			pPipeline->Initialize(pRenderTarget->GetDevice(), pRenderTarget, digests, spec);
-
-			return PointerToHandle<Interface::GraphicsPipelineHandle>(pPipeline);
-		}
-
-		Interface::GraphicsPipelineHandle CreateGraphicsPipelineSB3D(const Interface::RenderTargetHandleSB3D& renderTargetHandle, const std::vector<ShaderDigest>& digests, const GraphicsPipelineSpecification& spec)
-		{
-			VulkanRenderTargetSB3D* pRenderTarget = static_cast<VulkanRenderTargetSB3D*>(HandleToPointer(renderTargetHandle));
-			VulkanGraphicsPipeline* pPipeline = new VulkanGraphicsPipeline();
-			pPipeline->Initialize(pRenderTarget->GetDevice(), pRenderTarget, digests, spec);
-
-			return PointerToHandle<Interface::GraphicsPipelineHandle>(pPipeline);
-		}
-
-		Interface::GraphicsPipelineHandle CreateGraphicsPipelineSBRT(const Interface::RenderTargetHandleSBRT& renderTargetHandle, const std::vector<ShaderDigest>& digests, const GraphicsPipelineSpecification& spec)
-		{
-			return Interface::GraphicsPipelineHandle();
-		}
-
-		Interface::GraphicsPipelineHandle CreateGraphicsPipelineOS2D(const Interface::RenderTargetHandleOS2D& renderTargetHandle, const std::vector<ShaderDigest>& digests, const GraphicsPipelineSpecification& spec)
-		{
-			return Interface::GraphicsPipelineHandle();
-		}
-
-		Interface::GraphicsPipelineHandle CreateGraphicsPipelineOS3D(const Interface::RenderTargetHandleOS3D& renderTargetHandle, const std::vector<ShaderDigest>& digests, const GraphicsPipelineSpecification& spec)
-		{
-			return Interface::GraphicsPipelineHandle();
-		}
-
-		Interface::GraphicsPipelineHandle CreateGraphicsPipelineOSRT(const Interface::RenderTargetHandleOSRT& renderTargetHandle, const std::vector<ShaderDigest>& digests, const GraphicsPipelineSpecification& spec)
-		{
-			return Interface::GraphicsPipelineHandle();
-		}
-
-		void DestroyGraphicsPipeline(const Interface::GraphicsPipelineHandle& handle)
-		{
-			VulkanGraphicsPipeline* pPipeline = static_cast<VulkanGraphicsPipeline*>(HandleToPointer(handle));
-			pPipeline->Terminate();
-
-			delete pPipeline;
 		}
 	}
 }

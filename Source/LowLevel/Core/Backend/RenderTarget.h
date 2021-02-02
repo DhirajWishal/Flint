@@ -4,16 +4,44 @@
 #pragma once
 
 #include "Device.h"
+#include "Core/Maths/Vector/Vector2.h"
 
 namespace Flint
 {
 	namespace Backend
 	{
+		/**
+		 * Render Target object.
+		 * Render targets are the graphics space which objects are rendererd to. These are of two types,
+		 * 1. Screen bound.
+		 * 2. Off screen.
+		 *
+		 * These are also of 2 types,
+		 * 1. Software based.
+		 * 2. Hardware accelerated (only for the supported devices).
+		 *
+		 * These are handled by the individual APIs and the users are presented with the two options of screen bound
+		 * and off screen.
+		 */
 		class RenderTarget : public BackendObject {
 		public:
 			RenderTarget() {}
 
-			virtual void Initialize(Device* pDevice) = 0;
+			/**
+			 * Initialize the render target.
+			 *
+			 * The user can set the required buffer count. If the count is set to 0, the default buffer count is set.
+			 * If the buffer count it more than whats supported, the maximum supported is set.
+			 *
+			 * @param pDevice: The device pointer.
+			 * @param extent: The extent of the render target.
+			 * @param bufferCount: The buffer count of the render target.
+			 */
+			virtual void Initialize(Device* pDevice, const Vector2& extent, UI32 bufferCount = 0) = 0;
+
+			/**
+			 * Terminate the render target.
+			 */
 			virtual void Terminate() = 0;
 
 		protected:
@@ -21,19 +49,19 @@ namespace Flint
 		};
 
 		/**
-		 * Software based render target.
+		 * Screen Bound Render Target object.
 		 */
-		class RenderTargetS : public RenderTarget {
+		class ScreenBoundRenderTarget : public RenderTarget {
 		public:
-			RenderTargetS() {}
+			ScreenBoundRenderTarget() {}
 		};
 
 		/**
-		 * Hardware accelerated render target.
+		 * Off Screen Render Target object.
 		 */
-		class RenderTargetH : public RenderTarget {
+		class OffScreenRenderTarget : public RenderTarget {
 		public:
-			RenderTargetH() {}
+			OffScreenRenderTarget() {}
 		};
 	}
 }

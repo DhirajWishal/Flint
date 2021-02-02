@@ -3,33 +3,32 @@
 
 #pragma once
 
+#include "Core/Backend/RenderTarget.h"
 #include "Attachments/VulkanRenderTargetAttachment.h"
 
 namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanRenderTarget : public VulkanDeviceBoundObject {
+		class VulkanRenderTarget {
 		public:
 			VulkanRenderTarget() {}
-
-			virtual void Initialize(VulkanDevice* pDevice, const Interface::RenderTargetExtent& extent, UI32 bufferCount) {}
 
 		public:
 			VkRenderPass GetRenderPass() const { return vRenderPass; }
 
 		protected:
-			void CreateRenderPass(std::vector<VulkanRenderTargetAttachment*> pAttachments, VkPipelineBindPoint vBindPoint);
-			void DestroyRenderPass();
+			void CreateRenderPass(VulkanDevice* pDevice, std::vector<VulkanRenderTargetAttachment*> pAttachments, VkPipelineBindPoint vBindPoint);
+			void DestroyRenderPass(VulkanDevice* pDevice);
 
-			void CreateFrameBuffer(std::vector<VulkanRenderTargetAttachment*> pAttachments);
-			void DestroyFrameBuffers();
+			void CreateFrameBuffer(VulkanDevice* pDevice, std::vector<VulkanRenderTargetAttachment*> pAttachments);
+			void DestroyFrameBuffers(VulkanDevice* pDevice);
 
 		protected:
 			std::vector<VkFramebuffer> vFrameBuffers;
 			VkRenderPass vRenderPass = VK_NULL_HANDLE;
 
-			Interface::RenderTargetExtent mExtent = {};
+			Vector2 mExtent = {};
 			UI32 mBufferCount = 0;
 		};
 	}

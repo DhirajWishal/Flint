@@ -13,7 +13,7 @@ namespace Flint
 		public:
 			VulkanDepthBuffer() : VulkanRenderTargetAttachment(RenderTargetAttachmenType::DEPTH_BUFFER) {}
 
-			virtual void Initialize(VulkanDevice* pDevice, const Interface::RenderTargetExtent& extent, UI32 bufferCount) override final;
+			virtual void Initialize(VulkanDevice* pDevice, const Vector2& extent, UI32 bufferCount) override final;
 			virtual void Terminate() override final;
 
 			virtual VkAttachmentDescription GetAttachmentDescription() const override final;

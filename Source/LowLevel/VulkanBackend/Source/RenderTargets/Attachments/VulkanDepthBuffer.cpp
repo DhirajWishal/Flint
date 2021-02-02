@@ -10,7 +10,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		void VulkanDepthBuffer::Initialize(VulkanDevice* pDevice, const Interface::RenderTargetExtent& extent, UI32 bufferCount)
+		void VulkanDepthBuffer::Initialize(VulkanDevice* pDevice, const Vector2& extent, UI32 bufferCount)
 		{
 			this->pDevice = pDevice;
 			this->mExtent = extent;
@@ -22,7 +22,7 @@ namespace Flint
 			vCI.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 			vCI.flags = VK_NULL_HANDLE;
 			vCI.pNext = VK_NULL_HANDLE;
-			vCI.extent = { extent.mWidth, extent.mHeight, 1 };
+			vCI.extent = { static_cast<UI32>(extent.x), static_cast<UI32>(extent.y), 1 };
 			vCI.samples = static_cast<VkSampleCountFlagBits>(vSampleCount);
 			vCI.format = vFormat;
 			vCI.arrayLayers = 1;

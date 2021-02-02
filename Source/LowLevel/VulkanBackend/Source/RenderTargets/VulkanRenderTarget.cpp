@@ -8,7 +8,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		void VulkanRenderTarget::CreateRenderPass(std::vector<VulkanRenderTargetAttachment*> pAttachments, VkPipelineBindPoint vBindPoint)
+		void VulkanRenderTarget::CreateRenderPass(VulkanDevice* pDevice, std::vector<VulkanRenderTargetAttachment*> pAttachments, VkPipelineBindPoint vBindPoint)
 		{
 			std::vector<VkAttachmentDescription> vDescriptions;
 
@@ -81,12 +81,12 @@ namespace Flint
 			FLINT_VK_ASSERT(pDevice->CreateRenderPass(&vCI, &vRenderPass), "Failed to create render pass!");
 		}
 
-		void VulkanRenderTarget::DestroyRenderPass()
+		void VulkanRenderTarget::DestroyRenderPass(VulkanDevice* pDevice)
 		{
 			pDevice->DestroyRenderPass(vRenderPass);
 		}
 
-		void VulkanRenderTarget::CreateFrameBuffer(std::vector<VulkanRenderTargetAttachment*> pAttachments)
+		void VulkanRenderTarget::CreateFrameBuffer(VulkanDevice* pDevice, std::vector<VulkanRenderTargetAttachment*> pAttachments)
 		{
 			VkFramebufferCreateInfo vCI = {};
 			vCI.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
@@ -94,8 +94,8 @@ namespace Flint
 			vCI.pNext = VK_NULL_HANDLE;
 			vCI.layers = 1;
 			vCI.renderPass = vRenderPass;
-			vCI.width = mExtent.mWidth;
-			vCI.height = mExtent.mHeight;
+			vCI.width = static_cast<UI32>(mExtent.x);
+			vCI.height = static_cast<UI32>(mExtent.y);
 			vCI.attachmentCount = static_cast<UI32>(pAttachments.size());
 
 			vFrameBuffers.resize(mBufferCount);
@@ -111,7 +111,7 @@ namespace Flint
 			}
 		}
 
-		void VulkanRenderTarget::DestroyFrameBuffers()
+		void VulkanRenderTarget::DestroyFrameBuffers(VulkanDevice* pDevice)
 		{
 			pDevice->DestroyFrameBuffers(vFrameBuffers);
 			vFrameBuffers.clear();

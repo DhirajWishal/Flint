@@ -21,8 +21,8 @@ namespace Flint
 		public:
 			VulkanRenderTargetAttachment(const RenderTargetAttachmenType& type) : mType(type) {}
 
-			virtual void Initialize(VulkanDevice* pDevice, const Interface::RenderTargetExtent& extent, UI32 bufferCount) {}
-			virtual void Initialize(VulkanDevice* pDevice, const Interface::RenderTargetExtent& extent, VkFormat format, UI32 bufferCount) {}
+			virtual void Initialize(VulkanDevice* pDevice, const Vector2& extent, UI32 bufferCount) {}
+			virtual void Initialize(VulkanDevice* pDevice, const Vector2& extent, VkFormat format, UI32 bufferCount) {}
 
 			virtual VkAttachmentDescription GetAttachmentDescription() const { return VkAttachmentDescription(); }
 			virtual VkImageLayout GetAttachmentLayout() const { return VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED; }
