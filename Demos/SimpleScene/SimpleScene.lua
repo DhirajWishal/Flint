@@ -22,10 +22,10 @@ project "SimpleScene"
 	}
 
 	includedirs {
-		"$(SolutionDir)Source/LowLevel/",
+		"$(SolutionDir)Source/",
 		"$(SolutionDir)Demos/SimpleScene",
 	}
 
 	links {
-		"LowLevel"
+		"Flint"
 	}

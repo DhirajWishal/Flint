@@ -64,17 +64,17 @@ IncludeLib["FreeImageR"] = "$(SolutionDir)Dependencies/ThirdParty/Binaries/FreeI
 group "Demos"
 include "Demos/SimpleScene/SimpleScene.lua"
 
-group "HighLevel"
+group "Engine"
+include "Source/Flint/Flint.lua"
 
 group "LowLevel"
-include "Source/LowLevel/Core/Core.lua"
-include "Source/LowLevel/VulkanBackend/VulkanBackend.lua"
-include "Source/LowLevel/LowLevel/LowLevel.lua"
+include "Source/Core/Core.lua"
+include "Source/VulkanBackend/VulkanBackend.lua"
 
 group "ThirdParty"
 include "Dependencies/ThirdParty/SPIRV-Cross/SPIRV-Cross.lua"
 
 group "Tools"
-include "Source/Tools/ShaderTools/ShaderTools.lua"
+include "Source/ShaderTools/ShaderTools.lua"
 
 group ""

@@ -10,8 +10,8 @@ project "ShaderTools"
 	cppdialect "C++17"
 	staticruntime "On"
 
-	targetdir "$(SolutionDir)Builds/LowLevel/Binaries/$(Configuration)-$(Platform)"
-	objdir "$(SolutionDir)Builds/LowLevel/Intermediate/$(Configuration)-$(Platform)/$(ProjectName)"
+	targetdir "$(SolutionDir)Builds//Binaries/$(Configuration)-$(Platform)"
+	objdir "$(SolutionDir)Builds//Intermediate/$(Configuration)-$(Platform)/$(ProjectName)"
 
 	files {
 		"**.txt",
@@ -23,8 +23,8 @@ project "ShaderTools"
 	}
 
 	includedirs {
-		"$(SolutionDir)Source/LowLevel/",
-		"$(SolutionDir)Source/Tools/",
+		"$(SolutionDir)Source/",
+		"$(SolutionDir)Source/",
 		"$(SolutionDir)Dependencies/ThirdParty/SPIRV-Cross/",
 	}
 
