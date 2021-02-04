@@ -4,7 +4,7 @@
 #pragma once
 
 #include "VulkanBackend/VulkanDevice.h"
-#include "Core/Backend/Interface/Handles.h"
+#include "Core/Backend/RenderTarget.h"
 
 namespace Flint
 {
@@ -37,7 +37,7 @@ namespace Flint
 			std::vector<VkImage> vImages;
 			std::vector<VkImageView> vImageViews;
 
-			Interface::RenderTargetExtent mExtent = {};
+			Vector2 mExtent = {};
 			UI32 mBufferCount = 0;
 
 			VkFormat vFormat = VkFormat::VK_FORMAT_UNDEFINED;

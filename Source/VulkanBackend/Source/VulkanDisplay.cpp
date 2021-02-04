@@ -252,26 +252,5 @@ namespace Flint
 		{
 			vkDestroySurfaceKHR(pInstance->Derive<VulkanInstance>()->GetInstance(), vSurface, nullptr);
 		}
-
-		Interface::DisplayHandle CreateDisplay(const Interface::InstanceHandle& instanceHandle, UI32 width, UI32 height, const char* pTitle)
-		{
-			VulkanDisplay* pDisplay = new VulkanDisplay();
-			pDisplay->Initialize(static_cast<VulkanInstance*>(HandleToPointer(instanceHandle)), width, height, pTitle);
-
-			return PointerToHandle<Interface::DisplayHandle>(pDisplay);
-		}
-
-		void DestroyDisplay(const Interface::DisplayHandle& handle)
-		{
-			VulkanDisplay* pDisplay = static_cast<VulkanDisplay*>(HandleToPointer(handle));
-			pDisplay->Terminate();
-
-			delete pDisplay;
-		}
-
-		Inputs::InputCenter* GetInputCenter(const Interface::DisplayHandle& handle)
-		{
-			return static_cast<VulkanDisplay*>(HandleToPointer(handle))->GetInputCenter();
-		}
 	}
 }

@@ -14,41 +14,41 @@ namespace Flint
 	{
 		namespace _Helpers
 		{
-			VkPrimitiveTopology GetPrimitiveTopology(PrimitiveTopology topology)
+			VkPrimitiveTopology GetPrimitiveTopology(Backend::PrimitiveTopology topology)
 			{
 				switch (topology)
 				{
-				case Flint::PrimitiveTopology::POINT_LIST:
+				case Flint::Backend::PrimitiveTopology::POINT_LIST:
 					return VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
 
-				case Flint::PrimitiveTopology::LINE_LIST:
+				case Flint::Backend::PrimitiveTopology::LINE_LIST:
 					return VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
 
-				case Flint::PrimitiveTopology::LINE_STRIP:
+				case Flint::Backend::PrimitiveTopology::LINE_STRIP:
 					return VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_LINE_STRIP;
 
-				case Flint::PrimitiveTopology::TRIANGLE_LIST:
+				case Flint::Backend::PrimitiveTopology::TRIANGLE_LIST:
 					return VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 
-				case Flint::PrimitiveTopology::TRIANGLE_STRIP:
+				case Flint::Backend::PrimitiveTopology::TRIANGLE_STRIP:
 					return VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
 
-				case Flint::PrimitiveTopology::TRIANGLE_FAN:
+				case Flint::Backend::PrimitiveTopology::TRIANGLE_FAN:
 					return VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
 
-				case Flint::PrimitiveTopology::LINE_LIST_WITH_ADJACENCY:
+				case Flint::Backend::PrimitiveTopology::LINE_LIST_WITH_ADJACENCY:
 					return VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_LINE_LIST_WITH_ADJACENCY;
 
-				case Flint::PrimitiveTopology::LINE_STRIP_WITH_ADJACENCY:
+				case Flint::Backend::PrimitiveTopology::LINE_STRIP_WITH_ADJACENCY:
 					return VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_LINE_STRIP_WITH_ADJACENCY;
 
-				case Flint::PrimitiveTopology::TRIANGLE_LIST_WITH_ADJACENCY:
+				case Flint::Backend::PrimitiveTopology::TRIANGLE_LIST_WITH_ADJACENCY:
 					return VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST_WITH_ADJACENCY;
 
-				case Flint::PrimitiveTopology::TRIANGLE_STRIP_WITH_ADJACENCY:
+				case Flint::Backend::PrimitiveTopology::TRIANGLE_STRIP_WITH_ADJACENCY:
 					return VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP_WITH_ADJACENCY;
 
-				case Flint::PrimitiveTopology::PATCH_LIST:
+				case Flint::Backend::PrimitiveTopology::PATCH_LIST:
 					return VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_PATCH_LIST;
 
 				default:
@@ -59,20 +59,20 @@ namespace Flint
 				return VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
 			}
 
-			VkCullModeFlags GetCullMode(CullMode cull)
+			VkCullModeFlags GetCullMode(Backend::CullMode cull)
 			{
 				switch (cull)
 				{
-				case Flint::CullMode::NONE:
+				case Flint::Backend::CullMode::NONE:
 					return VkCullModeFlagBits::VK_CULL_MODE_NONE;
 
-				case Flint::CullMode::FRONT:
+				case Flint::Backend::CullMode::FRONT:
 					return VkCullModeFlagBits::VK_CULL_MODE_FRONT_BIT;
 
-				case Flint::CullMode::BACK:
+				case Flint::Backend::CullMode::BACK:
 					return VkCullModeFlagBits::VK_CULL_MODE_BACK_BIT;
 
-				case Flint::CullMode::FRONT_AND_BACK:
+				case Flint::Backend::CullMode::FRONT_AND_BACK:
 					return VkCullModeFlagBits::VK_CULL_MODE_FRONT_AND_BACK;
 
 				default:
@@ -82,13 +82,54 @@ namespace Flint
 
 				return VkCullModeFlagBits::VK_CULL_MODE_NONE;
 			}
+
+			VkFrontFace GetFrontFace(Backend::FrontFace face)
+			{
+				switch (face)
+				{
+				case Flint::Backend::FrontFace::COUNTER_CLOCKWISE:
+					return VkFrontFace::VK_FRONT_FACE_COUNTER_CLOCKWISE;
+
+				case Flint::Backend::FrontFace::CLOCKWISE:
+					return VkFrontFace::VK_FRONT_FACE_CLOCKWISE;
+
+				default:
+					FLINT_LOG_ERROR(TEXT("Invalid or Undefined front face!"))
+						break;
+				}
+
+				return VkFrontFace::VK_FRONT_FACE_COUNTER_CLOCKWISE;
+			}
+
+			VkPolygonMode GetPolygonMode(Backend::PolygonMode mode)
+			{
+				switch (mode)
+				{
+				case Flint::Backend::PolygonMode::FILL:
+					return VkPolygonMode::VK_POLYGON_MODE_FILL;
+
+				case Flint::Backend::PolygonMode::LINE:
+					return VkPolygonMode::VK_POLYGON_MODE_LINE;
+
+				case Flint::Backend::PolygonMode::POINT:
+					return VkPolygonMode::VK_POLYGON_MODE_POINT;
+
+				default:
+					FLINT_LOG_ERROR(TEXT("Invalid or Undefined polygon mode!"))
+						break;
+				}
+
+				return VkPolygonMode::VK_POLYGON_MODE_FILL;
+			}
 		}
 
-		void VulkanGraphicsPipeline::Initialize(VulkanDevice* pDevice, VulkanRenderTarget* pRenderTarget, const std::vector<ShaderDigest>& shaderDigest, const GraphicsPipelineSpecification& spec)
+		void VulkanGraphicsPipeline::Initialize(Backend::RenderTarget* pRenderTarget, const std::vector<ShaderDigest>& shaderDigests, const Backend::GraphicsPipelineSpecification& spec)
 		{
-			this->pDevice = pDevice;
+			this->pRenderTarget = pRenderTarget;
 			this->mSpec = spec;
-			ResolveUniformLayouts(shaderDigest);
+			ResolveUniformLayouts(shaderDigests);
+
+			VulkanDevice* pDevice = pRenderTarget->Derive<VulkanDevice>();
 
 			std::vector<VkVertexInputAttributeDescription> vAttributeDesc = {};
 			std::vector<VulkanShaderModule> sModules = {};
@@ -98,7 +139,7 @@ namespace Flint
 			// Create the descriptor set layout.
 			{
 				std::vector<VkDescriptorSetLayoutBinding> vBindings = {};
-				for (auto itr = shaderDigest.begin(); itr != shaderDigest.end(); itr++)
+				for (auto itr = shaderDigests.begin(); itr != shaderDigests.end(); itr++)
 				{
 					VulkanShaderModule sModule = {};
 					sModule.Initialize(pDevice, *itr);
@@ -160,7 +201,15 @@ namespace Flint
 			vRSCI.flags = VK_NULL_HANDLE;
 			vRSCI.pNext = VK_NULL_HANDLE;
 			vRSCI.cullMode = _Helpers::GetCullMode(mSpec.mCullMode);
-			vRSCI.depthBiasClamp;
+			vRSCI.depthBiasEnable = GET_VK_BOOL(mSpec.bEnableDepthBias);
+			vRSCI.depthBiasClamp = mSpec.mDepthBiasFactor;
+			vRSCI.depthBiasConstantFactor = mSpec.mDepthConstantFactor;
+			vRSCI.depthBiasSlopeFactor = mSpec.mDepthSlopeFactor;
+			vRSCI.depthClampEnable = GET_VK_BOOL(mSpec.bEnableDepthClamp);
+			vRSCI.frontFace = _Helpers::GetFrontFace(mSpec.mFrontFace);
+			vRSCI.lineWidth = mSpec.mRasterizerLineWidth;
+			vRSCI.polygonMode = _Helpers::GetPolygonMode(mSpec.mPolygonMode);
+			vRSCI.rasterizerDiscardEnable = GET_VK_BOOL(mSpec.bEnableRasterizerDiscard);
 
 			// Finals.
 			for (auto itr = sModules.begin(); itr != sModules.end(); itr++)
@@ -169,6 +218,7 @@ namespace Flint
 
 		void VulkanGraphicsPipeline::Terminate()
 		{
+			VulkanDevice* pDevice = pRenderTarget->Derive<VulkanDevice>();
 			pDevice->DestroyPipelineLayout(vPipelineLayout);
 			pDevice->DestroyDescriptorSetLayout(vSetLayout);
 		}

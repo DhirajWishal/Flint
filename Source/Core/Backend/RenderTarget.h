@@ -44,6 +44,9 @@ namespace Flint
 			 */
 			virtual void Terminate() = 0;
 
+		public:
+			Device* GetDevice() const { return pDevice; }
+
 		protected:
 			Device* pDevice = nullptr;
 		};

@@ -6,7 +6,6 @@
 #include "VulkanDisplay.h"
 #include "VulkanQueue.h"
 #include "Core/Backend/Device.h"
-#include "Core/Backend/Interface/Device.h"
 
 namespace Flint
 {
@@ -136,9 +135,6 @@ namespace Flint
 			VkResult CreatePipelineLayout(const VkPipelineLayoutCreateInfo* pCreateInfo, VkPipelineLayout* pLayout) const;
 			void DestroyPipelineLayout(VkPipelineLayout vLayout) const;
 		};
-
-		Interface::DeviceHandle CreateDevice(const Interface::DisplayHandle& displayHandle);
-		void DestroyDevice(const Interface::DeviceHandle& handle);
 
 		class VulkanDeviceBoundObject {
 		public:

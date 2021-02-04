@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "Core/Backend/Interface/Display.h"
 #include "Core/Inputs/InputCenter.h"
 #include "Core/Backend/Display.h"
 
@@ -37,9 +36,5 @@ namespace Flint
 			GLFWwindow* pWindowHandle = nullptr;
 			VkSurfaceKHR vSurface = VK_NULL_HANDLE;
 		};
-
-		Interface::DisplayHandle CreateDisplay(const Interface::InstanceHandle& instanceHandle, UI32 width, UI32 height, const char* pTitle);
-		void DestroyDisplay(const Interface::DisplayHandle& handle);
-		Inputs::InputCenter* GetInputCenter(const Interface::DisplayHandle& handle);
 	}
 }

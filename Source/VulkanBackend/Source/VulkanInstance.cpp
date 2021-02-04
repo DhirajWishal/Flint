@@ -272,21 +272,5 @@ namespace Flint
 			if (func != nullptr)
 				func(vInstance, vDebugUtilsMessenger, nullptr);
 		}
-
-		Interface::InstanceHandle CreateInstance(bool enableValidation)
-		{
-			VulkanInstance* pInstance = new VulkanInstance();
-			pInstance->Initialize(enableValidation);
-
-			return PointerToHandle<Interface::InstanceHandle>(pInstance);
-		}
-
-		void DestroyInstance(const Interface::InstanceHandle& handle)
-		{
-			VulkanInstance* pInstance = static_cast<VulkanInstance*>(HandleToPointer(handle));
-			pInstance->Terminate();
-
-			delete pInstance;
-		}
 	}
 }

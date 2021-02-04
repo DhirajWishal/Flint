@@ -4,7 +4,6 @@
 #pragma once
 
 #include "Core/Types/DataTypes.h"
-#include "Interface/Handles.h"
 
 namespace Flint
 {

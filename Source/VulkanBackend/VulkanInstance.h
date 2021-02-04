@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "Core/Backend/Interface/Instance.h"
 #include "Core/Backend/Instance.h"
 
 #include "MetaLoader/volk.h"  
@@ -41,8 +40,5 @@ namespace Flint
 			VkInstance vInstance = VK_NULL_HANDLE;
 			VkDebugUtilsMessengerEXT vDebugUtilsMessenger = VK_NULL_HANDLE;
 		};
-
-		Interface::InstanceHandle CreateInstance(bool enableValidation);
-		void DestroyInstance(const Interface::InstanceHandle& handle);
 	}
 }

@@ -3,11 +3,7 @@
 
 #pragma once
 
-#include "Core/Backend/ShaderDigest.h"
-#include "Core/Backend/Interface/Resources.h"
-#include "Core/Backend/Interface/ScreenBoundRenderTarget.h"
-#include "Core/Backend/Interface/OffScreenRenderTarget.h"
-
+#include "Core/Backend/Pipeline.h"
 #include "VulkanBackend/VulkanResourceContainer.h"
 #include "VulkanBackend/RenderTargets/VulkanRenderTarget.h"
 
@@ -15,12 +11,10 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanPipeline : public VulkanDeviceBoundObject {
+		class VulkanPipeline {
 		public:
 			VulkanPipeline() {}
 			virtual ~VulkanPipeline() {}
-
-			virtual void Initialize(VulkanDevice* pDevice, VulkanRenderTarget* pRenderTarget, const std::vector<ShaderDigest>& shaderDigests) {}
 
 		protected:
 			void ResolveUniformLayouts(const std::vector<ShaderDigest>& shaderDigests);

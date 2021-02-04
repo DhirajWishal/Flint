@@ -4,22 +4,21 @@
 #pragma once
 
 #include "VulkanPipeline.h"
+#include "Core/Backend/GraphicsPipeline.h"
 
 namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanGraphicsPipeline final : public VulkanPipeline {
+		class VulkanGraphicsPipeline final : public VulkanPipeline, public Backend::GraphicsPipeline {
 		public:
 			VulkanGraphicsPipeline() {}
 			~VulkanGraphicsPipeline() {}
 
-			void Initialize(VulkanDevice* pDevice, VulkanRenderTarget* pRenderTarget, const std::vector<ShaderDigest>& shaderDigest, const GraphicsPipelineSpecification& spec);
-			void Terminate();
+			virtual void Initialize(Backend::RenderTarget* pRenderTarget, const std::vector<ShaderDigest>& shaderDigests, const Backend::GraphicsPipelineSpecification& spec) override final;
+			virtual void Terminate() override final;
 
 		private:
-			GraphicsPipelineSpecification mSpec = {};
-
 			std::vector<VkDescriptorPoolSize> vPoolSizes;
 		};
 	}

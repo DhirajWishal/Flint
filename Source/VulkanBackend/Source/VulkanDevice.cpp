@@ -655,21 +655,5 @@ namespace Flint
 		{
 			mTable.vkDestroyPipelineLayout(GetLogicalDevice(), vLayout, nullptr);
 		}
-
-		Interface::DeviceHandle CreateDevice(const Interface::DisplayHandle& displayHandle)
-		{
-			VulkanDevice* pDevice = new VulkanDevice();
-			pDevice->Initialize(static_cast<VulkanDisplay*>(HandleToPointer(displayHandle)));
-
-			return PointerToHandle<Interface::DeviceHandle>(pDevice);
-		}
-
-		void DestroyDevice(const Interface::DeviceHandle& handle)
-		{
-			VulkanDevice* pDevice = static_cast<VulkanDevice*>(HandleToPointer(handle));
-			pDevice->Terminate();
-
-			delete pDevice;
-		}
 	}
 }
