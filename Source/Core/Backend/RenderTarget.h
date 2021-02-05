@@ -45,10 +45,14 @@ namespace Flint
 			virtual void Terminate() = 0;
 
 		public:
+			Vector2 GetExtent() const { return mExtent; }
+
+		public:
 			Device* GetDevice() const { return pDevice; }
 
 		protected:
 			Device* pDevice = nullptr;
+			Vector2 mExtent = {};
 		};
 
 		/**

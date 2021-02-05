@@ -6,7 +6,7 @@
 #include "VulkanBackend/VulkanUtilities.h"
 #include "VulkanBackend/VulkanMacros.h"
 
-#include "VulkanBackend/RenderTargets/VulkanScreenBoundRenderTargetS.h"
+#include "VulkanBackend/RenderTargets/VulkanRenderTarget.h"
 
 namespace Flint
 {
@@ -121,6 +121,102 @@ namespace Flint
 
 				return VkPolygonMode::VK_POLYGON_MODE_FILL;
 			}
+
+			VkLogicOp GetLogicOp(Backend::ColorBlendLogic logic)
+			{
+				switch (logic)
+				{
+				case Flint::Backend::ColorBlendLogic::CLEAR:
+					return VkLogicOp::VK_LOGIC_OP_CLEAR;
+
+				case Flint::Backend::ColorBlendLogic::AND:
+					return VkLogicOp::VK_LOGIC_OP_AND;
+
+				case Flint::Backend::ColorBlendLogic::AND_REVERSE:
+					return VkLogicOp::VK_LOGIC_OP_AND_REVERSE;
+
+				case Flint::Backend::ColorBlendLogic::COPY:
+					return VkLogicOp::VK_LOGIC_OP_COPY;
+
+				case Flint::Backend::ColorBlendLogic::AND_INVERTED:
+					return VkLogicOp::VK_LOGIC_OP_AND_INVERTED;
+
+				case Flint::Backend::ColorBlendLogic::NO_OP:
+					return VkLogicOp::VK_LOGIC_OP_NO_OP;
+
+				case Flint::Backend::ColorBlendLogic::XOR:
+					return VkLogicOp::VK_LOGIC_OP_XOR;
+
+				case Flint::Backend::ColorBlendLogic::OR:
+					return VkLogicOp::VK_LOGIC_OP_OR;
+
+				case Flint::Backend::ColorBlendLogic::NOR:
+					return VkLogicOp::VK_LOGIC_OP_NOR;
+
+				case Flint::Backend::ColorBlendLogic::EQUIVALENT:
+					return VkLogicOp::VK_LOGIC_OP_EQUIVALENT;
+
+				case Flint::Backend::ColorBlendLogic::INVERT:
+					return VkLogicOp::VK_LOGIC_OP_INVERT;
+
+				case Flint::Backend::ColorBlendLogic::OR_REVERSE:
+					return VkLogicOp::VK_LOGIC_OP_OR_REVERSE;
+
+				case Flint::Backend::ColorBlendLogic::COPY_INVERTED:
+					return VkLogicOp::VK_LOGIC_OP_COPY_INVERTED;
+
+				case Flint::Backend::ColorBlendLogic::OR_INVERTED:
+					return VkLogicOp::VK_LOGIC_OP_OR_INVERTED;
+
+				case Flint::Backend::ColorBlendLogic::NAND:
+					return VkLogicOp::VK_LOGIC_OP_NAND;
+
+				case Flint::Backend::ColorBlendLogic::SET:
+					return VkLogicOp::VK_LOGIC_OP_SET;
+
+				default:
+					FLINT_LOG_ERROR(TEXT("Invalid or Undefined color blend logic!"))
+						break;
+				}
+
+				return VkLogicOp::VK_LOGIC_OP_CLEAR;
+			}
+
+			VkCompareOp GetCompareOp(Backend::DepthCompareLogic logic)
+			{
+				switch (logic)
+				{
+				case Flint::Backend::DepthCompareLogic::NEVER:
+					return VkCompareOp::VK_COMPARE_OP_NEVER;
+
+				case Flint::Backend::DepthCompareLogic::LESS:
+					return VkCompareOp::VK_COMPARE_OP_LESS;
+
+				case Flint::Backend::DepthCompareLogic::EQUAL:
+					return VkCompareOp::VK_COMPARE_OP_EQUAL;
+
+				case Flint::Backend::DepthCompareLogic::LESS_OR_EQUAL:
+					return VkCompareOp::VK_COMPARE_OP_LESS_OR_EQUAL;
+
+				case Flint::Backend::DepthCompareLogic::GREATER:
+					return VkCompareOp::VK_COMPARE_OP_GREATER;
+
+				case Flint::Backend::DepthCompareLogic::NOT_EQUAL:
+					return VkCompareOp::VK_COMPARE_OP_NOT_EQUAL;
+
+				case Flint::Backend::DepthCompareLogic::GREATER_OR_EQUAL:
+					return VkCompareOp::VK_COMPARE_OP_GREATER_OR_EQUAL;
+
+				case Flint::Backend::DepthCompareLogic::ALWAYS:
+					return VkCompareOp::VK_COMPARE_OP_ALWAYS;
+
+				default:
+					FLINT_LOG_ERROR(TEXT("Invalid or Undefined depth compare logic!"))
+					break;
+				}
+
+				return VkCompareOp::VK_COMPARE_OP_LESS_OR_EQUAL;
+			}
 		}
 
 		void VulkanGraphicsPipeline::Initialize(Backend::RenderTarget* pRenderTarget, const std::vector<ShaderDigest>& shaderDigests, const Backend::GraphicsPipelineSpecification& spec)
@@ -211,9 +307,83 @@ namespace Flint
 			vRSCI.polygonMode = _Helpers::GetPolygonMode(mSpec.mPolygonMode);
 			vRSCI.rasterizerDiscardEnable = GET_VK_BOOL(mSpec.bEnableRasterizerDiscard);
 
-			// Finals.
-			for (auto itr = sModules.begin(); itr != sModules.end(); itr++)
-				itr->Terminate();
+			VkRect2D vR2D = {};
+			vR2D.extent.width = static_cast<UI32>(pRenderTarget->GetExtent().x);
+			vR2D.extent.height = static_cast<UI32>(pRenderTarget->GetExtent().y);
+			vR2D.offset = { 0, 0 };
+
+			VkViewport vVP = {};
+			vVP.width = static_cast<float>(vR2D.extent.width);
+			vVP.height = static_cast<float>(vR2D.extent.height);
+			vVP.maxDepth = 1.0f;
+			vVP.minDepth = 0.0f;
+			vVP.x = 0.0f;
+			vVP.y = 0.0f;
+
+			VkPipelineViewportStateCreateInfo vVSCI = {};
+			vVSCI.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+			vVSCI.pNext = VK_NULL_HANDLE;
+			vVSCI.flags = VK_NULL_HANDLE;
+			vVSCI.scissorCount = 1;
+			vVSCI.pScissors = &vR2D;
+			vVSCI.viewportCount = 1;
+			vVSCI.pViewports = &vVP;
+
+			VkPipelineMultisampleStateCreateInfo vMSCI = {};
+			vMSCI.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+			vMSCI.pNext = VK_NULL_HANDLE;
+			vMSCI.flags = VK_NULL_HANDLE;
+			vMSCI.alphaToCoverageEnable = GET_VK_BOOL(mSpec.bEnableAlphaCoverage);
+			vMSCI.alphaToOneEnable = GET_VK_BOOL(mSpec.bEnableAlphaToOne);
+			vMSCI.minSampleShading = mSpec.mMinSampleShading;
+			vMSCI.pSampleMask;
+			vMSCI.rasterizationSamples = static_cast<VkSampleCountFlagBits>(pDevice->GetSampleCount());
+			vMSCI.sampleShadingEnable = GET_VK_BOOL(mSpec.bEnableSampleShading);
+
+			VkPipelineColorBlendAttachmentState vCBAS = {};
+			vCBAS.colorWriteMask = 0xf;
+			vCBAS.blendEnable = VK_TRUE;
+
+			VkPipelineColorBlendStateCreateInfo vCBSCI = {};
+			vCBSCI.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+			vCBSCI.pNext = VK_NULL_HANDLE;
+			vCBSCI.flags = VK_NULL_HANDLE;
+			vCBSCI.logicOp = _Helpers::GetLogicOp(mSpec.mColorBlendLogic);
+			vCBSCI.logicOpEnable = GET_VK_BOOL(mSpec.bEnableColorBlendLogic);
+			std::copy(mSpec.mColorBlendConstants, mSpec.mColorBlendConstants + 4, vCBSCI.blendConstants);
+			vCBSCI.pAttachments = &vCBAS;
+			vCBSCI.attachmentCount = 1;
+
+			VkPipelineDepthStencilStateCreateInfo vDSSCI = {};
+			vDSSCI.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+			vDSSCI.flags = VK_NULL_HANDLE;
+			vDSSCI.pNext = VK_NULL_HANDLE;
+			vDSSCI.back.compareOp = VK_COMPARE_OP_ALWAYS;
+			vDSSCI.depthTestEnable = GET_VK_BOOL(mSpec.bEnableDepthTest);
+			vDSSCI.depthWriteEnable = GET_VK_BOOL(mSpec.bEnableDepthWrite);
+			vDSSCI.depthCompareOp = _Helpers::GetCompareOp(mSpec.mDepthCompareLogic);
+
+			VkGraphicsPipelineCreateInfo vCI = {};
+			vCI.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+			vCI.pNext = VK_NULL_HANDLE;
+			vCI.flags = VK_NULL_HANDLE;
+			vCI.pVertexInputState = &vVISCI;
+			vCI.pInputAssemblyState = &vIASCI;
+			vCI.pRasterizationState = &vRSCI;
+			vCI.pViewportState = &vVSCI;
+			vCI.pMultisampleState = &vMSCI;
+			vCI.pColorBlendState = &vCBSCI;
+			vCI.pDepthStencilState = &vDSSCI;
+			vCI.renderPass = pRenderTarget->Derive<VulkanRenderTarget>()->GetRenderPass();
+			vCI.basePipelineHandle = VK_NULL_HANDLE;
+			vCI.basePipelineIndex = 0;
+			vCI.layout = vPipelineLayout;
+
+			FLINT_VK_ASSERT(pDevice->CreateGraphicsPipeline(&vCI, &vPipeline), "Failed to create graphics pipeline!")
+
+				// Finals.
+				for (auto itr = sModules.begin(); itr != sModules.end(); itr++)
+					itr->Terminate();
 		}
 
 		void VulkanGraphicsPipeline::Terminate()

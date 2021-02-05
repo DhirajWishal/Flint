@@ -5,6 +5,8 @@
 
 #include "Pipeline.h"
 
+#define FLINT_GET_COLOR_255(x)	(x / 255.0f)
+
 namespace Flint
 {
 	namespace Backend
@@ -41,21 +43,64 @@ namespace Flint
 			POINT,
 		};
 
-		struct GraphicsPipelineSpecification {
-			bool bEnablePrimitiveRestart = false;
-			PrimitiveTopology mPrimitiveTopology = PrimitiveTopology::LINE_LIST;
+		enum class ColorBlendLogic : UI8 {
+			CLEAR,
+			AND,
+			AND_REVERSE,
+			COPY,
+			AND_INVERTED,
+			NO_OP,
+			XOR,
+			OR,
+			NOR,
+			EQUIVALENT,
+			INVERT,
+			OR_REVERSE,
+			COPY_INVERTED,
+			OR_INVERTED,
+			NAND,
+			SET,
+		};
 
-			CullMode mCullMode = CullMode::BACK;
+		enum class DepthCompareLogic : UI8 {
+			NEVER,
+			LESS,
+			EQUAL,
+			LESS_OR_EQUAL,
+			GREATER,
+			NOT_EQUAL,
+			GREATER_OR_EQUAL,
+			ALWAYS,
+		};
+
+		struct GraphicsPipelineSpecification {
+			float mColorBlendConstants[4] = {
+				FLINT_GET_COLOR_255(255), FLINT_GET_COLOR_255(255),
+				FLINT_GET_COLOR_255(255), FLINT_GET_COLOR_255(255)
+			};
 			float mDepthBiasFactor = 0.0f;
 			float mDepthConstantFactor = 0.0f;
 			float mDepthSlopeFactor = 0.0f;
-			FrontFace mFrontFace = FrontFace::COUNTER_CLOCKWISE;
 			float mRasterizerLineWidth = 0.0f;
-			PolygonMode mPolygonMode = PolygonMode::FILL;
+			float mMinSampleShading = 1.0f;
 
+			PrimitiveTopology mPrimitiveTopology = PrimitiveTopology::LINE_LIST;
+			CullMode mCullMode = CullMode::BACK;
+			FrontFace mFrontFace = FrontFace::COUNTER_CLOCKWISE;
+			PolygonMode mPolygonMode = PolygonMode::FILL;
+			ColorBlendLogic mColorBlendLogic = ColorBlendLogic::CLEAR;
+			DepthCompareLogic mDepthCompareLogic = DepthCompareLogic::LESS_OR_EQUAL;
+
+			bool bEnablePrimitiveRestart = false;
 			bool bEnableDepthBias = false;
 			bool bEnableDepthClamp = false;
 			bool bEnableRasterizerDiscard = false;
+			bool bEnableAlphaCoverage = true;
+			bool bEnableAlphaToOne = true;
+			bool bEnableSampleShading = true;
+			bool bEnableColorBlendLogic = true;
+			bool bEnableDepthTest = false;
+			bool bEnableDepthWrite = false;
 		};
 
 		/**

@@ -134,6 +134,9 @@ namespace Flint
 
 			VkResult CreatePipelineLayout(const VkPipelineLayoutCreateInfo* pCreateInfo, VkPipelineLayout* pLayout) const;
 			void DestroyPipelineLayout(VkPipelineLayout vLayout) const;
+
+			VkResult CreateGraphicsPipeline(const VkGraphicsPipelineCreateInfo* pCreateInfo, VkPipeline* pPipeline) const;
+			void DestroyPipeline(VkPipeline vPipeline) const;
 		};
 
 		class VulkanDeviceBoundObject {

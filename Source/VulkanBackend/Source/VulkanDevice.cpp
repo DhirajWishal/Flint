@@ -655,5 +655,15 @@ namespace Flint
 		{
 			mTable.vkDestroyPipelineLayout(GetLogicalDevice(), vLayout, nullptr);
 		}
+
+		VkResult VulkanDevice::CreateGraphicsPipeline(const VkGraphicsPipelineCreateInfo* pCreateInfo, VkPipeline* pPipeline) const
+		{
+			return mTable.vkCreateGraphicsPipelines(GetLogicalDevice(), VK_NULL_HANDLE, 1, pCreateInfo, nullptr, pPipeline);
+		}
+
+		void VulkanDevice::DestroyPipeline(VkPipeline vPipeline) const
+		{
+			mTable.vkDestroyPipeline(GetLogicalDevice(), vPipeline, nullptr);
+		}
 	}
 }
