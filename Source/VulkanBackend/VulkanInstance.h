@@ -19,6 +19,8 @@ namespace Flint
 			virtual void Initialize(bool enableValidation) override final;
 			virtual void Terminate() override final;
 
+			virtual Backend::Display* CreateDisplay(UI32 width, UI32 height, const char* pTitle) override final;
+
 		private:
 			void InitializeGLFW();
 			void TerminateGLFW();

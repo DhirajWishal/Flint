@@ -2,9 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "VulkanBackend/VulkanInstance.h"
+#include "VulkanBackend/VulkanDisplay.h"
 #include "VulkanBackend/VulkanMacros.h"
 #include "Core/ErrorHandler/Logger.h"
 #include "Core/Types/Utilities.h"
+
 
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -168,6 +170,9 @@ namespace Flint
 
 		void VulkanInstance::Initialize(bool enableValidation)
 		{
+			// Initialize volk instance functors.
+			volkInitialize();
+
 			this->mEnableValidation = enableValidation;
 
 			InitializeGLFW();
@@ -191,6 +196,14 @@ namespace Flint
 			DestroyInstance();
 
 			TerminateGLFW();
+		}
+
+		Backend::Display* VulkanInstance::CreateDisplay(UI32 width, UI32 height, const char* pTitle)
+		{
+			VulkanDisplay* pDisplay = new VulkanDisplay();
+			pDisplay->Initialize(this, width, height, pTitle);
+
+			return pDisplay;
 		}
 
 		void VulkanInstance::InitializeGLFW()

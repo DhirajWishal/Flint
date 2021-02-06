@@ -212,10 +212,34 @@ namespace Flint
 
 				default:
 					FLINT_LOG_ERROR(TEXT("Invalid or Undefined depth compare logic!"))
-					break;
+						break;
 				}
 
 				return VkCompareOp::VK_COMPARE_OP_LESS_OR_EQUAL;
+			}
+
+			std::vector<VkDynamicState> GetDynamicStates(Backend::DynamicStateFlags flags)
+			{
+				std::vector<VkDynamicState> states;
+				if (flags & Backend::DynamicStateFlags::VIEWPORT)
+					INSERT_INTO_VECTOR(states, VkDynamicState::VK_DYNAMIC_STATE_VIEWPORT);
+
+				if (flags & Backend::DynamicStateFlags::SCISSOR)
+					INSERT_INTO_VECTOR(states, VkDynamicState::VK_DYNAMIC_STATE_SCISSOR);
+
+				if (flags & Backend::DynamicStateFlags::LINE_WIDTH)
+					INSERT_INTO_VECTOR(states, VkDynamicState::VK_DYNAMIC_STATE_LINE_WIDTH);
+
+				if (flags & Backend::DynamicStateFlags::DEPTH_BIAS)
+					INSERT_INTO_VECTOR(states, VkDynamicState::VK_DYNAMIC_STATE_DEPTH_BIAS);
+
+				if (flags & Backend::DynamicStateFlags::BLEND_CONSTANTS)
+					INSERT_INTO_VECTOR(states, VkDynamicState::VK_DYNAMIC_STATE_BLEND_CONSTANTS);
+
+				if (flags & Backend::DynamicStateFlags::DEPTH_BOUNDS)
+					INSERT_INTO_VECTOR(states, VkDynamicState::VK_DYNAMIC_STATE_DEPTH_BOUNDS);
+
+				return states;
 			}
 		}
 
@@ -227,6 +251,7 @@ namespace Flint
 
 			VulkanDevice* pDevice = pRenderTarget->Derive<VulkanDevice>();
 
+			std::vector<VkPipelineShaderStageCreateInfo> vStages = {};
 			std::vector<VkVertexInputAttributeDescription> vAttributeDesc = {};
 			std::vector<VulkanShaderModule> sModules = {};
 			std::vector<VkPushConstantRange> vRanges = {};
@@ -239,6 +264,7 @@ namespace Flint
 				{
 					VulkanShaderModule sModule = {};
 					sModule.Initialize(pDevice, *itr);
+					INSERT_INTO_VECTOR(vStages, sModule.GetStage());
 					vBindings.insert(vBindings.end(), sModule.mBindings.begin(), sModule.mBindings.end());
 					vPoolSizes.insert(vPoolSizes.end(), sModule.mPoolSizes.begin(), sModule.mPoolSizes.end());
 					vRanges.insert(vRanges.end(), sModule.mConstantRange.begin(), sModule.mConstantRange.end());
@@ -363,6 +389,15 @@ namespace Flint
 			vDSSCI.depthWriteEnable = GET_VK_BOOL(mSpec.bEnableDepthWrite);
 			vDSSCI.depthCompareOp = _Helpers::GetCompareOp(mSpec.mDepthCompareLogic);
 
+			std::vector<VkDynamicState> vDynamicStates = std::move(_Helpers::GetDynamicStates(mSpec.mDynamicStateFlags));
+
+			VkPipelineDynamicStateCreateInfo vDSCI = {};
+			vDSCI.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+			vDSCI.pNext = VK_NULL_HANDLE;
+			vDSCI.flags = VK_NULL_HANDLE;
+			vDSCI.dynamicStateCount = static_cast<UI32>(vDynamicStates.size());
+			vDSCI.pDynamicStates = vDynamicStates.data();
+
 			VkGraphicsPipelineCreateInfo vCI = {};
 			vCI.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 			vCI.pNext = VK_NULL_HANDLE;
@@ -374,6 +409,9 @@ namespace Flint
 			vCI.pMultisampleState = &vMSCI;
 			vCI.pColorBlendState = &vCBSCI;
 			vCI.pDepthStencilState = &vDSSCI;
+			vCI.pDynamicState = &vDSCI;
+			vCI.stageCount = static_cast<UI32>(vStages.size());
+			vCI.pStages = vStages.data();
 			vCI.renderPass = pRenderTarget->Derive<VulkanRenderTarget>()->GetRenderPass();
 			vCI.basePipelineHandle = VK_NULL_HANDLE;
 			vCI.basePipelineIndex = 0;

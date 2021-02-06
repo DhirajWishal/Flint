@@ -21,14 +21,13 @@ namespace Flint
 			void CreateRenderPass(VulkanDevice* pDevice, std::vector<VulkanRenderTargetAttachment*> pAttachments, VkPipelineBindPoint vBindPoint);
 			void DestroyRenderPass(VulkanDevice* pDevice);
 
-			void CreateFrameBuffer(VulkanDevice* pDevice, std::vector<VulkanRenderTargetAttachment*> pAttachments);
+			void CreateFrameBuffer(VulkanDevice* pDevice, std::vector<VulkanRenderTargetAttachment*> pAttachments, const Vector2& extent);
 			void DestroyFrameBuffers(VulkanDevice* pDevice);
 
 		protected:
 			std::vector<VkFramebuffer> vFrameBuffers;
 			VkRenderPass vRenderPass = VK_NULL_HANDLE;
 
-			Vector2 mExtent = {};
 			UI32 mBufferCount = 0;
 		};
 	}

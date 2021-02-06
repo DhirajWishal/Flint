@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Core/Backend/Instance.h"
+#include "Core/Backend/Device.h"
 
 namespace Flint
 {
@@ -28,8 +28,11 @@ namespace Flint
 		 *
 		 * @param api: The backend API.
 		 * @param enableValidation: Whether or not to enable backend validation.
+		 * @param width: The width of the window.
+		 * @param heigth: The height of the window.
+		 * @param pTitle: The title of the window.
 		 */
-		void Initialize(BackenAPI api, bool enableValidation);
+		void Initialize(BackenAPI api, bool enableValidation, UI32 width, UI32 height, const char* pTitle);
 
 		/**
 		 * Terminate the engine.
@@ -52,6 +55,8 @@ namespace Flint
 
 	private:
 		Backend::Instance* pInstance = nullptr;
+		Backend::Display* pDisplay = nullptr;
+		Backend::Device* pDevice = nullptr;
 
 		BackenAPI mAPI = BackenAPI::UNDEFINED;
 	};

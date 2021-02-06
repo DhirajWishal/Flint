@@ -44,7 +44,7 @@ namespace Flint
 		if ((list.size() > 9) || (list.size() < 9))
 			FLINT_LOG_ERROR(TEXT("The size of the provided list does not match the current Matrix size!"))
 
-		std::memmove(this, static_cast<const void*>(list.begin()), list.size() * sizeof(float));
+			std::copy(list.begin(), list.end(), this);
 	}
 
 	Matrix33 Matrix33::operator=(const Matrix33& other)

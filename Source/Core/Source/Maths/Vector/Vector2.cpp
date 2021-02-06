@@ -12,7 +12,7 @@ namespace Flint
 		if ((list.size() > 2) || (list.size() < 2))
 			FLINT_LOG_ERROR(TEXT("The size of the provided list does not match the current Vector size! Expected size is 2."))
 
-		std::memmove(this, static_cast<const void*>(list.begin()), list.size() * sizeof(float));
+			std::copy(list.begin(), list.end(), this);
 	}
 
 	Vector2 Vector2::operator=(const std::initializer_list<float>& list)
@@ -20,8 +20,7 @@ namespace Flint
 		if ((list.size() > 2) || (list.size() < 2))
 			FLINT_LOG_ERROR(TEXT("The size of the provided list does not match the current Vector size! Expected size is 2."))
 
-		std::memmove(this, static_cast<const void*>(list.begin()), list.size() * sizeof(float));
-
+			std::copy(list.begin(), list.end(), this);
 		return *this;
 	}
 

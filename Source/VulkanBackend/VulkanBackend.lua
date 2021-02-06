@@ -21,6 +21,7 @@ project "VulkanBackend"
 		"**.txt",
 		"**.cpp",
 		"**.h",
+		"**.c",
 		"**.lua",
 		"**.txt",
 		"**.md",

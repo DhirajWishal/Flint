@@ -8,27 +8,22 @@
 #include <vector>
 #include <unordered_map>
 
-typedef unsigned char UI8;			// Unsigned 8 bit integer.
-typedef unsigned short UI16;		// Unsigned 16 bit integer.
-typedef unsigned int UI32;			// Unsigned 32 bit integer.
-typedef unsigned long long UI64;	// Unsigned 64 bit integer.
+typedef uint8_t UI8;			// Unsigned 8 bit integer.
+typedef uint16_t UI16;			// Unsigned 16 bit integer.
+typedef uint32_t UI32;			// Unsigned 32 bit integer.
+typedef uint64_t UI64;			// Unsigned 64 bit integer.
 
-typedef signed char SI8;			// Signed 8 bit integer.
-typedef signed short SI16;			// Signed 16 bit integer.
-typedef signed int SI32;			// Signed 32 bit integer.
-typedef signed long long SI64;		// Signed 64 bit integer.
-
-typedef signed char I8;				// 8 bit integer.
-typedef short I16;					// 16 bit integer.
-typedef int I32;					// 32 bit integer.
-typedef long long I64;				// 64 bit integer.
+typedef int8_t I8;				// 8 bit integer.
+typedef int16_t I16;			// 16 bit integer.
+typedef int32_t I32;			// 32 bit integer.
+typedef int64_t I64;			// 64 bit integer.
 
 #define TEXT(text)  L##text
 typedef std::string String;
 typedef std::wstring WString;
 typedef wchar_t wchar;
 
-typedef UI8 BYTE;					// Byte of data.
-typedef BYTE* BPTR;					// Byte pointer.
+typedef UI8 BYTE;				// Byte of data.
+typedef BYTE* BPTR;				// Byte pointer.
 
 #define INSERT_INTO_VECTOR(vector, data)	vector.insert(vector.end(), data)

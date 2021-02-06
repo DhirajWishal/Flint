@@ -18,7 +18,7 @@ namespace Flint
 				std::vector<UI32> mCode(mFinalCodeSize);
 
 				// Copy and return the copied vector.
-				std::memcpy(mCode.data(), code.data(), sizeof(UI32) * mFinalCodeSize);
+				std::copy(code.begin(), code.end(), mCode.data());
 				return mCode;
 			}
 		}

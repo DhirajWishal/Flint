@@ -4,7 +4,6 @@
 #pragma once
 
 #include "Core/Backend/Pipeline.h"
-#include "VulkanBackend/VulkanResourceContainer.h"
 #include "VulkanBackend/RenderTargets/VulkanRenderTarget.h"
 
 namespace Flint

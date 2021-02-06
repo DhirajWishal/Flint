@@ -3,6 +3,7 @@
 
 #include "VulkanBackend/VulkanDisplay.h"
 #include "VulkanBackend/VulkanMacros.h"
+#include "VulkanBackend/VulkanDevice.h"
 
 namespace Flint
 {
@@ -90,6 +91,14 @@ namespace Flint
 		{
 			DestroySurface();
 			glfwDestroyWindow(pWindowHandle);
+		}
+
+		Backend::Device* VulkanDisplay::CreatDevice()
+		{
+			VulkanDevice* pDevice = new VulkanDevice();
+			pDevice->Initialize(this);
+
+			return pDevice;
 		}
 
 		void VulkanDisplay::SetupInputs()

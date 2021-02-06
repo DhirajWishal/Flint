@@ -4,6 +4,7 @@
 #pragma once
 
 #include "Pipeline.h"
+#include "Core/Macros/Global.h"
 
 #define FLINT_GET_COLOR_255(x)	(x / 255.0f)
 
@@ -73,6 +74,25 @@ namespace Flint
 			ALWAYS,
 		};
 
+		enum class DynamicStateFlags : UI8 {
+			VIEWPORT = BIT_SHIFT(0),
+			SCISSOR = BIT_SHIFT(1),
+			LINE_WIDTH = BIT_SHIFT(2),
+			DEPTH_BIAS = BIT_SHIFT(3),
+			BLEND_CONSTANTS = BIT_SHIFT(4),
+			DEPTH_BOUNDS = BIT_SHIFT(5),
+		};
+
+		constexpr DynamicStateFlags operator|(const DynamicStateFlags& lhs, const DynamicStateFlags& rhs)
+		{
+			return static_cast<DynamicStateFlags>(lhs | rhs);
+		}
+
+		constexpr bool operator&(const DynamicStateFlags& lhs, const DynamicStateFlags& rhs)
+		{
+			return lhs & rhs;
+		}
+
 		struct GraphicsPipelineSpecification {
 			float mColorBlendConstants[4] = {
 				FLINT_GET_COLOR_255(255), FLINT_GET_COLOR_255(255),
@@ -90,6 +110,7 @@ namespace Flint
 			PolygonMode mPolygonMode = PolygonMode::FILL;
 			ColorBlendLogic mColorBlendLogic = ColorBlendLogic::CLEAR;
 			DepthCompareLogic mDepthCompareLogic = DepthCompareLogic::LESS_OR_EQUAL;
+			DynamicStateFlags mDynamicStateFlags = DynamicStateFlags::VIEWPORT | DynamicStateFlags::SCISSOR;
 
 			bool bEnablePrimitiveRestart = false;
 			bool bEnableDepthBias = false;

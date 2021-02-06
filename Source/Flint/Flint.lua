@@ -24,6 +24,8 @@ project "Flint"
 
 	includedirs {
 		"$(SolutionDir)Source/",
+		"%{IncludeDir.Vulkan}",
+		"%{IncludeDir.GLFW}",
 	}
 
 	libdirs {

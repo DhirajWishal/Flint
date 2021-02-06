@@ -21,7 +21,7 @@ namespace Flint
 			vDepthBuffer.Initialize(pvDevice, extent, mBufferCount);
 
 			CreateRenderPass(pvDevice, { &vSwapChain, &vColorBuffer, &vDepthBuffer }, VK_PIPELINE_BIND_POINT_GRAPHICS);
-			CreateFrameBuffer(pvDevice, { &vSwapChain, &vColorBuffer, &vDepthBuffer });
+			CreateFrameBuffer(pvDevice, { &vSwapChain, &vColorBuffer, &vDepthBuffer }, mExtent);
 		}
 
 		void VulkanScreenBoundRenderTargetS::Terminate()

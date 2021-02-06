@@ -31,6 +31,20 @@ namespace Flint
 			pDevice->DestroyShaderModule(vShaderModule);
 		}
 
+		VkPipelineShaderStageCreateInfo VulkanShaderModule::GetStage() const
+		{
+			VkPipelineShaderStageCreateInfo vSSCI = {};
+			vSSCI.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+			vSSCI.pNext = VK_NULL_HANDLE;
+			vSSCI.flags = VK_NULL_HANDLE;
+			vSSCI.module = vShaderModule;
+			vSSCI.pName = "main";
+			vSSCI.pSpecializationInfo = VK_NULL_HANDLE;
+			vSSCI.stage = static_cast<VkShaderStageFlagBits>(vShaderStage);
+
+			return vSSCI;
+		}
+
 		void VulkanShaderModule::SetupResources(const ShaderDigest& digest)
 		{
 			VkDescriptorSetLayoutBinding vBinding = {};

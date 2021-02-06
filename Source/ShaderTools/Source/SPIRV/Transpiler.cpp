@@ -40,7 +40,7 @@ namespace Flint
 			mShaderCode.resize(mSize / sizeof(UI32));
 
 			// Move data from the string to the shader code and return it.
-			std::memmove(mShaderCode.data(), mGLSl.data(), mSize);
+			std::move(mGLSl.begin(), mGLSl.end(), mShaderCode.data());
 			return mShaderCode;
 		}
 
@@ -67,7 +67,7 @@ namespace Flint
 			mShaderCode.resize(mSize / sizeof(UI32));
 
 			// Move data from the string to the shader code and return it.
-			std::memmove(mShaderCode.data(), mHLSL.data(), mSize);
+			std::move(mHLSL.begin(), mHLSL.end(), mShaderCode.data());
 			return mShaderCode;
 		}
 	}

@@ -8,7 +8,7 @@
 
 namespace Flint
 {
-	void Engine::Initialize(BackenAPI api, bool enableValidation)
+	void Engine::Initialize(BackenAPI api, bool enableValidation, UI32 width, UI32 height, const char* pTitle)
 	{
 		mAPI = api;
 
@@ -27,10 +27,18 @@ namespace Flint
 		}
 
 		pInstance->Initialize(enableValidation);
+		pDisplay = pInstance->CreateDisplay(width, height, pTitle);
+		pDevice = pDisplay->CreatDevice();
 	}
 
 	void Engine::Terminate()
 	{
+		pDevice->Terminate();
+		delete pDevice;
+
+		pDisplay->Terminate();
+		delete pDisplay;
+
 		pInstance->Terminate();
 		delete pInstance;
 	}

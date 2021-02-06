@@ -18,6 +18,8 @@ namespace Flint
 			void Initialize(VulkanDevice* pDevice, const ShaderDigest& digest);
 			void Terminate() override final;
 
+			VkPipelineShaderStageCreateInfo GetStage() const;
+
 		private:
 			void SetupResources(const ShaderDigest& digest);
 
