@@ -5,6 +5,7 @@
 #include "VulkanBackend/VulkanMacros.h"
 #include "VulkanBackend/VulkanOneTimeCommandBuffer.h"
 #include "VulkanBackend/VulkanUtilities.h"
+#include "VulkanBackend/RenderTargets/VulkanScreenBoundRenderTargetS.h"
 
 #include <set>
 
@@ -129,6 +130,29 @@ namespace Flint
 		void VulkanDevice::Terminate()
 		{
 			DestroyLogicalDevice();
+		}
+
+		Backend::RenderTarget* VulkanDevice::CreateRenderTarget(Backend::RenderTargetType type, const Vector2& extent, UI32 bufferCount)
+		{
+			switch (type)
+			{
+			case Flint::Backend::RenderTargetType::SCREEN_BOUND:
+			{
+				VulkanScreenBoundRenderTargetS* pRenderTarget = new VulkanScreenBoundRenderTargetS();
+				pRenderTarget->Initialize(this, extent, bufferCount);
+				return pRenderTarget;
+			}
+			break;
+
+			case Flint::Backend::RenderTargetType::OFF_SCREEN:
+				break;
+
+			default:
+				FLINT_LOG_ERROR(TEXT("Invalid render target type!"))
+					break;
+			}
+
+			return nullptr;
 		}
 
 		UI32 VulkanDevice::FindSupporterBufferCount(UI32 count) const

@@ -4,14 +4,22 @@
 #pragma once
 
 #include "Display.h"
+#include "Core/Maths/Vector/Vector2.h"
 
 namespace Flint
 {
 	namespace Backend
 	{
+		class RenderTarget;
+
 		enum class MemoryProfile : UI8 {
 			TRANSFER_FRIENDLY,
 			DEVICE_ONLY,
+		};
+
+		enum class RenderTargetType : UI8 {
+			SCREEN_BOUND,
+			OFF_SCREEN
 		};
 
 		/**
@@ -33,6 +41,17 @@ namespace Flint
 			 * Terminate the device.
 			 */
 			virtual void Terminate() = 0;
+
+		public:
+			/**
+			 * Create a new render target object.
+			 * 
+			 * @param type: The type of the render target.
+			 * @param extent: The buffer extent.
+			 * @param bufferCount: The number of buffers the  render target will contain.
+			 * @return The render target object pointer.
+			 */
+			virtual RenderTarget* CreateRenderTarget(RenderTargetType type, const Vector2& extent, UI32 bufferCount = 0) = 0;
 
 		public:
 			Display* GetDisplay() const { return pDisplay; }

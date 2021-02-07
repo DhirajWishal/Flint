@@ -40,6 +40,20 @@ namespace Flint
 			 */
 			virtual void Terminate() = 0;
 
+			/**
+			 * Map the buffer memory to the local address space.
+			 * 
+			 * @param size: The size to be mapped.
+			 * @param offset: The offset of the buffer to be mapped.
+			 * @return The mapped address pointer.
+			 */
+			virtual void* MapMemory(UI64 size, UI64 offset) = 0;
+
+			/**
+			 * Unmap the mapped memory from the local address space.
+			 */
+			virtual void UnmapMemory() = 0;
+
 		public:
 			Device* GetDevice() const { return pDevice; }
 			UI64 GetSize() const { return mSize; }

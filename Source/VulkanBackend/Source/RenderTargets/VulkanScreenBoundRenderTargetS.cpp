@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "VulkanBackend/RenderTargets/VulkanScreenBoundRenderTargetS.h"
+#include "VulkanBackend/RenderTargets/Pipelines/VulkanGraphicsPipeline.h"
 
 namespace Flint
 {
@@ -33,6 +34,13 @@ namespace Flint
 			VulkanDevice* pvDevice = pDevice->Derive<VulkanDevice>();
 			DestroyRenderPass(pvDevice);
 			DestroyFrameBuffers(pvDevice);
+		}
+
+		Backend::GraphicsPipeline* VulkanScreenBoundRenderTargetS::CreateGraphicsPipeline(const std::vector<ShaderDigest>& shaderDigests, const Backend::GraphicsPipelineSpecification& spec)
+		{
+			VulkanGraphicsPipeline* pPipeline = new VulkanGraphicsPipeline();
+			pPipeline->Initialize(this, shaderDigests, spec);
+			return pPipeline;
 		}
 
 		void VulkanScreenBoundRenderTargetS::PrepareComputeResources()

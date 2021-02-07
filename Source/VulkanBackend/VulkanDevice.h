@@ -3,9 +3,9 @@
 
 #pragma once
 
+#include "Core/Backend/Device.h"
 #include "VulkanDisplay.h"
 #include "VulkanQueue.h"
-#include "Core/Backend/Device.h"
 
 namespace Flint
 {
@@ -36,6 +36,9 @@ namespace Flint
 
 			virtual void Initialize(Backend::Display* pDisplay) override final;
 			virtual void Terminate() override final;
+
+		public:
+			virtual Backend::RenderTarget* CreateRenderTarget(Backend::RenderTargetType type, const Vector2& extent, UI32 bufferCount = 0) override final;
 
 		public:
 			VkPhysicalDeviceProperties& GetPhysicalDeviceProperties() { return vPhysicalDeviceProperties; }

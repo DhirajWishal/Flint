@@ -4,7 +4,6 @@
 #pragma once
 
 #include "RenderTarget.h"
-#include "ShaderDigest.h"
 
 namespace Flint
 {

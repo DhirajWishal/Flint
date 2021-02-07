@@ -7,7 +7,6 @@
 #include "Core/ErrorHandler/Logger.h"
 #include "Core/Types/Utilities.h"
 
-
 #include <GLFW/glfw3.h>
 #include <iostream>
 
@@ -28,7 +27,7 @@ namespace Flint
 			 */
 			static void GLFWErrorCallback(I32 errorCode, const char* pDescription)
 			{
-				FLINT_LOG_ERROR(("GLFW -> " + String(pDescription)).c_str());
+				FLINT_LOG_ERROR(TEXT("GLFW -> #6"), pDescription);
 			}
 
 			/**
@@ -112,28 +111,28 @@ namespace Flint
 				const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
 				void* pUserData)
 			{
-				WString myMessageStatement = TEXT("Vulkan Validation Layer ");
-				WString myMessagePreStatement = TEXT(": ");
+				WString myMessageStatement = TEXT("Vulkan Validation Layer");
+				WString myMessagePreStatement = TEXT(":");
 
 				if (messageType == VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT)
-					myMessagePreStatement = TEXT("(General): ");
+					myMessagePreStatement = TEXT("(General):");
 				else if (messageType == VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT)
-					myMessagePreStatement = TEXT("(Validation): ");
+					myMessagePreStatement = TEXT("(Validation):");
 				else if (messageType == VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT)
-					myMessagePreStatement = TEXT("(Performance): ");
+					myMessagePreStatement = TEXT("(Performance):");
 
 				switch (messageSeverity) {
 				case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
-					Logger::LogDebug(WString(TEXT("") + (myMessageStatement + myMessagePreStatement + StringToWString(pCallbackData->pMessage))).c_str());
+					Logger::LogDebug(TEXT("#6 #6 #7"), myMessageStatement.c_str(), myMessagePreStatement.c_str(), pCallbackData->pMessage);
 					break;
 				case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
-					Logger::LogInfo(WString(TEXT("") + (myMessageStatement + myMessagePreStatement + StringToWString(pCallbackData->pMessage))).c_str());
+					Logger::LogInfo(TEXT("#6 #6 #7"), myMessageStatement.c_str(), myMessagePreStatement.c_str(), pCallbackData->pMessage);
 					break;
 				case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
-					Logger::LogWarn(WString(TEXT("") + (myMessageStatement + myMessagePreStatement + StringToWString(pCallbackData->pMessage))).c_str());
+					Logger::LogWarning(TEXT("#6 #6 #7"), myMessageStatement.c_str(), myMessagePreStatement.c_str(), pCallbackData->pMessage);
 					break;
 				case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
-					Logger::LogError(WString(TEXT("") + (myMessageStatement + myMessagePreStatement + StringToWString(pCallbackData->pMessage))).c_str());
+					Logger::LogError(TEXT("#6 #6 #7"), myMessageStatement.c_str(), myMessagePreStatement.c_str(), pCallbackData->pMessage);
 					break;
 				default:
 					std::wcerr << myMessageStatement << myMessagePreStatement << StringToWString(pCallbackData->pMessage) << std::endl;

@@ -10,13 +10,16 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanBuffer : public Backend::Buffer {
+		class VulkanBuffer final : public Backend::Buffer {
 		public:
 			VulkanBuffer() {}
 			~VulkanBuffer() {}
 
 			virtual void Initialize(Backend::Device* pDevice, UI64 size, Backend::BufferUsage usage, Backend::MemoryProfile memoryProfile) override final;
 			virtual void Terminate() override final;
+
+			virtual void* MapMemory(UI64 size, UI64 offset) override final;
+			virtual void UnmapMemory() override final;
 
 		private:
 			void CreateBuffer(VkBufferUsageFlags vUsage);

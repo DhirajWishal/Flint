@@ -69,13 +69,13 @@ namespace Flint
 
 				vCI.subresourceRange = vSR;
 
-				UI8 counter = 0;
 				std::vector<VkImageView> vImageViews(vImages.size());
+				VkImageView* pArray = vImageViews.data();
 				for (auto itr = vImages.begin(); itr != vImages.end(); itr++)
 				{
 					vCI.image = *itr;
-					FLINT_VK_ASSERT(pDevice->CreateImageView(&vCI, vImageViews.data() + counter), "Failed to create Vulkan Image Views for the Swap Chain images!");
-					counter++;
+					FLINT_VK_ASSERT(pDevice->CreateImageView(&vCI, pArray), "Failed to create image views!");
+					pArray++;
 				}
 
 				return vImageViews;

@@ -18,6 +18,8 @@ int main()
 
 #endif // FLINT_DEBUG
 
+	engine.CreateRenderTarget({ 1280, 720 });
+
 	engine.Terminate();
 	return 0;
 }

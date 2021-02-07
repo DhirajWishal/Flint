@@ -4,12 +4,15 @@
 #pragma once
 
 #include "Device.h"
-#include "Core/Maths/Vector/Vector2.h"
+#include "ShaderDigest.h"
 
 namespace Flint
 {
 	namespace Backend
 	{
+		struct GraphicsPipelineSpecification;
+		class GraphicsPipeline;
+
 		/**
 		 * Render Target object.
 		 * Render targets are the graphics space which objects are rendererd to. These are of two types,
@@ -45,6 +48,16 @@ namespace Flint
 			virtual void Terminate() = 0;
 
 		public:
+			/**
+			 * Create a new graphics pipeline.
+			 * 
+			 * @param shaderDigest: The shader digests the pipeline is to use.
+			 * @param spec: The pipeline specification.
+			 * @return The graphcis pipeline pointer.
+			 */
+			virtual GraphicsPipeline* CreateGraphicsPipeline(const std::vector<ShaderDigest>& shaderDigests, const GraphicsPipelineSpecification& spec) = 0;
+
+		public:
 			Vector2 GetExtent() const { return mExtent; }
 
 		public:
@@ -57,6 +70,8 @@ namespace Flint
 
 		/**
 		 * Screen Bound Render Target object.
+		 *
+		 * This render target supports only software based ray tracing, compute and graphics.
 		 */
 		class ScreenBoundRenderTarget : public RenderTarget {
 		public:
@@ -65,6 +80,8 @@ namespace Flint
 
 		/**
 		 * Off Screen Render Target object.
+		 *
+		 * This render target supports software and hardware based ray tracing, compute and graphics.
 		 */
 		class OffScreenRenderTarget : public RenderTarget {
 		public:

@@ -85,12 +85,12 @@ namespace Flint
 
 		constexpr DynamicStateFlags operator|(const DynamicStateFlags& lhs, const DynamicStateFlags& rhs)
 		{
-			return static_cast<DynamicStateFlags>(lhs | rhs);
+			return static_cast<DynamicStateFlags>(static_cast<UI8>(lhs) | static_cast<UI8>(rhs));
 		}
 
 		constexpr bool operator&(const DynamicStateFlags& lhs, const DynamicStateFlags& rhs)
 		{
-			return lhs & rhs;
+			return static_cast<UI8>(lhs) & static_cast<UI8>(rhs);
 		}
 
 		struct GraphicsPipelineSpecification {

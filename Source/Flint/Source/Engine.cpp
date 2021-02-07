@@ -33,6 +33,9 @@ namespace Flint
 
 	void Engine::Terminate()
 	{
+		pRenderTarget->Terminate();
+		delete pRenderTarget;
+
 		pDevice->Terminate();
 		delete pDevice;
 
@@ -45,5 +48,10 @@ namespace Flint
 
 	void Engine::SwitchAPI(BackenAPI newAPI)
 	{
+	}
+
+	void Engine::CreateRenderTarget(const Vector2& extent, UI32 bufferCount)
+	{
+		pRenderTarget = pDevice->CreateRenderTarget(Backend::RenderTargetType::SCREEN_BOUND, extent, bufferCount);
 	}
 }

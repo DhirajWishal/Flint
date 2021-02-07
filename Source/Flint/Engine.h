@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Core/Backend/Device.h"
+#include "Core/Backend/GraphicsPipeline.h"
 
 namespace Flint
 {
@@ -53,10 +53,27 @@ namespace Flint
 		 */
 		BackenAPI GetBackendAPI() const { return mAPI; }
 
+	public:
+		/**
+		 * Create a the internal render target.
+		 * The engine uses one internal render target to render everything to. This is based on whether we can use the
+		 * device to utilize hardware based ray tracing. If available, we use the hardware accelerated render target, if
+		 * not we use the software based render target.
+		 *
+		 * The buffer count specifies the number of buffers the render target contains. If set to 0, the default
+		 * device supported buffer count will be set.
+		 * If the count is std::numeric_limits<UI32>::max(), then the maximum supported will be set.
+		 *
+		 * @param extent: The extent of the render target.
+		 * @param bufferCount: The number of buffers to be used. Default is 0.
+		 */
+		void CreateRenderTarget(const Vector2& extent, UI32 bufferCount = 0);
+
 	private:
 		Backend::Instance* pInstance = nullptr;
 		Backend::Display* pDisplay = nullptr;
 		Backend::Device* pDevice = nullptr;
+		Backend::RenderTarget* pRenderTarget = nullptr;
 
 		BackenAPI mAPI = BackenAPI::UNDEFINED;
 	};

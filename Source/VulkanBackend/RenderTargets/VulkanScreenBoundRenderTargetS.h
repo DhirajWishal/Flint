@@ -24,6 +24,8 @@ namespace Flint
 			virtual void Initialize(Backend::Device* pDevice, const Vector2& extent, UI32 bufferCount) override final;
 			virtual void Terminate() override final;
 
+			virtual Backend::GraphicsPipeline* CreateGraphicsPipeline(const std::vector<ShaderDigest>& shaderDigests, const Backend::GraphicsPipelineSpecification& spec) override final;
+
 			void PrepareComputeResources();
 			void PrepareRenderResources();
 
