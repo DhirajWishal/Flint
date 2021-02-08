@@ -1,9 +1,9 @@
 -- Copyright 2021 Dhiraj Wishal
 -- SPDX-License-Identifier: Apache-2.0
 
----------- Flint project description ----------
+---------- AssetLoader project description ----------
 
-project "Flint"
+project "AssetLoader"
 	kind "StaticLib"
 	language "C++"
 	systemversion "latest"
@@ -24,14 +24,13 @@ project "Flint"
 
 	includedirs {
 		"$(SolutionDir)Source/",
-		"%{IncludeDir.Vulkan}",
-		"%{IncludeDir.GLFW}",
+		"%{IncludeDir.Assimp}",
 	}
 
 	libdirs {
+	    "%{IncludeLib.Assimp}",
 	}
 
 	links { 
-	    "AssetLoader",
-	    "VulkanBackend",
+		"assimp-vc142-mt",
 	}

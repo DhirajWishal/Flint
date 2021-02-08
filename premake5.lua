@@ -42,7 +42,7 @@ IncludeDir["xxhash"] = "$(SolutionDir)Dependencies/ThirdParty/xxhash/include"
 
 IncludeDir["jpeg"] = "$(SolutionDir)Dependencies/ThirdParty/gil/jpeg-6b"
 IncludeDir["irrKlang"] = "$(SolutionDir)Dependencies/Libraries/Local/irrKlang/include"
-IncludeDir["assimp"] = "$(SolutionDir)Dependencies/ThirdParty/Assimp/include"
+IncludeDir["Assimp"] = "$(SolutionDir)Dependencies/ThirdParty/Assimp/include"
 
 -- Binaries
 IncludeLib = {}
@@ -66,6 +66,7 @@ include "Demos/SimpleScene/SimpleScene.lua"
 
 group "Engine"
 include "Source/Flint/Flint.lua"
+include "Source/AssetLoader/AssetLoader.lua"
 
 group "LowLevel"
 include "Source/Core/Core.lua"

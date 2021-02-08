@@ -29,7 +29,7 @@ namespace Flint
 		Vector2() : x(0.0f), y(0.0f) {}
 
 		/**
-		 * Constructu using one value which will be set to all (x, y)/ (a, b)/ (width, height).
+		 * Construct using one value which will be set to all (x, y)/ (a, b)/ (width, height).
 		 *
 		 * @param value: The value to be set with.
 		 */

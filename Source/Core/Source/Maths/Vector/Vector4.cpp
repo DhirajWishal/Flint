@@ -13,13 +13,13 @@ namespace Flint
 		if ((list.size() > 4) || (list.size() < 4))
 			FLINT_LOG_ERROR(TEXT("The size of the provided list does not match the current Vector size! Expected size is 4."))
 
-			std::copy(list.begin(), list.end(), this);
+			std::copy(list.begin(), list.end(), &this->x);
 	}
 
 	Vector4::Vector4(const float* ptr)
 		: x(0.0f), y(0.0f), z(0.0f), w(0.0f)
 	{
-		std::copy(ptr, ptr + 4, this);
+		std::copy(ptr, ptr + 4, &this->x);
 	}
 
 	Vector4 Vector4::operator=(const std::initializer_list<float>& list)
@@ -27,7 +27,7 @@ namespace Flint
 		if ((list.size() > 4) || (list.size() < 4))
 			FLINT_LOG_ERROR(TEXT("The size of the provided list does not match the current Vector size! Expected size is 4."))
 
-			std::copy(list.begin(), list.end(), this);
+			std::copy(list.begin(), list.end(), &this->x);
 		return *this;
 	}
 

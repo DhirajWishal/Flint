@@ -47,7 +47,7 @@ namespace Flint
 		VectorSet(VectorSet&& other);
 
 		/**
-		 * Construct the container using another constainer's iterator.
+		 * Construct the container using another container's iterator.
 		 *
 		 * @param begin: The begin iterator.
 		 * @param end: The end iterator.
@@ -55,7 +55,7 @@ namespace Flint
 		VectorSet(Iterator begin, Iterator end);
 
 		/**
-		 * Construct the container using another constainer's iterator.
+		 * Construct the container using another container's iterator.
 		 *
 		 * @param begin: The begin iterator.
 		 * @param end: The end iterator.
@@ -63,7 +63,7 @@ namespace Flint
 		VectorSet(ConstIterator begin, ConstIterator end);
 
 		/**
-		 * Construct the container using another constainer's iterator.
+		 * Construct the container using another container's iterator.
 		 *
 		 * @param begin: The begin iterator.
 		 * @param end: The end iterator.
@@ -71,7 +71,7 @@ namespace Flint
 		VectorSet(ConstReverseIterator begin, ConstReverseIterator end);
 
 		/**
-		 * Construct the container using another constainer's iterator.
+		 * Construct the container using another container's iterator.
 		 *
 		 * @param begin: The begin iterator.
 		 * @param end: The end iterator.
