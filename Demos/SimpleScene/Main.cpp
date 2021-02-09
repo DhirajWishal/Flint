@@ -3,6 +3,7 @@
 
 #include "Core/Benchmark/Timer.h"
 #include "Flint/Engine.h"
+#include "Flint/Components/WireFrame.h"
 
 #include <thread>
 
@@ -19,6 +20,9 @@ int main()
 #endif // FLINT_DEBUG
 
 	engine.CreateRenderTarget(Flint::Vector2(1280, 720));
+
+	Flint::WireFrame wireframe = {};
+	wireframe.LoadFromFile("E:\\Flint\\Assets\\Models\\Cube\\Cube.obj", Flint::CreateDefaultAttributes());
 
 	engine.Terminate();
 	return 0;

@@ -66,7 +66,6 @@ include "Demos/SimpleScene/SimpleScene.lua"
 
 group "Engine"
 include "Source/Flint/Flint.lua"
-include "Source/AssetLoader/AssetLoader.lua"
 
 group "LowLevel"
 include "Source/Core/Core.lua"

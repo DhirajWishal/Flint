@@ -26,12 +26,14 @@ project "Flint"
 		"$(SolutionDir)Source/",
 		"%{IncludeDir.Vulkan}",
 		"%{IncludeDir.GLFW}",
+		"%{IncludeDir.Assimp}",
 	}
 
 	libdirs {
+		"%{IncludeLib.Assimp}",
 	}
 
 	links { 
-	    "AssetLoader",
 	    "VulkanBackend",
+		"assimp-vc142-mt",
 	}
