@@ -10,9 +10,6 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
-#define VOLK_IMPLEMENTATION
-#include "VulkanBackend/MetaLoader/volk.h"   
-
 namespace Flint
 {
 	namespace VulkanBackend
@@ -169,9 +166,6 @@ namespace Flint
 
 		void VulkanInstance::Initialize(bool enableValidation)
 		{
-			// Initialize volk instance functors.
-			volkInitialize();
-
 			this->mEnableValidation = enableValidation;
 
 			InitializeGLFW();
@@ -257,9 +251,6 @@ namespace Flint
 
 			// Create the instance handle.
 			FLINT_VK_ASSERT(vkCreateInstance(&createInfo, nullptr, &vInstance), "Failed to create instance!");
-
-			// Load the instance functions.
-			volkLoadInstance(vInstance);
 		}
 
 		void VulkanInstance::DestroyInstance()

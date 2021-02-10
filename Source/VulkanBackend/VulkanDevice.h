@@ -41,6 +41,9 @@ namespace Flint
 			virtual Backend::RenderTarget* CreateRenderTarget(Backend::RenderTargetType type, const Vector2& extent, UI32 bufferCount = 0) override final;
 
 		public:
+			virtual Backend::Buffer* CreateBuffer(UI64 size, Backend::BufferUsage usage, Backend::MemoryProfile memoryProfile) override final;
+
+		public:
 			VkPhysicalDeviceProperties& GetPhysicalDeviceProperties() { return vPhysicalDeviceProperties; }
 			VkSurfaceCapabilitiesKHR& GetSurfaceCapabilities() { return vSurfaceCapabilities; }
 			SwapChainSupportDetails& GetSwapChainSupportDetails() { return vSwapChainSupportDetails; }
@@ -54,8 +57,6 @@ namespace Flint
 			VkPhysicalDevice GetPhysicalDevice() const { return vPhysicalDevice; }
 			VkDevice GetLogicalDevice() const { return vLogicalDevice; }
 
-			VolkDeviceTable* GetDeviceTable() const { return const_cast<VolkDeviceTable*>(&mTable); }
-
 			VkSampleCountFlags GetSampleCount() const { return vSampleCount; }
 
 			UI32 FindSupporterBufferCount(UI32 count) const;
@@ -67,8 +68,6 @@ namespace Flint
 			void DestroyLogicalDevice();
 
 		private:
-			VolkDeviceTable mTable = {};
-
 			VkPhysicalDeviceProperties vPhysicalDeviceProperties = {};
 			VkSurfaceCapabilitiesKHR vSurfaceCapabilities = {};
 			SwapChainSupportDetails vSwapChainSupportDetails = {};

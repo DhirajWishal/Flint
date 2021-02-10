@@ -4,6 +4,7 @@
 #pragma once
 
 #include "Core/Types/DataTypes.h"
+#include "Core/Backend/Buffer.h"
 
 namespace Flint
 {
@@ -42,12 +43,8 @@ namespace Flint
 	public:
 		WireFrame() {}
 
-		/**
-		 * Load the wire frame from an external asset file.
-		 *
-		 * @param pAsse: The asset file to load the data from.
-		 * @param attributes: The vertex attributes which are loaded from the file.
-		 */
-		void LoadFromFile(const char* pAsset, const std::vector<VertexAttribute>& attributes);
+	private:
+		Backend::Buffer* pVertexBuffer = nullptr;
+		Backend::Buffer* pIndexBuffer = nullptr;
 	};
 }

@@ -8,45 +8,27 @@
 
 namespace Flint
 {
-	void Engine::Initialize(BackenAPI api, bool enableValidation, UI32 width, UI32 height, const char* pTitle)
+	void Engine::Initialize(BackendAPI api, bool enableValidation, UI32 width, UI32 height, const char* pTitle)
 	{
-		mAPI = api;
-
-		switch (api)
-		{
-		case Flint::BackenAPI::VULKAN:
-			pInstance = new VulkanBackend::VulkanInstance();
-			break;
-		case Flint::BackenAPI::DIRECT_X_12:
-			break;
-		case Flint::BackenAPI::WEB_GPU:
-			break;
-		default:
-			FLINT_LOG_ERROR(TEXT("Invalid or Undefined backend API type!"))
-				break;
-		}
-
-		pInstance->Initialize(enableValidation);
-		pDisplay = pInstance->CreateDisplay(width, height, pTitle);
-		pDevice = pDisplay->CreatDevice();
+		InitializeInstance(api, enableValidation);
+		InitializeDisplay(width, height, pTitle);
+		InitializeDevice();
 	}
 
 	void Engine::Terminate()
 	{
-		pRenderTarget->Terminate();
-		delete pRenderTarget;
+		if (pRenderTarget)
+		{
+			pRenderTarget->Terminate();
+			delete pRenderTarget;
+		}
 
-		pDevice->Terminate();
-		delete pDevice;
-
-		pDisplay->Terminate();
-		delete pDisplay;
-
-		pInstance->Terminate();
-		delete pInstance;
+		TerminateDevice();
+		TerminateDisplay();
+		TerminateInstance();
 	}
 
-	void Engine::SwitchAPI(BackenAPI newAPI)
+	void Engine::SwitchAPI(BackendAPI newAPI)
 	{
 	}
 

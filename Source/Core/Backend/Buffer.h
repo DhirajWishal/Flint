@@ -9,14 +9,6 @@ namespace Flint
 {
 	namespace Backend
 	{
-		enum class BufferUsage : UI8 {
-			UNDEFINED,
-			VERTEX,
-			INDEX,
-			UNIFORM,
-			STAGGING
-		};
-
 		/**
 		 * Buffer object.
 		 * This object is used to store information in the GPU.

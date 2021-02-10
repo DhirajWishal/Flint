@@ -6,6 +6,7 @@
 #include "VulkanBackend/VulkanOneTimeCommandBuffer.h"
 #include "VulkanBackend/VulkanUtilities.h"
 #include "VulkanBackend/RenderTargets/VulkanScreenBoundRenderTargetS.h"
+#include "VulkanBackend/VulkanBuffer.h"
 
 #include <set>
 
@@ -153,6 +154,14 @@ namespace Flint
 			}
 
 			return nullptr;
+		}
+
+		Backend::Buffer* VulkanDevice::CreateBuffer(UI64 size, Backend::BufferUsage usage, Backend::MemoryProfile memoryProfile)
+		{
+			VulkanBuffer* pBuffer = new VulkanBuffer();
+			pBuffer->Initialize(this, size, usage, memoryProfile);
+
+			return pBuffer;
 		}
 
 		UI32 VulkanDevice::FindSupporterBufferCount(UI32 count) const
@@ -307,72 +316,69 @@ namespace Flint
 			// Create the logical device.
 			FLINT_VK_ASSERT(vkCreateDevice(vPhysicalDevice, &createInfo, nullptr, &vLogicalDevice), "Failed to create logical device!")
 
-				// Load the device table.
-				volkLoadDeviceTable(&mTable, vLogicalDevice);
-
 			// Get graphics queue.
-			mTable.vkGetDeviceQueue(GetLogicalDevice(), vQueue.mGraphicsFamily.value(), 0, &vQueue.vGraphicsQueue);
+			vkGetDeviceQueue(GetLogicalDevice(), vQueue.mGraphicsFamily.value(), 0, &vQueue.vGraphicsQueue);
 
 			// Get compute queue.
-			mTable.vkGetDeviceQueue(GetLogicalDevice(), vQueue.mComputeFamily.value(), 0, &vQueue.vComputeQueue);
+			vkGetDeviceQueue(GetLogicalDevice(), vQueue.mComputeFamily.value(), 0, &vQueue.vComputeQueue);
 
 			// Get transfer queue.
-			mTable.vkGetDeviceQueue(GetLogicalDevice(), vQueue.mTransferFamily.value(), 0, &vQueue.vTransferQueue);
+			vkGetDeviceQueue(GetLogicalDevice(), vQueue.mTransferFamily.value(), 0, &vQueue.vTransferQueue);
 		}
 
 		void VulkanDevice::DestroyLogicalDevice()
 		{
-			mTable.vkDestroyDevice(vLogicalDevice, nullptr);
+			vkDestroyDevice(vLogicalDevice, nullptr);
 		}
 
 		VkResult VulkanDevice::MapMemory(VkDeviceMemory vDeviceMemory, UI64 size, UI64 offset, void** ppData) const
 		{
-			return mTable.vkMapMemory(GetLogicalDevice(), vDeviceMemory, offset, size, 0, ppData);
+			return vkMapMemory(GetLogicalDevice(), vDeviceMemory, offset, size, 0, ppData);
 		}
 
 		void VulkanDevice::UnmapMemory(VkDeviceMemory vDeviceMemory) const
 		{
-			mTable.vkUnmapMemory(GetLogicalDevice(), vDeviceMemory);
+			vkUnmapMemory(GetLogicalDevice(), vDeviceMemory);
 		}
 
 		void VulkanDevice::FreeMemory(VkDeviceMemory vDeviceMemory) const
 		{
-			mTable.vkFreeMemory(GetLogicalDevice(), vDeviceMemory, nullptr);
+			vkFreeMemory(GetLogicalDevice(), vDeviceMemory, nullptr);
 		}
 
 		VkResult VulkanDevice::SubmitQueue(VkQueue vQueue, const std::vector<VkSubmitInfo>& vSubmitInfos, VkFence vFence) const
 		{
-			return mTable.vkQueueSubmit(vQueue, static_cast<UI32>(vSubmitInfos.size()), vSubmitInfos.data(), vFence);
+			return vkQueueSubmit(vQueue, static_cast<UI32>(vSubmitInfos.size()), vSubmitInfos.data(), vFence);
 		}
 
 		VkResult VulkanDevice::QueueWait(VkQueue vQueue) const
 		{
-			return mTable.vkQueueWaitIdle(vQueue);
+			return vkQueueWaitIdle(vQueue);
 		}
 
 		VkResult VulkanDevice::WaitIdle() const
 		{
-			return mTable.vkDeviceWaitIdle(GetLogicalDevice());
+			return vkDeviceWaitIdle(GetLogicalDevice());
 		}
 
 		VkResult VulkanDevice::CreateSwapChain(VkSwapchainCreateInfoKHR* pCreateInfo, VkSwapchainKHR* pSwapChain) const
 		{
-			return mTable.vkCreateSwapchainKHR(GetLogicalDevice(), pCreateInfo, nullptr, pSwapChain);
+			return vkCreateSwapchainKHR(GetLogicalDevice(), pCreateInfo, nullptr, pSwapChain);
 		}
 
 		VkResult VulkanDevice::GetSwapChainImages(VkSwapchainKHR vSwapChain, UI32* pSwapChainImageCount, std::vector<VkImage>& vImages) const
 		{
-			return mTable.vkGetSwapchainImagesKHR(GetLogicalDevice(), vSwapChain, pSwapChainImageCount, vImages.data());
+			return vkGetSwapchainImagesKHR(GetLogicalDevice(), vSwapChain, pSwapChainImageCount, vImages.data());
 		}
 
 		void VulkanDevice::DestroySwapChain(VkSwapchainKHR vSwapChain) const
 		{
-			mTable.vkDestroySwapchainKHR(GetLogicalDevice(), vSwapChain, nullptr);
+			vkDestroySwapchainKHR(GetLogicalDevice(), vSwapChain, nullptr);
 		}
 
 		VkResult VulkanDevice::CreateImage(const VkImageCreateInfo* pCreateInfo, VkImage* pImage) const
 		{
-			return mTable.vkCreateImage(GetLogicalDevice(), pCreateInfo, nullptr, pImage);
+			return vkCreateImage(GetLogicalDevice(), pCreateInfo, nullptr, pImage);
 		}
 
 		VkResult VulkanDevice::CreateImageMemory(const std::vector<VkImage>& vImages, VkMemoryPropertyFlags vMemoryflags, VkDeviceMemory* pDeviceMemory) const
@@ -381,7 +387,7 @@ namespace Flint
 				return VkResult::VK_ERROR_UNKNOWN;
 
 			VkMemoryRequirements vMR = {};
-			mTable.vkGetImageMemoryRequirements(GetLogicalDevice(), vImages[0], &vMR);
+			vkGetImageMemoryRequirements(GetLogicalDevice(), vImages[0], &vMR);
 
 			VkPhysicalDeviceMemoryProperties vMP = {};
 			vkGetPhysicalDeviceMemoryProperties(GetPhysicalDevice(), &vMP);
@@ -399,18 +405,18 @@ namespace Flint
 				}
 			}
 
-			FLINT_VK_ASSERT(mTable.vkAllocateMemory(GetLogicalDevice(), &vAI, nullptr, pDeviceMemory), "Failed to allocate image memory!")
+			FLINT_VK_ASSERT(vkAllocateMemory(GetLogicalDevice(), &vAI, nullptr, pDeviceMemory), "Failed to allocate image memory!")
 
 				VkResult result = VkResult::VK_ERROR_UNKNOWN;
 			for (UI32 i = 0; i < vImages.size(); i++)
-				result = mTable.vkBindImageMemory(GetLogicalDevice(), vImages[i], *pDeviceMemory, vMR.size * i);
+				result = vkBindImageMemory(GetLogicalDevice(), vImages[i], *pDeviceMemory, vMR.size * i);
 
 			return result;
 		}
 
 		void VulkanDevice::DestroyImage(VkImage vImage) const
 		{
-			mTable.vkDestroyImage(GetLogicalDevice(), vImage, nullptr);
+			vkDestroyImage(GetLogicalDevice(), vImage, nullptr);
 		}
 
 		void VulkanDevice::SetImageLayout(VkCommandBuffer vCommandBuffer, VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, UI32 layerCount, UI32 currentLayer, UI32 mipLevels) const
@@ -517,7 +523,7 @@ namespace Flint
 					break;
 			}
 
-			mTable.vkCmdPipelineBarrier(vCommandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &vMB);
+			vkCmdPipelineBarrier(vCommandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &vMB);
 		}
 
 		void VulkanDevice::SetImageLayout(VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, UI32 layerCount, UI32 currentLayer, UI32 mipLevels) const
@@ -528,73 +534,73 @@ namespace Flint
 
 		VkResult VulkanDevice::CreateImageView(const VkImageViewCreateInfo* pCreateInfo, VkImageView* pImageView) const
 		{
-			return mTable.vkCreateImageView(GetLogicalDevice(), pCreateInfo, nullptr, pImageView);
+			return vkCreateImageView(GetLogicalDevice(), pCreateInfo, nullptr, pImageView);
 		}
 
 		void VulkanDevice::DestroyImageView(VkImageView vImageView) const
 		{
-			mTable.vkDestroyImageView(GetLogicalDevice(), vImageView, nullptr);
+			vkDestroyImageView(GetLogicalDevice(), vImageView, nullptr);
 		}
 
 		VkResult VulkanDevice::CreateCommanPool(VkCommandPoolCreateInfo* pCreateInfo, VkCommandPool* pPool) const
 		{
-			return mTable.vkCreateCommandPool(GetLogicalDevice(), pCreateInfo, nullptr, pPool);
+			return vkCreateCommandPool(GetLogicalDevice(), pCreateInfo, nullptr, pPool);
 		}
 
 		VkResult VulkanDevice::AllocateCommandBuffers(VkCommandBufferAllocateInfo* pAllicateInfo, const std::vector<VkCommandBuffer>& commandBuffers) const
 		{
-			return mTable.vkAllocateCommandBuffers(GetLogicalDevice(), pAllicateInfo, const_cast<VkCommandBuffer*>(commandBuffers.data()));
+			return vkAllocateCommandBuffers(GetLogicalDevice(), pAllicateInfo, const_cast<VkCommandBuffer*>(commandBuffers.data()));
 		}
 
 		VkResult VulkanDevice::BeginCommandBuffer(VkCommandBuffer vCommandBuffer, const VkCommandBufferBeginInfo* pBeginInfo) const
 		{
-			return mTable.vkBeginCommandBuffer(vCommandBuffer, pBeginInfo);
+			return vkBeginCommandBuffer(vCommandBuffer, pBeginInfo);
 		}
 
 		VkResult VulkanDevice::EndCommandBuffer(VkCommandBuffer vCommandBuffer) const
 		{
-			return mTable.vkEndCommandBuffer(vCommandBuffer);
+			return vkEndCommandBuffer(vCommandBuffer);
 		}
 
 		VkResult VulkanDevice::ResetCommandBuffer(VkCommandBuffer vCommandBuffer, VkCommandBufferResetFlags vResetFlags) const
 		{
-			return mTable.vkResetCommandBuffer(vCommandBuffer, vResetFlags);
+			return vkResetCommandBuffer(vCommandBuffer, vResetFlags);
 		}
 
 		void VulkanDevice::FreeComandBuffers(VkCommandPool vCommandPool, const std::vector<VkCommandBuffer>& vCommandBuffers) const
 		{
-			mTable.vkFreeCommandBuffers(GetLogicalDevice(), vCommandPool, static_cast<UI32>(vCommandBuffers.size()), vCommandBuffers.data());
+			vkFreeCommandBuffers(GetLogicalDevice(), vCommandPool, static_cast<UI32>(vCommandBuffers.size()), vCommandBuffers.data());
 		}
 
 		void VulkanDevice::DestroyCommandPool(VkCommandPool vCommandPool) const
 		{
-			mTable.vkDestroyCommandPool(GetLogicalDevice(), vCommandPool, nullptr);
+			vkDestroyCommandPool(GetLogicalDevice(), vCommandPool, nullptr);
 		}
 
 		VkResult VulkanDevice::CreateRenderPass(const VkRenderPassCreateInfo* pCreateInfo, VkRenderPass* pRenderPass) const
 		{
-			return mTable.vkCreateRenderPass(GetLogicalDevice(), pCreateInfo, nullptr, pRenderPass);
+			return vkCreateRenderPass(GetLogicalDevice(), pCreateInfo, nullptr, pRenderPass);
 		}
 
 		void VulkanDevice::DestroyRenderPass(VkRenderPass vRenderPass) const
 		{
-			mTable.vkDestroyRenderPass(GetLogicalDevice(), vRenderPass, nullptr);
+			vkDestroyRenderPass(GetLogicalDevice(), vRenderPass, nullptr);
 		}
 
 		VkResult VulkanDevice::CreateFrameBuffer(const VkFramebufferCreateInfo* pCreateInfo, VkFramebuffer* pFrameBuffer) const
 		{
-			return mTable.vkCreateFramebuffer(GetLogicalDevice(), pCreateInfo, nullptr, pFrameBuffer);
+			return vkCreateFramebuffer(GetLogicalDevice(), pCreateInfo, nullptr, pFrameBuffer);
 		}
 
 		void VulkanDevice::DestroyFrameBuffers(const std::vector<VkFramebuffer>& vFrameBuffers) const
 		{
 			for (auto itr = vFrameBuffers.begin(); itr != vFrameBuffers.end(); itr++)
-				mTable.vkDestroyFramebuffer(GetLogicalDevice(), *itr, nullptr);
+				vkDestroyFramebuffer(GetLogicalDevice(), *itr, nullptr);
 		}
 
 		VkResult VulkanDevice::CreateBuffer(const VkBufferCreateInfo* pCreateInfo, VkBuffer* pBuffer) const
 		{
-			return mTable.vkCreateBuffer(GetLogicalDevice(), pCreateInfo, nullptr, pBuffer);
+			return vkCreateBuffer(GetLogicalDevice(), pCreateInfo, nullptr, pBuffer);
 		}
 
 		VkResult VulkanDevice::CreateBufferMemory(const std::vector<VkBuffer>& vBuffers, VkMemoryPropertyFlags vMemoryflags, VkDeviceMemory* pDeviceMemory) const
@@ -603,7 +609,7 @@ namespace Flint
 				return VkResult::VK_ERROR_UNKNOWN;
 
 			VkMemoryRequirements vMR = {};
-			mTable.vkGetBufferMemoryRequirements(GetLogicalDevice(), vBuffers[0], &vMR);
+			vkGetBufferMemoryRequirements(GetLogicalDevice(), vBuffers[0], &vMR);
 
 			VkPhysicalDeviceMemoryProperties vMP = {};
 			vkGetPhysicalDeviceMemoryProperties(GetPhysicalDevice(), &vMP);
@@ -621,73 +627,73 @@ namespace Flint
 				}
 			}
 
-			FLINT_VK_ASSERT(mTable.vkAllocateMemory(GetLogicalDevice(), &vAI, nullptr, pDeviceMemory), "Failed to allocate image memory!")
+			FLINT_VK_ASSERT(vkAllocateMemory(GetLogicalDevice(), &vAI, nullptr, pDeviceMemory), "Failed to allocate buffer memory!")
 
 				VkResult result = VkResult::VK_ERROR_UNKNOWN;
 			for (UI32 i = 0; i < vBuffers.size(); i++)
-				result = mTable.vkBindBufferMemory(GetLogicalDevice(), vBuffers[i], *pDeviceMemory, vMR.size * i);
+				result = vkBindBufferMemory(GetLogicalDevice(), vBuffers[i], *pDeviceMemory, vMR.size * i);
 
 			return result;
 		}
 
 		void VulkanDevice::DestroyBuffer(VkBuffer vBuffer) const
 		{
-			mTable.vkDestroyBuffer(GetLogicalDevice(), vBuffer, nullptr);
+			vkDestroyBuffer(GetLogicalDevice(), vBuffer, nullptr);
 		}
 
 		VkResult VulkanDevice::CreateShaderModule(const VkShaderModuleCreateInfo* pCreateInfo, VkShaderModule* pModule) const
 		{
-			return mTable.vkCreateShaderModule(GetLogicalDevice(), pCreateInfo, nullptr, pModule);
+			return vkCreateShaderModule(GetLogicalDevice(), pCreateInfo, nullptr, pModule);
 		}
 
 		void VulkanDevice::DestroyShaderModule(VkShaderModule vModule) const
 		{
-			mTable.vkDestroyShaderModule(GetLogicalDevice(), vModule, nullptr);
+			vkDestroyShaderModule(GetLogicalDevice(), vModule, nullptr);
 		}
 
 		VkResult VulkanDevice::CreateDescriptorSetLayout(const VkDescriptorSetLayoutCreateInfo* pCreateInfo, VkDescriptorSetLayout* pLayout) const
 		{
-			return mTable.vkCreateDescriptorSetLayout(GetLogicalDevice(), pCreateInfo, nullptr, pLayout);
+			return vkCreateDescriptorSetLayout(GetLogicalDevice(), pCreateInfo, nullptr, pLayout);
 		}
 
 		void VulkanDevice::DestroyDescriptorSetLayout(VkDescriptorSetLayout vLayout) const
 		{
-			mTable.vkDestroyDescriptorSetLayout(GetLogicalDevice(), vLayout, nullptr);
+			vkDestroyDescriptorSetLayout(GetLogicalDevice(), vLayout, nullptr);
 		}
 
 		VkResult VulkanDevice::CreateDescriptorPool(const VkDescriptorPoolCreateInfo* pCreateInfo, VkDescriptorPool* pPool) const
 		{
-			return mTable.vkCreateDescriptorPool(GetLogicalDevice(), pCreateInfo, nullptr, pPool);
+			return vkCreateDescriptorPool(GetLogicalDevice(), pCreateInfo, nullptr, pPool);
 		}
 
 		void VulkanDevice::DestroyDescriptorPool(VkDescriptorPool vPool) const
 		{
-			mTable.vkDestroyDescriptorPool(GetLogicalDevice(), vPool, nullptr);
+			vkDestroyDescriptorPool(GetLogicalDevice(), vPool, nullptr);
 		}
 
 		VkResult VulkanDevice::AllocateDescriptorSet(const VkDescriptorSetAllocateInfo* pAllocateInfo, VkDescriptorSet* pSet) const
 		{
-			return mTable.vkAllocateDescriptorSets(GetLogicalDevice(), pAllocateInfo, pSet);
+			return vkAllocateDescriptorSets(GetLogicalDevice(), pAllocateInfo, pSet);
 		}
 
 		VkResult VulkanDevice::CreatePipelineLayout(const VkPipelineLayoutCreateInfo* pCreateInfo, VkPipelineLayout* pLayout) const
 		{
-			return mTable.vkCreatePipelineLayout(GetLogicalDevice(), pCreateInfo, nullptr, pLayout);
+			return vkCreatePipelineLayout(GetLogicalDevice(), pCreateInfo, nullptr, pLayout);
 		}
 
 		void VulkanDevice::DestroyPipelineLayout(VkPipelineLayout vLayout) const
 		{
-			mTable.vkDestroyPipelineLayout(GetLogicalDevice(), vLayout, nullptr);
+			vkDestroyPipelineLayout(GetLogicalDevice(), vLayout, nullptr);
 		}
 
 		VkResult VulkanDevice::CreateGraphicsPipeline(const VkGraphicsPipelineCreateInfo* pCreateInfo, VkPipeline* pPipeline) const
 		{
-			return mTable.vkCreateGraphicsPipelines(GetLogicalDevice(), VK_NULL_HANDLE, 1, pCreateInfo, nullptr, pPipeline);
+			return vkCreateGraphicsPipelines(GetLogicalDevice(), VK_NULL_HANDLE, 1, pCreateInfo, nullptr, pPipeline);
 		}
 
 		void VulkanDevice::DestroyPipeline(VkPipeline vPipeline) const
 		{
-			mTable.vkDestroyPipeline(GetLogicalDevice(), vPipeline, nullptr);
+			vkDestroyPipeline(GetLogicalDevice(), vPipeline, nullptr);
 		}
 	}
 }

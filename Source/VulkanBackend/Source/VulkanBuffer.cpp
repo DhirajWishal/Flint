@@ -10,6 +10,11 @@ namespace Flint
 	{
 		void VulkanBuffer::Initialize(Backend::Device* pDevice, UI64 size, Backend::BufferUsage usage, Backend::MemoryProfile memoryProfile)
 		{
+			this->pDevice = pDevice;
+			this->mSize = size;
+			this->mUsage = usage;
+			this->mMemoryProfile = memoryProfile;
+
 			VkBufferUsageFlags vBufferUsage = {};
 			switch (usage)
 			{
@@ -63,14 +68,14 @@ namespace Flint
 
 		void* VulkanBuffer::MapMemory(UI64 size, UI64 offset)
 		{
-			if (size + offset >= mSize)
+			if (size + offset > mSize)
 			{
 				FLINT_LOG_ERROR(TEXT("Size and Offset goes out of bound! Arguments-> Size: #3 Offset: #3"), size, offset)
 					return nullptr;
 			}
 
 			void* pDataStore = nullptr;
-			FLINT_VK_ASSERT(pDevice->Derive<VulkanDevice>()->MapMemory(vBufferMemory, size, offset, &pDataStore), "Failed to map buffer memory!")
+			FLINT_VK_ASSERT(pDevice->Derive<VulkanDevice>()->MapMemory(vBufferMemory, offset, size, &pDataStore), "Failed to map buffer memory!")
 				return pDataStore;
 		}
 

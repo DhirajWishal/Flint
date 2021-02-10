@@ -11,6 +11,15 @@ namespace Flint
 	namespace Backend
 	{
 		class RenderTarget;
+		class Buffer;
+
+		enum class BufferUsage : UI8 {
+			UNDEFINED,
+			VERTEX,
+			INDEX,
+			UNIFORM,
+			STAGGING
+		};
 
 		enum class MemoryProfile : UI8 {
 			TRANSFER_FRIENDLY,
@@ -33,7 +42,7 @@ namespace Flint
 			/**
 			 * Initialize the device.
 			 *
-			 * @param pDisplay: The deisplay which the object is bound to.
+			 * @param pDisplay: The display which the object is bound to.
 			 */
 			virtual void Initialize(Display* pDisplay) = 0;
 
@@ -52,6 +61,16 @@ namespace Flint
 			 * @return The render target object pointer.
 			 */
 			virtual RenderTarget* CreateRenderTarget(RenderTargetType type, const Vector2& extent, UI32 bufferCount = 0) = 0;
+
+		public:
+			/**
+			 * Create a new buffer object.
+			 * 
+			 * @param size: The size of the buffer.
+			 * @param usage: The buffer usage.
+			 * @param memoryProfile: The memory profile to be used.
+			 */
+			virtual Buffer* CreateBuffer(UI64 size, BufferUsage usage, MemoryProfile memoryProfile) = 0;
 
 		public:
 			Display* GetDisplay() const { return pDisplay; }

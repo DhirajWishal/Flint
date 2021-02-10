@@ -3,22 +3,15 @@
 
 #pragma once
 
-#include "Core/Backend/GraphicsPipeline.h"
+#include "Parents/WireFrameManager.h"
 
 namespace Flint
 {
-	enum class BackenAPI : UI8 {
-		UNDEFINED,
-		VULKAN,
-		DIRECT_X_12,
-		WEB_GPU
-	};
-
 	/**
 	 * Flint Engine object.
 	 * This is the main object which is responsible of all flint activities.
 	 */
-	class Engine {
+	class Engine : public WireFrameManager {
 	public:
 		Engine() {}
 		~Engine() {}
@@ -29,10 +22,10 @@ namespace Flint
 		 * @param api: The backend API.
 		 * @param enableValidation: Whether or not to enable backend validation.
 		 * @param width: The width of the window.
-		 * @param heigth: The height of the window.
+		 * @param height: The height of the window.
 		 * @param pTitle: The title of the window.
 		 */
-		void Initialize(BackenAPI api, bool enableValidation, UI32 width, UI32 height, const char* pTitle);
+		void Initialize(BackendAPI api, bool enableValidation, UI32 width, UI32 height, const char* pTitle);
 
 		/**
 		 * Terminate the engine.
@@ -44,14 +37,14 @@ namespace Flint
 		 *
 		 * @param newAPI: The new api to be set.
 		 */
-		void SwitchAPI(BackenAPI newAPI);
+		void SwitchAPI(BackendAPI newAPI);
 
 		/**
 		 * Get the backend API which is currently active.
 		 *
 		 * @return The backend API type.
 		 */
-		BackenAPI GetBackendAPI() const { return mAPI; }
+		BackendAPI GetBackendAPI() const { return mAPI; }
 
 	public:
 		/**
@@ -70,11 +63,6 @@ namespace Flint
 		void CreateRenderTarget(const Vector2& extent, UI32 bufferCount = 0);
 
 	private:
-		Backend::Instance* pInstance = nullptr;
-		Backend::Display* pDisplay = nullptr;
-		Backend::Device* pDevice = nullptr;
 		Backend::RenderTarget* pRenderTarget = nullptr;
-
-		BackenAPI mAPI = BackenAPI::UNDEFINED;
 	};
 }
