@@ -10,7 +10,7 @@ namespace Flint
 	namespace Benchmark
 	{
 		/**
-		 * Timer object for the Flint Benchmark.
+		 * Timer object for Flint Benchmark.
 		 * This object calculates and prints the time taken to execute some code within a specific scope.
 		 */
 		class Timer {

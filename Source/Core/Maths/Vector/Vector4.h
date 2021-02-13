@@ -21,7 +21,7 @@ namespace Flint
 	};
 
 	/**
-	 * Basic 4D Vector for the Engine Dev Kit.
+	 * Basic 4D Vector for Flint.
 	 * This class uses SIMD to carry out the necessary calculations.
 	 */
 	class Vector4 : public Vector<Vector4> {

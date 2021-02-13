@@ -20,7 +20,7 @@ namespace Flint
 	};
 
 	/**
-	 * Matrix 2x2 for the Engine Dev Kit.
+	 * Matrix 2x2 for Flint.
 	 */
 	class Matrix22 : public Matrix<Matrix22>
 	{

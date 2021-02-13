@@ -28,10 +28,9 @@ namespace Flint
 
 	/**
 	 * Create default vertex attributes.
-	 * 
+	 *
 	 * Default attributes are comprised of,
 	 * * Position (vec3)
-	 * * tex_coord (vec2)
 	 */
 	std::vector<VertexAttribute> CreateDefaultAttributes();
 
@@ -42,9 +41,24 @@ namespace Flint
 	class WireFrame {
 	public:
 		WireFrame() {}
+		WireFrame(Backend::Buffer* pVertex, Backend::Buffer* pIndex) : pVertexBuffer(pVertex), pIndexBuffer(pIndex) {}
+		WireFrame(const String& name, Backend::Buffer* pVertex, Backend::Buffer* pIndex) 
+			: mName(name), pVertexBuffer(pVertex), pIndexBuffer(pIndex) {}
 
-	private:
+		/**
+		 * Clear the wire frame information.
+		 * This terminates the vertex and index buffers if created.
+		 */
+		void Clear();
+
+		String mName = {};
+
 		Backend::Buffer* pVertexBuffer = nullptr;
+		UI64 mVertexCount = 0;
+
 		Backend::Buffer* pIndexBuffer = nullptr;
+		UI64 mIndexCount = 0;
+
+		std::vector<VertexAttribute> mAttributes;
 	};
 }

@@ -7,6 +7,8 @@
 
 namespace Flint
 {
+	struct InternalStore { __m128 mData = {}; };
+
 	Vector3::Vector3(std::initializer_list<float> list)
 		: x(0.0f), y(0.0f), z(0.0f), w(0.0f)
 	{

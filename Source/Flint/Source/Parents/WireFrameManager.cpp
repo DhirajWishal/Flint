@@ -41,14 +41,17 @@ namespace Flint
 		for (auto& attribute : vertexAttributes)
 			vertexSize += attribute.mSize;
 
+		std::vector<WireFrame> wireFrames;
 		for (UI32 i = 0; i < pScene->mNumMeshes; i++)
 		{
 			auto pMesh = pScene->mMeshes[i];
+			WireFrame wireFrame = {};
+			wireFrame.mAttributes = vertexAttributes;
+			wireFrame.mName = pMesh->mName.C_Str();
 
-			Backend::Buffer* pVertexBuffer = GetDevice()->CreateBuffer(vertexSize * pMesh->mNumVertices, Backend::BufferUsage::VERTEX, Backend::MemoryProfile::TRANSFER_FRIENDLY);
-			Backend::Buffer* pIndexBuffer = nullptr;
-
-			void* pDataStore = pVertexBuffer->MapMemory(vertexSize * pMesh->mNumVertices, 0);
+			wireFrame.mVertexCount = pMesh->mNumVertices;
+			wireFrame.pVertexBuffer = GetDevice()->CreateBuffer(vertexSize * pMesh->mNumVertices, Backend::BufferUsage::VERTEX, Backend::MemoryProfile::TRANSFER_FRIENDLY);
+			void* pDataStore = wireFrame.pVertexBuffer->MapMemory(vertexSize * pMesh->mNumVertices, 0);
 			for (UI32 j = 0; j < pMesh->mNumVertices; j++)
 			{
 				for (auto& attribute : vertexAttributes)
@@ -80,12 +83,12 @@ namespace Flint
 
 					case Flint::VertexAttributeType::COLOR_2:
 						if (pMesh->HasVertexColors(2))
-							std::copy(&pMesh->mColors[2][j].r, (&pMesh->mColors[0][j].r) + copyAmount, static_cast<float*>(pDataStore));
+							std::copy(&pMesh->mColors[2][j].r, (&pMesh->mColors[1][j].r) + copyAmount, static_cast<float*>(pDataStore));
 						break;
 
 					case Flint::VertexAttributeType::COLOR_3:
 						if (pMesh->HasVertexColors(3))
-							std::copy(&pMesh->mColors[3][j].r, (&pMesh->mColors[0][j].r) + copyAmount, static_cast<float*>(pDataStore));
+							std::copy(&pMesh->mColors[3][j].r, (&pMesh->mColors[2][j].r) + copyAmount, static_cast<float*>(pDataStore));
 						break;
 
 					case Flint::VertexAttributeType::TEXTURE_COORDINATES_0:
@@ -100,58 +103,58 @@ namespace Flint
 
 					case Flint::VertexAttributeType::TEXTURE_COORDINATES_2:
 						if (pMesh->HasTextureCoords(2))
-							std::copy(&pMesh->mTextureCoords[2][j].x, (&pMesh->mTextureCoords[0][j].x) + copyAmount, static_cast<float*>(pDataStore));
+							std::copy(&pMesh->mTextureCoords[2][j].x, (&pMesh->mTextureCoords[2][j].x) + copyAmount, static_cast<float*>(pDataStore));
 						break;
 
 					case Flint::VertexAttributeType::TEXTURE_COORDINATES_3:
 						if (pMesh->HasTextureCoords(3))
-							std::copy(&pMesh->mTextureCoords[3][j].x, (&pMesh->mTextureCoords[0][j].x) + copyAmount, static_cast<float*>(pDataStore));
+							std::copy(&pMesh->mTextureCoords[3][j].x, (&pMesh->mTextureCoords[3][j].x) + copyAmount, static_cast<float*>(pDataStore));
 						break;
 
 					case Flint::VertexAttributeType::TEXTURE_COORDINATES_4:
 						if (pMesh->HasTextureCoords(4))
-							std::copy(&pMesh->mTextureCoords[4][j].x, (&pMesh->mTextureCoords[0][j].x) + copyAmount, static_cast<float*>(pDataStore));
+							std::copy(&pMesh->mTextureCoords[4][j].x, (&pMesh->mTextureCoords[4][j].x) + copyAmount, static_cast<float*>(pDataStore));
 						break;
 
 					case Flint::VertexAttributeType::TEXTURE_COORDINATES_5:
 						if (pMesh->HasTextureCoords(5))
-							std::copy(&pMesh->mTextureCoords[5][j].x, (&pMesh->mTextureCoords[0][j].x) + copyAmount, static_cast<float*>(pDataStore));
+							std::copy(&pMesh->mTextureCoords[5][j].x, (&pMesh->mTextureCoords[5][j].x) + copyAmount, static_cast<float*>(pDataStore));
 						break;
 
 					case Flint::VertexAttributeType::TEXTURE_COORDINATES_6:
 						if (pMesh->HasTextureCoords(6))
-							std::copy(&pMesh->mTextureCoords[6][j].x, (&pMesh->mTextureCoords[0][j].x) + copyAmount, static_cast<float*>(pDataStore));
+							std::copy(&pMesh->mTextureCoords[6][j].x, (&pMesh->mTextureCoords[6][j].x) + copyAmount, static_cast<float*>(pDataStore));
 						break;
 
 					case Flint::VertexAttributeType::TEXTURE_COORDINATES_7:
 						if (pMesh->HasTextureCoords(7))
-							std::copy(&pMesh->mTextureCoords[7][j].x, (&pMesh->mTextureCoords[0][j].x) + copyAmount, static_cast<float*>(pDataStore));
+							std::copy(&pMesh->mTextureCoords[7][j].x, (&pMesh->mTextureCoords[7][j].x) + copyAmount, static_cast<float*>(pDataStore));
 						break;
 
 					case Flint::VertexAttributeType::UV_COORDINATES:
-						if (pMesh->HasPositions())
-							std::copy(&pMesh->mVertices[j].x, (&pMesh->mVertices[j].x) + copyAmount, static_cast<float*>(pDataStore));
-						break;
+						//if (pMesh->HasPositions())
+						//	std::copy(&pMesh->mVertices[j].x, (&pMesh->mVertices[j].x) + copyAmount, static_cast<float*>(pDataStore));
+						//break;
 
 					case Flint::VertexAttributeType::TANGENT:
-						if (pMesh->HasPositions())
-							std::copy(&pMesh->mVertices[j].x, (&pMesh->mVertices[j].x) + copyAmount, static_cast<float*>(pDataStore));
+						if (pMesh->HasTangentsAndBitangents())
+							std::copy(&pMesh->mTangents[j].x, (&pMesh->mTangents[j].x) + copyAmount, static_cast<float*>(pDataStore));
 						break;
 
 					case Flint::VertexAttributeType::BITANGENT:
-						if (pMesh->HasPositions())
-							std::copy(&pMesh->mVertices[j].x, (&pMesh->mVertices[j].x) + copyAmount, static_cast<float*>(pDataStore));
+						if (pMesh->HasTangentsAndBitangents())
+							std::copy(&pMesh->mBitangents[j].x, (&pMesh->mBitangents[j].x) + copyAmount, static_cast<float*>(pDataStore));
 						break;
 
 					case Flint::VertexAttributeType::BONE_ID:
-						if (pMesh->HasPositions())
-							std::copy(&pMesh->mVertices[j].x, (&pMesh->mVertices[j].x) + copyAmount, static_cast<float*>(pDataStore));
-						break;
+						//if (pMesh->HasPositions())
+						//	std::copy(&pMesh->mVertices[j].x, (&pMesh->mVertices[j].x) + copyAmount, static_cast<float*>(pDataStore));
+						//break;
 
 					case Flint::VertexAttributeType::BONE_WEIGHT:
-						if (pMesh->HasPositions())
-							std::copy(&pMesh->mVertices[j].x, (&pMesh->mVertices[j].x) + copyAmount, static_cast<float*>(pDataStore));
-						break;
+						//if (pMesh->HasPositions())
+						//	std::copy(&pMesh->mVertices[j].x, (&pMesh->mVertices[j].x) + copyAmount, static_cast<float*>(pDataStore));
+						//break;
 
 					case Flint::VertexAttributeType::CUSTOM:
 						break;
@@ -164,10 +167,27 @@ namespace Flint
 					pDataStore = IncrementPointer(pDataStore, attribute.mSize);
 				}
 			}
+			wireFrame.pVertexBuffer->UnmapMemory();
 
-			pVertexBuffer->UnmapMemory();
+			aiFace face = {};
+			std::vector<UI32> indexes;
+			for (UI32 j = 0; j < pMesh->mNumFaces; j++)
+			{
+				face = pMesh->mFaces[j];
+				for (UI32 k = 0; k < face.mNumIndices; k++)
+					INSERT_INTO_VECTOR(indexes, face.mIndices[k]);
+			}
+
+
+			wireFrame.mIndexCount = indexes.size();
+			UI64 indexSize = sizeof(UI32) * wireFrame.mIndexCount;
+			wireFrame.pIndexBuffer = GetDevice()->CreateBuffer(indexSize, Backend::BufferUsage::INDEX, Backend::MemoryProfile::TRANSFER_FRIENDLY);
+			std::copy(indexes.begin(), indexes.end(), static_cast<UI32*>(wireFrame.pIndexBuffer->MapMemory(indexSize, 0)));
+			wireFrame.pIndexBuffer->UnmapMemory();
+
+			INSERT_INTO_VECTOR(wireFrames, wireFrame);
 		}
 
-		return WireFrame();
+		return wireFrames.front();
 	}
 }

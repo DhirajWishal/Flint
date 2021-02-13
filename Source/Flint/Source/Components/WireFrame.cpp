@@ -12,14 +12,21 @@ namespace Flint
 {
 	std::vector<VertexAttribute> CreateDefaultAttributes()
 	{
-		std::vector<VertexAttribute> attributes(2);
+		std::vector<VertexAttribute> attributes(1);
 
 		attributes[0].mType = VertexAttributeType::POSITION;
 		attributes[0].mSize = sizeof(float) * 4;
 
-		attributes[1].mType = VertexAttributeType::TEXTURE_COORDINATES_0;
-		attributes[1].mSize = sizeof(float) * 2;
-
 		return attributes;
+	}
+	
+	void WireFrame::Clear()
+	{
+		if (pVertexBuffer) pVertexBuffer->Terminate(), delete pVertexBuffer;
+		if (pIndexBuffer) pIndexBuffer->Terminate(), delete pIndexBuffer;
+
+		mVertexCount = 0;
+		mIndexCount = 0;
+		mName.clear();
 	}
 }

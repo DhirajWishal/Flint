@@ -21,7 +21,7 @@ namespace Flint
 	};
 
 	/**
-	 * The 2D vector of the Engine Dev Kit.
+	 * The 2D vector of Flint.
 	 */
 	class Vector2 : public Vector<Vector2>
 	{

@@ -26,4 +26,4 @@ typedef wchar_t wchar;
 typedef UI8 BYTE;				// Byte of data.
 typedef BYTE* BPTR;				// Byte pointer.
 
-#define INSERT_INTO_VECTOR(vector, data)	vector.insert(vector.end(), data)
+#define INSERT_INTO_VECTOR(vector, ...)	vector.insert(vector.end(), __VA_ARGS__)

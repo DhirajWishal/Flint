@@ -20,7 +20,7 @@ namespace Flint
 	};
 
 	/**
-	 * Matrix 3x3 for the Engine Dev Kit.
+	 * Matrix 3x3 for Flint.
 	 */
 	class Matrix33 : public Matrix<Matrix33>
 	{

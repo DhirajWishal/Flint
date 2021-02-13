@@ -14,7 +14,7 @@ namespace Flint
 	struct MatrixTraits;
 
 	/**
-	 * Matrix data type for the Engine Dev Kit.
+	 * Matrix data type for Flint.
 	 * This class contains all the common methods and operators all the other matrixes contain.
 	 *
 	 * @tparam Type: Matrix type.

@@ -20,7 +20,7 @@ namespace Flint
 	};
 
 	/**
-	 * Matrix 4x4 for the Engine Dev Kit.
+	 * Matrix 4x4 for Flint.
 	 */
 	class Matrix44 : public Matrix<Matrix44>
 	{

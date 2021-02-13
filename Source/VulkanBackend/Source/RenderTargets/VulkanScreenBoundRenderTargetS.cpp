@@ -14,7 +14,6 @@ namespace Flint
 			this->mExtent = extent;
 
 			VulkanDevice* pvDevice = pDevice->Derive<VulkanDevice>();
-
 			this->mBufferCount = pvDevice->FindSupporterBufferCount(bufferCount);
 
 			vSwapChain.Initialize(pvDevice, extent, mBufferCount);

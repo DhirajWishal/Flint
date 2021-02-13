@@ -22,6 +22,7 @@ int main()
 	engine.CreateRenderTarget(Flint::Vector2(1280, 720));
 
 	auto wireFrame = engine.CreateNewWireFrame("E:\\Flint\\Assets\\Models\\SkyBox\\SkySphere.obj", Flint::CreateDefaultAttributes());
+	wireFrame.Clear();
 
 	engine.Terminate();
 	return 0;
