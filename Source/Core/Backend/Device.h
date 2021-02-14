@@ -13,6 +13,9 @@ namespace Flint
 		class RenderTarget;
 		class Buffer;
 
+		class GraphicsPipeline;
+		struct GraphicsPipelineSpecification;
+
 		enum class BufferUsage : UI8 {
 			UNDEFINED,
 			VERTEX,

@@ -4,6 +4,7 @@
 #pragma once
 
 #include "Parents/WireFrameManager.h"
+#include "Components/SceneComponent.h"
 
 namespace Flint
 {
@@ -61,6 +62,17 @@ namespace Flint
 		 * @param bufferCount: The number of buffers to be used. Default is 0.
 		 */
 		void CreateRenderTarget(const Vector2& extent, UI32 bufferCount = 0);
+
+	public:
+		/**
+		 * Create a new scene component based on the graphics pipeline.
+		 * 
+		 * @param wireFrame: The wire frame to be used.
+		 * @param shaders: The shaders to be used.
+		 * @param spec: The graphics pipeline spec.
+		 * @return The newly created scene component object.
+		 */
+		SceneComponent CreateSceneComponent(const WireFrame& wireFrame, const std::vector<ShaderDigest>& shaders, const Backend::GraphicsPipelineSpecification& spec);
 
 	private:
 		Backend::RenderTarget* pRenderTarget = nullptr;

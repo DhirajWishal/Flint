@@ -7,6 +7,7 @@
 #include "VulkanBackend/VulkanUtilities.h"
 #include "VulkanBackend/RenderTargets/VulkanScreenBoundRenderTargetS.h"
 #include "VulkanBackend/VulkanBuffer.h"
+#include "VulkanBackend/RenderTargets/Pipelines/VulkanGraphicsPipeline.h"
 
 #include <set>
 

@@ -25,8 +25,6 @@ namespace Flint
 		if (pVertexBuffer) pVertexBuffer->Terminate(), delete pVertexBuffer;
 		if (pIndexBuffer) pIndexBuffer->Terminate(), delete pIndexBuffer;
 
-		mVertexCount = 0;
-		mIndexCount = 0;
-		mName.clear();
+		mDrawData.clear();
 	}
 }

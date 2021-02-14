@@ -143,4 +143,16 @@ namespace Flint
 			GraphicsPipelineSpecification mSpec = {};
 		};
 	}
+
+	namespace GraphicsPipelinePresets
+	{
+		/**
+		 * Create default specification.
+		 * This specification can be used with the following,
+		 * * Shaders containing 1 input attribute (Vector3 - Position).
+		 * * Uniform buffer for MVP (Model View Projection).
+		 * * 2 Shader modules (Vertex and Fragment).
+		 */
+		Backend::GraphicsPipelineSpecification CreateDefaultSpec();
+	}
 }

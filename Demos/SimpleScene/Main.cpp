@@ -4,8 +4,18 @@
 #include "Core/Benchmark/Timer.h"
 #include "Flint/Engine.h"
 #include "Flint/Components/WireFrame.h"
+#include "Flint/Components/ShaderCode.h"
 
 #include <thread>
+
+std::vector<Flint::ShaderCode> GetShaders()
+{
+	std::vector<Flint::ShaderCode> shaders(2);
+
+	shaders[0].LoadFromFile();
+
+	return shaders;
+}
 
 int main()
 {
@@ -22,6 +32,9 @@ int main()
 	engine.CreateRenderTarget(Flint::Vector2(1280, 720));
 
 	auto wireFrame = engine.CreateNewWireFrame("E:\\Flint\\Assets\\Models\\SkyBox\\SkySphere.obj", Flint::CreateDefaultAttributes());
+
+	//engine.SubmitWireFrames(wireFrame);
+
 	wireFrame.Clear();
 
 	engine.Terminate();

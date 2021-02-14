@@ -36,4 +36,13 @@ namespace Flint
 	{
 		pRenderTarget = pDevice->CreateRenderTarget(Backend::RenderTargetType::SCREEN_BOUND, extent, bufferCount);
 	}
+
+	SceneComponent Engine::CreateSceneComponent(const WireFrame& wireFrame, const std::vector<ShaderDigest>& shaders, const Backend::GraphicsPipelineSpecification& spec)
+	{
+		SceneComponent component = {};
+		component.pPipeline = pRenderTarget->CreateGraphicsPipeline(shaders, spec);
+		component.mWireFrame = wireFrame;
+
+		return component;
+	}
 }

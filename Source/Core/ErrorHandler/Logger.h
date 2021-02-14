@@ -26,7 +26,7 @@ namespace Flint
 	 * * 5: double.
 	 * * 6: string (wchar*).
 	 * * 7: string (char*).
-	 * * 7: pointer.
+	 * * 8: pointer.
 	 * 
 	 * Example: LogError("My age is #0.", 19);
 	 */

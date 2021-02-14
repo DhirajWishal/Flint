@@ -18,7 +18,7 @@ namespace Flint
 		~WireFrameManager() {}
 
 		/**
-		 * Create a new wire frame object.
+		 * Create a new wire frame objects.
 		 *
 		 * @param pAsset: The asset file to load the data from.
 		 * @param vertexAttributes: The vertex attributes to be loaded from the file.

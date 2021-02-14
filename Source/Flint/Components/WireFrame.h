@@ -22,8 +22,8 @@ namespace Flint
 	};
 
 	struct VertexAttribute {
-		VertexAttributeType mType = VertexAttributeType::UNDEFINED;
 		UI64 mSize = 0;
+		VertexAttributeType mType = VertexAttributeType::UNDEFINED;
 	};
 
 	/**
@@ -41,9 +41,6 @@ namespace Flint
 	class WireFrame {
 	public:
 		WireFrame() {}
-		WireFrame(Backend::Buffer* pVertex, Backend::Buffer* pIndex) : pVertexBuffer(pVertex), pIndexBuffer(pIndex) {}
-		WireFrame(const String& name, Backend::Buffer* pVertex, Backend::Buffer* pIndex) 
-			: mName(name), pVertexBuffer(pVertex), pIndexBuffer(pIndex) {}
 
 		/**
 		 * Clear the wire frame information.
@@ -51,14 +48,22 @@ namespace Flint
 		 */
 		void Clear();
 
-		String mName = {};
-
 		Backend::Buffer* pVertexBuffer = nullptr;
-		UI64 mVertexCount = 0;
-
 		Backend::Buffer* pIndexBuffer = nullptr;
-		UI64 mIndexCount = 0;
 
 		std::vector<VertexAttribute> mAttributes;
+
+	public:
+		struct DrawData {
+			String mName;
+
+			UI64 mVertexOffset = 0;
+			UI64 mVertexCount = 0;
+
+			UI64 mIndexOffset = 0;
+			UI64 mIndexCount = 0;
+		};
+
+		std::vector<DrawData> mDrawData;
 	};
 }
