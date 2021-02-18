@@ -39,6 +39,7 @@ IncludeDir["glslang"] = "$(SolutionDir)Dependencies/ThirdParty/glslang/"
 IncludeDir["FreeImage"] = "$(SolutionDir)Dependencies/ThirdParty/FreeImage/Include"
 IncludeDir["SDL2"] = "$(SolutionDir)Dependencies/ThirdParty/SDL2-2.0.12/include"
 IncludeDir["xxhash"] = "$(SolutionDir)Dependencies/ThirdParty/xxhash/include"
+IncludeDir["glslang"] = "$(SolutionDir)Dependencies/ThirdParty/glslang/include"
 
 IncludeDir["jpeg"] = "$(SolutionDir)Dependencies/ThirdParty/gil/jpeg-6b"
 IncludeDir["irrKlang"] = "$(SolutionDir)Dependencies/Libraries/Local/irrKlang/include"
@@ -55,6 +56,7 @@ IncludeLib["Assimp"] = "$(SolutionDir)Dependencies/ThirdParty/Binaries/Assimp"
 IncludeLib["SPIRVTools"] = "$(SolutionDir)Dependencies/ThirdParty/Binaries/SPIRV-Tools/"
 IncludeLib["SDL2"] = "$(SolutionDir)Dependencies/ThirdParty/Binaries/SDL2-2.0.12/bin/x64/"
 IncludeLib["xxhash"] = "$(SolutionDir)Dependencies/ThirdParty/Binaries/xxhash/lib/"
+IncludeLib["glslang"] = "$(SolutionDir)Dependencies/ThirdParty/Binaries/glslang/lib/"
 
 IncludeLib["zlib"] = ""	-- TODO
 IncludeLib["glslang"] = "$(SolutionDir)Dependencies/ThirdParty/Binaries/glslang/"

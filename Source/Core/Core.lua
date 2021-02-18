@@ -10,8 +10,8 @@ project "Core"
 	cppdialect "C++17"
 	staticruntime "On"
 
-	targetdir "$(SolutionDir)Builds//Binaries/$(Configuration)-$(Platform)"
-	objdir "$(SolutionDir)Builds//Intermediate/$(Configuration)-$(Platform)/$(ProjectName)"
+	targetdir "$(SolutionDir)Builds/Binaries/$(Configuration)-$(Platform)"
+	objdir "$(SolutionDir)Builds/Intermediate/$(Configuration)-$(Platform)/$(ProjectName)"
 
 	files {
 		"**.txt",

@@ -10,8 +10,8 @@ project "ShaderTools"
 	cppdialect "C++17"
 	staticruntime "On"
 
-	targetdir "$(SolutionDir)Builds//Binaries/$(Configuration)-$(Platform)"
-	objdir "$(SolutionDir)Builds//Intermediate/$(Configuration)-$(Platform)/$(ProjectName)"
+	targetdir "$(SolutionDir)Builds/Binaries/$(Configuration)-$(Platform)"
+	objdir "$(SolutionDir)Builds/Intermediate/$(Configuration)-$(Platform)/$(ProjectName)"
 
 	files {
 		"**.txt",
@@ -26,11 +26,20 @@ project "ShaderTools"
 		"$(SolutionDir)Source/",
 		"$(SolutionDir)Source/",
 		"$(SolutionDir)Dependencies/ThirdParty/SPIRV-Cross/",
+		"%{IncludeDir.glslang}",
 	}
 
 	libdirs {
+		"%{IncludeLib.glslang}",
 	}
 
 	links { 
-		"SPIRV-Cross"
+		"SPIRV-Cross",
+		"glslang",
+		"HLSL",
+		"OGLCompiler",
+		"OSDependent",
+		"SPIRV-Tools",
+		"SPIRV-Tools-opt",
+		"SPVRemapper",
 	}

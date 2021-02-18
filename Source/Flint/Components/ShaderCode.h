@@ -31,7 +31,24 @@ namespace Flint
 		 */
 		void LoadFromFile(const char* pAsset, ShaderLocation location, ShaderCodeType type);
 
+		/**
+		 * Transpile the shader code to a new type.
+		 * 
+		 * @param newType: The new type to be transpiled.
+		 */
+		void Transpile(ShaderCodeType newType);
+
+		/**
+		 * Perform reflection on the shader code and create the shader digest.
+		 * If required, this can also transpile the shader code to another type.
+		 * 
+		 * @return: The created shader digest.
+		 */
+		ShaderDigest CreateDigest(ShaderCodeType newType = ShaderCodeType::UNDEFINED);
+
+	private:
 		ShaderCodeType mType = ShaderCodeType::UNDEFINED;
-		ShaderDigest mDigest = {};
+		ShaderLocation mLocation = ShaderLocation::VERTEX;
+		std::vector<UI32> mCode;
 	};
 }

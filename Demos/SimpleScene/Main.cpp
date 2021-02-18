@@ -12,7 +12,8 @@ std::vector<Flint::ShaderCode> GetShaders()
 {
 	std::vector<Flint::ShaderCode> shaders(2);
 
-	shaders[0].LoadFromFile();
+	shaders[0].LoadFromFile("E:\\Flint\\Assets\\Shaders\\TestShaders\\Default\\shader.vert", Flint::ShaderLocation::VERTEX, Flint::ShaderCodeType::GLSL);
+	shaders[1].LoadFromFile("E:\\Flint\\Assets\\Shaders\\TestShaders\\Default\\shader.frag", Flint::ShaderLocation::FRAGMENT, Flint::ShaderCodeType::GLSL);
 
 	return shaders;
 }
@@ -33,7 +34,12 @@ int main()
 
 	auto wireFrame = engine.CreateNewWireFrame("E:\\Flint\\Assets\\Models\\SkyBox\\SkySphere.obj", Flint::CreateDefaultAttributes());
 
-	//engine.SubmitWireFrames(wireFrame);
+	auto shaders = std::move(GetShaders());
+	std::vector<Flint::ShaderDigest> digests;
+	for (auto itr = shaders.begin(); itr != shaders.end(); itr++)
+		INSERT_INTO_VECTOR(digests, itr->CreateDigest(Flint::ShaderCodeType::SPIR_V));
+
+	engine.CreateSceneComponent(wireFrame, digests, Flint::Backend::GraphicsPipelineSpecification());
 
 	wireFrame.Clear();
 

@@ -14,8 +14,8 @@ project "VulkanBackend"
 		"GLFW_INCLUDE_VULKAN"
 	}
 
-	targetdir "$(SolutionDir)Builds//Binaries/$(Configuration)-$(Platform)"
-	objdir "$(SolutionDir)Builds//Intermediate/$(Configuration)-$(Platform)/$(ProjectName)"
+	targetdir "$(SolutionDir)Builds/Binaries/$(Configuration)-$(Platform)"
+	objdir "$(SolutionDir)Builds/Intermediate/$(Configuration)-$(Platform)/$(ProjectName)"
 
 	files {
 		"**.txt",

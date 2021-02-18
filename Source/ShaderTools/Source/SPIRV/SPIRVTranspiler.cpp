@@ -1,22 +1,18 @@
 // Copyright 2020 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#include "ShaderTools/SPIRV/Transpiler.h"
+#include "ShaderTools/SPIRV/SPIRVTranspiler.h"
 #include "ShaderTools/SPIRV/Utilities.h"
 #include "Core/ErrorHandler/Logger.h"
 
 #include <spirv_glsl.hpp>
 #include <spirv_hlsl.hpp>
+#include "..\..\Transpiler.h"
 
 namespace Flint
 {
 	namespace ShaderTools
 	{
-		void SPIRVTranspiler::Initialize(std::vector<UI32>* pShaderCode)
-		{
-			this->pShaderCode = pShaderCode;
-		}
-
 		std::vector<UI32> SPIRVTranspiler::GetGLSL()
 		{
 			// Create and initialize the shader code.
