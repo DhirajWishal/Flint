@@ -54,6 +54,14 @@ namespace Flint
 		std::vector<VertexAttribute> mAttributes;
 
 	public:
+		/**
+		 * Assignment operator (copy).
+		 * 
+		 * @param other: The other wire frame object to copy data from.
+		 */
+		WireFrame& operator=(const WireFrame& other);
+
+	public:
 		struct DrawData {
 			String mName;
 

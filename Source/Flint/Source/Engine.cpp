@@ -45,4 +45,12 @@ namespace Flint
 
 		return component;
 	}
+	
+	void Engine::DestroySceneComponent(SceneComponent& sceneComponent)
+	{
+		sceneComponent.pPipeline->Terminate();
+		delete sceneComponent.pPipeline;
+
+		sceneComponent.mWireFrame.Clear();
+	}
 }

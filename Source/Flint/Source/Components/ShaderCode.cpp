@@ -6,7 +6,7 @@
 
 #include "ShaderTools/SPIRV/Reflection.h"
 #include "ShaderTools/SPIRV/SPIRVTranspiler.h"
-#include "ShaderTools/GLSL/GLSLTranspiler.h"
+//#include "ShaderTools/GLSL/GLSLTranspiler.h"
 
 #include <fstream>
 
@@ -14,6 +14,9 @@ namespace Flint
 {
 	void ShaderCode::LoadFromFile(const char* pAsset, ShaderLocation location, ShaderCodeType type)
 	{
+		this->mType = type;
+		this->mLocation = location;
+
 		std::ifstream file(pAsset, std::ios::binary | std::ios::ate);
 
 		if (!file.is_open())
@@ -25,7 +28,7 @@ namespace Flint
 		UI64 size = file.tellg();
 		file.seekg(0);
 
-		mCode.resize(size / sizeof(UI32));
+		mCode.resize(size);
 		file.read(reinterpret_cast<char*>(mCode.data()), size);
 
 		file.close();
@@ -42,7 +45,7 @@ namespace Flint
 			break;
 
 		case Flint::ShaderCodeType::GLSL:
-			pTranspiler = new ShaderTools::GLSLTranspiler();
+			//pTranspiler = new ShaderTools::GLSLTranspiler();
 			break;
 
 		case Flint::ShaderCodeType::HLSL:

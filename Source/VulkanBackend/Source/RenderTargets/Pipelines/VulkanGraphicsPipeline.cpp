@@ -249,7 +249,7 @@ namespace Flint
 			this->mSpec = spec;
 			ResolveUniformLayouts(shaderDigests);
 
-			VulkanDevice* pDevice = pRenderTarget->Derive<VulkanDevice>();
+			VulkanDevice* pDevice = pRenderTarget->GetDevice()->Derive<VulkanDevice>();
 
 			std::vector<VkPipelineShaderStageCreateInfo> vStages = {};
 			std::vector<VkVertexInputAttributeDescription> vAttributeDesc = {};
@@ -426,7 +426,7 @@ namespace Flint
 
 		void VulkanGraphicsPipeline::Terminate()
 		{
-			VulkanDevice* pDevice = pRenderTarget->Derive<VulkanDevice>();
+			VulkanDevice* pDevice = pRenderTarget->GetDevice()->Derive<VulkanDevice>();
 			pDevice->DestroyPipelineLayout(vPipelineLayout);
 			pDevice->DestroyDescriptorSetLayout(vSetLayout);
 		}

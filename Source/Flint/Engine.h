@@ -74,6 +74,13 @@ namespace Flint
 		 */
 		SceneComponent CreateSceneComponent(const WireFrame& wireFrame, const std::vector<ShaderDigest>& shaders, const Backend::GraphicsPipelineSpecification& spec);
 
+		/**
+		 * Destroy a created scene component object.
+		 * 
+		 * @param sceneComponent: The scene component to be destroyed.
+		 */
+		void DestroySceneComponent(SceneComponent& sceneComponent);
+
 	private:
 		Backend::RenderTarget* pRenderTarget = nullptr;
 	};

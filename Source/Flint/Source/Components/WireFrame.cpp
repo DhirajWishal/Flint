@@ -27,4 +27,13 @@ namespace Flint
 
 		mDrawData.clear();
 	}
+	
+	WireFrame& WireFrame::operator=(const WireFrame& other)
+	{
+		pVertexBuffer = other.pVertexBuffer;
+		pIndexBuffer = other.pIndexBuffer;
+		mAttributes = other.mAttributes;
+
+		return *this;
+	}
 }

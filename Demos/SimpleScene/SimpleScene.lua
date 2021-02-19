@@ -27,5 +27,5 @@ project "SimpleScene"
 	}
 
 	links {
-		"Flint"
+		"Flint",
 	}
