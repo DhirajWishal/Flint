@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "WireFrame.h"
+#include "Core/Objects/WireFrame.h"
 #include "Core/Backend/Pipeline.h"
 
 namespace Flint

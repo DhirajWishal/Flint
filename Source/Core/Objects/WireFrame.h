@@ -41,6 +41,8 @@ namespace Flint
 	class WireFrame {
 	public:
 		WireFrame() {}
+		WireFrame(const WireFrame& other);
+		WireFrame(WireFrame&& other) noexcept;
 
 		/**
 		 * Clear the wire frame information.
@@ -60,6 +62,13 @@ namespace Flint
 		 * @param other: The other wire frame object to copy data from.
 		 */
 		WireFrame& operator=(const WireFrame& other);
+
+		/**
+		 * Assignment operator (move).
+		 *
+		 * @param other: The other wire frame object to move data from.
+		 */
+		WireFrame& operator=(WireFrame&& other) noexcept;
 
 	public:
 		struct DrawData {

@@ -20,6 +20,7 @@ namespace Flint
 			~VulkanDisplay() {}
 
 			virtual void Initialize(Backend::Instance* pInstance, UI32 width, UI32 height, const char* pTitle) override final;
+			virtual void Update() override final;
 			virtual void Terminate() override final;
 
 			virtual Backend::Device* CreatDevice() override final;

@@ -22,6 +22,7 @@ namespace Flint
 	public:
 		GraphicsBackendObject() {}
 
+		Backend::Display* GetDisplay() const { return pDisplay; }
 		Backend::Device* GetDevice() const { return pDevice; }
 
 	protected:

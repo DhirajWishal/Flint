@@ -8,6 +8,7 @@
 #include "VulkanBackend/RenderTargets/VulkanScreenBoundRenderTargetS.h"
 #include "VulkanBackend/VulkanBuffer.h"
 #include "VulkanBackend/RenderTargets/Pipelines/VulkanGraphicsPipeline.h"
+#include "VulkanBackend/VulkanCommandBufferManager.h"
 
 #include <set>
 
@@ -165,6 +166,14 @@ namespace Flint
 			return pBuffer;
 		}
 
+		Backend::CommandBufferManager* VulkanDevice::CreateCommandBufferManager(UI32 count)
+		{
+			VulkanCommandBufferManager* pCommandBufferManager = new VulkanCommandBufferManager();
+			pCommandBufferManager->CreateBuffers(this, count);
+
+			return pCommandBufferManager;
+		}
+
 		UI32 VulkanDevice::FindSupporterBufferCount(UI32 count) const
 		{
 			if (count == std::numeric_limits<UI32>::max())
@@ -317,8 +326,8 @@ namespace Flint
 			// Create the logical device.
 			FLINT_VK_ASSERT(vkCreateDevice(vPhysicalDevice, &createInfo, nullptr, &vLogicalDevice), "Failed to create logical device!")
 
-			// Get graphics queue.
-			vkGetDeviceQueue(GetLogicalDevice(), vQueue.mGraphicsFamily.value(), 0, &vQueue.vGraphicsQueue);
+				// Get graphics queue.
+				vkGetDeviceQueue(GetLogicalDevice(), vQueue.mGraphicsFamily.value(), 0, &vQueue.vGraphicsQueue);
 
 			// Get compute queue.
 			vkGetDeviceQueue(GetLogicalDevice(), vQueue.mComputeFamily.value(), 0, &vQueue.vComputeQueue);
@@ -548,9 +557,9 @@ namespace Flint
 			return vkCreateCommandPool(GetLogicalDevice(), pCreateInfo, nullptr, pPool);
 		}
 
-		VkResult VulkanDevice::AllocateCommandBuffers(VkCommandBufferAllocateInfo* pAllicateInfo, const std::vector<VkCommandBuffer>& commandBuffers) const
+		VkResult VulkanDevice::AllocateCommandBuffers(VkCommandBufferAllocateInfo* pAllicateInfo, std::vector<VkCommandBuffer>& commandBuffers) const
 		{
-			return vkAllocateCommandBuffers(GetLogicalDevice(), pAllicateInfo, const_cast<VkCommandBuffer*>(commandBuffers.data()));
+			return vkAllocateCommandBuffers(GetLogicalDevice(), pAllicateInfo, commandBuffers.data());
 		}
 
 		VkResult VulkanDevice::BeginCommandBuffer(VkCommandBuffer vCommandBuffer, const VkCommandBufferBeginInfo* pBeginInfo) const
@@ -695,6 +704,35 @@ namespace Flint
 		void VulkanDevice::DestroyPipeline(VkPipeline vPipeline) const
 		{
 			vkDestroyPipeline(GetLogicalDevice(), vPipeline, nullptr);
+		}
+		VkResult VulkanDevice::CreateSemaphores(const VkSemaphoreCreateInfo* pCreateInfo, const std::vector<VkSemaphore>& vSemaphores) const
+		{
+			VkResult result = VkResult::VK_ERROR_UNKNOWN;
+			for (auto& itr : vSemaphores)
+				result = vkCreateSemaphore(GetLogicalDevice(), pCreateInfo, nullptr, const_cast<VkSemaphore*>(&itr));
+
+			return result;
+		}
+
+		void VulkanDevice::DestroySemaphores(const std::vector<VkSemaphore>& vSemaphores) const
+		{
+			for (auto itr : vSemaphores)
+				vkDestroySemaphore(GetLogicalDevice(), itr, nullptr);
+		}
+
+		VkResult VulkanDevice::CreateFences(const VkFenceCreateInfo* pCreateInfo, const std::vector<VkFence>& vFences) const
+		{
+			VkResult result = VkResult::VK_ERROR_UNKNOWN;
+			for (auto& itr : vFences)
+				result = vkCreateFence(GetLogicalDevice(), pCreateInfo, nullptr, const_cast<VkFence*>(&itr));
+
+			return result;
+		}
+
+		void VulkanDevice::DestroyFences(const std::vector<VkFence>& vFences) const
+		{
+			for (auto itr : vFences)
+				vkDestroyFence(GetLogicalDevice(), itr, nullptr);
 		}
 	}
 }

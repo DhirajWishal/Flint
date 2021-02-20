@@ -4,7 +4,7 @@
 #pragma once
 
 #include "GraphicsBackendObject.h"
-#include "Flint/Components/WireFrame.h"
+#include "Core/Objects/WireFrame.h"
 
 namespace Flint
 {

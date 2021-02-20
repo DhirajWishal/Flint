@@ -8,13 +8,16 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-void* IncrementPointer(void* pPointer, UI64 value)
-{
-	return reinterpret_cast<void*>(reinterpret_cast<UI64>(pPointer) + value);
-}
-
 namespace Flint
 {
+	namespace _Helpers
+	{
+		void* IncrementPointer(void* pPointer, UI64 value)
+		{
+			return reinterpret_cast<void*>(reinterpret_cast<UI64>(pPointer) + value);
+		}
+	}
+
 	WireFrame WireFrameManager::CreateNewWireFrame(const char* pAsset, std::vector<VertexAttribute>& vertexAttributes)
 	{
 		WireFrame wireFrame = {};
@@ -178,7 +181,7 @@ namespace Flint
 						break;
 					}
 
-					pVertexDataStore = IncrementPointer(pVertexDataStore, attribute.mSize);
+					pVertexDataStore = _Helpers::IncrementPointer(pVertexDataStore, attribute.mSize);
 				}
 			}
 
@@ -211,10 +214,10 @@ namespace Flint
 		for (auto itr = indexArrays.begin(); itr != indexArrays.end(); itr++)
 		{
 			std::copy(itr->begin(), itr->end(), static_cast<UI32*>(pIndexDataStore));
-			pIndexDataStore = IncrementPointer(pIndexDataStore, sizeof(UI32) * itr->size());
+			pIndexDataStore = _Helpers::IncrementPointer(pIndexDataStore, sizeof(UI32) * itr->size());
 		}
 		wireFrame.pIndexBuffer->UnmapMemory();
 
-		return wireFrame;
+		return std::move(wireFrame);
 	}
 }

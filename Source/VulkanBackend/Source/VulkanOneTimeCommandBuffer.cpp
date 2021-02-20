@@ -20,6 +20,7 @@ namespace Flint
 
 				VkCommandBufferAllocateInfo vAI = {};
 			vAI.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+			vAI.pNext = VK_NULL_HANDLE;
 			vAI.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 			vAI.commandPool = vPool;
 			vAI.commandBufferCount = 1;

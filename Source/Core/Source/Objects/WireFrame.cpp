@@ -1,12 +1,8 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#include "Flint/Components/WireFrame.h"
+#include "Core/Objects/WireFrame.h"
 #include "Core/ErrorHandler/Logger.h"
-
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
 
 namespace Flint
 {
@@ -20,6 +16,18 @@ namespace Flint
 		return attributes;
 	}
 	
+	WireFrame::WireFrame(const WireFrame& other)
+		: pVertexBuffer(other.pVertexBuffer), pIndexBuffer(other.pIndexBuffer), mAttributes(other.mAttributes)
+	{
+	}
+
+	WireFrame::WireFrame(WireFrame&& other) noexcept
+		: pVertexBuffer(other.pVertexBuffer), pIndexBuffer(other.pIndexBuffer), mAttributes(std::move(other.mAttributes))
+	{
+		other.pVertexBuffer = nullptr;
+		other.pIndexBuffer = nullptr;
+	}
+
 	void WireFrame::Clear()
 	{
 		if (pVertexBuffer) pVertexBuffer->Terminate(), delete pVertexBuffer;
@@ -33,6 +41,18 @@ namespace Flint
 		pVertexBuffer = other.pVertexBuffer;
 		pIndexBuffer = other.pIndexBuffer;
 		mAttributes = other.mAttributes;
+
+		return *this;
+	}
+	
+	WireFrame& WireFrame::operator=(WireFrame&& other) noexcept
+	{
+		pVertexBuffer = other.pVertexBuffer;
+		pIndexBuffer = other.pIndexBuffer;
+		mAttributes = std::move(other.mAttributes);
+
+		other.pVertexBuffer = nullptr;
+		other.pIndexBuffer = nullptr;
 
 		return *this;
 	}

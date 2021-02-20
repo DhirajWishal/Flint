@@ -31,6 +31,11 @@ namespace Flint
 			virtual void Initialize(Instance* pInstance, UI32 width, UI32 height, const char* pTitle = "Flint engine") = 0;
 
 			/**
+			 * Update the display and poll inputs.
+			 */
+			virtual void Update() = 0;
+
+			/**
 			 * Terminate the display.
 			 */
 			virtual void Terminate() = 0;

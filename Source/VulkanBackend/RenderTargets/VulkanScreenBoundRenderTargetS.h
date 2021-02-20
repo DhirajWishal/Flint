@@ -26,21 +26,16 @@ namespace Flint
 
 			virtual Backend::GraphicsPipeline* CreateGraphicsPipeline(const std::vector<ShaderDigest>& shaderDigests, const Backend::GraphicsPipelineSpecification& spec) override final;
 
-			void PrepareComputeResources();
-			void PrepareRenderResources();
+			VkSwapchainKHR GetSwapChain() const { return vSwapChain.GetSwapChain(); }
+
+		private:
+			virtual void Bind(Backend::CommandBuffer commandBuffer) override final;
+			virtual void UnBind(Backend::CommandBuffer commandBuffer) override final;
 
 		private:
 			VulkanSwapChain vSwapChain = {};
 			VulkanColorBuffer vColorBuffer = {};
 			VulkanDepthBuffer vDepthBuffer = {};
-
-			VkDescriptorSetLayout vComputeLayout = VK_NULL_HANDLE;
-			VkPipeline vComputePipeline = VK_NULL_HANDLE;
-			VkPipelineLayout vComputePipelineLayout = VK_NULL_HANDLE;
-
-			VkDescriptorSetLayout vRenderLayout = VK_NULL_HANDLE;
-			VkPipeline vRenderPipeline = VK_NULL_HANDLE;
-			VkPipelineLayout vRenderPipelineLayout = VK_NULL_HANDLE;
 		};
 	}
 }

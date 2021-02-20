@@ -44,6 +44,9 @@ namespace Flint
 			virtual Backend::Buffer* CreateBuffer(UI64 size, Backend::BufferUsage usage, Backend::MemoryProfile memoryProfile) override final;
 
 		public:
+			virtual Backend::CommandBufferManager* CreateCommandBufferManager(UI32 count) override final;
+
+		public:
 			VkPhysicalDeviceProperties& GetPhysicalDeviceProperties() { return vPhysicalDeviceProperties; }
 			VkSurfaceCapabilitiesKHR& GetSurfaceCapabilities() { return vSurfaceCapabilities; }
 			SwapChainSupportDetails& GetSwapChainSupportDetails() { return vSwapChainSupportDetails; }
@@ -104,7 +107,7 @@ namespace Flint
 			void DestroyImageView(VkImageView vImageView) const;
 
 			VkResult CreateCommanPool(VkCommandPoolCreateInfo* pCreateInfo, VkCommandPool* pPool) const;
-			VkResult AllocateCommandBuffers(VkCommandBufferAllocateInfo* pAllicateInfo, const std::vector<VkCommandBuffer>& commandBuffers) const;
+			VkResult AllocateCommandBuffers(VkCommandBufferAllocateInfo* pAllicateInfo, std::vector<VkCommandBuffer>& commandBuffers) const;
 
 			VkResult BeginCommandBuffer(VkCommandBuffer vCommandBuffer, const VkCommandBufferBeginInfo* pBeginInfo) const;
 			VkResult EndCommandBuffer(VkCommandBuffer vCommandBuffer) const;
@@ -139,6 +142,12 @@ namespace Flint
 
 			VkResult CreateGraphicsPipeline(const VkGraphicsPipelineCreateInfo* pCreateInfo, VkPipeline* pPipeline) const;
 			void DestroyPipeline(VkPipeline vPipeline) const;
+
+			VkResult CreateSemaphores(const VkSemaphoreCreateInfo* pCreateInfo, const std::vector<VkSemaphore>& vSemaphores) const;
+			void DestroySemaphores(const std::vector<VkSemaphore>& vSemaphores) const;
+
+			VkResult CreateFences(const VkFenceCreateInfo* pCreateInfo, const std::vector<VkFence>& vFences) const;
+			void DestroyFences(const std::vector<VkFence>& vFences) const;
 		};
 
 		class VulkanDeviceBoundObject {

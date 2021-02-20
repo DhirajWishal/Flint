@@ -15,6 +15,19 @@ namespace Flint
 		InitializeDevice();
 	}
 
+	bool Engine::BeginUpdate()
+	{
+		pDisplay->Update();
+		mCommandBuffer = pRenderTarget->GetCommandBuffer();
+
+		return mCommandBuffer.GetState() == Backend::CommandBuffer::State::VALID ? true : false;
+	}
+
+	void Engine::EndUpdate()
+	{
+		pRenderTarget->Draw(mCommandBuffer);
+	}
+
 	void Engine::Terminate()
 	{
 		if (pRenderTarget)
@@ -37,6 +50,11 @@ namespace Flint
 		pRenderTarget = pDevice->CreateRenderTarget(Backend::RenderTargetType::SCREEN_BOUND, extent, bufferCount);
 	}
 
+	void Engine::PrepareRenderTargetToRender()
+	{
+		pRenderTarget->PrepareCommandBuffers();
+	}
+
 	SceneComponent Engine::CreateSceneComponent(const WireFrame& wireFrame, const std::vector<ShaderDigest>& shaders, const Backend::GraphicsPipelineSpecification& spec)
 	{
 		SceneComponent component = {};
@@ -52,5 +70,10 @@ namespace Flint
 		delete sceneComponent.pPipeline;
 
 		sceneComponent.mWireFrame.Clear();
+	}
+	
+	void Engine::SubmitToDrawQueue(const SceneComponent& sceneComponent)
+	{
+		pRenderTarget->AddDrawEntry(sceneComponent.mWireFrame, sceneComponent.pPipeline, {});
 	}
 }

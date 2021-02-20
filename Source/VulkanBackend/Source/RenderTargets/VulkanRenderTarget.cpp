@@ -86,7 +86,7 @@ namespace Flint
 			pDevice->DestroyRenderPass(vRenderPass);
 		}
 
-		void VulkanRenderTarget::CreateFrameBuffer(VulkanDevice* pDevice, std::vector<VulkanRenderTargetAttachment*> pAttachments, const Vector2& extent)
+		void VulkanRenderTarget::CreateFrameBuffer(VulkanDevice* pDevice, std::vector<VulkanRenderTargetAttachment*> pAttachments, const Vector2& extent, UI32 bufferCount)
 		{
 			VkFramebufferCreateInfo vCI = {};
 			vCI.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
@@ -98,8 +98,8 @@ namespace Flint
 			vCI.height = static_cast<UI32>(extent.y);
 			vCI.attachmentCount = static_cast<UI32>(pAttachments.size());
 
-			vFrameBuffers.resize(mBufferCount);
-			for (UI32 i = 0; i < mBufferCount; i++)
+			vFrameBuffers.resize(bufferCount);
+			for (UI32 i = 0; i < bufferCount; i++)
 			{
 				std::vector<VkImageView> vAttachments;
 

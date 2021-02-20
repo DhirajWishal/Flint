@@ -9,6 +9,10 @@ namespace Flint
 {
 	namespace Backend
 	{
+		/**
+		 * Backend object.
+		 * This is the base class for all the backend related objects.
+		 */
 		class BackendObject {
 		public:
 			BackendObject() {}

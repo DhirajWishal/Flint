@@ -16,6 +16,8 @@ namespace Flint
 		class GraphicsPipeline;
 		struct GraphicsPipelineSpecification;
 
+		class CommandBufferManager;
+
 		enum class BufferUsage : UI8 {
 			UNDEFINED,
 			VERTEX,
@@ -74,6 +76,16 @@ namespace Flint
 			 * @param memoryProfile: The memory profile to be used.
 			 */
 			virtual Buffer* CreateBuffer(UI64 size, BufferUsage usage, MemoryProfile memoryProfile) = 0;
+
+		public:
+			/**
+			 * Create a new command buffer manager.
+			 * This manager creates and maintains command buffers.
+			 * 
+			 * @param count: The number of command buffers the manager contains.
+			 * @return The command buffer manager object pointer.
+			 */
+			virtual CommandBufferManager* CreateCommandBufferManager(UI32 count) = 0;
 
 		public:
 			Display* GetDisplay() const { return pDisplay; }

@@ -87,6 +87,11 @@ namespace Flint
 			SetupCallbacks();
 		}
 
+		void VulkanDisplay::Update()
+		{
+			glfwPollEvents();
+		}
+
 		void VulkanDisplay::Terminate()
 		{
 			DestroySurface();

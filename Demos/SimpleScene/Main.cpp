@@ -3,7 +3,6 @@
 
 #include "Core/Benchmark/Timer.h"
 #include "Flint/Engine.h"
-#include "Flint/Components/WireFrame.h"
 #include "Flint/Components/ShaderCode.h"
 
 #include <thread>
@@ -40,8 +39,18 @@ int main()
 		INSERT_INTO_VECTOR(digests, itr->CreateDigest());
 
 	Flint::SceneComponent sceneComponent = engine.CreateSceneComponent(wireFrame, digests, Flint::Backend::GraphicsPipelineSpecification());
+	engine.SubmitToDrawQueue(sceneComponent);
+
+	engine.PrepareRenderTargetToRender();
+	Flint::Inputs::InputCenter* pInputCenter = engine.GetDisplay()->GetInputCenter();
+	while (pInputCenter->IsWindowOpen)
+	{
+		if (!engine.BeginUpdate()) break;
+		engine.EndUpdate();
+	}
 
 	engine.DestroySceneComponent(sceneComponent);
+
 	engine.Terminate();
 	return 0;
 }

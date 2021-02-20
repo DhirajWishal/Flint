@@ -19,6 +19,8 @@ namespace Flint
 			virtual VkAttachmentDescription GetAttachmentDescription() const override final;
 			virtual VkImageLayout GetAttachmentLayout() const override final;
 
+			VkSwapchainKHR GetSwapChain() const { return vSwapChain; }
+
 		private:
 			VkSwapchainKHR vSwapChain = VK_NULL_HANDLE;
 		};

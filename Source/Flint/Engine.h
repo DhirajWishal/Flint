@@ -29,6 +29,20 @@ namespace Flint
 		void Initialize(BackendAPI api, bool enableValidation, UI32 width, UI32 height, const char* pTitle);
 
 		/**
+		 * Begin engine update.
+		 * This must be called before the final draw call (EndUpdate).
+		 * 
+		 * @return Boolean stating if an internal error occurred.
+		 */
+		bool BeginUpdate();
+
+		/**
+		 * End engine update.
+		 * This must be called at the end of the iteration (after calling the BeginUpdate).
+		 */
+		void EndUpdate();
+
+		/**
 		 * Terminate the engine.
 		 */
 		void Terminate();
@@ -63,6 +77,12 @@ namespace Flint
 		 */
 		void CreateRenderTarget(const Vector2& extent, UI32 bufferCount = 0);
 
+		/**
+		 * Prepare the render target to render to the screen.
+		 * This must be called every time the draw entries are altered.
+		 */
+		void PrepareRenderTargetToRender();
+
 	public:
 		/**
 		 * Create a new scene component based on the graphics pipeline.
@@ -81,7 +101,15 @@ namespace Flint
 		 */
 		void DestroySceneComponent(SceneComponent& sceneComponent);
 
+		/**
+		 * Submit the scene component to be drawn.
+		 * 
+		 * @param sceneComponent: The scene component to be drawn.
+		 */
+		void SubmitToDrawQueue(const SceneComponent& sceneComponent);
+
 	private:
 		Backend::RenderTarget* pRenderTarget = nullptr;
+		Backend::CommandBuffer mCommandBuffer = {};
 	};
 }
