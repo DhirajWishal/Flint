@@ -17,12 +17,12 @@ namespace Flint
 	}
 	
 	WireFrame::WireFrame(const WireFrame& other)
-		: pVertexBuffer(other.pVertexBuffer), pIndexBuffer(other.pIndexBuffer), mAttributes(other.mAttributes)
+		: pVertexBuffer(other.pVertexBuffer), pIndexBuffer(other.pIndexBuffer), mDrawData(other.mDrawData), mAttributes(other.mAttributes)
 	{
 	}
 
 	WireFrame::WireFrame(WireFrame&& other) noexcept
-		: pVertexBuffer(other.pVertexBuffer), pIndexBuffer(other.pIndexBuffer), mAttributes(std::move(other.mAttributes))
+		: pVertexBuffer(other.pVertexBuffer), pIndexBuffer(other.pIndexBuffer), mDrawData(std::move(other.mDrawData)), mAttributes(std::move(other.mAttributes))
 	{
 		other.pVertexBuffer = nullptr;
 		other.pIndexBuffer = nullptr;
@@ -41,6 +41,7 @@ namespace Flint
 		pVertexBuffer = other.pVertexBuffer;
 		pIndexBuffer = other.pIndexBuffer;
 		mAttributes = other.mAttributes;
+		mDrawData = other.mDrawData;
 
 		return *this;
 	}
@@ -50,6 +51,7 @@ namespace Flint
 		pVertexBuffer = other.pVertexBuffer;
 		pIndexBuffer = other.pIndexBuffer;
 		mAttributes = std::move(other.mAttributes);
+		mDrawData = std::move(other.mDrawData);
 
 		other.pVertexBuffer = nullptr;
 		other.pIndexBuffer = nullptr;

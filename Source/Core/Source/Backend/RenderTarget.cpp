@@ -3,6 +3,7 @@
 
 #include "Core/Backend/RenderTarget.h"
 #include "Core/ErrorHandler/Logger.h"
+#include "Core/Backend/Pipeline.h"
 
 namespace Flint
 {
@@ -33,10 +34,19 @@ namespace Flint
 				pCommandBufferManager->BeginBufferRecording(static_cast<UI32>(itr->GetIndex()));
 				Bind(*itr);
 
-				//for (EntryReference itr = 0; itr < mReferenceCounter; itr++)
-				//{
-				//	auto& entry = mDrawEntries[itr];
-				//}
+				for (EntryReference index = 0; index < mReferenceCounter; index++)
+				{
+					auto& entry = mDrawEntries[index];
+
+					entry.pPipeline->Bind(*itr);
+					entry.mWireFrame.pVertexBuffer->Bind(*itr);
+					entry.mWireFrame.pIndexBuffer->Bind(*itr);
+
+					for (auto i = entry.mWireFrame.mDrawData.begin(); i != entry.mWireFrame.mDrawData.end(); i++)
+					{
+						pCommandBufferManager->DrawUsingIndexData(static_cast<UI32>(itr->GetIndex()), static_cast<UI32>(i->mIndexCount), static_cast<UI32>(i->mVertexOffset), static_cast<UI32>(i->mIndexOffset));
+					}
+				}
 
 				UnBind(*itr);
 				pCommandBufferManager->EndBufferRecording(static_cast<UI32>(itr->GetIndex()));

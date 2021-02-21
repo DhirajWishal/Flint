@@ -52,9 +52,9 @@ namespace Flint
 		{
 			VkClearValue pClearValues[2] = {};
 			pClearValues[0].depthStencil = { 1.0f, 0 };
-			pClearValues[1].color.float32[0] = (64.0f / 255.0f);
-			pClearValues[1].color.float32[1] = (64.0f / 255.0f);
-			pClearValues[1].color.float32[2] = (64.0f / 255.0f);
+			pClearValues[1].color.float32[0] = CREATE_COLOR_256(32.0f);
+			pClearValues[1].color.float32[1] = CREATE_COLOR_256(32.0f);
+			pClearValues[1].color.float32[2] = CREATE_COLOR_256(32.0f);
 			pClearValues[1].color.float32[3] = 1.0f;
 
 			VkRenderPassBeginInfo vRBI = {};

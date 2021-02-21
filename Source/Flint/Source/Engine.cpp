@@ -20,7 +20,7 @@ namespace Flint
 		pDisplay->Update();
 		mCommandBuffer = pRenderTarget->GetCommandBuffer();
 
-		return mCommandBuffer.GetState() == Backend::CommandBuffer::State::VALID ? true : false;
+		return mCommandBuffer.IsValid();
 	}
 
 	void Engine::EndUpdate()
@@ -72,8 +72,8 @@ namespace Flint
 		sceneComponent.mWireFrame.Clear();
 	}
 	
-	void Engine::SubmitToDrawQueue(const SceneComponent& sceneComponent)
+	Backend::EntryReference Engine::SubmitToDrawQueue(const SceneComponent& sceneComponent)
 	{
-		pRenderTarget->AddDrawEntry(sceneComponent.mWireFrame, sceneComponent.pPipeline, {});
+		return pRenderTarget->AddDrawEntry(sceneComponent.mWireFrame, sceneComponent.pPipeline, {});
 	}
 }

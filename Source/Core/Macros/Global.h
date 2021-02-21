@@ -9,3 +9,4 @@
 #define BIT_SHIFT(count)					(1 << count)
 
 #define TYPE_NAME(type)						typeid(type).name()
+#define CREATE_COLOR_256(color)				(color / 255.0f)

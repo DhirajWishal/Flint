@@ -6,8 +6,6 @@
 #include "Pipeline.h"
 #include "Core/Macros/Global.h"
 
-#define FLINT_GET_COLOR_255(x)	(x / 255.0f)
-
 namespace Flint
 {
 	namespace Backend
@@ -95,8 +93,8 @@ namespace Flint
 
 		struct GraphicsPipelineSpecification {
 			float mColorBlendConstants[4] = {
-				FLINT_GET_COLOR_255(255), FLINT_GET_COLOR_255(255),
-				FLINT_GET_COLOR_255(255), FLINT_GET_COLOR_255(255)
+				CREATE_COLOR_256(255), CREATE_COLOR_256(255),
+				CREATE_COLOR_256(255), CREATE_COLOR_256(255)
 			};
 			float mDepthBiasFactor = 0.0f;
 			float mDepthConstantFactor = 0.0f;
@@ -104,13 +102,14 @@ namespace Flint
 			float mRasterizerLineWidth = 0.0f;
 			float mMinSampleShading = 1.0f;
 
-			PrimitiveTopology mPrimitiveTopology = PrimitiveTopology::LINE_LIST;
+			PrimitiveTopology mPrimitiveTopology = PrimitiveTopology::TRIANGLE_LIST;
 			CullMode mCullMode = CullMode::BACK;
 			FrontFace mFrontFace = FrontFace::COUNTER_CLOCKWISE;
 			PolygonMode mPolygonMode = PolygonMode::FILL;
 			ColorBlendLogic mColorBlendLogic = ColorBlendLogic::CLEAR;
 			DepthCompareLogic mDepthCompareLogic = DepthCompareLogic::LESS_OR_EQUAL;
-			DynamicStateFlags mDynamicStateFlags = DynamicStateFlags::VIEWPORT | DynamicStateFlags::SCISSOR;
+			DynamicStateFlags mDynamicStateFlags = DynamicStateFlags(0);
+			//DynamicStateFlags mDynamicStateFlags = DynamicStateFlags::VIEWPORT | DynamicStateFlags::SCISSOR;
 
 			bool bEnablePrimitiveRestart = false;
 			bool bEnableDepthBias = false;

@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "CommandBuffer.h"
 #include "Device.h"
 
 namespace Flint
@@ -45,6 +46,14 @@ namespace Flint
 			 * Unmap the mapped memory from the local address space.
 			 */
 			virtual void UnmapMemory() = 0;
+
+			/**
+			 * Bind a buffer to the command buffer.
+			 * For draw calls, only Index and Vertex buffers are allowed to be bound.
+			 * 
+			 * @param commandBuffer: The command buffer to be bound to.
+			 */
+			virtual void Bind(const CommandBuffer& commandBuffer) = 0;
 
 		public:
 			Device* GetDevice() const { return pDevice; }

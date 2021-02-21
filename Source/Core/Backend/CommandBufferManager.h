@@ -3,13 +3,13 @@
 
 #pragma once
 
+#include "CommandBuffer.h"
 #include "Device.h"
 
 namespace Flint
 {
 	namespace Backend
 	{
-		class CommandBuffer;
 		class ScreenBoundRenderTarget;
 
 		/**
@@ -71,6 +71,17 @@ namespace Flint
 			virtual void SubmitCommand(UI32 index, ScreenBoundRenderTarget* pRenderTarget) = 0;
 
 		public:
+			/**
+			 * Draw using index data.
+			 * 
+			 * @param index: The index of the command buffer.
+			 * @param indexCount: The number of indexes to draw.
+			 * @param vertexOffset: The vertex offset of the buffer.
+			 * @param indexOffset: The offset to be added to the index buffer.
+			 */
+			virtual void DrawUsingIndexData(UI32 index, UI32 indexCount, UI32 vertexOffset, UI32 indexOffset) = 0;
+
+		public:
 			std::vector<CommandBuffer>& GetBuffers() { return mCommandBuffers; }
 			const std::vector<CommandBuffer> GetBuffers() const { return mCommandBuffers; }
 
@@ -86,32 +97,6 @@ namespace Flint
 			std::vector<CommandBuffer> mCommandBuffers;
 
 			Device* pDevice = nullptr;
-		};
-
-		/**
-		 * Command buffer object.
-		 * This object is used to submit draw and other utility commands to the GPU device.
-		 */
-		class CommandBuffer : public BackendObject {
-			friend CommandBufferManager;
-
-		public:
-			CommandBuffer() {}
-			CommandBuffer(CommandBufferManager* parent, UI64 index) : pParent(parent), mIndex(index), mState(State::VALID) {}
-
-			enum class State : UI8 {
-				INVALID,
-				VALID
-			};
-
-			CommandBufferManager* GetManager() const { return pParent; }
-			UI64 GetIndex() const { return mIndex; }
-			State GetState() const { return mState; }
-		private:
-			CommandBufferManager* pParent = nullptr;
-			UI64 mIndex = 0;
-
-			State mState = State::INVALID;
 		};
 	}
 }

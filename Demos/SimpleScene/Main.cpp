@@ -7,14 +7,13 @@
 
 #include <thread>
 
-std::vector<Flint::ShaderCode> GetShaders()
+std::vector<Flint::ShaderDigest> GetShaders()
 {
-	std::vector<Flint::ShaderCode> shaders(2);
-
+	Flint::ShaderCode shaders[2] = {};
 	shaders[0].LoadFromFile("E:\\Flint\\Assets\\Shaders\\TestShaders\\Default\\shader.vert.spv", Flint::ShaderLocation::VERTEX, Flint::ShaderCodeType::SPIR_V);
 	shaders[1].LoadFromFile("E:\\Flint\\Assets\\Shaders\\TestShaders\\Default\\shader.frag.spv", Flint::ShaderLocation::FRAGMENT, Flint::ShaderCodeType::SPIR_V);
 
-	return shaders;
+	return { shaders[0].CreateDigest(), shaders[1].CreateDigest() };
 }
 
 int main()
@@ -33,11 +32,7 @@ int main()
 
 	auto wireFrame = engine.CreateNewWireFrame("E:\\Flint\\Assets\\Models\\SkyBox\\SkySphere.obj", Flint::CreateDefaultAttributes());
 
-	std::vector<Flint::ShaderCode> shaders = std::move(GetShaders());
-	std::vector<Flint::ShaderDigest> digests;
-	for (auto itr = shaders.begin(); itr != shaders.end(); itr++)
-		INSERT_INTO_VECTOR(digests, itr->CreateDigest());
-
+	std::vector<Flint::ShaderDigest> digests = std::move(GetShaders());
 	Flint::SceneComponent sceneComponent = engine.CreateSceneComponent(wireFrame, digests, Flint::Backend::GraphicsPipelineSpecification());
 	engine.SubmitToDrawQueue(sceneComponent);
 

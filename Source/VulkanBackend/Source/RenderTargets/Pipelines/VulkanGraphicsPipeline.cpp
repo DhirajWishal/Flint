@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "VulkanBackend/RenderTargets/Pipelines/VulkanGraphicsPipeline.h"
+#include "VulkanBackend/VulkanCommandBufferManager.h"
 #include "VulkanBackend/VulkanShaderModule.h"
 #include "VulkanBackend/VulkanUtilities.h"
 #include "VulkanBackend/VulkanMacros.h"
@@ -429,6 +430,15 @@ namespace Flint
 			VulkanDevice* pDevice = pRenderTarget->GetDevice()->Derive<VulkanDevice>();
 			pDevice->DestroyPipelineLayout(vPipelineLayout);
 			pDevice->DestroyDescriptorSetLayout(vSetLayout);
+		}
+
+		void VulkanGraphicsPipeline::Bind(const Backend::CommandBuffer& commandBuffer)
+		{
+			vkCmdBindPipeline(commandBuffer.GetManager()->Derive<VulkanCommandBufferManager>()->vCommandBuffers[commandBuffer.GetIndex()], VK_PIPELINE_BIND_POINT_GRAPHICS, vPipeline);
+		}
+
+		void VulkanGraphicsPipeline::UnBind(const Backend::CommandBuffer& commandBuffer)
+		{
 		}
 	}
 }

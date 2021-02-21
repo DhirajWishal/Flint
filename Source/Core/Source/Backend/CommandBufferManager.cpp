@@ -14,7 +14,7 @@ namespace Flint
 				CommandBuffer buffer = {};
 				buffer.pParent = this;
 				buffer.mIndex = i;
-				buffer.mState = CommandBuffer::State::VALID;
+				buffer.bIsValid = true;
 
 				INSERT_INTO_VECTOR(mCommandBuffers, buffer);
 			}

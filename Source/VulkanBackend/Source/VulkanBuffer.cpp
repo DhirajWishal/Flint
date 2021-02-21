@@ -3,6 +3,7 @@
 
 #include "VulkanBackend/VulkanBuffer.h"
 #include "VulkanBackend/VulkanMacros.h"
+#include "VulkanBackend/VulkanCommandBufferManager.h"
 
 namespace Flint
 {
@@ -45,11 +46,17 @@ namespace Flint
 			switch (memoryProfile)
 			{
 			case Flint::Backend::MemoryProfile::TRANSFER_FRIENDLY:
-				vMemoryProperties = VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+				vMemoryProperties =
+					VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+					| VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+					| VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
 				break;
 
 			case Flint::Backend::MemoryProfile::DEVICE_ONLY:
-				vMemoryProperties = VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT | VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_PROTECTED_BIT;
+				vMemoryProperties =
+					VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+					| VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT
+					| VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_PROTECTED_BIT;
 				break;
 
 			default:
@@ -82,6 +89,17 @@ namespace Flint
 		void VulkanBuffer::UnmapMemory()
 		{
 			pDevice->Derive<VulkanDevice>()->UnmapMemory(vBufferMemory);
+		}
+
+		void VulkanBuffer::Bind(const Backend::CommandBuffer& commandBuffer)
+		{
+			VkCommandBuffer vCommandBuffer = commandBuffer.GetManager()->Derive<VulkanCommandBufferManager>()->vCommandBuffers[commandBuffer.GetIndex()];
+			VkDeviceSize offset[1] = { 0 };
+
+			if (mUsage == Backend::BufferUsage::VERTEX)
+				vkCmdBindVertexBuffers(vCommandBuffer, 0, 1, &vBuffer, offset);
+			else if (mUsage == Backend::BufferUsage::INDEX)
+				vkCmdBindIndexBuffer(vCommandBuffer, vBuffer, 0, VK_INDEX_TYPE_UINT32);
 		}
 
 		void VulkanBuffer::CreateBuffer(VkBufferUsageFlags vUsage)

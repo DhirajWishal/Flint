@@ -18,6 +18,9 @@ namespace Flint
 			virtual void Initialize(Backend::RenderTarget* pRenderTarget, const std::vector<ShaderDigest>& shaderDigests, const Backend::GraphicsPipelineSpecification& spec) override final;
 			virtual void Terminate() override final;
 
+			virtual void Bind(const Backend::CommandBuffer& commandBuffer) override final;
+			virtual void UnBind(const Backend::CommandBuffer& commandBuffer) override final;
+
 		private:
 			std::vector<VkDescriptorPoolSize> vPoolSizes;
 		};

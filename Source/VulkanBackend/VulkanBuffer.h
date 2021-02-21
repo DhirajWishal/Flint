@@ -21,6 +21,8 @@ namespace Flint
 			virtual void* MapMemory(UI64 size, UI64 offset) override final;
 			virtual void UnmapMemory() override final;
 
+			virtual void Bind(const Backend::CommandBuffer& commandBuffer) override final;
+
 		private:
 			void CreateBuffer(VkBufferUsageFlags vUsage);
 			void DestroyBuffer();

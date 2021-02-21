@@ -24,6 +24,8 @@ namespace Flint
 			virtual I32 BeginCommandExecution(UI32 frameIndex, Backend::ScreenBoundRenderTarget* pRenderTarget) override final;
 			virtual void SubmitCommand(UI32 index, Backend::ScreenBoundRenderTarget* pRenderTarget) override final;
 
+			virtual void DrawUsingIndexData(UI32 index, UI32 indexCount, UI32 vertexOffset, UI32 indexOffset) override final;
+
 			VkCommandPool vCommandPool = VK_NULL_HANDLE;
 			std::vector<VkCommandBuffer> vCommandBuffers;
 

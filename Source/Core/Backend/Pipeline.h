@@ -23,9 +23,23 @@ namespace Flint
 			Pipeline() {}
 
 			/**
-			 * Terminate the pipline.
+			 * Terminate the pipeline.
 			 */
 			virtual void Terminate() = 0;
+
+			/**
+			 * Bind the pipeline to a command buffer.
+			 * 
+			 * @param commandBuffer: The command buffer to be bound to.
+			 */
+			virtual void Bind(const CommandBuffer& commandBuffer) = 0;
+
+			/**
+			 * Unbind the pipeline from a command buffer.
+			 * 
+			 * @param commandBuffer: The command buffer to be unbound from.
+			 */
+			virtual void UnBind(const CommandBuffer& commandBuffer) = 0;
 
 		public:
 			RenderTarget* GetRenderTarget() const { return pRenderTarget; }

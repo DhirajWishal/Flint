@@ -112,6 +112,11 @@ namespace Flint
 			FLINT_VK_ASSERT(vkQueuePresentKHR(pvDevice->GetTransferQueue(), &vPI), "Failed to present queue!")
 		}
 
+		void VulkanCommandBufferManager::DrawUsingIndexData(UI32 index, UI32 indexCount, UI32 vertexOffset, UI32 indexOffset)
+		{
+			vkCmdDrawIndexed(vCommandBuffers[index], indexCount, 1, indexOffset, vertexOffset, 0);
+		}
+
 		void VulkanCommandBufferManager::InitializeSyncObjects(UI32 count)
 		{
 			vImageAvailables.resize(count);
