@@ -356,6 +356,11 @@ namespace Flint
 			vkFreeMemory(GetLogicalDevice(), vDeviceMemory, nullptr);
 		}
 
+		VkResult VulkanDevice::FlushMemoryRanges(const std::vector<VkMappedMemoryRange>& vMappedRanges) const
+		{
+			return vkFlushMappedMemoryRanges(GetLogicalDevice(), static_cast<UI32>(vMappedRanges.size()), vMappedRanges.data());
+		}
+
 		VkResult VulkanDevice::SubmitQueue(VkQueue vQueue, const std::vector<VkSubmitInfo>& vSubmitInfos, VkFence vFence) const
 		{
 			return vkQueueSubmit(vQueue, static_cast<UI32>(vSubmitInfos.size()), vSubmitInfos.data(), vFence);
@@ -369,6 +374,11 @@ namespace Flint
 		VkResult VulkanDevice::WaitIdle() const
 		{
 			return vkDeviceWaitIdle(GetLogicalDevice());
+		}
+
+		VkResult VulkanDevice::WaitForFences(const std::vector<VkFence>& vFences, bool waitForAll, UI64 timeout) const
+		{
+			return vkWaitForFences(GetLogicalDevice(), static_cast<UI32>(vFences.size()), vFences.data(), GET_VK_BOOL(waitForAll), timeout);
 		}
 
 		VkResult VulkanDevice::CreateSwapChain(VkSwapchainCreateInfoKHR* pCreateInfo, VkSwapchainKHR* pSwapChain) const

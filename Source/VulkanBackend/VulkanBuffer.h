@@ -20,7 +20,9 @@ namespace Flint
 
 			virtual void* MapMemory(UI64 size, UI64 offset) override final;
 			virtual void UnmapMemory() override final;
+			virtual void FlushMemoryMappings() override final;
 
+			virtual void CopyFrom(Buffer* pBuffer, UI64 size, UI64 srcOffset, UI64 dstOffset) override final;
 			virtual void Bind(const Backend::CommandBuffer& commandBuffer) override final;
 
 		private:

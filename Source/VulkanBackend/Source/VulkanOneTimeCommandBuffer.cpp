@@ -33,7 +33,7 @@ namespace Flint
 
 			VkCommandBufferBeginInfo vBI = {};
 			vBI.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-			vBI.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+			//vBI.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 			FLINT_VK_ASSERT(pDevice->BeginCommandBuffer(vBuffer, &vBI), "Failed to begin command buffer recording!");
 		}
 
@@ -46,8 +46,17 @@ namespace Flint
 			vSI.commandBufferCount = 1;
 			vSI.pCommandBuffers = &vBuffer;
 
-			FLINT_VK_ASSERT(pDevice->SubmitQueue(pDevice->GetGraphicsQueue(), { vSI }, VK_NULL_HANDLE), "Failed to submit queue!");
-			FLINT_VK_ASSERT(pDevice->QueueWait(pDevice->GetTransferQueue()), "Failed to wait for queue completion!");
+			VkFenceCreateInfo vFCI = {};
+			vFCI.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+			vFCI.pNext = VK_NULL_HANDLE;
+			vFCI.flags = VK_NULL_HANDLE;
+
+			std::vector<VkFence> vFences{ 1 };
+			FLINT_VK_ASSERT(pDevice->CreateFences(&vFCI, vFences), "Failed to create fence!")
+
+				FLINT_VK_ASSERT(pDevice->SubmitQueue(pDevice->GetTransferQueue(), { vSI }, vFences[0]), "Failed to submit queue!");
+			FLINT_VK_ASSERT(pDevice->WaitForFences(vFences, true, std::numeric_limits<UI32>::max()), "Failed to wait for fences!")
+				pDevice->DestroyFences(vFences);
 
 			pDevice->FreeComandBuffers(vPool, { vBuffer });
 			pDevice->DestroyCommandPool(vPool);

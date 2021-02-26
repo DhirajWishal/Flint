@@ -29,6 +29,7 @@ namespace Flint
 		enum class MemoryProfile : UI8 {
 			TRANSFER_FRIENDLY,
 			DEVICE_ONLY,
+			DRAW_RESOURCE,
 		};
 
 		enum class RenderTargetType : UI8 {

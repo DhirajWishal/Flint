@@ -4,6 +4,7 @@
 #include "VulkanBackend/VulkanBuffer.h"
 #include "VulkanBackend/VulkanMacros.h"
 #include "VulkanBackend/VulkanCommandBufferManager.h"
+#include "VulkanBackend/VulkanOneTimeCommandBuffer.h"
 
 namespace Flint
 {
@@ -32,7 +33,7 @@ namespace Flint
 				break;
 
 			case Flint::Backend::BufferUsage::STAGGING:
-				vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+				vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
 				break;
 
 			default:
@@ -47,8 +48,7 @@ namespace Flint
 			{
 			case Flint::Backend::MemoryProfile::TRANSFER_FRIENDLY:
 				vMemoryProperties =
-					VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
-					| VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+					VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
 					| VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
 				break;
 
@@ -57,6 +57,10 @@ namespace Flint
 					VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
 					| VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT
 					| VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_PROTECTED_BIT;
+				break;
+
+			case Flint::Backend::MemoryProfile::DRAW_RESOURCE:
+				vMemoryProperties = VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 				break;
 
 			default:
@@ -81,14 +85,40 @@ namespace Flint
 					return nullptr;
 			}
 
+			mPrevMapInfo.mSize = size;
+			mPrevMapInfo.mOffset = offset;
+
 			void* pDataStore = nullptr;
-			FLINT_VK_ASSERT(pDevice->Derive<VulkanDevice>()->MapMemory(vBufferMemory, offset, size, &pDataStore), "Failed to map buffer memory!")
+			FLINT_VK_ASSERT(pDevice->Derive<VulkanDevice>()->MapMemory(vBufferMemory, size, offset, &pDataStore), "Failed to map buffer memory!")
 				return pDataStore;
 		}
 
 		void VulkanBuffer::UnmapMemory()
 		{
 			pDevice->Derive<VulkanDevice>()->UnmapMemory(vBufferMemory);
+		}
+
+		void VulkanBuffer::FlushMemoryMappings()
+		{
+			VkMappedMemoryRange vMMR = {};
+			vMMR.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
+			vMMR.pNext = VK_NULL_HANDLE;
+			vMMR.memory = vBufferMemory;
+			vMMR.size = mPrevMapInfo.mSize;
+			vMMR.offset = mPrevMapInfo.mOffset;
+
+			FLINT_VK_ASSERT(pDevice->Derive<VulkanDevice>()->FlushMemoryRanges({ vMMR }), "Failed to flush memory mappings!")
+		}
+
+		void VulkanBuffer::CopyFrom(Buffer* pBuffer, UI64 size, UI64 srcOffset, UI64 dstOffset)
+		{
+			VkBufferCopy vBC = {};
+			vBC.size = size;
+			vBC.srcOffset = srcOffset;
+			vBC.dstOffset = dstOffset;
+
+			VulkanOneTimeCommandBuffer vCommandBuffer(pDevice->Derive<VulkanDevice>());
+			vkCmdCopyBuffer(vCommandBuffer, pBuffer->Derive<VulkanBuffer>()->vBuffer, vBuffer, 1, &vBC);
 		}
 
 		void VulkanBuffer::Bind(const Backend::CommandBuffer& commandBuffer)

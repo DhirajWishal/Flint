@@ -87,10 +87,12 @@ namespace Flint
 			VkResult MapMemory(VkDeviceMemory vDeviceMemory, UI64 size, UI64 offset, void** ppData) const;
 			void UnmapMemory(VkDeviceMemory vDeviceMemory) const;
 			void FreeMemory(VkDeviceMemory vDeviceMemory) const;
+			VkResult FlushMemoryRanges(const std::vector<VkMappedMemoryRange>& vMappedRanges) const;
 
 			VkResult SubmitQueue(VkQueue vQueue, const std::vector<VkSubmitInfo>& vSubmitInfos, VkFence vFence) const;
 			VkResult QueueWait(VkQueue vQueue) const;
 			VkResult WaitIdle() const;
+			VkResult WaitForFences(const std::vector<VkFence>& vFences, bool waitForAll, UI64 timeout) const;
 
 			VkResult CreateSwapChain(VkSwapchainCreateInfoKHR* pCreateInfo, VkSwapchainKHR* pSwapChain) const;
 			VkResult GetSwapChainImages(VkSwapchainKHR vSwapChain, UI32* pSwapChainImageCount, std::vector<VkImage>& vImages) const;
