@@ -21,8 +21,9 @@ namespace Flint
 			virtual void Bind(const Backend::CommandBuffer& commandBuffer) override final;
 			virtual void UnBind(const Backend::CommandBuffer& commandBuffer) override final;
 
-		private:
-			std::vector<VkDescriptorPoolSize> vPoolSizes;
+			virtual VkPipelineBindPoint GetBindPoint() override final { return VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_GRAPHICS; }
+
+			virtual Backend::PipelineResource* CreatePipelineResource() override final;
 		};
 	}
 }

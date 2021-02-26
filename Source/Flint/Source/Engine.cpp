@@ -63,7 +63,7 @@ namespace Flint
 
 		return component;
 	}
-	
+
 	void Engine::DestroySceneComponent(SceneComponent& sceneComponent)
 	{
 		sceneComponent.pPipeline->Terminate();
@@ -71,9 +71,15 @@ namespace Flint
 
 		sceneComponent.mWireFrame.Clear();
 	}
-	
-	Backend::EntryReference Engine::SubmitToDrawQueue(const SceneComponent& sceneComponent)
+
+	RenderResource Engine::SubmitToDrawQueue(const SceneComponent& sceneComponent)
 	{
-		return pRenderTarget->AddDrawEntry(sceneComponent.mWireFrame, sceneComponent.pPipeline, {});
+		RenderResource resource = {};
+		resource.mUniformBuffers = sceneComponent.pPipeline->CreateUniformBuffers();
+		resource.pPipelineResource = sceneComponent.pPipeline->CreatePipelineResource();
+		resource.pPipelineResource->RegisterUniformBuffers(resource.mUniformBuffers);
+		resource.mReference = pRenderTarget->AddDrawEntry(sceneComponent.mWireFrame, sceneComponent.pPipeline, resource.pPipelineResource);
+
+		return resource;
 	}
 }

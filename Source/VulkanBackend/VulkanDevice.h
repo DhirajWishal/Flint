@@ -138,6 +138,7 @@ namespace Flint
 			void DestroyDescriptorPool(VkDescriptorPool vPool) const;
 
 			VkResult AllocateDescriptorSet(const VkDescriptorSetAllocateInfo* pAllocateInfo, VkDescriptorSet* pSet) const;
+			void UpdateDescriptorSet(const std::vector<VkWriteDescriptorSet>& vWrites, const std::vector<VkCopyDescriptorSet>& vCopies) const;
 
 			VkResult CreatePipelineLayout(const VkPipelineLayoutCreateInfo* pCreateInfo, VkPipelineLayout* pLayout) const;
 			void DestroyPipelineLayout(VkPipelineLayout vLayout) const;

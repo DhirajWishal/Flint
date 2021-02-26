@@ -80,10 +80,10 @@ namespace Flint
 		void* VulkanBuffer::MapMemory(UI64 size, UI64 offset)
 		{
 			if (size + offset > mSize)
-			{
-				FLINT_LOG_ERROR(TEXT("Size and Offset goes out of bound! Arguments-> Size: #3 Offset: #3"), size, offset)
-					return nullptr;
-			}
+				size = mSize, offset = 0;
+
+			else if (size > mSize)
+				size = mSize;
 
 			mPrevMapInfo.mSize = size;
 			mPrevMapInfo.mOffset = offset;

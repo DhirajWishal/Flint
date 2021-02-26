@@ -14,13 +14,14 @@ namespace Flint
 	{
 		struct GraphicsPipelineSpecification;
 		class Pipeline;
+		class PipelineResource;
 		class GraphicsPipeline;
 
 		typedef UI32 EntryReference;
 
 		/**
 		 * Render Target object.
-		 * Render targets are the graphics space which objects are rendererd to. These are of two types,
+		 * Render targets are the graphics space which objects are rendered to. These are of two types,
 		 * 1. Screen bound.
 		 * 2. Off screen.
 		 *
@@ -34,8 +35,8 @@ namespace Flint
 		class RenderTarget : public BackendObject {
 			struct DrawEntry {
 				WireFrame mWireFrame = {};
-				std::vector<Buffer*> pUniformBuffers;
 				Pipeline* pPipeline = nullptr;
+				PipelineResource* pResource = nullptr;
 			};
 
 		public:
@@ -80,10 +81,10 @@ namespace Flint
 			 *
 			 * @param wireFrame: The wire frame to be rendered.
 			 * @param pPipeline: The pipeline which the wire frame is rendered using.
-			 * @param pUniformBuffers: The uniform buffer pointers to be used. Default is 0.
+			 * @param pPipelineResource: The pipeline resources to bind.
 			 * @return The entry reference.
 			 */
-			EntryReference AddDrawEntry(const WireFrame& wireFrame, Pipeline* pPipeline, std::vector<Buffer*> pUniformBuffers = {});
+			EntryReference AddDrawEntry(const WireFrame& wireFrame, Pipeline* pPipeline, PipelineResource* pPipelineResource);
 
 			/**
 			 * Remove an entry from the draw queue.

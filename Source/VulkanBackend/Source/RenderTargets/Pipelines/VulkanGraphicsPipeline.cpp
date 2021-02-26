@@ -6,6 +6,7 @@
 #include "VulkanBackend/VulkanShaderModule.h"
 #include "VulkanBackend/VulkanUtilities.h"
 #include "VulkanBackend/VulkanMacros.h"
+#include "VulkanBackend/VulkanBuffer.h"
 
 #include "VulkanBackend/RenderTargets/VulkanRenderTarget.h"
 
@@ -364,12 +365,13 @@ namespace Flint
 			vMSCI.alphaToOneEnable = GET_VK_BOOL(mSpec.bEnableAlphaToOne);
 			vMSCI.minSampleShading = mSpec.mMinSampleShading;
 			vMSCI.pSampleMask;
-			vMSCI.rasterizationSamples = static_cast<VkSampleCountFlagBits>(pDevice->GetSampleCount());
+			vMSCI.rasterizationSamples = VkSampleCountFlagBits::VK_SAMPLE_COUNT_1_BIT;
+			//vMSCI.rasterizationSamples = static_cast<VkSampleCountFlagBits>(pDevice->GetSampleCount());
 			vMSCI.sampleShadingEnable = GET_VK_BOOL(mSpec.bEnableSampleShading);
 
 			VkPipelineColorBlendAttachmentState vCBAS = {};
 			vCBAS.colorWriteMask = 0xf;
-			vCBAS.blendEnable = VK_TRUE;
+			vCBAS.blendEnable = GET_VK_BOOL(mSpec.bEnableColorBlend);
 
 			VkPipelineColorBlendStateCreateInfo vCBSCI = {};
 			vCBSCI.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
@@ -439,6 +441,14 @@ namespace Flint
 
 		void VulkanGraphicsPipeline::UnBind(const Backend::CommandBuffer& commandBuffer)
 		{
+		}
+		
+		Backend::PipelineResource* VulkanGraphicsPipeline::CreatePipelineResource()
+		{
+			VulkanPipelineResource* pPipelineResource = new VulkanPipelineResource();
+			pPipelineResource->Initialize(this);
+
+			return pPipelineResource;
 		}
 	}
 }

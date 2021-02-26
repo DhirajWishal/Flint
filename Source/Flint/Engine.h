@@ -105,9 +105,9 @@ namespace Flint
 		 * Submit the scene component to be drawn.
 		 * 
 		 * @param sceneComponent: The scene component to be drawn.
-		 * @return The entry reference of the component.
+		 * @return The render resource object.
 		 */
-		Backend::EntryReference SubmitToDrawQueue(const SceneComponent& sceneComponent);
+		RenderResource SubmitToDrawQueue(const SceneComponent& sceneComponent);
 
 	private:
 		Backend::RenderTarget* pRenderTarget = nullptr;

@@ -4,14 +4,19 @@
 #include "Core/Objects/WireFrame.h"
 #include "Core/ErrorHandler/Logger.h"
 
+#include "Core/Maths/Vector/Vector3.h"
+
 namespace Flint
 {
 	std::vector<VertexAttribute> CreateDefaultAttributes()
 	{
-		std::vector<VertexAttribute> attributes(1);
+		std::vector<VertexAttribute> attributes(2);
 
 		attributes[0].mType = VertexAttributeType::POSITION;
-		attributes[0].mSize = sizeof(float) * 4;
+		attributes[0].mSize = sizeof(Vector3);
+
+		attributes[1].mType = VertexAttributeType::COLOR_0;
+		attributes[1].mSize = sizeof(Vector3);
 
 		return attributes;
 	}

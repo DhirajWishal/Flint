@@ -9,12 +9,12 @@ namespace Flint
 {
 	namespace Backend
 	{
-		EntryReference RenderTarget::AddDrawEntry(const WireFrame& wireFrame, Pipeline* pPipeline, std::vector<Buffer*> pUniformBuffers)
+		EntryReference RenderTarget::AddDrawEntry(const WireFrame& wireFrame, Pipeline* pPipeline, PipelineResource* pPipelineResource)
 		{
 			DrawEntry entry = {};
 			entry.mWireFrame = wireFrame;
 			entry.pPipeline = pPipeline;
-			entry.pUniformBuffers = pUniformBuffers;
+			entry.pResource = pPipelineResource;
 			mDrawEntries[mReferenceCounter++] = std::move(entry);
 
 			return mReferenceCounter - 1;
@@ -44,6 +44,9 @@ namespace Flint
 
 					for (auto i = entry.mWireFrame.mDrawData.begin(); i != entry.mWireFrame.mDrawData.end(); i++)
 					{
+						if (entry.pResource)
+							entry.pResource->Bind(*itr);
+
 						pCommandBufferManager->DrawUsingIndexData(static_cast<UI32>(itr->GetIndex()), static_cast<UI32>(i->mIndexCount), static_cast<UI32>(i->mVertexOffset), static_cast<UI32>(i->mIndexOffset));
 					}
 				}

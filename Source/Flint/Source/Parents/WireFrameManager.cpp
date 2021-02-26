@@ -16,17 +16,11 @@ namespace Flint
 		wireFrame.mAttributes = vertexAttributes;
 
 		Assimp::Importer importer = {};
-		const aiScene* pScene = importer.ReadFile(pAsset,
-			aiProcess_MakeLeftHanded |
-			//aiProcess_FlipWindingOrder |
-			aiProcess_FlipUVs |
-			aiProcess_PreTransformVertices |
-			aiProcess_CalcTangentSpace |
-			aiProcess_GenSmoothNormals |
+		const aiScene* pScene = importer.ReadFile(pAsset, aiProcess_CalcTangentSpace |
 			aiProcess_Triangulate |
-			aiProcess_FixInfacingNormals |
-			aiProcess_FindInvalidData |
-			aiProcess_ValidateDataStructure | 0);
+			aiProcess_JoinIdenticalVertices |
+			aiProcess_SortByPType |
+			aiProcess_GenUVCoords);
 
 		// Check if the scene could be loaded.
 		if (!pScene)
@@ -81,6 +75,8 @@ namespace Flint
 					case Flint::VertexAttributeType::COLOR_0:
 						if (pMesh->HasVertexColors(0))
 							std::copy(&pMesh->mColors[0][j].r, (&pMesh->mColors[0][j].r) + copyAmount, pDataStore);
+						else
+							std::fill(pDataStore, pDataStore + (attribute.mSize / sizeof(float)), 1.0f);
 						break;
 
 					case Flint::VertexAttributeType::COLOR_1:

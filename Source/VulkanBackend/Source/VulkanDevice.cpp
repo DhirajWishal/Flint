@@ -696,6 +696,11 @@ namespace Flint
 			return vkAllocateDescriptorSets(GetLogicalDevice(), pAllocateInfo, pSet);
 		}
 
+		void VulkanDevice::UpdateDescriptorSet(const std::vector<VkWriteDescriptorSet>& vWrites, const std::vector<VkCopyDescriptorSet>& vCopies) const
+		{
+			vkUpdateDescriptorSets(GetLogicalDevice(), static_cast<UI32>(vWrites.size()), vWrites.data(), static_cast<UI32>(vCopies.size()), vCopies.data());
+		}
+
 		VkResult VulkanDevice::CreatePipelineLayout(const VkPipelineLayoutCreateInfo* pCreateInfo, VkPipelineLayout* pLayout) const
 		{
 			return vkCreatePipelineLayout(GetLogicalDevice(), pCreateInfo, nullptr, pLayout);

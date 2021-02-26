@@ -32,7 +32,7 @@ namespace Flint
 			void AllocateBufferMemory(VkMemoryPropertyFlags vMemoryProperties);
 			void FreeBufferMemory();
 
-		private:
+		public:
 			VkBuffer vBuffer = VK_NULL_HANDLE;
 			VkDeviceMemory vBufferMemory = VK_NULL_HANDLE;
 		};

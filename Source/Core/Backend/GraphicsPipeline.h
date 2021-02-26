@@ -120,6 +120,7 @@ namespace Flint
 			bool bEnableAlphaToOne = true;
 			bool bEnableSampleShading = true;
 			bool bEnableColorBlendLogic = true;
+			bool bEnableColorBlend = false;
 			bool bEnableDepthTest = false;
 			bool bEnableDepthWrite = false;
 		};
