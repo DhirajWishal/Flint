@@ -5,6 +5,7 @@
 
 #include "CommandBufferManager.h"
 #include "ShaderDigest.h"
+#include "Pipeline.h"
 #include "Core/Objects/WireFrame.h"
 #include "Core/Types/VectorSet.h"
 
@@ -13,6 +14,8 @@ namespace Flint
 	namespace Backend
 	{
 		struct GraphicsPipelineSpecification;
+		struct DynamicStateContainer;
+
 		class Pipeline;
 		class PipelineResource;
 		class GraphicsPipeline;
@@ -35,6 +38,8 @@ namespace Flint
 		class RenderTarget : public BackendObject {
 			struct DrawEntry {
 				WireFrame mWireFrame = {};
+				DynamicStateContainer mDynamicStates = {};
+
 				Pipeline* pPipeline = nullptr;
 				PipelineResource* pResource = nullptr;
 			};
@@ -82,9 +87,10 @@ namespace Flint
 			 * @param wireFrame: The wire frame to be rendered.
 			 * @param pPipeline: The pipeline which the wire frame is rendered using.
 			 * @param pPipelineResource: The pipeline resources to bind.
+			 * @param container: The dynamic states used by the entry.
 			 * @return The entry reference.
 			 */
-			EntryReference AddDrawEntry(const WireFrame& wireFrame, Pipeline* pPipeline, PipelineResource* pPipelineResource);
+			EntryReference AddDrawEntry(const WireFrame& wireFrame, Pipeline* pPipeline, PipelineResource* pPipelineResource, const DynamicStateContainer& container = {});
 
 			/**
 			 * Remove an entry from the draw queue.

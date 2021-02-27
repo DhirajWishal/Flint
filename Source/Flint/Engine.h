@@ -105,9 +105,10 @@ namespace Flint
 		 * Submit the scene component to be drawn.
 		 * 
 		 * @param sceneComponent: The scene component to be drawn.
+		 * @param dynamicStates: The dynamic states to be used.
 		 * @return The render resource object.
 		 */
-		RenderResource SubmitToDrawQueue(const SceneComponent& sceneComponent);
+		RenderResource SubmitToDrawQueue(const SceneComponent& sceneComponent, const Backend::DynamicStateContainer& dynamicStates = {});
 
 	private:
 		Backend::RenderTarget* pRenderTarget = nullptr;

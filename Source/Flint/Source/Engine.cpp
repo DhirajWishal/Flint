@@ -72,13 +72,13 @@ namespace Flint
 		sceneComponent.mWireFrame.Clear();
 	}
 
-	RenderResource Engine::SubmitToDrawQueue(const SceneComponent& sceneComponent)
+	RenderResource Engine::SubmitToDrawQueue(const SceneComponent& sceneComponent, const Backend::DynamicStateContainer& dynamicStates)
 	{
 		RenderResource resource = {};
 		resource.mUniformBuffers = sceneComponent.pPipeline->CreateUniformBuffers();
 		resource.pPipelineResource = sceneComponent.pPipeline->CreatePipelineResource();
 		resource.pPipelineResource->RegisterUniformBuffers(resource.mUniformBuffers);
-		resource.mReference = pRenderTarget->AddDrawEntry(sceneComponent.mWireFrame, sceneComponent.pPipeline, resource.pPipelineResource);
+		resource.mReference = pRenderTarget->AddDrawEntry(sceneComponent.mWireFrame, sceneComponent.pPipeline, resource.pPipelineResource, dynamicStates);
 
 		return resource;
 	}

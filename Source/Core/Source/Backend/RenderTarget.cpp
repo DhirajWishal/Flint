@@ -3,18 +3,18 @@
 
 #include "Core/Backend/RenderTarget.h"
 #include "Core/ErrorHandler/Logger.h"
-#include "Core/Backend/Pipeline.h"
 
 namespace Flint
 {
 	namespace Backend
 	{
-		EntryReference RenderTarget::AddDrawEntry(const WireFrame& wireFrame, Pipeline* pPipeline, PipelineResource* pPipelineResource)
+		EntryReference RenderTarget::AddDrawEntry(const WireFrame& wireFrame, Pipeline* pPipeline, PipelineResource* pPipelineResource, const DynamicStateContainer& container)
 		{
 			DrawEntry entry = {};
 			entry.mWireFrame = wireFrame;
 			entry.pPipeline = pPipeline;
 			entry.pResource = pPipelineResource;
+			entry.mDynamicStates = container;
 			mDrawEntries[mReferenceCounter++] = std::move(entry);
 
 			return mReferenceCounter - 1;
@@ -47,6 +47,7 @@ namespace Flint
 						if (entry.pResource)
 							entry.pResource->Bind(*itr);
 
+						pCommandBufferManager->SubmitDynamicStates(static_cast<UI32>(itr->GetIndex()), entry.mDynamicStates);
 						pCommandBufferManager->DrawUsingIndexData(static_cast<UI32>(itr->GetIndex()), static_cast<UI32>(i->mIndexCount), static_cast<UI32>(i->mVertexOffset), static_cast<UI32>(i->mIndexOffset));
 					}
 				}

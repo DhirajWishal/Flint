@@ -5,6 +5,8 @@
 #include "VulkanBackend/VulkanMacros.h"
 #include "VulkanBackend/RenderTargets/VulkanScreenBoundRenderTargetS.h"
 
+#include "Core/Backend/Pipeline.h"
+
 namespace Flint
 {
 	namespace VulkanBackend
@@ -68,7 +70,7 @@ namespace Flint
 			VulkanDevice* pvDevice = pDevice->Derive<VulkanDevice>();
 
 			FLINT_VK_ASSERT(vkWaitForFences(pvDevice->GetLogicalDevice(), 1, &vInFlightFences[frameIndex], VK_TRUE, std::numeric_limits<uint64_t>::max()), "Failed to wait for fence!")
-			VkResult result = vkAcquireNextImageKHR(pvDevice->GetLogicalDevice(), pRenderTarget->Derive<VulkanScreenBoundRenderTargetS>()->GetSwapChain(), std::numeric_limits<UI32>::max(), vImageAvailables[frameIndex], vInFlightFences[frameIndex], &index);
+				VkResult result = vkAcquireNextImageKHR(pvDevice->GetLogicalDevice(), pRenderTarget->Derive<VulkanScreenBoundRenderTargetS>()->GetSwapChain(), std::numeric_limits<UI32>::max(), vImageAvailables[frameIndex], vInFlightFences[frameIndex], &index);
 
 			if (result == VkResult::VK_ERROR_OUT_OF_DATE_KHR)
 				index = -1;
@@ -110,6 +112,82 @@ namespace Flint
 			vPI.pImageIndices = &index;
 
 			FLINT_VK_ASSERT(vkQueuePresentKHR(pvDevice->GetTransferQueue(), &vPI), "Failed to present queue!")
+		}
+
+		void VulkanCommandBufferManager::SubmitDynamicStates(UI32 index, const Backend::DynamicStateContainer& container)
+		{
+			VkCommandBuffer vBuffer = vCommandBuffers[index];
+			for (auto pState : container.pDynamicStates)
+			{
+				switch (pState->GetFlag())
+				{
+				case Flint::Backend::DynamicStateFlags::VIEWPORT:
+				{
+					Backend::DynamicStateContainer::ViewPort* pViewPort = dynamic_cast<Backend::DynamicStateContainer::ViewPort*>(pState.get());
+
+					VkViewport vVP = {};
+					vVP.width = pViewPort->mExtent.width;
+					vVP.height = pViewPort->mExtent.height;
+					vVP.minDepth = pViewPort->mDepth.x;
+					vVP.maxDepth = pViewPort->mDepth.y;
+					vVP.x = pViewPort->mOffset.x;
+					vVP.y = pViewPort->mOffset.y;
+
+					vkCmdSetViewport(vBuffer, 0, 1, &vVP);
+				}
+				break;
+
+				case Flint::Backend::DynamicStateFlags::SCISSOR:
+				{
+					Backend::DynamicStateContainer::Scissor* pScissor = dynamic_cast<Backend::DynamicStateContainer::Scissor*>(pState.get());
+
+					VkRect2D vR2D = {};
+					vR2D.extent.width = static_cast<UI32>(pScissor->mExtent.width);
+					vR2D.extent.height = static_cast<UI32>(pScissor->mExtent.height);
+					vR2D.offset.x = static_cast<I32>(pScissor->mOffset.x);
+					vR2D.offset.y = static_cast<I32>(pScissor->mOffset.y);
+
+					vkCmdSetScissor(vBuffer, 0, 1, &vR2D);
+				}
+				break;
+
+				case Flint::Backend::DynamicStateFlags::LINE_WIDTH:
+				{
+					Backend::DynamicStateContainer::LineWidth* pLineWidth = dynamic_cast<Backend::DynamicStateContainer::LineWidth*>(pState.get());
+
+					vkCmdSetLineWidth(vBuffer, pLineWidth->mLineWidth);
+				}
+				break;
+
+				case Flint::Backend::DynamicStateFlags::DEPTH_BIAS:
+				{
+					Backend::DynamicStateContainer::DepthBias* pDepthBias = dynamic_cast<Backend::DynamicStateContainer::DepthBias*>(pState.get());
+
+					vkCmdSetDepthBias(vBuffer, pDepthBias->mDepthBiasFactor, pDepthBias->mDepthClampFactor, pDepthBias->mDepthSlopeFactor);
+				}
+				break;
+
+				case Flint::Backend::DynamicStateFlags::BLEND_CONSTANTS:
+				{
+					Backend::DynamicStateContainer::BlendConstants* pBlendConstants = dynamic_cast<Backend::DynamicStateContainer::BlendConstants*>(pState.get());
+
+					vkCmdSetBlendConstants(vBuffer, pBlendConstants->mConstants);
+				}
+				break;
+
+				case Flint::Backend::DynamicStateFlags::DEPTH_BOUNDS:
+				{
+					Backend::DynamicStateContainer::DepthBounds* pDepthBounds = dynamic_cast<Backend::DynamicStateContainer::DepthBounds*>(pState.get());
+
+					vkCmdSetDepthBounds(vBuffer, pDepthBounds->mBounds.x, pDepthBounds->mBounds.y);
+				}
+				break;
+
+				default:
+					FLINT_LOG_ERROR(TEXT("Invalid or Undefined dynamic state flag!"))
+						break;
+				}
+			}
 		}
 
 		void VulkanCommandBufferManager::DrawUsingIndexData(UI32 index, UI32 indexCount, UI32 vertexOffset, UI32 indexOffset)

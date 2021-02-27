@@ -11,6 +11,7 @@ namespace Flint
 	namespace Backend
 	{
 		class ScreenBoundRenderTarget;
+		struct DynamicStateContainer;
 
 		/**
 		 * Command buffer manager object.
@@ -71,6 +72,14 @@ namespace Flint
 			virtual void SubmitCommand(UI32 index, ScreenBoundRenderTarget* pRenderTarget) = 0;
 
 		public:
+			/**
+			 * Submit dynamic states to the command buffer.
+			 * 
+			 * @param index: The index of the command buffer.
+			 * @param container: The dynamic state container.
+			 */
+			virtual void SubmitDynamicStates(UI32 index, const DynamicStateContainer& container) = 0;
+
 			/**
 			 * Draw using index data.
 			 * 
