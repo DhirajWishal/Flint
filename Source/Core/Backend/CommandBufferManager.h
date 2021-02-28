@@ -10,8 +10,7 @@ namespace Flint
 {
 	namespace Backend
 	{
-		class ScreenBoundRenderTarget;
-		struct DynamicStateContainer;
+		class RenderTarget;
 
 		/**
 		 * Command buffer manager object.
@@ -22,6 +21,8 @@ namespace Flint
 
 		public:
 			CommandBufferManager() {}
+			CommandBufferManager(Device* pDevice) : pDevice(pDevice) {}
+			CommandBufferManager(Device* pDevice, std::vector<std::shared_ptr<CommandBuffer>>&& buffers) : pDevice(pDevice), mCommandBuffers(std::move(buffers)) {}
 
 			/**
 			 * Create new command buffers.
@@ -37,73 +38,25 @@ namespace Flint
 			 */
 			virtual void Terminate() = 0;
 
-		public:
 			/**
-			 * Begin command buffer recording.
-			 * Command buffers must begin recoding before performing tasks.
-			 *
-			 * @param index: The index of the buffer to be recorded.
+			 * Create a child command buffer manager object.
 			 */
-			virtual void BeginBufferRecording(UI32 index) = 0;
-
-			/**
-			 * End command buffer recording.
-			 * Command buffers must end recoding before submitting.
-			 *
-			 * @param index: The index of the buffer.
-			 */
-			virtual void EndBufferRecording(UI32 index) = 0;
-
-			/**
-			 * Begin command buffer execution.
-			 *
-			 * @param frameIndex: The frame index.
-			 * @param pRenderTarget: The render target pointer.
-			 * @return The image index.
-			 */
-			virtual I32 BeginCommandExecution(UI32 frameIndex, ScreenBoundRenderTarget* pRenderTarget) = 0;
-
-			/**
-			 * Submit commands to the GPU to be processed.
-			 *
-			 * @param index: The index of the buffer.
-			 * @param pRenderTarget: The render target to be submitted to.
-			 */
-			virtual void SubmitCommand(UI32 index, ScreenBoundRenderTarget* pRenderTarget) = 0;
+			virtual std::shared_ptr<CommandBufferManager> CreateChild(UI32 bufferCount, RenderTarget* pRenderTarget) = 0;
 
 		public:
 			/**
-			 * Submit dynamic states to the command buffer.
-			 * 
-			 * @param index: The index of the command buffer.
-			 * @param container: The dynamic state container.
+			 * Reset all the command buffers.
 			 */
-			virtual void SubmitDynamicStates(UI32 index, const DynamicStateContainer& container) = 0;
-
-			/**
-			 * Draw using index data.
-			 * 
-			 * @param index: The index of the command buffer.
-			 * @param indexCount: The number of indexes to draw.
-			 * @param vertexOffset: The vertex offset of the buffer.
-			 * @param indexOffset: The offset to be added to the index buffer.
-			 */
-			virtual void DrawUsingIndexData(UI32 index, UI32 indexCount, UI32 vertexOffset, UI32 indexOffset) = 0;
+			virtual void Reset() = 0;
 
 		public:
-			std::vector<CommandBuffer>& GetBuffers() { return mCommandBuffers; }
-			const std::vector<CommandBuffer> GetBuffers() const { return mCommandBuffers; }
+			std::shared_ptr<CommandBuffer> GetBuffer(UI64 index) { return mCommandBuffers[index]; }
+			const std::shared_ptr<CommandBuffer> GetBuffer(UI64 index) const { return mCommandBuffers[index]; }
+			std::vector<std::shared_ptr<CommandBuffer>>& GetBuffers() { return mCommandBuffers; }
+			const std::vector<std::shared_ptr<CommandBuffer>> GetBuffers() const { return mCommandBuffers; }
 
 		protected:
-			/**
-			 * Resolve the command buffers.
-			 *
-			 * @param count: The number of command buffers to be created.
-			 */
-			void ResolveCommandBuffers(UI32 count);
-
-		protected:
-			std::vector<CommandBuffer> mCommandBuffers;
+			std::vector<std::shared_ptr<CommandBuffer>> mCommandBuffers;
 
 			Device* pDevice = nullptr;
 		};

@@ -3,7 +3,7 @@
 
 #include "VulkanBackend/VulkanBuffer.h"
 #include "VulkanBackend/VulkanMacros.h"
-#include "VulkanBackend/VulkanCommandBufferManager.h"
+#include "VulkanBackend/VulkanCommandBuffer.h"
 #include "VulkanBackend/VulkanOneTimeCommandBuffer.h"
 
 namespace Flint
@@ -121,9 +121,9 @@ namespace Flint
 			vkCmdCopyBuffer(vCommandBuffer, pBuffer->Derive<VulkanBuffer>()->vBuffer, vBuffer, 1, &vBC);
 		}
 
-		void VulkanBuffer::Bind(const Backend::CommandBuffer& commandBuffer)
+		void VulkanBuffer::Bind(const std::shared_ptr<Backend::CommandBuffer>& pCommandBuffer)
 		{
-			VkCommandBuffer vCommandBuffer = commandBuffer.GetManager()->Derive<VulkanCommandBufferManager>()->vCommandBuffers[commandBuffer.GetIndex()];
+			VkCommandBuffer vCommandBuffer = *dynamic_cast<VulkanCommandBuffer*>(const_cast<Backend::CommandBuffer*>(pCommandBuffer.get()));
 			VkDeviceSize offset[1] = { 0 };
 
 			if (mUsage == Backend::BufferUsage::VERTEX)

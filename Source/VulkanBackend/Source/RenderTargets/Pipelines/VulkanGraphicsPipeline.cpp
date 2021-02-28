@@ -3,6 +3,7 @@
 
 #include "VulkanBackend/RenderTargets/Pipelines/VulkanGraphicsPipeline.h"
 #include "VulkanBackend/VulkanCommandBufferManager.h"
+#include "VulkanBackend/VulkanCommandBuffer.h"
 #include "VulkanBackend/VulkanShaderModule.h"
 #include "VulkanBackend/VulkanUtilities.h"
 #include "VulkanBackend/VulkanMacros.h"
@@ -434,12 +435,12 @@ namespace Flint
 			pDevice->DestroyDescriptorSetLayout(vSetLayout);
 		}
 
-		void VulkanGraphicsPipeline::Bind(const Backend::CommandBuffer& commandBuffer)
+		void VulkanGraphicsPipeline::Bind(const std::shared_ptr<Backend::CommandBuffer>& pCommandBuffer)
 		{
-			vkCmdBindPipeline(commandBuffer.GetManager()->Derive<VulkanCommandBufferManager>()->vCommandBuffers[commandBuffer.GetIndex()], VK_PIPELINE_BIND_POINT_GRAPHICS, vPipeline);
+			vkCmdBindPipeline(*dynamic_cast<VulkanCommandBuffer*>(const_cast<Backend::CommandBuffer*>(pCommandBuffer.get())), VK_PIPELINE_BIND_POINT_GRAPHICS, vPipeline);
 		}
 
-		void VulkanGraphicsPipeline::UnBind(const Backend::CommandBuffer& commandBuffer)
+		void VulkanGraphicsPipeline::UnBind(const std::shared_ptr<Backend::CommandBuffer>& pCommandBuffer)
 		{
 		}
 		

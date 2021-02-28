@@ -16,6 +16,7 @@ namespace Flint
 
 		public:
 			VkRenderPass GetRenderPass() const { return vRenderPass; }
+			virtual VkFramebuffer GetCurrentFrameBuffer() const = 0;
 
 		protected:
 			void CreateRenderPass(VulkanDevice* pDevice, std::vector<VulkanRenderTargetAttachment*> pAttachments, VkPipelineBindPoint vBindPoint);
@@ -25,6 +26,14 @@ namespace Flint
 			void DestroyFrameBuffers(VulkanDevice* pDevice);
 
 		protected:
+			void InitializeSyncObjects(VulkanDevice* pDevice, UI32 count);
+			void TerminateSyncObjects(VulkanDevice* pDevice);
+
+		protected:
+			std::vector<VkSemaphore> vImageAvailables;
+			std::vector<VkSemaphore> vRenderFinishes;
+			std::vector<VkFence> vInFlightFences;
+
 			std::vector<VkFramebuffer> vFrameBuffers;
 			VkRenderPass vRenderPass = VK_NULL_HANDLE;
 		};

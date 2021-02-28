@@ -381,6 +381,11 @@ namespace Flint
 			return vkWaitForFences(GetLogicalDevice(), static_cast<UI32>(vFences.size()), vFences.data(), GET_VK_BOOL(waitForAll), timeout);
 		}
 
+		VkResult VulkanDevice::ResetFences(const std::vector<VkFence>& vFences) const
+		{
+			return vkResetFences(GetLogicalDevice(), static_cast<UI32>(vFences.size()), vFences.data());
+		}
+
 		VkResult VulkanDevice::CreateSwapChain(VkSwapchainCreateInfoKHR* pCreateInfo, VkSwapchainKHR* pSwapChain) const
 		{
 			return vkCreateSwapchainKHR(GetLogicalDevice(), pCreateInfo, nullptr, pSwapChain);

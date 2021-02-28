@@ -8,6 +8,7 @@
 #include "Pipeline.h"
 #include "Core/Objects/WireFrame.h"
 #include "Core/Types/VectorSet.h"
+#include "Core/Thread/ThreadPool.h"
 
 namespace Flint
 {
@@ -21,6 +22,11 @@ namespace Flint
 		class GraphicsPipeline;
 
 		typedef UI32 EntryReference;
+
+		enum class RenderTargetExecutionType : UI8 {
+			SINGLE_THREADED,
+			MULTI_THREADED,
+		};
 
 		/**
 		 * Render Target object.
@@ -36,12 +42,17 @@ namespace Flint
 		 * and off screen.
 		 */
 		class RenderTarget : public BackendObject {
+		public:
 			struct DrawEntry {
 				WireFrame mWireFrame = {};
 				DynamicStateContainer mDynamicStates = {};
 
 				Pipeline* pPipeline = nullptr;
 				PipelineResource* pResource = nullptr;
+			};
+
+			struct DynamicDrawEntry : public DrawEntry {
+				std::unique_ptr<CommandBuffer> pCommandBuffer;
 			};
 
 		public:
@@ -83,6 +94,7 @@ namespace Flint
 		public:
 			/**
 			 * Add a draw entry to the render target.
+			 * By default, these entries are set to dynamic draw entries.
 			 *
 			 * @param wireFrame: The wire frame to be rendered.
 			 * @param pPipeline: The pipeline which the wire frame is rendered using.
@@ -93,11 +105,32 @@ namespace Flint
 			EntryReference AddDrawEntry(const WireFrame& wireFrame, Pipeline* pPipeline, PipelineResource* pPipelineResource, const DynamicStateContainer& container = {});
 
 			/**
+			 * Add a draw entry to the render target.
+			 *
+			 * @param wireFrame: The wire frame to be rendered.
+			 * @param pPipeline: The pipeline which the wire frame is rendered using.
+			 * @param pPipelineResource: The pipeline resources to bind.
+			 * @param container: The dynamic states used by the entry.
+			 * @return The entry reference.
+			 */
+			EntryReference AddStaticDrawEntry(const WireFrame& wireFrame, Pipeline* pPipeline, PipelineResource* pPipelineResource, const DynamicStateContainer& container = {});
+
+			/**
 			 * Remove an entry from the draw queue.
 			 *
 			 * @param reference: The draw entry reference to be deleted.
 			 */
 			void RemoveDrawEntry(EntryReference reference);
+
+			/**
+			 * Prepare the render target to draw.
+			 */
+			virtual UI32 PrepareToDraw() = 0;
+
+			/**
+			 * Submit commands to the GPU to be processed.
+			 */
+			virtual void SubmitCommand() = 0;
 
 		public:
 			/**
@@ -108,22 +141,21 @@ namespace Flint
 			 */
 			void PrepareCommandBuffers();
 
-			/**
-			 * Get the command buffer to be rendered.
-			 */
-			virtual CommandBuffer GetCommandBuffer() = 0;
+		protected:
+			virtual void Bind(const std::shared_ptr<CommandBuffer>& pCommandBuffer) = 0;
+			virtual void UnBind(const std::shared_ptr<CommandBuffer>& pCommandBuffer) = 0;
 
-			/**
-			 * Draw the entries to render target.
-			 */
-			virtual void Draw(const CommandBuffer& commandBuffer) = 0;
+			static void BakeDynamicCommands(const std::vector<RenderTarget::DrawEntry>& mEntries, const std::shared_ptr<CommandBufferManager>& pCommandBufferManager);
+
+			void DestroyChildCommandBuffers();
 
 		protected:
-			virtual void Bind(CommandBuffer commandBuffer) = 0;
-			virtual void UnBind(CommandBuffer commandBuffer) = 0;
+			VectorSet<EntryReference, DrawEntry> mDynamicDrawEntries;
+			VectorSet<EntryReference, DrawEntry> mStaticDrawEntries;
 
-		protected:
-			VectorSet<EntryReference, DrawEntry> mDrawEntries;
+			std::vector<std::shared_ptr<Backend::CommandBufferManager>> mChildCommandBuffers;
+
+			Thread::ThreadPool mThreadPool = {};
 
 			CommandBufferManager* pCommandBufferManager = {};
 			Device* pDevice = nullptr;
@@ -143,11 +175,8 @@ namespace Flint
 		public:
 			ScreenBoundRenderTarget() {}
 
-			virtual CommandBuffer GetCommandBuffer() override final;
-			virtual void Draw(const CommandBuffer& commandBuffer) override final;
-
 		protected:
-			I32 mImageIndex = 0;
+			UI32 mImageIndex = 0;
 		};
 
 		/**
@@ -159,5 +188,11 @@ namespace Flint
 		public:
 			OffScreenRenderTarget() {}
 		};
+
+		/** TODO
+		 * Make two types of entries:
+		 * * Static Entry (baked into the primary command buffer).
+		 * * Dynamic Entry (baked into the secondary command buffer).
+		 */
 	}
 }

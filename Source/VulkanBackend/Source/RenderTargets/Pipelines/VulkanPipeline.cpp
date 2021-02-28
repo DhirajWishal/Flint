@@ -6,7 +6,7 @@
 #include "VulkanBackend/VulkanMacros.h"
 #include "VulkanBackend/VulkanBuffer.h"
 #include "VulkanBackend/VulkanUtilities.h"
-#include "VulkanBackend/VulkanCommandBufferManager.h"
+#include "VulkanBackend/VulkanCommandBuffer.h"
 
 namespace Flint
 {
@@ -69,12 +69,12 @@ namespace Flint
 				delete ptr;
 		}
 
-		void VulkanPipelineResource::Bind(const Backend::CommandBuffer& commandBuffer)
+		void VulkanPipelineResource::Bind(const std::shared_ptr<Backend::CommandBuffer>& pCommandBuffer)
 		{
 			VulkanPipeline* pvPipeline = pPipeline->Derive<VulkanGraphicsPipeline>()->Derive<VulkanPipeline>();
 
 			vkCmdBindDescriptorSets(
-				commandBuffer.GetManager()->Derive<VulkanCommandBufferManager>()->vCommandBuffers[commandBuffer.GetIndex()],
+				*dynamic_cast<VulkanCommandBuffer*>(const_cast<Backend::CommandBuffer*>(pCommandBuffer.get())),
 				pvPipeline->GetBindPoint(),
 				pvPipeline->vPipelineLayout,
 				0, 1, &vDescriptorSet, 0, VK_NULL_HANDLE);

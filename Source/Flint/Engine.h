@@ -112,6 +112,5 @@ namespace Flint
 
 	private:
 		Backend::RenderTarget* pRenderTarget = nullptr;
-		Backend::CommandBuffer mCommandBuffer = {};
 	};
 }

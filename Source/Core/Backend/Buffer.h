@@ -71,9 +71,9 @@ namespace Flint
 			 * Bind a buffer to the command buffer.
 			 * For draw calls, only Index and Vertex buffers are allowed to be bound.
 			 * 
-			 * @param commandBuffer: The command buffer to be bound to.
+			 * @param pCommandBuffer: The command buffer to be bound to.
 			 */
-			virtual void Bind(const CommandBuffer& commandBuffer) = 0;
+			virtual void Bind(const std::shared_ptr<CommandBuffer>& pCommandBuffer) = 0;
 
 		public:
 			/**

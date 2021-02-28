@@ -6,6 +6,8 @@
 #include "Display.h"
 #include "Core/Maths/Vector/Vector2.h"
 
+#include <memory>
+
 namespace Flint
 {
 	namespace Backend

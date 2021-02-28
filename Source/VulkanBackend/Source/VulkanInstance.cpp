@@ -237,8 +237,8 @@ namespace Flint
 			VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo = {};
 			if (mEnableValidation)
 			{
-				//createInfo.enabledLayerCount = static_cast<UI32>(mValidationLayers.size());
-				//createInfo.ppEnabledLayerNames = mValidationLayers.data();
+				createInfo.enabledLayerCount = static_cast<UI32>(mValidationLayers.size());
+				createInfo.ppEnabledLayerNames = mValidationLayers.data();
 
 				debugCreateInfo = _Helpers::CreateDebugMessengerCreateInfo();
 				createInfo.pNext = static_cast<VkDebugUtilsMessengerCreateInfoEXT*>(&debugCreateInfo);

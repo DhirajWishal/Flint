@@ -7,8 +7,6 @@
 #include "ShaderDigest.h"
 #include "Core/Macros/Global.h"
 
-#include <memory>
-
 namespace Flint
 {
 	namespace Backend
@@ -51,9 +49,9 @@ namespace Flint
 			/**
 			 * Bind the resources to the draw call.
 			 * 
-			 * @param commandBuffer: The command buffer to be bound to.
+			 * @param pCommandBuffer: The command buffer to be bound to.
 			 */
-			virtual void Bind(const CommandBuffer& commandBuffer) = 0;
+			virtual void Bind(const std::shared_ptr<CommandBuffer>& pCommandBuffer) = 0;
 
 		protected:
 			Pipeline* pPipeline = nullptr;
@@ -81,16 +79,16 @@ namespace Flint
 			/**
 			 * Bind the pipeline to a command buffer.
 			 *
-			 * @param commandBuffer: The command buffer to be bound to.
+			 * @param pCommandBuffer: The command buffer to be bound to.
 			 */
-			virtual void Bind(const CommandBuffer& commandBuffer) = 0;
+			virtual void Bind(const std::shared_ptr<CommandBuffer>& pCommandBuffer) = 0;
 
 			/**
 			 * Unbind the pipeline from a command buffer.
 			 *
-			 * @param commandBuffer: The command buffer to be unbound from.
+			 * @param pCommandBuffer: The command buffer to be unbound from.
 			 */
-			virtual void UnBind(const CommandBuffer& commandBuffer) = 0;
+			virtual void UnBind(const std::shared_ptr<CommandBuffer>& pCommandBuffer) = 0;
 
 		public:
 			/**

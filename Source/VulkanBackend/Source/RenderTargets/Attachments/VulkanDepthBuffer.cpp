@@ -64,10 +64,10 @@ namespace Flint
 		{
 			VkAttachmentDescription vDesc = {};
 			vDesc.format = vFormat;
-			vDesc.samples = static_cast<VkSampleCountFlagBits>(vSampleCount);
+			vDesc.samples = VK_SAMPLE_COUNT_1_BIT;
 			vDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-			vDesc.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-			vDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+			vDesc.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+			vDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 			vDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 			vDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 			vDesc.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;

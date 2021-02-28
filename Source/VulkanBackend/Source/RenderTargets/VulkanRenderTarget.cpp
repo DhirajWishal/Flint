@@ -35,8 +35,8 @@ namespace Flint
 				switch ((*itr)->GetType())
 				{
 				case Flint::VulkanBackend::RenderTargetAttachmenType::SWAP_CHAIN:
-					INSERT_INTO_VECTOR(vResolveAttachmentRef, vAR);
-					vSD.colorAttachmentCount++;
+					//INSERT_INTO_VECTOR(vResolveAttachmentRef, vAR);
+					//vSD.colorAttachmentCount++;
 					break;
 
 				case Flint::VulkanBackend::RenderTargetAttachmenType::COLOR_BUFFER:
@@ -59,13 +59,23 @@ namespace Flint
 			vSD.pDepthStencilAttachment = vDepthAttachmentRef.data();
 			vSD.pResolveAttachments = vResolveAttachmentRef.data();
 
-			VkSubpassDependency vSDep = {};
-			vSDep.srcSubpass = VK_SUBPASS_EXTERNAL;
-			vSDep.dstSubpass = 0;
-			vSDep.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-			vSDep.srcAccessMask = 0;
-			vSDep.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-			vSDep.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+			VkSubpassDependency dependencies[2] = {};
+
+			dependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
+			dependencies[0].dstSubpass = 0;
+			dependencies[0].srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+			dependencies[0].dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+			dependencies[0].srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+			dependencies[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+			dependencies[0].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+
+			dependencies[1].srcSubpass = 0;
+			dependencies[1].dstSubpass = VK_SUBPASS_EXTERNAL;
+			dependencies[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+			dependencies[1].dstStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+			dependencies[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+			dependencies[1].dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+			dependencies[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
 
 			VkRenderPassCreateInfo vCI = {};
 			vCI.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
@@ -75,8 +85,8 @@ namespace Flint
 			vCI.pAttachments = vDescriptions.data();
 			vCI.subpassCount = 1;
 			vCI.pSubpasses = &vSD;
-			vCI.dependencyCount = 1;
-			vCI.pDependencies = &vSDep;
+			vCI.dependencyCount = 2;
+			vCI.pDependencies = dependencies;
 
 			FLINT_VK_ASSERT(pDevice->CreateRenderPass(&vCI, &vRenderPass), "Failed to create render pass!");
 		}
@@ -115,6 +125,33 @@ namespace Flint
 		{
 			pDevice->DestroyFrameBuffers(vFrameBuffers);
 			vFrameBuffers.clear();
+		}
+
+		void VulkanRenderTarget::InitializeSyncObjects(VulkanDevice* pDevice, UI32 count)
+		{
+			vImageAvailables.resize(count);
+			vRenderFinishes.resize(count);
+			vInFlightFences.resize(count);
+
+			VkSemaphoreCreateInfo vSCI = {};
+			vSCI.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+			VkFenceCreateInfo VFCI = {};
+			VFCI.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+			VFCI.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+			VulkanDevice* pvDevice = pDevice->Derive<VulkanDevice>();
+			FLINT_VK_ASSERT(pvDevice->CreateSemaphores(&vSCI, vImageAvailables), "Failed to create Image Available semaphores!")
+				FLINT_VK_ASSERT(pvDevice->CreateSemaphores(&vSCI, vRenderFinishes), "Failed to create Render Finished semaphores!")
+				FLINT_VK_ASSERT(pvDevice->CreateFences(&VFCI, vInFlightFences), "Failed to create In Flight fences!")
+		}
+
+		void VulkanRenderTarget::TerminateSyncObjects(VulkanDevice* pDevice)
+		{
+			VulkanDevice* pvDevice = pDevice->Derive<VulkanDevice>();
+			pvDevice->DestroySemaphores(vImageAvailables);
+			pvDevice->DestroySemaphores(vRenderFinishes);
+			pvDevice->DestroyFences(vInFlightFences);
 		}
 	}
 }

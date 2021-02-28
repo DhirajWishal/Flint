@@ -93,6 +93,7 @@ namespace Flint
 			VkResult QueueWait(VkQueue vQueue) const;
 			VkResult WaitIdle() const;
 			VkResult WaitForFences(const std::vector<VkFence>& vFences, bool waitForAll, UI64 timeout) const;
+			VkResult ResetFences(const std::vector<VkFence>& vFences) const;
 
 			VkResult CreateSwapChain(VkSwapchainCreateInfoKHR* pCreateInfo, VkSwapchainKHR* pSwapChain) const;
 			VkResult GetSwapChainImages(VkSwapchainKHR vSwapChain, UI32* pSwapChainImageCount, std::vector<VkImage>& vImages) const;

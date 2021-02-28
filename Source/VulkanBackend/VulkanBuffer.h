@@ -23,7 +23,7 @@ namespace Flint
 			virtual void FlushMemoryMappings() override final;
 
 			virtual void CopyFrom(Buffer* pBuffer, UI64 size, UI64 srcOffset, UI64 dstOffset) override final;
-			virtual void Bind(const Backend::CommandBuffer& commandBuffer) override final;
+			virtual void Bind(const std::shared_ptr<Backend::CommandBuffer>& pCommandBuffer) override final;
 
 		private:
 			void CreateBuffer(VkBufferUsageFlags vUsage);

@@ -18,14 +18,14 @@ namespace Flint
 	bool Engine::BeginUpdate()
 	{
 		pDisplay->Update();
-		mCommandBuffer = pRenderTarget->GetCommandBuffer();
+		pRenderTarget->PrepareToDraw();
 
-		return mCommandBuffer.IsValid();
+		return true;
 	}
 
 	void Engine::EndUpdate()
 	{
-		pRenderTarget->Draw(mCommandBuffer);
+		pRenderTarget->SubmitCommand();
 	}
 
 	void Engine::Terminate()

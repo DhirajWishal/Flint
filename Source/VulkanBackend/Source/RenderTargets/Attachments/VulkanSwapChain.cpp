@@ -67,6 +67,24 @@ namespace Flint
 			vCI.clipped = VK_TRUE;
 			vCI.oldSwapchain = vSwapChain;
 
+
+			VkBool32 isSupported = VK_FALSE;
+			FLINT_VK_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(pDevice->GetPhysicalDevice(), pDevice->GetQueue().mGraphicsFamily.value(), vCI.surface, &isSupported), "Failed to check swap chain -> display support!")
+
+				if (isSupported != VK_TRUE)
+				{
+					Logger::LogFatal(TEXT("The current display does not support Vulkan Swap chain creation! Handle: #8"), static_cast<void*>(vCI.surface));
+					return;
+				}
+
+			FLINT_VK_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(pDevice->GetPhysicalDevice(), pDevice->GetQueue().mTransferFamily.value(), vCI.surface, &isSupported), "Failed to check swap chain -> display support!")
+
+				if (isSupported != VK_TRUE)
+				{
+					Logger::LogFatal(TEXT("The current display does not support Vulkan Swap chain creation! Handle: #8"), static_cast<void*>(vCI.surface));
+					return;
+				}
+
 			VkSwapchainKHR vNewSwapChain = VK_NULL_HANDLE;
 			FLINT_VK_ASSERT(pDevice->CreateSwapChain(&vCI, &vNewSwapChain), "Failed to create the Vulkan Swap Chain!");
 

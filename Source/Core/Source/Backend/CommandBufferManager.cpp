@@ -7,17 +7,5 @@ namespace Flint
 {
 	namespace Backend
 	{
-		void Flint::Backend::CommandBufferManager::ResolveCommandBuffers(UI32 count)
-		{
-			for (UI32 i = 0; i < count; i++)
-			{
-				CommandBuffer buffer = {};
-				buffer.pParent = this;
-				buffer.mIndex = i;
-				buffer.bIsValid = true;
-
-				INSERT_INTO_VECTOR(mCommandBuffers, buffer);
-			}
-		}
 	}
 }

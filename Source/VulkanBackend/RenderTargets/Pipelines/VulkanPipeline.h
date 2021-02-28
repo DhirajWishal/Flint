@@ -24,7 +24,7 @@ namespace Flint
 
 			virtual void RegisterUniformBuffers(const Backend::UniformBufferContainer& uniformBuffers) override final;
 		
-			virtual void Bind(const Backend::CommandBuffer& commandBuffer) override final;
+			virtual void Bind(const std::shared_ptr<Backend::CommandBuffer>& pCommandBuffer) override final;
 
 		private:
 			void CreateDescriptorPool(const std::vector<VkDescriptorPoolSize>& vSizes);

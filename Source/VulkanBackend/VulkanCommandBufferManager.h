@@ -13,31 +13,20 @@ namespace Flint
 		class VulkanCommandBufferManager final : public Backend::CommandBufferManager {
 		public:
 			VulkanCommandBufferManager() {}
+			VulkanCommandBufferManager(Backend::Device* pDevice, VkCommandPool pool, std::vector<VkCommandBuffer>&& buffers, std::vector<std::shared_ptr<Backend::CommandBuffer>>&& commandBuffers)
+				: vCommandPool(pool), vCommandBuffers(std::move(buffers)), Backend::CommandBufferManager(pDevice, std::move(commandBuffers)) {}
 			~VulkanCommandBufferManager() {}
 
 			virtual void CreateBuffers(Backend::Device* pDevice, UI32 count) override final;
 			virtual void Terminate() override final;
 
-			virtual void BeginBufferRecording(UI32 index) override final;
-			virtual void EndBufferRecording(UI32 index) override final;
+			virtual std::shared_ptr<Backend::CommandBufferManager> CreateChild(UI32 bufferCount, Backend::RenderTarget* pRenderTarget) override final;
 
-			virtual I32 BeginCommandExecution(UI32 frameIndex, Backend::ScreenBoundRenderTarget* pRenderTarget) override final;
-			virtual void SubmitCommand(UI32 index, Backend::ScreenBoundRenderTarget* pRenderTarget) override final;
-
-			virtual void SubmitDynamicStates(UI32 index, const Backend::DynamicStateContainer& container) override final;
-			virtual void DrawUsingIndexData(UI32 index, UI32 indexCount, UI32 vertexOffset, UI32 indexOffset) override final;
+			virtual void Reset() override final;
 
 			VkCommandPool vCommandPool = VK_NULL_HANDLE;
 			std::vector<VkCommandBuffer> vCommandBuffers;
-
-		private:
-			void InitializeSyncObjects(UI32 count);
-			void TerminateSyncObjects();
-
-		private:
-			std::vector<VkSemaphore> vImageAvailables;
-			std::vector<VkSemaphore> vRenderFinishes;
-			std::vector<VkFence> vInFlightFences;
+			VkCommandBufferInheritanceInfo vCBII = {};
 		};
 	}
 }
