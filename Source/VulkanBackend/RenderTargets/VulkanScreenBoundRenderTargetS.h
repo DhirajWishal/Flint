@@ -30,7 +30,7 @@ namespace Flint
 			virtual void SubmitCommand() override final;
 
 			VkSwapchainKHR GetSwapChain() const { return vSwapChain.GetSwapChain(); }
-			virtual VkFramebuffer GetCurrentFrameBuffer() const override final { return vFrameBuffers[mFrameIndex]; }
+			virtual VkFramebuffer GetCurrentFrameBuffer() const override final { return vFrameBuffers[mImageIndex]; }
 
 		private:
 			virtual void Bind(const std::shared_ptr<Backend::CommandBuffer>& pCommandBuffer) override final;

@@ -65,7 +65,7 @@ namespace Flint
 			VkAttachmentDescription vDesc = {};
 			vDesc.flags = VK_NULL_HANDLE;
 			vDesc.format = vFormat;
-			vDesc.samples = VK_SAMPLE_COUNT_1_BIT;
+			vDesc.samples = static_cast<VkSampleCountFlagBits>(vSampleCount);
 			vDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 			vDesc.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 			vDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;

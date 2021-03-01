@@ -13,6 +13,8 @@ namespace Flint
 		class VulkanCommandBufferManager final : public Backend::CommandBufferManager {
 		public:
 			VulkanCommandBufferManager() {}
+			VulkanCommandBufferManager(Backend::Device* pDevice, VkCommandPool pool, std::vector<VkCommandBuffer>&& buffers)
+				: vCommandPool(pool), vCommandBuffers(std::move(buffers)), Backend::CommandBufferManager(pDevice) {}
 			VulkanCommandBufferManager(Backend::Device* pDevice, VkCommandPool pool, std::vector<VkCommandBuffer>&& buffers, std::vector<std::shared_ptr<Backend::CommandBuffer>>&& commandBuffers)
 				: vCommandPool(pool), vCommandBuffers(std::move(buffers)), Backend::CommandBufferManager(pDevice, std::move(commandBuffers)) {}
 			~VulkanCommandBufferManager() {}
@@ -21,6 +23,7 @@ namespace Flint
 			virtual void Terminate() override final;
 
 			virtual std::shared_ptr<Backend::CommandBufferManager> CreateChild(UI32 bufferCount, Backend::RenderTarget* pRenderTarget) override final;
+			virtual void UpdateChild(Backend::CommandBufferManager* pChildBufferManager, Backend::RenderTarget* pRenderTarget) override final;
 
 			virtual void Reset() override final;
 

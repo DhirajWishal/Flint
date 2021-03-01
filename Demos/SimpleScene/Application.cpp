@@ -123,6 +123,11 @@ void Application::CreateSceneComponent()
 {
 	// Create the wire frame.
 	mWireFrame = mEngine.CreateNewWireFrame("E:\\Flint\\Assets\\Models\\SkyBox\\SkySphere.obj", Flint::CreateDefaultAttributes());
+	mWireFrame.CreateCache("testCache");
+	//mWireFrame.LoadFromCache("testCache.fac", mEngine.GetDevice());
+
+	//Flint::WireFrame frame = {};
+	//frame.LoadFromCache("testCache.fac", mEngine.GetDevice());
 
 	// Create the scene component.
 	mSceneComponent = mEngine.CreateSceneComponent(mWireFrame, CreateShaderDigests(), GetGraphicsPipelineSpec());
@@ -131,8 +136,8 @@ void Application::CreateSceneComponent()
 void Application::PrepareToRender()
 {
 	// Setup dynamic states.
-	mDynamicState.AddViewPort({ 1280.0f, 720.0f }, { 0.0f, 1.0f }, { 0.0f, 0.0f });
-	mDynamicState.AddScissor({ 1280.0f, 720.0f }, { 0.0f, 0.0f });
+	mDynamicState.AddViewPort(Flint::Vector2(1280.0f, 720.0f), Flint::Vector2(0.0f, 1.0f), Flint::Vector2(0.0f, 0.0f));
+	mDynamicState.AddScissor(Flint::Vector2(1280.0f, 720.0f), Flint::Vector2(0.0f, 0.0f));
 
 	// Submit the scene component to draw and return the render resource.
 	mRenderResource = mEngine.SubmitToDrawQueue(mSceneComponent, mDynamicState);
@@ -190,6 +195,9 @@ Flint::Backend::GraphicsPipelineSpecification Application::GetGraphicsPipelineSp
 {
 	Flint::Backend::GraphicsPipelineSpecification spec = {};
 	spec.mDynamicStateFlags = Flint::Backend::DynamicStateFlags::VIEWPORT | Flint::Backend::DynamicStateFlags::SCISSOR;
+	spec.bEnableColorBlendLogic = false;
+	spec.bEnableAlphaCoverage = false;
+	spec.bEnableAlphaToOne = false;
 
 	return spec;
 }

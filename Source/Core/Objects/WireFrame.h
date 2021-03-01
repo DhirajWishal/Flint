@@ -6,6 +6,8 @@
 #include "Core/Types/DataTypes.h"
 #include "Core/Backend/Buffer.h"
 
+#include <filesystem>
+
 namespace Flint
 {
 	enum class VertexAttributeType : UI8 {
@@ -54,6 +56,23 @@ namespace Flint
 		Backend::Buffer* pIndexBuffer = nullptr;
 
 		std::vector<VertexAttribute> mAttributes;
+
+	public:
+		/**
+		 * Load the wire frame content from a cache file.
+		 * This is much faster than loading from a object file.
+		 * 
+		 * @param asset: The cache file to be loaded from.
+		 * @param pDevice: The device pointer.
+		 */
+		void LoadFromCache(std::filesystem::path asset, Backend::Device* pDevice);
+
+		/**
+		 * Create a cache file using the wire frame content.
+		 * 
+		 * @param title: The title of the file.
+		 */
+		void CreateCache(std::filesystem::path title);
 
 	public:
 		/**

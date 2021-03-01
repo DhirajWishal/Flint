@@ -366,8 +366,8 @@ namespace Flint
 			vMSCI.alphaToOneEnable = GET_VK_BOOL(mSpec.bEnableAlphaToOne);
 			vMSCI.minSampleShading = mSpec.mMinSampleShading;
 			vMSCI.pSampleMask;
-			vMSCI.rasterizationSamples = VkSampleCountFlagBits::VK_SAMPLE_COUNT_1_BIT;
-			//vMSCI.rasterizationSamples = static_cast<VkSampleCountFlagBits>(pDevice->GetSampleCount());
+			//vMSCI.rasterizationSamples = VkSampleCountFlagBits::VK_SAMPLE_COUNT_1_BIT;
+			vMSCI.rasterizationSamples = static_cast<VkSampleCountFlagBits>(pDevice->GetSampleCount());
 			vMSCI.sampleShadingEnable = GET_VK_BOOL(mSpec.bEnableSampleShading);
 
 			VkPipelineColorBlendAttachmentState vCBAS = {};
@@ -431,6 +431,7 @@ namespace Flint
 		void VulkanGraphicsPipeline::Terminate()
 		{
 			VulkanDevice* pDevice = pRenderTarget->GetDevice()->Derive<VulkanDevice>();
+			pDevice->DestroyPipeline(vPipeline);
 			pDevice->DestroyPipelineLayout(vPipelineLayout);
 			pDevice->DestroyDescriptorSetLayout(vSetLayout);
 		}

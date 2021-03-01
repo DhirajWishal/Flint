@@ -91,6 +91,9 @@ namespace Flint
 			if (vSwapChain) Terminate();
 			vSwapChain = vNewSwapChain;
 
+
+			vCI.minImageCount = 0;
+			FLINT_VK_ASSERT(pDevice->GetSwapChainImages(vSwapChain, &vCI.minImageCount, vImages), "Failed to get the Vulkan Swap Chain Images!");
 			vImages.resize(vCI.minImageCount);
 			FLINT_VK_ASSERT(pDevice->GetSwapChainImages(vSwapChain, &vCI.minImageCount, vImages), "Failed to get the Vulkan Swap Chain Images!");
 

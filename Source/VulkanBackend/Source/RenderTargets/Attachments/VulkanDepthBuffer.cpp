@@ -64,7 +64,7 @@ namespace Flint
 		{
 			VkAttachmentDescription vDesc = {};
 			vDesc.format = vFormat;
-			vDesc.samples = VK_SAMPLE_COUNT_1_BIT;
+			vDesc.samples = static_cast<VkSampleCountFlagBits>(vSampleCount);
 			vDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 			vDesc.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
 			vDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;

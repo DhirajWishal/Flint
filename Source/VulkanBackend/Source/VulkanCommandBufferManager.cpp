@@ -86,6 +86,19 @@ namespace Flint
 			return std::make_shared<VulkanCommandBufferManager>(pDevice, vPool, std::move(vCommandBuffers), std::move(commandBuffers));
 		}
 
+		void VulkanCommandBufferManager::UpdateChild(Backend::CommandBufferManager* pChildBufferManager, Backend::RenderTarget* pRenderTarget)
+		{
+			vCBII.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
+			vCBII.pNext = VK_NULL_HANDLE;
+			vCBII.occlusionQueryEnable = VK_FALSE;
+			vCBII.subpass = 0;
+			vCBII.renderPass = pRenderTarget->Derive<VulkanScreenBoundRenderTargetS>()->GetRenderPass();
+			vCBII.framebuffer = pRenderTarget->Derive<VulkanScreenBoundRenderTargetS>()->GetCurrentFrameBuffer();
+
+			for (auto& buffer : pChildBufferManager->GetBuffers())
+				buffer->Derive<VulkanCommandBuffer>()->SetInheritanceInfo(&vCBII);
+		}
+
 		void VulkanCommandBufferManager::Reset()
 		{
 			VulkanDevice* pvDevice = pDevice->Derive<VulkanDevice>();

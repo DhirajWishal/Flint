@@ -6,7 +6,7 @@
 
 namespace Flint
 {
-	Vector2::Vector2(std::initializer_list<float> list)
+	Vector2::Vector2(const std::initializer_list<float>& list)
 		: x(0.0f), y(0.0f)
 	{
 		if ((list.size() > 2) || (list.size() < 2))

@@ -43,6 +43,8 @@ namespace Flint
 			 */
 			virtual std::shared_ptr<CommandBufferManager> CreateChild(UI32 bufferCount, RenderTarget* pRenderTarget) = 0;
 
+			virtual void UpdateChild(CommandBufferManager* pChildBufferManager, RenderTarget* pRenderTarget) = 0;
+
 		public:
 			/**
 			 * Reset all the command buffers.

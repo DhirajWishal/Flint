@@ -23,6 +23,8 @@ namespace Flint
 			virtual void DrawUsingIndexData(UI32 indexCount, UI32 vertexOffset, UI32 indexOffset) override final;
 			virtual void ExecuteChildCommands(const std::vector<std::shared_ptr<Backend::CommandBuffer>>& pCommandBuffers) override final;
 
+			void SetInheritanceInfo(VkCommandBufferInheritanceInfo* pInheritanceInfo) { this->pInheritanceInfo = pInheritanceInfo; }
+
 			operator VkCommandBuffer() const { return vBuffer; }
 			operator VkCommandBuffer* () { return &vBuffer; }
 			operator const VkCommandBuffer* () const { return &vBuffer; }

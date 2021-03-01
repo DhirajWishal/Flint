@@ -177,6 +177,7 @@ namespace Flint
 
 		protected:
 			UI32 mImageIndex = 0;
+			UI32 mFrameIndex = 0;
 		};
 
 		/**

@@ -79,7 +79,7 @@ namespace Flint
 			float mDepthBiasFactor = 0.0f;
 			float mDepthConstantFactor = 0.0f;
 			float mDepthSlopeFactor = 0.0f;
-			float mRasterizerLineWidth = 0.0f;
+			float mRasterizerLineWidth = 1.0f;
 			float mMinSampleShading = 1.0f;
 
 			PrimitiveTopology mPrimitiveTopology = PrimitiveTopology::TRIANGLE_LIST;

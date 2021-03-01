@@ -49,7 +49,7 @@ namespace Flint
 		 *
 		 * @param list: The initializer list.
 		 */
-		Vector2(std::initializer_list<float> list);
+		Vector2(const std::initializer_list<float>& list);
 
 		~Vector2() {}
 

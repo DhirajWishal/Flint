@@ -35,8 +35,8 @@ namespace Flint
 				switch ((*itr)->GetType())
 				{
 				case Flint::VulkanBackend::RenderTargetAttachmenType::SWAP_CHAIN:
-					//INSERT_INTO_VECTOR(vResolveAttachmentRef, vAR);
-					//vSD.colorAttachmentCount++;
+					INSERT_INTO_VECTOR(vResolveAttachmentRef, vAR);
+					vSD.colorAttachmentCount++;
 					break;
 
 				case Flint::VulkanBackend::RenderTargetAttachmenType::COLOR_BUFFER:
@@ -132,6 +132,7 @@ namespace Flint
 			vImageAvailables.resize(count);
 			vRenderFinishes.resize(count);
 			vInFlightFences.resize(count);
+			vImagesInFlightFences.resize(count);
 
 			VkSemaphoreCreateInfo vSCI = {};
 			vSCI.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;

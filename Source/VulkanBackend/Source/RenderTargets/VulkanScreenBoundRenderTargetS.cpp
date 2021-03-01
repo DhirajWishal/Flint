@@ -25,8 +25,8 @@ namespace Flint
 			vColorBuffer.Initialize(pvDevice, extent, vSwapChain.GetFormat(), static_cast<UI32>(mBufferCount));
 			vDepthBuffer.Initialize(pvDevice, extent, static_cast<UI32>(mBufferCount));
 
-			CreateRenderPass(pvDevice, { &vColorBuffer, &vDepthBuffer }, VK_PIPELINE_BIND_POINT_GRAPHICS);
-			CreateFrameBuffer(pvDevice, { &vSwapChain, &vDepthBuffer }, mExtent, static_cast<UI32>(mBufferCount));
+			CreateRenderPass(pvDevice, { &vColorBuffer, &vDepthBuffer, &vSwapChain }, VK_PIPELINE_BIND_POINT_GRAPHICS);
+			CreateFrameBuffer(pvDevice, { &vColorBuffer, &vDepthBuffer, &vSwapChain }, mExtent, static_cast<UI32>(mBufferCount));
 
 			InitializeSyncObjects(pvDevice, static_cast<UI32>(this->mBufferCount));
 		}
@@ -57,14 +57,11 @@ namespace Flint
 
 		UI32 VulkanScreenBoundRenderTargetS::PrepareToDraw()
 		{
-			mFrameIndex++;
-			if (mFrameIndex >= mBufferCount) mFrameIndex = 0;
-
 			VulkanDevice* pvDevice = GetDevice()->Derive<VulkanDevice>();
 			FLINT_VK_ASSERT(vkWaitForFences(pvDevice->GetLogicalDevice(), 1, &vInFlightFences[mFrameIndex], VK_TRUE, std::numeric_limits<uint64_t>::max()), "Failed to wait for fence!")
-				FLINT_VK_ASSERT(pvDevice->ResetFences({ vInFlightFences[mFrameIndex] }), "Failed to reset fence!")
+				//FLINT_VK_ASSERT(pvDevice->ResetFences({ vInFlightFences[mFrameIndex] }), "Failed to reset fence!")
 
-				VkResult result = vkAcquireNextImageKHR(pvDevice->GetLogicalDevice(), GetSwapChain(), std::numeric_limits<UI32>::max(), vRenderFinishes[mFrameIndex], vInFlightFences[mFrameIndex], &mFrameIndex);
+				VkResult result = vkAcquireNextImageKHR(pvDevice->GetLogicalDevice(), GetSwapChain(), std::numeric_limits<UI32>::max(), vImageAvailables[mFrameIndex], VK_NULL_HANDLE, &mImageIndex);
 
 			if (mDynamicDrawEntries.Size())
 				SubmitSecondaryCommands();
@@ -74,6 +71,12 @@ namespace Flint
 
 		void VulkanScreenBoundRenderTargetS::SubmitCommand()
 		{
+			VulkanDevice* pvDevice = GetDevice()->Derive<VulkanDevice>();
+			if (vImagesInFlightFences[mImageIndex] != VK_NULL_HANDLE)
+				FLINT_VK_ASSERT(vkWaitForFences(pvDevice->GetLogicalDevice(), 1, &vImagesInFlightFences[mImageIndex], VK_TRUE, std::numeric_limits<uint64_t>::max()), "Failed to wait for fence!")
+
+				vImagesInFlightFences[mImageIndex] = vInFlightFences[mFrameIndex];
+
 			VkSemaphoreWaitFlags vWaitStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 
 			VkSubmitInfo vSI = {};
@@ -87,7 +90,6 @@ namespace Flint
 			vSI.pSignalSemaphores = &vRenderFinishes[mFrameIndex];
 			vSI.pWaitDstStageMask = &vWaitStage;
 
-			VulkanDevice* pvDevice = pDevice->Derive<VulkanDevice>();
 			FLINT_VK_ASSERT(vkResetFences(pvDevice->GetLogicalDevice(), 1, &vInFlightFences[mFrameIndex]), "Failed to reset fence!")
 				FLINT_VK_ASSERT(pvDevice->SubmitQueue(pvDevice->GetGraphicsQueue(), { vSI }, vInFlightFences[mFrameIndex]), "Failed to submit queue!")
 
@@ -104,6 +106,9 @@ namespace Flint
 
 			FLINT_VK_ASSERT(vkQueuePresentKHR(pvDevice->GetTransferQueue(), &vPI), "Failed to present queue!")
 				FLINT_VK_ASSERT(vkQueueWaitIdle(pvDevice->GetTransferQueue()), "Failed to wait idle till the queue is complete!")
+
+				mFrameIndex++;
+			if (mFrameIndex >= mBufferCount) mFrameIndex = 0;
 		}
 
 		void VulkanScreenBoundRenderTargetS::Bind(const std::shared_ptr<Backend::CommandBuffer>& pCommandBuffer)
@@ -135,9 +140,9 @@ namespace Flint
 		void VulkanScreenBoundRenderTargetS::SubmitSecondaryCommands()
 		{
 			auto& pSecondaryCommandBuffers = mChildCommandBuffers[0];
-			//pSecondaryCommandBuffers->Reset();
+			pCommandBufferManager->UpdateChild(pSecondaryCommandBuffers.get(), this);
 
-			auto& pCommandBuffer = pCommandBufferManager->GetBuffer(mFrameIndex);
+			auto& pCommandBuffer = pCommandBufferManager->GetBuffer(mImageIndex);
 
 			std::vector<DrawEntry> dynamicVector;
 			for (auto itr = mDynamicDrawEntries.Begin(); itr != mDynamicDrawEntries.End(); itr++)
@@ -156,7 +161,7 @@ namespace Flint
 			vRBI.clearValueCount = 2;
 			vRBI.pClearValues = pClearValues;
 			vRBI.renderPass = vRenderPass;
-			vRBI.framebuffer = vFrameBuffers[mFrameIndex];
+			vRBI.framebuffer = vFrameBuffers[mImageIndex];
 			vRBI.renderArea.extent = { static_cast<UI32>(mExtent.x), static_cast<UI32>(mExtent.y) };
 
 			pCommandBuffer->BeginBufferRecording();
@@ -174,6 +179,6 @@ namespace Flint
 }
 
 /*
-{ 17:25:23 } Vulkan Validation Layer (Validation): Validation Error: [ VUID-vkQueueSubmit-pWaitSemaphores-03238 ] Object 0: handle = 0x41ab840000000021, type = VK_OBJECT_TYPE_SEMAPHORE; Object 1: handle = 0x1a699d1f6b8, type = VK_OBJECT_TYPE_QUEUE; | MessageID = 0xb50452b0 | vkQueueSubmit: Queue VkQueue 0x1a699d1f6b8[] is waiting on pSubmits[0].pWaitSemaphores[0] (VkSemaphore 0x41ab840000000021[]) that has no way to be signaled. The Vulkan spec states: All elements of the pWaitSemaphores member of all elements of pSubmits created with a VkSemaphoreType of VK_SEMAPHORE_TYPE_BINARY must reference a semaphore signal operation that has been submitted for execution and any semaphore signal operations on which it depends (if any) must have also been submitted for execution (https://vulkan.lunarg.com/doc/view/1.2.162.1/windows/1.2-extensions/vkspec.html#VUID-vkQueueSubmit-pWaitSemaphores-03238)
-{ 17:25:23 } Vulkan Validation Layer (Validation): Validation Error: [ VUID-vkAcquireNextImageKHR-semaphore-01286 ] Object 0: handle = 0x8483000000000025, type = VK_OBJECT_TYPE_SEMAPHORE; | MessageID = 0xe9e4b2a9 | vkAcquireNextImageKHR: Semaphore must not be currently signaled or in a wait state. The Vulkan spec states: If semaphore is not VK_NULL_HANDLE it must be unsignaled (https://vulkan.lunarg.com/doc/view/1.2.162.1/windows/1.2-extensions/vkspec.html#VUID-vkAcquireNextImageKHR-semaphore-01286)
-*/
+VUID-VkViewport-width-01770(ERROR / SPEC): msgNum: -1542042715 - Validation Error: [ VUID-VkViewport-width-01770 ] Object 0: handle = 0x2637e7aecd8, type = VK_OBJECT_TYPE_COMMAND_BUFFER; | MessageID = 0xa4164ba5 | vkCmdSetViewport: pViewports[0].width (=0.000000) is not greater than 0.0. The Vulkan spec states: width must be greater than 0.0 (https://vulkan.lunarg.com/doc/view/1.2.162.1/windows/1.2-extensions/vkspec.html#VUID-VkViewport-width-01770)
+	Objects: 1
+		[0] 0x2637e7aecd8, type: 6, name: NULL*/

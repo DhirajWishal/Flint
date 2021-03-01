@@ -33,6 +33,7 @@ namespace Flint
 			std::vector<VkSemaphore> vImageAvailables;
 			std::vector<VkSemaphore> vRenderFinishes;
 			std::vector<VkFence> vInFlightFences;
+			std::vector<VkFence> vImagesInFlightFences;
 
 			std::vector<VkFramebuffer> vFrameBuffers;
 			VkRenderPass vRenderPass = VK_NULL_HANDLE;
