@@ -3,6 +3,8 @@
 
 #include "Application.h"
 
+#include "Core/Benchmark/Timer.h"
+
 float Application::Dot(Flint::Vector3 lhs, Flint::Vector3 rhs)
 {
 	Flint::Vector3 _tmp(lhs * rhs);
@@ -122,12 +124,9 @@ std::vector<Flint::ShaderDigest> Application::CreateShaderDigests() const
 void Application::CreateSceneComponent()
 {
 	// Create the wire frame.
-	mWireFrame = mEngine.CreateNewWireFrame("E:\\Flint\\Assets\\Models\\SkyBox\\SkySphere.obj", Flint::CreateDefaultAttributes());
-	mWireFrame.CreateCache("testCache");
-	//mWireFrame.LoadFromCache("testCache.fac", mEngine.GetDevice());
-
-	//Flint::WireFrame frame = {};
-	//frame.LoadFromCache("testCache.fac", mEngine.GetDevice());
+	//mWireFrame = mEngine.CreateNewWireFrame("E:\\Flint\\Assets\\Models\\SkyBox\\SkySphere.obj", Flint::CreateDefaultAttributes());
+	//mWireFrame.CreateCache("testCache");
+	mWireFrame.LoadFromCache("testCache.wfc", mEngine.GetDevice());
 
 	// Create the scene component.
 	mSceneComponent = mEngine.CreateSceneComponent(mWireFrame, CreateShaderDigests(), GetGraphicsPipelineSpec());

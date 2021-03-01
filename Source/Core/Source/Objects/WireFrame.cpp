@@ -62,7 +62,7 @@ namespace Flint
 
 	void WireFrame::CreateCache(std::filesystem::path title)
 	{
-		std::ofstream file(title.string() + ".fac", std::ios::binary);
+		std::ofstream file(title.string() + ".wfc", std::ios::binary);
 		if (!file.is_open()) return;
 
 		//The first 1 byte contains the number of vertex attributes.
@@ -152,19 +152,12 @@ namespace Flint
 			// Load the buffer size.
 			UI64 byteSize = 0;
 			file >> byteSize;
+			file.ignore(1);
 
 			// Load the data.
 			Backend::Buffer* pStaggingBuffer = pDevice->CreateBuffer(byteSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
-			unsigned char* pString = static_cast<unsigned char*>(pStaggingBuffer->MapMemory(byteSize, 0));
-
-			UI64 counter = byteSize;
-			while (counter--)
-			{
-				file>> *pString;
-				pString++;
-			}
-
-			//file.read(static_cast<char*>(pStaggingBuffer->MapMemory(byteSize, 0)), byteSize);
+			char* pString = static_cast<char*>(pStaggingBuffer->MapMemory(byteSize, 0));
+			file.read(static_cast<char*>(pString), byteSize);
 			pStaggingBuffer->FlushMemoryMappings();
 			pStaggingBuffer->UnmapMemory();
 
@@ -184,6 +177,7 @@ namespace Flint
 			// Load the buffer size.
 			UI64 byteSize = 0;
 			file >> byteSize;
+			file.ignore(1);
 
 			// Load the data.
 			Backend::Buffer* pStaggingBuffer = pDevice->CreateBuffer(byteSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
