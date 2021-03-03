@@ -49,7 +49,7 @@ namespace Flint
 		{
 			if (mDynamicDrawEntries.Size())
 			{
-				INSERT_INTO_VECTOR(mChildCommandBuffers, pCommandBufferManager->CreateChild(1, this));
+				INSERT_INTO_VECTOR(mChildCommandBuffers, pCommandBufferManager->CreateChild(1));
 				return;
 			}
 

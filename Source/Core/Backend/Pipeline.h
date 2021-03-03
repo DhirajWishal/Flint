@@ -77,6 +77,17 @@ namespace Flint
 			virtual void Terminate() = 0;
 
 			/**
+			 * Prepare the pipeline to recreate.
+			 * This method must be called before recreating the pipeline.
+			 */
+			virtual void PrepareToRecreate() = 0;
+
+			/**
+			 * Recreate the pipeline if the resources were changed.
+			 */
+			virtual void Recreate() = 0;
+
+			/**
 			 * Bind the pipeline to a command buffer.
 			 *
 			 * @param pCommandBuffer: The command buffer to be bound to.
@@ -129,6 +140,7 @@ namespace Flint
 
 		protected:
 			std::unordered_map<String, UniformLayout> mUniformLayouts;
+			std::vector<ShaderDigest> mDigests;
 			RenderTarget* pRenderTarget = nullptr;
 		};
 

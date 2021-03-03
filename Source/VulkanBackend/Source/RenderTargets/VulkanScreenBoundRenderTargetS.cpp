@@ -7,6 +7,8 @@
 #include "VulkanBackend/VulkanCommandBuffer.h"
 #include "VulkanBackend/VulkanMacros.h"
 
+#include "Core/Thread/ThreadUtilities.h"
+
 namespace Flint
 {
 	namespace VulkanBackend
@@ -63,8 +65,12 @@ namespace Flint
 
 				VkResult result = vkAcquireNextImageKHR(pvDevice->GetLogicalDevice(), GetSwapChain(), std::numeric_limits<UI32>::max(), vImageAvailables[mFrameIndex], VK_NULL_HANDLE, &mImageIndex);
 
-			if (mDynamicDrawEntries.Size())
-				SubmitSecondaryCommands();
+			if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
+				Recreate();
+			else FLINT_VK_ASSERT(result, "Failed to acquire the next swap chain image!")
+
+				if (mDynamicDrawEntries.Size())
+					SubmitSecondaryCommands();
 
 			return mFrameIndex;
 		}
@@ -104,11 +110,68 @@ namespace Flint
 			vPI.pSwapchains = &vSwapChain;
 			vPI.pImageIndices = &mImageIndex;
 
-			FLINT_VK_ASSERT(vkQueuePresentKHR(pvDevice->GetTransferQueue(), &vPI), "Failed to present queue!")
+			VkResult result = vkQueuePresentKHR(pvDevice->GetTransferQueue(), &vPI);
+			if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || pvDevice->GetDisplay()->GetInputCenter()->IsWindowResized)
+			{
+				pvDevice->GetDisplay()->GetInputCenter()->IsWindowResized = false;
+				Recreate();
+			}
+			else FLINT_VK_ASSERT(result, "Failed to present queue!")
+
 				FLINT_VK_ASSERT(vkQueueWaitIdle(pvDevice->GetTransferQueue()), "Failed to wait idle till the queue is complete!")
 
 				mFrameIndex++;
 			if (mFrameIndex >= mBufferCount) mFrameIndex = 0;
+		}
+
+		void VulkanScreenBoundRenderTargetS::Recreate()
+		{
+			VulkanDevice* pvDevice = this->pDevice->Derive<VulkanDevice>();
+			pvDevice->WaitIdle();
+
+			Vector2 extent = GetDevice()->GetDisplay()->GetExtent();
+			while (extent.width == 0.0f || extent.height == 0.0)
+			{
+				Thread::Utilities::SleepThisThread(std::chrono::milliseconds(1));
+				Backend::Display* pDisplay = GetDevice()->GetDisplay();
+
+				pDisplay->Update();
+				extent = pDisplay->GetExtent();
+			}
+
+			mExtent = extent;
+			pCommandBufferManager->ClearBuffers();
+
+			// Destroy render pass and frame buffer.
+			DestroyRenderPass(pvDevice);
+			DestroyFrameBuffers(pvDevice);
+
+			// Recreate attachments.
+			vSwapChain.Recreate(extent);
+			vColorBuffer.Recreate(extent);
+			vDepthBuffer.Recreate(extent);
+
+			// Recreate render pass and frame buffer.
+			CreateRenderPass(pvDevice, { &vColorBuffer, &vDepthBuffer, &vSwapChain }, VK_PIPELINE_BIND_POINT_GRAPHICS);
+			CreateFrameBuffer(pvDevice, { &vColorBuffer, &vDepthBuffer, &vSwapChain }, mExtent, static_cast<UI32>(mBufferCount));
+
+			// Re create renderable pipelines.
+			for (auto itr = mStaticDrawEntries.Begin(); itr != mStaticDrawEntries.End(); itr++)
+				itr->second.pPipeline->Recreate();
+
+			for (auto itr = mDynamicDrawEntries.Begin(); itr != mDynamicDrawEntries.End(); itr++)
+				itr->second.pPipeline->Recreate();
+
+			// Prepare command buffers to be rendered.
+			pCommandBufferManager->RecreateBuffers();
+			for (auto& buffer : mChildCommandBuffers)
+				buffer->Terminate();
+
+			mChildCommandBuffers.clear();
+
+			PrepareCommandBuffers();
+
+			vImagesInFlightFences.resize(vInFlightFences.size(), VK_NULL_HANDLE);
 		}
 
 		void VulkanScreenBoundRenderTargetS::Bind(const std::shared_ptr<Backend::CommandBuffer>& pCommandBuffer)
@@ -179,6 +242,7 @@ namespace Flint
 }
 
 /*
-VUID-VkViewport-width-01770(ERROR / SPEC): msgNum: -1542042715 - Validation Error: [ VUID-VkViewport-width-01770 ] Object 0: handle = 0x2637e7aecd8, type = VK_OBJECT_TYPE_COMMAND_BUFFER; | MessageID = 0xa4164ba5 | vkCmdSetViewport: pViewports[0].width (=0.000000) is not greater than 0.0. The Vulkan spec states: width must be greater than 0.0 (https://vulkan.lunarg.com/doc/view/1.2.162.1/windows/1.2-extensions/vkspec.html#VUID-VkViewport-width-01770)
-	Objects: 1
-		[0] 0x2637e7aecd8, type: 6, name: NULL*/
+{ 16:59:37 } Vulkan Validation Layer (Validation): Validation Error: [ VUID-VkPresentInfoKHR-pImageIndices-01296 ] Object 0: handle = 0x256f36a8f38, type = VK_OBJECT_TYPE_QUEUE; | MessageID = 0xc7aabc16 | vkQueuePresentKHR(): pSwapchains[0] images passed to present must be in layout VK_IMAGE_LAYOUT_PRESENT_SRC_KHR or VK_IMAGE_LAYOUT_SHARED_PRESENT_KHR but is in VK_IMAGE_LAYOUT_UNDEFINED. The Vulkan spec states: Each element of pImageIndices must be the index of a presentable image acquired from the swapchain specified by the corresponding element of the pSwapchains array, and the presented image subresource must be in the VK_IMAGE_LAYOUT_PRESENT_SRC_KHR layout at the time the operation is executed on a VkDevice (https://github.com/KhronosGroup/Vulkan-Docs/search?q=)VUID-VkPresentInfoKHR-pImageIndices-01296)
+{ 16:59:37 } Vulkan Validation Layer (Validation): Validation Error: [ VUID-VkSwapchainCreateInfoKHR-imageExtent-01274 ] Object 0: handle = 0x256f0dcc7b8, type = VK_OBJECT_TYPE_DEVICE; | MessageID = 0x7cd0911d | vkCreateSwapchainKHR() called with imageExtent = (1280,720), which is outside the bounds returned by vkGetPhysicalDeviceSurfaceCapabilitiesKHR(): currentExtent = (0,0), minImageExtent = (0,0), maxImageExtent = (0,0). The Vulkan spec states: imageExtent must be between minImageExtent and maxImageExtent, inclusive, where minImageExtent and maxImageExtent are members of the VkSurfaceCapabilitiesKHR structure returned by vkGetPhysicalDeviceSurfaceCapabilitiesKHR for the surface (https://vulkan.lunarg.com/doc/view/1.2.162.1/windows/1.2-extensions/vkspec.html#VUID-VkSwapchainCreateInfoKHR-imageExtent-01274)
+{ 16:59:37 } Vulkan Validation Layer (Validation): Validation Error: [ VUID-vkQueueSubmit-pCommandBuffers-00072 ] Object 0: handle = 0x256f3c550b8, type = VK_OBJECT_TYPE_COMMAND_BUFFER; | MessageID = 0x772c8884 | VkCommandBuffer 0x256f3c550b8[] used in the call to vkQueueSubmit() is unrecorded and contains no commands. The Vulkan spec states: Any secondary command buffers recorded into any element of the pCommandBuffers member of any element of pSubmits must be in the pending or executable state (https://vulkan.lunarg.com/doc/view/1.2.162.1/windows/1.2-extensions/vkspec.html#VUID-vkQueueSubmit-pCommandBuffers-00072)
+*/

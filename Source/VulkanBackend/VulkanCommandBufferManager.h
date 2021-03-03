@@ -22,10 +22,11 @@ namespace Flint
 			virtual void CreateBuffers(Backend::Device* pDevice, UI32 count) override final;
 			virtual void Terminate() override final;
 
-			virtual std::shared_ptr<Backend::CommandBufferManager> CreateChild(UI32 bufferCount, Backend::RenderTarget* pRenderTarget) override final;
+			virtual std::shared_ptr<Backend::CommandBufferManager> CreateChild(UI32 bufferCount) override final;
 			virtual void UpdateChild(Backend::CommandBufferManager* pChildBufferManager, Backend::RenderTarget* pRenderTarget) override final;
 
-			virtual void Reset() override final;
+			virtual void ClearBuffers() override final;
+			virtual void RecreateBuffers() override final;
 
 			VkCommandPool vCommandPool = VK_NULL_HANDLE;
 			std::vector<VkCommandBuffer> vCommandBuffers;

@@ -49,6 +49,12 @@ namespace Flint
 			}
 		}
 
+		void VulkanDepthBuffer::Recreate(const Vector2& extent)
+		{
+			Terminate();
+			Initialize(this->pDevice, extent, this->mBufferCount);
+		}
+
 		void VulkanDepthBuffer::Terminate()
 		{
 			for (auto itr = vImages.begin(); itr != vImages.end(); itr++)

@@ -6,6 +6,8 @@
 #include "Instance.h"
 #include "Core/Inputs/InputCenter.h"
 
+#include "Core/Maths/Vector/Vector2.h"
+
 namespace Flint
 {
 	namespace Backend
@@ -45,7 +47,10 @@ namespace Flint
 			 *
 			 * @return The device pointer.
 			 */
-			virtual Device* CreatDevice() = 0;
+			virtual Device* CreateDevice() = 0;
+
+		public:
+			Vector2 GetExtent() const { return mExtent; }
 
 		public:
 			Instance* GetInstance() const { return pInstance; }
@@ -54,6 +59,7 @@ namespace Flint
 		protected:
 			Instance* pInstance = nullptr;
 			Inputs::InputCenter mInputCenter = {};
+			Vector2 mExtent = Vector2::ZeroAll;
 		};
 	}
 }

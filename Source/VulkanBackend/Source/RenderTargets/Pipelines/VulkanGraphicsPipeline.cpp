@@ -250,6 +250,7 @@ namespace Flint
 		{
 			this->pRenderTarget = pRenderTarget;
 			this->mSpec = spec;
+			this->mDigests = shaderDigests;
 			ResolveUniformLayouts(shaderDigests);
 
 			VulkanDevice* pDevice = pRenderTarget->GetDevice()->Derive<VulkanDevice>();
@@ -314,14 +315,12 @@ namespace Flint
 			vVISCI.vertexBindingDescriptionCount = 1;
 			vVISCI.pVertexBindingDescriptions = &vDesc;
 
-			VkPipelineInputAssemblyStateCreateInfo vIASCI = {};
 			vIASCI.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
 			vIASCI.flags = VK_NULL_HANDLE;
 			vIASCI.pNext = VK_NULL_HANDLE;
 			vIASCI.primitiveRestartEnable = GET_VK_BOOL(mSpec.bEnablePrimitiveRestart);
 			vIASCI.topology = _Helpers::GetPrimitiveTopology(mSpec.mPrimitiveTopology);
 
-			VkPipelineRasterizationStateCreateInfo vRSCI = {};
 			vRSCI.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
 			vRSCI.flags = VK_NULL_HANDLE;
 			vRSCI.pNext = VK_NULL_HANDLE;
@@ -349,7 +348,6 @@ namespace Flint
 			vVP.x = 0.0f;
 			vVP.y = 0.0f;
 
-			VkPipelineViewportStateCreateInfo vVSCI = {};
 			vVSCI.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
 			vVSCI.pNext = VK_NULL_HANDLE;
 			vVSCI.flags = VK_NULL_HANDLE;
@@ -358,7 +356,6 @@ namespace Flint
 			vVSCI.viewportCount = 1;
 			vVSCI.pViewports = &vVP;
 
-			VkPipelineMultisampleStateCreateInfo vMSCI = {};
 			vMSCI.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
 			vMSCI.pNext = VK_NULL_HANDLE;
 			vMSCI.flags = VK_NULL_HANDLE;
@@ -374,7 +371,6 @@ namespace Flint
 			vCBAS.colorWriteMask = 0xf;
 			vCBAS.blendEnable = GET_VK_BOOL(mSpec.bEnableColorBlend);
 
-			VkPipelineColorBlendStateCreateInfo vCBSCI = {};
 			vCBSCI.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
 			vCBSCI.pNext = VK_NULL_HANDLE;
 			vCBSCI.flags = VK_NULL_HANDLE;
@@ -384,7 +380,6 @@ namespace Flint
 			vCBSCI.pAttachments = &vCBAS;
 			vCBSCI.attachmentCount = 1;
 
-			VkPipelineDepthStencilStateCreateInfo vDSSCI = {};
 			vDSSCI.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
 			vDSSCI.flags = VK_NULL_HANDLE;
 			vDSSCI.pNext = VK_NULL_HANDLE;
@@ -404,8 +399,8 @@ namespace Flint
 
 			VkGraphicsPipelineCreateInfo vCI = {};
 			vCI.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+			vCI.flags = VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT;
 			vCI.pNext = VK_NULL_HANDLE;
-			vCI.flags = VK_NULL_HANDLE;
 			vCI.pVertexInputState = &vVISCI;
 			vCI.pInputAssemblyState = &vIASCI;
 			vCI.pRasterizationState = &vRSCI;
@@ -421,11 +416,32 @@ namespace Flint
 			vCI.basePipelineIndex = 0;
 			vCI.layout = vPipelineLayout;
 
-			FLINT_VK_ASSERT(pDevice->CreateGraphicsPipeline(&vCI, &vPipeline), "Failed to create graphics pipeline!")
+			VkPipeline vNewPipeline = VK_NULL_HANDLE;
+			FLINT_VK_ASSERT(pDevice->CreateGraphicsPipeline(&vCI, &vNewPipeline), "Failed to create graphics pipeline!")
 
-				// Finals.
-				for (auto itr = sModules.begin(); itr != sModules.end(); itr++)
-					itr->Terminate();
+				if (vPipeline != VK_NULL_HANDLE)
+					pRenderTarget->GetDevice()->Derive<VulkanDevice>()->DestroyPipeline(vPipeline);
+
+			vPipeline = vNewPipeline;
+
+			// Finals.
+			for (auto itr = sModules.begin(); itr != sModules.end(); itr++)
+				itr->Terminate();
+		}
+
+		void VulkanGraphicsPipeline::PrepareToRecreate()
+		{
+			VulkanDevice* pDevice = pRenderTarget->GetDevice()->Derive<VulkanDevice>();
+			pDevice->DestroyPipeline(vPipeline);
+			pDevice->DestroyPipelineLayout(vPipelineLayout);
+
+			vPipeline = VK_NULL_HANDLE;
+			vPipelineLayout = VK_NULL_HANDLE;
+		}
+
+		void VulkanGraphicsPipeline::Recreate()
+		{
+			RecreatePipeline();
 		}
 
 		void VulkanGraphicsPipeline::Terminate()
@@ -444,13 +460,112 @@ namespace Flint
 		void VulkanGraphicsPipeline::UnBind(const std::shared_ptr<Backend::CommandBuffer>& pCommandBuffer)
 		{
 		}
-		
+
 		Backend::PipelineResource* VulkanGraphicsPipeline::CreatePipelineResource()
 		{
 			VulkanPipelineResource* pPipelineResource = new VulkanPipelineResource();
 			pPipelineResource->Initialize(this);
 
 			return pPipelineResource;
+		}
+
+		void VulkanGraphicsPipeline::RecreatePipeline()
+		{
+			VulkanDevice* pDevice = pRenderTarget->GetDevice()->Derive<VulkanDevice>();
+
+			std::vector<VkPipelineShaderStageCreateInfo> vStages = {};
+			std::vector<VkVertexInputAttributeDescription> vAttributeDesc = {};
+			std::vector<VulkanShaderModule> sModules = {};
+			VkVertexInputBindingDescription vDesc = {};
+
+			for (auto itr = mDigests.begin(); itr != mDigests.end(); itr++)
+			{
+				VulkanShaderModule sModule = {};
+				sModule.Initialize(pDevice, *itr);
+				INSERT_INTO_VECTOR(vStages, sModule.GetStage());
+
+				if (itr->mLocation == ShaderLocation::VERTEX)
+				{
+					vDesc.binding = 0;
+					vDesc.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+					vDesc.stride = static_cast<UI32>(Utilities::GetStride(*itr));
+
+					vAttributeDesc = std::move(Utilities::GetInputAttributeDescriptions(*itr));
+				}
+
+				INSERT_INTO_VECTOR(sModules, sModule);
+			}
+
+			VkPipelineVertexInputStateCreateInfo vVISCI = {};
+			vVISCI.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+			vVISCI.flags = VK_NULL_HANDLE;
+			vVISCI.pNext = VK_NULL_HANDLE;
+			vVISCI.vertexAttributeDescriptionCount = static_cast<UI32>(vAttributeDesc.size());
+			vVISCI.pVertexAttributeDescriptions = vAttributeDesc.data();
+			vVISCI.vertexBindingDescriptionCount = 1;
+			vVISCI.pVertexBindingDescriptions = &vDesc;
+
+			VkRect2D vR2D = {};
+			vR2D.extent.width = static_cast<UI32>(pRenderTarget->GetExtent().x);
+			vR2D.extent.height = static_cast<UI32>(pRenderTarget->GetExtent().y);
+			vR2D.offset = { 0, 0 };
+
+			VkViewport vVP = {};
+			vVP.width = static_cast<float>(vR2D.extent.width);
+			vVP.height = static_cast<float>(vR2D.extent.height);
+			vVP.maxDepth = 1.0f;
+			vVP.minDepth = 0.0f;
+			vVP.x = 0.0f;
+			vVP.y = 0.0f;
+
+			vVSCI.scissorCount = 1;
+			vVSCI.pScissors = &vR2D;
+			vVSCI.viewportCount = 1;
+			vVSCI.pViewports = &vVP;
+
+			VkPipelineColorBlendAttachmentState vCBAS = {};
+			vCBAS.colorWriteMask = 0xf;
+			vCBAS.blendEnable = GET_VK_BOOL(mSpec.bEnableColorBlend);
+
+			vCBSCI.pAttachments = &vCBAS;
+
+			std::vector<VkDynamicState> vDynamicStates = std::move(_Helpers::GetDynamicStates(mSpec.mDynamicStateFlags));
+
+			VkPipelineDynamicStateCreateInfo vDSCI = {};
+			vDSCI.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+			vDSCI.pNext = VK_NULL_HANDLE;
+			vDSCI.flags = VK_NULL_HANDLE;
+			vDSCI.dynamicStateCount = static_cast<UI32>(vDynamicStates.size());
+			vDSCI.pDynamicStates = vDynamicStates.data();
+
+			VkGraphicsPipelineCreateInfo vCI = {};
+			vCI.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+			vCI.pNext = VK_NULL_HANDLE;
+			vCI.flags = VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT;
+			vCI.pVertexInputState = &vVISCI;
+			vCI.pInputAssemblyState = &vIASCI;
+			vCI.pRasterizationState = &vRSCI;
+			vCI.pViewportState = &vVSCI;
+			vCI.pMultisampleState = &vMSCI;
+			vCI.pColorBlendState = &vCBSCI;
+			vCI.pDepthStencilState = &vDSSCI;
+			vCI.pDynamicState = &vDSCI;
+			vCI.stageCount = static_cast<UI32>(vStages.size());
+			vCI.pStages = vStages.data();
+			vCI.renderPass = pRenderTarget->Derive<VulkanRenderTarget>()->GetRenderPass();
+			vCI.basePipelineHandle = vPipeline;
+			vCI.basePipelineIndex = 0;
+			vCI.layout = vPipelineLayout;
+
+			VkPipeline vNewPipeline = VK_NULL_HANDLE;
+			FLINT_VK_ASSERT(pDevice->CreateGraphicsPipeline(&vCI, &vNewPipeline), "Failed to create graphics pipeline!")
+
+				if (vPipeline != VK_NULL_HANDLE) pDevice->DestroyPipeline(vPipeline);
+			vPipeline = vNewPipeline;
+
+			// Finals.
+			for (auto itr = sModules.begin(); itr != sModules.end(); itr++)
+				itr->Terminate();
 		}
 	}
 }

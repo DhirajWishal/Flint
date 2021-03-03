@@ -48,7 +48,7 @@ namespace Flint
 
 	void GraphicsBackendObject::InitializeDevice()
 	{
-		pDevice = pDisplay->CreatDevice();
+		pDevice = pDisplay->CreateDevice();
 	}
 
 	void GraphicsBackendObject::TerminateDevice()

@@ -174,8 +174,29 @@ namespace Flint
 			return pCommandBufferManager;
 		}
 
+		VkPhysicalDeviceProperties VulkanDevice::GetPhysicalDeviceProperties() const
+		{
+			VkPhysicalDeviceProperties vProps = {};
+			vkGetPhysicalDeviceProperties(GetPhysicalDevice(), &vProps);
+
+			return vProps;
+		}
+
+		VkSurfaceCapabilitiesKHR VulkanDevice::GetSurfaceCapabilities() const
+		{
+			VkSurfaceCapabilitiesKHR vCapabilities = {};
+			vkGetPhysicalDeviceSurfaceCapabilitiesKHR(GetPhysicalDevice(), pDisplay->Derive<VulkanDisplay>()->GetSurface(), &vCapabilities);
+			return vCapabilities;
+		}
+
+		SwapChainSupportDetails VulkanDevice::GetSwapChainSupportDetails() const
+		{
+			return SwapChainSupportDetails::Query(GetPhysicalDevice(), pDisplay->Derive<VulkanDisplay>()->GetSurface());
+		}
+
 		UI32 VulkanDevice::FindSupporterBufferCount(UI32 count) const
 		{
+			auto& vSurfaceCapabilities = GetSurfaceCapabilities();
 			if (count == std::numeric_limits<UI32>::max())
 				return vSurfaceCapabilities.maxImageCount - 1;
 			else if (count == 0)
@@ -208,6 +229,7 @@ namespace Flint
 			std::vector<VkPhysicalDevice> devices(deviceCount);
 			vkEnumeratePhysicalDevices(instance.GetInstance(), &deviceCount, devices.data());
 
+			VkPhysicalDeviceProperties vPhysicalDeviceProperties = {};
 			// Iterate through all the candidate devices and find the best device.
 			for (const VkPhysicalDevice& device : devices)
 			{
@@ -268,9 +290,6 @@ namespace Flint
 			wprintf(TEXT("\t-------------------------------------------------\n\n"));
 
 #endif	// FLINT_DEBUG
-
-			vkGetPhysicalDeviceSurfaceCapabilitiesKHR(vPhysicalDevice, display.GetSurface(), &vSurfaceCapabilities);
-			vSwapChainSupportDetails = SwapChainSupportDetails::Query(vPhysicalDevice, display.GetSurface());
 
 			vSampleCount = _Helpers::GetMaxUsableSamples(vPhysicalDevice);
 		}
@@ -391,9 +410,9 @@ namespace Flint
 			return vkCreateSwapchainKHR(GetLogicalDevice(), pCreateInfo, nullptr, pSwapChain);
 		}
 
-		VkResult VulkanDevice::GetSwapChainImages(VkSwapchainKHR vSwapChain, UI32* pSwapChainImageCount, std::vector<VkImage>& vImages) const
+		VkResult VulkanDevice::GetSwapChainImages(VkSwapchainKHR vSwapChain, UI32* pSwapChainImageCount, const std::vector<VkImage>& vImages) const
 		{
-			return vkGetSwapchainImagesKHR(GetLogicalDevice(), vSwapChain, pSwapChainImageCount, vImages.data());
+			return vkGetSwapchainImagesKHR(GetLogicalDevice(), vSwapChain, pSwapChainImageCount, const_cast<VkImage*>(vImages.data()));
 		}
 
 		void VulkanDevice::DestroySwapChain(VkSwapchainKHR vSwapChain) const

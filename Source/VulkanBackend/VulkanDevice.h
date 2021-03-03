@@ -47,9 +47,9 @@ namespace Flint
 			virtual Backend::CommandBufferManager* CreateCommandBufferManager(UI32 count) override final;
 
 		public:
-			VkPhysicalDeviceProperties& GetPhysicalDeviceProperties() { return vPhysicalDeviceProperties; }
-			VkSurfaceCapabilitiesKHR& GetSurfaceCapabilities() { return vSurfaceCapabilities; }
-			SwapChainSupportDetails& GetSwapChainSupportDetails() { return vSwapChainSupportDetails; }
+			VkPhysicalDeviceProperties GetPhysicalDeviceProperties() const;
+			VkSurfaceCapabilitiesKHR GetSurfaceCapabilities() const;
+			SwapChainSupportDetails GetSwapChainSupportDetails() const;
 
 			VulkanQueue& GetQueue() { return vQueue; }
 
@@ -71,10 +71,6 @@ namespace Flint
 			void DestroyLogicalDevice();
 
 		private:
-			VkPhysicalDeviceProperties vPhysicalDeviceProperties = {};
-			VkSurfaceCapabilitiesKHR vSurfaceCapabilities = {};
-			SwapChainSupportDetails vSwapChainSupportDetails = {};
-
 			VulkanQueue vQueue = {};
 			std::vector<const char*> mDeviceExtensions;
 
@@ -96,7 +92,7 @@ namespace Flint
 			VkResult ResetFences(const std::vector<VkFence>& vFences) const;
 
 			VkResult CreateSwapChain(VkSwapchainCreateInfoKHR* pCreateInfo, VkSwapchainKHR* pSwapChain) const;
-			VkResult GetSwapChainImages(VkSwapchainKHR vSwapChain, UI32* pSwapChainImageCount, std::vector<VkImage>& vImages) const;
+			VkResult GetSwapChainImages(VkSwapchainKHR vSwapChain, UI32* pSwapChainImageCount, const std::vector<VkImage>& vImages) const;
 			void DestroySwapChain(VkSwapchainKHR vSwapChain) const;
 
 			VkResult CreateImage(const VkImageCreateInfo* pCreateInfo, VkImage* pImage) const;

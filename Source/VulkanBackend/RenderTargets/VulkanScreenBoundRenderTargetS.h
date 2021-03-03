@@ -33,6 +33,8 @@ namespace Flint
 			virtual VkFramebuffer GetCurrentFrameBuffer() const override final { return vFrameBuffers[mImageIndex]; }
 
 		private:
+			virtual void Recreate() override final;
+
 			virtual void Bind(const std::shared_ptr<Backend::CommandBuffer>& pCommandBuffer) override final;
 			virtual void UnBind(const std::shared_ptr<Backend::CommandBuffer>& pCommandBuffer) override final;
 

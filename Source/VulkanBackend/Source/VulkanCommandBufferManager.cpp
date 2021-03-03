@@ -15,6 +15,7 @@ namespace Flint
 		void VulkanCommandBufferManager::CreateBuffers(Backend::Device* pDevice, UI32 count)
 		{
 			this->pDevice = pDevice;
+			this->mBufferCount = count;
 			VulkanDevice* pvDevice = pDevice->Derive<VulkanDevice>();
 
 			VkCommandPoolCreateInfo vPoolCI = {};
@@ -47,9 +48,10 @@ namespace Flint
 			pvDevice->DestroyCommandPool(vCommandPool);
 
 			vCommandBuffers.clear();
+			mCommandBuffers.clear();
 		}
 
-		std::shared_ptr<Backend::CommandBufferManager> VulkanCommandBufferManager::CreateChild(UI32 bufferCount, Backend::RenderTarget* pRenderTarget)
+		std::shared_ptr<Backend::CommandBufferManager> VulkanCommandBufferManager::CreateChild(UI32 bufferCount)
 		{
 			VulkanDevice* pvDevice = pDevice->Derive<VulkanDevice>();
 
@@ -72,16 +74,9 @@ namespace Flint
 			std::vector<VkCommandBuffer> vCommandBuffers(bufferCount);
 			FLINT_VK_ASSERT(pvDevice->AllocateCommandBuffers(&vAI, vCommandBuffers), "Failed to allocate command buffers!")
 
-				vCBII.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
-			vCBII.pNext = VK_NULL_HANDLE;
-			vCBII.occlusionQueryEnable = VK_FALSE;
-			vCBII.subpass = 0;
-			vCBII.renderPass = pRenderTarget->Derive<VulkanScreenBoundRenderTargetS>()->GetRenderPass();
-			vCBII.framebuffer = pRenderTarget->Derive<VulkanScreenBoundRenderTargetS>()->GetCurrentFrameBuffer();
-
 			std::vector<std::shared_ptr<Backend::CommandBuffer>> commandBuffers;
 			for (VkCommandBuffer buffer : vCommandBuffers)
-				INSERT_INTO_VECTOR(commandBuffers, std::make_shared<VulkanCommandBuffer>(buffer, &vCBII));
+				INSERT_INTO_VECTOR(commandBuffers, std::make_shared<VulkanCommandBuffer>(buffer));
 
 			return std::make_shared<VulkanCommandBufferManager>(pDevice, vPool, std::move(vCommandBuffers), std::move(commandBuffers));
 		}
@@ -99,12 +94,31 @@ namespace Flint
 				buffer->Derive<VulkanCommandBuffer>()->SetInheritanceInfo(&vCBII);
 		}
 
-		void VulkanCommandBufferManager::Reset()
+		void VulkanCommandBufferManager::ClearBuffers()
 		{
 			VulkanDevice* pvDevice = pDevice->Derive<VulkanDevice>();
+			pvDevice->FreeComandBuffers(vCommandPool, vCommandBuffers);
+			
+			vCommandBuffers.clear();
+			mCommandBuffers.clear();
+		}
 
-			for (auto buffer : vCommandBuffers)
-				pvDevice->ResetCommandBuffer(buffer, VkCommandBufferResetFlagBits::VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
+		void VulkanCommandBufferManager::RecreateBuffers()
+		{
+			VkCommandBufferAllocateInfo vAI = {};
+			vAI.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+			vAI.pNext = VK_NULL_HANDLE;
+			vAI.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+			vAI.commandBufferCount = mBufferCount;
+			vAI.commandPool = vCommandPool;
+
+			vCommandBuffers.resize(mBufferCount);
+			FLINT_VK_ASSERT(pDevice->Derive<VulkanDevice>()->AllocateCommandBuffers(&vAI, vCommandBuffers), "Failed to allocate command buffers!")
+
+				mCommandBuffers.clear();
+			mCommandBuffers.reserve(vCommandBuffers.size());
+			for (VkCommandBuffer buffer : vCommandBuffers)
+				INSERT_INTO_VECTOR(mCommandBuffers, std::make_shared<VulkanCommandBuffer>(buffer));
 		}
 	}
 }

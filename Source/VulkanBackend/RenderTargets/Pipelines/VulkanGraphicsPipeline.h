@@ -16,6 +16,8 @@ namespace Flint
 			~VulkanGraphicsPipeline() {}
 
 			virtual void Initialize(Backend::RenderTarget* pRenderTarget, const std::vector<ShaderDigest>& shaderDigests, const Backend::GraphicsPipelineSpecification& spec) override final;
+			virtual void PrepareToRecreate() override final;
+			virtual void Recreate() override final;
 			virtual void Terminate() override final;
 
 			virtual void Bind(const std::shared_ptr<Backend::CommandBuffer>& pCommandBuffer) override final;
@@ -24,6 +26,20 @@ namespace Flint
 			virtual VkPipelineBindPoint GetBindPoint() override final { return VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_GRAPHICS; }
 
 			virtual Backend::PipelineResource* CreatePipelineResource() override final;
+
+		private:
+			void RecreatePipeline();
+
+		private:
+			VkPipelineInputAssemblyStateCreateInfo vIASCI = {};
+			VkPipelineRasterizationStateCreateInfo vRSCI = {};
+			VkPipelineViewportStateCreateInfo vVSCI = {};
+			VkPipelineMultisampleStateCreateInfo vMSCI = {};
+
+			VkPipelineColorBlendAttachmentState vCBAS = {};
+			VkPipelineColorBlendStateCreateInfo vCBSCI = {};
+
+			VkPipelineDepthStencilStateCreateInfo vDSSCI = {};
 		};
 	}
 }

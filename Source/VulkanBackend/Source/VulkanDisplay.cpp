@@ -64,7 +64,7 @@ namespace Flint
 			{
 				VulkanDisplay* pWindow = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window));
 				pWindow->GetInputCenter()->IsWindowResized = true;
-				//pWindow->UpdateWindowExtent(width, height);
+				pWindow->UpdateWindowExtent(width, height);
 			}
 
 			void WindowCloseCallback(GLFWwindow* window)
@@ -98,12 +98,18 @@ namespace Flint
 			glfwDestroyWindow(pWindowHandle);
 		}
 
-		Backend::Device* VulkanDisplay::CreatDevice()
+		Backend::Device* VulkanDisplay::CreateDevice()
 		{
 			VulkanDevice* pDevice = new VulkanDevice();
 			pDevice->Initialize(this);
 
 			return pDevice;
+		}
+
+		void VulkanDisplay::UpdateWindowExtent(I32 width, I32 height)
+		{
+			mExtent.width = static_cast<float>(width);
+			mExtent.height = static_cast<float>(height);
 		}
 
 		void VulkanDisplay::SetupInputs()

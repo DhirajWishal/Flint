@@ -49,6 +49,12 @@ namespace Flint
 			}
 		}
 
+		void VulkanColorBuffer::Recreate(const Vector2& extent)
+		{
+			Terminate();
+			Initialize(this->pDevice, extent, this->vFormat, this->mBufferCount);
+		}
+
 		void VulkanColorBuffer::Terminate()
 		{
 			for (auto itr = vImages.begin(); itr != vImages.end(); itr++)

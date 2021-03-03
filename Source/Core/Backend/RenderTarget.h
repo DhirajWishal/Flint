@@ -142,6 +142,8 @@ namespace Flint
 			void PrepareCommandBuffers();
 
 		protected:
+			virtual void Recreate() = 0;
+
 			virtual void Bind(const std::shared_ptr<CommandBuffer>& pCommandBuffer) = 0;
 			virtual void UnBind(const std::shared_ptr<CommandBuffer>& pCommandBuffer) = 0;
 

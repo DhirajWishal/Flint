@@ -24,6 +24,8 @@ namespace Flint
 			virtual void Initialize(VulkanDevice* pDevice, const Vector2& extent, UI32 bufferCount) {}
 			virtual void Initialize(VulkanDevice* pDevice, const Vector2& extent, VkFormat format, UI32 bufferCount) {}
 
+			virtual void Recreate(const Vector2& extent) {}
+
 			virtual VkAttachmentDescription GetAttachmentDescription() const { return VkAttachmentDescription(); }
 			virtual VkImageLayout GetAttachmentLayout() const { return VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED; }
 

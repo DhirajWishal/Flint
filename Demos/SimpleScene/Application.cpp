@@ -3,8 +3,6 @@
 
 #include "Application.h"
 
-#include "Core/Benchmark/Timer.h"
-
 float Application::Dot(Flint::Vector3 lhs, Flint::Vector3 rhs)
 {
 	Flint::Vector3 _tmp(lhs * rhs);
@@ -153,16 +151,16 @@ void Application::ProcessInputs()
 #define CHECK_KEY_INPUT(key)	pInputCenter->key.IsPressed() || pInputCenter->key.IsOnRepeat()
 
 	if (CHECK_KEY_INPUT(KeyW))
-		mPosition += Flint::Vector3(1.0f, 0.0f, 0.0f) * 0.001f;
-
-	if (CHECK_KEY_INPUT(KeyS))
-		mPosition -= Flint::Vector3(1.0f, 0.0f, 0.0f) * 0.001f;
+		mPosition += Front * MoveFactor;
 
 	if (CHECK_KEY_INPUT(KeyA))
-		mPosition += Flint::Vector3(0.0f, 0.0f, 1.0f) * 0.001f;
+		mPosition += Left * MoveFactor;
+
+	if (CHECK_KEY_INPUT(KeyS))
+		mPosition -= Front * MoveFactor;
 
 	if (CHECK_KEY_INPUT(KeyD))
-		mPosition -= Flint::Vector3(0.0f, 0.0f, 1.0f) * 0.001f;
+		mPosition -= Left * MoveFactor;
 }
 
 void Application::OnUpdate()

@@ -16,6 +16,10 @@ class Application {
 	static Flint::Matrix44 LookAt(Flint::Vector3 const eye, Flint::Vector3 const center, Flint::Vector3 const up);
 	static Flint::Matrix44 Perspective(float FOV, float aspect, float near, float far, bool flipYAxis = true);
 
+	const Flint::Vector3 Front = Flint::Vector3(1.0f, 0.0f, 0.0f);
+	const Flint::Vector3 Left = Flint::Vector3(0.0f, 0.0f, 1.0f);
+	const float MoveFactor = 0.001f;
+
 	struct UniformBufferObject {
 		Flint::Matrix44 model = Flint::Matrix44::Identity;
 		Flint::Matrix44 view = Flint::Matrix44::Identity;

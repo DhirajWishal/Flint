@@ -41,7 +41,7 @@ namespace Flint
 			/**
 			 * Create a child command buffer manager object.
 			 */
-			virtual std::shared_ptr<CommandBufferManager> CreateChild(UI32 bufferCount, RenderTarget* pRenderTarget) = 0;
+			virtual std::shared_ptr<CommandBufferManager> CreateChild(UI32 bufferCount) = 0;
 
 			virtual void UpdateChild(CommandBufferManager* pChildBufferManager, RenderTarget* pRenderTarget) = 0;
 
@@ -49,7 +49,8 @@ namespace Flint
 			/**
 			 * Reset all the command buffers.
 			 */
-			virtual void Reset() = 0;
+			virtual void ClearBuffers() = 0;
+			virtual void RecreateBuffers() = 0;
 
 		public:
 			std::shared_ptr<CommandBuffer> GetBuffer(UI64 index) { return mCommandBuffers[index]; }
@@ -61,6 +62,7 @@ namespace Flint
 			std::vector<std::shared_ptr<CommandBuffer>> mCommandBuffers;
 
 			Device* pDevice = nullptr;
+			UI32 mBufferCount = 0;
 		};
 	}
 }

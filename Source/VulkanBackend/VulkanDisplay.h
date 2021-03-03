@@ -23,10 +23,12 @@ namespace Flint
 			virtual void Update() override final;
 			virtual void Terminate() override final;
 
-			virtual Backend::Device* CreatDevice() override final;
+			virtual Backend::Device* CreateDevice() override final;
 
 		public:
 			VkSurfaceKHR GetSurface() const { return vSurface; }
+
+			void UpdateWindowExtent(I32 width, I32 height);
 
 		private:
 			void SetupInputs();
