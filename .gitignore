@@ -332,9 +332,6 @@ ASALocalRun/
 # Other Files
 Builds/
 
-Dependencies/ThirdParty/Binaries/SPIRV-Tools
-Dependencies/ThirdParty/Binaries/glslang
-
 *.sln
 *.vcxproj
 *.vcxproj.filters
