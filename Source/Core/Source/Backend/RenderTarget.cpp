@@ -14,6 +14,10 @@ namespace Flint
 			{
 
 			}
+
+			void RuntimeCommandBaker(std::shared_ptr<CommandBufferManager> pCommandBufferManager, Thread::SharedDataClient<RenderTarget::ThreadPayload>* pClient)
+			{
+			}
 		}
 
 		EntryReference RenderTarget::AddDrawEntry(const WireFrame& wireFrame, Pipeline* pPipeline, PipelineResource* pPipelineResource, const DynamicStateContainer& container)

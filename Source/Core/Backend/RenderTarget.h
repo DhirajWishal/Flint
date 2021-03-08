@@ -9,6 +9,7 @@
 #include "Core/Objects/WireFrame.h"
 #include "Core/Types/VectorSet.h"
 #include "Core/Thread/ThreadPool.h"
+#include "Core/Thread/SharedDataStore.h"
 
 namespace Flint
 {
@@ -51,8 +52,8 @@ namespace Flint
 				PipelineResource* pResource = nullptr;
 			};
 
-			struct DynamicDrawEntry : public DrawEntry {
-				std::unique_ptr<CommandBuffer> pCommandBuffer;
+			struct ThreadPayload {
+				std::vector<DrawEntry> mDrawEntries;
 			};
 
 		public:
@@ -154,6 +155,8 @@ namespace Flint
 		protected:
 			VectorSet<EntryReference, DrawEntry> mDynamicDrawEntries;
 			VectorSet<EntryReference, DrawEntry> mStaticDrawEntries;
+
+			Thread::SharedDataStore<ThreadPayload> mSharedStore;
 
 			std::vector<std::shared_ptr<Backend::CommandBufferManager>> mChildCommandBuffers;
 

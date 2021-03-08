@@ -177,11 +177,11 @@ namespace Flint
 		void VulkanScreenBoundRenderTargetS::Bind(const std::shared_ptr<Backend::CommandBuffer>& pCommandBuffer)
 		{
 			VkClearValue pClearValues[2] = {};
-			pClearValues[1].depthStencil = { 1.0f, 0 };
 			pClearValues[0].color.float32[0] = CREATE_COLOR_256(32.0f);
 			pClearValues[0].color.float32[1] = CREATE_COLOR_256(32.0f);
 			pClearValues[0].color.float32[2] = CREATE_COLOR_256(32.0f);
 			pClearValues[0].color.float32[3] = 1.0f;
+			pClearValues[1].depthStencil = { 1.0f, 0 };
 
 			VkRenderPassBeginInfo vRBI = {};
 			vRBI.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -212,11 +212,11 @@ namespace Flint
 				INSERT_INTO_VECTOR(dynamicVector, itr->second);
 
 			VkClearValue pClearValues[2] = {};
-			pClearValues[1].depthStencil = { 1.0f, 0 };
 			pClearValues[0].color.float32[0] = CREATE_COLOR_256(32.0f);
 			pClearValues[0].color.float32[1] = CREATE_COLOR_256(32.0f);
 			pClearValues[0].color.float32[2] = CREATE_COLOR_256(32.0f);
 			pClearValues[0].color.float32[3] = 1.0f;
+			pClearValues[1].depthStencil = { 1.0f, 0 };
 
 			VkRenderPassBeginInfo vRBI = {};
 			vRBI.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;

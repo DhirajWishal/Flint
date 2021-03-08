@@ -154,13 +154,13 @@ void Application::ProcessInputs()
 		mPosition += Front * MoveFactor;
 
 	if (CHECK_KEY_INPUT(KeyA))
-		mPosition += Left * MoveFactor;
+		mPosition -= Left * MoveFactor;
 
 	if (CHECK_KEY_INPUT(KeyS))
 		mPosition -= Front * MoveFactor;
 
 	if (CHECK_KEY_INPUT(KeyD))
-		mPosition -= Left * MoveFactor;
+		mPosition += Left * MoveFactor;
 }
 
 void Application::OnUpdate()
