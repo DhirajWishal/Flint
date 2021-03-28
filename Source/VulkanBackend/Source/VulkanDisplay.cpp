@@ -73,12 +73,13 @@ namespace Flint
 			}
 		}
 
-		void VulkanDisplay::Initialize(Backend::Instance* pInstance, UI32 width, UI32 height, const char* pTitle)
+		void VulkanDisplay::Initialize(VulkanInstance* pInstance, const Vector2 extent, const char* pTitle)
 		{
 			this->pInstance = pInstance;
+			this->mExtent = extent;
 
 			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-			pWindowHandle = glfwCreateWindow(width, height, pTitle, nullptr, nullptr);
+			pWindowHandle = glfwCreateWindow(static_cast<UI32>(extent.width), static_cast<UI32>(extent.height), pTitle, nullptr, nullptr);
 
 			glfwSetWindowUserPointer(pWindowHandle, this);
 
@@ -96,14 +97,6 @@ namespace Flint
 		{
 			DestroySurface();
 			glfwDestroyWindow(pWindowHandle);
-		}
-
-		Backend::Device* VulkanDisplay::CreateDevice()
-		{
-			VulkanDevice* pDevice = new VulkanDevice();
-			pDevice->Initialize(this);
-
-			return pDevice;
 		}
 
 		void VulkanDisplay::UpdateWindowExtent(I32 width, I32 height)
@@ -265,12 +258,37 @@ namespace Flint
 
 		void VulkanDisplay::CreateSurface()
 		{
-			FLINT_VK_ASSERT(glfwCreateWindowSurface(pInstance->Derive<VulkanInstance>()->GetInstance(), pWindowHandle, nullptr, &vSurface), "Failed to create the Vulkan Surface!");
+			FLINT_VK_ASSERT(glfwCreateWindowSurface(pInstance->GetInstance(), pWindowHandle, nullptr, &vSurface), "Failed to create the Vulkan Surface!");
 		}
 
 		void VulkanDisplay::DestroySurface()
 		{
-			vkDestroySurfaceKHR(pInstance->Derive<VulkanInstance>()->GetInstance(), vSurface, nullptr);
+			vkDestroySurfaceKHR(pInstance->GetInstance(), vSurface, nullptr);
+		}
+
+		Backend::DisplayHandle CreateDisplay(Backend::InstanceHandle instanceHandle, const Vector2 extent, const char* pTitle)
+		{
+			VulkanDisplay* pDisplay = new VulkanDisplay();
+			pDisplay->Initialize(reinterpret_cast<VulkanInstance*>(instanceHandle), extent, pTitle);
+			return Backend::DisplayHandle(reinterpret_cast<UI64>(pDisplay));
+		}
+
+		void UpdateDisplay(Backend::DisplayHandle handle)
+		{
+			reinterpret_cast<VulkanDisplay*>(handle)->Update();
+		}
+
+		void DestroyDisplay(Backend::DisplayHandle handle)
+		{
+			VulkanDisplay* pDisplay = reinterpret_cast<VulkanDisplay*>(handle);
+			pDisplay->Terminate();
+
+			delete pDisplay;
+		}
+
+		Inputs::InputCenter* GetDisplayInputCenter(Backend::DisplayHandle handle)
+		{
+			return reinterpret_cast<VulkanDisplay*>(handle)->GetInputCenter();
 		}
 	}
 }

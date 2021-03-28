@@ -16,31 +16,32 @@ namespace Flint
 		/**
 		 * Software/ compute.
 		 */
-		class VulkanScreenBoundRenderTargetS final : public Backend::ScreenBoundRenderTarget, public VulkanRenderTarget {
+		class VulkanScreenBoundRenderTargetS final : public VulkanRenderTarget {
 		public:
 			VulkanScreenBoundRenderTargetS() {}
 			~VulkanScreenBoundRenderTargetS() {}
 
-			virtual void Initialize(Backend::Device* pDevice, const Vector2& extent, UI32 bufferCount) override final;
+			void Initialize(VulkanDevice* pDevice, VulkanDisplay* pDisplay, const Vector2& extent, UI32 bufferCount);
 			virtual void Terminate() override final;
 
-			virtual Backend::GraphicsPipeline* CreateGraphicsPipeline(const std::vector<ShaderDigest>& shaderDigests, const Backend::GraphicsPipelineSpecification& spec) override final;
+			Backend::GraphicsPipeline* CreateGraphicsPipeline(const std::vector<ShaderDigest>& shaderDigests, const Backend::GraphicsPipelineSpecification& spec);
 
-			virtual UI32 PrepareToDraw() override final;
-			virtual void SubmitCommand() override final;
+			UI32 PrepareToDraw();
+			void SubmitCommand();
 
 			VkSwapchainKHR GetSwapChain() const { return vSwapChain.GetSwapChain(); }
-			virtual VkFramebuffer GetCurrentFrameBuffer() const override final { return vFrameBuffers[mImageIndex]; }
+			VkFramebuffer GetCurrentFrameBuffer() const { return vFrameBuffers[mImageIndex]; }
 
 		private:
-			virtual void Recreate() override final;
+			void Recreate();
 
-			virtual void Bind(const std::shared_ptr<Backend::CommandBuffer>& pCommandBuffer) override final;
-			virtual void UnBind(const std::shared_ptr<Backend::CommandBuffer>& pCommandBuffer) override final;
+			void Bind(const std::shared_ptr<Backend::CommandBuffer>& pCommandBuffer);
+			void UnBind(const std::shared_ptr<Backend::CommandBuffer>& pCommandBuffer);
 
 			void SubmitSecondaryCommands();
 
 		private:
+			VulkanDisplay* pDisplay = nullptr;
 			VulkanSwapChain vSwapChain = {};
 			VulkanColorBuffer vColorBuffer = {};
 			VulkanDepthBuffer vDepthBuffer = {};

@@ -17,7 +17,7 @@ namespace Flint
 			VulkanQueue() {}
 			~VulkanQueue() {}
 
-			void Initialize(VkPhysicalDevice vPhysicalDevice, VkSurfaceKHR vSurface);
+			void Initialize(VkPhysicalDevice vPhysicalDevice);
 			bool IsComplete() const;
 
 			std::optional<UI32> mGraphicsFamily;

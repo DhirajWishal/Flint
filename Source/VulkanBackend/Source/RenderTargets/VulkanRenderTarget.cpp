@@ -8,7 +8,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		void VulkanRenderTarget::CreateRenderPass(VulkanDevice* pDevice, std::vector<VulkanRenderTargetAttachment*> pAttachments, VkPipelineBindPoint vBindPoint)
+		void VulkanRenderTarget::CreateRenderPass(std::vector<VulkanRenderTargetAttachment*> pAttachments, VkPipelineBindPoint vBindPoint)
 		{
 			std::vector<VkAttachmentDescription> vDescriptions;
 
@@ -91,12 +91,12 @@ namespace Flint
 			FLINT_VK_ASSERT(pDevice->CreateRenderPass(&vCI, &vRenderPass), "Failed to create render pass!");
 		}
 
-		void VulkanRenderTarget::DestroyRenderPass(VulkanDevice* pDevice)
+		void VulkanRenderTarget::DestroyRenderPass()
 		{
 			pDevice->DestroyRenderPass(vRenderPass);
 		}
 
-		void VulkanRenderTarget::CreateFrameBuffer(VulkanDevice* pDevice, std::vector<VulkanRenderTargetAttachment*> pAttachments, const Vector2& extent, UI32 bufferCount)
+		void VulkanRenderTarget::CreateFrameBuffer(std::vector<VulkanRenderTargetAttachment*> pAttachments, const Vector2& extent, UI32 bufferCount)
 		{
 			VkFramebufferCreateInfo vCI = {};
 			vCI.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
@@ -121,13 +121,13 @@ namespace Flint
 			}
 		}
 
-		void VulkanRenderTarget::DestroyFrameBuffers(VulkanDevice* pDevice)
+		void VulkanRenderTarget::DestroyFrameBuffers()
 		{
 			pDevice->DestroyFrameBuffers(vFrameBuffers);
 			vFrameBuffers.clear();
 		}
 
-		void VulkanRenderTarget::InitializeSyncObjects(VulkanDevice* pDevice, UI32 count)
+		void VulkanRenderTarget::InitializeSyncObjects(UI32 count)
 		{
 			vImageAvailables.resize(count);
 			vRenderFinishes.resize(count);
@@ -141,18 +141,21 @@ namespace Flint
 			VFCI.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
 			VFCI.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-			VulkanDevice* pvDevice = pDevice->Derive<VulkanDevice>();
-			FLINT_VK_ASSERT(pvDevice->CreateSemaphores(&vSCI, vImageAvailables), "Failed to create Image Available semaphores!")
-				FLINT_VK_ASSERT(pvDevice->CreateSemaphores(&vSCI, vRenderFinishes), "Failed to create Render Finished semaphores!")
-				FLINT_VK_ASSERT(pvDevice->CreateFences(&VFCI, vInFlightFences), "Failed to create In Flight fences!")
+			FLINT_VK_ASSERT(pDevice->CreateSemaphores(&vSCI, vImageAvailables), "Failed to create Image Available semaphores!")
+				FLINT_VK_ASSERT(pDevice->CreateSemaphores(&vSCI, vRenderFinishes), "Failed to create Render Finished semaphores!")
+				FLINT_VK_ASSERT(pDevice->CreateFences(&VFCI, vInFlightFences), "Failed to create In Flight fences!")
 		}
 
-		void VulkanRenderTarget::TerminateSyncObjects(VulkanDevice* pDevice)
+		void VulkanRenderTarget::TerminateSyncObjects()
 		{
-			VulkanDevice* pvDevice = pDevice->Derive<VulkanDevice>();
-			pvDevice->DestroySemaphores(vImageAvailables);
-			pvDevice->DestroySemaphores(vRenderFinishes);
-			pvDevice->DestroyFences(vInFlightFences);
+			pDevice->DestroySemaphores(vImageAvailables);
+			pDevice->DestroySemaphores(vRenderFinishes);
+			pDevice->DestroyFences(vInFlightFences);
 		}
-	}
+		
+		void DestroyRenderTarget(Backend::RenderTargetHandle handle)
+		{
+			reinterpret_cast<VulkanRenderTarget*>(handle)->Terminate();
+		}
+}
 }

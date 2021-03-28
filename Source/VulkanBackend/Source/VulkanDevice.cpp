@@ -71,25 +71,19 @@ namespace Flint
 			 * @param deviceExtensions: The physical device extensions.
 			 * @return Boolean value.
 			 */
-			bool IsPhysicalDeviceSuitable(VkPhysicalDevice vDevice, VkSurfaceKHR vSurface, const std::vector<const char*>& deviceExtensions)
+			bool IsPhysicalDeviceSuitable(VkPhysicalDevice vDevice, const std::vector<const char*>& deviceExtensions)
 			{
 				VulkanQueue vQueue = {};
-				vQueue.Initialize(vDevice, vSurface);
+				vQueue.Initialize(vDevice);
 
 				bool extensionsSupported = _Helpers::CheckDeviceExtensionSupport(vDevice, deviceExtensions);
 				bool swapChainAdequate = false;
-				if (extensionsSupported)
-				{
-					SwapChainSupportDetails swapChainSupport = SwapChainSupportDetails::Query(vDevice, vSurface);
-					swapChainAdequate = (!swapChainSupport.formats.empty()) && (!swapChainSupport.presentModes.empty());
-				}
 
 				VkPhysicalDeviceFeatures supportedFeatures = {};
 				vkGetPhysicalDeviceFeatures(vDevice, &supportedFeatures);
 
 				return vQueue.IsComplete()
 					&& extensionsSupported
-					&& swapChainAdequate
 					&& supportedFeatures.samplerAnisotropy;
 				return true;
 			}
@@ -121,9 +115,9 @@ namespace Flint
 			return supportDetails;
 		}
 
-		void VulkanDevice::Initialize(Backend::Display* pDisplay)
+		void VulkanDevice::Initialize(VulkanInstance* pInstance)
 		{
-			this->pDisplay = pDisplay;
+			this->pInstance = pInstance;
 			INSERT_INTO_VECTOR(mDeviceExtensions, VK_KHR_SWAPCHAIN_EXTENSION_NAME);
 
 			CreatePhysicalDevice();
@@ -133,45 +127,6 @@ namespace Flint
 		void VulkanDevice::Terminate()
 		{
 			DestroyLogicalDevice();
-		}
-
-		Backend::RenderTarget* VulkanDevice::CreateRenderTarget(Backend::RenderTargetType type, const Vector2& extent, UI32 bufferCount)
-		{
-			switch (type)
-			{
-			case Flint::Backend::RenderTargetType::SCREEN_BOUND:
-			{
-				VulkanScreenBoundRenderTargetS* pRenderTarget = new VulkanScreenBoundRenderTargetS();
-				pRenderTarget->Initialize(this, extent, bufferCount);
-				return pRenderTarget;
-			}
-			break;
-
-			case Flint::Backend::RenderTargetType::OFF_SCREEN:
-				break;
-
-			default:
-				FLINT_LOG_ERROR(TEXT("Invalid render target type!"))
-					break;
-			}
-
-			return nullptr;
-		}
-
-		Backend::Buffer* VulkanDevice::CreateBuffer(UI64 size, Backend::BufferUsage usage, Backend::MemoryProfile memoryProfile)
-		{
-			VulkanBuffer* pBuffer = new VulkanBuffer();
-			pBuffer->Initialize(this, size, usage, memoryProfile);
-
-			return pBuffer;
-		}
-
-		Backend::CommandBufferManager* VulkanDevice::CreateCommandBufferManager(UI32 count)
-		{
-			VulkanCommandBufferManager* pCommandBufferManager = new VulkanCommandBufferManager();
-			pCommandBufferManager->CreateBuffers(this, count);
-
-			return pCommandBufferManager;
 		}
 
 		VkPhysicalDeviceProperties VulkanDevice::GetPhysicalDeviceProperties() const
@@ -214,8 +169,7 @@ namespace Flint
 
 		void VulkanDevice::CreatePhysicalDevice()
 		{
-			VulkanDisplay& display = *pDisplay->Derive<VulkanDisplay>();
-			VulkanInstance& instance = *display.GetInstance()->Derive<VulkanInstance>();
+			VulkanInstance& instance = *pInstance;
 
 			UI32 deviceCount = 0;
 			vkEnumeratePhysicalDevices(instance.GetInstance(), &deviceCount, nullptr);
@@ -233,7 +187,7 @@ namespace Flint
 			// Iterate through all the candidate devices and find the best device.
 			for (const VkPhysicalDevice& device : devices)
 			{
-				if (_Helpers::IsPhysicalDeviceSuitable(device, display.GetSurface(), mDeviceExtensions))
+				if (_Helpers::IsPhysicalDeviceSuitable(device, mDeviceExtensions))
 				{
 					vkGetPhysicalDeviceProperties(device, &vPhysicalDeviceProperties);
 
@@ -296,10 +250,9 @@ namespace Flint
 
 		void VulkanDevice::CreateLogicalDevice()
 		{
-			VulkanDisplay& display = *pDisplay->Derive<VulkanDisplay>();
-			VulkanInstance& instance = *display.GetInstance()->Derive<VulkanInstance>();
+			VulkanInstance& instance = *pInstance;
 
-			vQueue.Initialize(vPhysicalDevice, display.GetSurface());
+			vQueue.Initialize(vPhysicalDevice);
 
 			std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
 			std::set<UI32> uniqueQueueFamilies = {
@@ -773,5 +726,21 @@ namespace Flint
 			for (auto itr : vFences)
 				vkDestroyFence(GetLogicalDevice(), itr, nullptr);
 		}
-	}
+
+		Backend::DeviceHandle CreateDevice(Backend::InstanceHandle instanceHandle)
+		{
+			VulkanDevice* pDevice = new VulkanDevice();
+			pDevice->Initialize(reinterpret_cast<VulkanInstance*>(instanceHandle));
+
+			return Backend::DeviceHandle(reinterpret_cast<UI64>(pDevice));
+		}
+
+		void DestroyDevice(Backend::DeviceHandle handle)
+		{
+			VulkanDevice* pDevice = reinterpret_cast<VulkanDevice*>(handle);
+			pDevice->Terminate();
+
+			delete pDevice;
+		}
+}
 }

@@ -7,7 +7,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		void VulkanQueue::Initialize(VkPhysicalDevice vPhysicalDevice, VkSurfaceKHR vSurface)
+		void VulkanQueue::Initialize(VkPhysicalDevice vPhysicalDevice)
 		{
 			UI32 queueFamilyCount = 0;
 			vkGetPhysicalDeviceQueueFamilyProperties(vPhysicalDevice, &queueFamilyCount, nullptr);

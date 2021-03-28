@@ -4,6 +4,7 @@
 #pragma once
 
 #include "Core/Backend/Device.h"
+#include "VulkanInstance.h"
 #include "VulkanDisplay.h"
 #include "VulkanQueue.h"
 
@@ -29,22 +30,13 @@ namespace Flint
 			static SwapChainSupportDetails Query(VkPhysicalDevice vPhysicalDevice, VkSurfaceKHR vSurface);
 		};
 
-		class VulkanDevice : public Backend::Device {
+		class VulkanDevice  {
 		public:
 			VulkanDevice() {}
 			~VulkanDevice() {}
 
-			virtual void Initialize(Backend::Display* pDisplay) override final;
-			virtual void Terminate() override final;
-
-		public:
-			virtual Backend::RenderTarget* CreateRenderTarget(Backend::RenderTargetType type, const Vector2& extent, UI32 bufferCount = 0) override final;
-
-		public:
-			virtual Backend::Buffer* CreateBuffer(UI64 size, Backend::BufferUsage usage, Backend::MemoryProfile memoryProfile) override final;
-
-		public:
-			virtual Backend::CommandBufferManager* CreateCommandBufferManager(UI32 count) override final;
+			void Initialize(VulkanInstance* pInstance);
+			void Terminate();
 
 		public:
 			VkPhysicalDeviceProperties GetPhysicalDeviceProperties() const;
@@ -73,6 +65,8 @@ namespace Flint
 		private:
 			VulkanQueue vQueue = {};
 			std::vector<const char*> mDeviceExtensions;
+
+			VulkanInstance* pInstance = nullptr;
 
 			VkPhysicalDevice vPhysicalDevice = VK_NULL_HANDLE;
 			VkDevice vLogicalDevice = VK_NULL_HANDLE;
@@ -149,6 +143,9 @@ namespace Flint
 			VkResult CreateFences(const VkFenceCreateInfo* pCreateInfo, const std::vector<VkFence>& vFences) const;
 			void DestroyFences(const std::vector<VkFence>& vFences) const;
 		};
+
+		Backend::DeviceHandle CreateDevice(Backend::InstanceHandle instanceHandle);
+		void DestroyDevice(Backend::DeviceHandle handle);
 
 		class VulkanDeviceBoundObject {
 		public:

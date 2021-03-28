@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "VulkanBackend/VulkanInstance.h"
-#include "VulkanBackend/VulkanDisplay.h"
+#include "VulkanBackend/VulkanDevice.h"
 #include "VulkanBackend/VulkanMacros.h"
 #include "Core/ErrorHandler/Logger.h"
 #include "Core/Types/Utilities.h"
@@ -191,13 +191,13 @@ namespace Flint
 			TerminateGLFW();
 		}
 
-		Backend::Display* VulkanInstance::CreateDisplay(UI32 width, UI32 height, const char* pTitle)
-		{
-			VulkanDisplay* pDisplay = new VulkanDisplay();
-			pDisplay->Initialize(this, width, height, pTitle);
-
-			return pDisplay;
-		}
+		//Backend::Device* VulkanInstance::CreateDevice()
+		//{
+		//	VulkanDevice* pDevice = new VulkanDevice();
+		//	pDevice->Initialize();
+		//
+		//	return pDevice;
+		//}
 
 		void VulkanInstance::InitializeGLFW()
 		{
@@ -275,5 +275,21 @@ namespace Flint
 			if (func != nullptr)
 				func(vInstance, vDebugUtilsMessenger, nullptr);
 		}
-	}
+		
+		Backend::InstanceHandle CreateInstance(bool enableValidation)
+		{
+			VulkanInstance* pInstance = new VulkanInstance();
+			pInstance->Initialize(enableValidation);
+
+			return Backend::InstanceHandle(reinterpret_cast<UI64>(pInstance));
+		}
+		
+		void DestroyInstance(Backend::InstanceHandle handle)
+		{
+			VulkanInstance* pInstance = reinterpret_cast<VulkanInstance*>(handle);
+			pInstance->Terminate();
+
+			delete pInstance;
+		}
+}
 }

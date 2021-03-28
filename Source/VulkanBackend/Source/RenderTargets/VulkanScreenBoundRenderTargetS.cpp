@@ -13,24 +13,22 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		void VulkanScreenBoundRenderTargetS::Initialize(Backend::Device* pDevice, const Vector2& extent, UI32 bufferCount)
+		void VulkanScreenBoundRenderTargetS::Initialize(VulkanDevice* pDevice, VulkanDisplay* pDisplay, const Vector2& extent, UI32 bufferCount)
 		{
 			this->pDevice = pDevice;
 			this->mExtent = extent;
-			this->pCommandBufferManager = new VulkanCommandBufferManager();
+			this->pDisplay = pDisplay;
+			this->mBufferCount = pDevice->FindSupporterBufferCount(bufferCount);
 
-			VulkanDevice* pvDevice = pDevice->Derive<VulkanDevice>();
-			this->mBufferCount = pvDevice->FindSupporterBufferCount(bufferCount);
+			mCommandBufferManager.CreateBuffers(pDevice, static_cast<UI32>(mBufferCount));
+			vSwapChain.Initialize(pDevice, extent, static_cast<UI32>(mBufferCount));
+			vColorBuffer.Initialize(pDevice, extent, vSwapChain.GetFormat(), static_cast<UI32>(mBufferCount));
+			vDepthBuffer.Initialize(pDevice, extent, static_cast<UI32>(mBufferCount));
 
-			pCommandBufferManager->CreateBuffers(pDevice, static_cast<UI32>(mBufferCount));
-			vSwapChain.Initialize(pvDevice, extent, static_cast<UI32>(mBufferCount));
-			vColorBuffer.Initialize(pvDevice, extent, vSwapChain.GetFormat(), static_cast<UI32>(mBufferCount));
-			vDepthBuffer.Initialize(pvDevice, extent, static_cast<UI32>(mBufferCount));
+			CreateRenderPass({ &vColorBuffer, &vDepthBuffer, &vSwapChain }, VK_PIPELINE_BIND_POINT_GRAPHICS);
+			CreateFrameBuffer({ &vColorBuffer, &vDepthBuffer, &vSwapChain }, mExtent, static_cast<UI32>(mBufferCount));
 
-			CreateRenderPass(pvDevice, { &vColorBuffer, &vDepthBuffer, &vSwapChain }, VK_PIPELINE_BIND_POINT_GRAPHICS);
-			CreateFrameBuffer(pvDevice, { &vColorBuffer, &vDepthBuffer, &vSwapChain }, mExtent, static_cast<UI32>(mBufferCount));
-
-			InitializeSyncObjects(pvDevice, static_cast<UI32>(this->mBufferCount));
+			InitializeSyncObjects(static_cast<UI32>(this->mBufferCount));
 		}
 
 		void VulkanScreenBoundRenderTargetS::Terminate()
@@ -39,15 +37,13 @@ namespace Flint
 			vColorBuffer.Terminate();
 			vDepthBuffer.Terminate();
 
-			VulkanDevice* pvDevice = pDevice->Derive<VulkanDevice>();
-			DestroyRenderPass(pvDevice);
-			DestroyFrameBuffers(pvDevice);
-			TerminateSyncObjects(pvDevice);
+			DestroyRenderPass();
+			DestroyFrameBuffers();
+			TerminateSyncObjects();
 
 			DestroyChildCommandBuffers();
 
-			pCommandBufferManager->Terminate();
-			delete pCommandBufferManager;
+			mCommandBufferManager.Terminate();
 		}
 
 		Backend::GraphicsPipeline* VulkanScreenBoundRenderTargetS::CreateGraphicsPipeline(const std::vector<ShaderDigest>& shaderDigests, const Backend::GraphicsPipelineSpecification& spec)
@@ -59,11 +55,10 @@ namespace Flint
 
 		UI32 VulkanScreenBoundRenderTargetS::PrepareToDraw()
 		{
-			VulkanDevice* pvDevice = GetDevice()->Derive<VulkanDevice>();
-			FLINT_VK_ASSERT(vkWaitForFences(pvDevice->GetLogicalDevice(), 1, &vInFlightFences[mFrameIndex], VK_TRUE, std::numeric_limits<uint64_t>::max()), "Failed to wait for fence!")
+			FLINT_VK_ASSERT(vkWaitForFences(pDevice->GetLogicalDevice(), 1, &vInFlightFences[mFrameIndex], VK_TRUE, std::numeric_limits<uint64_t>::max()), "Failed to wait for fence!")
 				//FLINT_VK_ASSERT(pvDevice->ResetFences({ vInFlightFences[mFrameIndex] }), "Failed to reset fence!")
 
-				VkResult result = vkAcquireNextImageKHR(pvDevice->GetLogicalDevice(), GetSwapChain(), std::numeric_limits<UI32>::max(), vImageAvailables[mFrameIndex], VK_NULL_HANDLE, &mImageIndex);
+				VkResult result = vkAcquireNextImageKHR(pDevice->GetLogicalDevice(), GetSwapChain(), std::numeric_limits<UI32>::max(), vImageAvailables[mFrameIndex], VK_NULL_HANDLE, &mImageIndex);
 
 			if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
 				Recreate();
@@ -77,9 +72,8 @@ namespace Flint
 
 		void VulkanScreenBoundRenderTargetS::SubmitCommand()
 		{
-			VulkanDevice* pvDevice = GetDevice()->Derive<VulkanDevice>();
 			if (vImagesInFlightFences[mImageIndex] != VK_NULL_HANDLE)
-				FLINT_VK_ASSERT(vkWaitForFences(pvDevice->GetLogicalDevice(), 1, &vImagesInFlightFences[mImageIndex], VK_TRUE, std::numeric_limits<uint64_t>::max()), "Failed to wait for fence!")
+				FLINT_VK_ASSERT(vkWaitForFences(pDevice->GetLogicalDevice(), 1, &vImagesInFlightFences[mImageIndex], VK_TRUE, std::numeric_limits<uint64_t>::max()), "Failed to wait for fence!")
 
 				vImagesInFlightFences[mImageIndex] = vInFlightFences[mFrameIndex];
 
@@ -89,15 +83,15 @@ namespace Flint
 			vSI.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 			vSI.pNext = VK_NULL_HANDLE;
 			vSI.commandBufferCount = 1;
-			vSI.pCommandBuffers = *dynamic_cast<VulkanCommandBuffer*>(const_cast<Backend::CommandBuffer*>(pCommandBufferManager->GetBuffer(mFrameIndex).get()));
+			vSI.pCommandBuffers = *dynamic_cast<VulkanCommandBuffer*>(const_cast<Backend::CommandBuffer*>(mCommandBufferManager.GetBuffer(mFrameIndex).get()));
 			vSI.waitSemaphoreCount = 1;
 			vSI.pWaitSemaphores = &vImageAvailables[mFrameIndex];
 			vSI.signalSemaphoreCount = 1;
 			vSI.pSignalSemaphores = &vRenderFinishes[mFrameIndex];
 			vSI.pWaitDstStageMask = &vWaitStage;
 
-			FLINT_VK_ASSERT(vkResetFences(pvDevice->GetLogicalDevice(), 1, &vInFlightFences[mFrameIndex]), "Failed to reset fence!")
-				FLINT_VK_ASSERT(pvDevice->SubmitQueue(pvDevice->GetGraphicsQueue(), { vSI }, vInFlightFences[mFrameIndex]), "Failed to submit queue!")
+			FLINT_VK_ASSERT(vkResetFences(pDevice->GetLogicalDevice(), 1, &vInFlightFences[mFrameIndex]), "Failed to reset fence!")
+				FLINT_VK_ASSERT(pDevice->SubmitQueue(pDevice->GetGraphicsQueue(), { vSI }, vInFlightFences[mFrameIndex]), "Failed to submit queue!")
 
 				VkPresentInfoKHR vPI = {};
 			vPI.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -110,15 +104,15 @@ namespace Flint
 			vPI.pSwapchains = &vSwapChain;
 			vPI.pImageIndices = &mImageIndex;
 
-			VkResult result = vkQueuePresentKHR(pvDevice->GetTransferQueue(), &vPI);
-			if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || pvDevice->GetDisplay()->GetInputCenter()->IsWindowResized)
+			VkResult result = vkQueuePresentKHR(pDevice->GetTransferQueue(), &vPI);
+			if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || pDisplay->GetInputCenter()->IsWindowResized)
 			{
-				pvDevice->GetDisplay()->GetInputCenter()->IsWindowResized = false;
+				pDisplay->GetInputCenter()->IsWindowResized = false;
 				Recreate();
 			}
 			else FLINT_VK_ASSERT(result, "Failed to present queue!")
 
-				FLINT_VK_ASSERT(vkQueueWaitIdle(pvDevice->GetTransferQueue()), "Failed to wait idle till the queue is complete!")
+				FLINT_VK_ASSERT(vkQueueWaitIdle(pDevice->GetTransferQueue()), "Failed to wait idle till the queue is complete!")
 
 				mFrameIndex++;
 			if (mFrameIndex >= mBufferCount) mFrameIndex = 0;
@@ -126,25 +120,23 @@ namespace Flint
 
 		void VulkanScreenBoundRenderTargetS::Recreate()
 		{
-			VulkanDevice* pvDevice = this->pDevice->Derive<VulkanDevice>();
-			pvDevice->WaitIdle();
+			pDevice->WaitIdle();
 
-			Vector2 extent = GetDevice()->GetDisplay()->GetExtent();
+			Vector2 extent = pDisplay->GetExtent();
 			while (extent.width == 0.0f || extent.height == 0.0)
 			{
 				Thread::Utilities::SleepThisThread(std::chrono::milliseconds(1));
-				Backend::Display* pDisplay = GetDevice()->GetDisplay();
 
 				pDisplay->Update();
 				extent = pDisplay->GetExtent();
 			}
 
 			mExtent = extent;
-			pCommandBufferManager->ClearBuffers();
+			mCommandBufferManager.ClearBuffers();
 
 			// Destroy render pass and frame buffer.
-			DestroyRenderPass(pvDevice);
-			DestroyFrameBuffers(pvDevice);
+			DestroyRenderPass();
+			DestroyFrameBuffers();
 
 			// Recreate attachments.
 			vSwapChain.Recreate(extent);
@@ -152,8 +144,8 @@ namespace Flint
 			vDepthBuffer.Recreate(extent);
 
 			// Recreate render pass and frame buffer.
-			CreateRenderPass(pvDevice, { &vColorBuffer, &vDepthBuffer, &vSwapChain }, VK_PIPELINE_BIND_POINT_GRAPHICS);
-			CreateFrameBuffer(pvDevice, { &vColorBuffer, &vDepthBuffer, &vSwapChain }, mExtent, static_cast<UI32>(mBufferCount));
+			CreateRenderPass({ &vColorBuffer, &vDepthBuffer, &vSwapChain }, VK_PIPELINE_BIND_POINT_GRAPHICS);
+			CreateFrameBuffer({ &vColorBuffer, &vDepthBuffer, &vSwapChain }, mExtent, static_cast<UI32>(mBufferCount));
 
 			// Re create renderable pipelines.
 			for (auto itr = mStaticDrawEntries.Begin(); itr != mStaticDrawEntries.End(); itr++)
@@ -163,7 +155,7 @@ namespace Flint
 				itr->second.pPipeline->Recreate();
 
 			// Prepare command buffers to be rendered.
-			pCommandBufferManager->RecreateBuffers();
+			mCommandBufferManager.RecreateBuffers();
 			for (auto& buffer : mChildCommandBuffers)
 				buffer->Terminate();
 
@@ -203,9 +195,9 @@ namespace Flint
 		void VulkanScreenBoundRenderTargetS::SubmitSecondaryCommands()
 		{
 			auto& pSecondaryCommandBuffers = mChildCommandBuffers[0];
-			pCommandBufferManager->UpdateChild(pSecondaryCommandBuffers.get(), this);
+			mCommandBufferManager.UpdateChild(pSecondaryCommandBuffers.get(), this);
 
-			auto& pCommandBuffer = pCommandBufferManager->GetBuffer(mImageIndex);
+			auto& pCommandBuffer = mCommandBufferManager.GetBuffer(mImageIndex);
 
 			std::vector<DrawEntry> dynamicVector;
 			for (auto itr = mDynamicDrawEntries.Begin(); itr != mDynamicDrawEntries.End(); itr++)

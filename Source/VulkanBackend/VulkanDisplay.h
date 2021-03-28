@@ -14,19 +14,19 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanDisplay : public Backend::Display {
+		class VulkanDisplay {
 		public:
 			VulkanDisplay() {}
 			~VulkanDisplay() {}
 
-			virtual void Initialize(Backend::Instance* pInstance, UI32 width, UI32 height, const char* pTitle) override final;
-			virtual void Update() override final;
-			virtual void Terminate() override final;
-
-			virtual Backend::Device* CreateDevice() override final;
+			void Initialize(VulkanInstance* pInstance, const Vector2 extent, const char* pTitle);
+			void Update();
+			void Terminate();
 
 		public:
 			VkSurfaceKHR GetSurface() const { return vSurface; }
+			Vector2 GetExtent() const { return mExtent; }
+			Inputs::InputCenter* GetInputCenter() const { return const_cast<Inputs::InputCenter*>(&mInputCenter); }
 
 			void UpdateWindowExtent(I32 width, I32 height);
 
@@ -38,8 +38,18 @@ namespace Flint
 			void DestroySurface();
 
 		private:
+			Inputs::InputCenter mInputCenter = {};
+
+			Vector2 mExtent = Vector2::ZeroAll;
+			VulkanInstance* pInstance = nullptr;
+
 			GLFWwindow* pWindowHandle = nullptr;
 			VkSurfaceKHR vSurface = VK_NULL_HANDLE;
 		};
+
+		Backend::DisplayHandle CreateDisplay(Backend::InstanceHandle instanceHandle, const Vector2 extent, const char* pTitle);
+		void UpdateDisplay(Backend::DisplayHandle handle);
+		void DestroyDisplay(Backend::DisplayHandle handle);
+		Inputs::InputCenter* GetDisplayInputCenter(Backend::DisplayHandle handle);
 	}
 }
