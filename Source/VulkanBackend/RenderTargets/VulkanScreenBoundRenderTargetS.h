@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "Core\Backend\ScreenBoundRenderTarget.h"
 #include "VulkanRenderTarget.h"
 
 #include "Attachments/VulkanColorBuffer.h"
@@ -16,15 +17,15 @@ namespace Flint
 		/**
 		 * Software/ compute.
 		 */
-		class VulkanScreenBoundRenderTargetS final : public VulkanRenderTarget {
+		class VulkanScreenBoundRenderTargetS final : public VulkanRenderTarget, Backend::ScreenBoundRenderTarget<VulkanScreenBoundRenderTargetS, VulkanDevice, VulkanDisplay> {
 		public:
 			VulkanScreenBoundRenderTargetS() {}
 			~VulkanScreenBoundRenderTargetS() {}
 
-			void Initialize(VulkanDevice* pDevice, VulkanDisplay* pDisplay, const Vector2& extent, UI32 bufferCount);
-			virtual void Terminate() override final;
+			virtual void mInitialize() override final;
+			virtual void mTerminate() override final;
 
-			Backend::GraphicsPipeline* CreateGraphicsPipeline(const std::vector<ShaderDigest>& shaderDigests, const Backend::GraphicsPipelineSpecification& spec);
+			//Backend::GraphicsPipeline* CreateGraphicsPipeline(const std::vector<ShaderDigest>& shaderDigests, const Backend::GraphicsPipelineSpecification& spec);
 
 			UI32 PrepareToDraw();
 			void SubmitCommand();
@@ -41,7 +42,6 @@ namespace Flint
 			void SubmitSecondaryCommands();
 
 		private:
-			VulkanDisplay* pDisplay = nullptr;
 			VulkanSwapChain vSwapChain = {};
 			VulkanColorBuffer vColorBuffer = {};
 			VulkanDepthBuffer vDepthBuffer = {};

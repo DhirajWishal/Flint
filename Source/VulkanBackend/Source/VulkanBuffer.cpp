@@ -10,29 +10,24 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		void VulkanBuffer::Initialize(Backend::Device* pDevice, UI64 size, Backend::BufferUsage usage, Backend::MemoryProfile memoryProfile)
+		void VulkanBuffer::mInitialize()
 		{
-			this->pDevice = pDevice;
-			this->mSize = size;
-			this->mUsage = usage;
-			this->mMemoryProfile = memoryProfile;
-
 			VkBufferUsageFlags vBufferUsage = {};
-			switch (usage)
+			switch (GetType())
 			{
-			case Flint::Backend::BufferUsage::VERTEX:
+			case Flint::Backend::BufferType::VERTEX:
 				vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 				break;
 
-			case Flint::Backend::BufferUsage::INDEX:
+			case Flint::Backend::BufferType::INDEX:
 				vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 				break;
 
-			case Flint::Backend::BufferUsage::UNIFORM:
+			case Flint::Backend::BufferType::UNIFORM:
 				vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 				break;
 
-			case Flint::Backend::BufferUsage::STAGGING:
+			case Flint::Backend::BufferType::STAGGING:
 				vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 				break;
 
@@ -44,7 +39,7 @@ namespace Flint
 			CreateBuffer(vBufferUsage);
 
 			VkMemoryPropertyFlags vMemoryProperties = {};
-			switch (memoryProfile)
+			switch (GetMemoryProfile())
 			{
 			case Flint::Backend::MemoryProfile::TRANSFER_FRIENDLY:
 				vMemoryProperties =
@@ -71,13 +66,13 @@ namespace Flint
 			AllocateBufferMemory(vMemoryProperties);
 		}
 
-		void VulkanBuffer::Terminate()
+		void VulkanBuffer::mTerminate()
 		{
 			DestroyBuffer();
 			FreeBufferMemory();
 		}
 
-		void* VulkanBuffer::MapMemory(UI64 size, UI64 offset)
+		void* VulkanBuffer::pMapMemory(UI64 size, UI64 offset)
 		{
 			if (size + offset > mSize)
 				size = mSize, offset = 0;
@@ -89,16 +84,16 @@ namespace Flint
 			mPrevMapInfo.mOffset = offset;
 
 			void* pDataStore = nullptr;
-			FLINT_VK_ASSERT(pDevice->Derive<VulkanDevice>()->MapMemory(vBufferMemory, size, offset, &pDataStore), "Failed to map buffer memory!")
+			FLINT_VK_ASSERT(pDevice->MapMemory(vBufferMemory, size, offset, &pDataStore), "Failed to map buffer memory!")
 				return pDataStore;
 		}
 
-		void VulkanBuffer::UnmapMemory()
+		void VulkanBuffer::mUnmapMemory()
 		{
-			pDevice->Derive<VulkanDevice>()->UnmapMemory(vBufferMemory);
+			pDevice->UnmapMemory(vBufferMemory);
 		}
 
-		void VulkanBuffer::FlushMemoryMappings()
+		void VulkanBuffer::mFlushMemoryMappings()
 		{
 			VkMappedMemoryRange vMMR = {};
 			vMMR.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
@@ -107,18 +102,18 @@ namespace Flint
 			vMMR.size = mPrevMapInfo.mSize;
 			vMMR.offset = mPrevMapInfo.mOffset;
 
-			FLINT_VK_ASSERT(pDevice->Derive<VulkanDevice>()->FlushMemoryRanges({ vMMR }), "Failed to flush memory mappings!")
+			FLINT_VK_ASSERT(pDevice->FlushMemoryRanges({ vMMR }), "Failed to flush memory mappings!")
 		}
 
-		void VulkanBuffer::CopyFrom(Buffer* pBuffer, UI64 size, UI64 srcOffset, UI64 dstOffset)
+		void VulkanBuffer::mCopyFrom(Buffer* pBuffer, UI64 size, UI64 srcOffset, UI64 dstOffset)
 		{
 			VkBufferCopy vBC = {};
 			vBC.size = size;
 			vBC.srcOffset = srcOffset;
 			vBC.dstOffset = dstOffset;
 
-			VulkanOneTimeCommandBuffer vCommandBuffer(pDevice->Derive<VulkanDevice>());
-			vkCmdCopyBuffer(vCommandBuffer, pBuffer->Derive<VulkanBuffer>()->vBuffer, vBuffer, 1, &vBC);
+			VulkanOneTimeCommandBuffer vCommandBuffer(pDevice.get());
+			vkCmdCopyBuffer(vCommandBuffer, pBuffer->GetDerived().vBuffer, vBuffer, 1, &vBC);
 		}
 
 		void VulkanBuffer::Bind(const std::shared_ptr<Backend::CommandBuffer>& pCommandBuffer)
@@ -126,9 +121,9 @@ namespace Flint
 			VkCommandBuffer vCommandBuffer = *dynamic_cast<VulkanCommandBuffer*>(const_cast<Backend::CommandBuffer*>(pCommandBuffer.get()));
 			VkDeviceSize offset[1] = { 0 };
 
-			if (mUsage == Backend::BufferUsage::VERTEX)
+			if (mType == Backend::BufferType::VERTEX)
 				vkCmdBindVertexBuffers(vCommandBuffer, 0, 1, &vBuffer, offset);
-			else if (mUsage == Backend::BufferUsage::INDEX)
+			else if (mType == Backend::BufferType::INDEX)
 				vkCmdBindIndexBuffer(vCommandBuffer, vBuffer, 0, VK_INDEX_TYPE_UINT32);
 		}
 
@@ -144,22 +139,22 @@ namespace Flint
 			vCI.size = static_cast<UI32>(mSize);
 			vCI.usage = vUsage;
 
-			FLINT_VK_ASSERT(pDevice->Derive<VulkanDevice>()->CreateBuffer(&vCI, &vBuffer), "Failed to create buffer!")
+			FLINT_VK_ASSERT(pDevice->CreateBuffer(&vCI, &vBuffer), "Failed to create buffer!")
 		}
 
 		void VulkanBuffer::DestroyBuffer()
 		{
-			pDevice->Derive<VulkanDevice>()->DestroyBuffer(vBuffer);
+			pDevice->DestroyBuffer(vBuffer);
 		}
 
 		void VulkanBuffer::AllocateBufferMemory(VkMemoryPropertyFlags vMemoryProperties)
 		{
-			FLINT_VK_ASSERT(pDevice->Derive<VulkanDevice>()->CreateBufferMemory({ vBuffer }, vMemoryProperties, &vBufferMemory), "Failed to create buffer memory!")
+			FLINT_VK_ASSERT(pDevice->CreateBufferMemory({ vBuffer }, vMemoryProperties, &vBufferMemory), "Failed to create buffer memory!")
 		}
 
 		void VulkanBuffer::FreeBufferMemory()
 		{
-			pDevice->Derive<VulkanDevice>()->FreeMemory(vBufferMemory);
+			pDevice->FreeMemory(vBufferMemory);
 		}
 	}
 }

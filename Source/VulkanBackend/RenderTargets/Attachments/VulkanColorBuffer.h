@@ -13,7 +13,7 @@ namespace Flint
 		public:
 			VulkanColorBuffer() : VulkanRenderTargetAttachment(RenderTargetAttachmenType::COLOR_BUFFER) {}
 
-			virtual void Initialize(VulkanDevice* pDevice, const Vector2& extent, VkFormat format, UI32 bufferCount) override final;
+			virtual void Initialize(std::shared_ptr<VulkanDevice> pDevice, const Vector2& extent, VkFormat format, UI32 bufferCount) override final;
 			virtual void Recreate(const Vector2& extent) override final;
 			virtual void Terminate() override final;
 

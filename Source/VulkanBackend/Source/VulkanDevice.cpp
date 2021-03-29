@@ -89,42 +89,22 @@ namespace Flint
 			}
 		}
 
-		SwapChainSupportDetails SwapChainSupportDetails::Query(VkPhysicalDevice vPhysicalDevice, VkSurfaceKHR vSurface)
+		void VulkanDevice::mInitialize()
 		{
-			SwapChainSupportDetails supportDetails = {};
-			vkGetPhysicalDeviceSurfaceCapabilitiesKHR(vPhysicalDevice, vSurface, &supportDetails.capabilities);
-
-			UI32 formatCount = 0;
-			vkGetPhysicalDeviceSurfaceFormatsKHR(vPhysicalDevice, vSurface, &formatCount, nullptr);
-
-			if (formatCount != 0)
-			{
-				supportDetails.formats.resize(formatCount);
-				vkGetPhysicalDeviceSurfaceFormatsKHR(vPhysicalDevice, vSurface, &formatCount, supportDetails.formats.data());
-			}
-
-			UI32 presentModeCount = 0;
-			vkGetPhysicalDeviceSurfacePresentModesKHR(vPhysicalDevice, vSurface, &presentModeCount, nullptr);
-
-			if (presentModeCount != 0)
-			{
-				supportDetails.presentModes.resize(presentModeCount);
-				vkGetPhysicalDeviceSurfacePresentModesKHR(vPhysicalDevice, vSurface, &presentModeCount, supportDetails.presentModes.data());
-			}
-
-			return supportDetails;
-		}
-
-		void VulkanDevice::Initialize(VulkanInstance* pInstance)
-		{
-			this->pInstance = pInstance;
 			INSERT_INTO_VECTOR(mDeviceExtensions, VK_KHR_SWAPCHAIN_EXTENSION_NAME);
 
 			CreatePhysicalDevice();
 			CreateLogicalDevice();
 		}
 
-		void VulkanDevice::Terminate()
+		bool VulkanDevice::bCheckDisplayCompatibility(DisplayType* pDisplay)
+		{
+			VkBool32 isSupported = VK_FALSE;
+			FLINT_VK_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(GetPhysicalDevice(), GetQueue().mGraphicsFamily.value(), pDisplay->GetSurface(), &isSupported), "Failed to check swap chain -> display support!")
+				return isSupported == VK_TRUE;
+		}
+
+		void VulkanDevice::mTerminate()
 		{
 			DestroyLogicalDevice();
 		}
@@ -135,36 +115,6 @@ namespace Flint
 			vkGetPhysicalDeviceProperties(GetPhysicalDevice(), &vProps);
 
 			return vProps;
-		}
-
-		VkSurfaceCapabilitiesKHR VulkanDevice::GetSurfaceCapabilities() const
-		{
-			VkSurfaceCapabilitiesKHR vCapabilities = {};
-			vkGetPhysicalDeviceSurfaceCapabilitiesKHR(GetPhysicalDevice(), pDisplay->Derive<VulkanDisplay>()->GetSurface(), &vCapabilities);
-			return vCapabilities;
-		}
-
-		SwapChainSupportDetails VulkanDevice::GetSwapChainSupportDetails() const
-		{
-			return SwapChainSupportDetails::Query(GetPhysicalDevice(), pDisplay->Derive<VulkanDisplay>()->GetSurface());
-		}
-
-		UI32 VulkanDevice::FindSupporterBufferCount(UI32 count) const
-		{
-			auto& vSurfaceCapabilities = GetSurfaceCapabilities();
-			if (count == std::numeric_limits<UI32>::max())
-				return vSurfaceCapabilities.maxImageCount - 1;
-			else if (count == 0)
-			{
-				UI32 bufferCount = vSurfaceCapabilities.minImageCount + 1;
-				if (vSurfaceCapabilities.maxImageCount > 0
-					&& bufferCount > vSurfaceCapabilities.maxImageCount)
-					bufferCount = vSurfaceCapabilities.maxImageCount;
-
-				return bufferCount;
-			}
-
-			return count;
 		}
 
 		void VulkanDevice::CreatePhysicalDevice()
@@ -726,21 +676,5 @@ namespace Flint
 			for (auto itr : vFences)
 				vkDestroyFence(GetLogicalDevice(), itr, nullptr);
 		}
-
-		Backend::DeviceHandle CreateDevice(Backend::InstanceHandle instanceHandle)
-		{
-			VulkanDevice* pDevice = new VulkanDevice();
-			pDevice->Initialize(reinterpret_cast<VulkanInstance*>(instanceHandle));
-
-			return Backend::DeviceHandle(reinterpret_cast<UI64>(pDevice));
-		}
-
-		void DestroyDevice(Backend::DeviceHandle handle)
-		{
-			VulkanDevice* pDevice = reinterpret_cast<VulkanDevice*>(handle);
-			pDevice->Terminate();
-
-			delete pDevice;
-		}
-}
+	}
 }

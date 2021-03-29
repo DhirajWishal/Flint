@@ -15,28 +15,22 @@ namespace Flint
 		public:
 			VulkanRenderTarget() {}
 
-			virtual void Terminate() = 0;
-
 		public:
 			VkRenderPass GetRenderPass() const { return vRenderPass; }
 			virtual VkFramebuffer GetCurrentFrameBuffer() const = 0;
 
 		protected:
-			void CreateRenderPass(std::vector<VulkanRenderTargetAttachment*> pAttachments, VkPipelineBindPoint vBindPoint);
-			void DestroyRenderPass();
+			void CreateRenderPass(std::shared_ptr<VulkanDevice> pDevice, std::vector<VulkanRenderTargetAttachment*> pAttachments, VkPipelineBindPoint vBindPoint);
+			void DestroyRenderPass(std::shared_ptr<VulkanDevice> pDevice);
 
-			void CreateFrameBuffer(std::vector<VulkanRenderTargetAttachment*> pAttachments, const Vector2& extent, UI32 bufferCount);
-			void DestroyFrameBuffers();
+			void CreateFrameBuffer(std::shared_ptr<VulkanDevice> pDevice, std::vector<VulkanRenderTargetAttachment*> pAttachments, const Vector2& extent, UI32 bufferCount);
+			void DestroyFrameBuffers(std::shared_ptr<VulkanDevice> pDevice);
 
-		protected:
-			void InitializeSyncObjects(UI32 count);
-			void TerminateSyncObjects();
+			void InitializeSyncObjects(std::shared_ptr<VulkanDevice> pDevice, UI32 count);
+			void TerminateSyncObjects(std::shared_ptr<VulkanDevice> pDevice);
 
 		protected:
 			VulkanCommandBufferManager mCommandBufferManager = {};
-			UI64 mBufferCount = 0;
-			VulkanDevice* pDevice = nullptr;
-			Vector2 mExtent = Vector2::ZeroAll;
 
 			std::vector<VkSemaphore> vImageAvailables;
 			std::vector<VkSemaphore> vRenderFinishes;
@@ -45,11 +39,6 @@ namespace Flint
 
 			std::vector<VkFramebuffer> vFrameBuffers;
 			VkRenderPass vRenderPass = VK_NULL_HANDLE;
-
-			UI32 mFrameIndex = 0;
-			UI32 mImageIndex = 0;
 		};
-
-		void DestroyRenderTarget(Backend::RenderTargetHandle handle);
 	}
 }

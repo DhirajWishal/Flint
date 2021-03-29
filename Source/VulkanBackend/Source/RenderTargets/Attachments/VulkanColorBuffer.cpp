@@ -10,7 +10,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		void VulkanColorBuffer::Initialize(VulkanDevice* pDevice, const Vector2& extent, VkFormat format, UI32 bufferCount)
+		void VulkanColorBuffer::Initialize(std::shared_ptr<VulkanDevice> pDevice, const Vector2& extent, VkFormat format, UI32 bufferCount)
 		{
 			this->pDevice = pDevice;
 			this->vFormat = format;
@@ -40,10 +40,10 @@ namespace Flint
 				FLINT_VK_ASSERT(pDevice->CreateImage(&vCI, vImages.data() + i), "Failed to create Vulkan Image!")
 
 				FLINT_VK_ASSERT(pDevice->CreateImageMemory(vImages, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &vBufferMemory), "Failed to bind image memory!");
-			vImageViews = std::move(Utilities::CreateImageViews(vImages, vFormat, pDevice, VK_IMAGE_ASPECT_COLOR_BIT));
+			vImageViews = std::move(Utilities::CreateImageViews(vImages, vFormat, pDevice.get(), VK_IMAGE_ASPECT_COLOR_BIT));
 
 			{
-				VulkanOneTimeCommandBuffer vCommandBuffer(pDevice);
+				VulkanOneTimeCommandBuffer vCommandBuffer(pDevice.get());
 				for (auto itr = vImages.begin(); itr != vImages.end(); itr++)
 					pDevice->SetImageLayout(vCommandBuffer, *itr, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, vFormat);
 			}

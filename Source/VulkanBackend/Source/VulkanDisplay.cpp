@@ -73,13 +73,36 @@ namespace Flint
 			}
 		}
 
-		void VulkanDisplay::Initialize(VulkanInstance* pInstance, const Vector2 extent, const char* pTitle)
+		SwapChainSupportDetails SwapChainSupportDetails::Query(VkPhysicalDevice vPhysicalDevice, VkSurfaceKHR vSurface)
 		{
-			this->pInstance = pInstance;
-			this->mExtent = extent;
+			SwapChainSupportDetails supportDetails = {};
+			vkGetPhysicalDeviceSurfaceCapabilitiesKHR(vPhysicalDevice, vSurface, &supportDetails.capabilities);
 
+			UI32 formatCount = 0;
+			vkGetPhysicalDeviceSurfaceFormatsKHR(vPhysicalDevice, vSurface, &formatCount, nullptr);
+
+			if (formatCount != 0)
+			{
+				supportDetails.formats.resize(formatCount);
+				vkGetPhysicalDeviceSurfaceFormatsKHR(vPhysicalDevice, vSurface, &formatCount, supportDetails.formats.data());
+			}
+
+			UI32 presentModeCount = 0;
+			vkGetPhysicalDeviceSurfacePresentModesKHR(vPhysicalDevice, vSurface, &presentModeCount, nullptr);
+
+			if (presentModeCount != 0)
+			{
+				supportDetails.presentModes.resize(presentModeCount);
+				vkGetPhysicalDeviceSurfacePresentModesKHR(vPhysicalDevice, vSurface, &presentModeCount, supportDetails.presentModes.data());
+			}
+
+			return supportDetails;
+		}
+
+		void VulkanDisplay::mInitialize()
+		{
 			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-			pWindowHandle = glfwCreateWindow(static_cast<UI32>(extent.width), static_cast<UI32>(extent.height), pTitle, nullptr, nullptr);
+			pWindowHandle = glfwCreateWindow(static_cast<UI32>(mExtent.width), static_cast<UI32>(mExtent.height), pTitle, nullptr, nullptr);
 
 			glfwSetWindowUserPointer(pWindowHandle, this);
 
@@ -88,15 +111,45 @@ namespace Flint
 			SetupCallbacks();
 		}
 
-		void VulkanDisplay::Update()
+		void VulkanDisplay::mUpdate()
 		{
 			glfwPollEvents();
 		}
 
-		void VulkanDisplay::Terminate()
+		void VulkanDisplay::mTerminate()
 		{
 			DestroySurface();
 			glfwDestroyWindow(pWindowHandle);
+		}
+
+		VkSurfaceCapabilitiesKHR VulkanDisplay::GetSurfaceCapabilities(VulkanDevice* pDevice) const
+		{
+			VkSurfaceCapabilitiesKHR vCapabilities = {};
+			vkGetPhysicalDeviceSurfaceCapabilitiesKHR(pDevice->GetPhysicalDevice(), GetSurface(), &vCapabilities);
+			return vCapabilities;
+		}
+
+		SwapChainSupportDetails VulkanDisplay::GetSwapChainSupportDetails(VulkanDevice* pDevice) const
+		{
+			return SwapChainSupportDetails::Query(pDevice->GetPhysicalDevice(), GetSurface());
+		}
+
+		UI32 VulkanDisplay::FindSupporterBufferCount(VulkanDevice* pDevice, UI32 count) const
+		{
+			auto& vSurfaceCapabilities = GetSurfaceCapabilities(pDevice);
+			if (count == std::numeric_limits<UI32>::max())
+				return vSurfaceCapabilities.maxImageCount - 1;
+			else if (count == 0)
+			{
+				UI32 bufferCount = vSurfaceCapabilities.minImageCount + 1;
+				if (vSurfaceCapabilities.maxImageCount > 0
+					&& bufferCount > vSurfaceCapabilities.maxImageCount)
+					bufferCount = vSurfaceCapabilities.maxImageCount;
+
+				return bufferCount;
+			}
+
+			return count;
 		}
 
 		void VulkanDisplay::UpdateWindowExtent(I32 width, I32 height)
@@ -264,31 +317,6 @@ namespace Flint
 		void VulkanDisplay::DestroySurface()
 		{
 			vkDestroySurfaceKHR(pInstance->GetInstance(), vSurface, nullptr);
-		}
-
-		Backend::DisplayHandle CreateDisplay(Backend::InstanceHandle instanceHandle, const Vector2 extent, const char* pTitle)
-		{
-			VulkanDisplay* pDisplay = new VulkanDisplay();
-			pDisplay->Initialize(reinterpret_cast<VulkanInstance*>(instanceHandle), extent, pTitle);
-			return Backend::DisplayHandle(reinterpret_cast<UI64>(pDisplay));
-		}
-
-		void UpdateDisplay(Backend::DisplayHandle handle)
-		{
-			reinterpret_cast<VulkanDisplay*>(handle)->Update();
-		}
-
-		void DestroyDisplay(Backend::DisplayHandle handle)
-		{
-			VulkanDisplay* pDisplay = reinterpret_cast<VulkanDisplay*>(handle);
-			pDisplay->Terminate();
-
-			delete pDisplay;
-		}
-
-		Inputs::InputCenter* GetDisplayInputCenter(Backend::DisplayHandle handle)
-		{
-			return reinterpret_cast<VulkanDisplay*>(handle)->GetInputCenter();
 		}
 	}
 }

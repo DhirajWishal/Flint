@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include "CommandBufferManager.h"
+#include "Device.h"
 #include "ShaderDigest.h"
-#include "Core/Macros/Global.h"
+#include "Core\Maths\Vector\Vector2.h"
 
 namespace Flint
 {

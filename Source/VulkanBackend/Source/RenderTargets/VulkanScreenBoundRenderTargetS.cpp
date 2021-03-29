@@ -13,45 +13,42 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		void VulkanScreenBoundRenderTargetS::Initialize(VulkanDevice* pDevice, VulkanDisplay* pDisplay, const Vector2& extent, UI32 bufferCount)
+		void VulkanScreenBoundRenderTargetS::mInitialize()
 		{
-			this->pDevice = pDevice;
-			this->mExtent = extent;
-			this->pDisplay = pDisplay;
-			this->mBufferCount = pDevice->FindSupporterBufferCount(bufferCount);
+			mBufferCount = pDisplay->FindSupporterBufferCount(pDevice.get(), mBufferCount);
 
 			mCommandBufferManager.CreateBuffers(pDevice, static_cast<UI32>(mBufferCount));
-			vSwapChain.Initialize(pDevice, extent, static_cast<UI32>(mBufferCount));
-			vColorBuffer.Initialize(pDevice, extent, vSwapChain.GetFormat(), static_cast<UI32>(mBufferCount));
-			vDepthBuffer.Initialize(pDevice, extent, static_cast<UI32>(mBufferCount));
+			vSwapChain.Initialize(pDevice, pDisplay, mExtent, static_cast<UI32>(mBufferCount));
+			vColorBuffer.Initialize(pDevice, mExtent, vSwapChain.GetFormat(), static_cast<UI32>(mBufferCount));
+			vDepthBuffer.Initialize(pDevice, mExtent, static_cast<UI32>(mBufferCount));
 
-			CreateRenderPass({ &vColorBuffer, &vDepthBuffer, &vSwapChain }, VK_PIPELINE_BIND_POINT_GRAPHICS);
-			CreateFrameBuffer({ &vColorBuffer, &vDepthBuffer, &vSwapChain }, mExtent, static_cast<UI32>(mBufferCount));
+			CreateRenderPass(pDevice, { &vColorBuffer, &vDepthBuffer, &vSwapChain }, VK_PIPELINE_BIND_POINT_GRAPHICS);
+			CreateFrameBuffer(pDevice, { &vColorBuffer, &vDepthBuffer, &vSwapChain }, mExtent, static_cast<UI32>(mBufferCount));
 
-			InitializeSyncObjects(static_cast<UI32>(this->mBufferCount));
+			InitializeSyncObjects(pDevice, static_cast<UI32>(this->mBufferCount));
 		}
 
-		void VulkanScreenBoundRenderTargetS::Terminate()
+		void VulkanScreenBoundRenderTargetS::mTerminate()
 		{
 			vSwapChain.Terminate();
 			vColorBuffer.Terminate();
 			vDepthBuffer.Terminate();
 
-			DestroyRenderPass();
-			DestroyFrameBuffers();
-			TerminateSyncObjects();
+			DestroyRenderPass(pDevice);
+			DestroyFrameBuffers(pDevice);
+			TerminateSyncObjects(pDevice);
 
-			DestroyChildCommandBuffers();
+			//DestroyChildCommandBuffers();
 
 			mCommandBufferManager.Terminate();
 		}
 
-		Backend::GraphicsPipeline* VulkanScreenBoundRenderTargetS::CreateGraphicsPipeline(const std::vector<ShaderDigest>& shaderDigests, const Backend::GraphicsPipelineSpecification& spec)
-		{
-			VulkanGraphicsPipeline* pPipeline = new VulkanGraphicsPipeline();
-			pPipeline->Initialize(this, shaderDigests, spec);
-			return pPipeline;
-		}
+		//Backend::GraphicsPipeline* VulkanScreenBoundRenderTargetS::CreateGraphicsPipeline(const std::vector<ShaderDigest>& shaderDigests, const Backend::GraphicsPipelineSpecification& spec)
+		//{
+		//	VulkanGraphicsPipeline* pPipeline = new VulkanGraphicsPipeline();
+		//	pPipeline->Initialize(this, shaderDigests, spec);
+		//	return pPipeline;
+		//}
 
 		UI32 VulkanScreenBoundRenderTargetS::PrepareToDraw()
 		{
@@ -114,8 +111,7 @@ namespace Flint
 
 				FLINT_VK_ASSERT(vkQueueWaitIdle(pDevice->GetTransferQueue()), "Failed to wait idle till the queue is complete!")
 
-				mFrameIndex++;
-			if (mFrameIndex >= mBufferCount) mFrameIndex = 0;
+				IncrementIndex();
 		}
 
 		void VulkanScreenBoundRenderTargetS::Recreate()
@@ -135,8 +131,8 @@ namespace Flint
 			mCommandBufferManager.ClearBuffers();
 
 			// Destroy render pass and frame buffer.
-			DestroyRenderPass();
-			DestroyFrameBuffers();
+			DestroyRenderPass(pDevice);
+			DestroyFrameBuffers(pDevice);
 
 			// Recreate attachments.
 			vSwapChain.Recreate(extent);
@@ -144,8 +140,8 @@ namespace Flint
 			vDepthBuffer.Recreate(extent);
 
 			// Recreate render pass and frame buffer.
-			CreateRenderPass({ &vColorBuffer, &vDepthBuffer, &vSwapChain }, VK_PIPELINE_BIND_POINT_GRAPHICS);
-			CreateFrameBuffer({ &vColorBuffer, &vDepthBuffer, &vSwapChain }, mExtent, static_cast<UI32>(mBufferCount));
+			CreateRenderPass(pDevice, { &vColorBuffer, &vDepthBuffer, &vSwapChain }, VK_PIPELINE_BIND_POINT_GRAPHICS);
+			CreateFrameBuffer(pDevice, { &vColorBuffer, &vDepthBuffer, &vSwapChain }, mExtent, static_cast<UI32>(mBufferCount));
 
 			// Re create renderable pipelines.
 			for (auto itr = mStaticDrawEntries.Begin(); itr != mStaticDrawEntries.End(); itr++)

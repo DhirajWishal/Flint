@@ -10,19 +10,19 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanBuffer final : public Backend::Buffer {
+		class VulkanBuffer final : public Backend::Buffer<VulkanBuffer, VulkanDevice> {
 		public:
 			VulkanBuffer() {}
 			~VulkanBuffer() {}
 
-			virtual void Initialize(Backend::Device* pDevice, UI64 size, Backend::BufferUsage usage, Backend::MemoryProfile memoryProfile) override final;
-			virtual void Terminate() override final;
+			virtual void mInitialize() override final;
+			virtual void mTerminate() override final;
 
-			virtual void* MapMemory(UI64 size, UI64 offset) override final;
-			virtual void UnmapMemory() override final;
-			virtual void FlushMemoryMappings() override final;
+			virtual void* pMapMemory(UI64 size, UI64 offset) override final;
+			virtual void mUnmapMemory() override final;
+			virtual void mFlushMemoryMappings() override final;
 
-			virtual void CopyFrom(Buffer* pBuffer, UI64 size, UI64 srcOffset, UI64 dstOffset) override final;
+			virtual void mCopyFrom(Buffer* pBuffer, UI64 size, UI64 srcOffset, UI64 dstOffset) override final;
 			virtual void Bind(const std::shared_ptr<Backend::CommandBuffer>& pCommandBuffer) override final;
 
 		private:

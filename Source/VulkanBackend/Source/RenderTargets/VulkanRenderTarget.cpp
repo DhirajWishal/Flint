@@ -8,7 +8,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		void VulkanRenderTarget::CreateRenderPass(std::vector<VulkanRenderTargetAttachment*> pAttachments, VkPipelineBindPoint vBindPoint)
+		void VulkanRenderTarget::CreateRenderPass(std::shared_ptr<VulkanDevice> pDevice, std::vector<VulkanRenderTargetAttachment*> pAttachments, VkPipelineBindPoint vBindPoint)
 		{
 			std::vector<VkAttachmentDescription> vDescriptions;
 
@@ -91,12 +91,12 @@ namespace Flint
 			FLINT_VK_ASSERT(pDevice->CreateRenderPass(&vCI, &vRenderPass), "Failed to create render pass!");
 		}
 
-		void VulkanRenderTarget::DestroyRenderPass()
+		void VulkanRenderTarget::DestroyRenderPass(std::shared_ptr<VulkanDevice> pDevice)
 		{
 			pDevice->DestroyRenderPass(vRenderPass);
 		}
 
-		void VulkanRenderTarget::CreateFrameBuffer(std::vector<VulkanRenderTargetAttachment*> pAttachments, const Vector2& extent, UI32 bufferCount)
+		void VulkanRenderTarget::CreateFrameBuffer(std::shared_ptr<VulkanDevice> pDevice, std::vector<VulkanRenderTargetAttachment*> pAttachments, const Vector2& extent, UI32 bufferCount)
 		{
 			VkFramebufferCreateInfo vCI = {};
 			vCI.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
@@ -121,13 +121,13 @@ namespace Flint
 			}
 		}
 
-		void VulkanRenderTarget::DestroyFrameBuffers()
+		void VulkanRenderTarget::DestroyFrameBuffers(std::shared_ptr<VulkanDevice> pDevice)
 		{
 			pDevice->DestroyFrameBuffers(vFrameBuffers);
 			vFrameBuffers.clear();
 		}
 
-		void VulkanRenderTarget::InitializeSyncObjects(UI32 count)
+		void VulkanRenderTarget::InitializeSyncObjects(std::shared_ptr<VulkanDevice> pDevice, UI32 count)
 		{
 			vImageAvailables.resize(count);
 			vRenderFinishes.resize(count);
@@ -146,16 +146,11 @@ namespace Flint
 				FLINT_VK_ASSERT(pDevice->CreateFences(&VFCI, vInFlightFences), "Failed to create In Flight fences!")
 		}
 
-		void VulkanRenderTarget::TerminateSyncObjects()
+		void VulkanRenderTarget::TerminateSyncObjects(std::shared_ptr<VulkanDevice> pDevice)
 		{
 			pDevice->DestroySemaphores(vImageAvailables);
 			pDevice->DestroySemaphores(vRenderFinishes);
 			pDevice->DestroyFences(vInFlightFences);
 		}
-		
-		void DestroyRenderTarget(Backend::RenderTargetHandle handle)
-		{
-			reinterpret_cast<VulkanRenderTarget*>(handle)->Terminate();
-		}
-}
+	}
 }

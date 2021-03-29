@@ -14,19 +14,40 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanDisplay {
+		class VulkanDevice;
+
+		/**
+		 * Structure containing support details for a Vulkan Swap Chain.
+		 */
+		struct SwapChainSupportDetails {
+			VkSurfaceCapabilitiesKHR capabilities = {};			// Swap Chain capabilities.
+			std::vector<VkSurfaceFormatKHR> formats = {};		// Swap Chain formats.
+			std::vector<VkPresentModeKHR> presentModes = {};	// Swap Chain present modes.
+
+			/**
+			 * Query swap chain support details.
+			 *
+			 * @param vPhysicalDevice: The physical device to be checked for.
+			 * @param vSurface: The surface to be checked with.
+			 * @return SwapChainSupportDetails structure.
+			 */
+			static SwapChainSupportDetails Query(VkPhysicalDevice vPhysicalDevice, VkSurfaceKHR vSurface);
+		};
+
+		class VulkanDisplay final : public Backend::Display<VulkanDisplay, VulkanInstance> {
 		public:
 			VulkanDisplay() {}
 			~VulkanDisplay() {}
 
-			void Initialize(VulkanInstance* pInstance, const Vector2 extent, const char* pTitle);
-			void Update();
-			void Terminate();
+			virtual void mInitialize() override final;
+			virtual void mUpdate() override final;
+			virtual void mTerminate() override final;
 
 		public:
 			VkSurfaceKHR GetSurface() const { return vSurface; }
-			Vector2 GetExtent() const { return mExtent; }
-			Inputs::InputCenter* GetInputCenter() const { return const_cast<Inputs::InputCenter*>(&mInputCenter); }
+			VkSurfaceCapabilitiesKHR GetSurfaceCapabilities(VulkanDevice* pDevice) const;
+			SwapChainSupportDetails GetSwapChainSupportDetails(VulkanDevice* pDevice) const;
+			UI32 FindSupporterBufferCount(VulkanDevice* pDevice, UI32 count) const;
 
 			void UpdateWindowExtent(I32 width, I32 height);
 
@@ -38,18 +59,8 @@ namespace Flint
 			void DestroySurface();
 
 		private:
-			Inputs::InputCenter mInputCenter = {};
-
-			Vector2 mExtent = Vector2::ZeroAll;
-			VulkanInstance* pInstance = nullptr;
-
 			GLFWwindow* pWindowHandle = nullptr;
 			VkSurfaceKHR vSurface = VK_NULL_HANDLE;
 		};
-
-		Backend::DisplayHandle CreateDisplay(Backend::InstanceHandle instanceHandle, const Vector2 extent, const char* pTitle);
-		void UpdateDisplay(Backend::DisplayHandle handle);
-		void DestroyDisplay(Backend::DisplayHandle handle);
-		Inputs::InputCenter* GetDisplayInputCenter(Backend::DisplayHandle handle);
 	}
 }

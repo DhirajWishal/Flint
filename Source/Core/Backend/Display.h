@@ -11,12 +11,36 @@ namespace Flint
 {
 	namespace Backend
 	{
-		FLINT_DEFINE_HANDLE(DisplayHandle);
+		template<class Derived, class InstanceType>
+		class Display : public BackendObject<Derived> {
+		public:
+			using InstanceType = InstanceType;
 
-		FLINT_DEFINE_FUNCTION_POINTER(DisplayHandle, CreateDisplay, InstanceHandle instanceHandle, const Vector2 extent, const char* pTitle);
-		FLINT_DEFINE_FUNCTION_POINTER(void, UpdateDisplay, DisplayHandle handle);
-		FLINT_DEFINE_FUNCTION_POINTER(void, DestroyDisplay, DisplayHandle handle);
+		public:
+			Display() {}
+			virtual ~Display() {}
 
-		FLINT_DEFINE_FUNCTION_POINTER(Inputs::InputCenter*, GetDisplayInputCenter, DisplayHandle handle);
+			void Initialize(std::shared_ptr<InstanceType> pInstance, const Vector2 extent, const char* pTitle) { this->pInstance = pInstance, this->mExtent = extent, this->pTitle = pTitle; GetDerived().mInitialize(); }
+			void Update() { GetDerived().mUpdate(); }
+			void Terminate() { GetDerived().mTerminate(); }
+
+			Inputs::InputCenter* GetInputCenter() const { return const_cast<Inputs::InputCenter*>(&mInputsCenter); }
+			Vector2 GetExtent() const { mExtent; }
+			const char* GetTitle() const { return pTitle; }
+
+			InstanceType* GetInstance() const { return pInstance.get(); }
+
+			FLINT_SET_NO_COPY_AND_MOVE(Display)
+		protected:
+			virtual void mInitialize() = 0;
+			virtual void mUpdate() = 0;
+			virtual void mTerminate() = 0;
+
+			Inputs::InputCenter mInputsCenter = {};
+			std::shared_ptr<InstanceType> pInstance = {};
+
+			Vector2 mExtent = Vector2::ZeroAll;
+			const char* pTitle = nullptr;
+		};
 	}
 }

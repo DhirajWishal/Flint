@@ -12,36 +12,17 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		/**
-		 * Structure containing support details for a Vulkan Swap Chain.
-		 */
-		struct SwapChainSupportDetails {
-			VkSurfaceCapabilitiesKHR capabilities = {};			// Swap Chain capabilities.
-			std::vector<VkSurfaceFormatKHR> formats = {};		// Swap Chain formats.
-			std::vector<VkPresentModeKHR> presentModes = {};	// Swap Chain present modes.
-
-			/**
-			 * Query swap chain support details.
-			 *
-			 * @param vPhysicalDevice: The physical device to be checked for.
-			 * @param vSurface: The surface to be checked with.
-			 * @return SwapChainSupportDetails structure.
-			 */
-			static SwapChainSupportDetails Query(VkPhysicalDevice vPhysicalDevice, VkSurfaceKHR vSurface);
-		};
-
-		class VulkanDevice  {
+		class VulkanDevice final : public Backend::Device<VulkanDevice, VulkanInstance, VulkanDevice> {
 		public:
 			VulkanDevice() {}
 			~VulkanDevice() {}
 
-			void Initialize(VulkanInstance* pInstance);
-			void Terminate();
+			virtual void mInitialize() override final;
+			virtual bool bCheckDisplayCompatibility(DisplayType* pDisplay) override final;
+			virtual void mTerminate() override final;
 
 		public:
 			VkPhysicalDeviceProperties GetPhysicalDeviceProperties() const;
-			VkSurfaceCapabilitiesKHR GetSurfaceCapabilities() const;
-			SwapChainSupportDetails GetSwapChainSupportDetails() const;
 
 			VulkanQueue& GetQueue() { return vQueue; }
 
@@ -54,8 +35,6 @@ namespace Flint
 
 			VkSampleCountFlags GetSampleCount() const { return vSampleCount; }
 
-			UI32 FindSupporterBufferCount(UI32 count) const;
-
 		private:
 			void CreatePhysicalDevice();
 
@@ -65,8 +44,6 @@ namespace Flint
 		private:
 			VulkanQueue vQueue = {};
 			std::vector<const char*> mDeviceExtensions;
-
-			VulkanInstance* pInstance = nullptr;
 
 			VkPhysicalDevice vPhysicalDevice = VK_NULL_HANDLE;
 			VkDevice vLogicalDevice = VK_NULL_HANDLE;
@@ -144,9 +121,6 @@ namespace Flint
 			void DestroyFences(const std::vector<VkFence>& vFences) const;
 		};
 
-		Backend::DeviceHandle CreateDevice(Backend::InstanceHandle instanceHandle);
-		void DestroyDevice(Backend::DeviceHandle handle);
-
 		class VulkanDeviceBoundObject {
 		public:
 			VulkanDeviceBoundObject() {}
@@ -154,14 +128,14 @@ namespace Flint
 			virtual void Terminate() {}
 
 		public:
-			VulkanDevice* GetDevice() const { return pDevice; }
+			std::shared_ptr<VulkanDevice> GetDevice() const { return pDevice; }
 
 		protected:
 			VkDevice GetLogicalDevice() const { return pDevice->GetLogicalDevice(); }
 			VkPhysicalDevice GetPhysicalDevice() const { return pDevice->GetPhysicalDevice(); }
 
 		protected:
-			VulkanDevice* pDevice = nullptr;
+			std::shared_ptr<VulkanDevice> pDevice = nullptr;
 		};
 	}
 }

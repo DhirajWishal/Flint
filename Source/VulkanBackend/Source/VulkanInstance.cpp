@@ -164,10 +164,8 @@ namespace Flint
 			}
 		}
 
-		void VulkanInstance::Initialize(bool enableValidation)
+		void VulkanInstance::mInitialize()
 		{
-			this->mEnableValidation = enableValidation;
-
 			InitializeGLFW();
 
 			if (enableValidation)
@@ -181,7 +179,7 @@ namespace Flint
 				CreateDebugMessenger();
 		}
 
-		void VulkanInstance::Terminate()
+		void VulkanInstance::mTerminate()
 		{
 			if (mEnableValidation)
 				DestroyDebugMessenger();

@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "VulkanBackend/VulkanDevice.h"
-#include "Core/Backend/RenderTarget.h"
+#include "VulkanBackend\VulkanDevice.h"
+#include "Core\Backend\RenderTarget.h"
 
 namespace Flint
 {
@@ -21,8 +21,9 @@ namespace Flint
 		public:
 			VulkanRenderTargetAttachment(const RenderTargetAttachmenType& type) : mType(type) {}
 
-			virtual void Initialize(VulkanDevice* pDevice, const Vector2& extent, UI32 bufferCount) {}
-			virtual void Initialize(VulkanDevice* pDevice, const Vector2& extent, VkFormat format, UI32 bufferCount) {}
+			virtual void Initialize(std::shared_ptr<VulkanDevice> pDevice, const Vector2& extent, UI32 bufferCount) {}
+			virtual void Initialize(std::shared_ptr<VulkanDevice> pDevice, std::shared_ptr<VulkanDisplay> pDisplay, const Vector2& extent, UI32 bufferCount) {}
+			virtual void Initialize(std::shared_ptr<VulkanDevice> pDevice, const Vector2& extent, VkFormat format, UI32 bufferCount) {}
 
 			virtual void Recreate(const Vector2& extent) {}
 

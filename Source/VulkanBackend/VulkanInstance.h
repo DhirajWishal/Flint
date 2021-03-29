@@ -11,13 +11,13 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanInstance {
+		class VulkanInstance final : public Backend::Instance<VulkanInstance> {
 		public:
 			VulkanInstance() {}
 			~VulkanInstance() {}
 
-			void Initialize(bool enableValidation);
-			void Terminate();
+			virtual void mInitialize() override final;
+			virtual void mTerminate() override final;
 
 			//virtual Backend::Device* CreateDevice() override final;
 		private:
@@ -40,11 +40,6 @@ namespace Flint
 
 			VkInstance vInstance = VK_NULL_HANDLE;
 			VkDebugUtilsMessengerEXT vDebugUtilsMessenger = VK_NULL_HANDLE;
-
-			bool mEnableValidation = true;
 		};
-
-		Backend::InstanceHandle CreateInstance(bool enableValidation);
-		void DestroyInstance(Backend::InstanceHandle handle);
 	}
 }

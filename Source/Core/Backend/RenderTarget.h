@@ -10,11 +10,27 @@ namespace Flint
 {
 	namespace Backend
 	{
-		FLINT_DEFINE_HANDLE(RenderTargetHandle);
+		template<class Derived, class DeviceType>
+		class RenderTarget : public BackendObject<Derived> {
+		public:
+			using DeviceType = DeviceType;
 
-		FLINT_DEFINE_FUNCTION_POINTER(RenderTargetHandle, CreateRenderTargetSB, DeviceHandle deviceHandle, DisplayHandle displayHandle, UI32 bufferCount);
-		FLINT_DEFINE_FUNCTION_POINTER(RenderTargetHandle, CreateRenderTargetOS, DeviceHandle deviceHandle, const Vector2 extent, UI32 bufferCount);
+		public:
+			RenderTarget() {}
+			virtual ~RenderTarget() {}
 
-		FLINT_DEFINE_FUNCTION_POINTER(void, DestroyRenderTarget, RenderTargetHandle handle);
+			void Terminate() { GetDerived().mTerminate(); }
+
+			Vector2 GetExtent() const { return mExtent; }
+			UI64 GetBufferCount() const { return mBufferCount;  }
+
+		protected:
+			virtual void mInitialize() = 0;
+			virtual void mTerminate() = 0;
+
+			std::shared_ptr<DeviceType> pDevice = {};
+			Vector2 mExtent = Vector2::ZeroAll;
+			UI64 mBufferCount = 0;
+		};
 	}
 }

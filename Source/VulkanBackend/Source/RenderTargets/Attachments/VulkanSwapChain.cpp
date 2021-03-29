@@ -9,17 +9,18 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		void VulkanSwapChain::Initialize(VulkanDevice* pDevice, const Vector2& extent, UI32 bufferCount)
+		void VulkanSwapChain::Initialize(std::shared_ptr<VulkanDevice> pDevice, std::shared_ptr<VulkanDisplay> pDisplay, const Vector2& extent, UI32 bufferCount)
 		{
 			this->pDevice = pDevice;
+			this->pDisplay = pDisplay;
 			this->mExtent = extent;
 			this->mBufferCount = bufferCount;
 
-			SwapChainSupportDetails& vSupport = pDevice->GetSwapChainSupportDetails();
+			SwapChainSupportDetails& vSupport = pDisplay->GetSwapChainSupportDetails(pDevice.get());
 			VkSurfaceFormatKHR surfaceFormat = Utilities::ChooseSwapSurfaceFormat(vSupport.formats);
 			VkPresentModeKHR presentMode = Utilities::ChooseSwapPresentMode(vSupport.presentModes);
 
-			auto& vCapabilities = pDevice->GetSurfaceCapabilities();
+			auto& vCapabilities = pDisplay->GetSurfaceCapabilities(pDevice.get());
 
 			VkCompositeAlphaFlagBitsKHR surfaceComposite = static_cast<VkCompositeAlphaFlagBitsKHR>(vCapabilities.supportedCompositeAlpha);
 			surfaceComposite = (surfaceComposite & VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR)
@@ -36,7 +37,7 @@ namespace Flint
 			vCI.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
 			vCI.flags = VK_NULL_HANDLE;
 			vCI.pNext = VK_NULL_HANDLE;
-			vCI.surface = pDevice->GetDisplay()->Derive<VulkanDisplay>()->GetSurface();
+			vCI.surface = pDisplay->GetSurface();
 			vCI.minImageCount = bufferCount;
 			vCI.imageFormat = vFormat;
 			vCI.imageColorSpace = surfaceFormat.colorSpace;
@@ -68,23 +69,11 @@ namespace Flint
 			vCI.clipped = VK_TRUE;
 			vCI.oldSwapchain = vSwapChain;
 
-
-			VkBool32 isSupported = VK_FALSE;
-			FLINT_VK_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(pDevice->GetPhysicalDevice(), pDevice->GetQueue().mGraphicsFamily.value(), vCI.surface, &isSupported), "Failed to check swap chain -> display support!")
-
-				if (isSupported != VK_TRUE)
-				{
-					Logger::LogFatal(TEXT("The current display does not support Vulkan Swap chain creation! Handle: #8"), static_cast<void*>(vCI.surface));
-					return;
-				}
-
-			FLINT_VK_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(pDevice->GetPhysicalDevice(), pDevice->GetQueue().mTransferFamily.value(), vCI.surface, &isSupported), "Failed to check swap chain -> display support!")
-
-				if (isSupported != VK_TRUE)
-				{
-					Logger::LogFatal(TEXT("The current display does not support Vulkan Swap chain creation! Handle: #8"), static_cast<void*>(vCI.surface));
-					return;
-				}
+			if (!pDevice->CheckDisplayCompatibility(pDisplay.get()))
+			{
+				Logger::LogFatal(TEXT("The current display does not support Vulkan Swap chain creation! Handle: #8"), static_cast<void*>(vCI.surface));
+				return;
+			}
 
 			VkSwapchainKHR vNewSwapChain = VK_NULL_HANDLE;
 			FLINT_VK_ASSERT(pDevice->CreateSwapChain(&vCI, &vNewSwapChain), "Failed to create the Vulkan Swap Chain!");
@@ -97,13 +86,13 @@ namespace Flint
 			vImages.resize(vCI.minImageCount);
 			FLINT_VK_ASSERT(pDevice->GetSwapChainImages(vSwapChain, &vCI.minImageCount, vImages), "Failed to get the Vulkan Swap Chain Images!");
 
-			vImageViews = std::move(Utilities::CreateImageViews(vImages, vCI.imageFormat, pDevice));
+			vImageViews = std::move(Utilities::CreateImageViews(vImages, vCI.imageFormat, pDevice.get()));
 		}
 
 		void VulkanSwapChain::Recreate(const Vector2& extent)
 		{
 			//Terminate();
-			Initialize(this->pDevice, extent, this->mBufferCount);
+			Initialize(this->pDevice, this->pDisplay, extent, this->mBufferCount);
 		}
 
 		void VulkanSwapChain::Terminate()
