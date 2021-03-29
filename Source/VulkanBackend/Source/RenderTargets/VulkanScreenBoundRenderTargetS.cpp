@@ -3,8 +3,6 @@
 
 #include "VulkanBackend/RenderTargets/VulkanScreenBoundRenderTargetS.h"
 #include "VulkanBackend/RenderTargets/Pipelines/VulkanGraphicsPipeline.h"
-#include "VulkanBackend/VulkanCommandBufferManager.h"
-#include "VulkanBackend/VulkanCommandBuffer.h"
 #include "VulkanBackend/VulkanMacros.h"
 
 #include "Core/Thread/ThreadUtilities.h"
@@ -13,9 +11,11 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		void VulkanScreenBoundRenderTargetS::mInitialize()
+		void VulkanScreenBoundRenderTargetS::Initialize(DeviceType* pDevice, DisplayType* pDisplay, UI64 bufferCount)
 		{
-			mBufferCount = pDisplay->FindSupporterBufferCount(pDevice.get(), mBufferCount);
+			this->pDevice = pDevice;
+			this->pDisplay = pDisplay;
+			this->mBufferCount = pDisplay->FindSupporterBufferCount(pDevice, bufferCount);
 
 			mCommandBufferManager.CreateBuffers(pDevice, static_cast<UI32>(mBufferCount));
 			vSwapChain.Initialize(pDevice, pDisplay, mExtent, static_cast<UI32>(mBufferCount));
@@ -28,7 +28,7 @@ namespace Flint
 			InitializeSyncObjects(pDevice, static_cast<UI32>(this->mBufferCount));
 		}
 
-		void VulkanScreenBoundRenderTargetS::mTerminate()
+		void VulkanScreenBoundRenderTargetS::Terminate()
 		{
 			vSwapChain.Terminate();
 			vColorBuffer.Terminate();

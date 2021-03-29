@@ -6,6 +6,8 @@
 #include "Core/Types/DataTypes.h"
 #include "Core/Backend/Buffer.h"
 
+#include "VulkanBackend\VulkanExporter.h"
+
 #include <filesystem>
 
 namespace Flint
@@ -52,8 +54,8 @@ namespace Flint
 		 */
 		void Clear();
 
-		Backend::Buffer* pVertexBuffer = nullptr;
-		Backend::Buffer* pIndexBuffer = nullptr;
+		Objects::Buffer mVertexBuffer = {};
+		Objects::Buffer mIndexBuffer = {};
 
 		std::vector<VertexAttribute> mAttributes;
 
@@ -65,7 +67,7 @@ namespace Flint
 		 * @param asset: The cache file to be loaded from.
 		 * @param pDevice: The device pointer.
 		 */
-		void LoadFromCache(std::filesystem::path asset, Backend::Device* pDevice);
+		void LoadFromCache(std::filesystem::path asset, Objects::Device* pDevice);
 
 		/**
 		 * Create a cache file using the wire frame content.

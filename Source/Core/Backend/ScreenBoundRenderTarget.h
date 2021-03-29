@@ -9,8 +9,8 @@ namespace Flint
 {
 	namespace Backend
 	{
-		template<class Derived, class DeviceType, class DisplayType>
-		class ScreenBoundRenderTarget : public RenderTarget<Derived, DeviceType> {
+		template<class DeviceType, class DisplayType>
+		class ScreenBoundRenderTarget : public RenderTarget<DeviceType> {
 		public:
 			using DisplayType = DisplayType;
 
@@ -18,24 +18,16 @@ namespace Flint
 			ScreenBoundRenderTarget() {}
 			virtual ~ScreenBoundRenderTarget() {}
 
-			void Initialize(std::shared_ptr<DeviceType> pDevice, std::shared_ptr<DisplayType> pDisplay, UI64 bufferCount)
-			{
-				this->pDevice = pDevice, this->pDisplay = pDisplay, this->mBufferCount = bufferCount, this->mExtent = pDisplay->GetExtent();
-				GetDerived().mInitialize();
-			}
+			virtual void Initialize(DeviceType* pDevice, DisplayType* pDisplay, UI64 bufferCount) = 0;
 
 			UI32 GetFrameIndex() const { return mFrameIndex; }
 			UI32 GetImageIndex() const { return mImageIndex; }
 
 		protected:
-			void IncrementIndex() 
-			{
-				mFrameIndex++;
-				if (mFrameIndex >= mBufferCount) mFrameIndex = 0;
-			}
+			void IncrementIndex() { mFrameIndex++; if (mFrameIndex >= mBufferCount) mFrameIndex = 0; }
 
-			std::shared_ptr<DeviceType> pDevice = {};
-			std::shared_ptr<DisplayType> pDisplay = {};
+			DeviceType* pDevice = nullptr;
+			DisplayType* pDisplay = nullptr;
 
 			UI32 mFrameIndex = 0;
 			UI32 mImageIndex = 0;

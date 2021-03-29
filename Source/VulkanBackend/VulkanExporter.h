@@ -3,12 +3,18 @@
 
 #pragma once
 
-#include "Core\Backend\Device.h"
+#include "Core\Backend\ObjectExporter.h"
+
+#include "RenderTargets\VulkanScreenBoundRenderTargetS.h"
+#include "VulkanCommandBufferList.h"
 
 namespace Flint
 {
-	namespace VulkanBackend
-	{
-		void ExportVulkanFunctions();
-	}
+	FLINT_SETUP_TYPE_EXPORTS(
+		VulkanBackend::VulkanInstance,
+		VulkanBackend::VulkanDevice,
+		VulkanBackend::VulkanDisplay,
+		VulkanBackend::VulkanBuffer,
+		VulkanBackend::VulkanScreenBoundRenderTargetS,
+		VulkanBackend::VulkanCommandBufferList);
 }

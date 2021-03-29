@@ -12,14 +12,14 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanDevice final : public Backend::Device<VulkanDevice, VulkanInstance, VulkanDevice> {
+		class VulkanDevice final : public Backend::Device<VulkanInstance, VulkanDisplay> {
 		public:
 			VulkanDevice() {}
 			~VulkanDevice() {}
 
-			virtual void mInitialize() override final;
-			virtual bool bCheckDisplayCompatibility(DisplayType* pDisplay) override final;
-			virtual void mTerminate() override final;
+			virtual void Initialize(InstanceType* pInstance) override final;
+			virtual bool CheckDisplayCompatibility(DisplayType* pDisplay) override final;
+			virtual void Terminate() override final;
 
 		public:
 			VkPhysicalDeviceProperties GetPhysicalDeviceProperties() const;
@@ -128,14 +128,14 @@ namespace Flint
 			virtual void Terminate() {}
 
 		public:
-			std::shared_ptr<VulkanDevice> GetDevice() const { return pDevice; }
+			VulkanDevice* GetDevice() const { return pDevice; }
 
 		protected:
 			VkDevice GetLogicalDevice() const { return pDevice->GetLogicalDevice(); }
 			VkPhysicalDevice GetPhysicalDevice() const { return pDevice->GetPhysicalDevice(); }
 
 		protected:
-			std::shared_ptr<VulkanDevice> pDevice = nullptr;
+			VulkanDevice* pDevice = nullptr;
 		};
 	}
 }

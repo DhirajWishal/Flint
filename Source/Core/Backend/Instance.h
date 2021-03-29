@@ -15,23 +15,19 @@ namespace Flint
 {
 	namespace Backend
 	{
-		template<class Derived>
-		class Instance : public BackendObject<Derived> {
+		class Instance : public BackendObject {
 		public:
 			Instance() {}
 			virtual ~Instance() {}
 
-			void Initialize(bool enableValidation) { mEnableValidation = enableValidation; GetDerived().mInitialize(); }
-			void Terminate() { GetDerived().mTerminate(); }
+			virtual void Initialize(bool enableValidation) = 0;
+			virtual void Terminate() = 0;
 
-			bool IsValidationEnabled() const { return mEnableValidation;  }
+			bool IsValidationEnabled() const { return bEnableValidation;  }
 
 			FLINT_SET_NO_COPY_AND_MOVE(Instance)
 		protected:
-			virtual void mInitialize() = 0;
-			virtual void mTerminate() = 0;
-
-			bool mEnableValidation = true;
+			bool bEnableValidation = true;
 		};
 	}
 }

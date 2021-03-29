@@ -17,13 +17,13 @@ namespace Flint
 		/**
 		 * Software/ compute.
 		 */
-		class VulkanScreenBoundRenderTargetS final : public VulkanRenderTarget, Backend::ScreenBoundRenderTarget<VulkanScreenBoundRenderTargetS, VulkanDevice, VulkanDisplay> {
+		class VulkanScreenBoundRenderTargetS final : public VulkanRenderTarget, Backend::ScreenBoundRenderTarget<VulkanDevice, VulkanDisplay> {
 		public:
 			VulkanScreenBoundRenderTargetS() {}
 			~VulkanScreenBoundRenderTargetS() {}
 
-			virtual void mInitialize() override final;
-			virtual void mTerminate() override final;
+			virtual void Initialize(DeviceType* pDevice, DisplayType* pDisplay, UI64 bufferCount) override final;
+			virtual void Terminate() override final;
 
 			//Backend::GraphicsPipeline* CreateGraphicsPipeline(const std::vector<ShaderDigest>& shaderDigests, const Backend::GraphicsPipelineSpecification& spec);
 

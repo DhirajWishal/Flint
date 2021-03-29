@@ -5,7 +5,6 @@
 
 #include "Core/Backend/RenderTarget.h"
 #include "Attachments/VulkanRenderTargetAttachment.h"
-#include "VulkanBackend\VulkanCommandBufferManager.h"
 
 namespace Flint
 {
@@ -20,18 +19,16 @@ namespace Flint
 			virtual VkFramebuffer GetCurrentFrameBuffer() const = 0;
 
 		protected:
-			void CreateRenderPass(std::shared_ptr<VulkanDevice> pDevice, std::vector<VulkanRenderTargetAttachment*> pAttachments, VkPipelineBindPoint vBindPoint);
-			void DestroyRenderPass(std::shared_ptr<VulkanDevice> pDevice);
+			void CreateRenderPass(VulkanDevice* pDevice,std::vector<VulkanRenderTargetAttachment*> pAttachments, VkPipelineBindPoint vBindPoint);
+			void DestroyRenderPass(VulkanDevice* pDevice);
 
-			void CreateFrameBuffer(std::shared_ptr<VulkanDevice> pDevice, std::vector<VulkanRenderTargetAttachment*> pAttachments, const Vector2& extent, UI32 bufferCount);
-			void DestroyFrameBuffers(std::shared_ptr<VulkanDevice> pDevice);
+			void CreateFrameBuffer(VulkanDevice* pDevice,std::vector<VulkanRenderTargetAttachment*> pAttachments, const Vector2& extent, UI32 bufferCount);
+			void DestroyFrameBuffers(VulkanDevice* pDevice);
 
-			void InitializeSyncObjects(std::shared_ptr<VulkanDevice> pDevice, UI32 count);
-			void TerminateSyncObjects(std::shared_ptr<VulkanDevice> pDevice);
+			void InitializeSyncObjects(VulkanDevice* pDevice,UI32 count);
+			void TerminateSyncObjects(VulkanDevice* pDevice);
 
 		protected:
-			VulkanCommandBufferManager mCommandBufferManager = {};
-
 			std::vector<VkSemaphore> vImageAvailables;
 			std::vector<VkSemaphore> vRenderFinishes;
 			std::vector<VkFence> vInFlightFences;

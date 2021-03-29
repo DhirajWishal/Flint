@@ -99,8 +99,12 @@ namespace Flint
 			return supportDetails;
 		}
 
-		void VulkanDisplay::mInitialize()
+		void VulkanDisplay::Initialize(InstanceType* pInstance, const Vector2 extent, const char* pTitle)
 		{
+			this->pInstance = pInstance;
+			this->mExtent = extent;
+			this->pTitle = pTitle;
+
 			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 			pWindowHandle = glfwCreateWindow(static_cast<UI32>(mExtent.width), static_cast<UI32>(mExtent.height), pTitle, nullptr, nullptr);
 
@@ -111,12 +115,12 @@ namespace Flint
 			SetupCallbacks();
 		}
 
-		void VulkanDisplay::mUpdate()
+		void VulkanDisplay::Update()
 		{
 			glfwPollEvents();
 		}
 
-		void VulkanDisplay::mTerminate()
+		void VulkanDisplay::Terminate()
 		{
 			DestroySurface();
 			glfwDestroyWindow(pWindowHandle);

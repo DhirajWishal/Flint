@@ -164,8 +164,10 @@ namespace Flint
 			}
 		}
 
-		void VulkanInstance::mInitialize()
+		void VulkanInstance::Initialize(bool enableValidation)
 		{
+			this->bEnableValidation = enableValidation;
+
 			InitializeGLFW();
 
 			if (enableValidation)
@@ -179,9 +181,9 @@ namespace Flint
 				CreateDebugMessenger();
 		}
 
-		void VulkanInstance::mTerminate()
+		void VulkanInstance::Terminate()
 		{
-			if (mEnableValidation)
+			if (bEnableValidation)
 				DestroyDebugMessenger();
 
 			DestroyInstance();
@@ -210,7 +212,7 @@ namespace Flint
 		void VulkanInstance::CreateInstance()
 		{
 			// Check if the validation layers are supported.
-			FLINT_ASSERT(mEnableValidation && !_Helpers::CheckValidationLayerSupport(mValidationLayers), TEXT("Requested validation layers are not available!"))
+			FLINT_ASSERT(bEnableValidation && !_Helpers::CheckValidationLayerSupport(mValidationLayers), TEXT("Requested validation layers are not available!"))
 
 				// Application info.
 				VkApplicationInfo appInfo = {};
@@ -227,13 +229,13 @@ namespace Flint
 			createInfo.pApplicationInfo = &appInfo;
 
 			// Get and insert the required instance extensions.
-			std::vector<const char*> requiredExtensions = std::move(_Helpers::GetRequiredInstanceExtensions(mEnableValidation));
+			std::vector<const char*> requiredExtensions = std::move(_Helpers::GetRequiredInstanceExtensions(bEnableValidation));
 			createInfo.enabledExtensionCount = static_cast<UI32>(requiredExtensions.size());
 			createInfo.ppEnabledExtensionNames = requiredExtensions.data();
 
 			// Initialize debugger.
 			VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo = {};
-			if (mEnableValidation)
+			if (bEnableValidation)
 			{
 				createInfo.enabledLayerCount = static_cast<UI32>(mValidationLayers.size());
 				createInfo.ppEnabledLayerNames = mValidationLayers.data();
@@ -273,21 +275,5 @@ namespace Flint
 			if (func != nullptr)
 				func(vInstance, vDebugUtilsMessenger, nullptr);
 		}
-		
-		Backend::InstanceHandle CreateInstance(bool enableValidation)
-		{
-			VulkanInstance* pInstance = new VulkanInstance();
-			pInstance->Initialize(enableValidation);
-
-			return Backend::InstanceHandle(reinterpret_cast<UI64>(pInstance));
-		}
-		
-		void DestroyInstance(Backend::InstanceHandle handle)
-		{
-			VulkanInstance* pInstance = reinterpret_cast<VulkanInstance*>(handle);
-			pInstance->Terminate();
-
-			delete pInstance;
-		}
-}
+	}
 }

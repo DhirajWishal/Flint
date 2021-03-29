@@ -3,31 +3,30 @@
 
 #include "VulkanBackend/VulkanBuffer.h"
 #include "VulkanBackend/VulkanMacros.h"
-#include "VulkanBackend/VulkanCommandBuffer.h"
 #include "VulkanBackend/VulkanOneTimeCommandBuffer.h"
 
 namespace Flint
 {
 	namespace VulkanBackend
 	{
-		void VulkanBuffer::mInitialize()
+		void VulkanBuffer::Initialize(DeviceType* pDevice, UI64 size, Backend::BufferUsage type, Backend::MemoryProfile profile)
 		{
 			VkBufferUsageFlags vBufferUsage = {};
-			switch (GetType())
+			switch (GetUsage())
 			{
-			case Flint::Backend::BufferType::VERTEX:
+			case Flint::Backend::BufferUsage::VERTEX:
 				vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 				break;
 
-			case Flint::Backend::BufferType::INDEX:
+			case Flint::Backend::BufferUsage::INDEX:
 				vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 				break;
 
-			case Flint::Backend::BufferType::UNIFORM:
+			case Flint::Backend::BufferUsage::UNIFORM:
 				vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 				break;
 
-			case Flint::Backend::BufferType::STAGGING:
+			case Flint::Backend::BufferUsage::STAGGING:
 				vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 				break;
 
@@ -66,13 +65,13 @@ namespace Flint
 			AllocateBufferMemory(vMemoryProperties);
 		}
 
-		void VulkanBuffer::mTerminate()
+		void VulkanBuffer::Terminate()
 		{
 			DestroyBuffer();
 			FreeBufferMemory();
 		}
 
-		void* VulkanBuffer::pMapMemory(UI64 size, UI64 offset)
+		void* VulkanBuffer::MapMemory(UI64 size, UI64 offset)
 		{
 			if (size + offset > mSize)
 				size = mSize, offset = 0;
@@ -88,12 +87,12 @@ namespace Flint
 				return pDataStore;
 		}
 
-		void VulkanBuffer::mUnmapMemory()
+		void VulkanBuffer::UnmapMemory()
 		{
 			pDevice->UnmapMemory(vBufferMemory);
 		}
 
-		void VulkanBuffer::mFlushMemoryMappings()
+		void VulkanBuffer::FlushMemoryMappings()
 		{
 			VkMappedMemoryRange vMMR = {};
 			vMMR.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
@@ -105,26 +104,15 @@ namespace Flint
 			FLINT_VK_ASSERT(pDevice->FlushMemoryRanges({ vMMR }), "Failed to flush memory mappings!")
 		}
 
-		void VulkanBuffer::mCopyFrom(Buffer* pBuffer, UI64 size, UI64 srcOffset, UI64 dstOffset)
+		void VulkanBuffer::CopyFrom(const Derived& buffer, UI64 size, UI64 srcOffset, UI64 dstOffset)
 		{
 			VkBufferCopy vBC = {};
 			vBC.size = size;
 			vBC.srcOffset = srcOffset;
 			vBC.dstOffset = dstOffset;
 
-			VulkanOneTimeCommandBuffer vCommandBuffer(pDevice.get());
-			vkCmdCopyBuffer(vCommandBuffer, pBuffer->GetDerived().vBuffer, vBuffer, 1, &vBC);
-		}
-
-		void VulkanBuffer::Bind(const std::shared_ptr<Backend::CommandBuffer>& pCommandBuffer)
-		{
-			VkCommandBuffer vCommandBuffer = *dynamic_cast<VulkanCommandBuffer*>(const_cast<Backend::CommandBuffer*>(pCommandBuffer.get()));
-			VkDeviceSize offset[1] = { 0 };
-
-			if (mType == Backend::BufferType::VERTEX)
-				vkCmdBindVertexBuffers(vCommandBuffer, 0, 1, &vBuffer, offset);
-			else if (mType == Backend::BufferType::INDEX)
-				vkCmdBindIndexBuffer(vCommandBuffer, vBuffer, 0, VK_INDEX_TYPE_UINT32);
+			VulkanOneTimeCommandBuffer vCommandBuffer(pDevice);
+			vkCmdCopyBuffer(vCommandBuffer, buffer.vBuffer, vBuffer, 1, &vBC);
 		}
 
 		void VulkanBuffer::CreateBuffer(VkBufferUsageFlags vUsage)

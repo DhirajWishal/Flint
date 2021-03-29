@@ -10,7 +10,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		void VulkanDepthBuffer::Initialize(std::shared_ptr<VulkanDevice> pDevice, const Vector2& extent, UI32 bufferCount)
+		void VulkanDepthBuffer::Initialize(VulkanDevice* pDevice, const Vector2& extent, UI32 bufferCount)
 		{
 			this->pDevice = pDevice;
 			this->mExtent = extent;
@@ -40,10 +40,10 @@ namespace Flint
 				FLINT_VK_ASSERT(pDevice->CreateImage(&vCI, vImages.data() + i), "Failed to create Vulkan Image!")
 
 				FLINT_VK_ASSERT(pDevice->CreateImageMemory(vImages, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &vBufferMemory), "Failed to bind image memory!");
-			vImageViews = std::move(Utilities::CreateImageViews(vImages, vFormat, pDevice.get(), VK_IMAGE_ASPECT_DEPTH_BIT));
+			vImageViews = std::move(Utilities::CreateImageViews(vImages, vFormat, pDevice, VK_IMAGE_ASPECT_DEPTH_BIT));
 
 			{
-				VulkanOneTimeCommandBuffer vCommandBuffer(pDevice.get());
+				VulkanOneTimeCommandBuffer vCommandBuffer(pDevice);
 				for (auto itr = vImages.begin(); itr != vImages.end(); itr++)
 					pDevice->SetImageLayout(vCommandBuffer, *itr, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, vFormat);
 			}

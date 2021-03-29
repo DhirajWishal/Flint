@@ -41,21 +41,21 @@ namespace Flint
 	}
 
 	WireFrame::WireFrame(const WireFrame& other)
-		: pVertexBuffer(other.pVertexBuffer), pIndexBuffer(other.pIndexBuffer), mDrawData(other.mDrawData), mAttributes(other.mAttributes)
+		: mVertexBuffer(other.mVertexBuffer), mIndexBuffer(other.mIndexBuffer), mDrawData(other.mDrawData), mAttributes(other.mAttributes)
 	{
 	}
 
 	WireFrame::WireFrame(WireFrame&& other) noexcept
-		: pVertexBuffer(other.pVertexBuffer), pIndexBuffer(other.pIndexBuffer), mDrawData(std::move(other.mDrawData)), mAttributes(std::move(other.mAttributes))
+		: mVertexBuffer(other.mVertexBuffer), mIndexBuffer(other.mIndexBuffer), mDrawData(std::move(other.mDrawData)), mAttributes(std::move(other.mAttributes))
 	{
-		other.pVertexBuffer = nullptr;
-		other.pIndexBuffer = nullptr;
+		other.mVertexBuffer = {};
+		other.mIndexBuffer = {};
 	}
 
 	void WireFrame::Clear()
 	{
-		if (pVertexBuffer) pVertexBuffer->Terminate(), delete pVertexBuffer;
-		if (pIndexBuffer) pIndexBuffer->Terminate(), delete pIndexBuffer;
+		mVertexBuffer.Terminate();
+		mIndexBuffer.Terminate();
 
 		mDrawData.clear();
 	}
@@ -73,43 +73,41 @@ namespace Flint
 			file << attribute.mSize << std::endl << static_cast<UI8>(attribute.mType) << std::endl;
 
 		// Next comes the 8 byte value stating the vertex byte size.
-		UI64 vertexBufferSize = pVertexBuffer->GetSize();
+		UI64 vertexBufferSize = mVertexBuffer.GetSize();
 		file << vertexBufferSize << std::endl;
 
 		// The vertex data is next.
 		{
 			// Create stagging buffer and copy vertex data to it.
-			Backend::Buffer* pStaggingBuffer = pVertexBuffer->GetDevice()->CreateBuffer(vertexBufferSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
-			pStaggingBuffer->CopyFrom(pVertexBuffer, vertexBufferSize, 0, 0);
+			Objects::Buffer staggingBuffer = Objects::CreateBuffer(mVertexBuffer.GetDevice(), vertexBufferSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
+			staggingBuffer.CopyFrom(mVertexBuffer, vertexBufferSize, 0, 0);
 
 			// Write and flush vertex data.
-			file.write(static_cast<char*>(pStaggingBuffer->MapMemory(vertexBufferSize, 0)), vertexBufferSize);
-			pStaggingBuffer->FlushMemoryMappings();
-			pStaggingBuffer->UnmapMemory();
+			file.write(static_cast<char*>(staggingBuffer.MapMemory(vertexBufferSize, 0)), vertexBufferSize);
+			staggingBuffer.FlushMemoryMappings();
+			staggingBuffer.UnmapMemory();
 
 			// Terminate the stagging buffer.
-			pStaggingBuffer->Terminate();
-			delete pStaggingBuffer;
+			staggingBuffer.Terminate();
 		}
 
 		// Index size and byte size comes next.
-		UI64 indexBufferSize = pIndexBuffer->GetSize();
+		UI64 indexBufferSize = mIndexBuffer.GetSize();
 		file << std::endl << indexBufferSize << std::endl;
 
 		// The index data comes next.
 		{
 			// Create stagging buffer and copy index data to it.
-			Backend::Buffer* pStaggingBuffer = pIndexBuffer->GetDevice()->CreateBuffer(indexBufferSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
-			pStaggingBuffer->CopyFrom(pIndexBuffer, indexBufferSize, 0, 0);
+			Objects::Buffer staggingBuffer = Objects::CreateBuffer(mVertexBuffer.GetDevice(), indexBufferSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
+			staggingBuffer.CopyFrom(mIndexBuffer, indexBufferSize, 0, 0);
 
 			// Write and flush index data.
-			file.write(static_cast<char*>(pStaggingBuffer->MapMemory(indexBufferSize, 0)), indexBufferSize);
-			pStaggingBuffer->FlushMemoryMappings();
-			pStaggingBuffer->UnmapMemory();
+			file.write(static_cast<char*>(staggingBuffer.MapMemory(indexBufferSize, 0)), indexBufferSize);
+			staggingBuffer.FlushMemoryMappings();
+			staggingBuffer.UnmapMemory();
 
 			// Terminate the stagging buffer.
-			pStaggingBuffer->Terminate();
-			delete pStaggingBuffer;
+			staggingBuffer.Terminate();
 		}
 
 		// The next 8 bytes contains the number of draw data.
@@ -123,7 +121,7 @@ namespace Flint
 		file.close();
 	}
 
-	void WireFrame::LoadFromCache(std::filesystem::path asset, Backend::Device* pDevice)
+	void WireFrame::LoadFromCache(std::filesystem::path asset, Objects::Device* pDevice)
 	{
 		std::ifstream file(asset, std::ios::binary);
 		if (!file.is_open()) return;
@@ -155,19 +153,18 @@ namespace Flint
 			file.ignore(1);
 
 			// Load the data.
-			Backend::Buffer* pStaggingBuffer = pDevice->CreateBuffer(byteSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
-			char* pString = static_cast<char*>(pStaggingBuffer->MapMemory(byteSize, 0));
+			Objects::Buffer staggingBuffer = Objects::CreateBuffer(pDevice, byteSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
+			char* pString = static_cast<char*>(staggingBuffer.MapMemory(byteSize, 0));
 			file.read(static_cast<char*>(pString), byteSize);
-			pStaggingBuffer->FlushMemoryMappings();
-			pStaggingBuffer->UnmapMemory();
+			staggingBuffer.FlushMemoryMappings();
+			staggingBuffer.UnmapMemory();
 
 			// Copy data to the buffer.
-			pVertexBuffer = pDevice->CreateBuffer(byteSize, Backend::BufferUsage::VERTEX, Backend::MemoryProfile::DRAW_RESOURCE);
-			pVertexBuffer->CopyFrom(pStaggingBuffer, byteSize, 0, 0);
+			mVertexBuffer = Objects::CreateBuffer(pDevice, byteSize, Backend::BufferUsage::VERTEX, Backend::MemoryProfile::DRAW_RESOURCE);
+			mVertexBuffer.CopyFrom(staggingBuffer, byteSize, 0, 0);
 
 			// Destroy stagging buffer.
-			pStaggingBuffer->Terminate();
-			delete pStaggingBuffer;
+			staggingBuffer.Terminate();
 
 			file.ignore(1);
 		}
@@ -180,18 +177,17 @@ namespace Flint
 			file.ignore(1);
 
 			// Load the data.
-			Backend::Buffer* pStaggingBuffer = pDevice->CreateBuffer(byteSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
-			file.read(static_cast<char*>(pStaggingBuffer->MapMemory(byteSize, 0)), byteSize);
-			pStaggingBuffer->FlushMemoryMappings();
-			pStaggingBuffer->UnmapMemory();
+			Objects::Buffer staggingBuffer = Objects::CreateBuffer(*pDevice, byteSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
+			file.read(static_cast<char*>(staggingBuffer.MapMemory(byteSize, 0)), byteSize);
+			staggingBuffer.FlushMemoryMappings();
+			staggingBuffer.UnmapMemory();
 
 			// Copy data to the buffer.
-			pIndexBuffer = pDevice->CreateBuffer(byteSize, Backend::BufferUsage::INDEX, Backend::MemoryProfile::DRAW_RESOURCE);
-			pIndexBuffer->CopyFrom(pStaggingBuffer, byteSize, 0, 0);
+			mIndexBuffer = Objects::CreateBuffer(*pDevice, byteSize, Backend::BufferUsage::INDEX, Backend::MemoryProfile::DRAW_RESOURCE);
+			mIndexBuffer.CopyFrom(staggingBuffer, byteSize, 0, 0);
 
 			// Destroy stagging buffer.
-			pStaggingBuffer->Terminate();
-			delete pStaggingBuffer;
+			staggingBuffer.Terminate();
 
 			file.ignore(1);
 		}
@@ -218,8 +214,8 @@ namespace Flint
 
 	WireFrame& WireFrame::operator=(const WireFrame& other)
 	{
-		pVertexBuffer = other.pVertexBuffer;
-		pIndexBuffer = other.pIndexBuffer;
+		mVertexBuffer = other.mVertexBuffer;
+		mIndexBuffer = other.mIndexBuffer;
 		mAttributes = other.mAttributes;
 		mDrawData = other.mDrawData;
 
@@ -228,13 +224,13 @@ namespace Flint
 
 	WireFrame& WireFrame::operator=(WireFrame&& other) noexcept
 	{
-		pVertexBuffer = other.pVertexBuffer;
-		pIndexBuffer = other.pIndexBuffer;
+		mVertexBuffer = other.mVertexBuffer;
+		mIndexBuffer = other.mIndexBuffer;
 		mAttributes = std::move(other.mAttributes);
 		mDrawData = std::move(other.mDrawData);
 
-		other.pVertexBuffer = nullptr;
-		other.pIndexBuffer = nullptr;
+		other.mVertexBuffer = {};
+		other.mIndexBuffer = {};
 
 		return *this;
 	}

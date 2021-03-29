@@ -11,13 +11,13 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanInstance final : public Backend::Instance<VulkanInstance> {
+		class VulkanInstance final : public Backend::Instance {
 		public:
 			VulkanInstance() {}
 			~VulkanInstance() {}
 
-			virtual void mInitialize() override final;
-			virtual void mTerminate() override final;
+			virtual void Initialize(bool enableValidation) override final;
+			virtual void Terminate() override final;
 
 			//virtual Backend::Device* CreateDevice() override final;
 		private:

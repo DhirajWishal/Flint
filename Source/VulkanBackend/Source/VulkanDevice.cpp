@@ -8,7 +8,6 @@
 #include "VulkanBackend/RenderTargets/VulkanScreenBoundRenderTargetS.h"
 #include "VulkanBackend/VulkanBuffer.h"
 #include "VulkanBackend/RenderTargets/Pipelines/VulkanGraphicsPipeline.h"
-#include "VulkanBackend/VulkanCommandBufferManager.h"
 
 #include <set>
 
@@ -89,22 +88,24 @@ namespace Flint
 			}
 		}
 
-		void VulkanDevice::mInitialize()
+		void VulkanDevice::Initialize(InstanceType* pInstance)
 		{
+			this->pInstance = pInstance;
+
 			INSERT_INTO_VECTOR(mDeviceExtensions, VK_KHR_SWAPCHAIN_EXTENSION_NAME);
 
 			CreatePhysicalDevice();
 			CreateLogicalDevice();
 		}
 
-		bool VulkanDevice::bCheckDisplayCompatibility(DisplayType* pDisplay)
+		bool VulkanDevice::CheckDisplayCompatibility(DisplayType* pDisplay)
 		{
 			VkBool32 isSupported = VK_FALSE;
 			FLINT_VK_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(GetPhysicalDevice(), GetQueue().mGraphicsFamily.value(), pDisplay->GetSurface(), &isSupported), "Failed to check swap chain -> display support!")
 				return isSupported == VK_TRUE;
 		}
 
-		void VulkanDevice::mTerminate()
+		void VulkanDevice::Terminate()
 		{
 			DestroyLogicalDevice();
 		}

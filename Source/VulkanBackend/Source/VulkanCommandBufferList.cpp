@@ -8,8 +8,11 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		void VulkanCommandBufferList::mInitialize()
+		void VulkanCommandBufferList::Initialize(DeviceType* pDevice, UI64 bufferCount)
 		{
+			this->pDevice = pDevice;
+			this->mBufferCount = bufferCount;
+
 			VkCommandPoolCreateInfo vCI = {};
 			vCI.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 			vCI.pNext = VK_NULL_HANDLE;
@@ -28,13 +31,13 @@ namespace Flint
 			FLINT_VK_ASSERT(pDevice->AllocateCommandBuffers(&vAI, vBuffers), "Failed to allocate command buffer!")
 		}
 
-		void VulkanCommandBufferList::mTerminate()
+		void VulkanCommandBufferList::Terminate()
 		{
 			pDevice->FreeComandBuffers(vCommandPool, vBuffers);
 			pDevice->DestroyCommandPool(vCommandPool);
 		}
 
-		void VulkanCommandBufferList::mBeginBuffer()
+		void VulkanCommandBufferList::BeginBuffer(UI64 index)
 		{
 			VkCommandBufferBeginInfo vBI = {};
 			vBI.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -45,22 +48,15 @@ namespace Flint
 			FLINT_VK_ASSERT(vkBeginCommandBuffer(vBuffers[GetIndex()], &vBI), "Failed to begin command buffer recording!")
 		}
 
-		void VulkanCommandBufferList::mEndBuffer()
+		void VulkanCommandBufferList::EndBuffer()
 		{
 			FLINT_VK_ASSERT(vkEndCommandBuffer(vBuffers[GetIndex()]), "Failed to end command buffer recording!")
 		}
 
-		void VulkanCommandBufferList::mBindBuffer(const BufferType& buffer)
-		{
-			if (buffer.GetType() == Backend::BufferType::VERTEX)
-			{
-			}
-		}
-
-		void VulkanCommandBufferList::mBindVertexBuffer(const BufferType& buffer, UI64 firstBinding, UI64 bindingCount)
+		void VulkanCommandBufferList::BindVertexBuffer(const BufferType& buffer, UI64 firstBinding, UI64 bindingCount)
 		{
 #ifdef FLINT_DEBUG
-			if (buffer.GetType() != Backend::BufferType::VERTEX)
+			if (buffer.GetUsage() != Backend::BufferUsage::VERTEX)
 			{
 				FLINT_LOG_ERROR(TEXT("Buffer type is not vertex!"))
 					return;

@@ -11,19 +11,18 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanCommandBufferList final : public Backend::CommandBufferList<VulkanCommandBufferList, VulkanDevice, VulkanBuffer> {
+		class VulkanCommandBufferList final : public Backend::CommandBufferList<VulkanDevice, VulkanBuffer> {
 		public:
 			VulkanCommandBufferList() {}
 			~VulkanCommandBufferList() {}
 
-			virtual void mInitialize() override final;
-			virtual void mTerminate() override final;
+			virtual void Initialize(DeviceType* pDevice, UI64 bufferCount) override final;
+			virtual void Terminate() override final;
 
-			virtual void mBeginBuffer() override final;
-			virtual void mEndBuffer() override final;
+			virtual void BeginBuffer(UI64 index) override final;
+			virtual void EndBuffer() override final;
 
-			virtual void mBindBuffer(const BufferType& buffer) override final;
-			virtual void mBindVertexBuffer(const BufferType& buffer, UI64 firstBinding, UI64 bindingCount) override final;
+			virtual void BindVertexBuffer(const BufferType& buffer, UI64 firstBinding, UI64 bindingCount) override final;
 
 			VkCommandPool GetCommandPool() const { return vCommandPool; }
 			VkCommandBuffer GetCurrentBuffer() const { return vBuffers[GetIndex()]; }

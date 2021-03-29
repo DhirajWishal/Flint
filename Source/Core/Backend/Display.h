@@ -11,8 +11,8 @@ namespace Flint
 {
 	namespace Backend
 	{
-		template<class Derived, class InstanceType>
-		class Display : public BackendObject<Derived> {
+		template<class InstanceType>
+		class Display : public BackendObject {
 		public:
 			using InstanceType = InstanceType;
 
@@ -20,24 +20,20 @@ namespace Flint
 			Display() {}
 			virtual ~Display() {}
 
-			void Initialize(std::shared_ptr<InstanceType> pInstance, const Vector2 extent, const char* pTitle) { this->pInstance = pInstance, this->mExtent = extent, this->pTitle = pTitle; GetDerived().mInitialize(); }
-			void Update() { GetDerived().mUpdate(); }
-			void Terminate() { GetDerived().mTerminate(); }
+			virtual void Initialize(InstanceType* pInstance, const Vector2 extent, const char* pTitle) = 0;
+			virtual void Update() = 0;
+			virtual void Terminate() = 0;
 
 			Inputs::InputCenter* GetInputCenter() const { return const_cast<Inputs::InputCenter*>(&mInputsCenter); }
 			Vector2 GetExtent() const { mExtent; }
 			const char* GetTitle() const { return pTitle; }
 
-			InstanceType* GetInstance() const { return pInstance.get(); }
+			InstanceType* GetInstance() const { return pInstance; }
 
 			FLINT_SET_NO_COPY_AND_MOVE(Display)
 		protected:
-			virtual void mInitialize() = 0;
-			virtual void mUpdate() = 0;
-			virtual void mTerminate() = 0;
-
 			Inputs::InputCenter mInputsCenter = {};
-			std::shared_ptr<InstanceType> pInstance = {};
+			InstanceType* pInstance = nullptr;
 
 			Vector2 mExtent = Vector2::ZeroAll;
 			const char* pTitle = nullptr;

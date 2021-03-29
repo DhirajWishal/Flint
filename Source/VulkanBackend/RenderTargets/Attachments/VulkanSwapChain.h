@@ -13,7 +13,7 @@ namespace Flint
 		public:
 			VulkanSwapChain() : VulkanRenderTargetAttachment(RenderTargetAttachmenType::SWAP_CHAIN) {}
 
-			virtual void Initialize(std::shared_ptr<VulkanDevice> pDevice, std::shared_ptr<VulkanDisplay> pDisplay, const Vector2& extent, UI32 bufferCount) override final;
+			virtual void Initialize(VulkanDevice* pDevice, VulkanDisplay* pDisplay, const Vector2& extent, UI32 bufferCount) override final;
 			virtual void Recreate(const Vector2& extent) override final;
 			virtual void Terminate() override final;
 
@@ -23,7 +23,7 @@ namespace Flint
 			VkSwapchainKHR GetSwapChain() const { return vSwapChain; }
 
 		private:
-			std::shared_ptr<VulkanDisplay> pDisplay = {};
+			VulkanDisplay* pDisplay = nullptr;
 			VkSwapchainKHR vSwapChain = VK_NULL_HANDLE;
 		};
 	}

@@ -9,7 +9,7 @@ namespace Flint
 {
 	namespace Backend
 	{
-		enum class BufferType : UI8 {
+		enum class BufferUsage : UI8 {
 			UNDEFINED,
 			VERTEX, INDEX, STAGGING, UNIFORM
 		};
@@ -21,52 +21,41 @@ namespace Flint
 		};
 
 		template<class Derived, class DeviceType>
-		class Buffer : public BackendObject<Derived> {
+		class Buffer : public BackendObject {
 			struct PreviousMemoryMapInfo {
 				UI64 mSize = 0;
 				UI64 mOffset = 0;
 			};
 
 		public:
+			using Derived = Derived;
 			using DeviceType = DeviceType;
 
 		public:
 			Buffer() {}
 			virtual ~Buffer() {}
 
-			void Initialize(std::shared_ptr<DeviceType> pDevice, UI64 size, BufferType type, MemoryProfile profile)
-			{
-				this->pDevice = pDevice, this->mSize = size, this->mType = type, this->mMemoryProfile = profile;
-				GetDerived().mInitialize();
-			}
+			virtual void Initialize(DeviceType* pDevice, UI64 size, BufferUsage type, MemoryProfile profile) = 0;
+			virtual void Terminate() = 0;
 
-			void* MapMemory(UI64 size, UI64 offset) { return GetDerived().pMapMemory(size, offset); }
-			void FlushMemoryMappings() { GetDerived().mFlushMemoryMappings(); }
-			void UnmapMemory() { GetDerived().mUnmapMemory(); }
+			virtual void* MapMemory(UI64 size, UI64 offset) = 0;
+			virtual void FlushMemoryMappings() = 0;
+			virtual void UnmapMemory() = 0;
 
-			void Terminate() { GetDerived().mTerminate(); }
-
-			void CopyFrom(Buffer* pBuffer, UI64 size, UI64 srcOffset, UI64 dstOffset) { GetDerived().mCopyFrom(pBuffer, size, srcOffset, dstOffset); }
+			virtual void CopyFrom(const Derived& buffer, UI64 size, UI64 srcOffset, UI64 dstOffset) = 0;
 
 			DeviceType* GetDevice() const { return pDevice.get(); }
 			UI64 GetSize() const { return mSize; }
-			BufferType GetType() const { return mType; }
+			BufferUsage GetUsage() const { return mUsage; }
 			MemoryProfile GetMemoryProfile() const { return mMemoryProfile; }
 
 		protected:
-			virtual void mInitialize() = 0;
-			virtual void* pMapMemory(UI64 size, UI64 offset) = 0;
-			virtual void mFlushMemoryMappings() = 0;
-			virtual void mUnmapMemory() = 0;
-			virtual void mTerminate() = 0;
-
-			virtual void mCopyFrom(Buffer* pBuffer, UI64 size, UI64 srcOffset, UI64 dstOffset) = 0;
-
 			PreviousMemoryMapInfo mPrevMapInfo = {};
 
-			std::shared_ptr<DeviceType> pDevice = {};
+			DeviceType* pDevice = {};
 			UI64 mSize = 0;
-			BufferType mType = BufferType::UNDEFINED;
+
+			BufferUsage mUsage = BufferUsage::UNDEFINED;
 			MemoryProfile mMemoryProfile = MemoryProfile::TRANSFER_FRIENDLY;
 		};
 	}

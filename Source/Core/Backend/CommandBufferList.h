@@ -10,8 +10,8 @@ namespace Flint
 {
 	namespace Backend
 	{
-		template<class Derived, class DeviceType, class BufferType>
-		class CommandBufferList : public BackendObject<Derived> {
+		template<class DeviceType, class BufferType>
+		class CommandBufferList : public BackendObject {
 		public:
 			using DeviceType = DeviceType;
 			using BufferType = BufferType;
@@ -20,15 +20,14 @@ namespace Flint
 			CommandBufferList() {}
 			virtual ~CommandBufferList() {}
 
-			void Initialize(std::shared_ptr<DeviceType> pDevice, UI64 bufferCount) { this->pDevice = pDevice, this->mBufferCount = bufferCount; GetDerived().mInitialize(); }
-			void Terminate() { GetDerived().mTerminate(); }
+			virtual void Initialize(DeviceType* pDevice, UI64 bufferCount) = 0;
+			virtual void Terminate() = 0;
 
-			void BeginBuffer(UI64 index) { this->mBufferIndex = index; GetDerived().mBeginBuffer(); }
-			void BeginNextBuffer() { BeginBuffer(IncrementIndex()); }
-			void EndBuffer() { GetDerived().mEndBuffer(); }
+			virtual void BeginBuffer(UI64 index) = 0;
+			virtual void BeginNextBuffer() { BeginBuffer(IncrementIndex()); }
+			virtual void EndBuffer() = 0;
 
-			void BindBuffer(const BufferType& buffer) { GetDerived().mBindBuffer(buffer); }
-			void BindVertexBuffer(const BufferType& buffer, UI64 firstBinding, UI64 bindingCount) {}
+			virtual void BindVertexBuffer(const BufferType& buffer, UI64 firstBinding, UI64 bindingCount) = 0;
 		public:
 			UI64 GetBufferCount() const { return mBufferCount; }
 			UI64 GetIndex() const { return mBufferIndex; }
@@ -41,16 +40,7 @@ namespace Flint
 			}
 
 		protected:
-			virtual void mInitialize() = 0;
-			virtual void mTerminate() = 0;
-
-			virtual void mBeginBuffer() = 0;
-			virtual void mEndBuffer() = 0;
-
-			virtual void mBindBuffer(const BufferType& buffer) = 0;
-			virtual void mBindVertexBuffer(const BufferType& buffer, UI64 firstBinding, UI64 bindingCount) = 0;
-
-			std::shared_ptr<DeviceType> pDevice = {};
+			DeviceType* pDevice = nullptr;
 			UI64 mBufferCount = 0;
 			UI64 mBufferIndex = 0;
 		};

@@ -9,18 +9,18 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		void VulkanSwapChain::Initialize(std::shared_ptr<VulkanDevice> pDevice, std::shared_ptr<VulkanDisplay> pDisplay, const Vector2& extent, UI32 bufferCount)
+		void VulkanSwapChain::Initialize(VulkanDevice* pDevice, VulkanDisplay* pDisplay, const Vector2& extent, UI32 bufferCount)
 		{
 			this->pDevice = pDevice;
 			this->pDisplay = pDisplay;
 			this->mExtent = extent;
 			this->mBufferCount = bufferCount;
 
-			SwapChainSupportDetails& vSupport = pDisplay->GetSwapChainSupportDetails(pDevice.get());
+			SwapChainSupportDetails& vSupport = pDisplay->GetSwapChainSupportDetails(pDevice);
 			VkSurfaceFormatKHR surfaceFormat = Utilities::ChooseSwapSurfaceFormat(vSupport.formats);
 			VkPresentModeKHR presentMode = Utilities::ChooseSwapPresentMode(vSupport.presentModes);
 
-			auto& vCapabilities = pDisplay->GetSurfaceCapabilities(pDevice.get());
+			auto& vCapabilities = pDisplay->GetSurfaceCapabilities(pDevice);
 
 			VkCompositeAlphaFlagBitsKHR surfaceComposite = static_cast<VkCompositeAlphaFlagBitsKHR>(vCapabilities.supportedCompositeAlpha);
 			surfaceComposite = (surfaceComposite & VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR)
@@ -86,7 +86,7 @@ namespace Flint
 			vImages.resize(vCI.minImageCount);
 			FLINT_VK_ASSERT(pDevice->GetSwapChainImages(vSwapChain, &vCI.minImageCount, vImages), "Failed to get the Vulkan Swap Chain Images!");
 
-			vImageViews = std::move(Utilities::CreateImageViews(vImages, vCI.imageFormat, pDevice.get()));
+			vImageViews = std::move(Utilities::CreateImageViews(vImages, vCI.imageFormat, pDevice));
 		}
 
 		void VulkanSwapChain::Recreate(const Vector2& extent)

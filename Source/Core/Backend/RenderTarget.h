@@ -10,8 +10,8 @@ namespace Flint
 {
 	namespace Backend
 	{
-		template<class Derived, class DeviceType>
-		class RenderTarget : public BackendObject<Derived> {
+		template<class DeviceType>
+		class RenderTarget : public BackendObject {
 		public:
 			using DeviceType = DeviceType;
 
@@ -19,16 +19,13 @@ namespace Flint
 			RenderTarget() {}
 			virtual ~RenderTarget() {}
 
-			void Terminate() { GetDerived().mTerminate(); }
+			virtual void Terminate() = 0;
 
 			Vector2 GetExtent() const { return mExtent; }
 			UI64 GetBufferCount() const { return mBufferCount;  }
 
 		protected:
-			virtual void mInitialize() = 0;
-			virtual void mTerminate() = 0;
-
-			std::shared_ptr<DeviceType> pDevice = {};
+			DeviceType* pDevice = nullptr;
 			Vector2 mExtent = Vector2::ZeroAll;
 			UI64 mBufferCount = 0;
 		};
