@@ -10,6 +10,8 @@
 
 #include <GLFW/glfw3.h>
 
+typedef void* GLFWObjectHandle;
+
 namespace Flint
 {
 	namespace VulkanBackend

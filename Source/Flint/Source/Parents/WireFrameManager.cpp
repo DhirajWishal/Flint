@@ -8,8 +8,21 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#define FREEIMAGE_LIB
+#include <FreeImage.h>
+
 namespace Flint
 {
+	WireFrameManager::WireFrameManager()
+	{
+		FreeImage_Initialise();
+	}
+
+	WireFrameManager::~WireFrameManager()
+	{
+		FreeImage_DeInitialise();
+	}
+
 	WireFrame WireFrameManager::CreateNewWireFrame(const char* pAsset, std::vector<VertexAttribute>& vertexAttributes)
 	{
 		WireFrame wireFrame = {};
@@ -189,7 +202,7 @@ namespace Flint
 		staggingVertexBuffer.FlushMemoryMappings();
 		staggingVertexBuffer.UnmapMemory();
 
-		wireFrame.mVertexBuffer = Objects::CreateBuffer(GetDevice(),vertexBufferSize, Backend::BufferUsage::VERTEX, Backend::MemoryProfile::DRAW_RESOURCE);
+		wireFrame.mVertexBuffer = Objects::CreateBuffer(GetDevice(), vertexBufferSize, Backend::BufferUsage::VERTEX, Backend::MemoryProfile::DRAW_RESOURCE);
 		wireFrame.mVertexBuffer.CopyFrom(staggingVertexBuffer, vertexBufferSize, 0, 0);
 
 		staggingVertexBuffer.Terminate();
@@ -218,5 +231,22 @@ namespace Flint
 		}
 
 		return std::move(wireFrame);
+	}
+
+	Objects::Image WireFrameManager::LoadImageData(std::filesystem::path filePath)
+	{
+		auto type = FreeImage_GetFileType(filePath.string().c_str());
+		auto pImage = FreeImage_Load(type, filePath.string().c_str());
+		UI8 bitsPerPixel = static_cast<UI8>(FreeImage_GetBPP(pImage));
+		auto data = FreeImage_GetBits(pImage);
+
+		UI8 channel = 0, BPP = 0;
+
+		Objects::Image image = {};
+		image.Initialize(GetDevice(), FreeImage_GetWidth(pImage), FreeImage_GetHeight(pImage), 1, Backend::ImageUsage::GRAPHICS_2D, bitsPerPixel);
+		image.CopyData(FreeImage_GetBits(pImage));
+
+		FreeImage_Unload(pImage);
+		return image;
 	}
 }

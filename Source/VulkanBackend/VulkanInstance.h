@@ -19,7 +19,6 @@ namespace Flint
 			virtual void Initialize(bool enableValidation) override final;
 			virtual void Terminate() override final;
 
-			//virtual Backend::Device* CreateDevice() override final;
 		private:
 			void InitializeGLFW();
 			void TerminateGLFW();

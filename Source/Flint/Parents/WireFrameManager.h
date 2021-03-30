@@ -14,8 +14,8 @@ namespace Flint
 	 */
 	class WireFrameManager : public GraphicsBackendObject {
 	public:
-		WireFrameManager() {}
-		~WireFrameManager() {}
+		WireFrameManager();
+		~WireFrameManager();
 
 		/**
 		 * Create a new wire frame objects.
@@ -25,5 +25,7 @@ namespace Flint
 		 * @return The created wire frame object.
 		 */
 		WireFrame CreateNewWireFrame(const char* pAsset, std::vector<VertexAttribute>& vertexAttributes);
+
+		Objects::Image LoadImageData(std::filesystem::path filePath);
 	};
 }

@@ -72,6 +72,6 @@ namespace Flint
 		renderResource.mPipelineResource = sceneComponent.mPipeline.CreatePipelineResource();
 		renderResource.mPipelineResource.RegisterUniformBuffers(renderResource.mUniformBuffers);
 		for (auto& data : sceneComponent.mWireFrame.mDrawData)
-			sceneComponent.mPipeline.AddStaticDrawData(sceneComponent.mDrawID, data.mVertexCount, data.mVertexOffset, data.mIndexCount, data.mIndexOffset, &renderResource.mPipelineResource, dynamicStates);
+			INSERT_INTO_VECTOR(renderResource.mDrawDataIDs, sceneComponent.mPipeline.AddStaticDrawData(sceneComponent.mDrawID, data.mVertexCount, data.mVertexOffset, data.mIndexCount, data.mIndexOffset, &renderResource.mPipelineResource, dynamicStates));
 	}
 }

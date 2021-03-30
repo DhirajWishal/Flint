@@ -191,14 +191,6 @@ namespace Flint
 			TerminateGLFW();
 		}
 
-		//Backend::Device* VulkanInstance::CreateDevice()
-		//{
-		//	VulkanDevice* pDevice = new VulkanDevice();
-		//	pDevice->Initialize();
-		//
-		//	return pDevice;
-		//}
-
 		void VulkanInstance::InitializeGLFW()
 		{
 			glfwInit();

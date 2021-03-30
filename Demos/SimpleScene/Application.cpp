@@ -83,6 +83,10 @@ Application::Application()
 	// Initialize the render target.
 	mEngine.CreateRenderTarget();
 
+	{
+		auto image = mEngine.LoadImageData("E:\\Dynamik\\Version\\Dynamik\\Assets\\Textures\\SkyBox\\back.jpg");
+	}
+
 	// Create the scene component.
 	CreateSceneComponent();
 

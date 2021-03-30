@@ -7,12 +7,14 @@
 
 #include "RenderTargets\Pipelines\VulkanGraphicsPipeline.h"
 #include "VulkanCommandBufferList.h"
+#include "VulkanImage.h"
 
 FLINT_PACK_OBJECTS(
 	Flint::VulkanBackend::VulkanInstance,
 	Flint::VulkanBackend::VulkanDevice,
 	Flint::VulkanBackend::VulkanDisplay,
 	Flint::VulkanBackend::VulkanBuffer,
+	Flint::VulkanBackend::VulkanImage,
 	Flint::VulkanBackend::VulkanScreenBoundRenderTargetS,
 	Flint::VulkanBackend::VulkanGraphicsPipeline,
 	Flint::VulkanBackend::VulkanPipelineResource,

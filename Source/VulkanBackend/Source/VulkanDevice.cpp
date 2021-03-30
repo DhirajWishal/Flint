@@ -118,6 +118,14 @@ namespace Flint
 			return vProps;
 		}
 
+		VkFormatProperties VulkanDevice::GetFormatProperties(VkFormat format) const
+		{
+			VkFormatProperties vProps = {};
+			vkGetPhysicalDeviceFormatProperties(GetPhysicalDevice(), format, &vProps);
+
+			return vProps;
+		}
+
 		void VulkanDevice::CreatePhysicalDevice()
 		{
 			VulkanInstance& instance = *pInstance;

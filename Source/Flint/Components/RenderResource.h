@@ -22,5 +22,7 @@ namespace Flint
 
 		Objects::UniformBufferContainer mUniformBuffers;
 		Objects::ScreenBoundGraphicsPipelineResource mPipelineResource = {};
+
+		std::vector<UI64> mDrawDataIDs;
 	};
 }

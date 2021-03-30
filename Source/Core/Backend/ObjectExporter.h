@@ -11,6 +11,7 @@
 	device,																																										\
 	display,																																									\
 	buffer,																																										\
+	image,																																										\
 	renderTargetSB,																																								\
 	graphicsPipeline,																																							\
 	pipelineResource,																																							\
@@ -29,6 +30,7 @@
 			typedef device Device;																																				\
 			typedef display Display;																																			\
 			typedef buffer Buffer;																																				\
+			typedef image Image;																																				\
 			typedef renderTargetSB ScreenBoundRenderTarget;																														\
 			typedef commandBufferList CommandBufferList;																														\
 																																												\

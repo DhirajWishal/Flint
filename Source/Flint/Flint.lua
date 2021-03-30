@@ -27,14 +27,46 @@ project "Flint"
 		"%{IncludeDir.Vulkan}",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Assimp}",
+		"%{IncludeDir.FreeImage}",
 	}
 
-	libdirs {
-		"%{IncludeLib.Assimp}",
-	}
+	filter "configurations:Debug"
+		libdirs {
+			"%{IncludeLib.Assimp}",
+			"%{IncludeLib.FreeImageD}",
+		}
 
-	links { 
-	    "VulkanBackend",
-		"ShaderTools",
-		"assimp-vc142-mt",
-	}
+		links { 
+		    "VulkanBackend",
+			"ShaderTools",
+			"assimp-vc142-mt",
+			"FreeImageLibd"
+		}
+
+	filter "configurations:Release"
+		libdirs {
+			"%{IncludeLib.Assimp}",
+			"%{IncludeLib.FreeImageR}",
+		}
+
+		links { 
+		    "VulkanBackend",
+			"ShaderTools",
+			"assimp-vc142-mt",
+			"FreeImageLib"
+		}
+
+	filter "configurations:Distribution"
+		libdirs {
+			"%{IncludeLib.Assimp}",
+			"%{IncludeLib.FreeImageR}",
+		}
+
+		links { 
+		    "VulkanBackend",
+			"ShaderTools",
+			"assimp-vc142-mt",
+			"FreeImageLib"
+		}
+
+	filter ""

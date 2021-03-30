@@ -33,6 +33,8 @@ namespace Flint
 			VkPhysicalDevice GetPhysicalDevice() const { return vPhysicalDevice; }
 			VkDevice GetLogicalDevice() const { return vLogicalDevice; }
 
+			VkFormatProperties GetFormatProperties(VkFormat format) const;
+
 			VkSampleCountFlags GetSampleCount() const { return vSampleCount; }
 
 		private:
