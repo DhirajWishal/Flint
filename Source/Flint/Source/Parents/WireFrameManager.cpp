@@ -37,8 +37,8 @@ namespace Flint
 		for (UI32 i = 0; i < pScene->mNumMeshes; i++)
 			vertexBufferSize += pScene->mMeshes[i]->mNumVertices * vertexSize;
 
-		Backend::Buffer* pStaggingVertexBuffer = GetDevice()->CreateBuffer(vertexBufferSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
-		float* pDataStore = static_cast<float*>(pStaggingVertexBuffer->MapMemory(vertexBufferSize, 0));
+		Objects::Buffer staggingVertexBuffer = Objects::CreateBuffer(GetDevice(), vertexBufferSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
+		float* pDataStore = static_cast<float*>(staggingVertexBuffer.MapMemory(vertexBufferSize, 0));
 
 		UI64 indexBufferSize = 0;
 		std::vector<std::vector<UI32>> indexArrays;
@@ -186,19 +186,18 @@ namespace Flint
 			INSERT_INTO_VECTOR(wireFrame.mDrawData, drawData);
 		}
 
-		pStaggingVertexBuffer->FlushMemoryMappings();
-		pStaggingVertexBuffer->UnmapMemory();
+		staggingVertexBuffer.FlushMemoryMappings();
+		staggingVertexBuffer.UnmapMemory();
 
-		wireFrame.pVertexBuffer = GetDevice()->CreateBuffer(vertexBufferSize, Backend::BufferUsage::VERTEX, Backend::MemoryProfile::DRAW_RESOURCE);
-		wireFrame.pVertexBuffer->CopyFrom(pStaggingVertexBuffer, vertexBufferSize, 0, 0);
+		wireFrame.mVertexBuffer = Objects::CreateBuffer(GetDevice(),vertexBufferSize, Backend::BufferUsage::VERTEX, Backend::MemoryProfile::DRAW_RESOURCE);
+		wireFrame.mVertexBuffer.CopyFrom(staggingVertexBuffer, vertexBufferSize, 0, 0);
 
-		pStaggingVertexBuffer->Terminate();
-		delete pStaggingVertexBuffer;
+		staggingVertexBuffer.Terminate();
 
 		// Create the index buffer.
 		{
-			Backend::Buffer* pStaggingBuffer = GetDevice()->CreateBuffer(indexBufferSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
-			UI32* pIndexDataStore = static_cast<UI32*>(pStaggingBuffer->MapMemory(indexBufferSize, 0));
+			Objects::Buffer staggingBuffer = Objects::CreateBuffer(GetDevice(), indexBufferSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
+			UI32* pIndexDataStore = static_cast<UI32*>(staggingBuffer.MapMemory(indexBufferSize, 0));
 
 			// Copy data to the stagging buffer.
 			UI64 offset = 0;
@@ -207,14 +206,13 @@ namespace Flint
 				std::copy(itr->begin(), itr->end(), pIndexDataStore + (offset / sizeof(UI32)));
 				offset += sizeof(UI32) * itr->size();
 			}
-			pStaggingBuffer->FlushMemoryMappings();
-			pStaggingBuffer->UnmapMemory();
+			staggingBuffer.FlushMemoryMappings();
+			staggingBuffer.UnmapMemory();
 
-			wireFrame.pIndexBuffer = GetDevice()->CreateBuffer(indexBufferSize, Backend::BufferUsage::INDEX, Backend::MemoryProfile::DRAW_RESOURCE);
-			wireFrame.pIndexBuffer->CopyFrom(pStaggingBuffer, indexBufferSize, 0, 0);
+			wireFrame.mIndexBuffer = Objects::CreateBuffer(GetDevice(), indexBufferSize, Backend::BufferUsage::INDEX, Backend::MemoryProfile::DRAW_RESOURCE);
+			wireFrame.mIndexBuffer.CopyFrom(staggingBuffer, indexBufferSize, 0, 0);
 
-			pStaggingBuffer->Terminate();
-			delete pStaggingBuffer;
+			staggingBuffer.Terminate();
 
 			indexArrays.clear();
 		}

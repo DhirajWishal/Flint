@@ -11,49 +11,31 @@ namespace Flint
 	void GraphicsBackendObject::InitializeInstance(BackendAPI api, bool enableValidation)
 	{
 		mAPI = api;
-
-		switch (api)
-		{
-		case Flint::BackendAPI::VULKAN:
-			pInstance = new VulkanBackend::VulkanInstance();
-			break;
-		case Flint::BackendAPI::DIRECT_X_12:
-			break;
-		case Flint::BackendAPI::WEB_GPU:
-			break;
-		default:
-			FLINT_LOG_ERROR(TEXT("Invalid or Undefined backend API type!"))
-				break;
-		}
-
-		pInstance->Initialize(enableValidation);
+		mInstance.Initialize(enableValidation);
 	}
 
 	void GraphicsBackendObject::TerminateInstance()
 	{
-		pInstance->Terminate();
-		delete pInstance;
+		mInstance.Terminate();
 	}
 
 	void GraphicsBackendObject::InitializeDisplay(UI32 width, UI32 height, const char* pTitle)
 	{
-		pDisplay = pInstance->CreateDisplay(width, height, pTitle);
+		mDisplay.Initialize(&mInstance, Vector2(static_cast<float>(width), static_cast<float>(height)), pTitle);
 	}
 
 	void GraphicsBackendObject::TerminateDisplay()
 	{
-		pDisplay->Terminate();
-		delete pDisplay;
+		mDisplay.Terminate();
 	}
 
 	void GraphicsBackendObject::InitializeDevice()
 	{
-		pDevice = pDisplay->CreateDevice();
+		mDevice.Initialize(&mInstance);
 	}
 
 	void GraphicsBackendObject::TerminateDevice()
 	{
-		pDevice->Terminate();
-		delete pDevice;
+		mDevice.Terminate();
 	}
 }

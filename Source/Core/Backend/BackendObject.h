@@ -13,6 +13,9 @@ namespace Flint
 		public:
 			BackendObject() {}
 			virtual ~BackendObject() {}
+
+			template<class Derived>
+			Derived* Derive() { return dynamic_cast<Derived*>(this); }
 		};
 	}
 }

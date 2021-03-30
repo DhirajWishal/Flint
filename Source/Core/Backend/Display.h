@@ -11,10 +11,10 @@ namespace Flint
 {
 	namespace Backend
 	{
-		template<class InstanceType>
+		template<class TInstance>
 		class Display : public BackendObject {
 		public:
-			using InstanceType = InstanceType;
+			using InstanceType = TInstance;
 
 		public:
 			Display() {}
@@ -25,7 +25,7 @@ namespace Flint
 			virtual void Terminate() = 0;
 
 			Inputs::InputCenter* GetInputCenter() const { return const_cast<Inputs::InputCenter*>(&mInputsCenter); }
-			Vector2 GetExtent() const { mExtent; }
+			Vector2 GetExtent() const { return mExtent; }
 			const char* GetTitle() const { return pTitle; }
 
 			InstanceType* GetInstance() const { return pInstance; }

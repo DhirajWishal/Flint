@@ -20,7 +20,7 @@ namespace Flint
 			DRAW_RESOURCE
 		};
 
-		template<class Derived, class DeviceType>
+		template<class TDerived, class TDevice>
 		class Buffer : public BackendObject {
 			struct PreviousMemoryMapInfo {
 				UI64 mSize = 0;
@@ -28,14 +28,14 @@ namespace Flint
 			};
 
 		public:
-			using Derived = Derived;
-			using DeviceType = DeviceType;
+			using Derived = TDerived;
+			using DeviceType = TDevice;
 
 		public:
 			Buffer() {}
 			virtual ~Buffer() {}
 
-			virtual void Initialize(DeviceType* pDevice, UI64 size, BufferUsage type, MemoryProfile profile) = 0;
+			virtual void Initialize(DeviceType* pDevice, UI64 size, BufferUsage usage, MemoryProfile profile) = 0;
 			virtual void Terminate() = 0;
 
 			virtual void* MapMemory(UI64 size, UI64 offset) = 0;
@@ -44,7 +44,7 @@ namespace Flint
 
 			virtual void CopyFrom(const Derived& buffer, UI64 size, UI64 srcOffset, UI64 dstOffset) = 0;
 
-			DeviceType* GetDevice() const { return pDevice.get(); }
+			DeviceType* GetDevice() const { return pDevice; }
 			UI64 GetSize() const { return mSize; }
 			BufferUsage GetUsage() const { return mUsage; }
 			MemoryProfile GetMemoryProfile() const { return mMemoryProfile; }

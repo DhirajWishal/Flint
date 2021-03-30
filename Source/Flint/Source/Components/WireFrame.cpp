@@ -1,7 +1,7 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#include "Core/Objects/WireFrame.h"
+#include "Flint/Components/WireFrame.h"
 #include "Core/ErrorHandler/Logger.h"
 
 #include "Core/Maths/Vector/Vector3.h"
@@ -177,13 +177,13 @@ namespace Flint
 			file.ignore(1);
 
 			// Load the data.
-			Objects::Buffer staggingBuffer = Objects::CreateBuffer(*pDevice, byteSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
+			Objects::Buffer staggingBuffer = Objects::CreateBuffer(pDevice, byteSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
 			file.read(static_cast<char*>(staggingBuffer.MapMemory(byteSize, 0)), byteSize);
 			staggingBuffer.FlushMemoryMappings();
 			staggingBuffer.UnmapMemory();
 
 			// Copy data to the buffer.
-			mIndexBuffer = Objects::CreateBuffer(*pDevice, byteSize, Backend::BufferUsage::INDEX, Backend::MemoryProfile::DRAW_RESOURCE);
+			mIndexBuffer = Objects::CreateBuffer(pDevice, byteSize, Backend::BufferUsage::INDEX, Backend::MemoryProfile::DRAW_RESOURCE);
 			mIndexBuffer.CopyFrom(staggingBuffer, byteSize, 0, 0);
 
 			// Destroy stagging buffer.

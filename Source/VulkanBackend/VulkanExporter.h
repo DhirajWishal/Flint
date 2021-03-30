@@ -5,16 +5,15 @@
 
 #include "Core\Backend\ObjectExporter.h"
 
-#include "RenderTargets\VulkanScreenBoundRenderTargetS.h"
+#include "RenderTargets\Pipelines\VulkanGraphicsPipeline.h"
 #include "VulkanCommandBufferList.h"
 
-namespace Flint
-{
-	FLINT_SETUP_TYPE_EXPORTS(
-		VulkanBackend::VulkanInstance,
-		VulkanBackend::VulkanDevice,
-		VulkanBackend::VulkanDisplay,
-		VulkanBackend::VulkanBuffer,
-		VulkanBackend::VulkanScreenBoundRenderTargetS,
-		VulkanBackend::VulkanCommandBufferList);
-}
+FLINT_PACK_OBJECTS(
+	Flint::VulkanBackend::VulkanInstance,
+	Flint::VulkanBackend::VulkanDevice,
+	Flint::VulkanBackend::VulkanDisplay,
+	Flint::VulkanBackend::VulkanBuffer,
+	Flint::VulkanBackend::VulkanScreenBoundRenderTargetS,
+	Flint::VulkanBackend::VulkanGraphicsPipeline,
+	Flint::VulkanBackend::VulkanPipelineResource,
+	Flint::VulkanBackend::VulkanCommandBufferList)

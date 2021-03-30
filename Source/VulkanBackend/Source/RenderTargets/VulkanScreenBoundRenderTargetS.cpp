@@ -15,9 +15,10 @@ namespace Flint
 		{
 			this->pDevice = pDevice;
 			this->pDisplay = pDisplay;
-			this->mBufferCount = pDisplay->FindSupporterBufferCount(pDevice, bufferCount);
+			this->mBufferCount = pDisplay->FindSupporterBufferCount(pDevice, static_cast<UI32>(bufferCount));
+			this->mExtent = pDisplay->GetExtent();
 
-			mCommandBufferManager.CreateBuffers(pDevice, static_cast<UI32>(mBufferCount));
+			mCommandBufferList.Initialize(pDevice, static_cast<UI32>(mBufferCount));
 			vSwapChain.Initialize(pDevice, pDisplay, mExtent, static_cast<UI32>(mBufferCount));
 			vColorBuffer.Initialize(pDevice, mExtent, vSwapChain.GetFormat(), static_cast<UI32>(mBufferCount));
 			vDepthBuffer.Initialize(pDevice, mExtent, static_cast<UI32>(mBufferCount));
@@ -40,17 +41,43 @@ namespace Flint
 
 			//DestroyChildCommandBuffers();
 
-			mCommandBufferManager.Terminate();
+			mCommandBufferList.Terminate();
 		}
 
-		//Backend::GraphicsPipeline* VulkanScreenBoundRenderTargetS::CreateGraphicsPipeline(const std::vector<ShaderDigest>& shaderDigests, const Backend::GraphicsPipelineSpecification& spec)
-		//{
-		//	VulkanGraphicsPipeline* pPipeline = new VulkanGraphicsPipeline();
-		//	pPipeline->Initialize(this, shaderDigests, spec);
-		//	return pPipeline;
-		//}
+		void VulkanScreenBoundRenderTargetS::BakeCommands()
+		{
+			for (UI64 counter = 0; counter < mBufferCount; counter++)
+			{
+				mCommandBufferList.BeginBuffer(counter);
+				mCommandBufferList.BindRenderTarget(*this);
+				
+				for (auto pPipeline : pGraphcisPipelinesStatic)
+				{
+					mCommandBufferList.BindPipeline(*pPipeline);
+					auto& drawEntries = pPipeline->GetStaticDrawEntries();
 
-		UI32 VulkanScreenBoundRenderTargetS::PrepareToDraw()
+					for (auto& entry : drawEntries)
+					{
+						mCommandBufferList.BindVertexBuffer(*entry.pVertexBuffer, 0, 1);
+						mCommandBufferList.BindIndexBuffer(*entry.pIndexBuffer);
+
+						for (auto& data : entry.mDrawData)
+						{
+							mCommandBufferList.SetDynamicStates(data.mDynamicStates);
+							mCommandBufferList.BindRenderResource(*data.pPipelineResource);
+							mCommandBufferList.DrawIndexed(data.mIndexCount, data.mIndexOffset, data.mVertexOffset);
+						}
+					}
+				}
+
+				mCommandBufferList.EndRenderTarget();
+				mCommandBufferList.EndBuffer();
+
+				IncrementIndex();
+			}
+		}
+
+		void VulkanScreenBoundRenderTargetS::PrepareToDraw()
 		{
 			FLINT_VK_ASSERT(vkWaitForFences(pDevice->GetLogicalDevice(), 1, &vInFlightFences[mFrameIndex], VK_TRUE, std::numeric_limits<uint64_t>::max()), "Failed to wait for fence!")
 				//FLINT_VK_ASSERT(pvDevice->ResetFences({ vInFlightFences[mFrameIndex] }), "Failed to reset fence!")
@@ -61,10 +88,12 @@ namespace Flint
 				Recreate();
 			else FLINT_VK_ASSERT(result, "Failed to acquire the next swap chain image!")
 
-				if (mDynamicDrawEntries.Size())
+				if (pGraphcisPipelinesDynamic.size())
 					SubmitSecondaryCommands();
+		}
 
-			return mFrameIndex;
+		void VulkanScreenBoundRenderTargetS::Update()
+		{
 		}
 
 		void VulkanScreenBoundRenderTargetS::SubmitCommand()
@@ -75,12 +104,13 @@ namespace Flint
 				vImagesInFlightFences[mImageIndex] = vInFlightFences[mFrameIndex];
 
 			VkSemaphoreWaitFlags vWaitStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+			VkCommandBuffer vCommandBuffer[1] = { mCommandBufferList.GetVkBuffer(mFrameIndex) };
 
 			VkSubmitInfo vSI = {};
 			vSI.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 			vSI.pNext = VK_NULL_HANDLE;
 			vSI.commandBufferCount = 1;
-			vSI.pCommandBuffers = *dynamic_cast<VulkanCommandBuffer*>(const_cast<Backend::CommandBuffer*>(mCommandBufferManager.GetBuffer(mFrameIndex).get()));
+			vSI.pCommandBuffers = vCommandBuffer;
 			vSI.waitSemaphoreCount = 1;
 			vSI.pWaitSemaphores = &vImageAvailables[mFrameIndex];
 			vSI.signalSemaphoreCount = 1;
@@ -128,7 +158,7 @@ namespace Flint
 			}
 
 			mExtent = extent;
-			mCommandBufferManager.ClearBuffers();
+			mCommandBufferList.ClearBuffers();
 
 			// Destroy render pass and frame buffer.
 			DestroyRenderPass(pDevice);
@@ -144,93 +174,69 @@ namespace Flint
 			CreateFrameBuffer(pDevice, { &vColorBuffer, &vDepthBuffer, &vSwapChain }, mExtent, static_cast<UI32>(mBufferCount));
 
 			// Re create renderable pipelines.
-			for (auto itr = mStaticDrawEntries.Begin(); itr != mStaticDrawEntries.End(); itr++)
-				itr->second.pPipeline->Recreate();
+			for (auto itr = pGraphcisPipelinesStatic.begin(); itr != pGraphcisPipelinesStatic.end(); itr++)
+				(*itr)->Recreate();
 
-			for (auto itr = mDynamicDrawEntries.Begin(); itr != mDynamicDrawEntries.End(); itr++)
-				itr->second.pPipeline->Recreate();
+			for (auto itr = pGraphcisPipelinesDynamic.begin(); itr != pGraphcisPipelinesDynamic.end(); itr++)
+				(*itr)->Recreate();
 
 			// Prepare command buffers to be rendered.
-			mCommandBufferManager.RecreateBuffers();
-			for (auto& buffer : mChildCommandBuffers)
-				buffer->Terminate();
-
-			mChildCommandBuffers.clear();
-
-			PrepareCommandBuffers();
+			mCommandBufferList.ReCreateBuffers();
+			//for (auto& buffer : mChildCommandBuffers)
+			//	buffer->Terminate();
+			//
+			//mChildCommandBuffers.clear();
+			
+			BakeCommands();
 
 			vImagesInFlightFences.resize(vInFlightFences.size(), VK_NULL_HANDLE);
-		}
 
-		void VulkanScreenBoundRenderTargetS::Bind(const std::shared_ptr<Backend::CommandBuffer>& pCommandBuffer)
-		{
-			VkClearValue pClearValues[2] = {};
-			pClearValues[0].color.float32[0] = CREATE_COLOR_256(32.0f);
-			pClearValues[0].color.float32[1] = CREATE_COLOR_256(32.0f);
-			pClearValues[0].color.float32[2] = CREATE_COLOR_256(32.0f);
-			pClearValues[0].color.float32[3] = 1.0f;
-			pClearValues[1].depthStencil = { 1.0f, 0 };
-
-			VkRenderPassBeginInfo vRBI = {};
-			vRBI.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-			vRBI.pNext = VK_NULL_HANDLE;
-			vRBI.clearValueCount = 2;
-			vRBI.pClearValues = pClearValues;
-			vRBI.renderPass = vRenderPass;
-			vRBI.framebuffer = vFrameBuffers[mFrameIndex];
-			vRBI.renderArea.extent = { static_cast<UI32>(mExtent.x), static_cast<UI32>(mExtent.y) };
-
-			vkCmdBeginRenderPass(*dynamic_cast<VulkanCommandBuffer*>(const_cast<Backend::CommandBuffer*>(pCommandBuffer.get())), &vRBI, VK_SUBPASS_CONTENTS_INLINE);
-		}
-
-		void VulkanScreenBoundRenderTargetS::UnBind(const std::shared_ptr<Backend::CommandBuffer>& pCommandBuffer)
-		{
-			vkCmdEndRenderPass(*dynamic_cast<VulkanCommandBuffer*>(const_cast<Backend::CommandBuffer*>(pCommandBuffer.get())));
+			mImageIndex = 0;
+			mFrameIndex = 0;
 		}
 
 		void VulkanScreenBoundRenderTargetS::SubmitSecondaryCommands()
 		{
-			auto& pSecondaryCommandBuffers = mChildCommandBuffers[0];
-			mCommandBufferManager.UpdateChild(pSecondaryCommandBuffers.get(), this);
-
-			auto& pCommandBuffer = mCommandBufferManager.GetBuffer(mImageIndex);
-
-			std::vector<DrawEntry> dynamicVector;
-			for (auto itr = mDynamicDrawEntries.Begin(); itr != mDynamicDrawEntries.End(); itr++)
-				INSERT_INTO_VECTOR(dynamicVector, itr->second);
-
-			VkClearValue pClearValues[2] = {};
-			pClearValues[0].color.float32[0] = CREATE_COLOR_256(32.0f);
-			pClearValues[0].color.float32[1] = CREATE_COLOR_256(32.0f);
-			pClearValues[0].color.float32[2] = CREATE_COLOR_256(32.0f);
-			pClearValues[0].color.float32[3] = 1.0f;
-			pClearValues[1].depthStencil = { 1.0f, 0 };
-
-			VkRenderPassBeginInfo vRBI = {};
-			vRBI.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-			vRBI.pNext = VK_NULL_HANDLE;
-			vRBI.clearValueCount = 2;
-			vRBI.pClearValues = pClearValues;
-			vRBI.renderPass = vRenderPass;
-			vRBI.framebuffer = vFrameBuffers[mImageIndex];
-			vRBI.renderArea.extent = { static_cast<UI32>(mExtent.x), static_cast<UI32>(mExtent.y) };
-
-			pCommandBuffer->BeginBufferRecording();
-			auto pBuff = dynamic_cast<VulkanCommandBuffer*>(const_cast<Backend::CommandBuffer*>(pCommandBuffer.get()));
-			vkCmdBeginRenderPass(*pBuff, &vRBI, VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
-
-			BakeDynamicCommands(dynamicVector, pSecondaryCommandBuffers);
-
-			pCommandBuffer->ExecuteChildCommands(pSecondaryCommandBuffers->GetBuffers());
-
-			UnBind(pCommandBuffer);
-			pCommandBuffer->EndBufferRecording();
+			//auto& pSecondaryCommandBuffers = mChildCommandBuffers[0];
+			//mCommandBufferManager.UpdateChild(pSecondaryCommandBuffers.get(), this);
+			//
+			//auto& pCommandBuffer = mCommandBufferManager.GetBuffer(mImageIndex);
+			//
+			//std::vector<DrawEntry> dynamicVector;
+			//for (auto itr = mDynamicDrawEntries.Begin(); itr != mDynamicDrawEntries.End(); itr++)
+			//	INSERT_INTO_VECTOR(dynamicVector, itr->second);
+			//
+			//VkClearValue pClearValues[2] = {};
+			//pClearValues[0].color.float32[0] = CREATE_COLOR_256(32.0f);
+			//pClearValues[0].color.float32[1] = CREATE_COLOR_256(32.0f);
+			//pClearValues[0].color.float32[2] = CREATE_COLOR_256(32.0f);
+			//pClearValues[0].color.float32[3] = 1.0f;
+			//pClearValues[1].depthStencil = { 1.0f, 0 };
+			//
+			//VkRenderPassBeginInfo vRBI = {};
+			//vRBI.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+			//vRBI.pNext = VK_NULL_HANDLE;
+			//vRBI.clearValueCount = 2;
+			//vRBI.pClearValues = pClearValues;
+			//vRBI.renderPass = vRenderPass;
+			//vRBI.framebuffer = vFrameBuffers[mImageIndex];
+			//vRBI.renderArea.extent = { static_cast<UI32>(mExtent.x), static_cast<UI32>(mExtent.y) };
+			//
+			//pCommandBuffer->BeginBufferRecording();
+			//auto pBuff = dynamic_cast<VulkanCommandBuffer*>(const_cast<Backend::CommandBuffer*>(pCommandBuffer.get()));
+			//vkCmdBeginRenderPass(*pBuff, &vRBI, VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+			//
+			//BakeDynamicCommands(dynamicVector, pSecondaryCommandBuffers);
+			//
+			//pCommandBuffer->ExecuteChildCommands(pSecondaryCommandBuffers->GetBuffers());
+			//
+			//UnBind(pCommandBuffer);
+			//pCommandBuffer->EndBufferRecording();
 		}
 	}
 }
 
 /*
-{ 16:59:37 } Vulkan Validation Layer (Validation): Validation Error: [ VUID-VkPresentInfoKHR-pImageIndices-01296 ] Object 0: handle = 0x256f36a8f38, type = VK_OBJECT_TYPE_QUEUE; | MessageID = 0xc7aabc16 | vkQueuePresentKHR(): pSwapchains[0] images passed to present must be in layout VK_IMAGE_LAYOUT_PRESENT_SRC_KHR or VK_IMAGE_LAYOUT_SHARED_PRESENT_KHR but is in VK_IMAGE_LAYOUT_UNDEFINED. The Vulkan spec states: Each element of pImageIndices must be the index of a presentable image acquired from the swapchain specified by the corresponding element of the pSwapchains array, and the presented image subresource must be in the VK_IMAGE_LAYOUT_PRESENT_SRC_KHR layout at the time the operation is executed on a VkDevice (https://github.com/KhronosGroup/Vulkan-Docs/search?q=)VUID-VkPresentInfoKHR-pImageIndices-01296)
-{ 16:59:37 } Vulkan Validation Layer (Validation): Validation Error: [ VUID-VkSwapchainCreateInfoKHR-imageExtent-01274 ] Object 0: handle = 0x256f0dcc7b8, type = VK_OBJECT_TYPE_DEVICE; | MessageID = 0x7cd0911d | vkCreateSwapchainKHR() called with imageExtent = (1280,720), which is outside the bounds returned by vkGetPhysicalDeviceSurfaceCapabilitiesKHR(): currentExtent = (0,0), minImageExtent = (0,0), maxImageExtent = (0,0). The Vulkan spec states: imageExtent must be between minImageExtent and maxImageExtent, inclusive, where minImageExtent and maxImageExtent are members of the VkSurfaceCapabilitiesKHR structure returned by vkGetPhysicalDeviceSurfaceCapabilitiesKHR for the surface (https://vulkan.lunarg.com/doc/view/1.2.162.1/windows/1.2-extensions/vkspec.html#VUID-VkSwapchainCreateInfoKHR-imageExtent-01274)
-{ 16:59:37 } Vulkan Validation Layer (Validation): Validation Error: [ VUID-vkQueueSubmit-pCommandBuffers-00072 ] Object 0: handle = 0x256f3c550b8, type = VK_OBJECT_TYPE_COMMAND_BUFFER; | MessageID = 0x772c8884 | VkCommandBuffer 0x256f3c550b8[] used in the call to vkQueueSubmit() is unrecorded and contains no commands. The Vulkan spec states: Any secondary command buffers recorded into any element of the pCommandBuffers member of any element of pSubmits must be in the pending or executable state (https://vulkan.lunarg.com/doc/view/1.2.162.1/windows/1.2-extensions/vkspec.html#VUID-vkQueueSubmit-pCommandBuffers-00072)
+{ 17:17:29 } Vulkan Validation Layer (Validation): Validation Error: [ VUID-vkQueueSubmit-pCommandBuffers-00072 ] Object 0: handle = 0x1e940001218, type = VK_OBJECT_TYPE_COMMAND_BUFFER; | MessageID = 0x772c8884 | VkCommandBuffer 0x1e940001218[] used in the call to vkQueueSubmit() is unrecorded and contains no commands. The Vulkan spec states: Any secondary command buffers recorded into any element of the pCommandBuffers member of any element of pSubmits must be in the pending or executable state (https://vulkan.lunarg.com/doc/view/1.2.162.1/windows/1.2-extensions/vkspec.html#VUID-vkQueueSubmit-pCommandBuffers-00072)
+{ 17:17:29 } Vulkan Validation Layer (Validation): Validation Error: [ VUID-VkPresentInfoKHR-pImageIndices-01296 ] Object 0: handle = 0x1e9405deb38, type = VK_OBJECT_TYPE_QUEUE; | MessageID = 0xc7aabc16 | vkQueuePresentKHR(): pSwapchains[0] images passed to present must be in layout VK_IMAGE_LAYOUT_PRESENT_SRC_KHR or VK_IMAGE_LAYOUT_SHARED_PRESENT_KHR but is in VK_IMAGE_LAYOUT_UNDEFINED. The Vulkan spec states: Each element of pImageIndices must be the index of a presentable image acquired from the swapchain specified by the corresponding element of the pSwapchains array, and the presented image subresource must be in the VK_IMAGE_LAYOUT_PRESENT_SRC_KHR layout at the time the operation is executed on a VkDevice (https://github.com/KhronosGroup/Vulkan-Docs/search?q=)VUID-VkPresentInfoKHR-pImageIndices-01296)
 */

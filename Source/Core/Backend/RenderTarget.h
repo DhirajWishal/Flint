@@ -3,17 +3,18 @@
 
 #pragma once
 
-#include "Device.h"
 #include "Display.h"
+#include "CommandBufferList.h"
 
 namespace Flint
 {
 	namespace Backend
 	{
-		template<class DeviceType>
+		template<class TDevice, class TCommandBufferList>
 		class RenderTarget : public BackendObject {
 		public:
-			using DeviceType = DeviceType;
+			using DeviceType = TDevice;
+			using CommandBufferListType = TCommandBufferList;
 
 		public:
 			RenderTarget() {}
@@ -21,10 +22,18 @@ namespace Flint
 
 			virtual void Terminate() = 0;
 
+			virtual void BakeCommands() = 0;
+			virtual void PrepareToDraw() = 0;
+			virtual void Update() = 0;
+			virtual void SubmitCommand() = 0;
+
+			DeviceType* GetDevice() const { return pDevice; }
 			Vector2 GetExtent() const { return mExtent; }
 			UI64 GetBufferCount() const { return mBufferCount;  }
 
 		protected:
+			CommandBufferListType mCommandBufferList = {};
+
 			DeviceType* pDevice = nullptr;
 			Vector2 mExtent = Vector2::ZeroAll;
 			UI64 mBufferCount = 0;

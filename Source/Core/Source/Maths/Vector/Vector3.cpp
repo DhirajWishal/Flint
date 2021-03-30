@@ -52,7 +52,7 @@ namespace Flint
 
 	Vector3 operator+(const Vector3& lhs, const Vector3& rhs)
 	{
-		Vector3 vec = 0.0f;
+		Vector3 vec = Vector3::ZeroAll;
 		_mm_store_ps(&vec.x, _mm_add_ps(_mm_load_ps(&lhs.x), _mm_load_ps(&rhs.x)));
 
 		return vec;
@@ -60,7 +60,7 @@ namespace Flint
 
 	Vector3 operator-(const Vector3& lhs, const Vector3& rhs)
 	{
-		Vector3 vec = 0.0f;
+		Vector3 vec = Vector3::ZeroAll;
 		_mm_store_ps(&vec.x, _mm_sub_ps(_mm_load_ps(&lhs.x), _mm_load_ps(&rhs.x)));
 
 		return vec;
@@ -68,7 +68,7 @@ namespace Flint
 
 	Vector3 operator*(const Vector3& lhs, const Vector3& rhs)
 	{
-		Vector3 vec = 0.0f;
+		Vector3 vec = Vector3::ZeroAll;
 		_mm_store_ps(&vec.x, _mm_mul_ps(_mm_load_ps(&lhs.x), _mm_load_ps(&rhs.x)));
 
 		return vec;
@@ -76,7 +76,7 @@ namespace Flint
 
 	Vector3 operator/(const Vector3& lhs, const Vector3& rhs)
 	{
-		Vector3 vec = 0.0f;
+		Vector3 vec = Vector3::ZeroAll;
 		_mm_store_ps(&vec.x, _mm_div_ps(_mm_load_ps(&lhs.x), _mm_load_ps(&rhs.x)));
 
 		return vec;
@@ -104,7 +104,7 @@ namespace Flint
 
 	bool operator==(const Vector3& lhs, const Vector3& rhs)
 	{
-		Vector3 vec = 0.0f;
+		Vector3 vec = Vector3::ZeroAll;
 		_mm_store_ps(&vec.x, _mm_cmpeq_ps(_mm_load_ps(&lhs.x), _mm_load_ps(&rhs.x)));
 
 		return ((vec.r) && (vec.g) && (vec.b) && (vec.a));
@@ -112,7 +112,7 @@ namespace Flint
 
 	bool operator!=(const Vector3& lhs, const Vector3& rhs)
 	{
-		Vector3 vec = 0.0f;
+		Vector3 vec = Vector3::ZeroAll;
 		_mm_store_ps(&vec.x, _mm_cmpneq_ps(_mm_load_ps(&lhs.x), _mm_load_ps(&rhs.x)));
 
 		return ((vec.r) && (vec.g) && (vec.b) && (vec.a));
@@ -120,7 +120,7 @@ namespace Flint
 
 	bool operator<(const Vector3& lhs, const Vector3& rhs)
 	{
-		Vector3 vec = 0.0f;
+		Vector3 vec = Vector3::ZeroAll;
 		_mm_store_ps(&vec.x, _mm_cmplt_ps(_mm_load_ps(&lhs.x), _mm_load_ps(&rhs.x)));
 
 		return ((vec.r) || (vec.g) || (vec.b) || (vec.a));
@@ -128,7 +128,7 @@ namespace Flint
 
 	bool operator<=(const Vector3& lhs, const Vector3& rhs)
 	{
-		Vector3 vec = 0.0f;
+		Vector3 vec = Vector3::ZeroAll;
 		_mm_store_ps(&vec.x, _mm_cmple_ps(_mm_load_ps(&lhs.x), _mm_load_ps(&rhs.x)));
 
 		return ((vec.r) && (vec.g) && (vec.b) && (vec.a));
@@ -136,7 +136,7 @@ namespace Flint
 
 	bool operator>(const Vector3& lhs, const Vector3& rhs)
 	{
-		Vector3 vec = 0.0f;
+		Vector3 vec = Vector3::ZeroAll;
 		_mm_store_ps(&vec.x, _mm_cmpgt_ps(_mm_load_ps(&lhs.x), _mm_load_ps(&rhs.x)));
 
 		return ((vec.r) || (vec.g) || (vec.b) || (vec.a));
@@ -144,7 +144,7 @@ namespace Flint
 
 	bool operator>=(const Vector3& lhs, const Vector3& rhs)
 	{
-		Vector3 vec = 0.0f;
+		Vector3 vec = Vector3::ZeroAll;
 		_mm_store_ps(&vec.x, _mm_cmpge_ps(_mm_load_ps(&lhs.x), _mm_load_ps(&rhs.x)));
 
 		return ((vec.r) && (vec.g) && (vec.b) && (vec.a));
@@ -152,7 +152,7 @@ namespace Flint
 
 	bool operator&&(const Vector3& lhs, const Vector3& rhs)
 	{
-		Vector3 vec = 0.0f;
+		Vector3 vec = Vector3::ZeroAll;
 		_mm_store_ps(&vec.x, _mm_and_ps(_mm_load_ps(&lhs.x), _mm_load_ps(&rhs.x)));
 
 		return ((vec.r) && (vec.g) && (vec.b) && (vec.a));
@@ -160,7 +160,7 @@ namespace Flint
 
 	bool operator||(const Vector3& lhs, const Vector3& rhs)
 	{
-		Vector3 vec = 0.0f;
+		Vector3 vec = Vector3::ZeroAll;
 		_mm_store_ps(&vec.x, _mm_or_ps(_mm_load_ps(&lhs.x), _mm_load_ps(&rhs.x)));
 
 		return ((vec.r) && (vec.g) && (vec.b) && (vec.a));
@@ -168,7 +168,7 @@ namespace Flint
 
 	bool operator^(const Vector3& lhs, const Vector3& rhs)
 	{
-		Vector3 vec = 0.0f;
+		Vector3 vec = Vector3::ZeroAll;
 		_mm_store_ps(&vec.x, _mm_or_ps(_mm_load_ps(&lhs.x), _mm_load_ps(&rhs.x)));
 
 		return ((vec.r) && (vec.g) && (vec.b) && (vec.a));
@@ -176,7 +176,7 @@ namespace Flint
 
 	bool operator~(const Vector3& rhs)
 	{
-		Vector3 vec = 0.0f;
+		Vector3 vec = Vector3::ZeroAll;
 		_mm_store_ps(&vec.x, _mm_or_ps(_mm_load_ps(&rhs.x), _mm_load_ps(Vector3(-1.0f))));
 
 		return ((vec.r) && (vec.g) && (vec.b) && (vec.a));
@@ -184,7 +184,7 @@ namespace Flint
 
 	bool operator!(const Vector3& rhs)
 	{
-		Vector3 vec = {};
+		Vector3 vec = Vector3::ZeroAll;
 		_mm_store_ps(&vec.x, _mm_or_ps(_mm_load_ps(&rhs.x), _mm_load_ps(Vector3(0.0f))));
 
 		return ((vec.r == 0) && (vec.g == 0) && (vec.b == 0) && (vec.a == 0));

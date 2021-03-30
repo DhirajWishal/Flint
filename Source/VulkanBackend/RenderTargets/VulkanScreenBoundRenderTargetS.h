@@ -9,15 +9,23 @@
 #include "Attachments/VulkanColorBuffer.h"
 #include "Attachments/VulkanSwapChain.h"
 #include "Attachments/VulkanDepthBuffer.h"
+#include "VulkanBackend\VulkanCommandBufferList.h"
 
 namespace Flint
 {
 	namespace VulkanBackend
 	{
+		template<class TRenderTarget>
+		class VulkanGraphicsPipeline;
+
 		/**
 		 * Software/ compute.
 		 */
-		class VulkanScreenBoundRenderTargetS final : public VulkanRenderTarget, Backend::ScreenBoundRenderTarget<VulkanDevice, VulkanDisplay> {
+		class VulkanScreenBoundRenderTargetS final : public VulkanRenderTarget, public Backend::ScreenBoundRenderTarget<VulkanDevice, VulkanDisplay, VulkanCommandBufferList, VulkanGraphicsPipeline<VulkanScreenBoundRenderTargetS>> {
+		public:
+			using DeviceType = VulkanDevice;
+			using DisplayType = VulkanDisplay;
+		
 		public:
 			VulkanScreenBoundRenderTargetS() {}
 			~VulkanScreenBoundRenderTargetS() {}
@@ -25,19 +33,16 @@ namespace Flint
 			virtual void Initialize(DeviceType* pDevice, DisplayType* pDisplay, UI64 bufferCount) override final;
 			virtual void Terminate() override final;
 
-			//Backend::GraphicsPipeline* CreateGraphicsPipeline(const std::vector<ShaderDigest>& shaderDigests, const Backend::GraphicsPipelineSpecification& spec);
-
-			UI32 PrepareToDraw();
-			void SubmitCommand();
+			virtual void BakeCommands() override final;
+			virtual void PrepareToDraw() override final;
+			virtual void Update() override final;
+			virtual void SubmitCommand() override final;
 
 			VkSwapchainKHR GetSwapChain() const { return vSwapChain.GetSwapChain(); }
-			VkFramebuffer GetCurrentFrameBuffer() const { return vFrameBuffers[mImageIndex]; }
+			VkFramebuffer GetCurrentFrameBuffer() const { return vFrameBuffers[GetFrameIndex()]; }
 
 		private:
 			void Recreate();
-
-			void Bind(const std::shared_ptr<Backend::CommandBuffer>& pCommandBuffer);
-			void UnBind(const std::shared_ptr<Backend::CommandBuffer>& pCommandBuffer);
 
 			void SubmitSecondaryCommands();
 

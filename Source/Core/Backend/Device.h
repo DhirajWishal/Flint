@@ -9,11 +9,11 @@ namespace Flint
 {
 	namespace Backend
 	{
-		template<class InstanceType, class DisplayType>
+		template<class TInstance, class TDisplay>
 		class Device : public BackendObject {
 		public:
-			using InstanceType = InstanceType;
-			using DisplayType = DisplayType;
+			using InstanceType = TInstance;
+			using DisplayType = TDisplay;
 
 		public:
 			Device() {}

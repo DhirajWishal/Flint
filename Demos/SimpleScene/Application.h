@@ -56,5 +56,5 @@ private:
 	Flint::Inputs::InputCenter* pInputCenter = nullptr;
 
 	UniformBufferObject* pDataCopy = nullptr;
-	Flint::Backend::Buffer* pUniformBuffer = nullptr;
+	Flint::Objects::Buffer mUniformBuffer = {};
 };

@@ -24,6 +24,8 @@ project "SimpleScene"
 	includedirs {
 		"$(SolutionDir)Source/",
 		"$(SolutionDir)Demos/SimpleScene",
+		"%{IncludeDir.Vulkan}",
+		"%{IncludeDir.GLFW}",
 	}
 
 	links {

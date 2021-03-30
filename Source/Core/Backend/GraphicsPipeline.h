@@ -107,7 +107,11 @@ namespace Flint
 		/**
 		 * Graphics Pipeline object.
 		 */
-		class GraphicsPipeline : public Pipeline {
+		template<class TDerived, class TDevice, class TRenderTarget, class TBuffer, class TResource>
+		class GraphicsPipeline : public Pipeline<TDerived, TDevice, TRenderTarget, TBuffer, TResource> {
+		public:
+			using Super = Pipeline<TDerived, TDevice, TRenderTarget, TBuffer, TResource>;
+
 		public:
 			GraphicsPipeline() {}
 
@@ -117,7 +121,9 @@ namespace Flint
 			 * @param pRenderTarget: The render target that the pipeline is bound to.
 			 * @param shaderDigest: The shader digests to use.
 			 */
-			virtual void Initialize(RenderTarget* pRenderTarget, const std::vector<ShaderDigest>& shaderDigests, const GraphicsPipelineSpecification& spec) = 0;
+			virtual void Initialize(RenderTargetType* pRenderTarget, const std::vector<ShaderDigest>& shaderDigests, const GraphicsPipelineSpecification& spec) = 0;
+
+			const GraphicsPipelineSpecification GetSpecification() const { return mSpec; }
 
 		protected:
 			GraphicsPipelineSpecification mSpec = {};

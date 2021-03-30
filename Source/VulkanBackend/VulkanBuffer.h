@@ -15,7 +15,7 @@ namespace Flint
 			VulkanBuffer() {}
 			~VulkanBuffer() {}
 
-			virtual void Initialize(DeviceType* pDevice, UI64 size, Backend::BufferUsage type, Backend::MemoryProfile profile) override final;
+			virtual void Initialize(DeviceType* pDevice, UI64 size, Backend::BufferUsage usage, Backend::MemoryProfile profile) override final;
 			virtual void Terminate() override final;
 
 			virtual void* MapMemory(UI64 size, UI64 offset) override final;

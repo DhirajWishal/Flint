@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Core/Objects/WireFrame.h"
+#include "WireFrame.h"
 #include "Core/Backend/Pipeline.h"
 #include "RenderResource.h"
 
@@ -29,9 +29,10 @@ namespace Flint
 		 * 
 		 * @return The uniform buffer container with the respective uniform buffers.
 		 */
-		Backend::UniformBufferContainer GetUniformBuffers() const { return pPipeline->CreateUniformBuffers(); }
+		Objects::UniformBufferContainer GetUniformBuffers() const { return mPipeline.CreateUniformBuffers(); }
 
 		WireFrame mWireFrame;
-		Backend::Pipeline* pPipeline = nullptr;
+		Objects::ScreenBoundGraphicsPipeline mPipeline = {};
+		UI64 mDrawID = 0;
 	};
 }

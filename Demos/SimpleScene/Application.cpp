@@ -3,6 +3,9 @@
 
 #include "Application.h"
 
+static Flint::Vector3 Forward = Flint::Vector3(1.0f, 0.0f, 0.0f);
+static Flint::Vector3 WorldUp = Flint::Vector3(0.0f, 1.0f, 0.0f);
+
 float Application::Dot(Flint::Vector3 lhs, Flint::Vector3 rhs)
 {
 	Flint::Vector3 _tmp(lhs * rhs);
@@ -78,7 +81,7 @@ Application::Application()
 	pInputCenter = mEngine.GetDisplay()->GetInputCenter();
 
 	// Initialize the render target.
-	mEngine.CreateRenderTarget(Flint::Vector2(static_cast<float>(mWidth), static_cast<float>(mHeight)));
+	mEngine.CreateRenderTarget();
 
 	// Create the scene component.
 	CreateSceneComponent();
@@ -126,8 +129,8 @@ void Application::CreateSceneComponent()
 	//mWireFrame.CreateCache("testCache");
 	mWireFrame.LoadFromCache("testCache.wfc", mEngine.GetDevice());
 
-	// Create the scene component.
-	mSceneComponent = mEngine.CreateSceneComponent(mWireFrame, CreateShaderDigests(), GetGraphicsPipelineSpec());
+	// Setup the scene component.
+	mEngine.SetupSceneComponent(mSceneComponent, mWireFrame, CreateShaderDigests(), GetGraphicsPipelineSpec());
 }
 
 void Application::PrepareToRender()
@@ -137,13 +140,13 @@ void Application::PrepareToRender()
 	mDynamicState.AddScissor(Flint::Vector2(1280.0f, 720.0f), Flint::Vector2(0.0f, 0.0f));
 
 	// Submit the scene component to draw and return the render resource.
-	mRenderResource = mEngine.SubmitToDrawQueue(mSceneComponent, mDynamicState);
+	mEngine.SubmitToDrawQueue(mRenderResource, mSceneComponent, mDynamicState);
 
 	// Prepare the render target to render.
 	mEngine.PrepareRenderTargetToRender();
 
 	// Get the main MVP uniform buffer.
-	pUniformBuffer = mRenderResource.mUniformBuffers["Ubo"];
+	mUniformBuffer = mRenderResource.mUniformBuffers["Ubo"];
 }
 
 void Application::ProcessInputs()
@@ -166,17 +169,17 @@ void Application::ProcessInputs()
 void Application::OnUpdate()
 {
 	// Map the uniform buffer memory to the local address space.
-	pDataCopy = static_cast<UniformBufferObject*>(pUniformBuffer->MapMemory(std::numeric_limits<UI32>::max(), 0));
+	pDataCopy = static_cast<UniformBufferObject*>(mUniformBuffer.MapMemory(std::numeric_limits<UI32>::max(), 0));
 
 	// Resolve the view matrix.
-	Ubo.view = LookAt(mPosition, mPosition + Flint::Vector3(1.0f, 0.0f, 0.0f), Flint::Vector3(0.0f, 1.0f, 0.0f));
+	Ubo.view = LookAt(mPosition, mPosition + Forward, WorldUp);
 
 	// Copy the data to the uniform buffer.
 	*pDataCopy = Ubo;
 
 	// Unmap the mapped buffer.
-	pUniformBuffer->FlushMemoryMappings();
-	pUniformBuffer->UnmapMemory();
+	mUniformBuffer.FlushMemoryMappings();
+	mUniformBuffer.UnmapMemory();
 }
 
 void Application::DestroyRenderResources()

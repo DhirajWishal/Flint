@@ -69,7 +69,7 @@ namespace Flint
 			vCI.clipped = VK_TRUE;
 			vCI.oldSwapchain = vSwapChain;
 
-			if (!pDevice->CheckDisplayCompatibility(pDisplay.get()))
+			if (!pDevice->CheckDisplayCompatibility(pDisplay))
 			{
 				Logger::LogFatal(TEXT("The current display does not support Vulkan Swap chain creation! Handle: #8"), static_cast<void*>(vCI.surface));
 				return;

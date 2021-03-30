@@ -3,38 +3,54 @@
 
 #pragma once
 
-#define FLINT_SETUP_TYPE_EXPORTS(...)  using Objects = Backend::ObjectTypeExporter<__VA_ARGS__>
-
-namespace Flint
-{
-	namespace Backend
-	{
-		template<class InstanceType, class DeviceType, class DisplayType, class BufferType, class ScreenBoundRennderTargetType, class CommandBufferListType>
-		class ObjectTypeExporter {
-		public:
-			typedef InstanceType Instance;
-			constexpr Instance CreateInstanceType() const noexcept { return Instance{}; }
-
-			typedef DeviceType Device;
-			constexpr Device CreateDeviceType() const noexcept { return Device{}; }
-
-			typedef BufferType Buffer;
-			constexpr Buffer CreateBufferType() const noexcept { return Buffer{}; }
-
-			typedef ScreenBoundRennderTargetType ScreenBoundRenderTarget;
-			constexpr ScreenBoundRenderTarget CreateScreenBoundRenderTargetType() const noexcept { return ScreenBoundRenderTarget{}; }
-
-			typedef CommandBufferListType CommandBufferList;
-			constexpr CommandBufferList GetCommandBufferListType() const noexcept { return CommandBufferList{}; }
-
-		public:
-			template<class... Args>
-			static Buffer CreateBuffer(Args&&... args)
-			{
-				Buffer buffer = {};
-				buffer.Initialize(std::forward(args)...);
-				return buffer;
-			}
-		};
+/**
+ * Package objects in the Flint::Objects namespace along with some utility functions.
+ */
+#define FLINT_PACK_OBJECTS(																																						\
+	instance,																																									\
+	device,																																										\
+	display,																																									\
+	buffer,																																										\
+	renderTargetSB,																																								\
+	graphicsPipeline,																																							\
+	pipelineResource,																																							\
+	commandBufferList)																																							\
+																																												\
+	namespace Flint																																								\
+	{																																											\
+		/*																																										\
+		 * Objects namespace contains object type definitions which are common for all the backend APIs. In other words, these object typedefs will be common for all the 		\
+		 * backend APIs and provides object type abstraction.																													\
+		 * This also contains some utility functions to perform some tasks like creating objects.																				\
+		 */																																										\
+		namespace Objects																																						\
+		{																																										\
+			typedef instance Instance;																																			\
+			typedef device Device;																																				\
+			typedef display Display;																																			\
+			typedef buffer Buffer;																																				\
+			typedef renderTargetSB ScreenBoundRenderTarget;																														\
+			typedef commandBufferList CommandBufferList;																														\
+																																												\
+			typedef graphicsPipeline<ScreenBoundRenderTarget> ScreenBoundGraphicsPipeline;																						\
+			typedef pipelineResource<ScreenBoundGraphicsPipeline> ScreenBoundGraphicsPipelineResource;																			\
+																																												\
+			typedef Backend::UniformBufferContainer<Buffer>	UniformBufferContainer;																								\
+																																												\
+			/*																																									\
+			 * Create a new buffer object.																																		\
+			 *																																									\
+			 * @param pDevice: The device pointer.																																\
+			 * @param size: The size of the buffer.																																\
+			 * @param usage: The buffer usage.																																	\
+			 * @param profile: The buffer's memory profile.																														\
+			 * @return The newly created buffer object.																															\
+			 */																																									\
+			inline Buffer CreateBuffer(Device* pDevice, UI64 size, Backend::BufferUsage usage, Backend::MemoryProfile profile)													\
+			{																																									\
+				Buffer mBuffer = {};																																			\
+				mBuffer.Initialize(pDevice, size, usage, profile);																												\
+				return mBuffer;																																					\
+			}																																									\
+		}																																										\
 	}
-}

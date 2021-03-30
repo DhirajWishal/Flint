@@ -3,8 +3,7 @@
 
 #pragma once
 
-#include "Core/Backend/Pipeline.h"
-#include "Core/Backend/RenderTarget.h"
+#include "VulkanBackend\VulkanExporter.h"
 
 namespace Flint
 {
@@ -21,8 +20,7 @@ namespace Flint
 		 */
 		void Destroy();
 
-		Backend::UniformBufferContainer mUniformBuffers;
-		Backend::PipelineResource* pPipelineResource = nullptr;
-		Backend::EntryReference mReference = {};
+		Objects::UniformBufferContainer mUniformBuffers;
+		Objects::ScreenBoundGraphicsPipelineResource mPipelineResource = {};
 	};
 }

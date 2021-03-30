@@ -5,8 +5,7 @@
 
 #include "Core/Types/DataTypes.h"
 #include "Core/Backend/Buffer.h"
-
-#include "VulkanBackend\VulkanExporter.h"
+#include "VulkanBackend/VulkanExporter.h"
 
 #include <filesystem>
 

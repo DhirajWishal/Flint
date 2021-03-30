@@ -33,7 +33,6 @@ namespace Flint
 		public:
 			VkInstance GetInstance() const { return vInstance; }
 			std::vector<const char*>& GetValidationLayers() { return mValidationLayers; }
-			bool IsValidationEnabled() const { return mEnableValidation; }
 
 		private:
 			std::vector<const char*> mValidationLayers;

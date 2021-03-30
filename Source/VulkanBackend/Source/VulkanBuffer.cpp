@@ -9,8 +9,13 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		void VulkanBuffer::Initialize(DeviceType* pDevice, UI64 size, Backend::BufferUsage type, Backend::MemoryProfile profile)
+		void VulkanBuffer::Initialize(DeviceType* pDevice, UI64 size, Backend::BufferUsage usage, Backend::MemoryProfile profile)
 		{
+			this->pDevice = pDevice;
+			this->mSize = size;
+			this->mUsage = usage;
+			this->mMemoryProfile = profile;
+
 			VkBufferUsageFlags vBufferUsage = {};
 			switch (GetUsage())
 			{

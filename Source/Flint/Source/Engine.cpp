@@ -17,24 +17,20 @@ namespace Flint
 
 	bool Engine::BeginUpdate()
 	{
-		pDisplay->Update();
-		pRenderTarget->PrepareToDraw();
+		mDisplay.Update();
+		mRenderTarget.PrepareToDraw();
 
 		return true;
 	}
 
 	void Engine::EndUpdate()
 	{
-		pRenderTarget->SubmitCommand();
+		mRenderTarget.SubmitCommand();
 	}
 
 	void Engine::Terminate()
 	{
-		if (pRenderTarget)
-		{
-			pRenderTarget->Terminate();
-			delete pRenderTarget;
-		}
+		mRenderTarget.Terminate();
 
 		TerminateDevice();
 		TerminateDisplay();
@@ -45,41 +41,37 @@ namespace Flint
 	{
 	}
 
-	void Engine::CreateRenderTarget(const Vector2& extent, UI32 bufferCount)
+	void Engine::CreateRenderTarget(UI32 bufferCount)
 	{
-		pRenderTarget = pDevice->CreateRenderTarget(Backend::RenderTargetType::SCREEN_BOUND, extent, bufferCount);
+		mRenderTarget.Initialize(&mDevice, &mDisplay, bufferCount);
 	}
 
 	void Engine::PrepareRenderTargetToRender()
 	{
-		pRenderTarget->PrepareCommandBuffers();
+		mRenderTarget.BakeCommands();
 	}
 
-	SceneComponent Engine::CreateSceneComponent(const WireFrame& wireFrame, const std::vector<ShaderDigest>& shaders, const Backend::GraphicsPipelineSpecification& spec)
+	void Engine::SetupSceneComponent(SceneComponent& sceneComponent, const WireFrame& wireFrame, const std::vector<ShaderDigest>& shaders, const Backend::GraphicsPipelineSpecification& spec)
 	{
-		SceneComponent component = {};
-		component.pPipeline = pRenderTarget->CreateGraphicsPipeline(shaders, spec);
-		component.mWireFrame = wireFrame;
+		sceneComponent.mPipeline.Initialize(&mRenderTarget, shaders, spec);
+		sceneComponent.mWireFrame = wireFrame;
 
-		return component;
+		sceneComponent.mDrawID = sceneComponent.mPipeline.AddStaticDrawEntry(&sceneComponent.mWireFrame.mVertexBuffer, &sceneComponent.mWireFrame.mIndexBuffer);
+		mRenderTarget.RegisterGraphicsPipelineStatic(&sceneComponent.mPipeline);
 	}
 
 	void Engine::DestroySceneComponent(SceneComponent& sceneComponent)
 	{
-		sceneComponent.pPipeline->Terminate();
-		delete sceneComponent.pPipeline;
-
+		sceneComponent.mPipeline.Terminate();
 		sceneComponent.mWireFrame.Clear();
 	}
 
-	RenderResource Engine::SubmitToDrawQueue(const SceneComponent& sceneComponent, const Backend::DynamicStateContainer& dynamicStates)
+	void Engine::SubmitToDrawQueue(RenderResource& renderResource, SceneComponent& sceneComponent, const Backend::DynamicStateContainer& dynamicStates)
 	{
-		RenderResource resource = {};
-		resource.mUniformBuffers = sceneComponent.pPipeline->CreateUniformBuffers();
-		resource.pPipelineResource = sceneComponent.pPipeline->CreatePipelineResource();
-		resource.pPipelineResource->RegisterUniformBuffers(resource.mUniformBuffers);
-		resource.mReference = pRenderTarget->AddDrawEntry(sceneComponent.mWireFrame, sceneComponent.pPipeline, resource.pPipelineResource, dynamicStates);
-
-		return resource;
+		renderResource.mUniformBuffers = sceneComponent.mPipeline.CreateUniformBuffers();
+		renderResource.mPipelineResource = sceneComponent.mPipeline.CreatePipelineResource();
+		renderResource.mPipelineResource.RegisterUniformBuffers(renderResource.mUniformBuffers);
+		for (auto& data : sceneComponent.mWireFrame.mDrawData)
+			sceneComponent.mPipeline.AddStaticDrawData(sceneComponent.mDrawID, data.mVertexCount, data.mVertexOffset, data.mIndexCount, data.mIndexOffset, &renderResource.mPipelineResource, dynamicStates);
 	}
 }

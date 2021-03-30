@@ -72,10 +72,9 @@ namespace Flint
 		 * device supported buffer count will be set.
 		 * If the count is std::numeric_limits<UI32>::max(), then the maximum supported will be set.
 		 *
-		 * @param extent: The extent of the render target.
 		 * @param bufferCount: The number of buffers to be used. Default is 0.
 		 */
-		void CreateRenderTarget(const Vector2& extent, UI32 bufferCount = 0);
+		void CreateRenderTarget(UI32 bufferCount = 0);
 
 		/**
 		 * Prepare the render target to render to the screen.
@@ -85,14 +84,14 @@ namespace Flint
 
 	public:
 		/**
-		 * Create a new scene component based on the graphics pipeline.
+		 * Setup a new scene component based on the graphics pipeline.
 		 * 
+		 * @param sceneComponent: The scene component to be setup.
 		 * @param wireFrame: The wire frame to be used.
 		 * @param shaders: The shaders to be used.
 		 * @param spec: The graphics pipeline spec.
-		 * @return The newly created scene component object.
 		 */
-		SceneComponent CreateSceneComponent(const WireFrame& wireFrame, const std::vector<ShaderDigest>& shaders, const Backend::GraphicsPipelineSpecification& spec);
+		void SetupSceneComponent(SceneComponent& sceneComponent , const WireFrame& wireFrame, const std::vector<ShaderDigest>& shaders, const Backend::GraphicsPipelineSpecification& spec);
 
 		/**
 		 * Destroy a created scene component object.
@@ -104,13 +103,13 @@ namespace Flint
 		/**
 		 * Submit the scene component to be drawn.
 		 * 
+		 * @param renderResource: The render resource to submit.
 		 * @param sceneComponent: The scene component to be drawn.
 		 * @param dynamicStates: The dynamic states to be used.
-		 * @return The render resource object.
 		 */
-		RenderResource SubmitToDrawQueue(const SceneComponent& sceneComponent, const Backend::DynamicStateContainer& dynamicStates = {});
+		void SubmitToDrawQueue(RenderResource& renderResource, SceneComponent& sceneComponent, const Backend::DynamicStateContainer& dynamicStates = {});
 
 	private:
-		Backend::RenderTarget* pRenderTarget = nullptr;
+		Objects::ScreenBoundRenderTarget mRenderTarget = {};
 	};
 }

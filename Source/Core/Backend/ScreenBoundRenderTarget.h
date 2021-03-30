@@ -4,15 +4,17 @@
 #pragma once
 
 #include "RenderTarget.h"
+#include "Pipeline.h"
 
 namespace Flint
 {
 	namespace Backend
 	{
-		template<class DeviceType, class DisplayType>
-		class ScreenBoundRenderTarget : public RenderTarget<DeviceType> {
+		template<class TDevice, class TDisplay, class TCommandBufferList, class TGraphicsPipeline>
+		class ScreenBoundRenderTarget : public RenderTarget<TDevice, TCommandBufferList> {
 		public:
-			using DisplayType = DisplayType;
+			using DeviceType = TDevice;
+			using DisplayType = TDisplay;
 
 		public:
 			ScreenBoundRenderTarget() {}
@@ -20,13 +22,18 @@ namespace Flint
 
 			virtual void Initialize(DeviceType* pDevice, DisplayType* pDisplay, UI64 bufferCount) = 0;
 
+			void RegisterGraphicsPipelineStatic(TGraphicsPipeline* pPipeline) { INSERT_INTO_VECTOR(pGraphcisPipelinesStatic, pPipeline); }
+			void RegisterGraphicsPipelineDynamic(TGraphicsPipeline* pPipeline) { INSERT_INTO_VECTOR(pGraphcisPipelinesDynamic, pPipeline); }
+
 			UI32 GetFrameIndex() const { return mFrameIndex; }
 			UI32 GetImageIndex() const { return mImageIndex; }
 
 		protected:
 			void IncrementIndex() { mFrameIndex++; if (mFrameIndex >= mBufferCount) mFrameIndex = 0; }
 
-			DeviceType* pDevice = nullptr;
+			std::vector<TGraphicsPipeline*> pGraphcisPipelinesStatic;
+			std::vector<TGraphicsPipeline*> pGraphcisPipelinesDynamic;
+
 			DisplayType* pDisplay = nullptr;
 
 			UI32 mFrameIndex = 0;
