@@ -4,6 +4,7 @@
 #pragma once
 
 #include "Device.h"
+#include "Core\Hasher\Hasher.h"
 
 #define FLINT_DEFAULT_CHANNEL_COUNT		4
 #define FLINT_DEFAULT_BPP				32
@@ -110,6 +111,46 @@ namespace Flint
 			ASTC_12x12_UNORM_BLOCK, ASTC_12x12_SRGB_BLOCK,
 		};
 
+		enum class SamplerAddressMode : UI8 {
+			REPEAT,
+			MIRRORED_REPEAT,
+			CLAMP_TO_EDGE,
+			CLAMP_TO_BORDER,
+			MIRROR_CLAMP_TO_EDGE,
+		};
+
+		enum class SamplerBorderColor : UI8 {
+			FLOAT_TRANSPARENT_BLACK,
+			INT_TRANSPARENT_BLACK,
+			FLOAT_OPAQUE_BLACK,
+			INT_OPAQUE_BLACK,
+			FLOAT_OPAQUE_WHITE,
+			INT_OPAQUE_WHITE,
+		};
+
+		enum class SamplerFilter : UI8 {
+			NEAREST,
+			LINEAR,
+			CUBIC_IMAGE,
+		};
+
+		struct SamplerSpecification {
+			float mMinLOD = 0.0f;
+			float mLODBias = 1.0f;
+
+			SamplerAddressMode mAddressModeU = SamplerAddressMode::CLAMP_TO_EDGE;
+			SamplerAddressMode mAddressModeV = SamplerAddressMode::CLAMP_TO_EDGE;
+			SamplerAddressMode mAddressModeW = SamplerAddressMode::CLAMP_TO_EDGE;
+
+			SamplerBorderColor mBorderColor = SamplerBorderColor::FLOAT_OPAQUE_BLACK;
+
+			SamplerFilter mFilter = SamplerFilter::LINEAR;
+
+			float mMipLevel = 0.0f;
+
+			const bool operator==(const SamplerSpecification& other) const;
+		};
+
 		template<class TDevice>
 		class Image : public BackendObject {
 		public:
@@ -122,7 +163,7 @@ namespace Flint
 			virtual void Initialize(DeviceType* pDevice, UI64 width, UI64 height, UI64 depth, ImageUsage usage, UI8 bitsPerPixel = FLINT_DEFAULT_BPP, UI8 layers = 1) = 0;
 			virtual void Terminate() = 0;
 
-			virtual void CopyData(unsigned char* pData) = 0;
+			virtual void CopyData(unsigned char* pData, UI64 width, UI64 widthOffset, UI64 height, UI64 heightOffset, UI64 depth, UI64 depthOffset, UI8 bitsPerPixel = FLINT_DEFAULT_BPP) = 0;
 
 		protected:
 			DeviceType* pDevice = nullptr;
@@ -133,4 +174,14 @@ namespace Flint
 			ImageUsage mUsage = ImageUsage::UNDEFINED;
 		};
 	}
+}
+
+namespace std {
+	template<>
+	struct hash<Flint::Backend::SamplerSpecification> {
+		const size_t operator()(const Flint::Backend::SamplerSpecification& spec) const
+		{
+			return Flint::Hasher::QuickHash64(&spec, sizeof(Flint::Backend::SamplerSpecification));
+		}
+	};
 }

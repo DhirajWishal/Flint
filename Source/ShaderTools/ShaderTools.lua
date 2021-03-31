@@ -27,19 +27,28 @@ project "ShaderTools"
 		"$(SolutionDir)Source/",
 		"$(SolutionDir)Dependencies/ThirdParty/SPIRV-Cross/",
 		"%{IncludeDir.glslang}",
+		"%{IncludeDir.shaderc}",
 	}
 
 	libdirs {
 		"%{IncludeLib.glslang}",
+		"%{IncludeLib.shaderc}",
 	}
 
 	links { 
-		"SPIRV-Cross",
 		"glslang",
 		"HLSL",
 		"OGLCompiler",
 		"OSDependent",
+
+		"SPIRV",
+		"SPIRV-Cross",
 		"SPIRV-Tools",
 		"SPIRV-Tools-opt",
 		"SPVRemapper",
+
+		"shaderc",
+		"shaderc_combined",
+		"shaderc_shared",
+		"shaderc_util",
 	}

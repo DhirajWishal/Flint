@@ -15,7 +15,7 @@ namespace Flint
 	class WireFrameManager : public GraphicsBackendObject {
 	public:
 		WireFrameManager();
-		~WireFrameManager();
+		virtual ~WireFrameManager();
 
 		/**
 		 * Create a new wire frame objects.

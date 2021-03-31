@@ -116,6 +116,27 @@ namespace Flint
 
 				return VkImageViewType::VK_IMAGE_VIEW_TYPE_2D;
 			}
+
+			VkFilter GetFilter(Backend::SamplerFilter filter)
+			{
+				switch (filter)
+				{
+				case Flint::Backend::SamplerFilter::NEAREST:
+					return VkFilter::VK_FILTER_NEAREST;
+
+				case Flint::Backend::SamplerFilter::LINEAR:
+					return VkFilter::VK_FILTER_LINEAR;
+
+				case Flint::Backend::SamplerFilter::CUBIC_IMAGE:
+					return VkFilter::VK_FILTER_CUBIC_IMG;
+
+				default:
+					FLINT_LOG_ERROR(TEXT("Invalid sampler filter type!"))
+						break;
+				}
+
+				return VkFilter::VK_FILTER_LINEAR;
+			}
 		}
 
 		void VulkanImage::Initialize(DeviceType* pDevice, UI64 width, UI64 height, UI64 depth, Backend::ImageUsage usage, UI8 bitsPerPixel, UI8 layers)
@@ -181,15 +202,18 @@ namespace Flint
 			pDevice->FreeMemory(vImageMemory);
 		}
 
-		void VulkanImage::CopyData(unsigned char* pData)
+		void VulkanImage::CopyData(unsigned char* pData, UI64 width, UI64 widthOffset, UI64 height, UI64 heightOffset, UI64 depth, UI64 depthOffset, UI8 bitsPerPixel)
 		{
-			SetImageLayout(VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-			UI64 size = mWidth * mHeight * (mBitsPerPixel / 8);
+			pDevice->SetImageLayout(vImage, vCurrentLayout, VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, vFormat, mLayers, 0, mMipLevel);
+			UI64 size = width * height * depth * (bitsPerPixel / 8);
+
+			VkMemoryRequirements vMR = {};
+			vkGetImageMemoryRequirements(pDevice->GetLogicalDevice(), vImage, &vMR);
 
 			VulkanBuffer staggingBuffer = {};
-			staggingBuffer.Initialize(pDevice, size, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
+			staggingBuffer.Initialize(pDevice, vMR.size, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
 
-			BYTE* pDataStore = static_cast<BYTE*>(staggingBuffer.MapMemory(size, 0));
+			BYTE* pDataStore = static_cast<BYTE*>(staggingBuffer.MapMemory(vMR.size, 0));
 			std::copy(pData, pData + size, pDataStore);
 
 			staggingBuffer.FlushMemoryMappings();
@@ -199,143 +223,59 @@ namespace Flint
 			vBIC.bufferOffset = 0;
 			vBIC.bufferImageHeight = 0;
 			vBIC.bufferRowLength = 0;
-			vBIC.imageOffset = { 0, 0, 0 };
+			vBIC.imageOffset.x = static_cast<UI32>(widthOffset);
+			vBIC.imageOffset.y = static_cast<UI32>(heightOffset);
+			vBIC.imageOffset.z = static_cast<UI32>(depthOffset);
+			vBIC.imageExtent.width = static_cast<UI32>(width);
+			vBIC.imageExtent.height = static_cast<UI32>(height);
+			vBIC.imageExtent.depth = static_cast<UI32>(depth);
 			vBIC.imageSubresource.baseArrayLayer = 0;
+			vBIC.imageSubresource.mipLevel = 0;
 			vBIC.imageSubresource.aspectMask = VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
-			vBIC.imageExtent.width = static_cast<UI32>(mWidth);
-			vBIC.imageExtent.height = static_cast<UI32>(mHeight);
-			vBIC.imageExtent.depth = static_cast<UI32>(mDepth);
 			vBIC.imageSubresource.layerCount = mLayers;
-			vBIC.imageSubresource.mipLevel = mMipLevel;
 
 			VulkanOneTimeCommandBuffer vCommandBuffer(pDevice);
 			vkCmdCopyBufferToImage(vCommandBuffer, staggingBuffer.vBuffer, vImage, VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &vBIC);
+
+			staggingBuffer.Terminate();
 		}
 
-		void VulkanImage::SetImageLayout(VkImageLayout layout)
+		VkSampler VulkanImage::CreateSampler(Backend::SamplerSpecification spec) const
 		{
-			VulkanOneTimeCommandBuffer vCommandBuffer(pDevice);
+			VkPhysicalDeviceProperties properties{};
+			vkGetPhysicalDeviceProperties(pDevice->GetPhysicalDevice(), &properties);
 
-			VkImageMemoryBarrier barrier = {};
-			barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-			barrier.oldLayout = vCurrentLayout;
-			barrier.newLayout = layout;
-			barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-			barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-			barrier.image = vImage;
+			VkSamplerCreateInfo vSCI = {};
+			vSCI.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+			vSCI.pNext = VK_NULL_HANDLE;
+			vSCI.flags = VK_NULL_HANDLE;
+			vSCI.magFilter = _Helpers::GetFilter(spec.mFilter);
+			vSCI.minFilter = vSCI.magFilter;
+			vSCI.addressModeU = static_cast<VkSamplerAddressMode>(spec.mAddressModeU);
+			vSCI.addressModeV = static_cast<VkSamplerAddressMode>(spec.mAddressModeV);
+			vSCI.addressModeW = static_cast<VkSamplerAddressMode>(spec.mAddressModeW);
+			vSCI.anisotropyEnable = VK_TRUE;
+			vSCI.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
+			vSCI.borderColor = static_cast<VkBorderColor>(spec.mBorderColor);
+			vSCI.unnormalizedCoordinates = VK_FALSE;
+			vSCI.compareEnable = VK_FALSE;
+			vSCI.compareOp = VK_COMPARE_OP_ALWAYS;
+			vSCI.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+			vSCI.minLod = spec.mMinLOD;
+			vSCI.maxLod = spec.mMipLevel;
+			vSCI.mipLodBias = spec.mLODBias;
 
-			if (layout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
-			{
-				barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+			VkSampler vSampler = VK_NULL_HANDLE;
+			FLINT_VK_ASSERT(pDevice->CreateSampler(&vSCI, &vSampler), "Failed to create sampler!")
 
-				if (Utilities::HasStencilComponent(vFormat))
-					barrier.subresourceRange.aspectMask |= VK_IMAGE_ASPECT_STENCIL_BIT;
-			}
-			else
-				barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-
-			barrier.subresourceRange.baseMipLevel = 0;
-			barrier.subresourceRange.levelCount = mMipLevel;
-			barrier.subresourceRange.baseArrayLayer = 0;
-			barrier.subresourceRange.layerCount = mLayers;
-			barrier.srcAccessMask = 0; // TODO
-			barrier.dstAccessMask = 0; // TODO
-
-			VkPipelineStageFlags sourceStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
-			VkPipelineStageFlags destinationStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
-
-			switch (barrier.oldLayout)
-			{
-			case VK_IMAGE_LAYOUT_UNDEFINED:
-				//sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-				barrier.srcAccessMask = 0;
-				break;
-
-			case VK_IMAGE_LAYOUT_PREINITIALIZED:
-				barrier.srcAccessMask = VK_ACCESS_HOST_WRITE_BIT;
-				break;
-
-			case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
-				barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-				break;
-
-			case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
-				barrier.srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-				break;
-
-			case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
-				barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
-				break;
-
-			case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
-				//sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-				barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-				break;
-
-			case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
-				//destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-				barrier.srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
-				break;
-			default:
-				FLINT_LOG_ERROR(TEXT("Unsupported layout transition!"))
-					break;
-			}
-
-			switch (barrier.newLayout)
-			{
-			case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
-				//destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-				barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-				break;
-
-			case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
-				barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
-				break;
-
-			case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
-				//destinationStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-				barrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-				break;
-
-			case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
-				//destinationStage = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-				barrier.dstAccessMask = barrier.dstAccessMask | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-				break;
-
-			case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
-				if (barrier.srcAccessMask == 0)
-					barrier.srcAccessMask = VK_ACCESS_HOST_WRITE_BIT | VK_ACCESS_TRANSFER_WRITE_BIT;
-
-				barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-				//destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-				break;
-
-			case VK_IMAGE_LAYOUT_GENERAL:
-				//destinationStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
-				break;
-			default:
-				FLINT_LOG_ERROR(TEXT("Unsupported layout transition!"))
-					break;
-			}
-
-			vkCmdPipelineBarrier(
-				vCommandBuffer,
-				sourceStage, destinationStage,
-				0,
-				0, nullptr,
-				0, nullptr,
-				1, &barrier
-			);
-
-			vCurrentLayout = layout;
+				return vSampler;
 		}
 
 		void VulkanImage::GenerateMipMaps()
 		{
 			VkFormatProperties vProps = pDevice->GetFormatProperties(vFormat);
 
-			if (!(vProps.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT))
-				FLINT_LOG_ERROR(TEXT("Texture format does not support linear bitting!"))
+			FLINT_ASSERT(!(vProps.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT), TEXT("Texture format does not support linear bitting!"))
 
 				VulkanOneTimeCommandBuffer vCommandBuffer(pDevice);
 
@@ -420,3 +360,11 @@ namespace Flint
 		}
 	}
 }
+
+/*
+{ 01:33:10 } Vulkan Validation Layer (Validation): Validation Error: [ VUID-vkCmdCopyBufferToImage-imageOffset-00197 ] Object 0: handle = 0x89daef000000002a, type = VK_OBJECT_TYPE_IMAGE; | MessageID = 0x24a2680d | vkCmdCopyBufferToImage(): Both pRegion[0] imageoffset.x (0) and (imageExtent.width + imageOffset.x) (2048) must be >= zero or <= image subresource width (0). The Vulkan spec states: For each element of pRegions, imageOffset.x and (imageExtent.width + imageOffset.x) must both be greater than or equal to 0 and less than or equal to the width of the specified imageSubresource of dstImage (https://vulkan.lunarg.com/doc/view/1.2.162.1/windows/1.2-extensions/vkspec.html#VUID-vkCmdCopyBufferToImage-imageOffset-00197)
+{ 01:33:10 } Vulkan Validation Layer (Validation): Validation Error: [ VUID-vkCmdCopyBufferToImage-imageOffset-00198 ] Object 0: handle = 0x89daef000000002a, type = VK_OBJECT_TYPE_IMAGE; | MessageID = 0x846b33ce | vkCmdCopyBufferToImage(): Both pRegion[0] imageoffset.y (0) and (imageExtent.height + imageOffset.y) (2048) must be >= zero or <= image subresource height (0). The Vulkan spec states: For each element of pRegions, imageOffset.y and (imageExtent.height + imageOffset.y) must both be greater than or equal to 0 and less than or equal to the height of the specified imageSubresource of dstImage (https://vulkan.lunarg.com/doc/view/1.2.162.1/windows/1.2-extensions/vkspec.html#VUID-vkCmdCopyBufferToImage-imageOffset-00198)
+{ 01:33:10 } Vulkan Validation Layer (Validation): Validation Error: [ VUID-vkCmdCopyBufferToImage-imageOffset-00200 ] Object 0: handle = 0x89daef000000002a, type = VK_OBJECT_TYPE_IMAGE; | MessageID = 0x7239f3a5 | vkCmdCopyBufferToImage(): Both pRegion[0] imageoffset.z (0) and (imageExtent.depth + imageOffset.z) (1) must be >= zero or <= image subresource depth (0). The Vulkan spec states: For each element of pRegions, imageOffset.z and (imageExtent.depth + imageOffset.z) must both be greater than or equal to 0 and less than or equal to the depth of the specified imageSubresource of {imageparam} (https://vulkan.lunarg.com/doc/view/1.2.162.1/windows/1.2-extensions/vkspec.html#VUID-vkCmdCopyBufferToImage-imageOffset-00200)
+{ 01:33:10 } Vulkan Validation Layer (Validation): Validation Error: [ VUID-vkCmdCopyBufferToImage-pRegions-00172 ] Object 0: handle = 0x89daef000000002a, type = VK_OBJECT_TYPE_IMAGE; | MessageID = 0x86fa53ce | vkCmdCopyBufferToImage(): pRegion[0] exceeds image bounds.. The Vulkan spec states: The image region specified by each element of pRegions must be a region that is contained within dstImage (https://vulkan.lunarg.com/doc/view/1.2.162.1/windows/1.2-extensions/vkspec.html#VUID-vkCmdCopyBufferToImage-pRegions-00172)
+{ 01:33:10 } Vulkan Validation Layer (Validation): Validation Error: [ VUID-vkCmdCopyBufferToImage-imageSubresource-01701 ] Object 0: handle = 0x215e6226fc8, type = VK_OBJECT_TYPE_COMMAND_BUFFER; | MessageID = 0x98a953ab | In vkCmdCopyBufferToImage(), pRegions[0].imageSubresource.mipLevel is 12, but provided VkImage 0x89daef000000002a[] has 12 mip levels. The Vulkan spec states: The imageSubresource.mipLevel member of each element of pRegions must be less than the mipLevels specified in VkImageCreateInfo when dstImage was created (https://vulkan.lunarg.com/doc/view/1.2.162.1/windows/1.2-extensions/vkspec.html#VUID-vkCmdCopyBufferToImage-imageSubresource-01701)
+*/

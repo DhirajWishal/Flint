@@ -9,6 +9,7 @@
 #include "VulkanBackend\VulkanUtilities.h"
 #include "VulkanBackend\VulkanMacros.h"
 #include "VulkanBackend\VulkanBuffer.h"
+#include "VulkanBackend\VulkanImage.h"
 #include "VulkanBackend\RenderTargets\VulkanScreenBoundRenderTargetS.h"
 
 namespace Flint
@@ -18,9 +19,9 @@ namespace Flint
 		class VulkanScreenBoundRenderTargetS;
 
 		template<class TRenderTarget = VulkanScreenBoundRenderTargetS>
-		class VulkanGraphicsPipeline final : public VulkanPipeline, public Backend::GraphicsPipeline<VulkanGraphicsPipeline<TRenderTarget>, VulkanDevice, TRenderTarget, VulkanBuffer, VulkanPipelineResource<VulkanGraphicsPipeline<TRenderTarget>>> {
+		class VulkanGraphicsPipeline final : public VulkanPipeline, public Backend::GraphicsPipeline<VulkanGraphicsPipeline<TRenderTarget>, VulkanDevice, TRenderTarget, VulkanBuffer, VulkanImage, VulkanPipelineResource<VulkanGraphicsPipeline<TRenderTarget>>> {
 		public:
-			using Super = Backend::GraphicsPipeline<VulkanGraphicsPipeline<TRenderTarget>, VulkanDevice, TRenderTarget, VulkanBuffer, VulkanPipelineResource<VulkanGraphicsPipeline<TRenderTarget>>>;
+			using Super = Backend::GraphicsPipeline<VulkanGraphicsPipeline<TRenderTarget>, VulkanDevice, TRenderTarget, VulkanBuffer, VulkanImage, VulkanPipelineResource<VulkanGraphicsPipeline<TRenderTarget>>>;
 			using DeviceType = VulkanDevice;
 			using BufferType = VulkanBuffer;
 			using ResourceType = VulkanPipelineResource<VulkanGraphicsPipeline<TRenderTarget>>;

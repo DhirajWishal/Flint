@@ -499,7 +499,6 @@ public:
         declaredBuiltIn = EbvNone;
 #ifndef GLSLANG_WEB
         noContraction = false;
-        nullInit = false;
 #endif
     }
 
@@ -513,7 +512,6 @@ public:
         clearMemory();
         specConstant = false;
         nonUniform = false;
-        nullInit = false;
         clearLayout();
     }
 
@@ -590,8 +588,6 @@ public:
     bool isNoContraction() const { return false; }
     void setNoContraction() { }
     bool isPervertexNV() const { return false; }
-    void setNullInit() { }
-    bool isNullInit() const { return false; }
 #else
     bool noContraction: 1; // prevent contraction and reassociation, e.g., for 'precise' keyword, and expressions it affects
     bool nopersp      : 1;
@@ -613,7 +609,6 @@ public:
     bool subgroupcoherent  : 1;
     bool shadercallcoherent : 1;
     bool nonprivate   : 1;
-    bool nullInit : 1;
     bool isWriteOnly() const { return writeonly; }
     bool isReadOnly() const { return readonly; }
     bool isRestrict() const { return restrict; }
@@ -649,8 +644,6 @@ public:
     bool isNoContraction() const { return noContraction; }
     void setNoContraction() { noContraction = true; }
     bool isPervertexNV() const { return pervertexNV; }
-    void setNullInit() { nullInit = true; }
-    bool isNullInit() const { return nullInit; }
 #endif
 
     bool isPipeInput() const
@@ -2171,8 +2164,6 @@ public:
             appendStr(" specialization-constant");
         if (qualifier.nonUniform)
             appendStr(" nonuniform");
-        if (qualifier.isNullInit())
-            appendStr(" null-init");
         appendStr(" ");
         appendStr(getStorageQualifierString());
         if (isArray()) {

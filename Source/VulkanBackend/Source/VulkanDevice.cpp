@@ -375,6 +375,16 @@ namespace Flint
 			vkDestroyImage(GetLogicalDevice(), vImage, nullptr);
 		}
 
+		VkResult VulkanDevice::CreateSampler(const VkSamplerCreateInfo* pCreateInfo, VkSampler* pSampler) const
+		{
+			return vkCreateSampler(GetLogicalDevice(), pCreateInfo, nullptr, pSampler);
+		}
+
+		void VulkanDevice::DestroySampler(VkSampler vSampler) const
+		{
+			vkDestroySampler(GetLogicalDevice(), vSampler, nullptr);
+		}
+
 		void VulkanDevice::SetImageLayout(VkCommandBuffer vCommandBuffer, VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, UI32 layerCount, UI32 currentLayer, UI32 mipLevels) const
 		{
 			VkImageMemoryBarrier vMB = {};

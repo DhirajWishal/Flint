@@ -38,6 +38,7 @@
 			typedef pipelineResource<ScreenBoundGraphicsPipeline> ScreenBoundGraphicsPipelineResource;																			\
 																																												\
 			typedef Backend::UniformBufferContainer<Buffer>	UniformBufferContainer;																								\
+			typedef Backend::UniformBufferContainer<Image>	UniformImageContainer;																								\
 																																												\
 			/*																																									\
 			 * Create a new buffer object.																																		\

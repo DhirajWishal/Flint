@@ -72,6 +72,9 @@ namespace Flint
 			VkResult CreateImageMemory(const std::vector<VkImage>& vImages, VkMemoryPropertyFlags vMemoryflags, VkDeviceMemory* pDeviceMemory) const;
 			void DestroyImage(VkImage vImage) const;
 
+			VkResult CreateSampler(const VkSamplerCreateInfo* pCreateInfo, VkSampler* pSampler) const;
+			void DestroySampler(VkSampler vSampler) const;
+
 			void SetImageLayout(VkCommandBuffer vCommandBuffer, VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, UI32 layerCount = 1, UI32 currentLayer = 0, UI32 mipLevels = 1) const;
 			void SetImageLayout(VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, UI32 layerCount = 1, UI32 currentLayer = 0, UI32 mipLevels = 1) const;
 

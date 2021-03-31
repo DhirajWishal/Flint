@@ -107,10 +107,10 @@ namespace Flint
 		/**
 		 * Graphics Pipeline object.
 		 */
-		template<class TDerived, class TDevice, class TRenderTarget, class TBuffer, class TResource>
-		class GraphicsPipeline : public Pipeline<TDerived, TDevice, TRenderTarget, TBuffer, TResource> {
+		template<class TDerived, class TDevice, class TRenderTarget, class TBuffer, class TImage, class TResource>
+		class GraphicsPipeline : public Pipeline<TDerived, TDevice, TRenderTarget, TBuffer, TImage, TResource> {
 		public:
-			using Super = Pipeline<TDerived, TDevice, TRenderTarget, TBuffer, TResource>;
+			using Super = Pipeline<TDerived, TDevice, TRenderTarget, TBuffer, TImage, TResource>;
 
 		public:
 			GraphicsPipeline() {}

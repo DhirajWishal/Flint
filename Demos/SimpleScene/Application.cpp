@@ -83,9 +83,11 @@ Application::Application()
 	// Initialize the render target.
 	mEngine.CreateRenderTarget();
 
-	{
-		auto image = mEngine.LoadImageData("E:\\Dynamik\\Version\\Dynamik\\Assets\\Textures\\SkyBox\\back.jpg");
-	}
+	//{
+	//	Flint::ShaderCode shaderCode = {};
+	//	shaderCode.LoadFromFile("E:\\Flint\\Assets\\Objects\\Moon\\shader.vert", Flint::ShaderLocation::VERTEX, Flint::ShaderCodeType::GLSL);
+	//	shaderCode.Transpile(Flint::ShaderCodeType::SPIR_V);
+	//}
 
 	// Create the scene component.
 	CreateSceneComponent();

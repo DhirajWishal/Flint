@@ -1,0 +1,2 @@
+Dependencies/ThirdParty/Binaries/shaderc/shaderc_combined.lib filter=lfs diff=lfs merge=lfs -text
+Dependencies/ThirdParty/Binaries/glslang/SPIRV-Tools-opt.lib filter=lfs diff=lfs merge=lfs -text

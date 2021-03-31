@@ -237,14 +237,15 @@ namespace Flint
 	{
 		auto type = FreeImage_GetFileType(filePath.string().c_str());
 		auto pImage = FreeImage_Load(type, filePath.string().c_str());
-		UI8 bitsPerPixel = static_cast<UI8>(FreeImage_GetBPP(pImage));
-		auto data = FreeImage_GetBits(pImage);
 
-		UI8 channel = 0, BPP = 0;
+		UI8 bitsPerPixel = static_cast<UI8>(FreeImage_GetBPP(pImage));
+		UI32 width = FreeImage_GetWidth(pImage);
+		UI32 height = FreeImage_GetHeight(pImage);
+		auto channels = FreeImage_GetColorsUsed(pImage);
 
 		Objects::Image image = {};
-		image.Initialize(GetDevice(), FreeImage_GetWidth(pImage), FreeImage_GetHeight(pImage), 1, Backend::ImageUsage::GRAPHICS_2D, bitsPerPixel);
-		image.CopyData(FreeImage_GetBits(pImage));
+		image.Initialize(GetDevice(), width, height, 1, Backend::ImageUsage::GRAPHICS_2D, bitsPerPixel);
+		image.CopyData(FreeImage_GetBits(pImage), width, 0, height, 0, 1, 0, bitsPerPixel);
 
 		FreeImage_Unload(pImage);
 		return image;

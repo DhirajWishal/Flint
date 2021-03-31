@@ -6,7 +6,7 @@
 
 #include "ShaderTools/SPIRV/Reflection.h"
 #include "ShaderTools/SPIRV/SPIRVTranspiler.h"
-//#include "ShaderTools/GLSL/GLSLTranspiler.h"
+#include "ShaderTools/GLSL/GLSLTranspiler.h"
 
 #include <fstream>
 
@@ -45,7 +45,7 @@ namespace Flint
 			break;
 
 		case Flint::ShaderCodeType::GLSL:
-			//pTranspiler = new ShaderTools::GLSLTranspiler();
+			pTranspiler = new ShaderTools::GLSLTranspiler();
 			break;
 
 		case Flint::ShaderCodeType::HLSL:

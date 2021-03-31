@@ -14,23 +14,29 @@ namespace Flint
 		template<class Derived, class DeviceType>
 		class Buffer;
 
-		template<class DerivedType, class DeviceType, class RenderTargetType, class BufferType, class ResourceType>
+		template<class DerivedType, class DeviceType, class RenderTargetType, class BufferType, class ImageType, class ResourceType>
 		class Pipeline;
 
 		template<class BufferType>
 		using UniformBufferContainer = std::unordered_map<std::string, BufferType>;
 
+		struct SamplerSpecification;
+
+		template<class ImageType>
+		using UniformImageContainer = std::unordered_map<std::string, std::pair<ImageType, SamplerSpecification>>;
+
 		/**
 		 * Pipeline resource object.
 		 * This contains the resources required to submit uniforms to the draw call.
 		 */
-		template<class TDerived, class TPipeline, class TDevice, class TBuffer>
+		template<class TDerived, class TPipeline, class TDevice, class TBuffer, class TImage>
 		class PipelineResource : public BackendObject {
 		public:
 			using DerivedType = TDerived;
 			using PipelineType = TPipeline;
 			using DeviceType = TDevice;
 			using BufferType = TBuffer;
+			using ImageType = TImage;
 
 		public:
 			PipelineResource() {}
@@ -54,6 +60,7 @@ namespace Flint
 			 * @param uniformBuffers: The uniform buffers to be registered.
 			 */
 			virtual void RegisterUniformBuffers(const UniformBufferContainer<BufferType>& uniformBuffers) = 0;
+			virtual void RegisterUniformImages(const UniformImageContainer<ImageType>& unformImages) = 0;
 
 			PipelineType* GetPipeline() const { return pPipeline; }
 
@@ -72,7 +79,7 @@ namespace Flint
 		 * 2. Compute pipeline.
 		 * 3. Ray Tracing pipeline.
 		 */
-		template<class TDerived, class TDevice, class TRenderTarget, class TBuffer, class TResource>
+		template<class TDerived, class TDevice, class TRenderTarget, class TBuffer, class TImage, class TResource>
 		class Pipeline : public BackendObject {
 
 		public:
@@ -80,9 +87,10 @@ namespace Flint
 			using DeviceType = TDevice;
 			using RenderTargetType = TRenderTarget;
 			using BufferType = TBuffer;
+			using ImageType = TImage;
 			using ResourceType = TResource;
 
-			friend PipelineResource<ResourceType, DerivedType, DeviceType, BufferType>;
+			friend PipelineResource<ResourceType, DerivedType, DeviceType, BufferType, ImageType>;
 
 			struct DrawData {
 				DrawData() = default;
@@ -153,7 +161,7 @@ namespace Flint
 			{
 				DeviceType* pDevice = pRenderTarget->GetDevice();
 
-				Backend::UniformBufferContainer<BufferType> container;
+				UniformBufferContainer<BufferType> container;
 				for (auto itr = mUniformLayouts.begin(); itr != mUniformLayouts.end(); itr++)
 				{
 					if (itr->second.mType == UniformType::UNIFORM_BUFFER || itr->second.mType == UniformType::UNIFORM_BUFFER_DYNAMIC)
@@ -178,6 +186,32 @@ namespace Flint
 					bufferPair.second.Terminate();
 
 				uniformBuffers.clear();
+			}
+
+			UniformImageContainer<ImageType> CreateUniformImages()
+			{
+				DeviceType* pDevice = pRenderTarget->GetDevice();
+
+				UniformImageContainer<ImageType> container;
+				for (auto itr = mUniformLayouts.begin(); itr != mUniformLayouts.end(); itr++)
+				{
+					if (itr->second.mType == UniformType::STORAGE_IMAGE ||
+						itr->second.mType == UniformType::SAMPLER_2D ||
+						itr->second.mType == UniformType::SAMPLER_2D_ARRAY ||
+						itr->second.mType == UniformType::SAMPLER_CUBE ||
+						itr->second.mType == UniformType::SAMPLER_CUBE_ARRAY)
+						container[itr->first] = {};
+				}
+
+				return container;
+			}
+
+			void DestroyUniformBuffers(UniformImageContainer<ImageType>& uniformImages) const
+			{
+				for (auto imagePair : uniformImages)
+					imagePair.second.Terminate();
+
+				uniformImages.clear();
 			}
 
 		public:
@@ -335,8 +369,8 @@ namespace Flint
 		/**
 		 * Compute Pipeline object.
 		 */
-		template<class DerivedType, class DeviceType, class RenderTargetType, class BufferType, class ResourceType>
-		class ComputePipeline : public Pipeline<DerivedType, DeviceType, RenderTargetType, BufferType, ResourceType> {
+		template<class DerivedType, class DeviceType, class RenderTargetType, class BufferType, class ImageType, class ResourceType>
+		class ComputePipeline : public Pipeline<DerivedType, DeviceType, RenderTargetType, BufferType, ImageType, ResourceType> {
 		public:
 			ComputePipeline() {}
 		};
@@ -344,8 +378,8 @@ namespace Flint
 		/**
 		 * Ray Tracing Pipeline object.
 		 */
-		template<class DerivedType, class DeviceType, class RenderTargetType, class BufferType, class ResourceType>
-		class RayTracingPipeline : public Pipeline<DerivedType, DeviceType, RenderTargetType, BufferType, ResourceType> {
+		template<class DerivedType, class DeviceType, class RenderTargetType, class BufferType, class ImageType, class ResourceType>
+		class RayTracingPipeline : public Pipeline<DerivedType, DeviceType, RenderTargetType, BufferType, ImageType, ResourceType> {
 		public:
 			RayTracingPipeline() {}
 		};

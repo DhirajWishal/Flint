@@ -21,9 +21,12 @@ namespace Flint
 			virtual void Initialize(DeviceType* pDevice, UI64 width, UI64 height, UI64 depth, Backend::ImageUsage usage, UI8 bitsPerPixel = FLINT_DEFAULT_BPP, UI8 layers = 1) override final;
 			virtual void Terminate() override final;
 
-			virtual void CopyData(unsigned char* pData) override final;
+			virtual void CopyData(unsigned char* pData, UI64 width, UI64 widthOffset, UI64 height, UI64 heightOffset, UI64 depth, UI64 depthOffset, UI8 bitsPerPixel = FLINT_DEFAULT_BPP) override final;
 
-			void SetImageLayout(VkImageLayout layout);
+			VkImageLayout GetLayout() const { return vCurrentLayout; }
+			VkImageView GetImageView() const { return vImageView; }
+
+			VkSampler CreateSampler(Backend::SamplerSpecification spec) const;
 
 		private:
 			void GenerateMipMaps();
