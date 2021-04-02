@@ -79,7 +79,7 @@ namespace Flint
 		// The vertex data is next.
 		{
 			// Create stagging buffer and copy vertex data to it.
-			Objects::Buffer staggingBuffer = Objects::CreateBuffer(mVertexBuffer.GetDevice(), vertexBufferSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
+			Buffer staggingBuffer = CreateBuffer(mVertexBuffer.GetDevice(), vertexBufferSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
 			staggingBuffer.CopyFrom(mVertexBuffer, vertexBufferSize, 0, 0);
 
 			// Write and flush vertex data.
@@ -98,7 +98,7 @@ namespace Flint
 		// The index data comes next.
 		{
 			// Create stagging buffer and copy index data to it.
-			Objects::Buffer staggingBuffer = Objects::CreateBuffer(mVertexBuffer.GetDevice(), indexBufferSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
+			Buffer staggingBuffer = CreateBuffer(mVertexBuffer.GetDevice(), indexBufferSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
 			staggingBuffer.CopyFrom(mIndexBuffer, indexBufferSize, 0, 0);
 
 			// Write and flush index data.
@@ -121,7 +121,7 @@ namespace Flint
 		file.close();
 	}
 
-	void WireFrame::LoadFromCache(std::filesystem::path asset, Objects::Device* pDevice)
+	void WireFrame::LoadFromCache(std::filesystem::path asset, Device* pDevice)
 	{
 		std::ifstream file(asset, std::ios::binary);
 		if (!file.is_open()) return;
@@ -153,14 +153,14 @@ namespace Flint
 			file.ignore(1);
 
 			// Load the data.
-			Objects::Buffer staggingBuffer = Objects::CreateBuffer(pDevice, byteSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
+			Buffer staggingBuffer = CreateBuffer(pDevice, byteSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
 			char* pString = static_cast<char*>(staggingBuffer.MapMemory(byteSize, 0));
 			file.read(static_cast<char*>(pString), byteSize);
 			staggingBuffer.FlushMemoryMappings();
 			staggingBuffer.UnmapMemory();
 
 			// Copy data to the buffer.
-			mVertexBuffer = Objects::CreateBuffer(pDevice, byteSize, Backend::BufferUsage::VERTEX, Backend::MemoryProfile::DRAW_RESOURCE);
+			mVertexBuffer = CreateBuffer(pDevice, byteSize, Backend::BufferUsage::VERTEX, Backend::MemoryProfile::DRAW_RESOURCE);
 			mVertexBuffer.CopyFrom(staggingBuffer, byteSize, 0, 0);
 
 			// Destroy stagging buffer.
@@ -177,13 +177,13 @@ namespace Flint
 			file.ignore(1);
 
 			// Load the data.
-			Objects::Buffer staggingBuffer = Objects::CreateBuffer(pDevice, byteSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
+			Buffer staggingBuffer = CreateBuffer(pDevice, byteSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
 			file.read(static_cast<char*>(staggingBuffer.MapMemory(byteSize, 0)), byteSize);
 			staggingBuffer.FlushMemoryMappings();
 			staggingBuffer.UnmapMemory();
 
 			// Copy data to the buffer.
-			mIndexBuffer = Objects::CreateBuffer(pDevice, byteSize, Backend::BufferUsage::INDEX, Backend::MemoryProfile::DRAW_RESOURCE);
+			mIndexBuffer = CreateBuffer(pDevice, byteSize, Backend::BufferUsage::INDEX, Backend::MemoryProfile::DRAW_RESOURCE);
 			mIndexBuffer.CopyFrom(staggingBuffer, byteSize, 0, 0);
 
 			// Destroy stagging buffer.

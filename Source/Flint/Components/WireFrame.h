@@ -53,8 +53,8 @@ namespace Flint
 		 */
 		void Clear();
 
-		Objects::Buffer mVertexBuffer = {};
-		Objects::Buffer mIndexBuffer = {};
+		Buffer mVertexBuffer = {};
+		Buffer mIndexBuffer = {};
 
 		std::vector<VertexAttribute> mAttributes;
 
@@ -66,7 +66,7 @@ namespace Flint
 		 * @param asset: The cache file to be loaded from.
 		 * @param pDevice: The device pointer.
 		 */
-		void LoadFromCache(std::filesystem::path asset, Objects::Device* pDevice);
+		void LoadFromCache(std::filesystem::path asset, Device* pDevice);
 
 		/**
 		 * Create a cache file using the wire frame content.

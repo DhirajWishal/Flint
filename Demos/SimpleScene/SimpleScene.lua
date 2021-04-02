@@ -26,7 +26,8 @@ project "SimpleScene"
 		"**.h",
 		"src/**.cpp",
 		"src/**.h",
-		"**.lua"
+		"**.lua",
+		"**.wfc",
 	}
 
 	includedirs {

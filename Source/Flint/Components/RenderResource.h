@@ -20,8 +20,8 @@ namespace Flint
 		 */
 		void Destroy();
 
-		Objects::UniformBufferContainer mUniformBuffers;
-		Objects::ScreenBoundGraphicsPipelineResource mPipelineResource = {};
+		UniformBufferContainer mUniformBuffers;
+		ScreenBoundGraphicsPipelineResource mPipelineResource = {};
 
 		std::vector<UI64> mDrawDataIDs;
 	};

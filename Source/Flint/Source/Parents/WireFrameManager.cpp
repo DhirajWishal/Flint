@@ -50,7 +50,7 @@ namespace Flint
 		for (UI32 i = 0; i < pScene->mNumMeshes; i++)
 			vertexBufferSize += pScene->mMeshes[i]->mNumVertices * vertexSize;
 
-		Objects::Buffer staggingVertexBuffer = Objects::CreateBuffer(GetDevice(), vertexBufferSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
+		Buffer staggingVertexBuffer = CreateBuffer(GetDevice(), vertexBufferSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
 		float* pDataStore = static_cast<float*>(staggingVertexBuffer.MapMemory(vertexBufferSize, 0));
 
 		UI64 indexBufferSize = 0;
@@ -202,14 +202,14 @@ namespace Flint
 		staggingVertexBuffer.FlushMemoryMappings();
 		staggingVertexBuffer.UnmapMemory();
 
-		wireFrame.mVertexBuffer = Objects::CreateBuffer(GetDevice(), vertexBufferSize, Backend::BufferUsage::VERTEX, Backend::MemoryProfile::DRAW_RESOURCE);
+		wireFrame.mVertexBuffer = CreateBuffer(GetDevice(), vertexBufferSize, Backend::BufferUsage::VERTEX, Backend::MemoryProfile::DRAW_RESOURCE);
 		wireFrame.mVertexBuffer.CopyFrom(staggingVertexBuffer, vertexBufferSize, 0, 0);
 
 		staggingVertexBuffer.Terminate();
 
 		// Create the index buffer.
 		{
-			Objects::Buffer staggingBuffer = Objects::CreateBuffer(GetDevice(), indexBufferSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
+			Buffer staggingBuffer = CreateBuffer(GetDevice(), indexBufferSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
 			UI32* pIndexDataStore = static_cast<UI32*>(staggingBuffer.MapMemory(indexBufferSize, 0));
 
 			// Copy data to the stagging buffer.
@@ -222,7 +222,7 @@ namespace Flint
 			staggingBuffer.FlushMemoryMappings();
 			staggingBuffer.UnmapMemory();
 
-			wireFrame.mIndexBuffer = Objects::CreateBuffer(GetDevice(), indexBufferSize, Backend::BufferUsage::INDEX, Backend::MemoryProfile::DRAW_RESOURCE);
+			wireFrame.mIndexBuffer = CreateBuffer(GetDevice(), indexBufferSize, Backend::BufferUsage::INDEX, Backend::MemoryProfile::DRAW_RESOURCE);
 			wireFrame.mIndexBuffer.CopyFrom(staggingBuffer, indexBufferSize, 0, 0);
 
 			staggingBuffer.Terminate();
@@ -233,7 +233,7 @@ namespace Flint
 		return std::move(wireFrame);
 	}
 
-	Objects::Image WireFrameManager::LoadImageData(std::filesystem::path filePath)
+	Image WireFrameManager::LoadImageData(std::filesystem::path filePath)
 	{
 		auto type = FreeImage_GetFileType(filePath.string().c_str());
 		auto pImage = FreeImage_Load(type, filePath.string().c_str());
@@ -243,7 +243,7 @@ namespace Flint
 		UI32 height = FreeImage_GetHeight(pImage);
 		auto channels = FreeImage_GetColorsUsed(pImage);
 
-		Objects::Image image = {};
+		Image image = {};
 		image.Initialize(GetDevice(), width, height, 1, Backend::ImageUsage::GRAPHICS_2D, bitsPerPixel);
 		image.CopyData(FreeImage_GetBits(pImage), width, 0, height, 0, 1, 0, bitsPerPixel);
 

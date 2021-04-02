@@ -110,6 +110,6 @@ namespace Flint
 		void SubmitToDrawQueue(RenderResource& renderResource, SceneComponent& sceneComponent, const Backend::DynamicStateContainer& dynamicStates = {});
 
 	private:
-		Objects::ScreenBoundRenderTarget mRenderTarget = {};
+		ScreenBoundRenderTarget mRenderTarget = {};
 	};
 }

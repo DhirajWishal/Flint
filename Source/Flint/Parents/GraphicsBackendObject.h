@@ -22,8 +22,8 @@ namespace Flint
 	public:
 		GraphicsBackendObject() {}
 
-		Objects::Display* GetDisplay() const { return const_cast<Objects::Display*>(&mDisplay); }
-		Objects::Device* GetDevice() const { return const_cast<Objects::Device*>(&mDevice); }
+		Display* GetDisplay() const { return const_cast<Display*>(&mDisplay); }
+		Device* GetDevice() const { return const_cast<Device*>(&mDevice); }
 
 	protected:
 		void InitializeInstance(BackendAPI api, bool enableValidation);
@@ -36,9 +36,9 @@ namespace Flint
 		void TerminateDevice();
 
 	protected:
-		Objects::Instance mInstance = {};
-		Objects::Display mDisplay = {};
-		Objects::Device mDevice = {};
+		Instance mInstance = {};
+		Display mDisplay = {};
+		Device mDevice = {};
 
 		BackendAPI mAPI = BackendAPI::UNDEFINED;
 	};

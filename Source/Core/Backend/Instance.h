@@ -25,7 +25,6 @@ namespace Flint
 
 			bool IsValidationEnabled() const { return bEnableValidation;  }
 
-			FLINT_SET_NO_COPY_AND_MOVE(Instance)
 		protected:
 			bool bEnableValidation = true;
 		};

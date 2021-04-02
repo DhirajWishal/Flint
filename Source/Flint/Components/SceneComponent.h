@@ -29,10 +29,10 @@ namespace Flint
 		 * 
 		 * @return The uniform buffer container with the respective uniform buffers.
 		 */
-		Objects::UniformBufferContainer GetUniformBuffers() const { return mPipeline.CreateUniformBuffers(); }
+		UniformBufferContainer GetUniformBuffers() const { return mPipeline.CreateUniformBuffers(); }
 
 		WireFrame mWireFrame;
-		Objects::ScreenBoundGraphicsPipeline mPipeline = {};
+		ScreenBoundGraphicsPipeline mPipeline = {};
 		UI64 mDrawID = 0;
 	};
 }
