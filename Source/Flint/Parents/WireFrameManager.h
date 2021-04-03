@@ -24,7 +24,7 @@ namespace Flint
 		 * @param vertexAttributes: The vertex attributes to be loaded from the file.
 		 * @return The created wire frame object.
 		 */
-		WireFrame CreateNewWireFrame(const char* pAsset, std::vector<VertexAttribute>& vertexAttributes);
+		WireFrame CreateNewWireFrame(std::filesystem::path asset, std::vector<VertexAttribute>& vertexAttributes);
 
 		Image LoadImageData(std::filesystem::path filePath);
 	};

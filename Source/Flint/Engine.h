@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Parents/WireFrameManager.h"
+#include "Parents/AssetRegistry.h"
 #include "Components/SceneComponent.h"
 
 namespace Flint
@@ -12,7 +12,7 @@ namespace Flint
 	 * Flint Engine object.
 	 * This is the main object which is responsible of all flint activities.
 	 */
-	class Engine : public WireFrameManager {
+	class Engine : public AssetRegistry {
 	public:
 		Engine() {}
 		~Engine() {}

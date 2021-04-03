@@ -35,7 +35,7 @@ namespace Flint
 			CommandBufferListType mCommandBufferList = {};
 
 			DeviceType* pDevice = nullptr;
-			Vector2 mExtent = Vector2::ZeroAll;
+			Vector2 mExtent = Vector2::Zero;
 			UI64 mBufferCount = 0;
 		};
 	}

@@ -35,7 +35,7 @@ namespace Flint
 			Inputs::InputCenter mInputsCenter = {};
 			InstanceType* pInstance = nullptr;
 
-			Vector2 mExtent = Vector2::ZeroAll;
+			Vector2 mExtent = Vector2::Zero;
 			const char* pTitle = nullptr;
 		};
 	}

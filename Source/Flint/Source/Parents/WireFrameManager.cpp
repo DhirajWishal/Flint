@@ -23,13 +23,13 @@ namespace Flint
 		FreeImage_DeInitialise();
 	}
 
-	WireFrame WireFrameManager::CreateNewWireFrame(const char* pAsset, std::vector<VertexAttribute>& vertexAttributes)
+	WireFrame WireFrameManager::CreateNewWireFrame(std::filesystem::path asset, std::vector<VertexAttribute>& vertexAttributes)
 	{
 		WireFrame wireFrame = {};
 		wireFrame.mAttributes = vertexAttributes;
 
 		Assimp::Importer importer = {};
-		const aiScene* pScene = importer.ReadFile(pAsset, aiProcess_CalcTangentSpace |
+		const aiScene* pScene = importer.ReadFile(asset.string(), aiProcess_CalcTangentSpace |
 			aiProcess_Triangulate |
 			aiProcess_JoinIdenticalVertices |
 			aiProcess_SortByPType |
@@ -38,7 +38,7 @@ namespace Flint
 		// Check if the scene could be loaded.
 		if (!pScene)
 		{
-			FLINT_LOG_ERROR(TEXT("Failed to load wire frame from asset path: #7"), pAsset);
+			FLINT_LOG_ERROR(TEXT("Failed to load wire frame from asset path: #8"), asset.string());
 			return {};
 		}
 

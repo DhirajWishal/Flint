@@ -202,7 +202,7 @@ namespace Flint
 		 */
 		inline Vector& operator=(const  Vector&) { return *this; }
 
-		static Type ZeroAll;
+		static Type Zero;
 	};
 
 	/**
@@ -331,5 +331,5 @@ namespace Flint
 	 * @tparam Type: The type of the vector.
 	 */
 	template<class Type>
-	Type Vector<Type>::ZeroAll = Type(0.0f);
+	Type Vector<Type>::Zero = Type(0.0f);
 }

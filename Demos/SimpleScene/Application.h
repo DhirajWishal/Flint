@@ -51,7 +51,7 @@ private:
 	Flint::RenderResource mRenderResource = {};
 	Flint::Backend::DynamicStateContainer mDynamicState = {};
 
-	Flint::Vector3 mPosition = Flint::Vector3::ZeroAll;
+	Flint::Vector3 mPosition = Flint::Vector3::Zero;
 
 	Flint::Inputs::InputCenter* pInputCenter = nullptr;
 

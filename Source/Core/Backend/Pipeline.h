@@ -299,17 +299,17 @@ namespace Flint
 				ViewPort(const Vector2& extent, const Vector2& offset, const Vector2& depth)
 					: DynamicStateObject(DynamicStateFlags::VIEWPORT), mExtent(extent), mOffset(offset), mDepth(depth) {}
 
-				Vector2 mExtent = Vector2::ZeroAll;
-				Vector2 mOffset = Vector2::ZeroAll;
-				Vector2 mDepth = Vector2::ZeroAll;	// { Min, Max }
+				Vector2 mExtent = Vector2::Zero;
+				Vector2 mOffset = Vector2::Zero;
+				Vector2 mDepth = Vector2::Zero;	// { Min, Max }
 			};
 
 			struct Scissor : public DynamicStateObject {
 				Scissor() : DynamicStateObject(DynamicStateFlags::SCISSOR) {}
 				Scissor(const Vector2& extent, const Vector2& offset) : DynamicStateObject(DynamicStateFlags::SCISSOR), mExtent(extent), mOffset(offset) {}
 
-				Vector2 mExtent = Vector2::ZeroAll;
-				Vector2 mOffset = Vector2::ZeroAll;
+				Vector2 mExtent = Vector2::Zero;
+				Vector2 mOffset = Vector2::Zero;
 			};
 
 			struct LineWidth : public DynamicStateObject {
@@ -344,7 +344,7 @@ namespace Flint
 				DepthBounds() : DynamicStateObject(DynamicStateFlags::DEPTH_BOUNDS) {}
 				DepthBounds(const Vector2& bounds) : DynamicStateObject(DynamicStateFlags::DEPTH_BOUNDS), mBounds(bounds) {}
 
-				Vector2 mBounds = Vector2::ZeroAll;	// { Min, Max }
+				Vector2 mBounds = Vector2::Zero;	// { Min, Max }
 			};
 
 		public:
