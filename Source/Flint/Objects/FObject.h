@@ -7,6 +7,8 @@
 
 namespace Flint
 {
+	class Backend::BackendObject;
+
 	template<UI64 Size, UI64 Alignment>
 	class FObject {
 	public:

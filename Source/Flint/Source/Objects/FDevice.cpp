@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "Flint\Objects\FDevice.h"
+#include "Flint\Objects\FScreenBoundRenderTarget.h"
 
 #include "VulkanBackend\VulkanDevice.h"
 typedef Flint::VulkanBackend::VulkanDevice Device;
@@ -36,5 +37,13 @@ namespace Flint
 	void FDevice::Terminate()
 	{
 		GetAs<Device>().Terminate();
+	}
+	
+	FScreenBoundRenderTarget FDevice::CreateScreenBoundRenderTarget(const FDisplay& display, UI64 bufferCount)
+	{
+		FScreenBoundRenderTarget renderTarget = {};
+		renderTarget.Initialize(*this, display, bufferCount);
+
+		return renderTarget;
 	}
 }

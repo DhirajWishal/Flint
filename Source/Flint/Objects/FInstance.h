@@ -9,8 +9,8 @@
 
 namespace Flint
 {
-	constexpr const UI64 GetInstanceSize();
-	constexpr const UI64 GetInstanceAlignment();
+	static constexpr const UI64 GetInstanceSize();
+	static constexpr const UI64 GetInstanceAlignment();
 
 	class FDisplay;
 	class FDevice;
