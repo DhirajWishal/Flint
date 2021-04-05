@@ -6,18 +6,20 @@
 #include "FObject.h"
 #include "Core\Backend\GraphicsPipeline.h"
 
+#if defined(FLINT_BACKEND_VULKAN)
+#define FLINT_SB_GRAPHICS_PIPELINE_BACKEND_SIZE		696Ui64
+
+#endif // defined(FLINT_BACKEND_VULKAN)
+
 namespace Flint
 {
-	static constexpr const UI64 GetScreenBoundGraphicsPipelineSize();
-	static constexpr const UI64 GetScreenBoundGraphicsPipelineAlignment();
-
 	class FScreenBoundRenderTarget;
 
 	/**
 	 * Flint screen bound graphics pipeline.
 	 * This pipeline is compatible only with the screen bound render target.
 	 */
-	class FScreenBoundGraphicsPipeline final : public FObject<GetScreenBoundGraphicsPipelineSize(), GetScreenBoundGraphicsPipelineAlignment()> {
+	class FScreenBoundGraphicsPipeline final : public FObject<FLINT_SB_GRAPHICS_PIPELINE_BACKEND_SIZE> {
 	public:
 		FScreenBoundGraphicsPipeline();
 		~FScreenBoundGraphicsPipeline();

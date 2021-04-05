@@ -11,15 +11,15 @@ workspace "Flint"
 	}
 
 	filter "configurations:Debug"
-		defines { "FLINT_DEBUG" }
+		defines { "FLINT_DEBUG", "FLINT_BACKEND_VULKAN" }
 		symbols "On"
 		
 	filter "configurations:Release"
-		defines { "FLINT_RELEASE" }
+		defines { "FLINT_RELEASE", "FLINT_BACKEND_VULKAN" }
 		optimize "On"
 
 	filter "configurations:Distribution"
-		defines { "FLINT_DISTRIBUTION" }
+		defines { "FLINT_DISTRIBUTION", "FLINT_BACKEND_VULKAN" }
 		optimize "On"
 
 	filter ""

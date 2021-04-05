@@ -4,22 +4,31 @@
 #pragma once
 
 #include "FInstance.h"
+#include "Core\Backend\ShaderDigest.h"
+#include "Core\Backend\Buffer.h"
+
+#if defined(FLINT_BACKEND_VULKAN)
+#define FLINT_DEVICE_BACKEND_SIZE		120Ui64
+
+#endif // defined(FLINT_BACKEND_VULKAN)
+
 
 namespace Flint
 {
-	static constexpr const UI64 GetDeviceSize();
-	static constexpr const UI64 GetDeviceAlignment();
+	class FDisplay;
 
 	class FScreenBoundRenderTarget;
-	class FDisplay;
+	class FShader;
+	class FBuffer;
 
 	/**
 	 * Flint device object.
 	 * This object is responsible for all the asset creations and their lifetimes.
 	 */
-	class FDevice final : public FObject<GetDeviceSize(), GetDeviceAlignment()> {
+	class FDevice final : public FObject<FLINT_DEVICE_BACKEND_SIZE> {
 	public:
 		FDevice();
+		explicit FDevice(Backend::BackendObject* pBackendObject);
 		~FDevice();
 
 		/**
@@ -43,5 +52,22 @@ namespace Flint
 		 * @return The newly created render target object.
 		 */
 		FScreenBoundRenderTarget CreateScreenBoundRenderTarget(const FDisplay& display, UI64 bufferCount);
+
+		/**
+		 * Create a new shader object.
+		 * 
+		 * @param digest: The shader digest.
+		 * @return The newly created shader object.
+		 */
+		FShader CreateShader(const ShaderDigest& digest);
+
+		/**
+		 * Create a new buffer object.
+		 * 
+		 * @param size: The size of the buffer.
+		 * @param usage: The buffer usage.
+		 * @param profile: The buffer's memory profile.
+		 */
+		FBuffer CreateBuffer(UI64 size, Backend::BufferUsage usage, Backend::MemoryProfile profile);
 	};
 }

@@ -5,21 +5,16 @@
 #include "Flint\Objects\FDisplay.h"
 #include "Flint\Objects\FDevice.h"
 
+#if defined(FLINT_BACKEND_VULKAN)
 #include "VulkanBackend\VulkanInstance.h"
 typedef Flint::VulkanBackend::VulkanInstance Instance;
+
+#endif // defined(FLINT_BACKEND_VULKAN)
 
 
 namespace Flint
 {
-	constexpr const UI64 GetInstanceSize()
-	{
-		return sizeof(Instance);
-	}
-
-	constexpr const UI64 GetInstanceAlignment()
-	{
-		return alignof(Instance);
-	}
+	constexpr UI64 _InstanceSize = sizeof(Instance);
 
 	FInstance::FInstance()
 	{

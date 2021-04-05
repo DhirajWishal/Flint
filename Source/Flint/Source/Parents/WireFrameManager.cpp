@@ -50,7 +50,7 @@ namespace Flint
 		for (UI32 i = 0; i < pScene->mNumMeshes; i++)
 			vertexBufferSize += pScene->mMeshes[i]->mNumVertices * vertexSize;
 
-		Buffer staggingVertexBuffer = CreateBuffer(GetDevice(), vertexBufferSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
+		FBuffer staggingVertexBuffer = GetDevice()->CreateBuffer(vertexBufferSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
 		float* pDataStore = static_cast<float*>(staggingVertexBuffer.MapMemory(vertexBufferSize, 0));
 
 		UI64 indexBufferSize = 0;
@@ -199,17 +199,17 @@ namespace Flint
 			INSERT_INTO_VECTOR(wireFrame.mDrawData, drawData);
 		}
 
-		staggingVertexBuffer.FlushMemoryMappings();
+		staggingVertexBuffer.FlushMemoryMapping();
 		staggingVertexBuffer.UnmapMemory();
 
-		wireFrame.mVertexBuffer = CreateBuffer(GetDevice(), vertexBufferSize, Backend::BufferUsage::VERTEX, Backend::MemoryProfile::DRAW_RESOURCE);
+		wireFrame.mVertexBuffer = GetDevice()->CreateBuffer(vertexBufferSize, Backend::BufferUsage::VERTEX, Backend::MemoryProfile::DRAW_RESOURCE);
 		wireFrame.mVertexBuffer.CopyFrom(staggingVertexBuffer, vertexBufferSize, 0, 0);
 
 		staggingVertexBuffer.Terminate();
 
 		// Create the index buffer.
 		{
-			Buffer staggingBuffer = CreateBuffer(GetDevice(), indexBufferSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
+			FBuffer staggingBuffer = GetDevice()->CreateBuffer(indexBufferSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
 			UI32* pIndexDataStore = static_cast<UI32*>(staggingBuffer.MapMemory(indexBufferSize, 0));
 
 			// Copy data to the stagging buffer.
@@ -219,10 +219,10 @@ namespace Flint
 				std::copy(itr->begin(), itr->end(), pIndexDataStore + (offset / sizeof(UI32)));
 				offset += sizeof(UI32) * itr->size();
 			}
-			staggingBuffer.FlushMemoryMappings();
+			staggingBuffer.FlushMemoryMapping();
 			staggingBuffer.UnmapMemory();
 
-			wireFrame.mIndexBuffer = CreateBuffer(GetDevice(), indexBufferSize, Backend::BufferUsage::INDEX, Backend::MemoryProfile::DRAW_RESOURCE);
+			wireFrame.mIndexBuffer = GetDevice()->CreateBuffer(indexBufferSize, Backend::BufferUsage::INDEX, Backend::MemoryProfile::DRAW_RESOURCE);
 			wireFrame.mIndexBuffer.CopyFrom(staggingBuffer, indexBufferSize, 0, 0);
 
 			staggingBuffer.Terminate();

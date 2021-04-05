@@ -10,7 +10,10 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanShaderModule final : VulkanDeviceBoundObject {
+		class FLINT_ALIGN VulkanShaderModule final : VulkanDeviceBoundObject {
+		public:
+			using DeviceType = VulkanDevice;
+
 		public:
 			VulkanShaderModule() {}
 			~VulkanShaderModule() {}

@@ -7,17 +7,20 @@
 #include "FDisplay.h"
 #include "FScreenBoundGraphicsPipeline.h"
 
+#if defined(FLINT_BACKEND_VULKAN)
+#define FLINT_SCREEN_BOUND_RT_BACKEND_SIZE		720Ui64
+
+#endif // defined(FLINT_BACKEND_VULKAN)
+
+
 namespace Flint
 {
-	static constexpr const UI64 GetScreenBoundRenderTargetSize();
-	static constexpr const UI64 GetScreenBoundRenderTargetAllignment();
-
 	/**
 	 * Flint screen bound render target.
 	 * Screen bound render targets output their frame to a display object.
 	 * Render targets in general are the onces responsible of rendering actual draw data.
 	 */
-	class FScreenBoundRenderTarget final : public FObject<GetScreenBoundRenderTargetSize(), GetScreenBoundRenderTargetAllignment()> {
+	class FScreenBoundRenderTarget final : public FObject<FLINT_SCREEN_BOUND_RT_BACKEND_SIZE> {
 	public:
 		FScreenBoundRenderTarget();
 		~FScreenBoundRenderTarget();

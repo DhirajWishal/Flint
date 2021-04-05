@@ -6,6 +6,8 @@
 #include "GraphicsBackendObject.h"
 #include "Flint\Components\WireFrame.h"
 
+#include "VulkanBackend\VulkanExporter.h"
+
 namespace Flint
 {
 	/**

@@ -4,22 +4,16 @@
 #include "Flint\Objects\FScreenBoundGraphicsPipeline.h"
 #include "Flint\Objects\FScreenBoundRenderTarget.h"
 
+#if defined(FLINT_BACKEND_VULKAN)
 #include "VulkanBackend\RenderTargets\VulkanScreenBoundRenderTargetS.h"
 #include "VulkanBackend\RenderTargets\Pipelines\VulkanGraphicsPipeline.h"
 typedef Flint::VulkanBackend::VulkanGraphicsPipeline<Flint::VulkanBackend::VulkanScreenBoundRenderTargetS> Pipeline;
 
+#endif // defined(FLINT_BACKEND_VULKAN)
+
+
 namespace Flint
 {
-	constexpr const UI64 GetScreenBoundGraphicsPipelineSize()
-	{
-		return sizeof(Pipeline);
-	}
-
-	constexpr const UI64 GetScreenBoundGraphicsPipelineAlignment()
-	{
-		return alignof(Pipeline);
-	}
-
 	FScreenBoundGraphicsPipeline::FScreenBoundGraphicsPipeline()
 	{
 		Construct<Pipeline>();

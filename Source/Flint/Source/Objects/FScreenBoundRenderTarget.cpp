@@ -4,21 +4,15 @@
 #include "Flint\Objects\FScreenBoundRenderTarget.h"
 #include "Flint\Objects\FScreenBoundGraphicsPipeline.h"
 
+#if defined(FLINT_BACKEND_VULKAN)
 #include "VulkanBackend\RenderTargets\VulkanScreenBoundRenderTargetS.h"
 typedef Flint::VulkanBackend::VulkanScreenBoundRenderTargetS RenderTarget;
 
+#endif // defined(FLINT_BACKEND_VULKAN)
+
+
 namespace Flint
 {
-	constexpr const UI64 GetScreenBoundRenderTargetSize()
-	{
-		return sizeof(RenderTarget);
-	}
-
-	constexpr const UI64 GetScreenBoundRenderTargetAllignment()
-	{
-		return alignof(RenderTarget);
-	}
-
 	FScreenBoundRenderTarget::FScreenBoundRenderTarget()
 	{
 		Construct<RenderTarget>();

@@ -7,11 +7,14 @@
 #include "Core\Backend\BackendObject.h"
 #include "Core\Maths\Vector\Vector2.h"
 
+#if defined(FLINT_BACKEND_VULKAN)
+#define FLINT_INSTANCE_BACKEND_SIZE				64Ui64
+extern class Flint::VulkanBackend::VulkanInstance;
+
+#endif
+
 namespace Flint
 {
-	static constexpr const UI64 GetInstanceSize();
-	static constexpr const UI64 GetInstanceAlignment();
-
 	class FDisplay;
 	class FDevice;
 
@@ -19,7 +22,7 @@ namespace Flint
 	 * Flint Instance object.
 	 * This object holds information about a single backend instance.
 	 */
-	class FInstance final : public FObject<GetInstanceSize(), GetInstanceAlignment()> {
+	class FInstance final : public FObject<sizeof(VulkanBackend::VulkanInstance)> {
 	public:
 		FInstance();
 		~FInstance();

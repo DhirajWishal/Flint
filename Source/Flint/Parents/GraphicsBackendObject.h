@@ -3,7 +3,8 @@
 
 #pragma once
 
-#include "VulkanBackend\VulkanExporter.h"
+#include "Flint\Objects\FDevice.h"
+#include "Flint\Objects\FDisplay.h"
 
 namespace Flint
 {
@@ -22,8 +23,8 @@ namespace Flint
 	public:
 		GraphicsBackendObject() {}
 
-		Display* GetDisplay() const { return const_cast<Display*>(&mDisplay); }
-		Device* GetDevice() const { return const_cast<Device*>(&mDevice); }
+		FDisplay* GetDisplay() const { return const_cast<FDisplay*>(&mDisplay); }
+		FDevice* GetDevice() const { return const_cast<FDevice*>(&mDevice); }
 
 	protected:
 		void InitializeInstance(BackendAPI api, bool enableValidation);
@@ -36,9 +37,9 @@ namespace Flint
 		void TerminateDevice();
 
 	protected:
-		Instance mInstance = {};
-		Display mDisplay = {};
-		Device mDevice = {};
+		FInstance mInstance = {};
+		FDisplay mDisplay = {};
+		FDevice mDevice = {};
 
 		BackendAPI mAPI = BackendAPI::UNDEFINED;
 	};

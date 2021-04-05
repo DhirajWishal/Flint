@@ -3,9 +3,7 @@
 
 #pragma once
 
-#include "Core/Types/DataTypes.h"
-#include "Core/Backend/Buffer.h"
-#include "VulkanBackend/VulkanExporter.h"
+#include "Flint\Objects\FBuffer.h"
 
 #include <filesystem>
 
@@ -53,8 +51,8 @@ namespace Flint
 		 */
 		void Clear();
 
-		Buffer mVertexBuffer = {};
-		Buffer mIndexBuffer = {};
+		FBuffer mVertexBuffer = {};
+		FBuffer mIndexBuffer = {};
 
 		std::vector<VertexAttribute> mAttributes;
 
@@ -66,7 +64,7 @@ namespace Flint
 		 * @param asset: The cache file to be loaded from.
 		 * @param pDevice: The device pointer.
 		 */
-		void LoadFromCache(std::filesystem::path asset, Device* pDevice);
+		void LoadFromCache(std::filesystem::path asset, FDevice* pDevice);
 
 		/**
 		 * Create a cache file using the wire frame content.

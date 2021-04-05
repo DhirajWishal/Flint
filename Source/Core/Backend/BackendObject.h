@@ -4,12 +4,13 @@
 #pragma once
 
 #include <type_traits>
+#include "Core\Macros\Global.h"
 
 namespace Flint
 {
 	namespace Backend
 	{
-		class BackendObject {
+		class FLINT_ALIGN BackendObject {
 		public:
 			BackendObject() {}
 			virtual ~BackendObject() {}

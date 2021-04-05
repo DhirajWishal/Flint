@@ -16,3 +16,6 @@
 #define FLINT_SET_NO_COPY(name)							name(const name&) = delete; name& operator=(const name&) = delete;
 #define FLINT_SET_NO_MOVE(name)							name(name&&) = delete; name& operator=(name&&) = delete;
 #define FLINT_SET_NO_COPY_AND_MOVE(name)				FLINT_SET_NO_COPY(name) FLINT_SET_NO_MOVE(name)
+
+#define FLINT_DEFAULT_ALIGNMENT							8
+#define FLINT_ALIGN										alignas(FLINT_DEFAULT_ALIGNMENT)

@@ -3,21 +3,15 @@
 
 #include "Flint\Objects\FDisplay.h"
 
+#if defined(FLINT_BACKEND_VULKAN)
 #include "VulkanBackend\VulkanDisplay.h"
 typedef Flint::VulkanBackend::VulkanDisplay Display;
 
+#endif // defined(FLINT_BACKEND_VULKAN)
+
+
 namespace Flint
 {
-	constexpr const UI64 GetDisplaySize()
-	{
-		return sizeof(Display);
-	}
-
-	constexpr const UI64 GetDisplayAlignment()
-	{
-		return alignof(Display);
-	}
-
 	FDisplay::FDisplay()
 	{
 		Construct<Display>();
