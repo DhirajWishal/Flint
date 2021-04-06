@@ -36,7 +36,7 @@ namespace Flint
 			virtual void BeginBuffer(UI64 index) override final;
 			virtual void EndBuffer() override final;
 
-			virtual void BindVertexBuffer(const BufferType& buffer, UI64 firstBinding, UI64 bindingCount) override final;
+			virtual void BindVertexBuffer(const BufferType& buffer) override final;
 			virtual void BindIndexBuffer(const BufferType& buffer) override final;
 			virtual void BindRenderTarget(const ScreenBoundRenderTargetType& renderTarget) override final;
 			virtual void EndRenderTarget() override final;

@@ -79,7 +79,7 @@ namespace Flint
 			FLINT_VK_ASSERT(vkEndCommandBuffer(vBuffers[GetIndex()]), "Failed to end command buffer recording!")
 		}
 
-		void VulkanCommandBufferList::BindVertexBuffer(const BufferType& buffer, UI64 firstBinding, UI64 bindingCount)
+		void VulkanCommandBufferList::BindVertexBuffer(const BufferType& buffer)
 		{
 #ifdef FLINT_DEBUG
 			if (buffer.GetUsage() != Backend::BufferUsage::VERTEX)
@@ -90,7 +90,7 @@ namespace Flint
 #endif // DEBUG
 
 			VkDeviceSize pOffset[1] = { 0 };
-			vkCmdBindVertexBuffers(GetCurrentBuffer(), static_cast<UI32>(firstBinding), static_cast<UI32>(bindingCount), &buffer.vBuffer, pOffset);
+			vkCmdBindVertexBuffers(GetCurrentBuffer(), 0, 1, &buffer.vBuffer, pOffset);
 		}
 
 		void VulkanCommandBufferList::BindIndexBuffer(const BufferType& buffer)
