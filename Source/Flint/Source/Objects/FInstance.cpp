@@ -14,8 +14,6 @@ typedef Flint::VulkanBackend::VulkanInstance Instance;
 
 namespace Flint
 {
-	constexpr UI64 _InstanceSize = sizeof(Instance);
-
 	FInstance::FInstance()
 	{
 		Construct<Instance>();

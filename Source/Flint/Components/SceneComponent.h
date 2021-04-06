@@ -6,6 +6,7 @@
 #include "WireFrame.h"
 #include "Core/Backend/Pipeline.h"
 #include "RenderResource.h"
+#include "Flint\Objects\FGraphicsPipeline.h"
 
 namespace Flint
 {
@@ -32,7 +33,7 @@ namespace Flint
 		UniformBufferContainer GetUniformBuffers() const { return mPipeline.CreateUniformBuffers(); }
 
 		WireFrame mWireFrame;
-		ScreenBoundGraphicsPipeline mPipeline = {};
+		FGraphicsPipeline mPipeline = {};
 		UI64 mDrawID = 0;
 	};
 }

@@ -14,9 +14,6 @@ namespace Flint
 		template<class Derived, class DeviceType>
 		class Buffer;
 
-		template<class DerivedType, class DeviceType, class RenderTargetType, class BufferType, class ImageType, class ResourceType>
-		class Pipeline;
-
 		template<class BufferType>
 		using UniformBufferContainer = std::unordered_map<std::string, BufferType>;
 
@@ -33,10 +30,23 @@ namespace Flint
 		class PipelineResource : public BackendObject {
 		public:
 			using DerivedType = TDerived;
-			using PipelineType = TPipeline;
 			using DeviceType = TDevice;
 			using BufferType = TBuffer;
 			using ImageType = TImage;
+
+			struct DrawData {
+				DrawData() = default;
+				DrawData(UI64 vertexCount, UI64 vertexOffset, UI64 indexCount, UI64 indexOffset, DynamicStateContainer dynamicStates)
+					: mVertexCount(vertexCount), mVertexOffset(vertexOffset), mIndexCount(indexCount), mIndexOffset(indexOffset), mDynamicStates(dynamicStates) {}
+
+				DynamicStateContainer mDynamicStates = {};
+
+				UI64 mVertexCount = 0;
+				UI64 mVertexOffset = 0;
+
+				UI64 mIndexCount = 0;
+				UI64 mIndexOffset = 0;
+			};
 
 		public:
 			PipelineResource() {}
@@ -46,7 +56,7 @@ namespace Flint
 			 *
 			 * @param pPipeline: The pipeline pointer which the resource is bound to.
 			 */
-			virtual void Initialize(PipelineType* pPipeline) = 0;
+			virtual void Initialize(TPipeline* pPipeline) = 0;
 
 			/**
 			 * Terminate the pipeline resource.
@@ -62,10 +72,24 @@ namespace Flint
 			virtual void RegisterUniformBuffers(const UniformBufferContainer<BufferType>& uniformBuffers) = 0;
 			virtual void RegisterUniformImages(const UniformImageContainer<ImageType>& unformImages) = 0;
 
-			PipelineType* GetPipeline() const { return pPipeline; }
+			TPipeline* GetPipeline() const { return pPipeline; }
+
+			UI64 AddDrawData(UI64 vertexCount, UI64 vertexOffset, UI64 indexCount, UI64 indexOffset, DynamicStateContainer dynamicStates)
+			{
+				mDrawData[mIndex] = DrawData(vertexCount, vertexOffset, indexCount, indexOffset, dynamicStates);
+				return mIndex++;
+			}
+
+			std::unordered_map<UI64, DrawData>& GetDrawData() { return mDrawData; }
+			const std::unordered_map<UI64, DrawData> GetDrawData() const { return mDrawData; }
+
+			UI64 GetDrawDataIndex() const { return mIndex; }
 
 		protected:
-			PipelineType* pPipeline = nullptr;
+			std::unordered_map<UI64, DrawData> mDrawData;
+			UI64 mIndex = 0;
+
+			TPipeline* pPipeline = nullptr;
 		};
 
 		struct DynamicStateContainer;
@@ -79,61 +103,23 @@ namespace Flint
 		 * 2. Compute pipeline.
 		 * 3. Ray Tracing pipeline.
 		 */
-		template<class TDerived, class TDevice, class TRenderTarget, class TBuffer, class TImage, class TResource>
+		template<class Derived, class TDevice, class TRenderTarget, class TBuffer, class TImage, class TResource>
 		class Pipeline : public BackendObject {
-
 		public:
-			using DerivedType = TDerived;
 			using DeviceType = TDevice;
-			using RenderTargetType = TRenderTarget;
 			using BufferType = TBuffer;
 			using ImageType = TImage;
 			using ResourceType = TResource;
+			using RenderTargetType = TRenderTarget;
 
-			friend PipelineResource<ResourceType, DerivedType, DeviceType, BufferType, ImageType>;
+			friend PipelineResource<ResourceType, Derived, DeviceType, BufferType, ImageType>;
 
-			struct DrawData {
-				DrawData() = default;
-				DrawData(UI64 vertexCount, UI64 vertexOffset, UI64 indexCount, UI64 indexOffset, ResourceType* pResource, DynamicStateContainer dynamicStates)
-					: mVertexCount(vertexCount), mVertexOffset(vertexOffset), mIndexCount(indexCount), mIndexOffset(indexOffset), pPipelineResource(pResource), mDynamicStates(dynamicStates) {}
-
-				DynamicStateContainer mDynamicStates = {};
-
+			struct DrawResource {
 				ResourceType* pPipelineResource = nullptr;
-
-				UI64 mVertexCount = 0;
-				UI64 mVertexOffset = 0;
-
-				UI64 mIndexCount = 0;
-				UI64 mIndexOffset = 0;
 			};
-
-			struct DrawEntry {
-				DrawEntry() = default;
-				DrawEntry(BufferType* pVertexBuffer, BufferType* pIndexBuffer, const std::vector<DrawData>& drawData)
-					: pVertexBuffer(pVertexBuffer), pIndexBuffer(pIndexBuffer), mDrawData(drawData) {}
-
-				BufferType* pVertexBuffer = nullptr;
-				BufferType* pIndexBuffer = nullptr;
-
-				std::vector<DrawData> mDrawData = {};
-			};
-
 
 		public:
 			Pipeline() {}
-
-			UI64 AddStaticDrawEntry(BufferType* pVertexBuffer, BufferType* pIndexBuffer, const std::vector<DrawData>& drawData = {})
-			{
-				INSERT_INTO_VECTOR(mStaticDrawEntries, DrawEntry(pVertexBuffer, pIndexBuffer, drawData));
-				return mStaticDrawEntries.size() - 1;
-			}
-
-			UI64 AddStaticDrawData(UI64 entryID, UI64 vertexCount, UI64 vertexOffset, UI64 indexCount, UI64 indexOffset, ResourceType* pResource, DynamicStateContainer dynamicStates)
-			{
-				INSERT_INTO_VECTOR(mStaticDrawEntries[entryID].mDrawData, DrawData(vertexCount, vertexOffset, indexCount, indexOffset, pResource, dynamicStates));
-				return mStaticDrawEntries[entryID].mDrawData.size() - 1;
-			}
 
 			/**
 			 * Terminate the pipeline.
@@ -150,6 +136,14 @@ namespace Flint
 			 * Recreate the pipeline if the resources were changed.
 			 */
 			virtual void Recreate() = 0;
+
+			UI64 AddDrawResource(ResourceType* pResource)
+			{
+				mDrawResources[mIndex] = pResource;
+				return mIndex++;
+			}
+
+			ResourceType* GetDrawResource(UI64 ID) const { return mDrawResources.at(ID); }
 
 		public:
 			/**
@@ -228,11 +222,9 @@ namespace Flint
 			std::unordered_map<String, UniformLayout>& GetUniformLayouts() { return mUniformLayouts; }
 			const std::unordered_map<String, UniformLayout> GetUniformLayouts() const { return mUniformLayouts; }
 
-			std::vector<DrawEntry>& GetStaticDrawEntries() { return mStaticDrawEntries; }
-			const std::vector<DrawEntry> GetStaticDrawEntries() const { return mStaticDrawEntries; }
-
-			std::vector<DrawEntry>& GetStaticDynamicDrawEntries() { return mDynamicDrawEntries; }
-			const std::vector<DrawEntry> GetStaticDynamicDrawEntries() const { return mDynamicDrawEntries; }
+			std::unordered_map<UI64, ResourceType*>& GetDrawResources() { return mDrawResources; }
+			const std::unordered_map<UI64, ResourceType*> GetDrawResources() const { return mDrawResources; }
+			UI64 GetDrawResourcesIndex() const { return mIndex; }
 
 		protected:
 			/**
@@ -259,8 +251,9 @@ namespace Flint
 			std::unordered_map<String, UniformLayout> mUniformLayouts;
 			std::vector<ShaderDigest> mDigests;
 
-			std::vector<DrawEntry> mStaticDrawEntries;
-			std::vector<DrawEntry> mDynamicDrawEntries;
+			std::unordered_map<UI64, ResourceType*> mDrawResources;
+			UI64 mIndex = 0;
+
 			RenderTargetType* pRenderTarget = nullptr;
 		};
 

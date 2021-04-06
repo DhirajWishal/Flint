@@ -13,16 +13,15 @@ namespace Flint
 	namespace VulkanBackend
 	{
 		class VulkanScreenBoundRenderTargetS;
-		template<class TRenderTarget>
 		class VulkanGraphicsPipeline;
 
-		class VulkanCommandBufferList final : public Backend::CommandBufferList<VulkanDevice, VulkanBuffer, VulkanScreenBoundRenderTargetS, VulkanGraphicsPipeline<VulkanScreenBoundRenderTargetS>, VulkanPipelineResource<VulkanGraphicsPipeline<VulkanScreenBoundRenderTargetS>>> {
+		class VulkanCommandBufferList final : public Backend::CommandBufferList<VulkanDevice, VulkanBuffer, VulkanScreenBoundRenderTargetS, VulkanGraphicsPipeline, VulkanPipelineResource> {
 		public:
 			using DeviceType = VulkanDevice;
 			using BufferType = VulkanBuffer;
 			using ScreenBoundRenderTargetType = VulkanScreenBoundRenderTargetS;
-			using ScreenBoundGraphicsPipelineType = VulkanGraphicsPipeline<VulkanScreenBoundRenderTargetS>;
-			using ScreenBoundGraphicsPipelineResourceType = VulkanPipelineResource<VulkanGraphicsPipeline<VulkanScreenBoundRenderTargetS>>;
+			using ScreenBoundGraphicsPipelineType = VulkanGraphicsPipeline;
+			using ScreenBoundGraphicsPipelineResourceType = VulkanPipelineResource;
 		
 		public:
 			VulkanCommandBufferList() {}
@@ -32,7 +31,7 @@ namespace Flint
 			virtual void Terminate() override final;
 
 			virtual void ClearBuffers() override final;
-			virtual void ReCreateBuffers() override final;
+			virtual void ReceateBuffers() override final;
 
 			virtual void BeginBuffer(UI64 index) override final;
 			virtual void EndBuffer() override final;

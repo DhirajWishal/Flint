@@ -7,6 +7,8 @@
 
 #include "Core/Thread/ThreadUtilities.h"
 
+#include <algorithm>
+
 namespace Flint
 {
 	namespace VulkanBackend
@@ -50,22 +52,48 @@ namespace Flint
 			{
 				mCommandBufferList.BeginBuffer(counter);
 				mCommandBufferList.BindRenderTarget(*this);
-				
-				for (auto pPipeline : pGraphcisPipelinesStatic)
+
+				for (UI64 entryIndex = 0; entryIndex < mStaticDrawIndex; entryIndex++)
 				{
-					mCommandBufferList.BindPipeline(*pPipeline);
-					auto& drawEntries = pPipeline->GetStaticDrawEntries();
+					if (mStaticDrawEntries.find(entryIndex) == mStaticDrawEntries.end())
+						continue;
 
-					for (auto& entry : drawEntries)
+					const auto& entry = mStaticDrawEntries[entryIndex];
+					mCommandBufferList.BindVertexBuffer(*entry.pVertexBuffer, 0, 1);
+					mCommandBufferList.BindIndexBuffer(*entry.pIndexBuffer);
+
+					for (UI64 pipelineIndex = 0; pipelineIndex < entry.mIndex; pipelineIndex++)
 					{
-						mCommandBufferList.BindVertexBuffer(*entry.pVertexBuffer, 0, 1);
-						mCommandBufferList.BindIndexBuffer(*entry.pIndexBuffer);
+						if (entry.pPipelines.find(pipelineIndex) == entry.pPipelines.end())
+							continue;
 
-						for (auto& data : entry.mDrawData)
+						const auto pPipeline = static_cast<VulkanGraphicsPipeline*>(entry.pPipelines.at(pipelineIndex));
+						mCommandBufferList.BindPipeline(*pPipeline);
+
+						const auto& drawResources = pPipeline->GetDrawResources();
+						const UI64 drawResourceIndex = pPipeline->GetDrawResourcesIndex();
+
+						for (UI64 drawIndex = 0; drawIndex < drawResourceIndex; drawIndex++)
 						{
-							mCommandBufferList.SetDynamicStates(data.mDynamicStates);
-							mCommandBufferList.BindRenderResource(*data.pPipelineResource);
-							mCommandBufferList.DrawIndexed(data.mIndexCount, data.mIndexOffset, data.mVertexOffset);
+							if (drawResources.find(drawIndex) == drawResources.end())
+								continue;
+
+							const auto pResource = drawResources.at(drawIndex);
+							mCommandBufferList.BindRenderResource(*pResource);
+
+							const auto& drawData = pResource->GetDrawData();
+							const UI64 dIndex = pResource->GetDrawDataIndex();
+
+							for (UI64 index = 0; index < dIndex; index++)
+							{
+								if (drawData.find(index) == drawData.end())
+									continue;
+
+								const auto& data = drawData.at(index);
+
+								mCommandBufferList.SetDynamicStates(data.mDynamicStates);
+								mCommandBufferList.DrawIndexed(data.mIndexCount, data.mIndexOffset, data.mVertexOffset);
+							}
 						}
 					}
 				}
@@ -88,7 +116,7 @@ namespace Flint
 				Recreate();
 			else FLINT_VK_ASSERT(result, "Failed to acquire the next swap chain image!")
 
-				if (pGraphcisPipelinesDynamic.size())
+				if (mDynamicDrawEntries.size())
 					SubmitSecondaryCommands();
 		}
 
@@ -174,19 +202,19 @@ namespace Flint
 			CreateFrameBuffer(pDevice, { &vColorBuffer, &vDepthBuffer, &vSwapChain }, mExtent, static_cast<UI32>(mBufferCount));
 
 			// Re create renderable pipelines.
-			for (auto itr = pGraphcisPipelinesStatic.begin(); itr != pGraphcisPipelinesStatic.end(); itr++)
-				(*itr)->Recreate();
+			for (auto itr = mStaticDrawEntries.begin(); itr != mStaticDrawEntries.end(); itr++)
+				std::for_each(itr->second.pPipelines.begin(), itr->second.pPipelines.end(), [](std::pair<UI64, VulkanPipeline*> entry) { entry.second->RecreatePipeline(); });
 
-			for (auto itr = pGraphcisPipelinesDynamic.begin(); itr != pGraphcisPipelinesDynamic.end(); itr++)
-				(*itr)->Recreate();
+			for (auto itr = mDynamicDrawEntries.begin(); itr != mDynamicDrawEntries.end(); itr++)
+				std::for_each(itr->second.pPipelines.begin(), itr->second.pPipelines.end(), [](std::pair<UI64, VulkanPipeline*>& entry) { entry.second->RecreatePipeline(); });
 
 			// Prepare command buffers to be rendered.
-			mCommandBufferList.ReCreateBuffers();
+			mCommandBufferList.ReceateBuffers();
 			//for (auto& buffer : mChildCommandBuffers)
 			//	buffer->Terminate();
 			//
 			//mChildCommandBuffers.clear();
-			
+
 			BakeCommands();
 
 			vImagesInFlightFences.resize(vInFlightFences.size(), VK_NULL_HANDLE);

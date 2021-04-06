@@ -15,14 +15,14 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		template<class TRenderTarget>
 		class VulkanGraphicsPipeline;
 
 		/**
 		 * Software/ compute.
 		 */
-		class VulkanScreenBoundRenderTargetS final : public VulkanRenderTarget, public Backend::ScreenBoundRenderTarget<VulkanDevice, VulkanDisplay, VulkanCommandBufferList, VulkanGraphicsPipeline<VulkanScreenBoundRenderTargetS>> {
+		class VulkanScreenBoundRenderTargetS final : public VulkanRenderTarget, public Backend::ScreenBoundRenderTarget<VulkanDevice, VulkanDisplay, VulkanBuffer, VulkanPipeline, VulkanCommandBufferList, VulkanGraphicsPipeline> {
 		public:
+			using Super = Backend::ScreenBoundRenderTarget<VulkanDevice, VulkanDisplay, VulkanBuffer, VulkanPipeline, VulkanCommandBufferList, VulkanGraphicsPipeline>;
 			using DeviceType = VulkanDevice;
 			using DisplayType = VulkanDisplay;
 		
@@ -40,6 +40,9 @@ namespace Flint
 
 			VkSwapchainKHR GetSwapChain() const { return vSwapChain.GetSwapChain(); }
 			VkFramebuffer GetCurrentFrameBuffer() const { return vFrameBuffers[GetFrameIndex()]; }
+
+			virtual Vector2 VulkanRenderTarget::GetExtent() const { return Super::GetExtent(); }
+			virtual VulkanDevice* VulkanRenderTarget::GetDevice() const { return Super::GetDevice(); }
 
 		private:
 			void Recreate();

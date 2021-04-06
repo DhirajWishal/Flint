@@ -5,28 +5,24 @@
 
 #include "FObject.h"
 #include "Core\Backend\GraphicsPipeline.h"
-
-#if defined(FLINT_BACKEND_VULKAN)
-#define FLINT_SB_GRAPHICS_PIPELINE_BACKEND_SIZE		696Ui64
-
-#endif // defined(FLINT_BACKEND_VULKAN)
+#include "FBuffer.h"
 
 namespace Flint
 {
 	class FScreenBoundRenderTarget;
+	class FPipelineResource;
 
 	/**
-	 * Flint screen bound graphics pipeline.
-	 * This pipeline is compatible only with the screen bound render target.
+	 * Flint graphics pipeline.
 	 */
-	class FScreenBoundGraphicsPipeline final : public FObject<FLINT_SB_GRAPHICS_PIPELINE_BACKEND_SIZE> {
+	class FGraphicsPipeline final : public FObject {
 	public:
-		FScreenBoundGraphicsPipeline();
-		~FScreenBoundGraphicsPipeline();
+		FGraphicsPipeline();
+		~FGraphicsPipeline();
 
 		/**
 		 * Initialize the pipeline.
-		 * 
+		 *
 		 * @param renderTarget: The render target to which the pipeline is bound to.
 		 * @param shaders: The shaders to be used.
 		 * @param spec: The graphics specification of the pipeline.
@@ -37,5 +33,20 @@ namespace Flint
 		 * Terminate the pipeline.
 		 */
 		void Terminate();
+
+	public:
+		/**
+		 * Create a new uniform buffer container.
+		 * 
+		 * @return The uniform buffer container.
+		 */
+		FUniformBufferContainer CreateUniformBufferContainer() const;
+
+		/**
+		 * Create a new pipeline resource object.
+		 * 
+		 * @return The created pipeline resource.
+		 */
+		FPipelineResource CreatePipelineResource() const;
 	};
 }

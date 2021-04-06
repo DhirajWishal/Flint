@@ -5,13 +5,7 @@
 
 #include "FDevice.h"
 #include "FDisplay.h"
-#include "FScreenBoundGraphicsPipeline.h"
-
-#if defined(FLINT_BACKEND_VULKAN)
-#define FLINT_SCREEN_BOUND_RT_BACKEND_SIZE		720Ui64
-
-#endif // defined(FLINT_BACKEND_VULKAN)
-
+#include "FGraphicsPipeline.h"
 
 namespace Flint
 {
@@ -20,7 +14,7 @@ namespace Flint
 	 * Screen bound render targets output their frame to a display object.
 	 * Render targets in general are the onces responsible of rendering actual draw data.
 	 */
-	class FScreenBoundRenderTarget final : public FObject<FLINT_SCREEN_BOUND_RT_BACKEND_SIZE> {
+	class FScreenBoundRenderTarget final : public FObject {
 	public:
 		FScreenBoundRenderTarget();
 		~FScreenBoundRenderTarget();
@@ -39,14 +33,29 @@ namespace Flint
 		 */
 		void Terminate();
 
+		/**
+		 * Bake draw entries to command buffers.
+		 */
+		void BakeCommands();
+
+		/**
+		 * Prepare resources to draw.
+		 */
+		void PrepareToDraw();
+
+		/**
+		 * Submit command to the device to draw.
+		 */
+		void SubmitCommand();
+
 	public:
 		/**
-		 * Create a new screen bound graphics pipeline object.
+		 * Create a new graphics pipeline object.
 		 * 
 		 * @param shaders: The shader digests the pipeline uses.
 		 * @param spec: The pipeline specification.
 		 * @return The newly created graphics pipeline object.
 		 */
-		FScreenBoundGraphicsPipeline CreateGraphicsPipeline(const std::vector<ShaderDigest>& shaders, const Backend::GraphicsPipelineSpecification& spec);
+		FGraphicsPipeline CreateGraphicsPipeline(const std::vector<ShaderDigest>& shaders, const Backend::GraphicsPipelineSpecification& spec);
 	};
 }

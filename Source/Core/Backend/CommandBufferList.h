@@ -28,7 +28,7 @@ namespace Flint
 			virtual void Terminate() = 0;
 
 			virtual void ClearBuffers() = 0;
-			virtual void ReCreateBuffers() = 0;
+			virtual void ReceateBuffers() = 0;
 
 			virtual void BeginBuffer(UI64 index) = 0;
 			virtual void BeginNextBuffer() { BeginBuffer(IncrementIndex()); }

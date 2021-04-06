@@ -5,21 +5,16 @@
 
 #include "FDevice.h"
 
-#if defined(FLINT_BACKEND_VULKAN)
-#define FLINT_BUFFER_BACKEND_SIZE			64Ui64  
-
-#endif // defined(FLINT_BACKEND_VULKAN)
-
-
 namespace Flint
 {
 	/**
 	 * Flint buffer object.
 	 * This object is used to store data in a device (GPU).
 	 */
-	class FBuffer final : public FObject<FLINT_BUFFER_BACKEND_SIZE> {
+	class FBuffer final : public FObject {
 	public:
 		FBuffer();
+		explicit FBuffer(Backend::BackendObject* pBackendObject);
 		~FBuffer();
 
 		/**
@@ -70,4 +65,6 @@ namespace Flint
 		FDevice GetDevice() const;
 		UI64 GetSize() const;
 	};
+
+	typedef std::unordered_map<String, FBuffer> FUniformBufferContainer;
 }

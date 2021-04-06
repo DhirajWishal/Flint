@@ -5,18 +5,13 @@
 
 #include "FDevice.h"
 
-#if defined(FLINT_BACKEND_VULKAN)
-#define FLINT_SHADER_BACKEND_SIZE	128Ui64
-
-#endif // defined(FLINT_BACKEND_VULKAN)
-
 namespace Flint
 {
 	/**
 	 * Flint shader object.
 	 * This object holds information about a single shader object.
 	 */
-	class FShader final : public FObject<FLINT_SHADER_BACKEND_SIZE> {
+	class FShader final : public FObject {
 	public:
 		FShader();
 		~FShader();

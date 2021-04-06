@@ -5,6 +5,7 @@
 
 #include "Parents/AssetRegistry.h"
 #include "Components/SceneComponent.h"
+#include "Flint\Objects\FScreenBoundRenderTarget.h"
 
 namespace Flint
 {
@@ -110,6 +111,6 @@ namespace Flint
 		void SubmitToDrawQueue(RenderResource& renderResource, SceneComponent& sceneComponent, const Backend::DynamicStateContainer& dynamicStates = {});
 
 	private:
-		ScreenBoundRenderTarget mRenderTarget = {};
+		FScreenBoundRenderTarget mRenderTarget = {};
 	};
 }

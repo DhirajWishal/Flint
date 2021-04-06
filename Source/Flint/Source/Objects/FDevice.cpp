@@ -22,8 +22,7 @@ namespace Flint
 
 	FDevice::FDevice(Backend::BackendObject* pBackendObject)
 	{
-		std::copy(reinterpret_cast<BYTE*>(pBackendObject), reinterpret_cast<BYTE*>(pBackendObject) + FLINT_DEVICE_BACKEND_SIZE, pBuffer);
-		this->pBackendObject = reinterpret_cast<Backend::BackendObject*>(pBuffer);
+		this->pBackendObject = pBackendObject;
 	}
 
 	FDevice::~FDevice()

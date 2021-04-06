@@ -17,6 +17,11 @@ namespace Flint
 		Construct<Buffer>();
 	}
 
+	FBuffer::FBuffer(Backend::BackendObject* pBackendObject)
+	{
+		pBackendObject = pBackendObject;
+	}
+
 	FBuffer::~FBuffer()
 	{
 		Destruct<Buffer>();

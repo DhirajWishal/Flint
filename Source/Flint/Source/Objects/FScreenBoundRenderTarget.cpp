@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "Flint\Objects\FScreenBoundRenderTarget.h"
-#include "Flint\Objects\FScreenBoundGraphicsPipeline.h"
+#include "Flint\Objects\FGraphicsPipeline.h"
 
 #if defined(FLINT_BACKEND_VULKAN)
 #include "VulkanBackend\RenderTargets\VulkanScreenBoundRenderTargetS.h"
@@ -32,10 +32,25 @@ namespace Flint
 	{
 		GetAs<RenderTarget>().Terminate();
 	}
-	
-	FScreenBoundGraphicsPipeline FScreenBoundRenderTarget::CreateGraphicsPipeline(const std::vector<ShaderDigest>& shaders, const Backend::GraphicsPipelineSpecification& spec)
+
+	void FScreenBoundRenderTarget::BakeCommands()
 	{
-		FScreenBoundGraphicsPipeline pipeline = {};
+		GetAs<RenderTarget>().BakeCommands();
+	}
+
+	void FScreenBoundRenderTarget::PrepareToDraw()
+	{
+		GetAs<RenderTarget>().PrepareToDraw();
+	}
+
+	void FScreenBoundRenderTarget::SubmitCommand()
+	{
+		GetAs<RenderTarget>().SubmitCommand();
+	}
+	
+	FGraphicsPipeline FScreenBoundRenderTarget::CreateGraphicsPipeline(const std::vector<ShaderDigest>& shaders, const Backend::GraphicsPipelineSpecification& spec)
+	{
+		FGraphicsPipeline pipeline = {};
 		pipeline.Initialize(*this, shaders, spec);
 
 		return pipeline;

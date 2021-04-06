@@ -7,12 +7,6 @@
 #include "Core\Backend\ShaderDigest.h"
 #include "Core\Backend\Buffer.h"
 
-#if defined(FLINT_BACKEND_VULKAN)
-#define FLINT_DEVICE_BACKEND_SIZE		120Ui64
-
-#endif // defined(FLINT_BACKEND_VULKAN)
-
-
 namespace Flint
 {
 	class FDisplay;
@@ -25,7 +19,7 @@ namespace Flint
 	 * Flint device object.
 	 * This object is responsible for all the asset creations and their lifetimes.
 	 */
-	class FDevice final : public FObject<FLINT_DEVICE_BACKEND_SIZE> {
+	class FDevice final : public FObject {
 	public:
 		FDevice();
 		explicit FDevice(Backend::BackendObject* pBackendObject);

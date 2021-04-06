@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "VulkanBackend\VulkanExporter.h"
+#include "Flint\Objects\FPipelineResource.h"
 
 namespace Flint
 {
@@ -20,8 +20,8 @@ namespace Flint
 		 */
 		void Destroy();
 
-		UniformBufferContainer mUniformBuffers;
-		ScreenBoundGraphicsPipelineResource mPipelineResource = {};
+		FUniformBufferContainer mUniformBuffers;
+		FPipelineResource mPipelineResource = {};
 
 		std::vector<UI64> mDrawDataIDs;
 	};

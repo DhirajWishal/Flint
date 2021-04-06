@@ -21,7 +21,7 @@ namespace Flint
 
 	void GraphicsBackendObject::InitializeDisplay(UI32 width, UI32 height, const char* pTitle)
 	{
-		mDisplay.Initialize(&mInstance, Vector2(static_cast<float>(width), static_cast<float>(height)), pTitle);
+		mDisplay.Initialize(mInstance, Vector2(static_cast<float>(width), static_cast<float>(height)), pTitle);
 	}
 
 	void GraphicsBackendObject::TerminateDisplay()
@@ -31,7 +31,7 @@ namespace Flint
 
 	void GraphicsBackendObject::InitializeDevice()
 	{
-		mDevice.Initialize(&mInstance);
+		mDevice.Initialize(mInstance);
 	}
 
 	void GraphicsBackendObject::TerminateDevice()

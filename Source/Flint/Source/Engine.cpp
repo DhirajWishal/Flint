@@ -43,7 +43,7 @@ namespace Flint
 
 	void Engine::CreateRenderTarget(UI32 bufferCount)
 	{
-		mRenderTarget.Initialize(&mDevice, &mDisplay, bufferCount);
+		mRenderTarget.Initialize(mDevice, mDisplay, bufferCount);
 	}
 
 	void Engine::PrepareRenderTargetToRender()
@@ -53,7 +53,7 @@ namespace Flint
 
 	void Engine::SetupSceneComponent(SceneComponent& sceneComponent, const WireFrame& wireFrame, const std::vector<ShaderDigest>& shaders, const Backend::GraphicsPipelineSpecification& spec)
 	{
-		sceneComponent.mPipeline.Initialize(&mRenderTarget, shaders, spec);
+		sceneComponent.mPipeline.Initialize(mRenderTarget, shaders, spec);
 		sceneComponent.mWireFrame = wireFrame;
 
 		sceneComponent.mDrawID = sceneComponent.mPipeline.AddStaticDrawEntry(&sceneComponent.mWireFrame.mVertexBuffer, &sceneComponent.mWireFrame.mIndexBuffer);
@@ -68,9 +68,9 @@ namespace Flint
 
 	void Engine::SubmitToDrawQueue(RenderResource& renderResource, SceneComponent& sceneComponent, const Backend::DynamicStateContainer& dynamicStates)
 	{
-		renderResource.mUniformBuffers = sceneComponent.mPipeline.CreateUniformBuffers();
+		renderResource.mUniformBuffers = sceneComponent.mPipeline.CreateUniformBufferContainer();
 		renderResource.mPipelineResource = sceneComponent.mPipeline.CreatePipelineResource();
-		renderResource.mPipelineResource.RegisterUniformBuffers(renderResource.mUniformBuffers);
+		renderResource.mPipelineResource.RegisterUniformBufferContainer(renderResource.mUniformBuffers);
 		for (auto& data : sceneComponent.mWireFrame.mDrawData)
 			INSERT_INTO_VECTOR(renderResource.mDrawDataIDs, sceneComponent.mPipeline.AddStaticDrawData(sceneComponent.mDrawID, data.mVertexCount, data.mVertexOffset, data.mIndexCount, data.mIndexOffset, &renderResource.mPipelineResource, dynamicStates));
 	}

@@ -6,19 +6,13 @@
 #include "FInstance.h"
 #include "Core\Inputs\InputCenter.h"
 
-#if defined(FLINT_BACKEND_VULKAN)
-#define FLINT_DISPLAY_BACKEND_SIZE		1896Ui64
-
-#endif // defined(FLINT_BACKEND_VULKAN)
-
-
 namespace Flint
 {
 	/**
 	 * Flint device object.
 	 * This object holds information about a single backend display object.
 	 */
-	class FDisplay final : public FObject<FLINT_DISPLAY_BACKEND_SIZE> {
+	class FDisplay final : public FObject {
 	public:
 		FDisplay();
 		~FDisplay();

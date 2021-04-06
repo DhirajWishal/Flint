@@ -46,7 +46,7 @@ namespace Flint
 				vkResetCommandBuffer(vBuffer, 0);
 		}
 
-		void VulkanCommandBufferList::ReCreateBuffers()
+		void VulkanCommandBufferList::ReceateBuffers()
 		{
 			pDevice->FreeComandBuffers(vCommandPool, vBuffers);
 

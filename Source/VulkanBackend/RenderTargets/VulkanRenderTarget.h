@@ -18,6 +18,9 @@ namespace Flint
 			VkRenderPass GetRenderPass() const { return vRenderPass; }
 			virtual VkFramebuffer GetCurrentFrameBuffer() const = 0;
 
+			virtual Vector2 GetExtent() const = 0;
+			virtual VulkanDevice* GetDevice() const = 0;
+
 		protected:
 			void CreateRenderPass(VulkanDevice* pDevice,std::vector<VulkanRenderTargetAttachment*> pAttachments, VkPipelineBindPoint vBindPoint);
 			void DestroyRenderPass(VulkanDevice* pDevice);
