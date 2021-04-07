@@ -47,7 +47,4 @@ project "SimpleScene"
 	filter "configurations:Release"
 	    buildoptions "/MT"
 
-	filter "configurations:Distribution"
-	    buildoptions "/MT"
-
 	filter ""

@@ -9,6 +9,13 @@
 #include "VulkanBackend\VulkanInstance.h"
 typedef Flint::VulkanBackend::VulkanInstance Instance;
 
+#elif defined(FLINT_BACKEND_DIRECT_X_12)
+
+#elif defined(FLINT_BACKEND_WEB_GPU)
+
+#else
+error "Selected backend is invalid! Make sure that you select a proper supported backend!"
+
 #endif // defined(FLINT_BACKEND_VULKAN)
 
 

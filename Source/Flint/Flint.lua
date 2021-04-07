@@ -30,7 +30,7 @@ project "Flint"
 		"%{IncludeDir.FreeImage}",
 	}
 
-	filter "configurations:Debug"
+	filter "configurations:Debug*"
 		libdirs {
 			"%{IncludeLib.Assimp}",
 			"%{IncludeLib.FreeImageD}",
@@ -43,20 +43,7 @@ project "Flint"
 			"FreeImageLibd"
 		}
 
-	filter "configurations:Release"
-		libdirs {
-			"%{IncludeLib.Assimp}",
-			"%{IncludeLib.FreeImageR}",
-		}
-
-		links { 
-		    "VulkanBackend",
-			"ShaderTools",
-			"assimp-vc142-mt",
-			"FreeImageLib"
-		}
-
-	filter "configurations:Distribution"
+	filter "configurations:Release*"
 		libdirs {
 			"%{IncludeLib.Assimp}",
 			"%{IncludeLib.FreeImageR}",

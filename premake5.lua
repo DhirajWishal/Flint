@@ -5,24 +5,43 @@ workspace "Flint"
 	architecture "x64"
 
 	configurations {
-		"Debug",
-		"Release",
-		"Distribution",
+		"Debug Vulkan",
+		"Release Vulkan",
+
+		"Debug DirectX 12",
+		"Release DirectX 12",
+
+		"Debug WebGPU",
+		"Release WebGPU",
 	}
 
-	filter "configurations:Debug"
+	filter "configurations:Debug Vulkan"
 		defines { "FLINT_DEBUG", "FLINT_BACKEND_VULKAN" }
 		symbols "On"
 		
-	filter "configurations:Release"
+	filter "configurations:Release Vulkan"
 		defines { "FLINT_RELEASE", "FLINT_BACKEND_VULKAN" }
 		optimize "On"
 
-	filter "configurations:Distribution"
-		defines { "FLINT_DISTRIBUTION", "FLINT_BACKEND_VULKAN" }
+	filter "configurations:Debug DirectX 12"
+		defines { "FLINT_DEBUG", "FLINT_BACKEND_DIRECT_X_12" }
+		symbols "On"
+		
+	filter "configurations:Release DirectX 12"
+		defines { "FLINT_RELEASE", "FLINT_BACKEND_DIRECT_X_12" }
+		optimize "On"
+
+	filter "configurations:Debug WebGPU"
+		defines { "FLINT_DEBUG", "FLINT_BACKEND_WEB_GPU" }
+		symbols "On"
+		
+	filter "configurations:Release WebGPU"
+		defines { "FLINT_RELEASE", "FLINT_BACKEND_WEB_GPU" }
 		optimize "On"
 
 	filter ""
+
+	startproject "Flint"
 
 
 -- Libraries
