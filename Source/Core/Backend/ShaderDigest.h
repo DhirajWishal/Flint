@@ -7,11 +7,19 @@
 
 namespace Flint
 {
+	/**
+	 * Shader location enum.
+	 * This defines the location of the shader in the pipeline.
+	 */
 	enum class ShaderLocation : UI8 {
 		UNDEFINED,
 		VERTEX, TESSELLATION, GEOMETRY, FRAGMENT, COMPUTE,
 	};
 
+	/**
+	 * Uniform type enum.
+	 * This defines what the uniform type is.
+	 */
 	enum class UniformType : UI8 {
 		UNDEFINED,
 		UNIFORM_BUFFER, STORAGE_BUFFER, UNIFORM_BUFFER_DYNAMIC, STORAGE_BUFFER_DYNAMIC,
@@ -23,6 +31,10 @@ namespace Flint
 		ACCELERATION_STRUCTURE,
 	};
 
+	/**
+	 * Shader attribute type enum.
+	 * This defines what the shader attribute type is.
+	 */
 	enum class ShaderAttribueType : UI8 {
 		UNDEFINED,
 		POSITION, NORMAL, UV_COORDINATES,

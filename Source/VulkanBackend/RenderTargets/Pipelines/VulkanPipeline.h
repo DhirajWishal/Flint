@@ -17,7 +17,7 @@ namespace Flint
 	{
 		class VulkanPipeline;
 
-		class VulkanPipelineResource : public Backend::PipelineResource<VulkanPipelineResource, VulkanPipeline, VulkanDevice, VulkanBuffer, VulkanImage> {
+		class VulkanPipelineResource : public Backend::PipelineResource<VulkanPipelineResource, VulkanPipeline, VulkanBuffer, VulkanImage> {
 			friend VulkanPipeline;
 
 		public:

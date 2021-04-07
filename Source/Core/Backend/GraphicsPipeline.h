@@ -9,6 +9,10 @@ namespace Flint
 {
 	namespace Backend
 	{
+		/**
+		 * Pipeline primitive topology.
+		 * This describes how the vertexes are connected.
+		 */
 		enum class PrimitiveTopology : UI8 {
 			POINT_LIST,
 			LINE_LIST,
@@ -23,6 +27,9 @@ namespace Flint
 			PATCH_LIST,
 		};
 
+		/**
+		 * Pipeline cull mode.
+		 */
 		enum class CullMode : UI8 {
 			NONE,
 			FRONT,
@@ -30,17 +37,36 @@ namespace Flint
 			FRONT_AND_BACK
 		};
 
+		/**
+		 * Pipeline front face.
+		 * This defines how to find the front size of a triangle.
+		 */
 		enum class FrontFace : UI8 {
+			/**
+			 * In this mode, the front side of it is facing away from you.
+			 */
 			COUNTER_CLOCKWISE,
-			CLOCKWISE,
+
+			/**
+			 * In this mode, the front is facing towards you.
+			 */
+			 CLOCKWISE,
 		};
 
+		/**
+		 * Pipeline polygon mode.
+		 * This defines how a vertex group. A vertex group is defined by the primitive topology.
+		 */
 		enum class PolygonMode : UI8 {
 			FILL,
 			LINE,
 			POINT,
 		};
 
+		/**
+		 * Pipeline color blend logic.
+		 * This defined what logic to apply when color blending.
+		 */
 		enum class ColorBlendLogic : UI8 {
 			CLEAR,
 			AND,
@@ -60,6 +86,10 @@ namespace Flint
 			SET,
 		};
 
+		/**
+		 * Pipeline depth compare logic.
+		 * This defines what logic to apply when depth comparing.
+		 */
 		enum class DepthCompareLogic : UI8 {
 			NEVER,
 			LESS,
@@ -71,6 +101,10 @@ namespace Flint
 			ALWAYS,
 		};
 
+		/**
+		 * Graphics pipeline specification.
+		 * This structure describes how the pipeline should handle certain aspects of it.
+		 */
 		struct GraphicsPipelineSpecification {
 			float mColorBlendConstants[4] = {
 				CREATE_COLOR_256(255), CREATE_COLOR_256(255),
@@ -106,6 +140,13 @@ namespace Flint
 
 		/**
 		 * Graphics Pipeline object.
+		 * Graphics pipelines use rasterization to render graphics to a render target.
+		 *
+		 * @tparam Derived: The derived object type.
+		 * @tparam TDevice: The device type.
+		 * @tparam TBuffer: The buffer type.
+		 * @tparam TImage: The image type.
+		 * @tparam TResource: The resource type.
 		 */
 		template<class Derived, class TDevice, class TRenderTarget, class TBuffer, class TImage, class TResource>
 		class GraphicsPipeline : public Pipeline<Derived, TDevice, TRenderTarget, TBuffer, TImage, TResource> {
@@ -123,6 +164,11 @@ namespace Flint
 			 */
 			virtual void Initialize(TRenderTarget* pRenderTarget, const std::vector<ShaderDigest>& shaderDigests, const GraphicsPipelineSpecification& spec) = 0;
 
+			/**
+			 * Get the graphics specification.
+			 *
+			 * @return The const graphics pipeline specification structure.
+			 */
 			const GraphicsPipelineSpecification GetSpecification() const { return mSpec; }
 
 		protected:

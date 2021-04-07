@@ -36,5 +36,8 @@ namespace Flint
 		 * @param container: The uniform buffer container to be registered.
 		 */
 		void RegisterUniformBufferContainer(const FUniformBufferContainer& container);
+
+	private:
+		bool bShouldDelete = false;
 	};
 }

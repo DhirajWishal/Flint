@@ -63,5 +63,9 @@ namespace Flint
 		 * @param profile: The buffer's memory profile.
 		 */
 		FBuffer CreateBuffer(UI64 size, Backend::BufferUsage usage, Backend::MemoryProfile profile);
+
+
+	private:
+		bool bShouldDelete = false;
 	};
 }

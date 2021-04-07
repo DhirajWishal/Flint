@@ -5,7 +5,7 @@
 
 #include "Device.h"
 #include "ShaderDigest.h"
-#include "Core\Maths\Vector\Vector2.h"
+#include "DynamicStateContainer.h"
 
 namespace Flint
 {
@@ -24,16 +24,24 @@ namespace Flint
 
 		/**
 		 * Pipeline resource object.
-		 * This contains the resources required to submit uniforms to the draw call.
+		 * This contains the resources required to submit uniforms and images to the draw call.
+		 *
+		 * @tparam TDerived: The derived type.
+		 * @tparam TPipeline: The pipeline type.
+		 * @tparam TBuffer: The buffer type.
+		 * @tparam TImage: The image type.
 		 */
-		template<class TDerived, class TPipeline, class TDevice, class TBuffer, class TImage>
+		template<class TDerived, class TPipeline, class TBuffer, class TImage>
 		class PipelineResource : public BackendObject {
 		public:
 			using DerivedType = TDerived;
-			using DeviceType = TDevice;
 			using BufferType = TBuffer;
 			using ImageType = TImage;
 
+			/**
+			 * Draw data structure.
+			 * This structure contains the final information to be drawn.
+			 */
 			struct DrawData {
 				DrawData() = default;
 				DrawData(UI64 vertexCount, UI64 vertexOffset, UI64 indexCount, UI64 indexOffset, DynamicStateContainer dynamicStates)
@@ -70,19 +78,57 @@ namespace Flint
 			 * @param uniformBuffers: The uniform buffers to be registered.
 			 */
 			virtual void RegisterUniformBuffers(const UniformBufferContainer<BufferType>& uniformBuffers) = 0;
+
+			/**
+			 * Register uniform images to the resource object.
+			 * All the uniform images are to be registered ONCE.
+			 *
+			 * @param unformImages: The uniform images to be registered.
+			 */
 			virtual void RegisterUniformImages(const UniformImageContainer<ImageType>& unformImages) = 0;
 
+			/**
+			 * Get the pipeline which the resource is bound to.
+			 *
+			 * @return The pipeline pointer.
+			 */
 			TPipeline* GetPipeline() const { return pPipeline; }
 
+			/**
+			 * Add draw data to the pipeline resource.
+			 *
+			 * @param vertexCount: The number of vertexes to draw.
+			 * @param vertexOffset: The vertex offset in the buffer.
+			 * @param indexCount: The number of indexes to draw.
+			 * @param indexOffset: The index offset in the buffer.
+			 * @param dynamicStates: The dynamic states of the pipeline to be drawn.
+			 * @return Draw data ID.
+			 */
 			UI64 AddDrawData(UI64 vertexCount, UI64 vertexOffset, UI64 indexCount, UI64 indexOffset, DynamicStateContainer dynamicStates)
 			{
 				mDrawData[mIndex] = DrawData(vertexCount, vertexOffset, indexCount, indexOffset, dynamicStates);
 				return mIndex++;
 			}
 
+			/**
+			 * Get draw data from the resource.
+			 *
+			 * @return The draw data map.
+			 */
 			std::unordered_map<UI64, DrawData>& GetDrawData() { return mDrawData; }
+
+			/**
+			 * Get draw data from the resource.
+			 *
+			 * @return The draw data map.
+			 */
 			const std::unordered_map<UI64, DrawData> GetDrawData() const { return mDrawData; }
 
+			/**
+			 * Get the draw data index counter.
+			 *
+			 * @return The index.
+			 */
 			UI64 GetDrawDataIndex() const { return mIndex; }
 
 		protected:
@@ -102,6 +148,12 @@ namespace Flint
 		 * 1. Graphics pipeline.
 		 * 2. Compute pipeline.
 		 * 3. Ray Tracing pipeline.
+		 *
+		 * @tparam Derived: The derived type.
+		 * @tparam TDevice: The device type.
+		 * @tparam TBuffer: The buffer type.
+		 * @tparam TImage: The image type.
+		 * @tparam TResource: The resource type.
 		 */
 		template<class Derived, class TDevice, class TRenderTarget, class TBuffer, class TImage, class TResource>
 		class Pipeline : public BackendObject {
@@ -112,11 +164,7 @@ namespace Flint
 			using ResourceType = TResource;
 			using RenderTargetType = TRenderTarget;
 
-			friend PipelineResource<ResourceType, Derived, DeviceType, BufferType, ImageType>;
-
-			struct DrawResource {
-				ResourceType* pPipelineResource = nullptr;
-			};
+			friend PipelineResource<ResourceType, Derived, BufferType, ImageType>;
 
 		public:
 			Pipeline() {}
@@ -137,12 +185,20 @@ namespace Flint
 			 */
 			virtual void Recreate() = 0;
 
-			UI64 AddDrawResource(ResourceType* pResource)
-			{
-				mDrawResources[mIndex] = pResource;
-				return mIndex++;
-			}
+			/**
+			 * Add draw resource to the pipeline to be rendered.
+			 *
+			 * @param pResource: The resource pointer.
+			 * @return The draw resource ID.
+			 */
+			UI64 AddDrawResource(ResourceType* pResource) { mDrawResources[mIndex] = pResource; return mIndex++; }
 
+			/**
+			 * Get draw resource pointer using the index.
+			 *
+			 * @param ID: The resource ID.
+			 * @return The resource pointer.
+			 */
 			ResourceType* GetDrawResource(UI64 ID) const { return mDrawResources.at(ID); }
 
 		public:
@@ -151,62 +207,28 @@ namespace Flint
 			 *
 			 * @return The created uniform buffer container.
 			 */
-			UniformBufferContainer<BufferType> CreateUniformBuffers() const
-			{
-				DeviceType* pDevice = pRenderTarget->GetDevice();
-
-				UniformBufferContainer<BufferType> container;
-				for (auto itr = mUniformLayouts.begin(); itr != mUniformLayouts.end(); itr++)
-				{
-					if (itr->second.mType == UniformType::UNIFORM_BUFFER || itr->second.mType == UniformType::UNIFORM_BUFFER_DYNAMIC)
-					{
-						BufferType buffer = {};
-						buffer.Initialize(pDevice, itr->second.mSize, Backend::BufferUsage::UNIFORM, Backend::MemoryProfile::TRANSFER_FRIENDLY);
-						container[itr->first] = buffer;
-					}
-				}
-
-				return container;
-			}
+			UniformBufferContainer<BufferType> CreateUniformBuffers() const;
 
 			/**
 			 * Destroy created uniform buffers.
 			 *
 			 * @param uniformBuffers: The uniform buffers to be destroyed.
 			 */
-			void DestroyUniformBuffers(UniformBufferContainer<BufferType>& uniformBuffers) const
-			{
-				for (auto bufferPair : uniformBuffers)
-					bufferPair.second.Terminate();
+			void DestroyUniformBuffers(UniformBufferContainer<BufferType>& uniformBuffers) const;
 
-				uniformBuffers.clear();
-			}
+			/**
+			 * Create uniform images which can be bound to the pipeline instance.
+			 *
+			 * @return The created uniform image container.
+			 */
+			UniformImageContainer<ImageType> CreateUniformImages() const;
 
-			UniformImageContainer<ImageType> CreateUniformImages()
-			{
-				DeviceType* pDevice = pRenderTarget->GetDevice();
-
-				UniformImageContainer<ImageType> container;
-				for (auto itr = mUniformLayouts.begin(); itr != mUniformLayouts.end(); itr++)
-				{
-					if (itr->second.mType == UniformType::STORAGE_IMAGE ||
-						itr->second.mType == UniformType::SAMPLER_2D ||
-						itr->second.mType == UniformType::SAMPLER_2D_ARRAY ||
-						itr->second.mType == UniformType::SAMPLER_CUBE ||
-						itr->second.mType == UniformType::SAMPLER_CUBE_ARRAY)
-						container[itr->first] = {};
-				}
-
-				return container;
-			}
-
-			void DestroyUniformBuffers(UniformImageContainer<ImageType>& uniformImages) const
-			{
-				for (auto imagePair : uniformImages)
-					imagePair.second.Terminate();
-
-				uniformImages.clear();
-			}
+			/**
+			 * Destroy created uniform images.
+			 *
+			 * @param uniformBuffers: The uniform images to be destroyed.
+			 */
+			void DestroyUniformImages(UniformImageContainer<ImageType>& uniformImages) const;
 
 		public:
 			/**
@@ -217,13 +239,46 @@ namespace Flint
 			virtual ResourceType CreatePipelineResource() = 0;
 
 		public:
+			/**
+			 * Get the render target which the pipeline is bound to.
+			 *
+			 * @return The render target pointer.
+			 */
 			RenderTargetType* GetRenderTarget() const { return pRenderTarget; }
 
+			/**
+			 * Get the uniform layouts of the pipeline.
+			 *
+			 * @return The uniform layout map.
+			 */
 			std::unordered_map<String, UniformLayout>& GetUniformLayouts() { return mUniformLayouts; }
+
+			/**
+			 * Get the uniform layouts of the pipeline.
+			 *
+			 * @return The uniform layout map.
+			 */
 			const std::unordered_map<String, UniformLayout> GetUniformLayouts() const { return mUniformLayouts; }
 
+			/**
+			 * Get draw resource of the pipeline.
+			 *
+			 * @return Draw resource map.
+			 */
 			std::unordered_map<UI64, ResourceType*>& GetDrawResources() { return mDrawResources; }
+
+			/**
+			 * Get draw resource of the pipeline.
+			 *
+			 * @return Draw resource map.
+			 */
 			const std::unordered_map<UI64, ResourceType*> GetDrawResources() const { return mDrawResources; }
+
+			/**
+			 * Get the draw resource index counter.
+			 *
+			 * @return The index.
+			 */
 			UI64 GetDrawResourcesIndex() const { return mIndex; }
 
 		protected:
@@ -232,20 +287,7 @@ namespace Flint
 			 *
 			 * @param shaderDigest: The shader digests that contain the uniform data.
 			 */
-			void ResolveUniformLayouts(const std::vector<ShaderDigest>& shaderDigests)
-			{
-				for (auto itr = shaderDigests.begin(); itr != shaderDigests.end(); itr++)
-				{
-					for (auto pUniform = itr->mUniforms.begin(); pUniform != itr->mUniforms.end(); pUniform++)
-					{
-						if (pUniform->mType == UniformType::UNIFORM_BUFFER ||
-							pUniform->mType == UniformType::UNIFORM_BUFFER_DYNAMIC ||
-							pUniform->mType == UniformType::STORAGE_BUFFER ||
-							pUniform->mType == UniformType::STORAGE_BUFFER_DYNAMIC)
-							mUniformLayouts[pUniform->mName] = *pUniform;
-					}
-				}
-			}
+			void ResolveUniformLayouts(const std::vector<ShaderDigest>& shaderDigests);
 
 		protected:
 			std::unordered_map<String, UniformLayout> mUniformLayouts;
@@ -255,108 +297,6 @@ namespace Flint
 			UI64 mIndex = 0;
 
 			RenderTargetType* pRenderTarget = nullptr;
-		};
-
-		enum class DynamicStateFlags : UI8 {
-			UNDEFINED,
-			VIEWPORT = BIT_SHIFT(0),
-			SCISSOR = BIT_SHIFT(1),
-			LINE_WIDTH = BIT_SHIFT(2),
-			DEPTH_BIAS = BIT_SHIFT(3),
-			BLEND_CONSTANTS = BIT_SHIFT(4),
-			DEPTH_BOUNDS = BIT_SHIFT(5),
-		};
-
-		constexpr DynamicStateFlags operator|(const DynamicStateFlags& lhs, const DynamicStateFlags& rhs)
-		{
-			return static_cast<DynamicStateFlags>(static_cast<UI8>(lhs) | static_cast<UI8>(rhs));
-		}
-
-		constexpr bool operator&(const DynamicStateFlags& lhs, const DynamicStateFlags& rhs)
-		{
-			return static_cast<UI8>(lhs) & static_cast<UI8>(rhs);
-		}
-
-		struct DynamicStateContainer {
-			struct DynamicStateObject {
-				DynamicStateObject(DynamicStateFlags flag) : mFlag(flag) {}
-				virtual ~DynamicStateObject() {}
-
-				DynamicStateFlags GetFlag() const { return mFlag; }
-
-				DynamicStateFlags mFlag = DynamicStateFlags::UNDEFINED;
-			};
-
-			struct ViewPort : public DynamicStateObject {
-				ViewPort() : DynamicStateObject(DynamicStateFlags::VIEWPORT) {}
-				ViewPort(const Vector2& extent, const Vector2& offset, const Vector2& depth)
-					: DynamicStateObject(DynamicStateFlags::VIEWPORT), mExtent(extent), mOffset(offset), mDepth(depth) {}
-
-				Vector2 mExtent = Vector2::Zero;
-				Vector2 mOffset = Vector2::Zero;
-				Vector2 mDepth = Vector2::Zero;	// { Min, Max }
-			};
-
-			struct Scissor : public DynamicStateObject {
-				Scissor() : DynamicStateObject(DynamicStateFlags::SCISSOR) {}
-				Scissor(const Vector2& extent, const Vector2& offset) : DynamicStateObject(DynamicStateFlags::SCISSOR), mExtent(extent), mOffset(offset) {}
-
-				Vector2 mExtent = Vector2::Zero;
-				Vector2 mOffset = Vector2::Zero;
-			};
-
-			struct LineWidth : public DynamicStateObject {
-				LineWidth() : DynamicStateObject(DynamicStateFlags::LINE_WIDTH) {}
-				LineWidth(const float width) : DynamicStateObject(DynamicStateFlags::LINE_WIDTH), mLineWidth(width) {}
-
-				float mLineWidth = 1.0f;
-			};
-
-			struct DepthBias : public DynamicStateObject {
-				DepthBias() : DynamicStateObject(DynamicStateFlags::DEPTH_BIAS) {}
-				DepthBias(const float biasFactor, const float clampFactor, const float slopeFactor)
-					: DynamicStateObject(DynamicStateFlags::DEPTH_BIAS), mDepthBiasFactor(biasFactor),
-					mDepthClampFactor(clampFactor), mDepthSlopeFactor(slopeFactor) {}
-
-				float mDepthBiasFactor = 0.0f;
-				float mDepthClampFactor = 0.0f;
-				float mDepthSlopeFactor = 0.0f;
-			};
-
-			struct BlendConstants : public DynamicStateObject {
-				BlendConstants() : DynamicStateObject(DynamicStateFlags::BLEND_CONSTANTS) {}
-				BlendConstants(const float(&constants)[4]) : DynamicStateObject(DynamicStateFlags::BLEND_CONSTANTS)
-				{
-					std::copy(constants, constants + 4, mConstants);
-				}
-
-				float mConstants[4] = {};
-			};
-
-			struct DepthBounds : public DynamicStateObject {
-				DepthBounds() : DynamicStateObject(DynamicStateFlags::DEPTH_BOUNDS) {}
-				DepthBounds(const Vector2& bounds) : DynamicStateObject(DynamicStateFlags::DEPTH_BOUNDS), mBounds(bounds) {}
-
-				Vector2 mBounds = Vector2::Zero;	// { Min, Max }
-			};
-
-		public:
-			DynamicStateContainer() {}
-			DynamicStateContainer(const DynamicStateContainer& other);
-			DynamicStateContainer(DynamicStateContainer&& other) noexcept;
-			~DynamicStateContainer();
-
-			void AddViewPort(const Vector2& extent, const Vector2& depth, const Vector2& offset);
-			void AddScissor(const Vector2& extent, const Vector2& offset);
-			void AddLineWidth(const float width);
-			void AddDepthBias(const float biasFactor, const float clampFactor, const float slopeFactor);
-			void AddBlendConstants(const float(&constants)[4]);
-			void AddDepthBounds(const Vector2& bounds);
-
-			DynamicStateContainer& operator=(const DynamicStateContainer& other);
-			DynamicStateContainer& operator=(DynamicStateContainer&& other) noexcept;
-
-			std::vector<std::shared_ptr<DynamicStateObject>> pDynamicStates;
 		};
 
 		/**
@@ -376,5 +316,77 @@ namespace Flint
 		public:
 			RayTracingPipeline() {}
 		};
+
+		template<class Derived, class TDevice, class TRenderTarget, class TBuffer, class TImage, class TResource>
+		inline UniformBufferContainer<TBuffer> Pipeline<Derived, TDevice, TRenderTarget, TBuffer, TImage, TResource>::CreateUniformBuffers() const
+		{
+			DeviceType* pDevice = pRenderTarget->GetDevice();
+
+			UniformBufferContainer<BufferType> container;
+			for (auto itr = mUniformLayouts.begin(); itr != mUniformLayouts.end(); itr++)
+			{
+				if (itr->second.mType == UniformType::UNIFORM_BUFFER || itr->second.mType == UniformType::UNIFORM_BUFFER_DYNAMIC)
+				{
+					BufferType buffer = {};
+					buffer.Initialize(pDevice, itr->second.mSize, Backend::BufferUsage::UNIFORM, Backend::MemoryProfile::TRANSFER_FRIENDLY);
+					container[itr->first] = buffer;
+				}
+			}
+
+			return container;
+		}
+
+		template<class Derived, class TDevice, class TRenderTarget, class TBuffer, class TImage, class TResource>
+		inline void Pipeline<Derived, TDevice, TRenderTarget, TBuffer, TImage, TResource>::DestroyUniformBuffers(UniformBufferContainer<BufferType>& uniformBuffers) const
+		{
+			for (auto bufferPair : uniformBuffers)
+				bufferPair.second.Terminate();
+
+			uniformBuffers.clear();
+		}
+
+		template<class Derived, class TDevice, class TRenderTarget, class TBuffer, class TImage, class TResource>
+		inline UniformImageContainer<TImage> Pipeline<Derived, TDevice, TRenderTarget, TBuffer, TImage, TResource>::CreateUniformImages() const
+		{
+			DeviceType* pDevice = pRenderTarget->GetDevice();
+
+			UniformImageContainer<ImageType> container;
+			for (auto itr = mUniformLayouts.begin(); itr != mUniformLayouts.end(); itr++)
+			{
+				if (itr->second.mType == UniformType::STORAGE_IMAGE ||
+					itr->second.mType == UniformType::SAMPLER_2D ||
+					itr->second.mType == UniformType::SAMPLER_2D_ARRAY ||
+					itr->second.mType == UniformType::SAMPLER_CUBE ||
+					itr->second.mType == UniformType::SAMPLER_CUBE_ARRAY)
+					container[itr->first] = {};
+			}
+
+			return container;
+		}
+
+		template<class Derived, class TDevice, class TRenderTarget, class TBuffer, class TImage, class TResource>
+		inline void Pipeline<Derived, TDevice, TRenderTarget, TBuffer, TImage, TResource>::DestroyUniformImages(UniformImageContainer<ImageType>& uniformImages) const
+		{
+			for (auto imagePair : uniformImages)
+				imagePair.second.Terminate();
+
+			uniformImages.clear();
+		}
+
+		template<class Derived, class TDevice, class TRenderTarget, class TBuffer, class TImage, class TResource>
+		inline void Pipeline<Derived, TDevice, TRenderTarget, TBuffer, TImage, TResource>::ResolveUniformLayouts(const std::vector<ShaderDigest>& shaderDigests)
+		{
+			for (auto itr = shaderDigests.begin(); itr != shaderDigests.end(); itr++)
+			{
+				for (auto pUniform = itr->mUniforms.begin(); pUniform != itr->mUniforms.end(); pUniform++)
+				{
+					if (pUniform->mType == UniformType::UNIFORM_BUFFER ||
+						pUniform->mType == UniformType::UNIFORM_BUFFER_DYNAMIC ||
+						pUniform->mType == UniformType::STORAGE_BUFFER ||
+						pUniform->mType == UniformType::STORAGE_BUFFER_DYNAMIC)
+						mUniformLayouts[pUniform->mName] = *pUniform;
+				}
+			}
+		}
 	}
 }

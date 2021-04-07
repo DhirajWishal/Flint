@@ -21,7 +21,7 @@ namespace Flint
 
 			/**
 			 * Cast the object to a derived type.
-			 * 
+			 *
 			 * @tparam Derived: The derived type to cast to.
 			 */
 			template<class Derived>

@@ -111,21 +111,21 @@ namespace Flint
 
 			/**
 			 * Set dynamic states of the pipeline.
-			 * 
+			 *
 			 * @param container: The dynamic state container.
 			 */
 			virtual void SetDynamicStates(const DynamicStateContainer& container) = 0;
 
 			/**
 			 * Bind render resources to the pipeline.
-			 * 
+			 *
 			 * @param resource: The render resource.
 			 */
 			virtual void BindRenderResource(const PipelineResourceType& resource) = 0;
 
 			/**
 			 * Draw using the index buffer.
-			 * 
+			 *
 			 * @param indexCount: The number of indexes to draw.
 			 * @param indexOffset: The offset of the index buffer.
 			 * @param vertexOffset: The vertex buffer offset.
@@ -135,21 +135,21 @@ namespace Flint
 		public:
 			/**
 			 * Get the buffer count of the list.
-			 * 
+			 *
 			 * @return The buffer count.
 			 */
 			UI64 GetBufferCount() const { return mBufferCount; }
 
 			/**
 			 * Get the current buffer index.
-			 * 
+			 *
 			 * @return The index of the buffer which is active.
 			 */
 			UI64 GetIndex() const { return mBufferIndex; }
 
 			/**
 			 * Set a new buffer index.
-			 * 
+			 *
 			 * @param index: The index to be set.
 			 */
 			void SetIndex(UI64 index) { mBufferIndex = index; }
@@ -157,7 +157,7 @@ namespace Flint
 			/**
 			 * Increment the index by one.
 			 * If the index is greater than or equal to the buffer count, it will be set back to 0.
-			 * 
+			 *
 			 * @return The incremented buffer index.
 			 */
 			UI64 IncrementIndex()

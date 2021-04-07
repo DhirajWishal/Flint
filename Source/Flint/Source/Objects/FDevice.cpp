@@ -18,6 +18,7 @@ namespace Flint
 	FDevice::FDevice()
 	{
 		Construct<Device>();
+		bShouldDelete = true;
 	}
 
 	FDevice::FDevice(Backend::BackendObject* pBackendObject)
@@ -27,7 +28,8 @@ namespace Flint
 
 	FDevice::~FDevice()
 	{
-		Destruct<Device>();
+		if (bShouldDelete)
+			Destruct<Device>();
 	}
 
 	void FDevice::Initialize(const FInstance& instance)
@@ -39,7 +41,7 @@ namespace Flint
 	{
 		GetAs<Device>().Terminate();
 	}
-	
+
 	FScreenBoundRenderTarget FDevice::CreateScreenBoundRenderTarget(const FDisplay& display, UI64 bufferCount)
 	{
 		FScreenBoundRenderTarget renderTarget = {};
@@ -55,7 +57,7 @@ namespace Flint
 
 		return shader;
 	}
-	
+
 	FBuffer FDevice::CreateBuffer(UI64 size, Backend::BufferUsage usage, Backend::MemoryProfile profile)
 	{
 		FBuffer buffer = {};

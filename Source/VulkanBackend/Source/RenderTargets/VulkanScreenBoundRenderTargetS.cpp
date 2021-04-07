@@ -59,7 +59,7 @@ namespace Flint
 						continue;
 
 					const auto& entry = mStaticDrawEntries[entryIndex];
-					mCommandBufferList.BindVertexBuffer(*entry.pVertexBuffer, 0, 1);
+					mCommandBufferList.BindVertexBuffer(*entry.pVertexBuffer);
 					mCommandBufferList.BindIndexBuffer(*entry.pIndexBuffer);
 
 					for (UI64 pipelineIndex = 0; pipelineIndex < entry.mIndex; pipelineIndex++)

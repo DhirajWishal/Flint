@@ -9,16 +9,25 @@
 #define FLINT_DEFAULT_CHANNEL_COUNT		4
 #define FLINT_DEFAULT_BPP				32
 
+#define FLINT_CREATE_FORMAT_ID(r, g, b, a)		((static_cast<UI8>(r) << 24) | (static_cast<UI8>(g) << 16) | (static_cast<UI8>(b) << 8) | static_cast<UI8>(a))
+
 namespace Flint
 {
 	namespace Backend
 	{
+		/**
+		 * Image usage enum.
+		 * This defines what the image object is used for.
+		 */
 		enum class ImageUsage : UI8 {
 			UNDEFINED,
 			GRAPHICS_1D, GRAPHICS_2D, GRAPHICS_3D, GRAPHICS_CUBEMAP,
 			STORAGE_1D, STORAGE_2D, STORAGE_3D, STORAGE_CUBEMAP,
 		};
 
+		/**
+		 * Image format enum.
+		 */
 		enum class ImageFormat : UI8 {
 			UNDEFINED,						// Undefined format
 
@@ -111,6 +120,9 @@ namespace Flint
 			ASTC_12x12_UNORM_BLOCK, ASTC_12x12_SRGB_BLOCK,
 		};
 
+		/**
+		 * Image sampler address mode.
+		 */
 		enum class SamplerAddressMode : UI8 {
 			REPEAT,
 			MIRRORED_REPEAT,
@@ -119,6 +131,9 @@ namespace Flint
 			MIRROR_CLAMP_TO_EDGE,
 		};
 
+		/**
+		 * Image sampler border color.
+		 */
 		enum class SamplerBorderColor : UI8 {
 			FLOAT_TRANSPARENT_BLACK,
 			INT_TRANSPARENT_BLACK,
@@ -128,12 +143,19 @@ namespace Flint
 			INT_OPAQUE_WHITE,
 		};
 
+		/**
+		 * Image sampler filter.
+		 */
 		enum class SamplerFilter : UI8 {
 			NEAREST,
 			LINEAR,
 			CUBIC_IMAGE,
 		};
 
+		/**
+		 * Image sampler specification.
+		 * This structure defines how the image sampler should be initialized.
+		 */
 		struct SamplerSpecification {
 			float mMinLOD = 0.0f;
 			float mLODBias = 1.0f;
@@ -151,6 +173,12 @@ namespace Flint
 			const bool operator==(const SamplerSpecification& other) const;
 		};
 
+		/**
+		 * Flint image object.
+		 * This object is the base class for all the backend image objects. Image objects are used to store image data in the GPU.
+		 *
+		 * @tparam TDevice: The device type.
+		 */
 		template<class TDevice>
 		class Image : public BackendObject {
 		public:
@@ -160,9 +188,36 @@ namespace Flint
 			Image() {}
 			virtual ~Image() {}
 
+			/**
+			 * Initialize the image object.
+			 *
+			 * @param pDevice: The device pointer which the image is bound to.
+			 * @param width: The width of the image.
+			 * @param height: The height of the image.
+			 * @param depth: The depth of the image.
+			 * @param usage: The image usage.
+			 * @param bitsPerPixel: The number of bits a pixel contains.
+			 * @param layers: The number of image layers the image consists of.
+			 */
 			virtual void Initialize(DeviceType* pDevice, UI64 width, UI64 height, UI64 depth, ImageUsage usage, UI8 bitsPerPixel = FLINT_DEFAULT_BPP, UI8 layers = 1) = 0;
+
+			/**
+			 * Terminate the image.
+			 */
 			virtual void Terminate() = 0;
 
+			/**
+			 * Copy image data to the image.
+			 *
+			 * @param pData: The data to be copied,
+			 * @param width: The width of the source image.
+			 * @param widthOffset: The width offset of the destination (this) image to be copied to.
+			 * @param height: The height of the source image.
+			 * @param heightOffset: The height offset of the destination (this) image to be copied to.
+			 * @param depth: The depth of the source image.
+			 * @param depthOffset: The depth offset of the destination (this) image to be copied to.
+			 * @param bitsPerPixel: The BPP of the source image.
+			 */
 			virtual void CopyData(unsigned char* pData, UI64 width, UI64 widthOffset, UI64 height, UI64 heightOffset, UI64 depth, UI64 depthOffset, UI8 bitsPerPixel = FLINT_DEFAULT_BPP) = 0;
 
 		protected:
@@ -176,7 +231,8 @@ namespace Flint
 	}
 }
 
-namespace std {
+namespace std
+{
 	template<>
 	struct hash<Flint::Backend::SamplerSpecification> {
 		const size_t operator()(const Flint::Backend::SamplerSpecification& spec) const

@@ -12,7 +12,7 @@ namespace Flint
 		/**
 		 * Flint device object.
 		 * Device objects are the basis of all the assets. This resembles a single (or multiple in the future) GPU(s).
-		 * 
+		 *
 		 * @tparam TInstance: The instance type.
 		 * @tparam TDisplay: The display type.
 		 */
@@ -28,14 +28,14 @@ namespace Flint
 
 			/**
 			 * Initialize the device.
-			 * 
+			 *
 			 * @param pIstance: The instance object pointer which the device is made to.
 			 */
 			virtual void Initialize(InstanceType* pInstance) = 0;
 
 			/**
 			 * Check if the device and display is compatible.
-			 * 
+			 *
 			 * @return Boolean value stating the validity.
 			 */
 			virtual bool CheckDisplayCompatibility(DisplayType* pDisplay) = 0;
@@ -47,7 +47,7 @@ namespace Flint
 
 			/**
 			 * Get the instance pointer.
-			 * 
+			 *
 			 * @return The instance object pointer.
 			 */
 			InstanceType* GetInstance() const { return pInstance.get(); }

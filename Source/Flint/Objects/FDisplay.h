@@ -46,7 +46,7 @@ namespace Flint
 
 		/**
 		 * Get the display extent.
-		 * 
+		 *
 		 * @return The extent.
 		 */
 		Vector2 GetExtent() const;

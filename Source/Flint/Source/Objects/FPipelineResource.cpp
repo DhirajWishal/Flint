@@ -18,6 +18,7 @@ namespace Flint
 	FPipelineResource::FPipelineResource()
 	{
 		Construct<Resource>();
+		bShouldDelete = true;
 	}
 
 	FPipelineResource::FPipelineResource(Backend::BackendObject* pBackendObject)
@@ -27,7 +28,8 @@ namespace Flint
 
 	FPipelineResource::~FPipelineResource()
 	{
-		Destruct<Resource>();
+		if (bShouldDelete)
+			Destruct<Resource>();
 	}
 
 	void FPipelineResource::Initialize(const FGraphicsPipeline& pipeline)
@@ -39,7 +41,7 @@ namespace Flint
 	{
 		GetAs<Resource>().Terminate();
 	}
-	
+
 	void FPipelineResource::RegisterUniformBufferContainer(const FUniformBufferContainer& container)
 	{
 		std::unordered_map<String, Buffer> uniformBuffers;
