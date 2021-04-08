@@ -15,7 +15,7 @@ namespace Flint
 	class FPipelineResource final : public FObject {
 	public:
 		FPipelineResource();
-		explicit FPipelineResource(Backend::BackendObject* pBackendObject);
+		explicit FPipelineResource(const std::shared_ptr<Backend::BackendObject>& pBackendObject) : FObject(pBackendObject) {}
 		~FPipelineResource();
 
 		/**

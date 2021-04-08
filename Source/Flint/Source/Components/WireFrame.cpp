@@ -60,6 +60,97 @@ namespace Flint
 		mDrawData.clear();
 	}
 
+	void WireFrame::LoadFromCache(std::filesystem::path asset, const FDevice& device)
+	{
+		std::ifstream file(asset, std::ios::binary);
+		if (!file.is_open()) return;
+		//file.setf(std::ios::hex);
+
+		// The first byte contains the number of vertex attributes.
+		UI8 attributeSize = 0;
+		file >> attributeSize;
+		mAttributes.resize(attributeSize);
+
+		// The next is to load the vertex data.
+		for (UI8 i = 0; i < attributeSize; i++)
+		{
+			VertexAttribute vAttribute = {};
+			file >> vAttribute.mSize;
+
+			UI8 type = 0;
+			file >> type;
+			vAttribute.mType = static_cast<VertexAttributeType>(type);
+
+			mAttributes[i] = std::move(vAttribute);
+		}
+
+		// Vertex information.
+		{
+			// Load the buffer size.
+			UI64 byteSize = 0;
+			file >> byteSize;
+			file.ignore(1);
+
+			// Load the data.
+			FBuffer staggingBuffer = device.CreateBuffer(byteSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
+			char* pString = static_cast<char*>(staggingBuffer.MapMemory(byteSize, 0));
+			file.read(static_cast<char*>(pString), byteSize);
+			staggingBuffer.FlushMemoryMapping();
+			staggingBuffer.UnmapMemory();
+
+			// Copy data to the buffer.
+			mVertexBuffer = device.CreateBuffer(byteSize, Backend::BufferUsage::VERTEX, Backend::MemoryProfile::DRAW_RESOURCE);
+			mVertexBuffer.CopyFrom(staggingBuffer, byteSize, 0, 0);
+
+			// Destroy stagging buffer.
+			staggingBuffer.Terminate();
+
+			file.ignore(1);
+		}
+
+		// Index information.
+		{
+			// Load the buffer size.
+			UI64 byteSize = 0;
+			file >> byteSize;
+			file.ignore(1);
+
+			// Load the data.
+			FBuffer staggingBuffer = device.CreateBuffer(byteSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
+			file.read(static_cast<char*>(staggingBuffer.MapMemory(byteSize, 0)), byteSize);
+			staggingBuffer.FlushMemoryMapping();
+			staggingBuffer.UnmapMemory();
+
+			// Copy data to the buffer.
+			mIndexBuffer = device.CreateBuffer(byteSize, Backend::BufferUsage::INDEX, Backend::MemoryProfile::DRAW_RESOURCE);
+			mIndexBuffer.CopyFrom(staggingBuffer, byteSize, 0, 0);
+
+			// Destroy stagging buffer.
+			staggingBuffer.Terminate();
+
+			file.ignore(1);
+		}
+
+		// Get the draw data count.
+		UI64 drawCount = 0;
+		file >> drawCount;
+		mDrawData.resize(drawCount);
+
+		// Load the draw data.
+		for (UI32 i = 0; i < drawCount; i++)
+		{
+			DrawData data = {};
+			file >> data.mVertexOffset >> data.mVertexCount >> data.mIndexOffset >> data.mIndexCount;
+
+			file.ignore(1);
+			std::getline(file, data.mName);
+
+			mDrawData[i] = std::move(data);
+		}
+
+		file.close();
+	}
+
 	void WireFrame::CreateCache(std::filesystem::path title)
 	{
 		std::ofstream file(title.string() + ".wfc", std::ios::binary);
@@ -118,97 +209,6 @@ namespace Flint
 			file << data.mVertexOffset << std::endl << data.mVertexCount << std::endl << data.mIndexOffset << std::endl << data.mIndexCount << std::endl << data.mName << std::endl;
 
 		// Close the opened file.
-		file.close();
-	}
-
-	void WireFrame::LoadFromCache(std::filesystem::path asset, FDevice* pDevice)
-	{
-		std::ifstream file(asset, std::ios::binary);
-		if (!file.is_open()) return;
-		//file.setf(std::ios::hex);
-
-		// The first byte contains the number of vertex attributes.
-		UI8 attributeSize = 0;
-		file >> attributeSize;
-		mAttributes.resize(attributeSize);
-
-		// The next is to load the vertex data.
-		for (UI8 i = 0; i < attributeSize; i++)
-		{
-			VertexAttribute vAttribute = {};
-			file >> vAttribute.mSize;
-
-			UI8 type = 0;
-			file >> type;
-			vAttribute.mType = static_cast<VertexAttributeType>(type);
-
-			mAttributes[i] = std::move(vAttribute);
-		}
-
-		// Vertex information.
-		{
-			// Load the buffer size.
-			UI64 byteSize = 0;
-			file >> byteSize;
-			file.ignore(1);
-
-			// Load the data.
-			FBuffer staggingBuffer = pDevice->CreateBuffer(byteSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
-			char* pString = static_cast<char*>(staggingBuffer.MapMemory(byteSize, 0));
-			file.read(static_cast<char*>(pString), byteSize);
-			staggingBuffer.FlushMemoryMapping();
-			staggingBuffer.UnmapMemory();
-
-			// Copy data to the buffer.
-			mVertexBuffer = pDevice->CreateBuffer(byteSize, Backend::BufferUsage::VERTEX, Backend::MemoryProfile::DRAW_RESOURCE);
-			mVertexBuffer.CopyFrom(staggingBuffer, byteSize, 0, 0);
-
-			// Destroy stagging buffer.
-			staggingBuffer.Terminate();
-
-			file.ignore(1);
-		}
-
-		// Index information.
-		{
-			// Load the buffer size.
-			UI64 byteSize = 0;
-			file >> byteSize;
-			file.ignore(1);
-
-			// Load the data.
-			FBuffer staggingBuffer = pDevice->CreateBuffer(byteSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
-			file.read(static_cast<char*>(staggingBuffer.MapMemory(byteSize, 0)), byteSize);
-			staggingBuffer.FlushMemoryMapping();
-			staggingBuffer.UnmapMemory();
-
-			// Copy data to the buffer.
-			mIndexBuffer = pDevice->CreateBuffer(byteSize, Backend::BufferUsage::INDEX, Backend::MemoryProfile::DRAW_RESOURCE);
-			mIndexBuffer.CopyFrom(staggingBuffer, byteSize, 0, 0);
-
-			// Destroy stagging buffer.
-			staggingBuffer.Terminate();
-
-			file.ignore(1);
-		}
-
-		// Get the draw data count.
-		UI64 drawCount = 0;
-		file >> drawCount;
-		mDrawData.resize(drawCount);
-
-		// Load the draw data.
-		for (UI32 i = 0; i < drawCount; i++)
-		{
-			DrawData data = {};
-			file >> data.mVertexOffset >> data.mVertexCount >> data.mIndexOffset >> data.mIndexCount;
-
-			file.ignore(1);
-			std::getline(file, data.mName);
-
-			mDrawData[i] = std::move(data);
-		}
-
 		file.close();
 	}
 

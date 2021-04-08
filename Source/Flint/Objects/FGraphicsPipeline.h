@@ -6,6 +6,7 @@
 #include "FObject.h"
 #include "Core\Backend\GraphicsPipeline.h"
 #include "FBuffer.h"
+#include "FShader.h"
 
 namespace Flint
 {
@@ -27,7 +28,7 @@ namespace Flint
 		 * @param shaders: The shaders to be used.
 		 * @param spec: The graphics specification of the pipeline.
 		 */
-		void Initialize(const FScreenBoundRenderTarget& renderTarget, const std::vector<ShaderDigest>& shaders, const Backend::GraphicsPipelineSpecification& spec);
+		void Initialize(const FScreenBoundRenderTarget& renderTarget, const std::vector<FShader>& shaders, const Backend::GraphicsPipelineSpecification& spec);
 
 		/**
 		 * Terminate the pipeline.

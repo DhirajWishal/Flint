@@ -138,8 +138,6 @@ namespace Flint
 			TPipeline* pPipeline = nullptr;
 		};
 
-		struct DynamicStateContainer;
-
 		/**
 		 * Pipeline object.
 		 * This is the base class for all the pipelines created by Flint.

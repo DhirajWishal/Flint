@@ -48,14 +48,28 @@ namespace Flint
 		 */
 		void SubmitCommand();
 
+		/**
+		 * Get the current frame index.
+		 * 
+		 * @return The index.
+		 */
+		UI64 GetFrameIndex() const;
+
+		/**
+		 * Get the current image index.
+		 *
+		 * @return The index.
+		 */
+		UI64 GetImageIndex() const;
+
 	public:
 		/**
 		 * Create a new graphics pipeline object.
 		 * 
-		 * @param shaders: The shader digests the pipeline uses.
+		 * @param shaders: The shaders the pipeline uses.
 		 * @param spec: The pipeline specification.
 		 * @return The newly created graphics pipeline object.
 		 */
-		FGraphicsPipeline CreateGraphicsPipeline(const std::vector<ShaderDigest>& shaders, const Backend::GraphicsPipelineSpecification& spec);
+		FGraphicsPipeline CreateGraphicsPipeline(const std::vector<FShader>& shaders, const Backend::GraphicsPipelineSpecification& spec);
 	};
 }

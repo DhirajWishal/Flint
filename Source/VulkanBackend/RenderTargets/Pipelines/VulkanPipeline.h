@@ -9,7 +9,6 @@
 #include "VulkanBackend\VulkanBuffer.h"
 #include "VulkanBackend\VulkanImage.h"
 #include "VulkanBackend\RenderTargets\VulkanRenderTarget.h"
-#include "VulkanBackend\VulkanMacros.h"
 
 namespace Flint
 {

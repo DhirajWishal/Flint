@@ -28,20 +28,13 @@ namespace Flint
 		bShouldDelete = true;
 	}
 
-	FPipelineResource::FPipelineResource(Backend::BackendObject* pBackendObject)
-	{
-		this->pBackendObject = pBackendObject;
-	}
-
 	FPipelineResource::~FPipelineResource()
 	{
-		if (bShouldDelete)
-			Destruct<Resource>();
 	}
 
 	void FPipelineResource::Initialize(const FGraphicsPipeline& pipeline)
 	{
-		GetAs<Resource>().Initialize(static_cast<GraphicsPipeline*>(pipeline.GetBackendObject()));
+		GetAs<Resource>().Initialize(static_cast<GraphicsPipeline*>(pipeline.GetBackendObject().get()));
 	}
 
 	void FPipelineResource::Terminate()

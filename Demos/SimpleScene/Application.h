@@ -3,8 +3,14 @@
 
 #pragma once
 
-#include "Flint/Engine.h"
-#include "Flint/Components/ShaderCode.h"
+#include "Flint\Objects\FInstance.h"
+#include "Flint\Objects\FDevice.h"
+#include "Flint\Objects\FDisplay.h"
+#include "Flint\Objects\FScreenBoundRenderTarget.h"
+#include "Flint\Objects\FShader.h"
+#include "Flint\Objects\FGraphicsPipeline.h"
+
+#include "Flint\Components\WireFrame.h"
 
 #include "Core/Maths/Matrix/Matrix44.h"
 #include "Core/Maths/Vector/Vector3.h"
@@ -31,7 +37,7 @@ public:
 	~Application();
 
 private:
-	std::vector<Flint::ShaderDigest> CreateShaderDigests() const;
+	void SetupShaders();
 	void CreateSceneComponent();
 	void PrepareToRender();
 
@@ -43,18 +49,14 @@ private:
 	Flint::Backend::GraphicsPipelineSpecification GetGraphicsPipelineSpec() const;
 
 private:
-	UI32 mWidth = 1280, mHeight = 720;
-	Flint::Engine mEngine = {};
+	Flint::FInstance mInstance = {};
+	Flint::FDisplay mDisplay = {};
+	Flint::FDevice mDevice = {};
+
+	Flint::FScreenBoundRenderTarget mRenderTarget = {};
+
+	Flint::FShader mShaders[2] = {};
+	Flint::FGraphicsPipeline mPipeline = {};
 
 	Flint::WireFrame mWireFrame = {};
-	Flint::SceneComponent mSceneComponent = {};
-	Flint::RenderResource mRenderResource = {};
-	Flint::Backend::DynamicStateContainer mDynamicState = {};
-
-	Flint::Vector3 mPosition = Flint::Vector3::Zero;
-
-	Flint::Inputs::InputCenter* pInputCenter = nullptr;
-
-	UniformBufferObject* pDataCopy = nullptr;
-	Flint::Buffer mUniformBuffer = {};
 };

@@ -7,7 +7,7 @@ namespace Flint
 {
 	void SceneComponent::DestroyRenderResources(RenderResource& renderResource)
 	{
-		mPipeline.DestroyUniformBuffers(renderResource.mUniformBuffers);
+		//mPipeline.(renderResource.mUniformBuffers);
 		renderResource.mPipelineResource.Terminate();
 	}
 }

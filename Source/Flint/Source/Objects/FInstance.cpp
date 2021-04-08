@@ -28,7 +28,6 @@ namespace Flint
 
 	FInstance::~FInstance()
 	{
-		Destruct<Instance>();
 	}
 
 	void FInstance::Initialize(bool enableValidation)

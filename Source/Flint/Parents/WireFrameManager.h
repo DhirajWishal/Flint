@@ -28,6 +28,6 @@ namespace Flint
 		 */
 		WireFrame CreateNewWireFrame(std::filesystem::path asset, std::vector<VertexAttribute>& vertexAttributes);
 
-		Image LoadImageData(std::filesystem::path filePath);
+		//FImage LoadImageData(std::filesystem::path filePath);
 	};
 }

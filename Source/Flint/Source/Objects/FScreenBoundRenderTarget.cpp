@@ -27,12 +27,11 @@ namespace Flint
 
 	FScreenBoundRenderTarget::~FScreenBoundRenderTarget()
 	{
-		Destruct<RenderTarget>();
 	}
 
 	void FScreenBoundRenderTarget::Initialize(const FDevice& device, const FDisplay& display, UI64 bufferCount)
 	{
-		GetAs<RenderTarget>().Initialize(static_cast<RenderTarget::DeviceType*>(device.GetBackendObject()), static_cast<RenderTarget::DisplayType*>(display.GetBackendObject()), bufferCount);
+		GetAs<RenderTarget>().Initialize(static_cast<RenderTarget::DeviceType*>(device.GetBackendObject().get()), static_cast<RenderTarget::DisplayType*>(display.GetBackendObject().get()), bufferCount);
 	}
 
 	void FScreenBoundRenderTarget::Terminate()
@@ -54,8 +53,18 @@ namespace Flint
 	{
 		GetAs<RenderTarget>().SubmitCommand();
 	}
+
+	UI64 FScreenBoundRenderTarget::GetFrameIndex() const
+	{
+		return GetAs<RenderTarget>().GetFrameIndex();
+	}
+
+	UI64 FScreenBoundRenderTarget::GetImageIndex() const
+	{
+		return GetAs<RenderTarget>().GetImageIndex();
+	}
 	
-	FGraphicsPipeline FScreenBoundRenderTarget::CreateGraphicsPipeline(const std::vector<ShaderDigest>& shaders, const Backend::GraphicsPipelineSpecification& spec)
+	FGraphicsPipeline FScreenBoundRenderTarget::CreateGraphicsPipeline(const std::vector<FShader>& shaders, const Backend::GraphicsPipelineSpecification& spec)
 	{
 		FGraphicsPipeline pipeline = {};
 		pipeline.Initialize(*this, shaders, spec);

@@ -31,12 +31,11 @@ namespace Flint
 
 	FBuffer::~FBuffer()
 	{
-		Destruct<Buffer>();
 	}
 
 	void FBuffer::Initialize(const FDevice& device, UI64 size, Backend::BufferUsage usage, Backend::MemoryProfile profile)
 	{
-		GetAs<Buffer>().Initialize(static_cast<Buffer::DeviceType*>(device.GetBackendObject()), size, usage, profile);
+		GetAs<Buffer>().Initialize(static_cast<Buffer::DeviceType*>(device.GetBackendObject().get()), size, usage, profile);
 	}
 
 	void FBuffer::Terminate()
@@ -66,7 +65,7 @@ namespace Flint
 	
 	FDevice FBuffer::GetDevice() const
 	{
-		return FDevice(GetAs<Buffer>().GetDevice());
+		return FDevice(std::shared_ptr<Backend::BackendObject>(GetAs<Buffer>().GetDevice()));
 	}
 	
 	UI64 FBuffer::GetSize() const

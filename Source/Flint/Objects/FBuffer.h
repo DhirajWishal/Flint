@@ -62,7 +62,18 @@ namespace Flint
 		void CopyFrom(const FBuffer& other, UI64 size, UI64 srcOffset, UI64 dstOffset);
 
 	public:
+		/**
+		 * Get the bound device object.
+		 * 
+		 * @return The device object.
+		 */
 		FDevice GetDevice() const;
+
+		/**
+		 * Get the size of the buffer.
+		 * 
+		 * @return The size in bytes.
+		 */
 		UI64 GetSize() const;
 	};
 

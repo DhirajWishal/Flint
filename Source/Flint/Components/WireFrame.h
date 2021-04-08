@@ -62,9 +62,9 @@ namespace Flint
 		 * This is much faster than loading from a object file.
 		 * 
 		 * @param asset: The cache file to be loaded from.
-		 * @param pDevice: The device pointer.
+		 * @param device: The device object.
 		 */
-		void LoadFromCache(std::filesystem::path asset, FDevice* pDevice);
+		void LoadFromCache(std::filesystem::path asset, const FDevice& device);
 
 		/**
 		 * Create a cache file using the wire frame content.

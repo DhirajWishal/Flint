@@ -203,10 +203,12 @@ namespace Flint
 
 			// Re create renderable pipelines.
 			for (auto itr = mStaticDrawEntries.begin(); itr != mStaticDrawEntries.end(); itr++)
-				std::for_each(itr->second.pPipelines.begin(), itr->second.pPipelines.end(), [](std::pair<UI64, VulkanPipeline*> entry) { entry.second->RecreatePipeline(); });
+				for (auto& pPipeline : itr->second.pPipelines)
+					pPipeline.second->RecreatePipeline();
 
 			for (auto itr = mDynamicDrawEntries.begin(); itr != mDynamicDrawEntries.end(); itr++)
-				std::for_each(itr->second.pPipelines.begin(), itr->second.pPipelines.end(), [](std::pair<UI64, VulkanPipeline*>& entry) { entry.second->RecreatePipeline(); });
+				for (auto& pPipeline : itr->second.pPipelines)
+					pPipeline.second->RecreatePipeline();
 
 			// Prepare command buffers to be rendered.
 			mCommandBufferList.ReceateBuffers();

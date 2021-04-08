@@ -233,21 +233,21 @@ namespace Flint
 		return std::move(wireFrame);
 	}
 
-	Image WireFrameManager::LoadImageData(std::filesystem::path filePath)
-	{
-		auto type = FreeImage_GetFileType(filePath.string().c_str());
-		auto pImage = FreeImage_Load(type, filePath.string().c_str());
-
-		UI8 bitsPerPixel = static_cast<UI8>(FreeImage_GetBPP(pImage));
-		UI32 width = FreeImage_GetWidth(pImage);
-		UI32 height = FreeImage_GetHeight(pImage);
-		auto channels = FreeImage_GetColorsUsed(pImage);
-
-		Image image = {};
-		image.Initialize(GetDevice(), width, height, 1, Backend::ImageUsage::GRAPHICS_2D, bitsPerPixel);
-		image.CopyData(FreeImage_GetBits(pImage), width, 0, height, 0, 1, 0, bitsPerPixel);
-
-		FreeImage_Unload(pImage);
-		return image;
-	}
+	//Image WireFrameManager::LoadImageData(std::filesystem::path filePath)
+	//{
+	//	auto type = FreeImage_GetFileType(filePath.string().c_str());
+	//	auto pImage = FreeImage_Load(type, filePath.string().c_str());
+	//
+	//	UI8 bitsPerPixel = static_cast<UI8>(FreeImage_GetBPP(pImage));
+	//	UI32 width = FreeImage_GetWidth(pImage);
+	//	UI32 height = FreeImage_GetHeight(pImage);
+	//	auto channels = FreeImage_GetColorsUsed(pImage);
+	//
+	//	Image image = {};
+	//	image.Initialize(GetDevice(), width, height, 1, Backend::ImageUsage::GRAPHICS_2D, bitsPerPixel);
+	//	image.CopyData(FreeImage_GetBits(pImage), width, 0, height, 0, 1, 0, bitsPerPixel);
+	//
+	//	FreeImage_Unload(pImage);
+	//	return image;
+	//}
 }

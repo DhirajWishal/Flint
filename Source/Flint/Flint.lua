@@ -30,7 +30,7 @@ project "Flint"
 		"%{IncludeDir.FreeImage}",
 	}
 
-	filter "configurations:Debug*"
+	filter "configurations:Debug Vulkan"
 		libdirs {
 			"%{IncludeLib.Assimp}",
 			"%{IncludeLib.FreeImageD}",
@@ -43,7 +43,7 @@ project "Flint"
 			"FreeImageLibd"
 		}
 
-	filter "configurations:Release*"
+	filter "configurations:Release Vulkan"
 		libdirs {
 			"%{IncludeLib.Assimp}",
 			"%{IncludeLib.FreeImageR}",

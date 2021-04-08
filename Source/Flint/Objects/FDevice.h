@@ -4,7 +4,6 @@
 #pragma once
 
 #include "FInstance.h"
-#include "Core\Backend\ShaderDigest.h"
 #include "Core\Backend\Buffer.h"
 
 namespace Flint
@@ -12,7 +11,6 @@ namespace Flint
 	class FDisplay;
 
 	class FScreenBoundRenderTarget;
-	class FShader;
 	class FBuffer;
 
 	/**
@@ -22,7 +20,7 @@ namespace Flint
 	class FDevice final : public FObject {
 	public:
 		FDevice();
-		explicit FDevice(Backend::BackendObject* pBackendObject);
+		explicit FDevice(const std::shared_ptr<Backend::BackendObject>& pBackendObject) : FObject(pBackendObject) {}
 		~FDevice();
 
 		/**
@@ -45,15 +43,7 @@ namespace Flint
 		 * @param bufferCount: The number of frame buffers to use. If set to 0, the default count is set. If set to std::numeric_limits<UI64>::max(), the maximum supported is set.
 		 * @return The newly created render target object.
 		 */
-		FScreenBoundRenderTarget CreateScreenBoundRenderTarget(const FDisplay& display, UI64 bufferCount);
-
-		/**
-		 * Create a new shader object.
-		 * 
-		 * @param digest: The shader digest.
-		 * @return The newly created shader object.
-		 */
-		FShader CreateShader(const ShaderDigest& digest);
+		FScreenBoundRenderTarget CreateScreenBoundRenderTarget(const FDisplay& display, UI64 bufferCount) const;
 
 		/**
 		 * Create a new buffer object.
@@ -62,8 +52,7 @@ namespace Flint
 		 * @param usage: The buffer usage.
 		 * @param profile: The buffer's memory profile.
 		 */
-		FBuffer CreateBuffer(UI64 size, Backend::BufferUsage usage, Backend::MemoryProfile profile);
-
+		FBuffer CreateBuffer(UI64 size, Backend::BufferUsage usage, Backend::MemoryProfile profile) const;
 
 	private:
 		bool bShouldDelete = false;

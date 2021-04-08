@@ -26,12 +26,11 @@ namespace Flint
 
 	FDisplay::~FDisplay()
 	{
-		Destruct<Display>();
 	}
 
 	void FDisplay::Initialize(const FInstance& instance, const Vector2 extent, const char* pTitle)
 	{
-		GetAs<Display>().Initialize(static_cast<Display::InstanceType*>(instance.GetBackendObject()), extent, pTitle);
+		GetAs<Display>().Initialize(static_cast<Display::InstanceType*>(instance.GetBackendObject().get()), extent, pTitle);
 	}
 
 	void FDisplay::Terminate()

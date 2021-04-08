@@ -29,12 +29,15 @@ namespace Flint
 
 	FGraphicsPipeline::~FGraphicsPipeline()
 	{
-		Destruct<Pipeline>();
 	}
 
-	void FGraphicsPipeline::Initialize(const FScreenBoundRenderTarget& renderTarget, const std::vector<ShaderDigest>& shaders, const Backend::GraphicsPipelineSpecification& spec)
+	void FGraphicsPipeline::Initialize(const FScreenBoundRenderTarget& renderTarget, const std::vector<FShader>& shaders, const Backend::GraphicsPipelineSpecification& spec)
 	{
-		GetAs<Pipeline>().Initialize(static_cast<VulkanBackend::VulkanScreenBoundRenderTargetS*>(renderTarget.GetBackendObject()), shaders, spec);
+		std::vector<ShaderDigest> digests(shaders.size());
+		for (UI8 itr = 0; itr < shaders.size(); itr++)
+			digests[itr] = shaders[itr].GetShaderDigest();
+
+		GetAs<Pipeline>().Initialize(static_cast<VulkanBackend::VulkanScreenBoundRenderTargetS*>(renderTarget.GetBackendObject().get()), digests, spec);
 	}
 
 	void FGraphicsPipeline::Terminate()
@@ -53,17 +56,17 @@ namespace Flint
 				itr.second.mType == UniformType::UNIFORM_BUFFER || itr.second.mType == UniformType::UNIFORM_BUFFER_DYNAMIC || itr.second.mType == UniformType::UNIFORM_TEXEL_BUFFER)
 			{
 				FBuffer buffer = {};
-				buffer.Initialize(FDevice(GetAs<Pipeline>().GetRenderTarget()->GetDevice()), itr.second.mSize, Backend::BufferUsage::UNIFORM, Backend::MemoryProfile::TRANSFER_FRIENDLY);
+				buffer.Initialize(FDevice(std::shared_ptr<Backend::BackendObject>(GetAs<Pipeline>().GetRenderTarget()->GetDevice())), itr.second.mSize, Backend::BufferUsage::UNIFORM, Backend::MemoryProfile::TRANSFER_FRIENDLY);
 				container[itr.first] = std::move(buffer);
 			}
 		}
 
 		return container;
 	}
-	
+
 	FPipelineResource FGraphicsPipeline::CreatePipelineResource() const
 	{
-		Resource* pResource = new Resource();
+		std::shared_ptr<Resource> pResource = std::make_shared<Resource>();
 		*pResource = GetAs<Pipeline>().CreatePipelineResource();
 
 		return FPipelineResource(pResource);

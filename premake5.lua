@@ -15,6 +15,8 @@ workspace "Flint"
 		"Release WebGPU",
 	}
 
+	startproject "Flint"
+
 	filter "configurations:Debug Vulkan"
 		defines { "FLINT_DEBUG", "FLINT_BACKEND_VULKAN" }
 		symbols "On"
@@ -41,7 +43,6 @@ workspace "Flint"
 
 	filter ""
 
-	startproject "Flint"
 
 
 -- Libraries

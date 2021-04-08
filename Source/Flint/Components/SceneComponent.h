@@ -30,7 +30,7 @@ namespace Flint
 		 * 
 		 * @return The uniform buffer container with the respective uniform buffers.
 		 */
-		UniformBufferContainer GetUniformBuffers() const { return mPipeline.CreateUniformBuffers(); }
+		FUniformBufferContainer GetUniformBuffers() const { return mPipeline.CreateUniformBufferContainer(); }
 
 		WireFrame mWireFrame;
 		FGraphicsPipeline mPipeline = {};
