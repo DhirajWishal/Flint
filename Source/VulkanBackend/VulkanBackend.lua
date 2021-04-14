@@ -9,13 +9,14 @@ project "VulkanBackend"
 	systemversion "latest"
 	cppdialect "C++17"
 	staticruntime "On"
+	targetname "VulkanBackend"
 
 	defines {
 		"GLFW_INCLUDE_VULKAN"
 	}
 
-	targetdir "$(SolutionDir)Builds/Binaries/$(Configuration)-$(Platform)"
-	objdir "$(SolutionDir)Builds/Intermediate/$(Configuration)-$(Platform)/$(ProjectName)"
+	targetdir "$(SolutionDir)Builds/Binaries/$(ProjectName)/$(Configuration)"
+	objdir "$(SolutionDir)Builds/Intermediate/$(Configuration)/$(ProjectName)"
 
 	files {
 		"**.txt",

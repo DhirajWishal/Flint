@@ -9,9 +9,10 @@ project "Flint"
 	systemversion "latest"
 	cppdialect "C++17"
 	staticruntime "On"
+	targetname "Flint"
 
-	targetdir "$(SolutionDir)Builds/Binaries/$(Configuration)-$(Platform)"
-	objdir "$(SolutionDir)Builds/Intermediate/$(Configuration)-$(Platform)/$(ProjectName)"
+	targetdir "$(SolutionDir)Builds/Binaries/$(ProjectName)/$(Configuration)"
+	objdir "$(SolutionDir)Builds/Intermediate/$(Configuration)/$(ProjectName)"
 
 	files {
 		"**.txt",
@@ -30,7 +31,7 @@ project "Flint"
 		"%{IncludeDir.FreeImage}",
 	}
 
-	filter "configurations:Debug Vulkan"
+	filter "configurations:Debug"
 		libdirs {
 			"%{IncludeLib.Assimp}",
 			"%{IncludeLib.FreeImageD}",
@@ -43,7 +44,7 @@ project "Flint"
 			"FreeImageLibd"
 		}
 
-	filter "configurations:Release Vulkan"
+	filter "configurations:Release"
 		libdirs {
 			"%{IncludeLib.Assimp}",
 			"%{IncludeLib.FreeImageR}",

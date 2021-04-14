@@ -4,6 +4,7 @@
 #pragma once
 
 #include "FDevice.h"
+#include "Core\Backend\ShaderDigest.h"
 
 #include <filesystem>
 

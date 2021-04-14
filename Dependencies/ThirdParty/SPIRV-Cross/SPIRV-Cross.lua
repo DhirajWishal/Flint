@@ -9,9 +9,10 @@ project "SPIRV-Cross"
 	systemversion "latest"
 	cppdialect "C++17"
 	staticruntime "On"
+	targetname "SPIRV-Cross"
 
-	targetdir "$(SolutionDir)Builds/ThirdParty/Binaries/$(Configuration)-$(Platform)/$(ProjectName)"
-	objdir "$(SolutionDir)Builds/ThirdParty/Intermediate/$(Configuration)-$(Platform)/$(ProjectName)"
+	targetdir "$(SolutionDir)Builds/ThirdParty/Binaries/$(Configuration)/$(ProjectName)"
+	objdir "$(SolutionDir)Builds/ThirdParty/Intermediate/$(Configuration)/$(ProjectName)"
 
 	files {
 		"**.txt",
