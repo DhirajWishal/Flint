@@ -6,7 +6,9 @@
 
 #if defined(FLINT_BACKEND_VULKAN)
 #include "VulkanBackend\RenderTargets\VulkanScreenBoundRenderTargetS.h"
+#include "VulkanBackend\VulkanBuffer.h"
 typedef Flint::VulkanBackend::VulkanScreenBoundRenderTargetS RenderTarget;
+typedef Flint::VulkanBackend::VulkanBuffer Buffer;
 
 #elif defined(FLINT_BACKEND_DIRECT_X_12)
 
@@ -63,7 +65,27 @@ namespace Flint
 	{
 		return GetAs<RenderTarget>().GetImageIndex();
 	}
-	
+
+	FDrawIndex FScreenBoundRenderTarget::AddWireFrameToStaticDrawQueue(const WireFrame& wireFrame)
+	{
+		return FDrawIndex{ GetAs<RenderTarget>().AddStaticDrawEntry(static_cast<Buffer*>(wireFrame.mVertexBuffer.GetBackendObject().get()), static_cast<Buffer*>(wireFrame.mIndexBuffer.GetBackendObject().get())) };
+	}
+
+	void FScreenBoundRenderTarget::RemoveWireFrameFromStaticDrawQueue(const FDrawIndex index)
+	{
+		GetAs<RenderTarget>().RemoveStaticDrawEntry(static_cast<UI64>(index));
+	}
+
+	FDrawIndex FScreenBoundRenderTarget::AddWireFrameToDynamicDrawQueue(const WireFrame& wireFrame)
+	{
+		return FDrawIndex{ GetAs<RenderTarget>().AddDynamicDrawEntry(static_cast<Buffer*>(wireFrame.mVertexBuffer.GetBackendObject().get()), static_cast<Buffer*>(wireFrame.mIndexBuffer.GetBackendObject().get())) };
+	}
+
+	void FScreenBoundRenderTarget::RemoveWireFrameFromDynamicDrawQueue(const FDrawIndex index)
+	{
+		GetAs<RenderTarget>().RemoveDynamicDrawEntry(static_cast<UI64>(index));
+	}
+
 	FGraphicsPipeline FScreenBoundRenderTarget::CreateGraphicsPipeline(const std::vector<FShader>& shaders, const Backend::GraphicsPipelineSpecification& spec)
 	{
 		FGraphicsPipeline pipeline = {};

@@ -94,10 +94,16 @@ Application::Application()
 
 	// Load wireframe information.
 	mWireFrame.LoadFromCache("testCache.wfc", mDevice);
+
+	// Add the wire frame to the draw queue.
+	mDrawIndex = mRenderTarget.AddWireFrameToStaticDrawQueue(mWireFrame);
 }
 
 Application::~Application()
 {
+	// Remove the wire frame from the draw queue.
+	mRenderTarget.RemoveWireFrameFromStaticDrawQueue(mDrawIndex);
+
 	// Clear the wireframe.
 	mWireFrame.Clear();
 

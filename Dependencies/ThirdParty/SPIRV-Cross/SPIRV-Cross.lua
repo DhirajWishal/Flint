@@ -18,6 +18,7 @@ project "SPIRV-Cross"
 		"**.txt",
 		"**.cpp",
 		"**.h",
+		"**.hpp",
 		"**.lua",
 		"**.txt",
 		"**.md",

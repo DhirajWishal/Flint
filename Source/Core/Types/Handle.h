@@ -7,6 +7,7 @@
 #include <type_traits>
 
 #define FLINT_DEFINE_HANDLE(handle)				enum class handle : UI64 { INVALID = 0 }
+#define FLINT_DEFINE_INDEX(handle)				enum class handle : UI64 {}
 #define FLINT_NULL_HANDLE						{}
 
 namespace Flint

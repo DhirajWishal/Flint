@@ -59,4 +59,6 @@ private:
 	Flint::FGraphicsPipeline mPipeline = {};
 
 	Flint::WireFrame mWireFrame = {};
+
+	Flint::FDrawIndex mDrawIndex = FLINT_NULL_HANDLE;
 };

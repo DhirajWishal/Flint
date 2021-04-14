@@ -7,8 +7,13 @@
 #include "FDisplay.h"
 #include "FGraphicsPipeline.h"
 
+#include "Flint\Components\WireFrame.h"
+#include "Core\Types\Handle.h"
+
 namespace Flint
 {
+	FLINT_DEFINE_INDEX(FDrawIndex);
+
 	/**
 	 * Flint screen bound render target.
 	 * Screen bound render targets output their frame to a display object.
@@ -61,6 +66,41 @@ namespace Flint
 		 * @return The index.
 		 */
 		UI64 GetImageIndex() const;
+
+	public:
+		/**
+		 * Add a wire frame to the static draw queue.
+		 * Drawing order is done using the same order which the wire frames are submitted.
+		 * Static draw entries are pre-baked into the command buffer and if your planning on changing, you need to recreate the command buffer(s)
+		 * 
+		 * @param wireFrame: The wire frame object to be added.
+		 * @return The draw index of the submission.
+		 */
+		FDrawIndex AddWireFrameToStaticDrawQueue(const WireFrame& wireFrame);
+
+		/**
+		 * Remove a wire frame from the static draw queue using its index.
+		 * 
+		 * @param index: The index of the wire frame.
+		 */
+		void RemoveWireFrameFromStaticDrawQueue(const FDrawIndex index);
+
+		/**
+		 * Add a wire frame to the dynamic draw queue.
+		 * Drawing order is done using the same order which the wire frames are submitted.
+		 * Dynamic draw entries are baked into command buffers each iteration (tick) and can be updated before the Update() method.
+		 *
+		 * @param wireFrame: The wire frame object to be added.
+		 * @return The draw index of the submission.
+		 */
+		FDrawIndex AddWireFrameToDynamicDrawQueue(const WireFrame& wireFrame);
+
+		/**
+		 * Remove a wire frame from the dynamic draw queue using its index.
+		 *
+		 * @param index: The index of the wire frame.
+		 */
+		void RemoveWireFrameFromDynamicDrawQueue(const FDrawIndex index);
 
 	public:
 		/**

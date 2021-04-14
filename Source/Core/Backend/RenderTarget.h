@@ -105,6 +105,13 @@ namespace Flint
 			UI64 AddStaticDrawEntry(TBuffer* pVertexBuffer, TBuffer* pIndexBuffer);
 
 			/**
+			 * Remove a static draw entry from the render target.
+			 * 
+			 * @param index: The index of the entry.
+			 */
+			void RemoveStaticDrawEntry(const UI64 index);
+
+			/**
 			 * Add a dynamic draw entry.
 			 *
 			 * @param pVertexBuffer: The vertex buffer pointer.
@@ -112,6 +119,13 @@ namespace Flint
 			 * @return The entry ID.
 			 */
 			UI64 AddDynamicDrawEntry(TBuffer* pVertexBuffer, TBuffer* pIndexBuffer);
+
+			/**
+			 * Remove a dynamic draw entry from the render target.
+			 *
+			 * @param index: The index of the entry.
+			 */
+			void RemoveDynamicDrawEntry(const UI64 index);
 
 			/**
 			 * Add a pipeline to a static draw entry.
@@ -181,11 +195,23 @@ namespace Flint
 			return mStaticDrawIndex++;
 		}
 
+		template<class DeviceType, class TCommandBufferList, class TBuffer, class T>
+		inline void RenderTarget<DeviceType, TCommandBufferList, TBuffer, T>::RemoveStaticDrawEntry(const UI64 index)
+		{
+			mStaticDrawEntries.erase(index);
+		}
+
 		template<class TDevice, class TBuffer, class TPipeline, class TCommandBufferList>
 		inline UI64 RenderTarget<TDevice, TBuffer, TPipeline, TCommandBufferList>::AddDynamicDrawEntry(TBuffer* pVertexBuffer, TBuffer* pIndexBuffer)
 		{
 			mDynamicDrawEntries[mDynamicDrawIndex] = DrawEntry(pVertexBuffer, pIndexBuffer);
 			return mDynamicDrawIndex++;
+		}
+
+		template<class DeviceType, class TCommandBufferList, class TBuffer, class T>
+		inline void RenderTarget<DeviceType, TCommandBufferList, TBuffer, T>::RemoveDynamicDrawEntry(const UI64 index)
+		{
+			mDynamicDrawEntries.erase(index);
 		}
 
 		template<class TDevice, class TBuffer, class TPipeline, class TCommandBufferList>
