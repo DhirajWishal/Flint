@@ -3,20 +3,21 @@
 
 #pragma once
 
-#include "Device.h"
-#include "ShaderDigest.h"
-#include "DynamicStateContainer.h"
+#include "FDevice.h"
+#include "FShaderDigest.h"
+#include "FDynamicStateContainer.h"
 
 namespace Flint
 {
 	class FRenderTarget;
+	class FPipeline;
 
 	class FBuffer;
-	using UniformBufferContainer = std::unordered_map<std::string, FBuffer*>;
+	using UniformBufferContainer = std::unordered_map<std::string, std::shared_ptr<FBuffer>>;
 
 	class FImage;
 	struct SamplerSpecification;
-	using UniformImageContainer = std::unordered_map<std::string, std::pair<FImage*, SamplerSpecification>>;
+	using UniformImageContainer = std::unordered_map<std::string, std::pair<std::shared_ptr<FImage>, SamplerSpecification>>;
 
 	/**
 	 * Pipeline resource object.
@@ -43,19 +44,7 @@ namespace Flint
 		};
 
 	public:
-		FPipelineResource() {}
-
-		/**
-		 * Initialize the pipeline resource object.
-		 *
-		 * @param pPipeline: The pipeline pointer which the resource is bound to.
-		 */
-		virtual void Initialize(FPipeline* pPipeline) = 0;
-
-		/**
-		 * Terminate the pipeline resource.
-		 */
-		virtual void Terminate() = 0;
+		FPipelineResource(std::shared_ptr<FPipeline> pPipeline) : pPipeline(pPipeline) {}
 
 		/**
 		 * Register uniform buffers to the resource object.
@@ -78,7 +67,7 @@ namespace Flint
 		 *
 		 * @return The pipeline pointer.
 		 */
-		FPipeline* GetPipeline() const { return pPipeline; }
+		std::shared_ptr<FPipeline> GetPipeline() const { return pPipeline; }
 
 		/**
 		 * Add draw data to the pipeline resource.
@@ -121,7 +110,7 @@ namespace Flint
 		std::unordered_map<UI64, DrawData> mDrawData;
 		UI64 mIndex = 0;
 
-		FPipeline* pPipeline = nullptr;
+		std::shared_ptr<FPipeline> pPipeline = nullptr;
 	};
 
 	/**
@@ -135,12 +124,8 @@ namespace Flint
 	 */
 	class FPipeline : public BackendObject {
 	public:
-		FPipeline() {}
-
-		/**
-		 * Terminate the pipeline.
-		 */
-		virtual void Terminate() = 0;
+		FPipeline(std::shared_ptr<FRenderTarget> pRenderTarget, std::vector<ShaderDigest> digest) {}
+		virtual ~FPipeline() {}
 
 		/**
 		 * Prepare the pipeline to recreate.
@@ -204,7 +189,7 @@ namespace Flint
 		 *
 		 * @return The created pipeline resource object pointer.
 		 */
-		virtual FPipelineResource* CreatePipelineResource() = 0;
+		virtual std::shared_ptr<FPipelineResource> CreatePipelineResource() = 0;
 
 	public:
 		/**
@@ -212,7 +197,7 @@ namespace Flint
 		 *
 		 * @return The render target pointer.
 		 */
-		FRenderTarget* GetRenderTarget() const { return pRenderTarget; }
+		std::shared_ptr<FRenderTarget> GetRenderTarget() const { return pRenderTarget; }
 
 		/**
 		 * Get the uniform layouts of the pipeline.
@@ -262,9 +247,10 @@ namespace Flint
 		std::vector<ShaderDigest> mDigests;
 
 		std::unordered_map<UI64, FPipelineResource*> mDrawResources;
-		UI64 mIndex = 0;
 
-		FRenderTarget* pRenderTarget = nullptr;
+		std::shared_ptr<FRenderTarget> pRenderTarget = nullptr;
+
+		UI64 mIndex = 0;
 	};
 
 	/**
@@ -272,7 +258,7 @@ namespace Flint
 	 */
 	class ComputePipeline : public FPipeline {
 	public:
-		ComputePipeline() {}
+		ComputePipeline(std::shared_ptr<FRenderTarget> pRenderTarget, std::vector<ShaderDigest> digest) : FPipeline(pRenderTarget, digest) {}
 	};
 
 	/**
@@ -280,6 +266,6 @@ namespace Flint
 	 */
 	class RayTracingPipeline : public FPipeline {
 	public:
-		RayTracingPipeline() {}
+		RayTracingPipeline(std::shared_ptr<FRenderTarget> pRenderTarget, std::vector<ShaderDigest> digest) : FPipeline(pRenderTarget, digest) {}
 	};
 }

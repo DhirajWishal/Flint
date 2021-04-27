@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Device.h"
+#include "FDevice.h"
 #include "Core\Hasher\Hasher.h"
 
 #define FLINT_DEFAULT_CHANNEL_COUNT		4
@@ -177,26 +177,9 @@ namespace Flint
 	 */
 	class FImage : public BackendObject {
 	public:
-		FImage() {}
+		FImage(std::shared_ptr<FDevice> pDevice, UI64 width, UI64 height, UI64 depth, ImageUsage usage, UI8 bitsPerPixel = FLINT_DEFAULT_BPP, UI8 layers = 1)
+			: pDevice(pDevice), mWidth(width), mHeight(height), mDepth(depth), mUsage(usage), mBitsPerPixel(bitsPerPixel), mLayers(layers) {}
 		virtual ~FImage() {}
-
-		/**
-		 * Initialize the image object.
-		 *
-		 * @param pDevice: The device pointer which the image is bound to.
-		 * @param width: The width of the image.
-		 * @param height: The height of the image.
-		 * @param depth: The depth of the image.
-		 * @param usage: The image usage.
-		 * @param bitsPerPixel: The number of bits a pixel contains.
-		 * @param layers: The number of image layers the image consists of.
-		 */
-		virtual void Initialize(FDevice* pDevice, UI64 width, UI64 height, UI64 depth, ImageUsage usage, UI8 bitsPerPixel = FLINT_DEFAULT_BPP, UI8 layers = 1) = 0;
-
-		/**
-		 * Terminate the image.
-		 */
-		virtual void Terminate() = 0;
 
 		/**
 		 * Copy image data to the image.
@@ -213,7 +196,7 @@ namespace Flint
 		virtual void CopyData(unsigned char* pData, UI64 width, UI64 widthOffset, UI64 height, UI64 heightOffset, UI64 depth, UI64 depthOffset, UI8 bitsPerPixel = FLINT_DEFAULT_BPP) = 0;
 
 	protected:
-		FDevice* pDevice = nullptr;
+		std::shared_ptr<FDevice> pDevice = nullptr;
 		UI64 mWidth = 0, mHeight = 0, mDepth = 0;
 		UI32 mMipLevel = 1;
 		UI8 mBitsPerPixel = 8, mLayers = 1;

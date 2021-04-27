@@ -3,43 +3,10 @@
 
 #pragma once
 
-#include "Device.h"
+#include "FDevice.h"
 
 namespace Flint
 {
-	/**
-	 * Buffer usage enum.
-	 * Defines what the buffer will be used for,
-	 */
-	enum class BufferUsage : UI8 {
-		UNDEFINED,
-		VERTEX, INDEX, STAGGING, UNIFORM
-	};
-
-	/**
-	 * Memory profile enum.
-	 * Defines what the buffer memory should look like. This can be used to optimize performance.
-	 */
-	enum class MemoryProfile : UI8 {
-		/**
-		 * This type is a must if the buffer's content is being copied at any moment.
-		 * Try not to set this for buffer types like Vertex and Index as it might be costly.
-		 */
-		TRANSFER_FRIENDLY,
-
-		/**
-		 * This is the best for speed.
-		 * Buffers with this profile has the fastest access time. Usually this is set for draw-based buffers like Vertex and Index buffers.
-		 * Unlike DRAW_RESOURCE type, this has a slight performance cost.
-		 */
-		 DEVICE_ONLY,
-
-		 /**
-		  * This is used for buffer types like Vertex and Index buffers and is optimized for speed.
-		  */
-		  DRAW_RESOURCE
-	};
-
 	/**
 	 * Buffer object.
 	 * This object is the base class for all the backend buffer objects.
@@ -51,23 +18,8 @@ namespace Flint
 		};
 
 	public:
-		FBuffer() {}
+		FBuffer(std::shared_ptr<FDevice> pDevice, UI64 size, BufferUsage usage, MemoryProfile profile) : pDevice(pDevice), mSize(size), mUsage(usage), mMemoryProfile(profile) {}
 		virtual ~FBuffer() {}
-
-		/**
-		 * Initialize the buffer.
-		 *
-		 * @param pDevice: The device pointer.
-		 * @param size: The size of the buffer.
-		 * @param usage: The buffer usage.
-		 * @param profile: The buffer's memory profile.
-		 */
-		virtual void Initialize(FDevice* pDevice, UI64 size, BufferUsage usage, MemoryProfile profile) = 0;
-
-		/**
-		 * Terminate the buffer.
-		 */
-		virtual void Terminate() = 0;
 
 		/**
 		 * Map the buffer memory to the local address space.
@@ -104,7 +56,7 @@ namespace Flint
 		 *
 		 * @return The device pointer.
 		 */
-		FDevice* GetDevice() const { return pDevice; }
+		std::shared_ptr<FDevice> GetDevice() const { return pDevice; }
 
 		/**
 		 * Get the size of the buffer.
@@ -130,7 +82,7 @@ namespace Flint
 	protected:
 		PreviousMemoryMapInfo mPrevMapInfo = {};
 
-		FDevice* pDevice = {};
+		std::shared_ptr<FDevice> pDevice = nullptr;
 		UI64 mSize = 0;
 
 		BufferUsage mUsage = BufferUsage::UNDEFINED;

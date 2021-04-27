@@ -1,16 +1,16 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#include "Core/Backend/GraphicsPipeline.h"
-#include "Core\Backend\Image.h"
-#include "Core\Backend\Buffer.h"
-#include "Core\Backend\RenderTarget.h"
+#include "Core/Backend/FGraphicsPipeline.h"
+#include "Core\Backend\FImage.h"
+#include "Core\Backend\FBuffer.h"
+#include "Core\Backend\FRenderTarget.h"
 
 namespace Flint
 {
 	UniformBufferContainer FPipeline::CreateUniformBuffers() const
 	{
-		FDevice* pDevice = pRenderTarget->GetDevice();
+		FDevice* pDevice = pRenderTarget->GetDevice().get();
 
 		UniformBufferContainer container;
 		for (auto itr = mUniformLayouts.begin(); itr != mUniformLayouts.end(); itr++)
@@ -22,15 +22,12 @@ namespace Flint
 
 	void FPipeline::DestroyUniformBuffers(UniformBufferContainer& uniformBuffers) const
 	{
-		for (auto bufferPair : uniformBuffers)
-			bufferPair.second->Terminate();
-
 		uniformBuffers.clear();
 	}
 
 	UniformImageContainer FPipeline::CreateUniformImages() const
 	{
-		FDevice* pDevice = pRenderTarget->GetDevice();
+		FDevice* pDevice = pRenderTarget->GetDevice().get();
 
 		UniformImageContainer container;
 		for (auto itr = mUniformLayouts.begin(); itr != mUniformLayouts.end(); itr++)
@@ -49,9 +46,6 @@ namespace Flint
 
 	void FPipeline::DestroyUniformImages(UniformImageContainer& uniformImages) const
 	{
-		for (auto imagePair : uniformImages)
-			imagePair.second.first->Terminate();
-
 		uniformImages.clear();
 	}
 

@@ -9,9 +9,9 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		void VulkanShaderModule::Initialize(VulkanDevice* pDevice, const ShaderDigest& digest)
+		VulkanShaderModule::VulkanShaderModule(VulkanDevice* pDevice, const ShaderDigest& digest)
+			: pDevice(pDevice)
 		{
-			this->pDevice = pDevice;
 			vShaderStage = Utilities::GetShaderStage(digest.mLocation);
 
 			VkShaderModuleCreateInfo vCI = {};
@@ -26,7 +26,7 @@ namespace Flint
 			SetupResources(digest);
 		}
 
-		void VulkanShaderModule::Terminate()
+		VulkanShaderModule::~VulkanShaderModule()
 		{
 			pDevice->DestroyShaderModule(vShaderModule);
 		}

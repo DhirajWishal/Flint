@@ -3,13 +3,14 @@
 
 #pragma once
 
-#include "Device.h"
-#include "Buffer.h"
-#include "Pipeline.h"
+#include "FDevice.h"
+#include "FBuffer.h"
+#include "FPipeline.h"
 
 namespace Flint
 {
 	class FScreenBoundRenderTarget;
+	class FGraphicsPipeline;
 
 	/**
 	 * Flint command buffer list.
@@ -17,21 +18,8 @@ namespace Flint
 	 */
 	class FCommandBufferList : public BackendObject {
 	public:
-		FCommandBufferList() {}
+		FCommandBufferList(std::shared_ptr<FDevice> pDevice, UI64 bufferCount) : pDevice(pDevice), mBufferCount(bufferCount) {}
 		virtual ~FCommandBufferList() {}
-
-		/**
-		 * Initialize the list.
-		 *
-		 * @param pDevice: The device pointer.
-		 * @param bufferCount: The buffer count.
-		 */
-		virtual void Initialize(FDevice* pDevice, UI64 bufferCount) = 0;
-
-		/**
-		 * Terminate the buffer list.
-		 */
-		virtual void Terminate() = 0;
 
 		/**
 		 * Clear command buffer recordings.
@@ -154,7 +142,7 @@ namespace Flint
 		}
 
 	protected:
-		FDevice* pDevice = nullptr;
+		std::shared_ptr<FDevice> pDevice = nullptr;
 		UI64 mBufferCount = 0;
 		UI64 mBufferIndex = 0;
 	};

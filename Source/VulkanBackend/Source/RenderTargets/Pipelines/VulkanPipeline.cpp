@@ -11,9 +11,9 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		void VulkanPipelineResource::Initialize(FPipeline* pPipeline)
+		VulkanPipelineResource::VulkanPipelineResource(std::shared_ptr<FPipeline> pPipeline)
+			: FPipelineResource(pPipeline)
 		{
-			this->pPipeline = pPipeline;
 			CreateDescriptorPool(pPipeline->GetAs<VulkanPipeline>()->vPoolSizes);
 
 			VkDescriptorSetAllocateInfo vDSAI = {};
@@ -26,7 +26,7 @@ namespace Flint
 			FLINT_VK_ASSERT(pPipeline->GetAs<VulkanPipeline>()->GetRenderTarget()->GetDevice()->AllocateDescriptorSet(&vDSAI, &vDescriptorSet), "Failed to allocate descriptor set!");
 		}
 
-		void VulkanPipelineResource::Terminate()
+		VulkanPipelineResource::~VulkanPipelineResource()
 		{
 			DeviceType* pDevice = pPipeline->GetAs<VulkanPipeline>()->GetRenderTarget()->GetDevice();
 			pDevice->DestroyDescriptorPool(vPool);
@@ -49,7 +49,7 @@ namespace Flint
 				auto& layout = uniformLayouts[itr->first];
 
 				VkDescriptorBufferInfo* pDBI = new VkDescriptorBufferInfo();
-				pDBI->buffer = itr->second.vBuffer;
+				pDBI->buffer = itr->second->GetAs<VulkanBuffer>()->vBuffer;
 				pDBI->range = layout.mSize;
 				pDBI->offset = 0;
 
@@ -82,15 +82,16 @@ namespace Flint
 			for (auto itr = unformImages.begin(); itr != unformImages.end(); itr++)
 			{
 				auto& layout = uniformLayouts[itr->first];
+				VulkanImage* pImage = itr->second.first->GetAs<VulkanImage>();
 
 				VkDescriptorImageInfo* pDII = new VkDescriptorImageInfo();
-				pDII->imageLayout = itr->second.first->GetAs<VulkanPipeline>()->GetLayout();
-				pDII->imageView = itr->second.first.GetImageView();
+				pDII->imageLayout = pImage->GetLayout();
+				pDII->imageView = pImage->GetImageView();
 
 				if (mSamplerMap.find(itr->second.second) != mSamplerMap.end())
 					pDII->sampler = mSamplerMap[itr->second.second];
 				else
-					pDII->sampler = itr->second.first.CreateSampler(itr->second.second), mSamplerMap[itr->second.second] = pDII->sampler;
+					pDII->sampler = itr->second.first->GetAs<VulkanImage>()->CreateSampler(itr->second.second), mSamplerMap[itr->second.second] = pDII->sampler;
 
 				INSERT_INTO_VECTOR(pImageInfos, pDII);
 
@@ -105,7 +106,7 @@ namespace Flint
 				INSERT_INTO_VECTOR(vSetWrites, std::move(vWDS));
 			}
 
-			pPipeline->GetRenderTarget()->GetDevice()->UpdateDescriptorSet(vSetWrites, {});
+			pPipeline->GetAs<VulkanPipeline>()->GetRenderTarget()->GetDevice()->UpdateDescriptorSet(vSetWrites, {});
 
 			for (auto ptr : pImageInfos)
 				delete ptr;
@@ -121,7 +122,7 @@ namespace Flint
 			vCI.poolSizeCount = static_cast<UI32>(vSizes.size());
 			vCI.pPoolSizes = vSizes.data();
 
-			FLINT_VK_ASSERT(pPipeline->GetRenderTarget()->GetDevice()->CreateDescriptorPool(&vCI, &vPool), "Failed to create descriptor pool!")
+			FLINT_VK_ASSERT(pPipeline->GetAs<VulkanPipeline>()->GetRenderTarget()->GetDevice()->CreateDescriptorPool(&vCI, &vPool), "Failed to create descriptor pool!");
 		}
 	}
 }

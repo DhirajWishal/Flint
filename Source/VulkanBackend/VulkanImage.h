@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Core\Backend\Image.h"
+#include "Core\Backend\FImage.h"
 #include "VulkanDevice.h"
 
 namespace Flint
@@ -12,14 +12,8 @@ namespace Flint
 	{
 		class VulkanImage final : public FImage {
 		public:
-			using DeviceType = VulkanDevice;
-
-		public:
-			VulkanImage() {}
-			~VulkanImage() {}
-
-			virtual void Initialize(FDevice* pDevice, UI64 width, UI64 height, UI64 depth, ImageUsage usage, UI8 bitsPerPixel = FLINT_DEFAULT_BPP, UI8 layers = 1) override final;
-			virtual void Terminate() override final;
+			VulkanImage(std::shared_ptr<FDevice> pDevice, UI64 width, UI64 height, UI64 depth, ImageUsage usage, UI8 bitsPerPixel = FLINT_DEFAULT_BPP, UI8 layers = 1);
+			~VulkanImage();
 
 			virtual void CopyData(unsigned char* pData, UI64 width, UI64 widthOffset, UI64 height, UI64 heightOffset, UI64 depth, UI64 depthOffset, UI8 bitsPerPixel = FLINT_DEFAULT_BPP) override final;
 

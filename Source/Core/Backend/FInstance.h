@@ -4,10 +4,11 @@
 #pragma once
 
 #include "BackendObject.h"
-#include <memory>
 
 #include "Core\Types\DataTypes.h"
 #include "Core\Macros\Global.h"
+
+#include <memory>
 
 #define FLINT_BACKEND_OBJECT_ASSERT(base, derived, msg) static_assert(!std::is_base_of<base, derived>::value, msg);
 
@@ -19,20 +20,8 @@ namespace Flint
 	 */
 	class FInstance : public BackendObject {
 	public:
-		FInstance() {}
+		FInstance(bool enableValidation) {}
 		virtual ~FInstance() {}
-
-		/**
-		 * Initialize the instance.
-		 *
-		 * @param enableValidation: Whether or not to enable backend validation.
-		 */
-		virtual void Initialize(bool enableValidation) = 0;
-
-		/**
-		 * Terminate the instance.
-		 */
-		virtual void Terminate() = 0;
 
 		/**
 		 * Check if validation is enabled.

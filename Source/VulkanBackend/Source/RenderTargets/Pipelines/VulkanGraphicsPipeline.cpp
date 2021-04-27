@@ -245,11 +245,9 @@ namespace Flint
 			}
 		}
 
-		void VulkanGraphicsPipeline::Initialize(FRenderTarget* pRenderTarget, const std::vector<ShaderDigest>& shaderDigests, const GraphicsPipelineSpecification& spec)
+		VulkanGraphicsPipeline::VulkanGraphicsPipeline(std::shared_ptr<FRenderTarget> pRenderTarget, const std::vector<ShaderDigest>& shaderDigests, const GraphicsPipelineSpecification& spec)
+			: FGraphicsPipeline(pRenderTarget, shaderDigests, spec)
 		{
-			this->pRenderTarget = pRenderTarget;
-			this->mSpec = spec;
-			this->mDigests = shaderDigests;
 			ResolveUniformLayouts(shaderDigests);
 
 			VulkanDevice* pDevice = pRenderTarget->GetAs<VulkanRenderTarget>()->GetDevice();
@@ -265,8 +263,7 @@ namespace Flint
 				std::vector<VkDescriptorSetLayoutBinding> vBindings = {};
 				for (auto itr = shaderDigests.begin(); itr != shaderDigests.end(); itr++)
 				{
-					VulkanShaderModule sModule = {};
-					sModule.Initialize(pDevice, *itr);
+					VulkanShaderModule sModule = { pDevice, *itr };
 					INSERT_INTO_VECTOR(vStages, sModule.GetStage());
 					vBindings.insert(vBindings.end(), sModule.mBindings.begin(), sModule.mBindings.end());
 					vPoolSizes.insert(vPoolSizes.end(), sModule.mPoolSizes.begin(), sModule.mPoolSizes.end());
@@ -428,6 +425,14 @@ namespace Flint
 				itr->Terminate();
 		}
 
+		VulkanGraphicsPipeline::~VulkanGraphicsPipeline()
+		{
+			VulkanDevice* pDevice = pRenderTarget->GetAs<VulkanRenderTarget>()->GetDevice();
+			pDevice->DestroyPipeline(vPipeline);
+			pDevice->DestroyPipelineLayout(vPipelineLayout);
+			pDevice->DestroyDescriptorSetLayout(vSetLayout);
+		}
+
 		void VulkanGraphicsPipeline::PrepareToRecreate()
 		{
 			VulkanDevice* pDevice = pRenderTarget->GetAs<VulkanRenderTarget>()->GetDevice();
@@ -443,20 +448,9 @@ namespace Flint
 		//	RecreatePipeline();
 		//}
 
-		void VulkanGraphicsPipeline::Terminate()
+		std::shared_ptr<FPipelineResource> VulkanGraphicsPipeline::CreatePipelineResource()
 		{
-			VulkanDevice* pDevice = pRenderTarget->GetAs<VulkanRenderTarget>()->GetDevice();
-			pDevice->DestroyPipeline(vPipeline);
-			pDevice->DestroyPipelineLayout(vPipelineLayout);
-			pDevice->DestroyDescriptorSetLayout(vSetLayout);
-		}
-
-		FPipelineResource* VulkanGraphicsPipeline::CreatePipelineResource()
-		{
-			VulkanPipelineResource* pResource = new VulkanPipelineResource();
-			pResource->Initialize(this);
-
-			return pResource;
+			return std::make_shared<VulkanPipelineResource>(std::shared_ptr<VulkanGraphicsPipeline>(this));
 		}
 
 		void VulkanGraphicsPipeline::RecreatePipeline()
@@ -470,8 +464,7 @@ namespace Flint
 
 			for (auto itr = mDigests.begin(); itr != mDigests.end(); itr++)
 			{
-				VulkanShaderModule sModule = {};
-				sModule.Initialize(pDevice, *itr);
+				VulkanShaderModule sModule = { pDevice, *itr };
 				INSERT_INTO_VECTOR(vStages, sModule.GetStage());
 
 				if (itr->mLocation == ShaderLocation::VERTEX)

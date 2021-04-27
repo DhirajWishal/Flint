@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Core\Backend\CommandBufferList.h"
+#include "Core\Backend\FCommandBufferList.h"
 #include "VulkanDevice.h"
 #include "VulkanBuffer.h"
 #include "RenderTargets\Pipelines\VulkanPipeline.h"
@@ -17,11 +17,8 @@ namespace Flint
 
 		class VulkanCommandBufferList final : public FCommandBufferList {		
 		public:
-			VulkanCommandBufferList() {}
-			~VulkanCommandBufferList() {}
-
-			virtual void Initialize(FDevice* pDevice, UI64 bufferCount) override final;
-			virtual void Terminate() override final;
+			VulkanCommandBufferList(std::shared_ptr<FDevice> pDevice, UI64 bufferCount);
+			~VulkanCommandBufferList();
 
 			virtual void ClearBuffers() override final;
 			virtual void ReceateBuffers() override final;

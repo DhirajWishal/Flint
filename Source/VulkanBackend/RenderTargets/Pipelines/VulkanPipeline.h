@@ -5,7 +5,7 @@
 
 #include <unordered_map>
 
-#include "Core\Backend\Pipeline.h"
+#include "Core\Backend\FPipeline.h"
 #include "VulkanBackend\VulkanBuffer.h"
 #include "VulkanBackend\VulkanImage.h"
 #include "VulkanBackend\RenderTargets\VulkanRenderTarget.h"
@@ -23,11 +23,8 @@ namespace Flint
 			using DeviceType = VulkanDevice;
 
 		public:
-			VulkanPipelineResource() {}
-			~VulkanPipelineResource() {}
-
-			virtual void Initialize(FPipeline* pPipeline) override final;
-			virtual void Terminate() override final;
+			VulkanPipelineResource(std::shared_ptr<FPipeline> pPipeline);
+			~VulkanPipelineResource();
 
 			virtual void RegisterUniformBuffers(const UniformBufferContainer& uniformBuffers) override final;
 			virtual void RegisterUniformImages(const UniformImageContainer& unformImages) override final;

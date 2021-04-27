@@ -88,14 +88,18 @@ namespace Flint
 			}
 		}
 
-		void VulkanDevice::Initialize(FInstance* pInstance)
+		VulkanDevice::VulkanDevice(std::shared_ptr<FInstance> pInstance)
+			: FDevice(pInstance)
 		{
-			this->pInstance = pInstance;
-
 			INSERT_INTO_VECTOR(mDeviceExtensions, VK_KHR_SWAPCHAIN_EXTENSION_NAME);
 
 			CreatePhysicalDevice();
 			CreateLogicalDevice();
+		}
+
+		VulkanDevice::~VulkanDevice()
+		{
+			DestroyLogicalDevice();
 		}
 
 		bool VulkanDevice::CheckDisplayCompatibility(FDisplay* pDisplay)
@@ -105,17 +109,9 @@ namespace Flint
 			return isSupported == VK_TRUE;
 		}
 
-		void VulkanDevice::Terminate()
+		std::shared_ptr<FBuffer> VulkanDevice::CreateBuffer(UI64 size, BufferUsage usage, MemoryProfile memoryProfile)
 		{
-			DestroyLogicalDevice();
-		}
-
-		FBuffer* VulkanDevice::CreateBuffer(UI64 size, BufferUsage usage, MemoryProfile memoryProfile)
-		{
-			VulkanBuffer* pBuffer = new VulkanBuffer();
-			pBuffer->Initialize(this, size, usage, memoryProfile);
-
-			return pBuffer;
+			return std::make_shared<VulkanBuffer>(this, size, usage, memoryProfile);
 		}
 
 		VkPhysicalDeviceProperties VulkanDevice::GetPhysicalDeviceProperties() const

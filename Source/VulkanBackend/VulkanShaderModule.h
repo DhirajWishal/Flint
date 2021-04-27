@@ -4,7 +4,7 @@
 #pragma once
 
 #include "VulkanDevice.h"
-#include "Core/Backend/ShaderDigest.h"
+#include "Core/Backend/FShaderDigest.h"
 
 namespace Flint
 {
@@ -15,11 +15,8 @@ namespace Flint
 			using DeviceType = VulkanDevice;
 
 		public:
-			VulkanShaderModule() {}
-			~VulkanShaderModule() {}
-
-			void Initialize(VulkanDevice* pDevice, const ShaderDigest& digest);
-			void Terminate() override final;
+			VulkanShaderModule(VulkanDevice* pDevice, const ShaderDigest& digest);
+			~VulkanShaderModule();
 
 			VkPipelineShaderStageCreateInfo GetStage() const;
 
@@ -27,6 +24,8 @@ namespace Flint
 			void SetupResources(const ShaderDigest& digest);
 
 		public:
+			VulkanDevice* pDevice = nullptr;
+
 			VkShaderModule vShaderModule = VK_NULL_HANDLE;
 			VkShaderStageFlags vShaderStage = VkShaderStageFlagBits::VK_SHADER_STAGE_ALL;
 

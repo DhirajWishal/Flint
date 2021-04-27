@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Core\Backend\ScreenBoundRenderTarget.h"
+#include "Core\Backend\FScreenBoundRenderTarget.h"
 #include "VulkanRenderTarget.h"
 
 #include "Attachments/VulkanColorBuffer.h"
@@ -20,18 +20,11 @@ namespace Flint
 		/**
 		 * Software/ compute.
 		 */
-		class VulkanScreenBoundRenderTargetS final : public VulkanRenderTarget, public ScreenBoundRenderTarget<VulkanDevice, VulkanDisplay, VulkanBuffer, VulkanPipeline, VulkanCommandBufferList> {
-		public:
-			using Super = ScreenBoundRenderTarget<VulkanDevice, VulkanDisplay, VulkanBuffer, VulkanPipeline, VulkanCommandBufferList>;
-			using DeviceType = VulkanDevice;
-			using DisplayType = VulkanDisplay;
+		class VulkanScreenBoundRenderTargetS final : public VulkanRenderTarget, public FScreenBoundRenderTarget {
 		
 		public:
-			VulkanScreenBoundRenderTargetS() {}
-			~VulkanScreenBoundRenderTargetS() {}
-
-			virtual void Initialize(DeviceType* pDevice, DisplayType* pDisplay, UI64 bufferCount) override final;
-			virtual void Terminate() override final;
+			VulkanScreenBoundRenderTargetS(std::shared_ptr<FDevice> pDevice, std::shared_ptr<FDisplay> pDisplay, UI64 bufferCount);
+			~VulkanScreenBoundRenderTargetS();
 
 			virtual void BakeCommands() override final;
 			virtual void PrepareToDraw() override final;
@@ -41,8 +34,8 @@ namespace Flint
 			VkSwapchainKHR GetSwapChain() const { return vSwapChain.GetSwapChain(); }
 			VkFramebuffer GetCurrentFrameBuffer() const { return vFrameBuffers[GetFrameIndex()]; }
 
-			virtual Vector2 VulkanRenderTarget::GetExtent() const { return Super::GetExtent(); }
-			virtual VulkanDevice* VulkanRenderTarget::GetDevice() const { return Super::GetDevice(); }
+			virtual Vector2 VulkanRenderTarget::GetExtent() const { return FScreenBoundRenderTarget::GetExtent(); }
+			virtual VulkanDevice* VulkanRenderTarget::GetDevice() const { return VulkanRenderTarget::GetDevice(); }
 
 		private:
 			void Recreate();

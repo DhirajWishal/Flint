@@ -141,9 +141,9 @@ namespace Flint
 			VFCI.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
 			VFCI.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-			FLINT_VK_ASSERT(pDevice->CreateSemaphores(&vSCI, vImageAvailables), "Failed to create Image Available semaphores!")
-				FLINT_VK_ASSERT(pDevice->CreateSemaphores(&vSCI, vRenderFinishes), "Failed to create Render Finished semaphores!")
-				FLINT_VK_ASSERT(pDevice->CreateFences(&VFCI, vInFlightFences), "Failed to create In Flight fences!")
+			FLINT_VK_ASSERT(pDevice->CreateSemaphores(&vSCI, vImageAvailables), "Failed to create Image Available semaphores!");
+			FLINT_VK_ASSERT(pDevice->CreateSemaphores(&vSCI, vRenderFinishes), "Failed to create Render Finished semaphores!");
+			FLINT_VK_ASSERT(pDevice->CreateFences(&VFCI, vInFlightFences), "Failed to create In Flight fences!");
 		}
 
 		void VulkanRenderTarget::TerminateSyncObjects(VulkanDevice* pDevice)

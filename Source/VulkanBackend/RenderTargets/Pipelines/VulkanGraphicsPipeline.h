@@ -4,7 +4,7 @@
 #pragma once
 
 #include "VulkanPipeline.h"
-#include "Core\Backend\GraphicsPipeline.h"
+#include "Core\Backend\FGraphicsPipeline.h"
 #include "VulkanBackend\VulkanShaderModule.h"
 #include "VulkanBackend\VulkanUtilities.h"
 #include "VulkanBackend\VulkanMacros.h"
@@ -20,17 +20,15 @@ namespace Flint
 
 		class VulkanGraphicsPipeline final : public VulkanPipeline, public FGraphicsPipeline {
 		public:
-			VulkanGraphicsPipeline() {}
-			~VulkanGraphicsPipeline() {}
+			VulkanGraphicsPipeline(std::shared_ptr<FRenderTarget> pRenderTarget, const std::vector<ShaderDigest>& shaderDigests, const GraphicsPipelineSpecification& spec);
+			~VulkanGraphicsPipeline();
 
-			virtual void Initialize(FRenderTarget* pRenderTarget, const std::vector<ShaderDigest>& shaderDigests, const GraphicsPipelineSpecification& spec) override final;
 			virtual void PrepareToRecreate() override final;
 			virtual void Recreate() override final { RecreatePipeline(); }
-			virtual void Terminate() override final;
 
 			virtual VkPipelineBindPoint GetBindPoint() const override final { return VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_GRAPHICS; }
 
-			virtual FPipelineResource* CreatePipelineResource() override final;
+			virtual std::shared_ptr<FPipelineResource> CreatePipelineResource() override final;
 
 			virtual VulkanRenderTarget* VulkanPipeline::GetRenderTarget() const { return VulkanPipeline::GetRenderTarget(); }
 			virtual std::unordered_map<String, UniformLayout> VulkanPipeline::GetUniformLayouts() const { return VulkanPipeline::GetUniformLayouts(); }

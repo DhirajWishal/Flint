@@ -99,12 +99,9 @@ namespace Flint
 			return supportDetails;
 		}
 
-		void VulkanDisplay::Initialize(FInstance* pInstance, const Vector2 extent, const char* pTitle)
+		VulkanDisplay::VulkanDisplay(std::shared_ptr<FInstance> pInstance, const Vector2 extent, const char* pTitle)
+			: FDisplay(pInstance, extent, pTitle)
 		{
-			this->pInstance = pInstance;
-			this->mExtent = extent;
-			this->pTitle = pTitle;
-
 			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 			pWindowHandle = glfwCreateWindow(static_cast<UI32>(mExtent.width), static_cast<UI32>(mExtent.height), pTitle, nullptr, nullptr);
 
@@ -115,15 +112,15 @@ namespace Flint
 			SetupCallbacks();
 		}
 
-		void VulkanDisplay::Update()
-		{
-			glfwPollEvents();
-		}
-
-		void VulkanDisplay::Terminate()
+		VulkanDisplay::~VulkanDisplay()
 		{
 			DestroySurface();
 			glfwDestroyWindow(pWindowHandle);
+		}
+
+		void VulkanDisplay::Update()
+		{
+			glfwPollEvents();
 		}
 
 		VkSurfaceCapabilitiesKHR VulkanDisplay::GetSurfaceCapabilities(VulkanDevice* pDevice) const

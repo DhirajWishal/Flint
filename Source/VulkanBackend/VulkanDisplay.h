@@ -4,7 +4,7 @@
 #pragma once
 
 #include "Core/Inputs/InputCenter.h"
-#include "Core/Backend/Display.h"
+#include "Core/Backend/FDisplay.h"
 
 #include "VulkanInstance.h"
 
@@ -38,12 +38,10 @@ namespace Flint
 
 		class VulkanDisplay final : public FDisplay {
 		public:
-			VulkanDisplay() {}
-			~VulkanDisplay() {}
+			VulkanDisplay(std::shared_ptr<FInstance> pInstance, const Vector2 extent, const char* pTitle);
+			~VulkanDisplay();
 
-			virtual void Initialize(FInstance* pInstance, const Vector2 extent, const char* pTitle) override final;
 			virtual void Update() override final;
-			virtual void Terminate() override final;
 
 		public:
 			VkSurfaceKHR GetSurface() const { return vSurface; }

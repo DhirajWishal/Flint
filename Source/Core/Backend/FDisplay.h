@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Instance.h"
+#include "FInstance.h"
 #include "Core\Maths\Vector\Vector2.h"
 #include "Core\Inputs\InputCenter.h"
 
@@ -15,28 +15,14 @@ namespace Flint
 	 */
 	class FDisplay : public BackendObject {
 	public:
-		FDisplay() {}
+		FDisplay(std::shared_ptr<FInstance> pInstance, const Vector2 extent, const char* pTitle) : pInstance(pInstance), mExtent(extent), pTitle(pTitle) {}
 		virtual ~FDisplay() {}
-
-		/**
-		 * Initialize the display.
-		 *
-		 * @param pInstance: The instance pointer.
-		 * @param extent: The display extent.
-		 * @param pTitle: The display title.
-		 */
-		virtual void Initialize(FInstance* pInstance, const Vector2 extent, const char* pTitle) = 0;
 
 		/**
 		 * Update the display.
 		 * This also polls inputs.
 		 */
 		virtual void Update() = 0;
-
-		/**
-		 * Terminate the display.
-		 */
-		virtual void Terminate() = 0;
 
 		/**
 		 * Get the input center of this display.
@@ -64,11 +50,11 @@ namespace Flint
 		 *
 		 * @return The instance pointer.
 		 */
-		FInstance* GetInstance() const { return pInstance; }
+		std::shared_ptr<FInstance> GetInstance() const { return pInstance; }
 
 	protected:
 		Inputs::InputCenter mInputsCenter = {};
-		FInstance* pInstance = nullptr;
+		std::shared_ptr<FInstance> pInstance = nullptr;
 
 		Vector2 mExtent = Vector2::Zero;
 		const char* pTitle = nullptr;

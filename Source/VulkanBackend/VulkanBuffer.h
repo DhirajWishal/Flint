@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Core/Backend/Buffer.h"
+#include "Core/Backend/FBuffer.h"
 #include "VulkanDevice.h"
 
 namespace Flint
@@ -12,11 +12,8 @@ namespace Flint
 	{
 		class VulkanBuffer final : public FBuffer {
 		public:
-			VulkanBuffer() {}
-			~VulkanBuffer() {}
-
-			virtual void Initialize(FDevice* pDevice, UI64 size, BufferUsage usage, MemoryProfile profile) override final;
-			virtual void Terminate() override final;
+			VulkanBuffer(std::shared_ptr<FDevice> pDevice, UI64 size, BufferUsage usage, MemoryProfile profile);
+			~VulkanBuffer();
 
 			virtual void* MapMemory(UI64 size, UI64 offset) override final;
 			virtual void UnmapMemory() override final;

@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "Display.h"
-#include "CommandBufferList.h"
+#include "FDisplay.h"
+#include "FCommandBufferList.h"
 
 namespace Flint
 {
@@ -21,24 +21,19 @@ namespace Flint
 		 */
 		struct DrawEntry {
 			DrawEntry() = default;
-			DrawEntry(FBuffer* pVertexBuffer, FBuffer* pIndexBuffer) : pVertexBuffer(pVertexBuffer), pIndexBuffer(pIndexBuffer) {}
+			DrawEntry(std::weak_ptr<FBuffer> pVertexBuffer, std::weak_ptr<FBuffer> pIndexBuffer) : pVertexBuffer(pVertexBuffer), pIndexBuffer(pIndexBuffer) {}
 
-			std::unordered_map<UI64, FPipeline*> pPipelines = {};
+			std::unordered_map<UI64, std::weak_ptr<FPipeline>> pPipelines = {};
 
-			FBuffer* pVertexBuffer = nullptr;
-			FBuffer* pIndexBuffer = nullptr;
+			std::weak_ptr<FBuffer> pVertexBuffer = {};
+			std::weak_ptr<FBuffer> pIndexBuffer = {};
 
 			UI64 mIndex = 0;
 		};
 
 	public:
-		FRenderTarget() {}
+		FRenderTarget(std::shared_ptr<FDevice> pDevice, UI64 bufferCount) : pDevice(pDevice), mBufferCount(bufferCount) {}
 		virtual ~FRenderTarget() {}
-
-		/**
-		 * Terminate the render target.
-		 */
-		virtual void Terminate() = 0;
 
 		/**
 		 * Bake draw entries to command buffers in the command list.
@@ -66,7 +61,7 @@ namespace Flint
 		 *
 		 * @return The device pointer.
 		 */
-		FDevice* GetDevice() const { return pDevice; }
+		std::shared_ptr<FDevice> GetDevice() const { return pDevice; }
 
 		/**
 		 * Get the render target extent.
@@ -90,7 +85,7 @@ namespace Flint
 		 * @param pIndexBuffer: The index buffer pointer.
 		 * @return The entry ID.
 		 */
-		UI64 AddStaticDrawEntry(FBuffer* pVertexBuffer, FBuffer* pIndexBuffer);
+		UI64 AddStaticDrawEntry(std::weak_ptr<FBuffer> pVertexBuffer, std::weak_ptr<FBuffer> pIndexBuffer);
 
 		/**
 		 * Remove a static draw entry from the render target.
@@ -106,7 +101,7 @@ namespace Flint
 		 * @param pIndexBuffer: The index buffer pointer.
 		 * @return The entry ID.
 		 */
-		UI64 AddDynamicDrawEntry(FBuffer* pVertexBuffer, FBuffer* pIndexBuffer);
+		UI64 AddDynamicDrawEntry(std::weak_ptr<FBuffer> pVertexBuffer, std::weak_ptr<FBuffer> pIndexBuffer);
 
 		/**
 		 * Remove a dynamic draw entry from the render target.
@@ -122,7 +117,7 @@ namespace Flint
 		 * @param pPipeline: The pipeline pointer.
 		 * @return The pipeline ID.
 		 */
-		UI64 AddPipelineToStaticDrawEntry(UI64 ID, FPipeline* pPipeline);
+		UI64 AddPipelineToStaticDrawEntry(UI64 ID, std::weak_ptr<FPipeline> pPipeline);
 
 		/**
 		 * Add a pipeline to a dynamic draw entry.
@@ -131,7 +126,7 @@ namespace Flint
 		 * @param pPipeline: The pipeline pointer.
 		 * @return The pipeline ID.
 		 */
-		UI64 AddPipelineToDynamicDrawEntry(UI64 ID, FPipeline* pPipeline);
+		UI64 AddPipelineToDynamicDrawEntry(UI64 ID, std::weak_ptr<FPipeline> pPipeline);
 
 		/**
 		 * Get the static draw entries of the render target.
@@ -166,12 +161,12 @@ namespace Flint
 		std::unordered_map<UI64, DrawEntry> mStaticDrawEntries;
 		std::unordered_map<UI64, DrawEntry> mDynamicDrawEntries;
 
-		FCommandBufferList* pCommandBufferList = {};
+		std::unique_ptr<FCommandBufferList> pCommandBufferList = nullptr;
 
 		UI64 mStaticDrawIndex = 0;
 		UI64 mDynamicDrawIndex = 0;
 
-		FDevice* pDevice = nullptr;
+		std::shared_ptr<FDevice> pDevice = nullptr;
 		Vector2 mExtent = Vector2::Zero;
 		UI64 mBufferCount = 0;
 	};

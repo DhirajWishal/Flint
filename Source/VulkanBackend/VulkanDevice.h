@@ -3,7 +3,8 @@
 
 #pragma once
 
-#include "Core/Backend/Device.h"
+#include "Core\Backend\FDevice.h"
+#include "Core\Backend\FBuffer.h"
 #include "VulkanInstance.h"
 #include "VulkanDisplay.h"
 #include "VulkanQueue.h"
@@ -14,14 +15,12 @@ namespace Flint
 	{
 		class VulkanDevice final : public FDevice {
 		public:
-			VulkanDevice() {}
-			~VulkanDevice() {}
+			VulkanDevice(std::shared_ptr<FInstance> pInstance);
+			~VulkanDevice();
 
-			virtual void Initialize(FInstance* pInstance) override final;
 			virtual bool CheckDisplayCompatibility(FDisplay* pDisplay) override final;
-			virtual void Terminate() override final;
 
-			virtual FBuffer* FDevice::CreateBuffer(UI64 size, BufferUsage usage, MemoryProfile memoryProfile) override final;
+			virtual std::shared_ptr<FBuffer> CreateBuffer(UI64 size, BufferUsage usage, MemoryProfile memoryProfile) override final;
 
 		public:
 			VkPhysicalDeviceProperties GetPhysicalDeviceProperties() const;

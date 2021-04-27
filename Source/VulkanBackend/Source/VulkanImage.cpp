@@ -139,18 +139,9 @@ namespace Flint
 			}
 		}
 
-		void VulkanImage::Initialize(FDevice* pDevice, UI64 width, UI64 height, UI64 depth, ImageUsage usage, UI8 bitsPerPixel, UI8 layers)
+		VulkanImage::VulkanImage(std::shared_ptr<FDevice> pDevice, UI64 width, UI64 height, UI64 depth, ImageUsage usage, UI8 bitsPerPixel, UI8 layers)
+			: FImage(pDevice, width, height, depth, usage, bitsPerPixel, layers)
 		{
-			this->pDevice = pDevice;
-			this->mWidth = width;
-			this->mHeight = height;
-			this->mDepth = depth;
-			this->mUsage = usage;
-			this->mBitsPerPixel = bitsPerPixel;
-			this->mLayers = layers;
-			this->mMipLevel = static_cast<UI32>(std::floor(std::log2(std::max(mWidth, mHeight)))) + 1;
-			this->vFormat = _Helpers::GetFormat(bitsPerPixel);
-
 			VkImageCreateInfo vCI = {};
 			vCI.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 			vCI.pNext = VK_NULL_HANDLE;
@@ -195,7 +186,7 @@ namespace Flint
 			FLINT_VK_ASSERT(pDevice->GetAs<VulkanDevice>()->CreateImageView(&vIVCI, &vImageView), "Failed to create image view!");
 		}
 
-		void VulkanImage::Terminate()
+		VulkanImage::~VulkanImage()
 		{
 			pDevice->GetAs<VulkanDevice>()->DestroyImage(vImage);
 			pDevice->GetAs<VulkanDevice>()->DestroyImageView(vImageView);
@@ -210,9 +201,7 @@ namespace Flint
 			VkMemoryRequirements vMR = {};
 			vkGetImageMemoryRequirements(pDevice->GetAs<VulkanDevice>()->GetLogicalDevice(), vImage, &vMR);
 
-			VulkanBuffer staggingBuffer = {};
-			staggingBuffer.Initialize(pDevice, vMR.size, BufferUsage::STAGGING, MemoryProfile::TRANSFER_FRIENDLY);
-
+			VulkanBuffer staggingBuffer = { pDevice, vMR.size, BufferUsage::STAGGING, MemoryProfile::TRANSFER_FRIENDLY };
 			BYTE* pDataStore = static_cast<BYTE*>(staggingBuffer.MapMemory(vMR.size, 0));
 			std::copy(pData, pData + size, pDataStore);
 
@@ -236,8 +225,6 @@ namespace Flint
 
 			VulkanOneTimeCommandBuffer vCommandBuffer(pDevice->GetAs<VulkanDevice>());
 			vkCmdCopyBufferToImage(vCommandBuffer, staggingBuffer.vBuffer, vImage, VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &vBIC);
-
-			staggingBuffer.Terminate();
 		}
 
 		VkSampler VulkanImage::CreateSampler(SamplerSpecification spec) const

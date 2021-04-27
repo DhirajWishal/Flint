@@ -164,10 +164,9 @@ namespace Flint
 			}
 		}
 
-		void VulkanInstance::Initialize(bool enableValidation)
+		VulkanInstance::VulkanInstance(bool enableValidation)
+			: FInstance(enableValidation)
 		{
-			this->bEnableValidation = enableValidation;
-
 			InitializeGLFW();
 
 			if (enableValidation)
@@ -181,7 +180,7 @@ namespace Flint
 				CreateDebugMessenger();
 		}
 
-		void VulkanInstance::Terminate()
+		VulkanInstance::~VulkanInstance()
 		{
 			if (bEnableValidation)
 				DestroyDebugMessenger();
@@ -215,7 +214,7 @@ namespace Flint
 			appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
 			appInfo.apiVersion = VK_API_VERSION_1_2;
 
-			// Instance create info.
+			// FInstance create info.
 			VkInstanceCreateInfo createInfo = {};
 			createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 			createInfo.pApplicationInfo = &appInfo;

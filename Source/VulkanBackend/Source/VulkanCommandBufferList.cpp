@@ -10,11 +10,9 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		void VulkanCommandBufferList::Initialize(FDevice* pDevice, UI64 bufferCount)
+		VulkanCommandBufferList::VulkanCommandBufferList(std::shared_ptr<FDevice> pDevice, UI64 bufferCount)
+			: FCommandBufferList(pDevice, bufferCount)
 		{
-			this->pDevice = pDevice;
-			this->mBufferCount = bufferCount;
-
 			VkCommandPoolCreateInfo vCI = {};
 			vCI.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 			vCI.pNext = VK_NULL_HANDLE;
@@ -34,7 +32,7 @@ namespace Flint
 			FLINT_VK_ASSERT(pDevice->GetAs<VulkanDevice>()->AllocateCommandBuffers(&vAI, vBuffers), "Failed to allocate command buffer!");
 		}
 
-		void VulkanCommandBufferList::Terminate()
+		VulkanCommandBufferList::~VulkanCommandBufferList()
 		{
 			pDevice->GetAs<VulkanDevice>()->FreeComandBuffers(vCommandPool, vBuffers);
 			pDevice->GetAs<VulkanDevice>()->DestroyCommandPool(vCommandPool);

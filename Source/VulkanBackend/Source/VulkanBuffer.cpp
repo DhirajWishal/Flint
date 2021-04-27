@@ -9,13 +9,9 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		void VulkanBuffer::Initialize(FDevice* pDevice, UI64 size, BufferUsage usage, MemoryProfile profile)
+		VulkanBuffer::VulkanBuffer(std::shared_ptr<FDevice> pDevice, UI64 size, BufferUsage usage, MemoryProfile profile)
+			: FBuffer(pDevice, size, usage, profile)
 		{
-			this->pDevice = pDevice;
-			this->mSize = size;
-			this->mUsage = usage;
-			this->mMemoryProfile = profile;
-
 			VkBufferUsageFlags vBufferUsage = {};
 			switch (GetUsage())
 			{
@@ -70,7 +66,7 @@ namespace Flint
 			AllocateBufferMemory(vMemoryProperties);
 		}
 
-		void VulkanBuffer::Terminate()
+		VulkanBuffer::~VulkanBuffer()
 		{
 			DestroyBuffer();
 			FreeBufferMemory();
@@ -89,7 +85,7 @@ namespace Flint
 
 			void* pDataStore = nullptr;
 			FLINT_VK_ASSERT(pDevice->GetAs<VulkanDevice>()->MapMemory(vBufferMemory, size, offset, &pDataStore), "Failed to map buffer memory!");
-				return pDataStore;
+			return pDataStore;
 		}
 
 		void VulkanBuffer::UnmapMemory()

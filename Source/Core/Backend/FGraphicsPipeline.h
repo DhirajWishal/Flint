@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Pipeline.h"
+#include "FPipeline.h"
 
 namespace Flint
 {
@@ -142,15 +142,9 @@ namespace Flint
 	 */
 	class FGraphicsPipeline : public FPipeline {
 	public:
-		FGraphicsPipeline() {}
-
-		/**
-		 * Initialize the pipeline.
-		 *
-		 * @param pRenderTarget: The render target that the pipeline is bound to.
-		 * @param shaderDigest: The shader digests to use.
-		 */
-		virtual void Initialize(FRenderTarget* pRenderTarget, const std::vector<ShaderDigest>& shaderDigests, const GraphicsPipelineSpecification& spec) = 0;
+		FGraphicsPipeline(std::shared_ptr<FRenderTarget> pRenderTarget, const std::vector<ShaderDigest>& shaderDigests, const GraphicsPipelineSpecification& spec)
+			: FPipeline(pRenderTarget, shaderDigests), mSpec(spec) {}
+		virtual ~FGraphicsPipeline() {}
 
 		/**
 		 * Get the graphics specification.

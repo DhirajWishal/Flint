@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Core/Backend/Instance.h"
+#include "Core/Backend/FInstance.h"
 
 #include <vulkan/vulkan.h> 
 
@@ -13,11 +13,8 @@ namespace Flint
 	{
 		class VulkanInstance final : public FInstance {
 		public:
-			VulkanInstance() {}
-			~VulkanInstance() {}
-
-			virtual void Initialize(bool enableValidation) override final;
-			virtual void Terminate() override final;
+			VulkanInstance(bool enableValidation);
+			~VulkanInstance();
 
 		private:
 			void InitializeGLFW();

@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "RenderTarget.h"
-#include "Pipeline.h"
+#include "FRenderTarget.h"
+#include "FPipeline.h"
 
 namespace Flint
 {
@@ -14,17 +14,8 @@ namespace Flint
 	 */
 	class FScreenBoundRenderTarget : public FRenderTarget {
 	public:
-		FScreenBoundRenderTarget() {}
+		FScreenBoundRenderTarget(std::shared_ptr<FDevice> pDevice, std::shared_ptr<FDisplay> pDisplay, UI64 bufferCount) : FRenderTarget(pDevice, bufferCount), pDisplay(pDisplay) {}
 		virtual ~FScreenBoundRenderTarget() {}
-
-		/**
-		 * Initialize the render target.
-		 *
-		 * @param pDevice: The device pointer.
-		 * @param pDisplay: The display pointer.
-		 * @param bufferCount: The number of frame buffers the render target contains.
-		 */
-		virtual void Initialize(FDevice* pDevice, FDisplay* pDisplay, UI64 bufferCount) = 0;
 
 		/**
 		 * Get the current frame index.
@@ -43,7 +34,7 @@ namespace Flint
 	protected:
 		void IncrementIndex() { mFrameIndex++; if (mFrameIndex >= mBufferCount) mFrameIndex = 0; }
 
-		FDisplay* pDisplay = nullptr;
+		std::shared_ptr<FDisplay> pDisplay = nullptr;
 
 		UI32 mFrameIndex = 0;
 		UI32 mImageIndex = 0;
