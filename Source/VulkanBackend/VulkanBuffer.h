@@ -10,19 +10,19 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanBuffer final : public Backend::Buffer<VulkanBuffer, VulkanDevice> {
+		class VulkanBuffer final : public FBuffer {
 		public:
 			VulkanBuffer() {}
 			~VulkanBuffer() {}
 
-			virtual void Initialize(DeviceType* pDevice, UI64 size, Backend::BufferUsage usage, Backend::MemoryProfile profile) override final;
+			virtual void Initialize(FDevice* pDevice, UI64 size, BufferUsage usage, MemoryProfile profile) override final;
 			virtual void Terminate() override final;
 
 			virtual void* MapMemory(UI64 size, UI64 offset) override final;
 			virtual void UnmapMemory() override final;
 			virtual void FlushMemoryMappings() override final;
 
-			virtual void CopyFrom(const Derived& buffer, UI64 size, UI64 srcOffset, UI64 dstOffset) override final;
+			virtual void CopyFrom(const FBuffer* pBuffer, UI64 size, UI64 srcOffset, UI64 dstOffset) override final;
 
 		private:
 			void CreateBuffer(VkBufferUsageFlags vUsage);

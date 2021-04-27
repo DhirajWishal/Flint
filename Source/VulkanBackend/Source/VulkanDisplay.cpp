@@ -99,7 +99,7 @@ namespace Flint
 			return supportDetails;
 		}
 
-		void VulkanDisplay::Initialize(InstanceType* pInstance, const Vector2 extent, const char* pTitle)
+		void VulkanDisplay::Initialize(FInstance* pInstance, const Vector2 extent, const char* pTitle)
 		{
 			this->pInstance = pInstance;
 			this->mExtent = extent;
@@ -315,12 +315,12 @@ namespace Flint
 
 		void VulkanDisplay::CreateSurface()
 		{
-			FLINT_VK_ASSERT(glfwCreateWindowSurface(pInstance->GetInstance(), pWindowHandle, nullptr, &vSurface), "Failed to create the Vulkan Surface!");
+			FLINT_VK_ASSERT(glfwCreateWindowSurface(pInstance->GetAs<VulkanInstance>()->GetInstance(), pWindowHandle, nullptr, &vSurface), "Failed to create the Vulkan Surface!");
 		}
 
 		void VulkanDisplay::DestroySurface()
 		{
-			vkDestroySurfaceKHR(pInstance->GetInstance(), vSurface, nullptr);
+			vkDestroySurfaceKHR(pInstance->GetAs<VulkanInstance>()->GetInstance(), vSurface, nullptr);
 		}
 	}
 }

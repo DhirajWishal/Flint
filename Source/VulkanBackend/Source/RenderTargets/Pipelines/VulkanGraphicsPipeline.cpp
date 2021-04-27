@@ -16,41 +16,41 @@ namespace Flint
 	{
 		namespace _Helpers
 		{
-			VkPrimitiveTopology GetPrimitiveTopology(Backend::PrimitiveTopology topology)
+			VkPrimitiveTopology GetPrimitiveTopology(PrimitiveTopology topology)
 			{
 				switch (topology)
 				{
-				case Flint::Backend::PrimitiveTopology::POINT_LIST:
+				case Flint::PrimitiveTopology::POINT_LIST:
 					return VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
 
-				case Flint::Backend::PrimitiveTopology::LINE_LIST:
+				case Flint::PrimitiveTopology::LINE_LIST:
 					return VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
 
-				case Flint::Backend::PrimitiveTopology::LINE_STRIP:
+				case Flint::PrimitiveTopology::LINE_STRIP:
 					return VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_LINE_STRIP;
 
-				case Flint::Backend::PrimitiveTopology::TRIANGLE_LIST:
+				case Flint::PrimitiveTopology::TRIANGLE_LIST:
 					return VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 
-				case Flint::Backend::PrimitiveTopology::TRIANGLE_STRIP:
+				case Flint::PrimitiveTopology::TRIANGLE_STRIP:
 					return VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
 
-				case Flint::Backend::PrimitiveTopology::TRIANGLE_FAN:
+				case Flint::PrimitiveTopology::TRIANGLE_FAN:
 					return VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
 
-				case Flint::Backend::PrimitiveTopology::LINE_LIST_WITH_ADJACENCY:
+				case Flint::PrimitiveTopology::LINE_LIST_WITH_ADJACENCY:
 					return VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_LINE_LIST_WITH_ADJACENCY;
 
-				case Flint::Backend::PrimitiveTopology::LINE_STRIP_WITH_ADJACENCY:
+				case Flint::PrimitiveTopology::LINE_STRIP_WITH_ADJACENCY:
 					return VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_LINE_STRIP_WITH_ADJACENCY;
 
-				case Flint::Backend::PrimitiveTopology::TRIANGLE_LIST_WITH_ADJACENCY:
+				case Flint::PrimitiveTopology::TRIANGLE_LIST_WITH_ADJACENCY:
 					return VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST_WITH_ADJACENCY;
 
-				case Flint::Backend::PrimitiveTopology::TRIANGLE_STRIP_WITH_ADJACENCY:
+				case Flint::PrimitiveTopology::TRIANGLE_STRIP_WITH_ADJACENCY:
 					return VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP_WITH_ADJACENCY;
 
-				case Flint::Backend::PrimitiveTopology::PATCH_LIST:
+				case Flint::PrimitiveTopology::PATCH_LIST:
 					return VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_PATCH_LIST;
 
 				default:
@@ -61,20 +61,20 @@ namespace Flint
 				return VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
 			}
 
-			VkCullModeFlags GetCullMode(Backend::CullMode cull)
+			VkCullModeFlags GetCullMode(CullMode cull)
 			{
 				switch (cull)
 				{
-				case Flint::Backend::CullMode::NONE:
+				case Flint::CullMode::NONE:
 					return VkCullModeFlagBits::VK_CULL_MODE_NONE;
 
-				case Flint::Backend::CullMode::FRONT:
+				case Flint::CullMode::FRONT:
 					return VkCullModeFlagBits::VK_CULL_MODE_FRONT_BIT;
 
-				case Flint::Backend::CullMode::BACK:
+				case Flint::CullMode::BACK:
 					return VkCullModeFlagBits::VK_CULL_MODE_BACK_BIT;
 
-				case Flint::Backend::CullMode::FRONT_AND_BACK:
+				case Flint::CullMode::FRONT_AND_BACK:
 					return VkCullModeFlagBits::VK_CULL_MODE_FRONT_AND_BACK;
 
 				default:
@@ -85,14 +85,14 @@ namespace Flint
 				return VkCullModeFlagBits::VK_CULL_MODE_NONE;
 			}
 
-			VkFrontFace GetFrontFace(Backend::FrontFace face)
+			VkFrontFace GetFrontFace(FrontFace face)
 			{
 				switch (face)
 				{
-				case Flint::Backend::FrontFace::COUNTER_CLOCKWISE:
+				case Flint::FrontFace::COUNTER_CLOCKWISE:
 					return VkFrontFace::VK_FRONT_FACE_COUNTER_CLOCKWISE;
 
-				case Flint::Backend::FrontFace::CLOCKWISE:
+				case Flint::FrontFace::CLOCKWISE:
 					return VkFrontFace::VK_FRONT_FACE_CLOCKWISE;
 
 				default:
@@ -103,17 +103,17 @@ namespace Flint
 				return VkFrontFace::VK_FRONT_FACE_COUNTER_CLOCKWISE;
 			}
 
-			VkPolygonMode GetPolygonMode(Backend::PolygonMode mode)
+			VkPolygonMode GetPolygonMode(PolygonMode mode)
 			{
 				switch (mode)
 				{
-				case Flint::Backend::PolygonMode::FILL:
+				case Flint::PolygonMode::FILL:
 					return VkPolygonMode::VK_POLYGON_MODE_FILL;
 
-				case Flint::Backend::PolygonMode::LINE:
+				case Flint::PolygonMode::LINE:
 					return VkPolygonMode::VK_POLYGON_MODE_LINE;
 
-				case Flint::Backend::PolygonMode::POINT:
+				case Flint::PolygonMode::POINT:
 					return VkPolygonMode::VK_POLYGON_MODE_POINT;
 
 				default:
@@ -124,56 +124,56 @@ namespace Flint
 				return VkPolygonMode::VK_POLYGON_MODE_FILL;
 			}
 
-			VkLogicOp GetLogicOp(Backend::ColorBlendLogic logic)
+			VkLogicOp GetLogicOp(ColorBlendLogic logic)
 			{
 				switch (logic)
 				{
-				case Flint::Backend::ColorBlendLogic::CLEAR:
+				case Flint::ColorBlendLogic::CLEAR:
 					return VkLogicOp::VK_LOGIC_OP_CLEAR;
 
-				case Flint::Backend::ColorBlendLogic::AND:
+				case Flint::ColorBlendLogic::AND:
 					return VkLogicOp::VK_LOGIC_OP_AND;
 
-				case Flint::Backend::ColorBlendLogic::AND_REVERSE:
+				case Flint::ColorBlendLogic::AND_REVERSE:
 					return VkLogicOp::VK_LOGIC_OP_AND_REVERSE;
 
-				case Flint::Backend::ColorBlendLogic::COPY:
+				case Flint::ColorBlendLogic::COPY:
 					return VkLogicOp::VK_LOGIC_OP_COPY;
 
-				case Flint::Backend::ColorBlendLogic::AND_INVERTED:
+				case Flint::ColorBlendLogic::AND_INVERTED:
 					return VkLogicOp::VK_LOGIC_OP_AND_INVERTED;
 
-				case Flint::Backend::ColorBlendLogic::NO_OP:
+				case Flint::ColorBlendLogic::NO_OP:
 					return VkLogicOp::VK_LOGIC_OP_NO_OP;
 
-				case Flint::Backend::ColorBlendLogic::XOR:
+				case Flint::ColorBlendLogic::XOR:
 					return VkLogicOp::VK_LOGIC_OP_XOR;
 
-				case Flint::Backend::ColorBlendLogic::OR:
+				case Flint::ColorBlendLogic::OR:
 					return VkLogicOp::VK_LOGIC_OP_OR;
 
-				case Flint::Backend::ColorBlendLogic::NOR:
+				case Flint::ColorBlendLogic::NOR:
 					return VkLogicOp::VK_LOGIC_OP_NOR;
 
-				case Flint::Backend::ColorBlendLogic::EQUIVALENT:
+				case Flint::ColorBlendLogic::EQUIVALENT:
 					return VkLogicOp::VK_LOGIC_OP_EQUIVALENT;
 
-				case Flint::Backend::ColorBlendLogic::INVERT:
+				case Flint::ColorBlendLogic::INVERT:
 					return VkLogicOp::VK_LOGIC_OP_INVERT;
 
-				case Flint::Backend::ColorBlendLogic::OR_REVERSE:
+				case Flint::ColorBlendLogic::OR_REVERSE:
 					return VkLogicOp::VK_LOGIC_OP_OR_REVERSE;
 
-				case Flint::Backend::ColorBlendLogic::COPY_INVERTED:
+				case Flint::ColorBlendLogic::COPY_INVERTED:
 					return VkLogicOp::VK_LOGIC_OP_COPY_INVERTED;
 
-				case Flint::Backend::ColorBlendLogic::OR_INVERTED:
+				case Flint::ColorBlendLogic::OR_INVERTED:
 					return VkLogicOp::VK_LOGIC_OP_OR_INVERTED;
 
-				case Flint::Backend::ColorBlendLogic::NAND:
+				case Flint::ColorBlendLogic::NAND:
 					return VkLogicOp::VK_LOGIC_OP_NAND;
 
-				case Flint::Backend::ColorBlendLogic::SET:
+				case Flint::ColorBlendLogic::SET:
 					return VkLogicOp::VK_LOGIC_OP_SET;
 
 				default:
@@ -184,32 +184,32 @@ namespace Flint
 				return VkLogicOp::VK_LOGIC_OP_CLEAR;
 			}
 
-			VkCompareOp GetCompareOp(Backend::DepthCompareLogic logic)
+			VkCompareOp GetCompareOp(DepthCompareLogic logic)
 			{
 				switch (logic)
 				{
-				case Flint::Backend::DepthCompareLogic::NEVER:
+				case Flint::DepthCompareLogic::NEVER:
 					return VkCompareOp::VK_COMPARE_OP_NEVER;
 
-				case Flint::Backend::DepthCompareLogic::LESS:
+				case Flint::DepthCompareLogic::LESS:
 					return VkCompareOp::VK_COMPARE_OP_LESS;
 
-				case Flint::Backend::DepthCompareLogic::EQUAL:
+				case Flint::DepthCompareLogic::EQUAL:
 					return VkCompareOp::VK_COMPARE_OP_EQUAL;
 
-				case Flint::Backend::DepthCompareLogic::LESS_OR_EQUAL:
+				case Flint::DepthCompareLogic::LESS_OR_EQUAL:
 					return VkCompareOp::VK_COMPARE_OP_LESS_OR_EQUAL;
 
-				case Flint::Backend::DepthCompareLogic::GREATER:
+				case Flint::DepthCompareLogic::GREATER:
 					return VkCompareOp::VK_COMPARE_OP_GREATER;
 
-				case Flint::Backend::DepthCompareLogic::NOT_EQUAL:
+				case Flint::DepthCompareLogic::NOT_EQUAL:
 					return VkCompareOp::VK_COMPARE_OP_NOT_EQUAL;
 
-				case Flint::Backend::DepthCompareLogic::GREATER_OR_EQUAL:
+				case Flint::DepthCompareLogic::GREATER_OR_EQUAL:
 					return VkCompareOp::VK_COMPARE_OP_GREATER_OR_EQUAL;
 
-				case Flint::Backend::DepthCompareLogic::ALWAYS:
+				case Flint::DepthCompareLogic::ALWAYS:
 					return VkCompareOp::VK_COMPARE_OP_ALWAYS;
 
 				default:
@@ -220,39 +220,39 @@ namespace Flint
 				return VkCompareOp::VK_COMPARE_OP_LESS_OR_EQUAL;
 			}
 
-			std::vector<VkDynamicState> GetDynamicStates(Backend::DynamicStateFlags flags)
+			std::vector<VkDynamicState> GetDynamicStates(DynamicStateFlags flags)
 			{
 				std::vector<VkDynamicState> states;
-				if (flags & Backend::DynamicStateFlags::VIEWPORT)
+				if (flags & DynamicStateFlags::VIEWPORT)
 					INSERT_INTO_VECTOR(states, VkDynamicState::VK_DYNAMIC_STATE_VIEWPORT);
 
-				if (flags & Backend::DynamicStateFlags::SCISSOR)
+				if (flags & DynamicStateFlags::SCISSOR)
 					INSERT_INTO_VECTOR(states, VkDynamicState::VK_DYNAMIC_STATE_SCISSOR);
 
-				if (flags & Backend::DynamicStateFlags::LINE_WIDTH)
+				if (flags & DynamicStateFlags::LINE_WIDTH)
 					INSERT_INTO_VECTOR(states, VkDynamicState::VK_DYNAMIC_STATE_LINE_WIDTH);
 
-				if (flags & Backend::DynamicStateFlags::DEPTH_BIAS)
+				if (flags & DynamicStateFlags::DEPTH_BIAS)
 					INSERT_INTO_VECTOR(states, VkDynamicState::VK_DYNAMIC_STATE_DEPTH_BIAS);
 
-				if (flags & Backend::DynamicStateFlags::BLEND_CONSTANTS)
+				if (flags & DynamicStateFlags::BLEND_CONSTANTS)
 					INSERT_INTO_VECTOR(states, VkDynamicState::VK_DYNAMIC_STATE_BLEND_CONSTANTS);
 
-				if (flags & Backend::DynamicStateFlags::DEPTH_BOUNDS)
+				if (flags & DynamicStateFlags::DEPTH_BOUNDS)
 					INSERT_INTO_VECTOR(states, VkDynamicState::VK_DYNAMIC_STATE_DEPTH_BOUNDS);
 
 				return states;
 			}
 		}
 
-		void VulkanGraphicsPipeline::Initialize(VulkanRenderTarget* pRenderTarget, const std::vector<ShaderDigest>& shaderDigests, const Backend::GraphicsPipelineSpecification& spec)
+		void VulkanGraphicsPipeline::Initialize(FRenderTarget* pRenderTarget, const std::vector<ShaderDigest>& shaderDigests, const GraphicsPipelineSpecification& spec)
 		{
 			this->pRenderTarget = pRenderTarget;
 			this->mSpec = spec;
 			this->mDigests = shaderDigests;
 			ResolveUniformLayouts(shaderDigests);
 
-			VulkanDevice* pDevice = pRenderTarget->GetDevice();
+			VulkanDevice* pDevice = pRenderTarget->GetAs<VulkanRenderTarget>()->GetDevice();
 
 			std::vector<VkPipelineShaderStageCreateInfo> vStages = {};
 			std::vector<VkVertexInputAttributeDescription> vAttributeDesc = {};
@@ -291,7 +291,7 @@ namespace Flint
 				vCI.bindingCount = static_cast<UI32>(vBindings.size());
 				vCI.pBindings = vBindings.data();
 
-				FLINT_VK_ASSERT(pDevice->CreateDescriptorSetLayout(&vCI, &vSetLayout), "Failed to create descriptor set layout!")
+				FLINT_VK_ASSERT(pDevice->CreateDescriptorSetLayout(&vCI, &vSetLayout), "Failed to create descriptor set layout!");
 			}
 
 			VkPipelineLayoutCreateInfo vLayoutCI = {};
@@ -303,9 +303,9 @@ namespace Flint
 			vLayoutCI.setLayoutCount = 1;
 			vLayoutCI.pSetLayouts = &vSetLayout;
 
-			FLINT_VK_ASSERT(pDevice->CreatePipelineLayout(&vLayoutCI, &vPipelineLayout), "Failed to create descriptor set layout!")
+			FLINT_VK_ASSERT(pDevice->CreatePipelineLayout(&vLayoutCI, &vPipelineLayout), "Failed to create descriptor set layout!");
 
-				VkPipelineVertexInputStateCreateInfo vVISCI = {};
+			VkPipelineVertexInputStateCreateInfo vVISCI = {};
 			vVISCI.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 			vVISCI.flags = VK_NULL_HANDLE;
 			vVISCI.pNext = VK_NULL_HANDLE;
@@ -410,16 +410,16 @@ namespace Flint
 			vCI.pDynamicState = &vDSCI;
 			vCI.stageCount = static_cast<UI32>(vStages.size());
 			vCI.pStages = vStages.data();
-			vCI.renderPass = pRenderTarget->GetRenderPass();
+			vCI.renderPass = pRenderTarget->GetAs<VulkanRenderTarget>()->GetRenderPass();
 			vCI.basePipelineHandle = VK_NULL_HANDLE;
 			vCI.basePipelineIndex = 0;
 			vCI.layout = vPipelineLayout;
 
 			VkPipeline vNewPipeline = VK_NULL_HANDLE;
-			FLINT_VK_ASSERT(pDevice->CreateGraphicsPipeline(&vCI, &vNewPipeline), "Failed to create graphics pipeline!")
+			FLINT_VK_ASSERT(pDevice->CreateGraphicsPipeline(&vCI, &vNewPipeline), "Failed to create graphics pipeline!");
 
-				if (vPipeline != VK_NULL_HANDLE)
-					pRenderTarget->GetDevice()->DestroyPipeline(vPipeline);
+			if (vPipeline != VK_NULL_HANDLE)
+				pRenderTarget->GetAs<VulkanRenderTarget>()->GetDevice()->DestroyPipeline(vPipeline);
 
 			vPipeline = vNewPipeline;
 
@@ -430,7 +430,7 @@ namespace Flint
 
 		void VulkanGraphicsPipeline::PrepareToRecreate()
 		{
-			VulkanDevice* pDevice = pRenderTarget->GetDevice();
+			VulkanDevice* pDevice = pRenderTarget->GetAs<VulkanRenderTarget>()->GetDevice();
 			pDevice->DestroyPipeline(vPipeline);
 			pDevice->DestroyPipelineLayout(vPipelineLayout);
 
@@ -445,23 +445,23 @@ namespace Flint
 
 		void VulkanGraphicsPipeline::Terminate()
 		{
-			VulkanDevice* pDevice = pRenderTarget->GetDevice();
+			VulkanDevice* pDevice = pRenderTarget->GetAs<VulkanRenderTarget>()->GetDevice();
 			pDevice->DestroyPipeline(vPipeline);
 			pDevice->DestroyPipelineLayout(vPipelineLayout);
 			pDevice->DestroyDescriptorSetLayout(vSetLayout);
 		}
 
-		VulkanPipelineResource VulkanGraphicsPipeline::CreatePipelineResource()
+		FPipelineResource* VulkanGraphicsPipeline::CreatePipelineResource()
 		{
-			VulkanPipelineResource resource = {};
-			resource.Initialize(this);
+			VulkanPipelineResource* pResource = new VulkanPipelineResource();
+			pResource->Initialize(this);
 
-			return resource;
+			return pResource;
 		}
 
 		void VulkanGraphicsPipeline::RecreatePipeline()
 		{
-			VulkanDevice* pDevice = pRenderTarget->GetDevice();
+			VulkanDevice* pDevice = pRenderTarget->GetAs<VulkanRenderTarget>()->GetDevice();
 
 			std::vector<VkPipelineShaderStageCreateInfo> vStages = {};
 			std::vector<VkVertexInputAttributeDescription> vAttributeDesc = {};
@@ -542,15 +542,15 @@ namespace Flint
 			vCI.pDynamicState = &vDSCI;
 			vCI.stageCount = static_cast<UI32>(vStages.size());
 			vCI.pStages = vStages.data();
-			vCI.renderPass = pRenderTarget->GetRenderPass();
+			vCI.renderPass = pRenderTarget->GetAs<VulkanRenderTarget>()->GetRenderPass();
 			vCI.basePipelineHandle = vPipeline;
 			vCI.basePipelineIndex = 0;
 			vCI.layout = vPipelineLayout;
 
 			VkPipeline vNewPipeline = VK_NULL_HANDLE;
-			FLINT_VK_ASSERT(pDevice->CreateGraphicsPipeline(&vCI, &vNewPipeline), "Failed to create graphics pipeline!")
+			FLINT_VK_ASSERT(pDevice->CreateGraphicsPipeline(&vCI, &vNewPipeline), "Failed to create graphics pipeline!");
 
-				if (vPipeline != VK_NULL_HANDLE) pDevice->DestroyPipeline(vPipeline);
+			if (vPipeline != VK_NULL_HANDLE) pDevice->DestroyPipeline(vPipeline);
 			vPipeline = vNewPipeline;
 
 			// Finals.

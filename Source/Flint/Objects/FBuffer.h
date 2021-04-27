@@ -14,7 +14,7 @@ namespace Flint
 	class FBuffer final : public FObject {
 	public:
 		FBuffer();
-		explicit FBuffer(Backend::BackendObject* pBackendObject);
+		explicit FBuffer(BackendObject* pBackendObject);
 		~FBuffer();
 
 		/**
@@ -25,7 +25,7 @@ namespace Flint
 		 * @param usage: The buffer usage.
 		 * @param profile: The buffer's memory profile.
 		 */
-		void Initialize(const FDevice& device, UI64 size, Backend::BufferUsage usage, Backend::MemoryProfile profile);
+		void Initialize(const FDevice& device, UI64 size, BufferUsage usage, MemoryProfile profile);
 
 		/**
 		 * Terminate the buffer.

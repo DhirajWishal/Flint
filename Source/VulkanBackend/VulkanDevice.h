@@ -12,14 +12,16 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanDevice final : public Backend::Device<VulkanInstance, VulkanDisplay> {
+		class VulkanDevice final : public FDevice {
 		public:
 			VulkanDevice() {}
 			~VulkanDevice() {}
 
-			virtual void Initialize(InstanceType* pInstance) override final;
-			virtual bool CheckDisplayCompatibility(DisplayType* pDisplay) override final;
+			virtual void Initialize(FInstance* pInstance) override final;
+			virtual bool CheckDisplayCompatibility(FDisplay* pDisplay) override final;
 			virtual void Terminate() override final;
+
+			virtual FBuffer* FDevice::CreateBuffer(UI64 size, BufferUsage usage, MemoryProfile memoryProfile) override final;
 
 		public:
 			VkPhysicalDeviceProperties GetPhysicalDeviceProperties() const;

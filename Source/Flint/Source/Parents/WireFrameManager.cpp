@@ -50,7 +50,7 @@ namespace Flint
 		for (UI32 i = 0; i < pScene->mNumMeshes; i++)
 			vertexBufferSize += pScene->mMeshes[i]->mNumVertices * vertexSize;
 
-		FBuffer staggingVertexBuffer = GetDevice()->CreateBuffer(vertexBufferSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
+		FBuffer staggingVertexBuffer = GetDevice()->CreateBuffer(vertexBufferSize, BufferUsage::STAGGING, MemoryProfile::TRANSFER_FRIENDLY);
 		float* pDataStore = static_cast<float*>(staggingVertexBuffer.MapMemory(vertexBufferSize, 0));
 
 		UI64 indexBufferSize = 0;
@@ -202,14 +202,14 @@ namespace Flint
 		staggingVertexBuffer.FlushMemoryMapping();
 		staggingVertexBuffer.UnmapMemory();
 
-		wireFrame.mVertexBuffer = GetDevice()->CreateBuffer(vertexBufferSize, Backend::BufferUsage::VERTEX, Backend::MemoryProfile::DRAW_RESOURCE);
+		wireFrame.mVertexBuffer = GetDevice()->CreateBuffer(vertexBufferSize, BufferUsage::VERTEX, MemoryProfile::DRAW_RESOURCE);
 		wireFrame.mVertexBuffer.CopyFrom(staggingVertexBuffer, vertexBufferSize, 0, 0);
 
 		staggingVertexBuffer.Terminate();
 
 		// Create the index buffer.
 		{
-			FBuffer staggingBuffer = GetDevice()->CreateBuffer(indexBufferSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
+			FBuffer staggingBuffer = GetDevice()->CreateBuffer(indexBufferSize, BufferUsage::STAGGING, MemoryProfile::TRANSFER_FRIENDLY);
 			UI32* pIndexDataStore = static_cast<UI32*>(staggingBuffer.MapMemory(indexBufferSize, 0));
 
 			// Copy data to the stagging buffer.
@@ -222,7 +222,7 @@ namespace Flint
 			staggingBuffer.FlushMemoryMapping();
 			staggingBuffer.UnmapMemory();
 
-			wireFrame.mIndexBuffer = GetDevice()->CreateBuffer(indexBufferSize, Backend::BufferUsage::INDEX, Backend::MemoryProfile::DRAW_RESOURCE);
+			wireFrame.mIndexBuffer = GetDevice()->CreateBuffer(indexBufferSize, BufferUsage::INDEX, MemoryProfile::DRAW_RESOURCE);
 			wireFrame.mIndexBuffer.CopyFrom(staggingBuffer, indexBufferSize, 0, 0);
 
 			staggingBuffer.Terminate();
@@ -244,7 +244,7 @@ namespace Flint
 	//	auto channels = FreeImage_GetColorsUsed(pImage);
 	//
 	//	Image image = {};
-	//	image.Initialize(GetDevice(), width, height, 1, Backend::ImageUsage::GRAPHICS_2D, bitsPerPixel);
+	//	image.Initialize(GetDevice(), width, height, 1, ImageUsage::GRAPHICS_2D, bitsPerPixel);
 	//	image.CopyData(FreeImage_GetBits(pImage), width, 0, height, 0, 1, 0, bitsPerPixel);
 	//
 	//	FreeImage_Unload(pImage);

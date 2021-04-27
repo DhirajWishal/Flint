@@ -86,7 +86,7 @@ namespace Flint
 		GetAs<RenderTarget>().RemoveDynamicDrawEntry(static_cast<UI64>(index));
 	}
 
-	FGraphicsPipeline FScreenBoundRenderTarget::CreateGraphicsPipeline(const std::vector<FShader>& shaders, const Backend::GraphicsPipelineSpecification& spec)
+	FGraphicsPipeline FScreenBoundRenderTarget::CreateGraphicsPipeline(const std::vector<FShader>& shaders, const GraphicsPipelineSpecification& spec)
 	{
 		FGraphicsPipeline pipeline = {};
 		pipeline.Initialize(*this, shaders, spec);

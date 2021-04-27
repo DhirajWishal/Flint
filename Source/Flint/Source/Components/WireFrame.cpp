@@ -92,14 +92,14 @@ namespace Flint
 			file.ignore(1);
 
 			// Load the data.
-			FBuffer staggingBuffer = device.CreateBuffer(byteSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
+			FBuffer staggingBuffer = device.CreateBuffer(byteSize, BufferUsage::STAGGING, MemoryProfile::TRANSFER_FRIENDLY);
 			char* pString = static_cast<char*>(staggingBuffer.MapMemory(byteSize, 0));
 			file.read(static_cast<char*>(pString), byteSize);
 			staggingBuffer.FlushMemoryMapping();
 			staggingBuffer.UnmapMemory();
 
 			// Copy data to the buffer.
-			mVertexBuffer = device.CreateBuffer(byteSize, Backend::BufferUsage::VERTEX, Backend::MemoryProfile::DRAW_RESOURCE);
+			mVertexBuffer = device.CreateBuffer(byteSize, BufferUsage::VERTEX, MemoryProfile::DRAW_RESOURCE);
 			mVertexBuffer.CopyFrom(staggingBuffer, byteSize, 0, 0);
 
 			// Destroy stagging buffer.
@@ -116,13 +116,13 @@ namespace Flint
 			file.ignore(1);
 
 			// Load the data.
-			FBuffer staggingBuffer = device.CreateBuffer(byteSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
+			FBuffer staggingBuffer = device.CreateBuffer(byteSize, BufferUsage::STAGGING, MemoryProfile::TRANSFER_FRIENDLY);
 			file.read(static_cast<char*>(staggingBuffer.MapMemory(byteSize, 0)), byteSize);
 			staggingBuffer.FlushMemoryMapping();
 			staggingBuffer.UnmapMemory();
 
 			// Copy data to the buffer.
-			mIndexBuffer = device.CreateBuffer(byteSize, Backend::BufferUsage::INDEX, Backend::MemoryProfile::DRAW_RESOURCE);
+			mIndexBuffer = device.CreateBuffer(byteSize, BufferUsage::INDEX, MemoryProfile::DRAW_RESOURCE);
 			mIndexBuffer.CopyFrom(staggingBuffer, byteSize, 0, 0);
 
 			// Destroy stagging buffer.
@@ -170,7 +170,7 @@ namespace Flint
 		// The vertex data is next.
 		{
 			// Create stagging buffer and copy vertex data to it.
-			FBuffer staggingBuffer = mVertexBuffer.GetDevice().CreateBuffer(vertexBufferSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
+			FBuffer staggingBuffer = mVertexBuffer.GetDevice().CreateBuffer(vertexBufferSize, BufferUsage::STAGGING, MemoryProfile::TRANSFER_FRIENDLY);
 			staggingBuffer.CopyFrom(mVertexBuffer, vertexBufferSize, 0, 0);
 
 			// Write and flush vertex data.
@@ -189,7 +189,7 @@ namespace Flint
 		// The index data comes next.
 		{
 			// Create stagging buffer and copy index data to it.
-			FBuffer staggingBuffer = mVertexBuffer.GetDevice().CreateBuffer(indexBufferSize, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
+			FBuffer staggingBuffer = mVertexBuffer.GetDevice().CreateBuffer(indexBufferSize, BufferUsage::STAGGING, MemoryProfile::TRANSFER_FRIENDLY);
 			staggingBuffer.CopyFrom(mIndexBuffer, indexBufferSize, 0, 0);
 
 			// Write and flush index data.

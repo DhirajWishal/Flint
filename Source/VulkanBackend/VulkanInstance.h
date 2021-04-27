@@ -11,7 +11,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanInstance final : public Backend::Instance {
+		class VulkanInstance final : public FInstance {
 		public:
 			VulkanInstance() {}
 			~VulkanInstance() {}

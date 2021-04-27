@@ -9,168 +9,153 @@
 
 namespace Flint
 {
-	namespace Backend
-	{
+	class FScreenBoundRenderTarget;
+
+	/**
+	 * Flint command buffer list.
+	 * Commands are submitted to the device using command buffer lists. Each list is made of command buffers which are handled internally.
+	 */
+	class FCommandBufferList : public BackendObject {
+	public:
+		FCommandBufferList() {}
+		virtual ~FCommandBufferList() {}
+
 		/**
-		 * Flint command buffer list.
-		 * Commands are submitted to the device using command buffer lists. Each list is made of command buffers which are handled internally.
+		 * Initialize the list.
 		 *
-		 * @tparam TDevice: The device type.
-		 * @tparam TBuffer: The buffer type.
-		 * @tparam TScreenBoundRenderTarget: The screen bound render target type.
-		 * @tparam TGraphicsPipeline: The graphics pipeline type.
-		 * @tparam TPipelineResource: The render resource type.
+		 * @param pDevice: The device pointer.
+		 * @param bufferCount: The buffer count.
 		 */
-		template<class TDevice, class TBuffer, class TScreenBoundRenderTarget, class TGraphicsPipeline, class TPipelineResource>
-		class CommandBufferList : public BackendObject {
-		public:
-			using DeviceType = TDevice;
-			using BufferType = TBuffer;
-			using ScreenBoundRenderTargetType = TScreenBoundRenderTarget;
-			using GraphicsPipelineType = TGraphicsPipeline;
-			using PipelineResourceType = TPipelineResource;
+		virtual void Initialize(FDevice* pDevice, UI64 bufferCount) = 0;
 
-		public:
-			CommandBufferList() {}
-			virtual ~CommandBufferList() {}
+		/**
+		 * Terminate the buffer list.
+		 */
+		virtual void Terminate() = 0;
 
-			/**
-			 * Initialize the list.
-			 *
-			 * @param pDevice: The device pointer.
-			 * @param bufferCount: The buffer count.
-			 */
-			virtual void Initialize(DeviceType* pDevice, UI64 bufferCount) = 0;
+		/**
+		 * Clear command buffer recordings.
+		 * This resets them back to a unrecorded state.
+		 */
+		virtual void ClearBuffers() = 0;
 
-			/**
-			 * Terminate the buffer list.
-			 */
-			virtual void Terminate() = 0;
+		/**
+		 * Recreate command buffers.
+		 */
+		virtual void ReceateBuffers() = 0;
 
-			/**
-			 * Clear command buffer recordings.
-			 * This resets them back to a unrecorded state.
-			 */
-			virtual void ClearBuffers() = 0;
+		/**
+		 * Begin command buffer recording.
+		 * This must be done prior to binding anything to a buffer.
+		 *
+		 * @param index: The index of the buffer.
+		 */
+		virtual void BeginBuffer(UI64 index) = 0;
 
-			/**
-			 * Recreate command buffers.
-			 */
-			virtual void ReceateBuffers() = 0;
+		/**
+		 * Begin the next command buffer.
+		 */
+		virtual void BeginNextBuffer() { BeginBuffer(IncrementIndex()); }
 
-			/**
-			 * Begin command buffer recording.
-			 * This must be done prior to binding anything to a buffer.
-			 *
-			 * @param index: The index of the buffer.
-			 */
-			virtual void BeginBuffer(UI64 index) = 0;
+		/**
+		 * End the current command buffer recording.
+		 */
+		virtual void EndBuffer() = 0;
 
-			/**
-			 * Begin the next command buffer.
-			 */
-			virtual void BeginNextBuffer() { BeginBuffer(IncrementIndex()); }
+		/**
+		 * Bind a vertex buffer to the command buffer.
+		 *
+		 * @param pBuffer: The vertex buffer.
+		 */
+		virtual void BindVertexBuffer(const FBuffer* pBuffer) = 0;
 
-			/**
-			 * End the current command buffer recording.
-			 */
-			virtual void EndBuffer() = 0;
+		/**
+		 * Bind a index buffer to the command buffer.
+		 *
+		 * @param pBuffer: The index buffer.
+		 */
+		virtual void BindIndexBuffer(const FBuffer* pBuffer) = 0;
 
-			/**
-			 * Bind a vertex buffer to the command buffer.
-			 *
-			 * @param buffer: The vertex buffer.
-			 */
-			virtual void BindVertexBuffer(const BufferType& buffer) = 0;
+		/**
+		 * Bind a screen bound render target to the command buffer.
+		 *
+		 * @param pRenderTarget: The render target to be bound.
+		 */
+		virtual void BindRenderTarget(const FScreenBoundRenderTarget* pRenderTarget) = 0;
 
-			/**
-			 * Bind a index buffer to the command buffer.
-			 *
-			 * @param buffer: The index buffer.
-			 */
-			virtual void BindIndexBuffer(const BufferType& buffer) = 0;
+		/**
+		 * End the render target.
+		 */
+		virtual void EndRenderTarget() = 0;
 
-			/**
-			 * Bind a screen bound render target to the command buffer.
-			 *
-			 * @param renderTarget: The render target to be bound.
-			 */
-			virtual void BindRenderTarget(const ScreenBoundRenderTargetType& renderTarget) = 0;
+		/**
+		 * Bind a graphics pipeline to the command buffer.
+		 *
+		 * @param pGraphicsPipeline: The graphics pipeline.
+		 */
+		virtual void BindPipeline(const FGraphicsPipeline* pGraphicsPipeline) = 0;
 
-			/**
-			 * End the render target.
-			 */
-			virtual void EndRenderTarget() = 0;
+		/**
+		 * Set dynamic states of the pipeline.
+		 *
+		 * @param container: The dynamic state container.
+		 */
+		virtual void SetDynamicStates(const DynamicStateContainer& container) = 0;
 
-			/**
-			 * Bind a graphics pipeline to the command buffer.
-			 *
-			 * @param graphicsPipeline: The graphics pipeline.
-			 */
-			virtual void BindPipeline(const GraphicsPipelineType& graphicsPipeline) = 0;
+		/**
+		 * Bind render resources to the pipeline.
+		 *
+		 * @param pResource: The render resource.
+		 */
+		virtual void BindRenderResource(const FPipelineResource* pResource) = 0;
 
-			/**
-			 * Set dynamic states of the pipeline.
-			 *
-			 * @param container: The dynamic state container.
-			 */
-			virtual void SetDynamicStates(const DynamicStateContainer& container) = 0;
+		/**
+		 * Draw using the index buffer.
+		 *
+		 * @param indexCount: The number of indexes to draw.
+		 * @param indexOffset: The offset of the index buffer.
+		 * @param vertexOffset: The vertex buffer offset.
+		 */
+		virtual void DrawIndexed(UI64 indexCount, UI64 indexOffset, UI64 vertexOffset) = 0;
 
-			/**
-			 * Bind render resources to the pipeline.
-			 *
-			 * @param resource: The render resource.
-			 */
-			virtual void BindRenderResource(const PipelineResourceType& resource) = 0;
+	public:
+		/**
+		 * Get the buffer count of the list.
+		 *
+		 * @return The buffer count.
+		 */
+		UI64 GetBufferCount() const { return mBufferCount; }
 
-			/**
-			 * Draw using the index buffer.
-			 *
-			 * @param indexCount: The number of indexes to draw.
-			 * @param indexOffset: The offset of the index buffer.
-			 * @param vertexOffset: The vertex buffer offset.
-			 */
-			virtual void DrawIndexed(UI64 indexCount, UI64 indexOffset, UI64 vertexOffset) = 0;
+		/**
+		 * Get the current buffer index.
+		 *
+		 * @return The index of the buffer which is active.
+		 */
+		UI64 GetIndex() const { return mBufferIndex; }
 
-		public:
-			/**
-			 * Get the buffer count of the list.
-			 *
-			 * @return The buffer count.
-			 */
-			UI64 GetBufferCount() const { return mBufferCount; }
+		/**
+		 * Set a new buffer index.
+		 *
+		 * @param index: The index to be set.
+		 */
+		void SetIndex(UI64 index) { mBufferIndex = index; }
 
-			/**
-			 * Get the current buffer index.
-			 *
-			 * @return The index of the buffer which is active.
-			 */
-			UI64 GetIndex() const { return mBufferIndex; }
+		/**
+		 * Increment the index by one.
+		 * If the index is greater than or equal to the buffer count, it will be set back to 0.
+		 *
+		 * @return The incremented buffer index.
+		 */
+		UI64 IncrementIndex()
+		{
+			mBufferIndex++;
+			if (mBufferIndex >= mBufferCount) mBufferIndex = 0;
+			return mBufferIndex;
+		}
 
-			/**
-			 * Set a new buffer index.
-			 *
-			 * @param index: The index to be set.
-			 */
-			void SetIndex(UI64 index) { mBufferIndex = index; }
-
-			/**
-			 * Increment the index by one.
-			 * If the index is greater than or equal to the buffer count, it will be set back to 0.
-			 *
-			 * @return The incremented buffer index.
-			 */
-			UI64 IncrementIndex()
-			{
-				mBufferIndex++;
-				if (mBufferIndex >= mBufferCount) mBufferIndex = 0;
-				return mBufferIndex;
-			}
-
-		protected:
-			DeviceType* pDevice = nullptr;
-			UI64 mBufferCount = 0;
-			UI64 mBufferIndex = 0;
-		};
-	}
+	protected:
+		FDevice* pDevice = nullptr;
+		UI64 mBufferCount = 0;
+		UI64 mBufferIndex = 0;
+	};
 }

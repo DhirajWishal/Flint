@@ -36,12 +36,12 @@ namespace Flint
 			static SwapChainSupportDetails Query(VkPhysicalDevice vPhysicalDevice, VkSurfaceKHR vSurface);
 		};
 
-		class VulkanDisplay final : public Backend::Display<VulkanInstance> {
+		class VulkanDisplay final : public FDisplay {
 		public:
 			VulkanDisplay() {}
 			~VulkanDisplay() {}
 
-			virtual void Initialize(InstanceType* pInstance, const Vector2 extent, const char* pTitle) override final;
+			virtual void Initialize(FInstance* pInstance, const Vector2 extent, const char* pTitle) override final;
 			virtual void Update() override final;
 			virtual void Terminate() override final;
 

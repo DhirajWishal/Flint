@@ -88,7 +88,7 @@ namespace Flint
 			}
 		}
 
-		void VulkanDevice::Initialize(InstanceType* pInstance)
+		void VulkanDevice::Initialize(FInstance* pInstance)
 		{
 			this->pInstance = pInstance;
 
@@ -98,16 +98,24 @@ namespace Flint
 			CreateLogicalDevice();
 		}
 
-		bool VulkanDevice::CheckDisplayCompatibility(DisplayType* pDisplay)
+		bool VulkanDevice::CheckDisplayCompatibility(FDisplay* pDisplay)
 		{
 			VkBool32 isSupported = VK_FALSE;
-			FLINT_VK_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(GetPhysicalDevice(), GetQueue().mGraphicsFamily.value(), pDisplay->GetSurface(), &isSupported), "Failed to check swap chain -> display support!")
-				return isSupported == VK_TRUE;
+			FLINT_VK_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(GetPhysicalDevice(), GetQueue().mGraphicsFamily.value(), pDisplay->GetAs<VulkanDisplay>()->GetSurface(), &isSupported), "Failed to check swap chain -> display support!");
+			return isSupported == VK_TRUE;
 		}
 
 		void VulkanDevice::Terminate()
 		{
 			DestroyLogicalDevice();
+		}
+
+		FBuffer* VulkanDevice::CreateBuffer(UI64 size, BufferUsage usage, MemoryProfile memoryProfile)
+		{
+			VulkanBuffer* pBuffer = new VulkanBuffer();
+			pBuffer->Initialize(this, size, usage, memoryProfile);
+
+			return pBuffer;
 		}
 
 		VkPhysicalDeviceProperties VulkanDevice::GetPhysicalDeviceProperties() const
@@ -128,7 +136,7 @@ namespace Flint
 
 		void VulkanDevice::CreatePhysicalDevice()
 		{
-			VulkanInstance& instance = *pInstance;
+			VulkanInstance& instance = *pInstance->GetAs<VulkanInstance>();
 
 			UI32 deviceCount = 0;
 			vkEnumeratePhysicalDevices(instance.GetInstance(), &deviceCount, nullptr);
@@ -209,7 +217,7 @@ namespace Flint
 
 		void VulkanDevice::CreateLogicalDevice()
 		{
-			VulkanInstance& instance = *pInstance;
+			VulkanInstance& instance = *pInstance->GetAs<VulkanInstance>();
 
 			vQueue.Initialize(vPhysicalDevice);
 
@@ -255,10 +263,10 @@ namespace Flint
 				createInfo.enabledLayerCount = 0;
 
 			// Create the logical device.
-			FLINT_VK_ASSERT(vkCreateDevice(vPhysicalDevice, &createInfo, nullptr, &vLogicalDevice), "Failed to create logical device!")
+			FLINT_VK_ASSERT(vkCreateDevice(vPhysicalDevice, &createInfo, nullptr, &vLogicalDevice), "Failed to create logical device!");
 
-				// Get graphics queue.
-				vkGetDeviceQueue(GetLogicalDevice(), vQueue.mGraphicsFamily.value(), 0, &vQueue.vGraphicsQueue);
+			// Get graphics queue.
+			vkGetDeviceQueue(GetLogicalDevice(), vQueue.mGraphicsFamily.value(), 0, &vQueue.vGraphicsQueue);
 
 			// Get compute queue.
 			vkGetDeviceQueue(GetLogicalDevice(), vQueue.mComputeFamily.value(), 0, &vQueue.vComputeQueue);
@@ -361,9 +369,9 @@ namespace Flint
 				}
 			}
 
-			FLINT_VK_ASSERT(vkAllocateMemory(GetLogicalDevice(), &vAI, nullptr, pDeviceMemory), "Failed to allocate image memory!")
+			FLINT_VK_ASSERT(vkAllocateMemory(GetLogicalDevice(), &vAI, nullptr, pDeviceMemory), "Failed to allocate image memory!");
 
-				VkResult result = VkResult::VK_ERROR_UNKNOWN;
+			VkResult result = VkResult::VK_ERROR_UNKNOWN;
 			for (UI32 i = 0; i < vImages.size(); i++)
 				result = vkBindImageMemory(GetLogicalDevice(), vImages[i], *pDeviceMemory, vMR.size * i);
 
@@ -593,9 +601,9 @@ namespace Flint
 				}
 			}
 
-			FLINT_VK_ASSERT(vkAllocateMemory(GetLogicalDevice(), &vAI, nullptr, pDeviceMemory), "Failed to allocate buffer memory!")
+			FLINT_VK_ASSERT(vkAllocateMemory(GetLogicalDevice(), &vAI, nullptr, pDeviceMemory), "Failed to allocate buffer memory!");
 
-				VkResult result = VkResult::VK_ERROR_UNKNOWN;
+			VkResult result = VkResult::VK_ERROR_UNKNOWN;
 			for (UI32 i = 0; i < vBuffers.size(); i++)
 				result = vkBindBufferMemory(GetLogicalDevice(), vBuffers[i], *pDeviceMemory, vMR.size * i);
 

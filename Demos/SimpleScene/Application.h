@@ -46,7 +46,7 @@ private:
 
 	void DestroyRenderResources();
 
-	Flint::Backend::GraphicsPipelineSpecification GetGraphicsPipelineSpec() const;
+	Flint::GraphicsPipelineSpecification GetGraphicsPipelineSpec() const;
 
 private:
 	Flint::FInstance mInstance = {};

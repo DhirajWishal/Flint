@@ -149,10 +149,10 @@ void Application::DestroyRenderResources()
 {
 }
 
-Flint::Backend::GraphicsPipelineSpecification Application::GetGraphicsPipelineSpec() const
+Flint::GraphicsPipelineSpecification Application::GetGraphicsPipelineSpec() const
 {
-	Flint::Backend::GraphicsPipelineSpecification spec = {};
-	spec.mDynamicStateFlags = Flint::Backend::DynamicStateFlags::VIEWPORT | Flint::Backend::DynamicStateFlags::SCISSOR;
+	Flint::GraphicsPipelineSpecification spec = {};
+	spec.mDynamicStateFlags = Flint::DynamicStateFlags::VIEWPORT | Flint::DynamicStateFlags::SCISSOR;
 	spec.bEnableColorBlendLogic = false;
 	spec.bEnableAlphaCoverage = false;
 	spec.bEnableAlphaToOne = false;

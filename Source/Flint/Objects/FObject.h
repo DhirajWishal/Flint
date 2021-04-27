@@ -19,7 +19,7 @@ namespace Flint
 	class FObject {
 	public:
 		FObject() {}
-		FObject(const std::shared_ptr<Backend::BackendObject>& ptr) : pBackendObject(ptr) {}
+		FObject(const std::shared_ptr<BackendObject>& ptr) : pBackendObject(ptr) {}
 		virtual ~FObject() {}
 
 		/**
@@ -27,7 +27,7 @@ namespace Flint
 		 *
 		 * @return The backend object pointer.
 		 */
-		std::shared_ptr<Backend::BackendObject> GetBackendObject() const { return pBackendObject; }
+		std::shared_ptr<BackendObject> GetBackendObject() const { return pBackendObject; }
 
 	protected:
 		template<class Object>
@@ -36,6 +36,6 @@ namespace Flint
 		template<class Derived>
 		Derived& GetAs() const { return static_cast<Derived&>(*pBackendObject); }
 
-		std::shared_ptr<Backend::BackendObject> pBackendObject = {};
+		std::shared_ptr<BackendObject> pBackendObject = {};
 	};
 }

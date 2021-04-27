@@ -21,9 +21,9 @@ namespace Flint
 			vCI.codeSize = static_cast<UI32>(digest.mCode.size());
 			vCI.pCode = digest.mCode.data();
 
-			FLINT_VK_ASSERT(pDevice->CreateShaderModule(&vCI, &vShaderModule), "Failed to create shader module!")
+			FLINT_VK_ASSERT(pDevice->CreateShaderModule(&vCI, &vShaderModule), "Failed to create shader module!");
 
-				SetupResources(digest);
+			SetupResources(digest);
 		}
 
 		void VulkanShaderModule::Terminate()

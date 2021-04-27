@@ -16,9 +16,9 @@ namespace Flint
 			vPoolCI.pNext = VK_NULL_HANDLE;
 			vPoolCI.queueFamilyIndex = this->pDevice->GetQueue().mTransferFamily.value();
 
-			FLINT_VK_ASSERT(pDevice->CreateCommanPool(&vPoolCI, &vPool), "Failed to create command pool!")
+			FLINT_VK_ASSERT(pDevice->CreateCommanPool(&vPoolCI, &vPool), "Failed to create command pool!");
 
-				VkCommandBufferAllocateInfo vAI = {};
+			VkCommandBufferAllocateInfo vAI = {};
 			vAI.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 			vAI.pNext = VK_NULL_HANDLE;
 			vAI.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
@@ -52,11 +52,11 @@ namespace Flint
 			vFCI.flags = VK_NULL_HANDLE;
 
 			std::vector<VkFence> vFences{ 1 };
-			FLINT_VK_ASSERT(pDevice->CreateFences(&vFCI, vFences), "Failed to create fence!")
+			FLINT_VK_ASSERT(pDevice->CreateFences(&vFCI, vFences), "Failed to create fence!");
 
-				FLINT_VK_ASSERT(pDevice->SubmitQueue(pDevice->GetTransferQueue(), { vSI }, vFences[0]), "Failed to submit queue!");
-			FLINT_VK_ASSERT(pDevice->WaitForFences(vFences, true, std::numeric_limits<UI32>::max()), "Failed to wait for fences!")
-				pDevice->DestroyFences(vFences);
+			FLINT_VK_ASSERT(pDevice->SubmitQueue(pDevice->GetTransferQueue(), { vSI }, vFences[0]), "Failed to submit queue!");
+			FLINT_VK_ASSERT(pDevice->WaitForFences(vFences, true, std::numeric_limits<UI32>::max()), "Failed to wait for fences!");
+			pDevice->DestroyFences(vFences);
 
 			pDevice->FreeComandBuffers(vPool, { vBuffer });
 			pDevice->DestroyCommandPool(vPool);

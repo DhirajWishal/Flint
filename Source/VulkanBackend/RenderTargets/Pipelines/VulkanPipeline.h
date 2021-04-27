@@ -16,7 +16,7 @@ namespace Flint
 	{
 		class VulkanPipeline;
 
-		class VulkanPipelineResource : public Backend::PipelineResource<VulkanPipelineResource, VulkanPipeline, VulkanBuffer, VulkanImage> {
+		class VulkanPipelineResource : public FPipelineResource {
 			friend VulkanPipeline;
 
 		public:
@@ -26,11 +26,11 @@ namespace Flint
 			VulkanPipelineResource() {}
 			~VulkanPipelineResource() {}
 
-			virtual void Initialize(VulkanPipeline* pPipeline) override final;
+			virtual void Initialize(FPipeline* pPipeline) override final;
 			virtual void Terminate() override final;
 
-			virtual void RegisterUniformBuffers(const Backend::UniformBufferContainer<VulkanBuffer>& uniformBuffers) override final;
-			virtual void RegisterUniformImages(const Backend::UniformImageContainer<VulkanImage>& unformImages) override final;
+			virtual void RegisterUniformBuffers(const UniformBufferContainer& uniformBuffers) override final;
+			virtual void RegisterUniformImages(const UniformImageContainer& unformImages) override final;
 
 			VkDescriptorPool vPool = VK_NULL_HANDLE;
 			VkDescriptorSet vDescriptorSet = VK_NULL_HANDLE;
@@ -38,7 +38,7 @@ namespace Flint
 		private:
 			void CreateDescriptorPool(const std::vector<VkDescriptorPoolSize>& vSizes);
 
-			std::unordered_map<Backend::SamplerSpecification, VkSampler> mSamplerMap;
+			std::unordered_map<SamplerSpecification, VkSampler> mSamplerMap;
 		};
 
 		class VulkanPipeline {

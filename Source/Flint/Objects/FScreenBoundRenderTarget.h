@@ -110,6 +110,6 @@ namespace Flint
 		 * @param spec: The pipeline specification.
 		 * @return The newly created graphics pipeline object.
 		 */
-		FGraphicsPipeline CreateGraphicsPipeline(const std::vector<FShader>& shaders, const Backend::GraphicsPipelineSpecification& spec);
+		FGraphicsPipeline CreateGraphicsPipeline(const std::vector<FShader>& shaders, const GraphicsPipelineSpecification& spec);
 	};
 }

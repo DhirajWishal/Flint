@@ -13,38 +13,35 @@
 
 namespace Flint
 {
-	namespace Backend
-	{
+	/**
+	 * Flint instance object.
+	 * This object is the basis of all the backend objects. This represents a single backend API instance.
+	 */
+	class FInstance : public BackendObject {
+	public:
+		FInstance() {}
+		virtual ~FInstance() {}
+
 		/**
-		 * Flint instance object.
-		 * This object is the basis of all the backend objects. This represents a single backend API instance.
+		 * Initialize the instance.
+		 *
+		 * @param enableValidation: Whether or not to enable backend validation.
 		 */
-		class Instance : public BackendObject {
-		public:
-			Instance() {}
-			virtual ~Instance() {}
+		virtual void Initialize(bool enableValidation) = 0;
 
-			/**
-			 * Initialize the instance.
-			 *
-			 * @param enableValidation: Whether or not to enable backend validation.
-			 */
-			virtual void Initialize(bool enableValidation) = 0;
+		/**
+		 * Terminate the instance.
+		 */
+		virtual void Terminate() = 0;
 
-			/**
-			 * Terminate the instance.
-			 */
-			virtual void Terminate() = 0;
+		/**
+		 * Check if validation is enabled.
+		 *
+		 * @return The boolean stating if the validation is enabled.
+		 */
+		bool IsValidationEnabled() const { return bEnableValidation; }
 
-			/**
-			 * Check if validation is enabled.
-			 *
-			 * @return The boolean stating if the validation is enabled.
-			 */
-			bool IsValidationEnabled() const { return bEnableValidation; }
-
-		protected:
-			bool bEnableValidation = true;
-		};
-	}
+	protected:
+		bool bEnableValidation = true;
+	};
 }

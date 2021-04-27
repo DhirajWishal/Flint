@@ -24,7 +24,7 @@ namespace Flint
 		Construct<Buffer>();
 	}
 
-	FBuffer::FBuffer(Backend::BackendObject* pBackendObject)
+	FBuffer::FBuffer(BackendObject* pBackendObject)
 	{
 		pBackendObject = pBackendObject;
 	}
@@ -33,7 +33,7 @@ namespace Flint
 	{
 	}
 
-	void FBuffer::Initialize(const FDevice& device, UI64 size, Backend::BufferUsage usage, Backend::MemoryProfile profile)
+	void FBuffer::Initialize(const FDevice& device, UI64 size, BufferUsage usage, MemoryProfile profile)
 	{
 		GetAs<Buffer>().Initialize(static_cast<Buffer::DeviceType*>(device.GetBackendObject().get()), size, usage, profile);
 	}
@@ -65,7 +65,7 @@ namespace Flint
 	
 	FDevice FBuffer::GetDevice() const
 	{
-		return FDevice(std::shared_ptr<Backend::BackendObject>(GetAs<Buffer>().GetDevice()));
+		return FDevice(std::shared_ptr<BackendObject>(GetAs<Buffer>().GetDevice()));
 	}
 	
 	UI64 FBuffer::GetSize() const

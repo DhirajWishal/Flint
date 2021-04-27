@@ -31,7 +31,7 @@ namespace Flint
 	{
 	}
 
-	void FGraphicsPipeline::Initialize(const FScreenBoundRenderTarget& renderTarget, const std::vector<FShader>& shaders, const Backend::GraphicsPipelineSpecification& spec)
+	void FGraphicsPipeline::Initialize(const FScreenBoundRenderTarget& renderTarget, const std::vector<FShader>& shaders, const GraphicsPipelineSpecification& spec)
 	{
 		std::vector<ShaderDigest> digests(shaders.size());
 		for (UI8 itr = 0; itr < shaders.size(); itr++)
@@ -56,7 +56,7 @@ namespace Flint
 				itr.second.mType == UniformType::UNIFORM_BUFFER || itr.second.mType == UniformType::UNIFORM_BUFFER_DYNAMIC || itr.second.mType == UniformType::UNIFORM_TEXEL_BUFFER)
 			{
 				FBuffer buffer = {};
-				buffer.Initialize(FDevice(std::shared_ptr<Backend::BackendObject>(GetAs<Pipeline>().GetRenderTarget()->GetDevice())), itr.second.mSize, Backend::BufferUsage::UNIFORM, Backend::MemoryProfile::TRANSFER_FRIENDLY);
+				buffer.Initialize(FDevice(std::shared_ptr<BackendObject>(GetAs<Pipeline>().GetRenderTarget()->GetDevice())), itr.second.mSize, BufferUsage::UNIFORM, MemoryProfile::TRANSFER_FRIENDLY);
 				container[itr.first] = std::move(buffer);
 			}
 		}

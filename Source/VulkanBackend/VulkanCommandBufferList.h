@@ -15,19 +15,12 @@ namespace Flint
 		class VulkanScreenBoundRenderTargetS;
 		class VulkanGraphicsPipeline;
 
-		class VulkanCommandBufferList final : public Backend::CommandBufferList<VulkanDevice, VulkanBuffer, VulkanScreenBoundRenderTargetS, VulkanGraphicsPipeline, VulkanPipelineResource> {
-		public:
-			using DeviceType = VulkanDevice;
-			using BufferType = VulkanBuffer;
-			using ScreenBoundRenderTargetType = VulkanScreenBoundRenderTargetS;
-			using ScreenBoundGraphicsPipelineType = VulkanGraphicsPipeline;
-			using ScreenBoundGraphicsPipelineResourceType = VulkanPipelineResource;
-		
+		class VulkanCommandBufferList final : public FCommandBufferList {		
 		public:
 			VulkanCommandBufferList() {}
 			~VulkanCommandBufferList() {}
 
-			virtual void Initialize(DeviceType* pDevice, UI64 bufferCount) override final;
+			virtual void Initialize(FDevice* pDevice, UI64 bufferCount) override final;
 			virtual void Terminate() override final;
 
 			virtual void ClearBuffers() override final;
@@ -36,13 +29,13 @@ namespace Flint
 			virtual void BeginBuffer(UI64 index) override final;
 			virtual void EndBuffer() override final;
 
-			virtual void BindVertexBuffer(const BufferType& buffer) override final;
-			virtual void BindIndexBuffer(const BufferType& buffer) override final;
-			virtual void BindRenderTarget(const ScreenBoundRenderTargetType& renderTarget) override final;
+			virtual void BindVertexBuffer(const FBuffer* pBuffer) override final;
+			virtual void BindIndexBuffer(const FBuffer* pBuffer) override final;
+			virtual void BindRenderTarget(const FScreenBoundRenderTarget* pRenderTarget) override final;
 			virtual void EndRenderTarget() override final;
-			virtual void BindPipeline(const ScreenBoundGraphicsPipelineType& graphicsPipeline) override final;
-			virtual void SetDynamicStates(const Backend::DynamicStateContainer& container) override final;
-			virtual void BindRenderResource(const ScreenBoundGraphicsPipelineResourceType& resource) override final;
+			virtual void BindPipeline(const FGraphicsPipeline* pGraphicsPipeline) override final;
+			virtual void SetDynamicStates(const DynamicStateContainer& container) override final;
+			virtual void BindRenderResource(const FPipelineResource* pResource) override final;
 			virtual void DrawIndexed(UI64 indexCount, UI64 indexOffset, UI64 vertexOffset) override final;
 
 			VkCommandPool GetCommandPool() const { return vCommandPool; }

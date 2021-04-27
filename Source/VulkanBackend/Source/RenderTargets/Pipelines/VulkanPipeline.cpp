@@ -11,24 +11,24 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		void VulkanPipelineResource::Initialize(VulkanPipeline* pPipeline)
+		void VulkanPipelineResource::Initialize(FPipeline* pPipeline)
 		{
 			this->pPipeline = pPipeline;
-			CreateDescriptorPool(pPipeline->vPoolSizes);
+			CreateDescriptorPool(pPipeline->GetAs<VulkanPipeline>()->vPoolSizes);
 
 			VkDescriptorSetAllocateInfo vDSAI = {};
 			vDSAI.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
 			vDSAI.pNext = VK_NULL_HANDLE;
 			vDSAI.descriptorSetCount = 1;
-			vDSAI.pSetLayouts = &pPipeline->vSetLayout;
+			vDSAI.pSetLayouts = &pPipeline->GetAs<VulkanPipeline>()->vSetLayout;
 			vDSAI.descriptorPool = vPool;
 
-			FLINT_VK_ASSERT(pPipeline->GetRenderTarget()->GetDevice()->AllocateDescriptorSet(&vDSAI, &vDescriptorSet), "Failed to allocate descriptor set!");
+			FLINT_VK_ASSERT(pPipeline->GetAs<VulkanPipeline>()->GetRenderTarget()->GetDevice()->AllocateDescriptorSet(&vDSAI, &vDescriptorSet), "Failed to allocate descriptor set!");
 		}
 
 		void VulkanPipelineResource::Terminate()
 		{
-			DeviceType* pDevice = pPipeline->GetRenderTarget()->GetDevice();
+			DeviceType* pDevice = pPipeline->GetAs<VulkanPipeline>()->GetRenderTarget()->GetDevice();
 			pDevice->DestroyDescriptorPool(vPool);
 
 			for (auto& samplerPair : mSamplerMap)
@@ -37,9 +37,9 @@ namespace Flint
 			mSamplerMap.clear();
 		}
 
-		void VulkanPipelineResource::RegisterUniformBuffers(const Backend::UniformBufferContainer<VulkanBuffer>& uniformBuffers)
+		void VulkanPipelineResource::RegisterUniformBuffers(const UniformBufferContainer& uniformBuffers)
 		{
-			auto& uniformLayouts = pPipeline->GetUniformLayouts();
+			auto& uniformLayouts = pPipeline->GetAs<VulkanPipeline>()->GetUniformLayouts();
 
 			std::vector<VkWriteDescriptorSet> vSetWrites;
 			std::vector<VkDescriptorBufferInfo*> pBufferInfos;
@@ -66,13 +66,13 @@ namespace Flint
 				INSERT_INTO_VECTOR(vSetWrites, std::move(vWDS));
 			}
 
-			pPipeline->GetRenderTarget()->GetDevice()->UpdateDescriptorSet(vSetWrites, {});
+			pPipeline->GetAs<VulkanPipeline>()->GetRenderTarget()->GetDevice()->UpdateDescriptorSet(vSetWrites, {});
 
 			for (auto ptr : pBufferInfos)
 				delete ptr;
 		}
 
-		void VulkanPipelineResource::RegisterUniformImages(const Backend::UniformImageContainer<VulkanImage>& unformImages)
+		void VulkanPipelineResource::RegisterUniformImages(const UniformImageContainer& unformImages)
 		{
 			auto& uniformLayouts = pPipeline->GetUniformLayouts();
 
@@ -84,7 +84,7 @@ namespace Flint
 				auto& layout = uniformLayouts[itr->first];
 
 				VkDescriptorImageInfo* pDII = new VkDescriptorImageInfo();
-				pDII->imageLayout = itr->second.first.GetLayout();
+				pDII->imageLayout = itr->second.first->GetAs<VulkanPipeline>()->GetLayout();
 				pDII->imageView = itr->second.first.GetImageView();
 
 				if (mSamplerMap.find(itr->second.second) != mSamplerMap.end())

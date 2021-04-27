@@ -8,58 +8,44 @@
 
 namespace Flint
 {
-	namespace Backend
-	{
+	/**
+	 * Flint screen bound render target object.
+	 * This object is used to draw data to a display object. Make sure that the display and device are compatible.
+	 */
+	class FScreenBoundRenderTarget : public FRenderTarget {
+	public:
+		FScreenBoundRenderTarget() {}
+		virtual ~FScreenBoundRenderTarget() {}
+
 		/**
-		 * Flint screen bound render target object.
-		 * This object is used to draw data to a display object. Make sure that the display and device are compatible.
+		 * Initialize the render target.
 		 *
-		 * @tparam TDevice: The device type.
-		 * @tparam TDisplay: The display type.
-		 * @tparam TBuffer: The buffer type.
-		 * @tparam TPipeline: The pipeline type.
-		 * @tparam TCommandBufferList: The command buffer list type.
+		 * @param pDevice: The device pointer.
+		 * @param pDisplay: The display pointer.
+		 * @param bufferCount: The number of frame buffers the render target contains.
 		 */
-		template<class TDevice, class TDisplay, class TBuffer, class TPipeline, class TCommandBufferList>
-		class ScreenBoundRenderTarget : public RenderTarget<TDevice, TBuffer, TPipeline, TCommandBufferList> {
-		public:
-			using DeviceType = TDevice;
-			using DisplayType = TDisplay;
+		virtual void Initialize(FDevice* pDevice, FDisplay* pDisplay, UI64 bufferCount) = 0;
 
-		public:
-			ScreenBoundRenderTarget() {}
-			virtual ~ScreenBoundRenderTarget() {}
+		/**
+		 * Get the current frame index.
+		 *
+		 * @return The index.
+		 */
+		UI32 GetFrameIndex() const { return mFrameIndex; }
 
-			/**
-			 * Initialize the render target.
-			 *
-			 * @param pDevice: The device pointer.
-			 * @param pDisplay: The display pointer.
-			 * @param bufferCount: The number of frame buffers the render target contains.
-			 */
-			virtual void Initialize(DeviceType* pDevice, DisplayType* pDisplay, UI64 bufferCount) = 0;
+		/**
+		 * Get the current image index.
+		 *
+		 * @return The index.
+		 */
+		UI32 GetImageIndex() const { return mImageIndex; }
 
-			/**
-			 * Get the current frame index.
-			 *
-			 * @return The index.
-			 */
-			UI32 GetFrameIndex() const { return mFrameIndex; }
+	protected:
+		void IncrementIndex() { mFrameIndex++; if (mFrameIndex >= mBufferCount) mFrameIndex = 0; }
 
-			/**
-			 * Get the current image index.
-			 *
-			 * @return The index.
-			 */
-			UI32 GetImageIndex() const { return mImageIndex; }
+		FDisplay* pDisplay = nullptr;
 
-		protected:
-			void IncrementIndex() { mFrameIndex++; if (mFrameIndex >= mBufferCount) mFrameIndex = 0; }
-
-			DisplayType* pDisplay = nullptr;
-
-			UI32 mFrameIndex = 0;
-			UI32 mImageIndex = 0;
-		};
-	}
+		UI32 mFrameIndex = 0;
+		UI32 mImageIndex = 0;
+	};
 }

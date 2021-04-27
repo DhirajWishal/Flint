@@ -13,20 +13,20 @@ namespace Flint
 	{
 		namespace _Helpers
 		{
-			VkImageType GetType(Backend::ImageUsage usage)
+			VkImageType GetType(ImageUsage usage)
 			{
-				if (usage == Backend::ImageUsage::GRAPHICS_1D || usage == Backend::ImageUsage::STORAGE_1D)
+				if (usage == ImageUsage::GRAPHICS_1D || usage == ImageUsage::STORAGE_1D)
 					return VkImageType::VK_IMAGE_TYPE_1D;
 
-				if (usage == Backend::ImageUsage::GRAPHICS_3D || usage == Backend::ImageUsage::STORAGE_3D)
+				if (usage == ImageUsage::GRAPHICS_3D || usage == ImageUsage::STORAGE_3D)
 					return VkImageType::VK_IMAGE_TYPE_3D;
 
 				return VkImageType::VK_IMAGE_TYPE_2D;
 			}
 
-			VkImageUsageFlags GetUsage(Backend::ImageUsage usage)
+			VkImageUsageFlags GetUsage(ImageUsage usage)
 			{
-				if (usage == Backend::ImageUsage::GRAPHICS_1D || usage == Backend::ImageUsage::GRAPHICS_2D || usage == Backend::ImageUsage::GRAPHICS_3D || usage == Backend::ImageUsage::GRAPHICS_CUBEMAP)
+				if (usage == ImageUsage::GRAPHICS_1D || usage == ImageUsage::GRAPHICS_2D || usage == ImageUsage::GRAPHICS_3D || usage == ImageUsage::GRAPHICS_CUBEMAP)
 					return VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_DST_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_SAMPLED_BIT;
 
 				return VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_DST_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_STORAGE_BIT;
@@ -100,34 +100,34 @@ namespace Flint
 				return VkFormat::VK_FORMAT_UNDEFINED;
 			}
 
-			VkImageViewType GetImageViewType(Backend::ImageUsage usage, UI8 layers)
+			VkImageViewType GetImageViewType(ImageUsage usage, UI8 layers)
 			{
-				if (usage == Backend::ImageUsage::GRAPHICS_1D || usage == Backend::ImageUsage::STORAGE_1D)
+				if (usage == ImageUsage::GRAPHICS_1D || usage == ImageUsage::STORAGE_1D)
 					return layers > 1 ? VkImageViewType::VK_IMAGE_VIEW_TYPE_1D_ARRAY : VkImageViewType::VK_IMAGE_VIEW_TYPE_1D;
 
-				if (usage == Backend::ImageUsage::GRAPHICS_2D || usage == Backend::ImageUsage::STORAGE_2D)
+				if (usage == ImageUsage::GRAPHICS_2D || usage == ImageUsage::STORAGE_2D)
 					return layers > 1 ? VkImageViewType::VK_IMAGE_VIEW_TYPE_2D_ARRAY : VkImageViewType::VK_IMAGE_VIEW_TYPE_2D;
 
-				if (usage == Backend::ImageUsage::GRAPHICS_3D || usage == Backend::ImageUsage::STORAGE_3D)
+				if (usage == ImageUsage::GRAPHICS_3D || usage == ImageUsage::STORAGE_3D)
 					return VkImageViewType::VK_IMAGE_VIEW_TYPE_3D;
 
-				if (usage == Backend::ImageUsage::GRAPHICS_CUBEMAP || usage == Backend::ImageUsage::STORAGE_CUBEMAP)
+				if (usage == ImageUsage::GRAPHICS_CUBEMAP || usage == ImageUsage::STORAGE_CUBEMAP)
 					return layers > 1 ? VkImageViewType::VK_IMAGE_VIEW_TYPE_CUBE_ARRAY : VkImageViewType::VK_IMAGE_VIEW_TYPE_CUBE;
 
 				return VkImageViewType::VK_IMAGE_VIEW_TYPE_2D;
 			}
 
-			VkFilter GetFilter(Backend::SamplerFilter filter)
+			VkFilter GetFilter(SamplerFilter filter)
 			{
 				switch (filter)
 				{
-				case Flint::Backend::SamplerFilter::NEAREST:
+				case Flint::SamplerFilter::NEAREST:
 					return VkFilter::VK_FILTER_NEAREST;
 
-				case Flint::Backend::SamplerFilter::LINEAR:
+				case Flint::SamplerFilter::LINEAR:
 					return VkFilter::VK_FILTER_LINEAR;
 
-				case Flint::Backend::SamplerFilter::CUBIC_IMAGE:
+				case Flint::SamplerFilter::CUBIC_IMAGE:
 					return VkFilter::VK_FILTER_CUBIC_IMG;
 
 				default:
@@ -139,7 +139,7 @@ namespace Flint
 			}
 		}
 
-		void VulkanImage::Initialize(DeviceType* pDevice, UI64 width, UI64 height, UI64 depth, Backend::ImageUsage usage, UI8 bitsPerPixel, UI8 layers)
+		void VulkanImage::Initialize(FDevice* pDevice, UI64 width, UI64 height, UI64 depth, ImageUsage usage, UI8 bitsPerPixel, UI8 layers)
 		{
 			this->pDevice = pDevice;
 			this->mWidth = width;
@@ -169,16 +169,16 @@ namespace Flint
 			vCI.extent.height = static_cast<UI32>(height);
 			vCI.extent.depth = static_cast<UI32>(depth);
 
-			if (mUsage == Backend::ImageUsage::GRAPHICS_CUBEMAP || mUsage == Backend::ImageUsage::STORAGE_CUBEMAP)
+			if (mUsage == ImageUsage::GRAPHICS_CUBEMAP || mUsage == ImageUsage::STORAGE_CUBEMAP)
 			{
 				vCI.flags = VkImageCreateFlagBits::VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
 				vCI.arrayLayers = 6;
 			}
 
-			FLINT_VK_ASSERT(pDevice->CreateImage(&vCI, &vImage), "Failed to create image!")
-				FLINT_VK_ASSERT(pDevice->CreateImageMemory({ vImage }, VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &vImageMemory), "Failed to allocate image memory!")
+			FLINT_VK_ASSERT(pDevice->GetAs<VulkanDevice>()->CreateImage(&vCI, &vImage), "Failed to create image!");
+			FLINT_VK_ASSERT(pDevice->GetAs<VulkanDevice>()->CreateImageMemory({ vImage }, VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &vImageMemory), "Failed to allocate image memory!");
 
-				VkImageViewCreateInfo vIVCI = {};
+			VkImageViewCreateInfo vIVCI = {};
 			vIVCI.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 			vIVCI.pNext = VK_NULL_HANDLE;
 			vIVCI.flags = VK_NULL_HANDLE;
@@ -192,26 +192,26 @@ namespace Flint
 			vIVCI.subresourceRange.levelCount = mMipLevel;
 			vIVCI.subresourceRange.layerCount = mLayers;
 
-			FLINT_VK_ASSERT(pDevice->CreateImageView(&vIVCI, &vImageView), "Failed to create image view!")
+			FLINT_VK_ASSERT(pDevice->GetAs<VulkanDevice>()->CreateImageView(&vIVCI, &vImageView), "Failed to create image view!");
 		}
 
 		void VulkanImage::Terminate()
 		{
-			pDevice->DestroyImage(vImage);
-			pDevice->DestroyImageView(vImageView);
-			pDevice->FreeMemory(vImageMemory);
+			pDevice->GetAs<VulkanDevice>()->DestroyImage(vImage);
+			pDevice->GetAs<VulkanDevice>()->DestroyImageView(vImageView);
+			pDevice->GetAs<VulkanDevice>()->FreeMemory(vImageMemory);
 		}
 
 		void VulkanImage::CopyData(unsigned char* pData, UI64 width, UI64 widthOffset, UI64 height, UI64 heightOffset, UI64 depth, UI64 depthOffset, UI8 bitsPerPixel)
 		{
-			pDevice->SetImageLayout(vImage, vCurrentLayout, VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, vFormat, mLayers, 0, mMipLevel);
+			pDevice->GetAs<VulkanDevice>()->SetImageLayout(vImage, vCurrentLayout, VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, vFormat, mLayers, 0, mMipLevel);
 			UI64 size = width * height * depth * (bitsPerPixel / 8);
 
 			VkMemoryRequirements vMR = {};
-			vkGetImageMemoryRequirements(pDevice->GetLogicalDevice(), vImage, &vMR);
+			vkGetImageMemoryRequirements(pDevice->GetAs<VulkanDevice>()->GetLogicalDevice(), vImage, &vMR);
 
 			VulkanBuffer staggingBuffer = {};
-			staggingBuffer.Initialize(pDevice, vMR.size, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY);
+			staggingBuffer.Initialize(pDevice, vMR.size, BufferUsage::STAGGING, MemoryProfile::TRANSFER_FRIENDLY);
 
 			BYTE* pDataStore = static_cast<BYTE*>(staggingBuffer.MapMemory(vMR.size, 0));
 			std::copy(pData, pData + size, pDataStore);
@@ -234,16 +234,16 @@ namespace Flint
 			vBIC.imageSubresource.aspectMask = VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
 			vBIC.imageSubresource.layerCount = mLayers;
 
-			VulkanOneTimeCommandBuffer vCommandBuffer(pDevice);
+			VulkanOneTimeCommandBuffer vCommandBuffer(pDevice->GetAs<VulkanDevice>());
 			vkCmdCopyBufferToImage(vCommandBuffer, staggingBuffer.vBuffer, vImage, VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &vBIC);
 
 			staggingBuffer.Terminate();
 		}
 
-		VkSampler VulkanImage::CreateSampler(Backend::SamplerSpecification spec) const
+		VkSampler VulkanImage::CreateSampler(SamplerSpecification spec) const
 		{
 			VkPhysicalDeviceProperties properties{};
-			vkGetPhysicalDeviceProperties(pDevice->GetPhysicalDevice(), &properties);
+			vkGetPhysicalDeviceProperties(pDevice->GetAs<VulkanDevice>()->GetPhysicalDevice(), &properties);
 
 			VkSamplerCreateInfo vSCI = {};
 			vSCI.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
@@ -266,18 +266,18 @@ namespace Flint
 			vSCI.mipLodBias = spec.mLODBias;
 
 			VkSampler vSampler = VK_NULL_HANDLE;
-			FLINT_VK_ASSERT(pDevice->CreateSampler(&vSCI, &vSampler), "Failed to create sampler!")
+			FLINT_VK_ASSERT(pDevice->GetAs<VulkanDevice>()->CreateSampler(&vSCI, &vSampler), "Failed to create sampler!");
 
-				return vSampler;
+			return vSampler;
 		}
 
 		void VulkanImage::GenerateMipMaps()
 		{
-			VkFormatProperties vProps = pDevice->GetFormatProperties(vFormat);
+			VkFormatProperties vProps = pDevice->GetAs<VulkanDevice>()->GetFormatProperties(vFormat);
 
 			FLINT_ASSERT(!(vProps.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT), TEXT("Texture format does not support linear bitting!"))
 
-				VulkanOneTimeCommandBuffer vCommandBuffer(pDevice);
+				VulkanOneTimeCommandBuffer vCommandBuffer(pDevice->GetAs<VulkanDevice>());
 
 			for (UI32 i = 0; i < mLayers; i++)
 			{

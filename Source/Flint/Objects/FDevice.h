@@ -20,7 +20,7 @@ namespace Flint
 	class FDevice final : public FObject {
 	public:
 		FDevice();
-		explicit FDevice(const std::shared_ptr<Backend::BackendObject>& pBackendObject) : FObject(pBackendObject) {}
+		explicit FDevice(const std::shared_ptr<BackendObject>& pBackendObject) : FObject(pBackendObject) {}
 		~FDevice();
 
 		/**
@@ -52,7 +52,7 @@ namespace Flint
 		 * @param usage: The buffer usage.
 		 * @param profile: The buffer's memory profile.
 		 */
-		FBuffer CreateBuffer(UI64 size, Backend::BufferUsage usage, Backend::MemoryProfile profile) const;
+		FBuffer CreateBuffer(UI64 size, BufferUsage usage, MemoryProfile profile) const;
 
 	private:
 		bool bShouldDelete = false;

@@ -50,7 +50,7 @@ namespace Flint
 		return renderTarget;
 	}
 
-	FBuffer FDevice::CreateBuffer(UI64 size, Backend::BufferUsage usage, Backend::MemoryProfile profile) const
+	FBuffer FDevice::CreateBuffer(UI64 size, BufferUsage usage, MemoryProfile profile) const
 	{
 		FBuffer buffer = {};
 		buffer.Initialize(*this, size, usage, profile);

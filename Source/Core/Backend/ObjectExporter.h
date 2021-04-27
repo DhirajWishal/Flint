@@ -30,8 +30,8 @@
 		typedef graphicsPipeline<ScreenBoundRenderTarget> ScreenBoundGraphicsPipeline;																							\
 		typedef pipelineResource<ScreenBoundGraphicsPipeline> ScreenBoundGraphicsPipelineResource;																				\
 																																												\
-		typedef Backend::UniformBufferContainer<Buffer>	UniformBufferContainer;																									\
-		typedef Backend::UniformBufferContainer<Image>	UniformImageContainer;																									\
+		typedef UniformBufferContainer<Buffer>	UniformBufferContainer;																									\
+		typedef UniformBufferContainer<Image>	UniformImageContainer;																									\
 																																												\
 		/*																																										\
 		 * Create a new buffer object.																																			\
@@ -42,7 +42,7 @@
 		 * @param profile: The buffer's memory profile.																															\
 		 * @return The newly created buffer object.																																\
 		 */																																										\
-		inline Buffer CreateBuffer(Device* pDevice, UI64 size, Backend::BufferUsage usage, Backend::MemoryProfile profile)														\
+		inline Buffer CreateBuffer(Device* pDevice, UI64 size, BufferUsage usage, MemoryProfile profile)														\
 		{																																										\
 			Buffer mBuffer = {};																																				\
 			mBuffer.Initialize(pDevice, size, usage, profile);																													\

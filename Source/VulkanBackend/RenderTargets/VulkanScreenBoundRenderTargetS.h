@@ -20,9 +20,9 @@ namespace Flint
 		/**
 		 * Software/ compute.
 		 */
-		class VulkanScreenBoundRenderTargetS final : public VulkanRenderTarget, public Backend::ScreenBoundRenderTarget<VulkanDevice, VulkanDisplay, VulkanBuffer, VulkanPipeline, VulkanCommandBufferList> {
+		class VulkanScreenBoundRenderTargetS final : public VulkanRenderTarget, public ScreenBoundRenderTarget<VulkanDevice, VulkanDisplay, VulkanBuffer, VulkanPipeline, VulkanCommandBufferList> {
 		public:
-			using Super = Backend::ScreenBoundRenderTarget<VulkanDevice, VulkanDisplay, VulkanBuffer, VulkanPipeline, VulkanCommandBufferList>;
+			using Super = ScreenBoundRenderTarget<VulkanDevice, VulkanDisplay, VulkanBuffer, VulkanPipeline, VulkanCommandBufferList>;
 			using DeviceType = VulkanDevice;
 			using DisplayType = VulkanDisplay;
 		

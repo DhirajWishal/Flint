@@ -37,9 +37,9 @@ namespace Flint
 
 			vImages.resize(bufferCount);
 			for (UI32 i = 0; i < bufferCount; i++)
-				FLINT_VK_ASSERT(pDevice->CreateImage(&vCI, vImages.data() + i), "Failed to create Vulkan Image!")
+				FLINT_VK_ASSERT(pDevice->CreateImage(&vCI, vImages.data() + i), "Failed to create Vulkan Image!");
 
-				FLINT_VK_ASSERT(pDevice->CreateImageMemory(vImages, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &vBufferMemory), "Failed to bind image memory!");
+			FLINT_VK_ASSERT(pDevice->CreateImageMemory(vImages, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &vBufferMemory), "Failed to bind image memory!");
 			vImageViews = std::move(Utilities::CreateImageViews(vImages, vFormat, pDevice, VK_IMAGE_ASPECT_DEPTH_BIT));
 
 			{
