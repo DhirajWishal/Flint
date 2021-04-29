@@ -1,11 +1,12 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#include "VulkanBackend/RenderTargets/VulkanScreenBoundRenderTargetS.h"
-#include "VulkanBackend/RenderTargets/Pipelines/VulkanGraphicsPipeline.h"
-#include "VulkanBackend/VulkanMacros.h"
+#include "VulkanBackend\RenderTargets\VulkanScreenBoundRenderTargetS.h"
+#include "VulkanBackend\RenderTargets\Pipelines\VulkanGraphicsPipeline.h"
+#include "VulkanBackend\RenderTargets\Pipelines\VulkanPipelineResource.h"
+#include "VulkanBackend\VulkanMacros.h"
 
-#include "Core/Thread/ThreadUtilities.h"
+#include "Core\Thread\ThreadUtilities.h"
 
 namespace Flint
 {
@@ -28,7 +29,7 @@ namespace Flint
 			InitializeSyncObjects(pDevice->GetAs<VulkanDevice>(), static_cast<UI32>(this->mBufferCount));
 		}
 
-		VulkanScreenBoundRenderTargetS::~VulkanScreenBoundRenderTargetS()
+		void VulkanScreenBoundRenderTargetS::Terminate()
 		{
 			vSwapChain.Terminate();
 			vColorBuffer.Terminate();

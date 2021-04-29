@@ -47,7 +47,7 @@ namespace Flint
 	 * Flint device object.
 	 * Device objects are the basis of all the assets. This resembles a single (or multiple in the future) GPU(s).
 	 */
-	class FDevice : public BackendObject {
+	class FDevice : public BackendObject, public std::enable_shared_from_this<FDevice> {
 	public:
 		FDevice(std::shared_ptr<FInstance> pInstance) : pInstance(pInstance) {}
 		virtual ~FDevice() {}
@@ -73,9 +73,19 @@ namespace Flint
 		 * @param size: The size of the buffer.
 		 * @param usage: The buffer usage.
 		 * @param memoryProfile: The buffer's memory profile.
-		 * @return The created buffer pointer.
+		 * @return The created buffer pointer (shared pointer).
 		 */
-		virtual std::shared_ptr<FBuffer> CreateBuffer(UI64 size, BufferUsage usage, MemoryProfile memoryProfile) = 0;
+		virtual std::shared_ptr<FBuffer> CreateBufferShared(UI64 size, BufferUsage usage, MemoryProfile memoryProfile) = 0;
+
+		/**
+		 * Create a new buffer object.
+		 *
+		 * @param size: The size of the buffer.
+		 * @param usage: The buffer usage.
+		 * @param memoryProfile: The buffer's memory profile.
+		 * @return The created buffer pointer (unique pointer).
+		 */
+		virtual std::unique_ptr<FBuffer> CreateBufferUnique(UI64 size, BufferUsage usage, MemoryProfile memoryProfile) = 0;
 
 	protected:
 		std::shared_ptr<FInstance> pInstance = nullptr;

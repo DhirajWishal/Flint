@@ -219,7 +219,7 @@ namespace Flint
 				return VkFormat::VK_FORMAT_UNDEFINED;
 			}
 
-			std::vector<VkVertexInputAttributeDescription> GetInputAttributeDescriptions(const ShaderDigest& digest)
+			std::vector<VkVertexInputAttributeDescription> GetInputAttributeDescriptions(const FShaderDigest& digest)
 			{
 				std::vector<VkVertexInputAttributeDescription> vDescriptions = {};
 				VkVertexInputAttributeDescription vDesc = {};
@@ -238,7 +238,7 @@ namespace Flint
 				return vDescriptions;
 			}
 			
-			UI64 GetStride(const ShaderDigest& digest)
+			UI64 GetStride(const FShaderDigest& digest)
 			{
 				UI64 size = 0;
 				for (auto itr = digest.mInputAttributes.begin(); itr != digest.mInputAttributes.end(); itr++)

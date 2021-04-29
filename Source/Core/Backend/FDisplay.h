@@ -4,7 +4,6 @@
 #pragma once
 
 #include "FInstance.h"
-#include "Core\Maths\Vector\Vector2.h"
 #include "Core\Inputs\InputCenter.h"
 
 namespace Flint
@@ -13,7 +12,7 @@ namespace Flint
 	 * Flint display object.
 	 * This object is the base class for all the backend display objects. Displays are responsible of creating a window on the screen to where content can be drawn to.
 	 */
-	class FDisplay : public BackendObject {
+	class FDisplay : public BackendObject, public std::enable_shared_from_this<FDisplay> {
 	public:
 		FDisplay(std::shared_ptr<FInstance> pInstance, const Vector2 extent, const char* pTitle) : pInstance(pInstance), mExtent(extent), pTitle(pTitle) {}
 		virtual ~FDisplay() {}

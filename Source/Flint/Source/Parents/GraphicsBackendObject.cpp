@@ -11,31 +11,31 @@ namespace Flint
 	void GraphicsBackendObject::InitializeInstance(BackendAPI api, bool enableValidation)
 	{
 		mAPI = api;
-		mInstance.Initialize(enableValidation);
+		pInstance = std::make_shared<VulkanBackend::VulkanInstance>(enableValidation);
 	}
 
 	void GraphicsBackendObject::TerminateInstance()
 	{
-		mInstance.Terminate();
+		pInstance->Terminate();
 	}
 
 	void GraphicsBackendObject::InitializeDisplay(UI32 width, UI32 height, const char* pTitle)
 	{
-		mDisplay.Initialize(mInstance, Vector2(static_cast<float>(width), static_cast<float>(height)), pTitle);
+		pDisplay = pInstance->CreateDisplay(Vector2(static_cast<float>(width), static_cast<float>(height)), pTitle);
 	}
 
 	void GraphicsBackendObject::TerminateDisplay()
 	{
-		mDisplay.Terminate();
+		pDisplay->Terminate();
 	}
 
 	void GraphicsBackendObject::InitializeDevice()
 	{
-		mDevice.Initialize(mInstance);
+		pDevice = pInstance->CreateDevice();
 	}
 
 	void GraphicsBackendObject::TerminateDevice()
 	{
-		mDevice.Terminate();
+		pDevice->Terminate();
 	}
 }

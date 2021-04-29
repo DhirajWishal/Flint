@@ -10,7 +10,7 @@
 namespace Flint
 {
 	class FRenderTarget;
-	class FPipeline;
+	class FPipelineResource;
 
 	class FBuffer;
 	using UniformBufferContainer = std::unordered_map<std::string, std::shared_ptr<FBuffer>>;
@@ -18,100 +18,6 @@ namespace Flint
 	class FImage;
 	struct SamplerSpecification;
 	using UniformImageContainer = std::unordered_map<std::string, std::pair<std::shared_ptr<FImage>, SamplerSpecification>>;
-
-	/**
-	 * Pipeline resource object.
-	 * This contains the resources required to submit uniforms and images to the draw call.
-	 */
-	class FPipelineResource : public BackendObject {
-
-		/**
-		 * Draw data structure.
-		 * This structure contains the final information to be drawn.
-		 */
-		struct DrawData {
-			DrawData() = default;
-			DrawData(UI64 vertexCount, UI64 vertexOffset, UI64 indexCount, UI64 indexOffset, DynamicStateContainer dynamicStates)
-				: mVertexCount(vertexCount), mVertexOffset(vertexOffset), mIndexCount(indexCount), mIndexOffset(indexOffset), mDynamicStates(dynamicStates) {}
-
-			DynamicStateContainer mDynamicStates = {};
-
-			UI64 mVertexCount = 0;
-			UI64 mVertexOffset = 0;
-
-			UI64 mIndexCount = 0;
-			UI64 mIndexOffset = 0;
-		};
-
-	public:
-		FPipelineResource(std::shared_ptr<FPipeline> pPipeline) : pPipeline(pPipeline) {}
-
-		/**
-		 * Register uniform buffers to the resource object.
-		 * All the uniform buffers are to be registered ONCE.
-		 *
-		 * @param uniformBuffers: The uniform buffers to be registered.
-		 */
-		virtual void RegisterUniformBuffers(const UniformBufferContainer& uniformBuffers) = 0;
-
-		/**
-		 * Register uniform images to the resource object.
-		 * All the uniform images are to be registered ONCE.
-		 *
-		 * @param unformImages: The uniform images to be registered.
-		 */
-		virtual void RegisterUniformImages(const UniformImageContainer& unformImages) = 0;
-
-		/**
-		 * Get the pipeline which the resource is bound to.
-		 *
-		 * @return The pipeline pointer.
-		 */
-		std::shared_ptr<FPipeline> GetPipeline() const { return pPipeline; }
-
-		/**
-		 * Add draw data to the pipeline resource.
-		 *
-		 * @param vertexCount: The number of vertexes to draw.
-		 * @param vertexOffset: The vertex offset in the buffer.
-		 * @param indexCount: The number of indexes to draw.
-		 * @param indexOffset: The index offset in the buffer.
-		 * @param dynamicStates: The dynamic states of the pipeline to be drawn.
-		 * @return Draw data ID.
-		 */
-		UI64 AddDrawData(UI64 vertexCount, UI64 vertexOffset, UI64 indexCount, UI64 indexOffset, DynamicStateContainer dynamicStates)
-		{
-			mDrawData[mIndex] = DrawData(vertexCount, vertexOffset, indexCount, indexOffset, dynamicStates);
-			return mIndex++;
-		}
-
-		/**
-		 * Get draw data from the resource.
-		 *
-		 * @return The draw data map.
-		 */
-		std::unordered_map<UI64, DrawData>& GetDrawData() { return mDrawData; }
-
-		/**
-		 * Get draw data from the resource.
-		 *
-		 * @return The draw data map.
-		 */
-		const std::unordered_map<UI64, DrawData> GetDrawData() const { return mDrawData; }
-
-		/**
-		 * Get the draw data index counter.
-		 *
-		 * @return The index.
-		 */
-		UI64 GetDrawDataIndex() const { return mIndex; }
-
-	protected:
-		std::unordered_map<UI64, DrawData> mDrawData;
-		UI64 mIndex = 0;
-
-		std::shared_ptr<FPipeline> pPipeline = nullptr;
-	};
 
 	/**
 	 * Pipeline object.
@@ -122,9 +28,9 @@ namespace Flint
 	 * 2. Compute pipeline.
 	 * 3. Ray Tracing pipeline.
 	 */
-	class FPipeline : public BackendObject {
+	class FPipeline : public BackendObject, public std::enable_shared_from_this<FPipeline> {
 	public:
-		FPipeline(std::shared_ptr<FRenderTarget> pRenderTarget, std::vector<ShaderDigest> digest) {}
+		FPipeline(std::shared_ptr<FRenderTarget> pRenderTarget, std::vector<FShaderDigest> digest) : pRenderTarget(pRenderTarget), mDigests(digest) {}
 		virtual ~FPipeline() {}
 
 		/**
@@ -193,13 +99,6 @@ namespace Flint
 
 	public:
 		/**
-		 * Get the render target which the pipeline is bound to.
-		 *
-		 * @return The render target pointer.
-		 */
-		std::shared_ptr<FRenderTarget> GetRenderTarget() const { return pRenderTarget; }
-
-		/**
 		 * Get the uniform layouts of the pipeline.
 		 *
 		 * @return The uniform layout map.
@@ -234,21 +133,27 @@ namespace Flint
 		 */
 		UI64 GetDrawResourcesIndex() const { return mIndex; }
 
+		/**
+		 * Get the render target of the pipeline.
+		 *
+		 * @return The render target pointer.
+		 */
+		std::shared_ptr<FRenderTarget> GetRenderTarget() const { return pRenderTarget; }
+
 	protected:
 		/**
 		 * Resolve the uniform layouts used by the pipeline.
 		 *
 		 * @param shaderDigest: The shader digests that contain the uniform data.
 		 */
-		void ResolveUniformLayouts(const std::vector<ShaderDigest>& shaderDigests);
+		void ResolveUniformLayouts(const std::vector<FShaderDigest>& shaderDigests);
 
 	protected:
+		std::shared_ptr<FRenderTarget> pRenderTarget = nullptr;
 		std::unordered_map<String, UniformLayout> mUniformLayouts;
-		std::vector<ShaderDigest> mDigests;
+		std::vector<FShaderDigest> mDigests;
 
 		std::unordered_map<UI64, FPipelineResource*> mDrawResources;
-
-		std::shared_ptr<FRenderTarget> pRenderTarget = nullptr;
 
 		UI64 mIndex = 0;
 	};
@@ -256,16 +161,16 @@ namespace Flint
 	/**
 	 * Compute Pipeline object.
 	 */
-	class ComputePipeline : public FPipeline {
+	class ComputePipeline : public FPipeline, public std::enable_shared_from_this<ComputePipeline> {
 	public:
-		ComputePipeline(std::shared_ptr<FRenderTarget> pRenderTarget, std::vector<ShaderDigest> digest) : FPipeline(pRenderTarget, digest) {}
+		ComputePipeline(std::shared_ptr<FRenderTarget> pRenderTarget, std::vector<FShaderDigest> digest) : FPipeline(pRenderTarget, digest) {}
 	};
 
 	/**
 	 * Ray Tracing Pipeline object.
 	 */
-	class RayTracingPipeline : public FPipeline {
+	class RayTracingPipeline : public FPipeline, public std::enable_shared_from_this<RayTracingPipeline> {
 	public:
-		RayTracingPipeline(std::shared_ptr<FRenderTarget> pRenderTarget, std::vector<ShaderDigest> digest) : FPipeline(pRenderTarget, digest) {}
+		RayTracingPipeline(std::shared_ptr<FRenderTarget> pRenderTarget, std::vector<FShaderDigest> digest) : FPipeline(pRenderTarget, digest) {}
 	};
 }

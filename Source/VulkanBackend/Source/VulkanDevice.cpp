@@ -97,7 +97,7 @@ namespace Flint
 			CreateLogicalDevice();
 		}
 
-		VulkanDevice::~VulkanDevice()
+		void VulkanDevice::Terminate()
 		{
 			DestroyLogicalDevice();
 		}
@@ -109,9 +109,14 @@ namespace Flint
 			return isSupported == VK_TRUE;
 		}
 
-		std::shared_ptr<FBuffer> VulkanDevice::CreateBuffer(UI64 size, BufferUsage usage, MemoryProfile memoryProfile)
+		std::shared_ptr<FBuffer> VulkanDevice::CreateBufferShared(UI64 size, BufferUsage usage, MemoryProfile memoryProfile)
 		{
-			return std::make_shared<VulkanBuffer>(this, size, usage, memoryProfile);
+			return std::make_shared<VulkanBuffer>(std::shared_ptr<FDevice>(this), size, usage, memoryProfile);
+		}
+
+		std::unique_ptr<FBuffer> VulkanDevice::CreateBufferUnique(UI64 size, BufferUsage usage, MemoryProfile memoryProfile)
+		{
+			return std::make_unique<VulkanBuffer>(std::shared_ptr<FDevice>(this), size, usage, memoryProfile);
 		}
 
 		VkPhysicalDeviceProperties VulkanDevice::GetPhysicalDeviceProperties() const

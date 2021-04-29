@@ -8,6 +8,6 @@ namespace Flint
 	void SceneComponent::DestroyRenderResources(RenderResource& renderResource)
 	{
 		//mPipeline.(renderResource.mUniformBuffers);
-		renderResource.mPipelineResource.Terminate();
+		delete renderResource.pPipelineResource.release();
 	}
 }

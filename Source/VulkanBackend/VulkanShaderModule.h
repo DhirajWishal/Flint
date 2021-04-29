@@ -15,13 +15,13 @@ namespace Flint
 			using DeviceType = VulkanDevice;
 
 		public:
-			VulkanShaderModule(VulkanDevice* pDevice, const ShaderDigest& digest);
-			~VulkanShaderModule();
+			VulkanShaderModule(VulkanDevice* pDevice, const FShaderDigest& digest);
 
+			virtual void Terminate() override final;
 			VkPipelineShaderStageCreateInfo GetStage() const;
 
 		private:
-			void SetupResources(const ShaderDigest& digest);
+			void SetupResources(const FShaderDigest& digest);
 
 		public:
 			VulkanDevice* pDevice = nullptr;

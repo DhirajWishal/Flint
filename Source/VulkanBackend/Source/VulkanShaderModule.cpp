@@ -9,7 +9,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanShaderModule::VulkanShaderModule(VulkanDevice* pDevice, const ShaderDigest& digest)
+		VulkanShaderModule::VulkanShaderModule(VulkanDevice* pDevice, const FShaderDigest& digest)
 			: pDevice(pDevice)
 		{
 			vShaderStage = Utilities::GetShaderStage(digest.mLocation);
@@ -26,7 +26,7 @@ namespace Flint
 			SetupResources(digest);
 		}
 
-		VulkanShaderModule::~VulkanShaderModule()
+		void VulkanShaderModule::Terminate()
 		{
 			pDevice->DestroyShaderModule(vShaderModule);
 		}
@@ -45,7 +45,7 @@ namespace Flint
 			return vSSCI;
 		}
 
-		void VulkanShaderModule::SetupResources(const ShaderDigest& digest)
+		void VulkanShaderModule::SetupResources(const FShaderDigest& digest)
 		{
 			VkDescriptorSetLayoutBinding vBinding = {};
 			vBinding.stageFlags = vShaderStage;

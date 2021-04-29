@@ -39,8 +39,8 @@ namespace Flint
 		class VulkanDisplay final : public FDisplay {
 		public:
 			VulkanDisplay(std::shared_ptr<FInstance> pInstance, const Vector2 extent, const char* pTitle);
-			~VulkanDisplay();
 
+			virtual void Terminate() override final;
 			virtual void Update() override final;
 
 		public:

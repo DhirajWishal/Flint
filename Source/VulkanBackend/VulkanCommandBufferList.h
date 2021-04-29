@@ -18,8 +18,8 @@ namespace Flint
 		class VulkanCommandBufferList final : public FCommandBufferList {		
 		public:
 			VulkanCommandBufferList(std::shared_ptr<FDevice> pDevice, UI64 bufferCount);
-			~VulkanCommandBufferList();
 
+			virtual void Terminate() override final;
 			virtual void ClearBuffers() override final;
 			virtual void ReceateBuffers() override final;
 
@@ -31,7 +31,7 @@ namespace Flint
 			virtual void BindRenderTarget(const FScreenBoundRenderTarget* pRenderTarget) override final;
 			virtual void EndRenderTarget() override final;
 			virtual void BindPipeline(const FGraphicsPipeline* pGraphicsPipeline) override final;
-			virtual void SetDynamicStates(const DynamicStateContainer& container) override final;
+			virtual void SetDynamicStates(const FDynamicStateContainer& container) override final;
 			virtual void BindRenderResource(const FPipelineResource* pResource) override final;
 			virtual void DrawIndexed(UI64 indexCount, UI64 indexOffset, UI64 vertexOffset) override final;
 

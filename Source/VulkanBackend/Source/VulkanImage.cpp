@@ -186,7 +186,7 @@ namespace Flint
 			FLINT_VK_ASSERT(pDevice->GetAs<VulkanDevice>()->CreateImageView(&vIVCI, &vImageView), "Failed to create image view!");
 		}
 
-		VulkanImage::~VulkanImage()
+		void VulkanImage::Terminate()
 		{
 			pDevice->GetAs<VulkanDevice>()->DestroyImage(vImage);
 			pDevice->GetAs<VulkanDevice>()->DestroyImageView(vImageView);

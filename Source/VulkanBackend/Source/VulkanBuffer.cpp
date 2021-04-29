@@ -66,7 +66,7 @@ namespace Flint
 			AllocateBufferMemory(vMemoryProperties);
 		}
 
-		VulkanBuffer::~VulkanBuffer()
+		void VulkanBuffer::Terminate()
 		{
 			DestroyBuffer();
 			FreeBufferMemory();

@@ -14,7 +14,11 @@ namespace Flint
 		class VulkanInstance final : public FInstance {
 		public:
 			VulkanInstance(bool enableValidation);
-			~VulkanInstance();
+
+			virtual void Terminate() override final;
+
+			virtual std::shared_ptr<FDevice> CreateDevice() override final;
+			virtual std::shared_ptr<FDisplay> CreateDisplay(const Vector2 extent, const char* pTitle) override final;
 
 		private:
 			void InitializeGLFW();

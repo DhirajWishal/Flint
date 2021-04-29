@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "Flint\Objects\FDevice.h"
-#include "Flint\Objects\FDisplay.h"
+#include "Core\Backend\FDevice.h"
+#include "Core\Backend\FDisplay.h"
 
 namespace Flint
 {
@@ -23,8 +23,8 @@ namespace Flint
 	public:
 		GraphicsBackendObject() {}
 
-		FDisplay* GetDisplay() const { return const_cast<FDisplay*>(&mDisplay); }
-		FDevice* GetDevice() const { return const_cast<FDevice*>(&mDevice); }
+		std::shared_ptr<FDisplay> GetDisplay() const { return pDisplay; }
+		std::shared_ptr<FDevice> GetDevice() const { return pDevice; }
 
 	protected:
 		void InitializeInstance(BackendAPI api, bool enableValidation);
@@ -37,9 +37,9 @@ namespace Flint
 		void TerminateDevice();
 
 	protected:
-		FInstance mInstance = {};
-		FDisplay mDisplay = {};
-		FDevice mDevice = {};
+		std::shared_ptr<FInstance> pInstance = {};
+		std::shared_ptr<FDisplay> pDisplay = {};
+		std::shared_ptr<FDevice> pDevice = {};
 
 		BackendAPI mAPI = BackendAPI::UNDEFINED;
 	};

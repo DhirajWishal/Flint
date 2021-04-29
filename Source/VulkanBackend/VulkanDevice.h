@@ -16,11 +16,12 @@ namespace Flint
 		class VulkanDevice final : public FDevice {
 		public:
 			VulkanDevice(std::shared_ptr<FInstance> pInstance);
-			~VulkanDevice();
 
+			virtual void Terminate() override final;
 			virtual bool CheckDisplayCompatibility(FDisplay* pDisplay) override final;
 
-			virtual std::shared_ptr<FBuffer> CreateBuffer(UI64 size, BufferUsage usage, MemoryProfile memoryProfile) override final;
+			virtual std::shared_ptr<FBuffer> CreateBufferShared(UI64 size, BufferUsage usage, MemoryProfile memoryProfile) override final;
+			virtual std::unique_ptr<FBuffer> CreateBufferUnique(UI64 size, BufferUsage usage, MemoryProfile memoryProfile) override final;
 
 		public:
 			VkPhysicalDeviceProperties GetPhysicalDeviceProperties() const;

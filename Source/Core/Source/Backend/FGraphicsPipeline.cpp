@@ -15,7 +15,7 @@ namespace Flint
 		UniformBufferContainer container;
 		for (auto itr = mUniformLayouts.begin(); itr != mUniformLayouts.end(); itr++)
 			if (itr->second.mType == UniformType::UNIFORM_BUFFER || itr->second.mType == UniformType::UNIFORM_BUFFER_DYNAMIC)
-				container[itr->first] = pDevice->CreateBuffer(itr->second.mSize, BufferUsage::UNIFORM, MemoryProfile::TRANSFER_FRIENDLY);
+				container[itr->first] = pDevice->CreateBufferShared(itr->second.mSize, BufferUsage::UNIFORM, MemoryProfile::TRANSFER_FRIENDLY);
 
 		return container;
 	}
@@ -50,7 +50,7 @@ namespace Flint
 	}
 
 
-	void FPipeline::ResolveUniformLayouts(const std::vector<ShaderDigest>& shaderDigests)
+	void FPipeline::ResolveUniformLayouts(const std::vector<FShaderDigest>& shaderDigests)
 	{
 		for (auto itr = shaderDigests.begin(); itr != shaderDigests.end(); itr++)
 		{

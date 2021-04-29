@@ -11,7 +11,7 @@ namespace Flint
 	 * Buffer object.
 	 * This object is the base class for all the backend buffer objects.
 	 */
-	class FBuffer : public BackendObject {
+	class FBuffer : public BackendObject, public std::enable_shared_from_this<FBuffer> {
 		struct PreviousMemoryMapInfo {
 			UI64 mSize = 0;
 			UI64 mOffset = 0;
@@ -52,13 +52,6 @@ namespace Flint
 		virtual void CopyFrom(const FBuffer* pBuffer, UI64 size, UI64 srcOffset, UI64 dstOffset) = 0;
 
 		/**
-		 * Get the device object the buffer is bound to.
-		 *
-		 * @return The device pointer.
-		 */
-		std::shared_ptr<FDevice> GetDevice() const { return pDevice; }
-
-		/**
 		 * Get the size of the buffer.
 		 *
 		 * @return The size in bytes.
@@ -78,6 +71,13 @@ namespace Flint
 		 * @return The memory profile.
 		 */
 		MemoryProfile GetMemoryProfile() const { return mMemoryProfile; }
+
+		/**
+		 * Get the device which the buffer is bound to.
+		 * 
+		 * @return The device pointer.
+		 */
+		std::shared_ptr<FDevice> GetDevice() const { return pDevice; }
 
 	protected:
 		PreviousMemoryMapInfo mPrevMapInfo = {};

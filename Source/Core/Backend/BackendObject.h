@@ -18,6 +18,11 @@ namespace Flint
 		virtual ~BackendObject() {}
 
 		/**
+		 * Terminate the backend object.
+		 */
+		virtual void Terminate() = 0;
+
+		/**
 		 * Cast the object to a derived type.
 		 *
 		 * @tparam Derived: The derived type to cast to.
@@ -51,6 +56,6 @@ namespace Flint
 		 * @return The casted pointer.
 		 */
 		template<class Type>
-		const Type* GetAs() const { return static_cast<Type*>(this); }
+		const Type* GetAs() const { return static_cast<const Type*>(this); }
 	};
 }

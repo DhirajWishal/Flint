@@ -14,7 +14,7 @@ namespace Flint
 	 * 1. Screen bound render targets.
 	 * 2. Off screen render targets.
 	 */
-	class FRenderTarget : public BackendObject {
+	class FRenderTarget : public BackendObject, public std::enable_shared_from_this<FRenderTarget> {
 		/**
 		 * Draw entry structure.
 		 * This object contains information about a single draw entry.
@@ -57,13 +57,6 @@ namespace Flint
 		virtual void SubmitCommand() = 0;
 
 		/**
-		 * Get the device which the render target is bound to.
-		 *
-		 * @return The device pointer.
-		 */
-		std::shared_ptr<FDevice> GetDevice() const { return pDevice; }
-
-		/**
 		 * Get the render target extent.
 		 *
 		 * @return The extent.
@@ -76,6 +69,13 @@ namespace Flint
 		 * @return The buffer count.
 		 */
 		UI64 GetBufferCount() const { return mBufferCount; }
+
+		/**
+		 * Get the device object of the render target.
+		 *
+		 * @return The device pointer.
+		 */
+		std::shared_ptr<FDevice> GetDevice() const { return pDevice; }
 
 	public:
 		/**
@@ -162,11 +162,11 @@ namespace Flint
 		std::unordered_map<UI64, DrawEntry> mDynamicDrawEntries;
 
 		std::unique_ptr<FCommandBufferList> pCommandBufferList = nullptr;
+		std::shared_ptr<FDevice> pDevice = nullptr;
 
 		UI64 mStaticDrawIndex = 0;
 		UI64 mDynamicDrawIndex = 0;
 
-		std::shared_ptr<FDevice> pDevice = nullptr;
 		Vector2 mExtent = Vector2::Zero;
 		UI64 mBufferCount = 0;
 	};

@@ -24,18 +24,17 @@ namespace Flint
 		
 		public:
 			VulkanScreenBoundRenderTargetS(std::shared_ptr<FDevice> pDevice, std::shared_ptr<FDisplay> pDisplay, UI64 bufferCount);
-			~VulkanScreenBoundRenderTargetS();
 
+			virtual void Terminate() override final;
 			virtual void BakeCommands() override final;
 			virtual void PrepareToDraw() override final;
 			virtual void Update() override final;
 			virtual void SubmitCommand() override final;
 
+			virtual Vector2 VulkanRenderTarget::GetExtent() const = 0 { return FScreenBoundRenderTarget::GetExtent(); }
+
 			VkSwapchainKHR GetSwapChain() const { return vSwapChain.GetSwapChain(); }
 			VkFramebuffer GetCurrentFrameBuffer() const { return vFrameBuffers[GetFrameIndex()]; }
-
-			virtual Vector2 VulkanRenderTarget::GetExtent() const { return FScreenBoundRenderTarget::GetExtent(); }
-			virtual VulkanDevice* VulkanRenderTarget::GetDevice() const { return VulkanRenderTarget::GetDevice(); }
 
 		private:
 			void Recreate();

@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Flint\Objects\FBuffer.h"
+#include "Core\Backend\FBuffer.h"
 
 #include <filesystem>
 
@@ -41,9 +41,24 @@ namespace Flint
 	 */
 	class WireFrame {
 	public:
-		WireFrame() {}
-		WireFrame(const WireFrame& other);
-		WireFrame(WireFrame&& other) noexcept;
+		WireFrame() = default;
+
+		/**
+		 * Load wire frame data from an external asset file.
+		 * 
+		 * @param pDevice: The device pointer.
+		 * @param asset: The asset file.
+		 * @param vertexAttributes: The vertex attributes to be loaded.
+		 */
+		WireFrame(std::shared_ptr<FDevice> pDevice, std::filesystem::path asset, std::vector<VertexAttribute> vertexAttributes);
+
+		/**
+		 * Load wire frame data form a wire frame cache file.
+		 * 
+		 * @param pDevice: The device pointer.
+		 * @param asset: The asset file.
+		 */
+		WireFrame(std::shared_ptr<FDevice> pDevice, std::filesystem::path asset);
 
 		/**
 		 * Clear the wire frame information.
@@ -51,20 +66,29 @@ namespace Flint
 		 */
 		void Clear();
 
-		FBuffer mVertexBuffer = {};
-		FBuffer mIndexBuffer = {};
+		std::unique_ptr<FBuffer> pVertexBuffer = nullptr;
+		std::unique_ptr<FBuffer> pIndexBuffer = nullptr;
 
 		std::vector<VertexAttribute> mAttributes;
 
 	public:
 		/**
+		 * Load wire frame content from an external file.
+		 * 
+		 * @param pDevice: The device pointer.
+		 * @param asset: The asset file.
+		 * @param vertexAttributes: The vertex attributes to be loaded.
+		 */
+		void LoadFromFile(std::shared_ptr<FDevice> pDevice, std::filesystem::path asset, std::vector<VertexAttribute> vertexAttributes);
+
+		/**
 		 * Load the wire frame content from a cache file.
 		 * This is much faster than loading from a object file.
 		 * 
+		 * @param pDevice: The device object pointer.
 		 * @param asset: The cache file to be loaded from.
-		 * @param device: The device object.
 		 */
-		void LoadFromCache(std::filesystem::path asset, const FDevice& device);
+		void LoadFromCache(std::shared_ptr<FDevice> pDevice, std::filesystem::path asset);
 
 		/**
 		 * Create a cache file using the wire frame content.
@@ -75,20 +99,9 @@ namespace Flint
 
 	public:
 		/**
-		 * Assignment operator (copy).
-		 * 
-		 * @param other: The other wire frame object to copy data from.
+		 * Draw data container struct.
+		 * This struct contains information about a single draw data.
 		 */
-		WireFrame& operator=(const WireFrame& other);
-
-		/**
-		 * Assignment operator (move).
-		 *
-		 * @param other: The other wire frame object to move data from.
-		 */
-		WireFrame& operator=(WireFrame&& other) noexcept;
-
-	public:
 		struct DrawData {
 			String mName;
 

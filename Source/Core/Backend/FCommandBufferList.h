@@ -16,7 +16,7 @@ namespace Flint
 	 * Flint command buffer list.
 	 * Commands are submitted to the device using command buffer lists. Each list is made of command buffers which are handled internally.
 	 */
-	class FCommandBufferList : public BackendObject {
+	class FCommandBufferList : public BackendObject, public std::enable_shared_from_this<FCommandBufferList> {
 	public:
 		FCommandBufferList(std::shared_ptr<FDevice> pDevice, UI64 bufferCount) : pDevice(pDevice), mBufferCount(bufferCount) {}
 		virtual ~FCommandBufferList() {}
@@ -88,7 +88,7 @@ namespace Flint
 		 *
 		 * @param container: The dynamic state container.
 		 */
-		virtual void SetDynamicStates(const DynamicStateContainer& container) = 0;
+		virtual void SetDynamicStates(const FDynamicStateContainer& container) = 0;
 
 		/**
 		 * Bind render resources to the pipeline.

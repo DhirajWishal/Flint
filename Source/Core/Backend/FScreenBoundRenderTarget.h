@@ -12,7 +12,7 @@ namespace Flint
 	 * Flint screen bound render target object.
 	 * This object is used to draw data to a display object. Make sure that the display and device are compatible.
 	 */
-	class FScreenBoundRenderTarget : public FRenderTarget {
+	class FScreenBoundRenderTarget : public FRenderTarget, public std::enable_shared_from_this<FScreenBoundRenderTarget> {
 	public:
 		FScreenBoundRenderTarget(std::shared_ptr<FDevice> pDevice, std::shared_ptr<FDisplay> pDisplay, UI64 bufferCount) : FRenderTarget(pDevice, bufferCount), pDisplay(pDisplay) {}
 		virtual ~FScreenBoundRenderTarget() {}

@@ -13,8 +13,8 @@ namespace Flint
 		class VulkanBuffer final : public FBuffer {
 		public:
 			VulkanBuffer(std::shared_ptr<FDevice> pDevice, UI64 size, BufferUsage usage, MemoryProfile profile);
-			~VulkanBuffer();
 
+			virtual void Terminate() override final;
 			virtual void* MapMemory(UI64 size, UI64 offset) override final;
 			virtual void UnmapMemory() override final;
 			virtual void FlushMemoryMappings() override final;

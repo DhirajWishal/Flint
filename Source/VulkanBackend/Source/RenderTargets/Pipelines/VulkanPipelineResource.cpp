@@ -1,7 +1,7 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#include "VulkanBackend/RenderTargets/Pipelines/VulkanPipeline.h"
+#include "VulkanBackend/RenderTargets/Pipelines/VulkanPipelineResource.h"
 #include "VulkanBackend/RenderTargets/Pipelines/VulkanGraphicsPipeline.h"
 #include "VulkanBackend/VulkanMacros.h"
 #include "VulkanBackend/VulkanBuffer.h"
@@ -11,24 +11,25 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanPipelineResource::VulkanPipelineResource(std::shared_ptr<FPipeline> pPipeline)
+		VulkanPipelineResource::VulkanPipelineResource(std::shared_ptr<FGraphicsPipeline> pPipeline)
 			: FPipelineResource(pPipeline)
 		{
-			CreateDescriptorPool(pPipeline->GetAs<VulkanPipeline>()->vPoolSizes);
+			pvPipeline = pPipeline->GetAs<VulkanGraphicsPipeline>();
+			CreateDescriptorPool(pvPipeline->vPoolSizes);
 
 			VkDescriptorSetAllocateInfo vDSAI = {};
 			vDSAI.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
 			vDSAI.pNext = VK_NULL_HANDLE;
 			vDSAI.descriptorSetCount = 1;
-			vDSAI.pSetLayouts = &pPipeline->GetAs<VulkanPipeline>()->vSetLayout;
+			vDSAI.pSetLayouts = &pvPipeline->vSetLayout;
 			vDSAI.descriptorPool = vPool;
 
-			FLINT_VK_ASSERT(pPipeline->GetAs<VulkanPipeline>()->GetRenderTarget()->GetDevice()->AllocateDescriptorSet(&vDSAI, &vDescriptorSet), "Failed to allocate descriptor set!");
+			FLINT_VK_ASSERT(pPipeline->GetRenderTarget()->GetDevice()->GetAs<VulkanDevice>()->AllocateDescriptorSet(&vDSAI, &vDescriptorSet), "Failed to allocate descriptor set!");
 		}
 
-		VulkanPipelineResource::~VulkanPipelineResource()
+		void VulkanPipelineResource::Terminate()
 		{
-			DeviceType* pDevice = pPipeline->GetAs<VulkanPipeline>()->GetRenderTarget()->GetDevice();
+			DeviceType* pDevice = pPipeline->GetRenderTarget()->GetDevice()->GetAs<VulkanDevice>();
 			pDevice->DestroyDescriptorPool(vPool);
 
 			for (auto& samplerPair : mSamplerMap)
@@ -39,7 +40,7 @@ namespace Flint
 
 		void VulkanPipelineResource::RegisterUniformBuffers(const UniformBufferContainer& uniformBuffers)
 		{
-			auto& uniformLayouts = pPipeline->GetAs<VulkanPipeline>()->GetUniformLayouts();
+			auto& uniformLayouts = pvPipeline->GetUniformLayouts();
 
 			std::vector<VkWriteDescriptorSet> vSetWrites;
 			std::vector<VkDescriptorBufferInfo*> pBufferInfos;
@@ -66,7 +67,7 @@ namespace Flint
 				INSERT_INTO_VECTOR(vSetWrites, std::move(vWDS));
 			}
 
-			pPipeline->GetAs<VulkanPipeline>()->GetRenderTarget()->GetDevice()->UpdateDescriptorSet(vSetWrites, {});
+			pPipeline->GetRenderTarget()->GetDevice()->GetAs<VulkanDevice>()->UpdateDescriptorSet(vSetWrites, {});
 
 			for (auto ptr : pBufferInfos)
 				delete ptr;
@@ -106,7 +107,7 @@ namespace Flint
 				INSERT_INTO_VECTOR(vSetWrites, std::move(vWDS));
 			}
 
-			pPipeline->GetAs<VulkanPipeline>()->GetRenderTarget()->GetDevice()->UpdateDescriptorSet(vSetWrites, {});
+			pPipeline->GetRenderTarget()->GetDevice()->GetAs<VulkanDevice>()->UpdateDescriptorSet(vSetWrites, {});
 
 			for (auto ptr : pImageInfos)
 				delete ptr;
@@ -122,7 +123,7 @@ namespace Flint
 			vCI.poolSizeCount = static_cast<UI32>(vSizes.size());
 			vCI.pPoolSizes = vSizes.data();
 
-			FLINT_VK_ASSERT(pPipeline->GetAs<VulkanPipeline>()->GetRenderTarget()->GetDevice()->CreateDescriptorPool(&vCI, &vPool), "Failed to create descriptor pool!");
+			FLINT_VK_ASSERT(pPipeline->GetRenderTarget()->GetDevice()->GetAs<VulkanDevice>()->CreateDescriptorPool(&vCI, &vPool), "Failed to create descriptor pool!");
 		}
 	}
 }

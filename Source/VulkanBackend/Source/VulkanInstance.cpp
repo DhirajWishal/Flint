@@ -1,13 +1,14 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#include "VulkanBackend/VulkanInstance.h"
-#include "VulkanBackend/VulkanDevice.h"
-#include "VulkanBackend/VulkanMacros.h"
-#include "Core/ErrorHandler/Logger.h"
-#include "Core/Types/Utilities.h"
+#include "VulkanBackend\VulkanInstance.h"
+#include "VulkanBackend\VulkanDevice.h"
+#include "VulkanBackend\VulkanDisplay.h"
+#include "VulkanBackend\VulkanMacros.h"
+#include "Core\ErrorHandler\Logger.h"
+#include "Core\Types\Utilities.h"
 
-#include <GLFW/glfw3.h>
+#include <GLFW\glfw3.h>
 #include <iostream>
 
 namespace Flint
@@ -180,7 +181,7 @@ namespace Flint
 				CreateDebugMessenger();
 		}
 
-		VulkanInstance::~VulkanInstance()
+		void VulkanInstance::Terminate()
 		{
 			if (bEnableValidation)
 				DestroyDebugMessenger();
@@ -188,6 +189,16 @@ namespace Flint
 			DestroyInstance();
 
 			TerminateGLFW();
+		}
+
+		std::shared_ptr<FDevice> VulkanInstance::CreateDevice()
+		{
+			return std::make_shared<VulkanDevice>(std::shared_ptr<FInstance>(this));
+		}
+
+		std::shared_ptr<FDisplay> VulkanInstance::CreateDisplay(const Vector2 extent, const char* pTitle)
+		{
+			return std::make_shared<VulkanDisplay>(std::shared_ptr<FInstance>(this), extent, pTitle);
 		}
 
 		void VulkanInstance::InitializeGLFW()

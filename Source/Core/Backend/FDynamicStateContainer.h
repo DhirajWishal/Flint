@@ -52,7 +52,7 @@ namespace Flint
 	 * Dynamic state container.
 	 * This object contains the dynamic states which are to be passed to the pipeline at draw time.
 	 */
-	struct DynamicStateContainer {
+	struct FDynamicStateContainer {
 		/**
 		 * Dynamic sate object.
 		 * This is the base class for all the dynamic states supported.
@@ -145,10 +145,10 @@ namespace Flint
 		};
 
 	public:
-		DynamicStateContainer() {}
-		DynamicStateContainer(const DynamicStateContainer& other);
-		DynamicStateContainer(DynamicStateContainer&& other) noexcept;
-		~DynamicStateContainer();
+		FDynamicStateContainer() {}
+		FDynamicStateContainer(const FDynamicStateContainer& other);
+		FDynamicStateContainer(FDynamicStateContainer&& other) noexcept;
+		~FDynamicStateContainer();
 
 		/**
 		 * Add a viewport to the container.
@@ -203,7 +203,7 @@ namespace Flint
 		 * @param other: The other container.
 		 * @return The assigned object reference.
 		 */
-		DynamicStateContainer& operator=(const DynamicStateContainer& other);
+		FDynamicStateContainer& operator=(const FDynamicStateContainer& other);
 
 		/**
 		 * Assignment operator (move).
@@ -211,7 +211,7 @@ namespace Flint
 		 * @param other: The other container.
 		 * @return The assigned object reference.
 		 */
-		DynamicStateContainer& operator=(DynamicStateContainer&& other) noexcept;
+		FDynamicStateContainer& operator=(FDynamicStateContainer&& other) noexcept;
 
 		std::vector<std::shared_ptr<DynamicStateObject>> pDynamicStates;
 	};

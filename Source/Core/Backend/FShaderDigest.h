@@ -77,9 +77,9 @@ namespace Flint
 	 * This contains the summary of the shader, including the shade code, inputs and output layouts, uniforms
 	 * and other information.
 	 */
-	class ShaderDigest {
+	class FShaderDigest {
 	public:
-		ShaderDigest() = default;
+		FShaderDigest() = default;
 
 		/**
 		 * Construct the shader digest by initializing (copy)
@@ -88,7 +88,7 @@ namespace Flint
 		 * @param uniformLayouts: The uniform layouts of the shader.
 		 * @param code: The shader code.
 		 */
-		ShaderDigest(
+		FShaderDigest(
 			ShaderLocation location,
 			const std::vector<UniformLayout>& uniformLayouts,
 			const std::vector<UI32>& code)
@@ -101,7 +101,7 @@ namespace Flint
 		 * @param uniformLayouts: The uniform layouts of the shader.
 		 * @param code: The shader code.
 		 */
-		ShaderDigest(
+		FShaderDigest(
 			ShaderLocation location,
 			std::vector<UniformLayout>&& uniformLayouts,
 			std::vector<UI32>&& code)

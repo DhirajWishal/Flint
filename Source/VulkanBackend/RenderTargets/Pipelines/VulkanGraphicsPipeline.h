@@ -20,21 +20,17 @@ namespace Flint
 
 		class VulkanGraphicsPipeline final : public VulkanPipeline, public FGraphicsPipeline {
 		public:
-			VulkanGraphicsPipeline(std::shared_ptr<FRenderTarget> pRenderTarget, const std::vector<ShaderDigest>& shaderDigests, const GraphicsPipelineSpecification& spec);
-			~VulkanGraphicsPipeline();
+			VulkanGraphicsPipeline(std::shared_ptr<FScreenBoundRenderTarget> pRenderTarget, const std::vector<FShaderDigest>& shaderDigests, const GraphicsPipelineSpecification& spec);
 
+			virtual void Terminate() override final;
 			virtual void PrepareToRecreate() override final;
-			virtual void Recreate() override final { RecreatePipeline(); }
+			virtual void Recreate() override final;
 
 			virtual VkPipelineBindPoint GetBindPoint() const override final { return VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_GRAPHICS; }
 
 			virtual std::shared_ptr<FPipelineResource> CreatePipelineResource() override final;
 
-			virtual VulkanRenderTarget* VulkanPipeline::GetRenderTarget() const { return VulkanPipeline::GetRenderTarget(); }
 			virtual std::unordered_map<String, UniformLayout> VulkanPipeline::GetUniformLayouts() const { return VulkanPipeline::GetUniformLayouts(); }
-
-		private:
-			virtual void RecreatePipeline() override final;
 
 		private:
 			VkPipelineInputAssemblyStateCreateInfo vIASCI = {};

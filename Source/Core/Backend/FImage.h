@@ -175,7 +175,7 @@ namespace Flint
 	 * Flint image object.
 	 * This object is the base class for all the backend image objects. Image objects are used to store image data in the GPU.
 	 */
-	class FImage : public BackendObject {
+	class FImage : public BackendObject, public std::enable_shared_from_this<FImage> {
 	public:
 		FImage(std::shared_ptr<FDevice> pDevice, UI64 width, UI64 height, UI64 depth, ImageUsage usage, UI8 bitsPerPixel = FLINT_DEFAULT_BPP, UI8 layers = 1)
 			: pDevice(pDevice), mWidth(width), mHeight(height), mDepth(depth), mUsage(usage), mBitsPerPixel(bitsPerPixel), mLayers(layers) {}

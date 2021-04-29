@@ -4,9 +4,9 @@
 #pragma once
 
 #include "WireFrame.h"
-#include "Core/Backend/Pipeline.h"
+#include "Core/Backend/FPipeline.h"
 #include "RenderResource.h"
-#include "Flint\Objects\FGraphicsPipeline.h"
+#include "Core\Backend\FGraphicsPipeline.h"
 
 namespace Flint
 {
@@ -30,10 +30,10 @@ namespace Flint
 		 * 
 		 * @return The uniform buffer container with the respective uniform buffers.
 		 */
-		FUniformBufferContainer GetUniformBuffers() const { return mPipeline.CreateUniformBufferContainer(); }
+		UniformBufferContainer GetUniformBuffers() const { return pPipeline->CreateUniformBuffers(); }
 
 		WireFrame mWireFrame;
-		FGraphicsPipeline mPipeline = {};
+		std::unique_ptr<FGraphicsPipeline> pPipeline = nullptr;
 		UI64 mDrawID = 0;
 	};
 }

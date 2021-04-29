@@ -112,7 +112,7 @@ namespace Flint
 			SetupCallbacks();
 		}
 
-		VulkanDisplay::~VulkanDisplay()
+		void VulkanDisplay::Terminate()
 		{
 			DestroySurface();
 			glfwDestroyWindow(pWindowHandle);

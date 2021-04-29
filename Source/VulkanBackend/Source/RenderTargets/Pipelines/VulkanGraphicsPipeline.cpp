@@ -1,14 +1,13 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#include "VulkanBackend/RenderTargets/Pipelines/VulkanGraphicsPipeline.h"
-#include "VulkanBackend\RenderTargets\Pipelines\VulkanPipeline.h"
-#include "VulkanBackend/VulkanShaderModule.h"
-#include "VulkanBackend/VulkanUtilities.h"
-#include "VulkanBackend/VulkanMacros.h"
-#include "VulkanBackend/VulkanBuffer.h"
-
-#include "VulkanBackend/RenderTargets/VulkanRenderTarget.h"
+#include "VulkanBackend\RenderTargets\Pipelines\VulkanGraphicsPipeline.h"
+#include "VulkanBackend\RenderTargets\Pipelines\VulkanPipelineResource.h"
+#include "VulkanBackend\RenderTargets\VulkanRenderTarget.h"
+#include "VulkanBackend\VulkanShaderModule.h"
+#include "VulkanBackend\VulkanUtilities.h"
+#include "VulkanBackend\VulkanMacros.h"
+#include "VulkanBackend\VulkanBuffer.h"
 
 namespace Flint
 {
@@ -245,12 +244,12 @@ namespace Flint
 			}
 		}
 
-		VulkanGraphicsPipeline::VulkanGraphicsPipeline(std::shared_ptr<FRenderTarget> pRenderTarget, const std::vector<ShaderDigest>& shaderDigests, const GraphicsPipelineSpecification& spec)
+		VulkanGraphicsPipeline::VulkanGraphicsPipeline(std::shared_ptr<FScreenBoundRenderTarget> pRenderTarget, const std::vector<FShaderDigest>& shaderDigests, const GraphicsPipelineSpecification& spec)
 			: FGraphicsPipeline(pRenderTarget, shaderDigests, spec)
 		{
 			ResolveUniformLayouts(shaderDigests);
-
-			VulkanDevice* pDevice = pRenderTarget->GetAs<VulkanRenderTarget>()->GetDevice();
+			this->pvRenderTarget = pRenderTarget->GetAs<VulkanScreenBoundRenderTargetS>();
+			VulkanDevice* pDevice = pRenderTarget->GetDevice()->GetAs<VulkanDevice>();
 
 			std::vector<VkPipelineShaderStageCreateInfo> vStages = {};
 			std::vector<VkVertexInputAttributeDescription> vAttributeDesc = {};
@@ -407,7 +406,7 @@ namespace Flint
 			vCI.pDynamicState = &vDSCI;
 			vCI.stageCount = static_cast<UI32>(vStages.size());
 			vCI.pStages = vStages.data();
-			vCI.renderPass = pRenderTarget->GetAs<VulkanRenderTarget>()->GetRenderPass();
+			vCI.renderPass = pvRenderTarget->GetRenderPass();
 			vCI.basePipelineHandle = VK_NULL_HANDLE;
 			vCI.basePipelineIndex = 0;
 			vCI.layout = vPipelineLayout;
@@ -416,7 +415,7 @@ namespace Flint
 			FLINT_VK_ASSERT(pDevice->CreateGraphicsPipeline(&vCI, &vNewPipeline), "Failed to create graphics pipeline!");
 
 			if (vPipeline != VK_NULL_HANDLE)
-				pRenderTarget->GetAs<VulkanRenderTarget>()->GetDevice()->DestroyPipeline(vPipeline);
+				pRenderTarget->GetDevice()->GetAs<VulkanDevice>()->DestroyPipeline(vPipeline);
 
 			vPipeline = vNewPipeline;
 
@@ -425,9 +424,9 @@ namespace Flint
 				itr->Terminate();
 		}
 
-		VulkanGraphicsPipeline::~VulkanGraphicsPipeline()
+		void VulkanGraphicsPipeline::Terminate()
 		{
-			VulkanDevice* pDevice = pRenderTarget->GetAs<VulkanRenderTarget>()->GetDevice();
+			VulkanDevice* pDevice = pRenderTarget->GetDevice()->GetAs<VulkanDevice>();
 			pDevice->DestroyPipeline(vPipeline);
 			pDevice->DestroyPipelineLayout(vPipelineLayout);
 			pDevice->DestroyDescriptorSetLayout(vSetLayout);
@@ -435,7 +434,7 @@ namespace Flint
 
 		void VulkanGraphicsPipeline::PrepareToRecreate()
 		{
-			VulkanDevice* pDevice = pRenderTarget->GetAs<VulkanRenderTarget>()->GetDevice();
+			VulkanDevice* pDevice = pRenderTarget->GetDevice()->GetAs<VulkanDevice>();
 			pDevice->DestroyPipeline(vPipeline);
 			pDevice->DestroyPipelineLayout(vPipelineLayout);
 
@@ -443,19 +442,9 @@ namespace Flint
 			vPipelineLayout = VK_NULL_HANDLE;
 		}
 
-		//void VulkanGraphicsPipeline::Super::Recreate()
-		//{
-		//	RecreatePipeline();
-		//}
-
-		std::shared_ptr<FPipelineResource> VulkanGraphicsPipeline::CreatePipelineResource()
+		void VulkanGraphicsPipeline::Recreate()
 		{
-			return std::make_shared<VulkanPipelineResource>(std::shared_ptr<VulkanGraphicsPipeline>(this));
-		}
-
-		void VulkanGraphicsPipeline::RecreatePipeline()
-		{
-			VulkanDevice* pDevice = pRenderTarget->GetAs<VulkanRenderTarget>()->GetDevice();
+			VulkanDevice* pDevice = pRenderTarget->GetDevice()->GetAs<VulkanDevice>();
 
 			std::vector<VkPipelineShaderStageCreateInfo> vStages = {};
 			std::vector<VkVertexInputAttributeDescription> vAttributeDesc = {};
@@ -535,7 +524,7 @@ namespace Flint
 			vCI.pDynamicState = &vDSCI;
 			vCI.stageCount = static_cast<UI32>(vStages.size());
 			vCI.pStages = vStages.data();
-			vCI.renderPass = pRenderTarget->GetAs<VulkanRenderTarget>()->GetRenderPass();
+			vCI.renderPass = pvRenderTarget->GetRenderPass();
 			vCI.basePipelineHandle = vPipeline;
 			vCI.basePipelineIndex = 0;
 			vCI.layout = vPipelineLayout;
@@ -549,6 +538,11 @@ namespace Flint
 			// Finals.
 			for (auto itr = sModules.begin(); itr != sModules.end(); itr++)
 				itr->Terminate();
+		}
+
+		std::shared_ptr<FPipelineResource> VulkanGraphicsPipeline::CreatePipelineResource()
+		{
+			return std::make_shared<VulkanPipelineResource>(std::shared_ptr<FGraphicsPipeline>(this));
 		}
 	}
 }
