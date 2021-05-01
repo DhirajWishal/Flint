@@ -11,7 +11,7 @@
 #define TYPE_NAME(type)									typeid(type).name()
 #define CREATE_COLOR_256(color)							(color / 255.0f)
 
-#define FLINT_DEFINE_FUNCTION_POINTER(ret, name, ...)	inline ret (*name)(__VA_ARGS__) = nullptr
+#define FLINT_DEFINE_FUNCTION_POINTER(ret, name, ...)	ret (*name)(__VA_ARGS__) = nullptr
 
 #define FLINT_SET_NO_COPY(name)							name(const name&) = delete; name& operator=(const name&) = delete;
 #define FLINT_SET_NO_MOVE(name)							name(name&&) = delete; name& operator=(name&&) = delete;

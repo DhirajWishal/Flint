@@ -17,8 +17,8 @@ namespace Flint
 			this->mBufferCount = bufferCount;
 
 			SwapChainSupportDetails& vSupport = pDisplay->GetSwapChainSupportDetails(pDevice);
-			VkSurfaceFormatKHR surfaceFormat = Utilities::ChooseSwapSurfaceFormat(vSupport.formats);
-			VkPresentModeKHR presentMode = Utilities::ChooseSwapPresentMode(vSupport.presentModes);
+			VkSurfaceFormatKHR surfaceFormat = Utilities::ChooseSwapSurfaceFormat(vSupport.mFormats);
+			VkPresentModeKHR presentMode = Utilities::ChooseSwapPresentMode(vSupport.mPresentModes);
 
 			auto& vCapabilities = pDisplay->GetSurfaceCapabilities(pDevice);
 
@@ -63,7 +63,7 @@ namespace Flint
 				vCI.pQueueFamilyIndices = nullptr;
 			}
 
-			vCI.preTransform = vSupport.capabilities.currentTransform;
+			vCI.preTransform = vSupport.mCapabilities.currentTransform;
 			vCI.compositeAlpha = surfaceComposite;
 			vCI.presentMode = presentMode;
 			vCI.clipped = VK_TRUE;

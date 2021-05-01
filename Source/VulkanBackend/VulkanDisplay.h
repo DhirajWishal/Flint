@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "Core\Interface\Display.h"
 #include "Core/Inputs/InputCenter.h"
 #include "Core/Backend/FDisplay.h"
 
@@ -16,15 +17,20 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
+		Interface::DisplayHandle CreateDisplay(Interface::InstanceHandle instanceHandle, const Vector2 extent, const char* pTitle, Inputs::InputCenter* pInputCente);
+		void UpdateDisplay(Interface::DisplayHandle handle);
+		void DestroyDisplay(Interface::DisplayHandle handle);
+
 		class VulkanDevice;
 
 		/**
 		 * Structure containing support details for a Vulkan Swap Chain.
 		 */
-		struct SwapChainSupportDetails {
-			VkSurfaceCapabilitiesKHR capabilities = {};			// Swap Chain capabilities.
-			std::vector<VkSurfaceFormatKHR> formats = {};		// Swap Chain formats.
-			std::vector<VkPresentModeKHR> presentModes = {};	// Swap Chain present modes.
+		struct SwapChainSupportDetails 
+		{
+			VkSurfaceCapabilitiesKHR mCapabilities = {};			// Swap Chain capabilities.
+			std::vector<VkSurfaceFormatKHR> mFormats = {};			// Swap Chain formats.
+			std::vector<VkPresentModeKHR> mPresentModes = {};		// Swap Chain present modes.
 
 			/**
 			 * Query swap chain support details.
@@ -36,12 +42,13 @@ namespace Flint
 			static SwapChainSupportDetails Query(VkPhysicalDevice vPhysicalDevice, VkSurfaceKHR vSurface);
 		};
 
-		class VulkanDisplay final : public FDisplay {
+		class VulkanDisplay final : public Interface::Template::Display 
+		{
 		public:
-			VulkanDisplay(std::shared_ptr<FInstance> pInstance, const Vector2 extent, const char* pTitle);
+			VulkanDisplay(VulkanInstance* pInstance, const Vector2 extent, const char* pTitle, Inputs::InputCenter* pInputs);
 
-			virtual void Terminate() override final;
-			virtual void Update() override final;
+			virtual void Terminate();
+			virtual void Update();
 
 		public:
 			VkSurfaceKHR GetSurface() const { return vSurface; }
@@ -59,6 +66,7 @@ namespace Flint
 			void DestroySurface();
 
 		private:
+			VulkanInstance* pInstance = nullptr;
 			GLFWwindow* pWindowHandle = nullptr;
 			VkSurfaceKHR vSurface = VK_NULL_HANDLE;
 		};

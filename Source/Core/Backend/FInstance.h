@@ -9,6 +9,8 @@
 #include "Core\Macros\Global.h"
 #include "Core\Maths\Vector\Vector2.h"
 
+#include "Core\Types\Handle.h"
+
 #include <memory>
 
 #define FLINT_BACKEND_OBJECT_ASSERT(base, derived, msg) static_assert(!std::is_base_of<base, derived>::value, msg);
@@ -54,4 +56,27 @@ namespace Flint
 	protected:
 		bool bEnableValidation = true;
 	};
+
+	namespace Interface
+	{
+		/**
+		 * The instance handle.
+		 */
+		FLINT_DEFINE_HANDLE(InstanceHandle);
+
+		/**
+		 * Create a new instance handle.
+		 * 
+		 * @param enableValidation: Whether or not to enable backend validation.
+		 * @return The instance handle.
+		 */
+		FLINT_DEFINE_FUNCTION_POINTER(InstanceHandle, CreateInstance, bool enableValidation);
+
+		/**
+		 * Destroy a created instance.
+		 * 
+		 * @param instance: The instance to be destroyed.
+		 */
+		FLINT_DEFINE_FUNCTION_POINTER(void, DestroyInstance, InstanceHandle instance);
+	}
 }

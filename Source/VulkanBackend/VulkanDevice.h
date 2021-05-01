@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "Core\Interface\Device.h"
 #include "Core\Backend\FDevice.h"
 #include "Core\Backend\FBuffer.h"
 #include "VulkanInstance.h"
@@ -13,15 +14,16 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanDevice final : public FDevice {
+		Interface::DeviceHandle CreateDevice(Interface::InstanceHandle instanceHandle);
+		void DestroyDevice(Interface::DeviceHandle handle);
+
+		class VulkanDevice final : public Interface::Template::Device 
+		{
 		public:
-			VulkanDevice(std::shared_ptr<FInstance> pInstance);
+			VulkanDevice(VulkanInstance* pInstance);
 
-			virtual void Terminate() override final;
-			virtual bool CheckDisplayCompatibility(FDisplay* pDisplay) override final;
-
-			virtual std::shared_ptr<FBuffer> CreateBufferShared(UI64 size, BufferUsage usage, MemoryProfile memoryProfile) override final;
-			virtual std::unique_ptr<FBuffer> CreateBufferUnique(UI64 size, BufferUsage usage, MemoryProfile memoryProfile) override final;
+			void Terminate();
+			bool CheckDisplayCompatibility(VulkanDisplay* pDisplay);
 
 		public:
 			VkPhysicalDeviceProperties GetPhysicalDeviceProperties() const;
@@ -48,6 +50,8 @@ namespace Flint
 		private:
 			VulkanQueue vQueue = {};
 			std::vector<const char*> mDeviceExtensions;
+
+			VulkanInstance* pInstance = nullptr;
 
 			VkPhysicalDevice vPhysicalDevice = VK_NULL_HANDLE;
 			VkDevice vLogicalDevice = VK_NULL_HANDLE;
@@ -128,7 +132,8 @@ namespace Flint
 			void DestroyFences(const std::vector<VkFence>& vFences) const;
 		};
 
-		class VulkanDeviceBoundObject {
+		class VulkanDeviceBoundObject 
+		{
 		public:
 			VulkanDeviceBoundObject() {}
 

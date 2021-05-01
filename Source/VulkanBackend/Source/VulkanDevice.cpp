@@ -88,8 +88,21 @@ namespace Flint
 			}
 		}
 
-		VulkanDevice::VulkanDevice(std::shared_ptr<FInstance> pInstance)
-			: FDevice(pInstance)
+		Interface::DeviceHandle CreateDevice(Interface::InstanceHandle instanceHandle)
+		{
+			return Interface::DeviceHandle(reinterpret_cast<UI64>(new VulkanDevice(reinterpret_cast<VulkanInstance*>(instanceHandle))));
+		}
+
+		void DestroyDevice(Interface::DeviceHandle handle)
+		{
+			VulkanDevice* pDevice = reinterpret_cast<VulkanDevice*>(handle);
+			pDevice->Terminate();
+
+			delete pDevice;
+		}
+
+		VulkanDevice::VulkanDevice(VulkanInstance* pInstance)
+			: pInstance(pInstance)
 		{
 			INSERT_INTO_VECTOR(mDeviceExtensions, VK_KHR_SWAPCHAIN_EXTENSION_NAME);
 
@@ -102,21 +115,11 @@ namespace Flint
 			DestroyLogicalDevice();
 		}
 
-		bool VulkanDevice::CheckDisplayCompatibility(FDisplay* pDisplay)
+		bool VulkanDevice::CheckDisplayCompatibility(VulkanDisplay* pDisplay)
 		{
 			VkBool32 isSupported = VK_FALSE;
-			FLINT_VK_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(GetPhysicalDevice(), GetQueue().mGraphicsFamily.value(), pDisplay->GetAs<VulkanDisplay>()->GetSurface(), &isSupported), "Failed to check swap chain -> display support!");
+			FLINT_VK_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(GetPhysicalDevice(), GetQueue().mGraphicsFamily.value(), pDisplay->GetSurface(), &isSupported), "Failed to check swap chain -> display support!");
 			return isSupported == VK_TRUE;
-		}
-
-		std::shared_ptr<FBuffer> VulkanDevice::CreateBufferShared(UI64 size, BufferUsage usage, MemoryProfile memoryProfile)
-		{
-			return std::make_shared<VulkanBuffer>(std::shared_ptr<FDevice>(this), size, usage, memoryProfile);
-		}
-
-		std::unique_ptr<FBuffer> VulkanDevice::CreateBufferUnique(UI64 size, BufferUsage usage, MemoryProfile memoryProfile)
-		{
-			return std::make_unique<VulkanBuffer>(std::shared_ptr<FDevice>(this), size, usage, memoryProfile);
 		}
 
 		VkPhysicalDeviceProperties VulkanDevice::GetPhysicalDeviceProperties() const
@@ -137,7 +140,7 @@ namespace Flint
 
 		void VulkanDevice::CreatePhysicalDevice()
 		{
-			VulkanInstance& instance = *pInstance->GetAs<VulkanInstance>();
+			VulkanInstance& instance = *pInstance;
 
 			UI32 deviceCount = 0;
 			vkEnumeratePhysicalDevices(instance.GetInstance(), &deviceCount, nullptr);
@@ -218,7 +221,7 @@ namespace Flint
 
 		void VulkanDevice::CreateLogicalDevice()
 		{
-			VulkanInstance& instance = *pInstance->GetAs<VulkanInstance>();
+			VulkanInstance& instance = *pInstance;
 
 			vQueue.Initialize(vPhysicalDevice);
 

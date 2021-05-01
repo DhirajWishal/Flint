@@ -165,8 +165,21 @@ namespace Flint
 			}
 		}
 
+		Interface::InstanceHandle CreateInstance(bool enableValidation)
+		{
+			return Interface::InstanceHandle(reinterpret_cast<UI64>(new VulkanInstance(enableValidation)));
+		}
+
+		void DestroyInstance(Interface::InstanceHandle handle)
+		{
+			VulkanInstance* pInstance = reinterpret_cast<VulkanInstance*>(handle);
+			pInstance->Terminate();
+
+			delete pInstance;
+		}
+
 		VulkanInstance::VulkanInstance(bool enableValidation)
-			: FInstance(enableValidation)
+			: Instance(enableValidation)
 		{
 			InitializeGLFW();
 
@@ -189,16 +202,6 @@ namespace Flint
 			DestroyInstance();
 
 			TerminateGLFW();
-		}
-
-		std::shared_ptr<FDevice> VulkanInstance::CreateDevice()
-		{
-			return std::make_shared<VulkanDevice>(std::shared_ptr<FInstance>(this));
-		}
-
-		std::shared_ptr<FDisplay> VulkanInstance::CreateDisplay(const Vector2 extent, const char* pTitle)
-		{
-			return std::make_shared<VulkanDisplay>(std::shared_ptr<FInstance>(this), extent, pTitle);
 		}
 
 		void VulkanInstance::InitializeGLFW()

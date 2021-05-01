@@ -4,6 +4,7 @@
 #pragma once
 
 #include "Core/Backend/FInstance.h"
+#include "Core\Interface\Instance.h"
 
 #include <vulkan/vulkan.h> 
 
@@ -11,14 +12,15 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanInstance final : public FInstance {
+		Interface::InstanceHandle CreateInstance(bool enableValidation);
+		void DestroyInstance(Interface::InstanceHandle handle);
+
+		class VulkanInstance final : public Interface::Template::Instance 
+		{
 		public:
 			VulkanInstance(bool enableValidation);
 
 			virtual void Terminate() override final;
-
-			virtual std::shared_ptr<FDevice> CreateDevice() override final;
-			virtual std::shared_ptr<FDisplay> CreateDisplay(const Vector2 extent, const char* pTitle) override final;
 
 		private:
 			void InitializeGLFW();
