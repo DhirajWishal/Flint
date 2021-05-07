@@ -244,7 +244,7 @@ namespace Flint
 			}
 		}
 
-		VulkanGraphicsPipeline::VulkanGraphicsPipeline(std::shared_ptr<FScreenBoundRenderTarget> pRenderTarget, const std::vector<FShaderDigest>& shaderDigests, const GraphicsPipelineSpecification& spec)
+		VulkanGraphicsPipeline::VulkanGraphicsPipeline(FScreenBoundRenderTarget* pRenderTarget, const std::vector<FShaderDigest>& shaderDigests, const GraphicsPipelineSpecification& spec)
 			: FGraphicsPipeline(pRenderTarget, shaderDigests, spec)
 		{
 			ResolveUniformLayouts(shaderDigests);
@@ -540,9 +540,9 @@ namespace Flint
 				itr->Terminate();
 		}
 
-		std::shared_ptr<FPipelineResource> VulkanGraphicsPipeline::CreatePipelineResource()
+		FPipelineResource* VulkanGraphicsPipeline::CreatePipelineResource()
 		{
-			return std::make_shared<VulkanPipelineResource>(std::shared_ptr<FGraphicsPipeline>(this));
+			return std::make_shared<VulkanPipelineResource>(FGraphicsPipeline*(this));
 		}
 	}
 }

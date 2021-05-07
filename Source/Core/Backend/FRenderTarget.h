@@ -32,7 +32,7 @@ namespace Flint
 		};
 
 	public:
-		FRenderTarget(std::shared_ptr<FDevice> pDevice, UI64 bufferCount) : pDevice(pDevice), mBufferCount(bufferCount) {}
+		FRenderTarget(FDevice* pDevice, UI64 bufferCount) : pDevice(pDevice), mBufferCount(bufferCount) {}
 		virtual ~FRenderTarget() {}
 
 		/**
@@ -75,7 +75,7 @@ namespace Flint
 		 *
 		 * @return The device pointer.
 		 */
-		std::shared_ptr<FDevice> GetDevice() const { return pDevice; }
+		FDevice* GetDevice() const { return pDevice; }
 
 	public:
 		/**
@@ -162,7 +162,7 @@ namespace Flint
 		std::unordered_map<UI64, DrawEntry> mDynamicDrawEntries;
 
 		std::unique_ptr<FCommandBufferList> pCommandBufferList = nullptr;
-		std::shared_ptr<FDevice> pDevice = nullptr;
+		FDevice* pDevice = nullptr;
 
 		UI64 mStaticDrawIndex = 0;
 		UI64 mDynamicDrawIndex = 0;

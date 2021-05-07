@@ -213,6 +213,6 @@ namespace Flint
 		 */
 		FDynamicStateContainer& operator=(FDynamicStateContainer&& other) noexcept;
 
-		std::vector<std::shared_ptr<DynamicStateObject>> pDynamicStates;
+		std::vector<DynamicStateObject*> pDynamicStates;
 	};
 }

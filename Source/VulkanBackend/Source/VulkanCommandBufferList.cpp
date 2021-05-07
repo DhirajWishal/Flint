@@ -11,7 +11,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanCommandBufferList::VulkanCommandBufferList(std::shared_ptr<FDevice> pDevice, UI64 bufferCount)
+		VulkanCommandBufferList::VulkanCommandBufferList(FDevice* pDevice, UI64 bufferCount)
 			: FCommandBufferList(pDevice, bufferCount)
 		{
 			VkCommandPoolCreateInfo vCI = {};

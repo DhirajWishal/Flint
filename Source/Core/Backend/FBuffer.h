@@ -18,7 +18,7 @@ namespace Flint
 		};
 
 	public:
-		FBuffer(std::shared_ptr<FDevice> pDevice, UI64 size, BufferUsage usage, MemoryProfile profile) : pDevice(pDevice), mSize(size), mUsage(usage), mMemoryProfile(profile) {}
+		FBuffer(FDevice* pDevice, UI64 size, BufferUsage usage, MemoryProfile profile) : pDevice(pDevice), mSize(size), mUsage(usage), mMemoryProfile(profile) {}
 		virtual ~FBuffer() {}
 
 		/**
@@ -77,12 +77,12 @@ namespace Flint
 		 * 
 		 * @return The device pointer.
 		 */
-		std::shared_ptr<FDevice> GetDevice() const { return pDevice; }
+		FDevice* GetDevice() const { return pDevice; }
 
 	protected:
 		PreviousMemoryMapInfo mPrevMapInfo = {};
 
-		std::shared_ptr<FDevice> pDevice = nullptr;
+		FDevice* pDevice = nullptr;
 		UI64 mSize = 0;
 
 		BufferUsage mUsage = BufferUsage::UNDEFINED;

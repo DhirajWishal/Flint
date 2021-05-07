@@ -3,14 +3,13 @@
 
 #pragma once
 
-#include "Handles.h"
-#include "IObject.h"
+#include "BackendObject.h"
 
 namespace Flint
 {
-	namespace Interface
+	namespace Backend
 	{
-		class Instance : public IObject
+		class Instance : public BackendObject
 		{
 		public:
 			Instance(bool enableValidation) : bEnableValidation(enableValidation) {}
@@ -19,7 +18,7 @@ namespace Flint
 			bool IsValidationEnabled() const { return bEnableValidation; }
 
 		protected:
-			bool bEnableValidation = false;
+			bool bEnableValidation = true;
 		};
 	}
 }

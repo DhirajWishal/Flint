@@ -165,19 +165,6 @@ namespace Flint
 			}
 		}
 
-		Interface::InstanceHandle CreateInstance(bool enableValidation)
-		{
-			return Interface::InstanceHandle(reinterpret_cast<UI64>(new VulkanInstance(enableValidation)));
-		}
-
-		void DestroyInstance(Interface::InstanceHandle handle)
-		{
-			VulkanInstance* pInstance = reinterpret_cast<VulkanInstance*>(handle);
-			pInstance->Terminate();
-
-			delete pInstance;
-		}
-
 		VulkanInstance::VulkanInstance(bool enableValidation)
 			: Instance(enableValidation)
 		{

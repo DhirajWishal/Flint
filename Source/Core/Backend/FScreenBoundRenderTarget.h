@@ -14,7 +14,7 @@ namespace Flint
 	 */
 	class FScreenBoundRenderTarget : public FRenderTarget, public std::enable_shared_from_this<FScreenBoundRenderTarget> {
 	public:
-		FScreenBoundRenderTarget(std::shared_ptr<FDevice> pDevice, std::shared_ptr<FDisplay> pDisplay, UI64 bufferCount) : FRenderTarget(pDevice, bufferCount), pDisplay(pDisplay) {}
+		FScreenBoundRenderTarget(FDevice* pDevice, FDisplay* pDisplay, UI64 bufferCount) : FRenderTarget(pDevice, bufferCount), pDisplay(pDisplay) {}
 		virtual ~FScreenBoundRenderTarget() {}
 
 		/**
@@ -34,7 +34,7 @@ namespace Flint
 	protected:
 		void IncrementIndex() { mFrameIndex++; if (mFrameIndex >= mBufferCount) mFrameIndex = 0; }
 
-		std::shared_ptr<FDisplay> pDisplay = nullptr;
+		FDisplay* pDisplay = nullptr;
 
 		UI32 mFrameIndex = 0;
 		UI32 mImageIndex = 0;

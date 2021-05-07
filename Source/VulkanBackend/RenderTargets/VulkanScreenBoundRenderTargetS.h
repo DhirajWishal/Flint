@@ -23,7 +23,7 @@ namespace Flint
 		class VulkanScreenBoundRenderTargetS final : public VulkanRenderTarget, public FScreenBoundRenderTarget {
 		
 		public:
-			VulkanScreenBoundRenderTargetS(std::shared_ptr<FDevice> pDevice, std::shared_ptr<FDisplay> pDisplay, UI64 bufferCount);
+			VulkanScreenBoundRenderTargetS(FDevice* pDevice, FDisplay* pDisplay, UI64 bufferCount);
 
 			virtual void Terminate() override final;
 			virtual void BakeCommands() override final;

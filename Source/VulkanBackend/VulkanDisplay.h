@@ -3,9 +3,8 @@
 
 #pragma once
 
-#include "Core\Interface\Display.h"
-#include "Core/Inputs/InputCenter.h"
-#include "Core/Backend/FDisplay.h"
+#include "Core\Backend\Display.h"
+#include "Core\Inputs\InputCenter.h"
 
 #include "VulkanInstance.h"
 
@@ -17,10 +16,6 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		Interface::DisplayHandle CreateDisplay(Interface::InstanceHandle instanceHandle, const Vector2 extent, const char* pTitle, Inputs::InputCenter* pInputCente);
-		void UpdateDisplay(Interface::DisplayHandle handle);
-		void DestroyDisplay(Interface::DisplayHandle handle);
-
 		class VulkanDevice;
 
 		/**
@@ -42,10 +37,10 @@ namespace Flint
 			static SwapChainSupportDetails Query(VkPhysicalDevice vPhysicalDevice, VkSurfaceKHR vSurface);
 		};
 
-		class VulkanDisplay final : public Interface::Template::Display 
+		class VulkanDisplay final : public Backend::Display 
 		{
 		public:
-			VulkanDisplay(VulkanInstance* pInstance, const Vector2 extent, const char* pTitle, Inputs::InputCenter* pInputs);
+			VulkanDisplay(VulkanInstance* pInstance, const Vector2 extent, const char* pTitle);
 
 			virtual void Terminate();
 			virtual void Update();

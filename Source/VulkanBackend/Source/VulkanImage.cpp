@@ -139,7 +139,7 @@ namespace Flint
 			}
 		}
 
-		VulkanImage::VulkanImage(std::shared_ptr<FDevice> pDevice, UI64 width, UI64 height, UI64 depth, ImageUsage usage, UI8 bitsPerPixel, UI8 layers)
+		VulkanImage::VulkanImage(FDevice* pDevice, UI64 width, UI64 height, UI64 depth, ImageUsage usage, UI8 bitsPerPixel, UI8 layers)
 			: FImage(pDevice, width, height, depth, usage, bitsPerPixel, layers)
 		{
 			VkImageCreateInfo vCI = {};

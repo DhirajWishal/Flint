@@ -9,29 +9,15 @@ namespace Flint
 {
 	namespace Interface
 	{
-		namespace Template
+		class Display;
+
+		class Device : public IObject
 		{
-			class Device
-			{
-			public:
-				Device() {}
-				virtual ~Device() {}
-			};
-		}
+		public:
+			Device() {}
+			virtual ~Device() {}
 
-		/**
-		 * Create a new device handle.
-		 *
-		 * @param instanceHandle: The instance to which the device is bound to.
-		 * @return The device handle.
-		 */
-		inline FLINT_DEFINE_FUNCTION_POINTER(DeviceHandle, CreateDevice, InstanceHandle instanceHandle);
-
-		/**
-		 * Destroy a created device.
-		 *
-		 * @param handle: The handle to be destroyed.
-		 */
-		inline FLINT_DEFINE_FUNCTION_POINTER(void, DestroyDevice, DeviceHandle handle);
+			virtual bool CheckDisplayCompatibility(const Display* pDisplay) = 0;
+		};
 	}
 }

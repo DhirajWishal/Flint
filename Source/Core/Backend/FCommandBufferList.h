@@ -18,7 +18,7 @@ namespace Flint
 	 */
 	class FCommandBufferList : public BackendObject, public std::enable_shared_from_this<FCommandBufferList> {
 	public:
-		FCommandBufferList(std::shared_ptr<FDevice> pDevice, UI64 bufferCount) : pDevice(pDevice), mBufferCount(bufferCount) {}
+		FCommandBufferList(FDevice* pDevice, UI64 bufferCount) : pDevice(pDevice), mBufferCount(bufferCount) {}
 		virtual ~FCommandBufferList() {}
 
 		/**
@@ -142,7 +142,7 @@ namespace Flint
 		}
 
 	protected:
-		std::shared_ptr<FDevice> pDevice = nullptr;
+		FDevice* pDevice = nullptr;
 		UI64 mBufferCount = 0;
 		UI64 mBufferIndex = 0;
 	};

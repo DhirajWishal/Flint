@@ -32,7 +32,7 @@ namespace Flint
 		};
 
 	public:
-		FPipelineResource(std::shared_ptr<FPipeline> pPipeline) : pPipeline(pPipeline) {}
+		FPipelineResource(FPipeline* pPipeline) : pPipeline(pPipeline) {}
 
 		/**
 		 * Register uniform buffers to the resource object.
@@ -55,7 +55,7 @@ namespace Flint
 		 *
 		 * @return The pipeline pointer.
 		 */
-		std::shared_ptr<FPipeline> GetPipeline() const { return pPipeline; }
+		FPipeline* GetPipeline() const { return pPipeline; }
 
 		/**
 		 * Add draw data to the pipeline resource.
@@ -98,6 +98,6 @@ namespace Flint
 		std::unordered_map<UI64, DrawData> mDrawData;
 		UI64 mIndex = 0;
 
-		std::shared_ptr<FPipeline> pPipeline = nullptr;
+		FPipeline* pPipeline = nullptr;
 	};
 }

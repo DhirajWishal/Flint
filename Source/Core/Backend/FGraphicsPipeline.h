@@ -142,7 +142,7 @@ namespace Flint
 	 */
 	class FGraphicsPipeline : public FPipeline, public std::enable_shared_from_this<FGraphicsPipeline> {
 	public:
-		FGraphicsPipeline(std::shared_ptr<FRenderTarget> pRenderTarget, const std::vector<FShaderDigest>& shaderDigests, const GraphicsPipelineSpecification& spec)
+		FGraphicsPipeline(FRenderTarget* pRenderTarget, const std::vector<FShaderDigest>& shaderDigests, const GraphicsPipelineSpecification& spec)
 			: FPipeline(pRenderTarget, shaderDigests), mSpec(spec) {}
 		virtual ~FGraphicsPipeline() {}
 

@@ -9,7 +9,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanBuffer::VulkanBuffer(std::shared_ptr<FDevice> pDevice, UI64 size, BufferUsage usage, MemoryProfile profile)
+		VulkanBuffer::VulkanBuffer(FDevice* pDevice, UI64 size, BufferUsage usage, MemoryProfile profile)
 			: FBuffer(pDevice, size, usage, profile)
 		{
 			VkBufferUsageFlags vBufferUsage = {};

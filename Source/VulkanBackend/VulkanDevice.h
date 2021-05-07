@@ -3,8 +3,7 @@
 
 #pragma once
 
-#include "Core\Interface\Device.h"
-#include "Core\Backend\FDevice.h"
+#include "Core\Backend\Device.h"
 #include "Core\Backend\FBuffer.h"
 #include "VulkanInstance.h"
 #include "VulkanDisplay.h"
@@ -14,16 +13,13 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		Interface::DeviceHandle CreateDevice(Interface::InstanceHandle instanceHandle);
-		void DestroyDevice(Interface::DeviceHandle handle);
-
-		class VulkanDevice final : public Interface::Template::Device 
+		class VulkanDevice final : public Backend::Device
 		{
 		public:
 			VulkanDevice(VulkanInstance* pInstance);
 
-			void Terminate();
-			bool CheckDisplayCompatibility(VulkanDisplay* pDisplay);
+			virtual void Terminate() override final;
+			virtual bool CheckDisplayCompatibility(const Backend::Display* pDisplay) override final;
 
 		public:
 			VkPhysicalDeviceProperties GetPhysicalDeviceProperties() const;

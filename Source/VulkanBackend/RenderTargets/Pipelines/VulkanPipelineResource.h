@@ -17,7 +17,7 @@ namespace Flint
 			using DeviceType = VulkanDevice;
 
 		public:
-			VulkanPipelineResource(std::shared_ptr<FGraphicsPipeline> pPipeline);
+			VulkanPipelineResource(FGraphicsPipeline* pPipeline);
 
 			virtual void Terminate() override final;
 			virtual void RegisterUniformBuffers(const UniformBufferContainer& uniformBuffers) override final;

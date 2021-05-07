@@ -11,7 +11,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanPipelineResource::VulkanPipelineResource(std::shared_ptr<FGraphicsPipeline> pPipeline)
+		VulkanPipelineResource::VulkanPipelineResource(FGraphicsPipeline* pPipeline)
 			: FPipelineResource(pPipeline)
 		{
 			pvPipeline = pPipeline->GetAs<VulkanGraphicsPipeline>();

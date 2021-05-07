@@ -3,8 +3,7 @@
 
 #pragma once
 
-#include "Core/Backend/FInstance.h"
-#include "Core\Interface\Instance.h"
+#include "Core\Backend\Instance.h"
 
 #include <vulkan/vulkan.h> 
 
@@ -12,10 +11,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		Interface::InstanceHandle CreateInstance(bool enableValidation);
-		void DestroyInstance(Interface::InstanceHandle handle);
-
-		class VulkanInstance final : public Interface::Template::Instance 
+		class VulkanInstance final : public Backend::Instance 
 		{
 		public:
 			VulkanInstance(bool enableValidation);

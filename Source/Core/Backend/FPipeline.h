@@ -13,11 +13,11 @@ namespace Flint
 	class FPipelineResource;
 
 	class FBuffer;
-	using UniformBufferContainer = std::unordered_map<std::string, std::shared_ptr<FBuffer>>;
+	using UniformBufferContainer = std::unordered_map<std::string, FBuffer*>;
 
 	class FImage;
 	struct SamplerSpecification;
-	using UniformImageContainer = std::unordered_map<std::string, std::pair<std::shared_ptr<FImage>, SamplerSpecification>>;
+	using UniformImageContainer = std::unordered_map<std::string, std::pair<FImage*, SamplerSpecification>>;
 
 	/**
 	 * Pipeline object.
@@ -30,7 +30,7 @@ namespace Flint
 	 */
 	class FPipeline : public BackendObject, public std::enable_shared_from_this<FPipeline> {
 	public:
-		FPipeline(std::shared_ptr<FRenderTarget> pRenderTarget, std::vector<FShaderDigest> digest) : pRenderTarget(pRenderTarget), mDigests(digest) {}
+		FPipeline(FRenderTarget* pRenderTarget, std::vector<FShaderDigest> digest) : pRenderTarget(pRenderTarget), mDigests(digest) {}
 		virtual ~FPipeline() {}
 
 		/**
@@ -95,7 +95,7 @@ namespace Flint
 		 *
 		 * @return The created pipeline resource object pointer.
 		 */
-		virtual std::shared_ptr<FPipelineResource> CreatePipelineResource() = 0;
+		virtual FPipelineResource* CreatePipelineResource() = 0;
 
 	public:
 		/**
@@ -138,7 +138,7 @@ namespace Flint
 		 *
 		 * @return The render target pointer.
 		 */
-		std::shared_ptr<FRenderTarget> GetRenderTarget() const { return pRenderTarget; }
+		FRenderTarget* GetRenderTarget() const { return pRenderTarget; }
 
 	protected:
 		/**
@@ -149,7 +149,7 @@ namespace Flint
 		void ResolveUniformLayouts(const std::vector<FShaderDigest>& shaderDigests);
 
 	protected:
-		std::shared_ptr<FRenderTarget> pRenderTarget = nullptr;
+		FRenderTarget* pRenderTarget = nullptr;
 		std::unordered_map<String, UniformLayout> mUniformLayouts;
 		std::vector<FShaderDigest> mDigests;
 
@@ -163,7 +163,7 @@ namespace Flint
 	 */
 	class ComputePipeline : public FPipeline, public std::enable_shared_from_this<ComputePipeline> {
 	public:
-		ComputePipeline(std::shared_ptr<FRenderTarget> pRenderTarget, std::vector<FShaderDigest> digest) : FPipeline(pRenderTarget, digest) {}
+		ComputePipeline(FRenderTarget* pRenderTarget, std::vector<FShaderDigest> digest) : FPipeline(pRenderTarget, digest) {}
 	};
 
 	/**
@@ -171,6 +171,6 @@ namespace Flint
 	 */
 	class RayTracingPipeline : public FPipeline, public std::enable_shared_from_this<RayTracingPipeline> {
 	public:
-		RayTracingPipeline(std::shared_ptr<FRenderTarget> pRenderTarget, std::vector<FShaderDigest> digest) : FPipeline(pRenderTarget, digest) {}
+		RayTracingPipeline(FRenderTarget* pRenderTarget, std::vector<FShaderDigest> digest) : FPipeline(pRenderTarget, digest) {}
 	};
 }

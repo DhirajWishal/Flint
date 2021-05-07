@@ -17,7 +17,7 @@ namespace Flint
 
 		class VulkanCommandBufferList final : public FCommandBufferList {		
 		public:
-			VulkanCommandBufferList(std::shared_ptr<FDevice> pDevice, UI64 bufferCount);
+			VulkanCommandBufferList(FDevice* pDevice, UI64 bufferCount);
 
 			virtual void Terminate() override final;
 			virtual void ClearBuffers() override final;

@@ -1,13 +1,16 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#include "VulkanBackend/VulkanDevice.h"
-#include "VulkanBackend/VulkanMacros.h"
-#include "VulkanBackend/VulkanOneTimeCommandBuffer.h"
-#include "VulkanBackend/VulkanUtilities.h"
-#include "VulkanBackend/RenderTargets/VulkanScreenBoundRenderTargetS.h"
-#include "VulkanBackend/VulkanBuffer.h"
-#include "VulkanBackend/RenderTargets/Pipelines/VulkanGraphicsPipeline.h"
+#include "VulkanBackend\VulkanDevice.h"
+#include "VulkanBackend\VulkanMacros.h"
+#include "VulkanBackend\VulkanOneTimeCommandBuffer.h"
+#include "VulkanBackend\VulkanUtilities.h"
+#include "VulkanBackend\RenderTargets\VulkanScreenBoundRenderTargetS.h"
+#include "VulkanBackend\VulkanBuffer.h"
+#include "VulkanBackend\RenderTargets\Pipelines/VulkanGraphicsPipeline.h"
+
+#include "Core\Interface\Display.h"
+#include "VulkanBackend\VulkanDisplay.h"
 
 #include <set>
 
@@ -102,7 +105,7 @@ namespace Flint
 		}
 
 		VulkanDevice::VulkanDevice(VulkanInstance* pInstance)
-			: pInstance(pInstance)
+			: Device(pInstance)
 		{
 			INSERT_INTO_VECTOR(mDeviceExtensions, VK_KHR_SWAPCHAIN_EXTENSION_NAME);
 
@@ -115,10 +118,11 @@ namespace Flint
 			DestroyLogicalDevice();
 		}
 
-		bool VulkanDevice::CheckDisplayCompatibility(VulkanDisplay* pDisplay)
+		bool VulkanDevice::CheckDisplayCompatibility(const Backend::Display* pDisplay)
 		{
+			const VulkanDisplay* pvDisplay = pDisplay->GetAs<const VulkanDisplay>();
 			VkBool32 isSupported = VK_FALSE;
-			FLINT_VK_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(GetPhysicalDevice(), GetQueue().mGraphicsFamily.value(), pDisplay->GetSurface(), &isSupported), "Failed to check swap chain -> display support!");
+			FLINT_VK_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(GetPhysicalDevice(), GetQueue().mGraphicsFamily.value(), pvDisplay->GetSurface(), &isSupported), "Failed to check swap chain -> display support!");
 			return isSupported == VK_TRUE;
 		}
 

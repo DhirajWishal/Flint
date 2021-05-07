@@ -73,24 +73,6 @@ namespace Flint
 			}
 		}
 
-		Interface::DisplayHandle CreateDisplay(Interface::InstanceHandle instanceHandle, const Vector2 extent, const char* pTitle, Inputs::InputCenter* pInputCente)
-		{
-			return Interface::DisplayHandle(reinterpret_cast<UI64>(new VulkanDisplay(reinterpret_cast<VulkanInstance*>(instanceHandle), extent, pTitle, pInputCente)));
-		}
-
-		void UpdateDisplay(Interface::DisplayHandle handle)
-		{
-			reinterpret_cast<VulkanDisplay*>(handle)->Update();
-		}
-
-		void DestroyDisplay(Interface::DisplayHandle handle)
-		{
-			VulkanDisplay* pDisplay = reinterpret_cast<VulkanDisplay*>(handle);
-			pDisplay->Terminate();
-
-			delete pDisplay;
-		}
-
 		SwapChainSupportDetails SwapChainSupportDetails::Query(VkPhysicalDevice vPhysicalDevice, VkSurfaceKHR vSurface)
 		{
 			SwapChainSupportDetails supportDetails = {};
@@ -117,8 +99,8 @@ namespace Flint
 			return supportDetails;
 		}
 
-		VulkanDisplay::VulkanDisplay(VulkanInstance* pInstance, const Vector2 extent, const char* pTitle, Inputs::InputCenter* pInputs)
-			: Display(pInputs)
+		VulkanDisplay::VulkanDisplay(VulkanInstance* pInstance, const Vector2 extent, const char* pTitle)
+			: Display(pInstance, extent, pTitle)
 		{
 			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 			pWindowHandle = glfwCreateWindow(static_cast<UI32>(extent.width), static_cast<UI32>(extent.height), pTitle, nullptr, nullptr);

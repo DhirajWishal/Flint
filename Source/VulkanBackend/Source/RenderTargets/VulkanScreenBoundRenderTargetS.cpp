@@ -12,7 +12,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanScreenBoundRenderTargetS::VulkanScreenBoundRenderTargetS(std::shared_ptr<FDevice> pDevice, std::shared_ptr<FDisplay> pDisplay, UI64 bufferCount)
+		VulkanScreenBoundRenderTargetS::VulkanScreenBoundRenderTargetS(FDevice* pDevice, FDisplay* pDisplay, UI64 bufferCount)
 			: FScreenBoundRenderTarget(pDevice, pDisplay, bufferCount)
 		{
 			this->mBufferCount = pDisplay->GetAs<VulkanDisplay>()->FindSupporterBufferCount(pDevice->GetAs<VulkanDevice>(), static_cast<UI32>(bufferCount));
