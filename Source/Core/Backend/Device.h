@@ -36,27 +36,65 @@ namespace Flint
 			  DRAW_RESOURCE
 		};
 
+		/**
+		 * Device object.
+		 * Device objects represent GPUs and is the basis for all the resources.
+		 */
 		class Device : public BackendObject
 		{
 		public:
+			/**
+			 * Construct the device object.
+			 *
+			 * @param pInstance: The instance to which the device is bound to.
+			 */
 			Device(Instance* pInstance) : pInstance(pInstance) {}
-			virtual ~Device() {}
 
+			/**
+			 * Check if the display is compatible with the device.
+			 *
+			 * @param pDisplay: The display to check.
+			 * @return Boolean whether or not the display is compatible.
+			 */
 			virtual bool CheckDisplayCompatibility(const Display* pDisplay) = 0;
 
+			/**
+			 * Get the instance to which the device is bound to.
+			 *
+			 * @return The instance pointer.
+			 */
 			Instance* GetInstance() const { return pInstance; }
 
 		protected:
 			Instance* pInstance = nullptr;
 		};
 
+		/**
+		 * Device bound object.
+		 * This object is the base class for all the device bound objects in Flint.
+		 */
 		class DeviceBoundObject : public BackendObject
 		{
 		public:
+			/**
+			 * Construct the device bound object.
+			 *
+			 * @param pDevice: The device object pointer.
+			 */
 			DeviceBoundObject(Device* pDevice) : pDevice(pDevice) {}
-			virtual ~DeviceBoundObject() {}
 
+			/**
+			 * Get the device object pointer.
+			 *
+			 * @return The device pointer.
+			 */
 			Device* GetDevice() { return pDevice; }
+
+			/**
+			 * Get the device object pointer.
+			 *
+			 * @return The device pointer.
+			 */
 			const Device* GetDevice() const { return pDevice; }
 
 		protected:
