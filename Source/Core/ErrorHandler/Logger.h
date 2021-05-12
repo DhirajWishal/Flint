@@ -16,7 +16,7 @@ namespace Flint
 {
 	/**
 	 * The logger is a namespace which contains functions which allows the user to log messages to the console.
-	 * 
+	 *
 	 * Formatting command is set using the # tag. This tag can include,
 	 * * 0: 8 bit integers.
 	 * * 1: 16 bit integers.
@@ -27,7 +27,7 @@ namespace Flint
 	 * * 6: string (wchar*).
 	 * * 7: string (char*).
 	 * * 8: pointer.
-	 * 
+	 *
 	 * Example: LogError("My age is #0.", 19);
 	 */
 	namespace Logger
@@ -156,7 +156,6 @@ namespace Flint
 #define FLINT_LOG_ERROR(...)
 #define FLINT_LOG_FATAL(...)
 
-#define FLINT_ASSERT(exp, ...)		
+#define FLINT_ASSERT(exp, ...)
 
 #endif // FLINT_DEBUG
-

@@ -14,7 +14,7 @@ namespace Flint
 		 * Backend object.
 		 * This object is the base class for all the backend objects in the library.
 		 */
-		class BackendObject 
+		class BackendObject
 		{
 		public:
 			BackendObject() {}

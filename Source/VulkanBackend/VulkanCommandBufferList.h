@@ -12,10 +12,11 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanScreenBoundRenderTargetS;
+		class VulkanScreenBoundRenderTarget;
 		class VulkanGraphicsPipeline;
 
-		class VulkanCommandBufferList final : public FCommandBufferList {		
+		class VulkanCommandBufferList final : public FCommandBufferList
+		{
 		public:
 			VulkanCommandBufferList(FDevice* pDevice, UI64 bufferCount);
 

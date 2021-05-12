@@ -22,7 +22,7 @@ namespace Flint
 		public:
 			/**
 			 * Create the display using the basic information.
-			 * 
+			 *
 			 * @param pInstance: The instance pointer.
 			 * @param extent: The extent of the display.
 			 * @param pTitle: The title of the display.
@@ -37,28 +37,28 @@ namespace Flint
 
 			/**
 			 * Get the input center of the display.
-			 * 
+			 *
 			 * @return The input center pointer.
 			 */
 			Inputs::InputCenter* GetInputCenter() const { return const_cast<Inputs::InputCenter*>(&mInputsCenter); }
 
 			/**
 			 * Get the current extent of the display.
-			 * 
+			 *
 			 * @return the extent of the display.
 			 */
 			Vector2 GetExtent() const { return mExtent; }
 
 			/**
 			 * Get the title of the display object.
-			 * 
+			 *
 			 * @return The title.
 			 */
 			const char* GetTitle() const { return pTitle; }
 
 			/**
 			 * Get the instance pointer of the display.
-			 * 
+			 *
 			 * @return The current instance pointer.
 			 */
 			Instance* GetInstance() const { return pInstance; }

@@ -12,7 +12,6 @@ namespace Flint
 	 * This contains the resources required to submit uniforms and images to the draw call.
 	 */
 	class FPipelineResource : public BackendObject, public std::enable_shared_from_this<FPipelineResource> {
-
 		/**
 		 * Draw data structure.
 		 * This structure contains the final information to be drawn.

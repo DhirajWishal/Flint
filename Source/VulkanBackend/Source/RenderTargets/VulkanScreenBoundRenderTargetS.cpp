@@ -1,7 +1,7 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#include "VulkanBackend\RenderTargets\VulkanScreenBoundRenderTargetS.h"
+#include "VulkanBackend\RenderTargets\VulkanScreenBoundRenderTarget.h"
 #include "VulkanBackend\RenderTargets\Pipelines\VulkanGraphicsPipeline.h"
 #include "VulkanBackend\RenderTargets\Pipelines\VulkanPipelineResource.h"
 #include "VulkanBackend\VulkanMacros.h"
@@ -12,8 +12,8 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanScreenBoundRenderTargetS::VulkanScreenBoundRenderTargetS(FDevice* pDevice, FDisplay* pDisplay, UI64 bufferCount)
-			: FScreenBoundRenderTarget(pDevice, pDisplay, bufferCount)
+		VulkanScreenBoundRenderTarget::VulkanScreenBoundRenderTarget(Backend::Device* pDevice, Backend::Display* pDisplay, UI64 bufferCount)
+			: ScreenBoundRenderTarget(pDevice, pDisplay, bufferCount)
 		{
 			this->mBufferCount = pDisplay->GetAs<VulkanDisplay>()->FindSupporterBufferCount(pDevice->GetAs<VulkanDevice>(), static_cast<UI32>(bufferCount));
 			this->mExtent = pDisplay->GetExtent();
@@ -29,7 +29,7 @@ namespace Flint
 			InitializeSyncObjects(pDevice->GetAs<VulkanDevice>(), static_cast<UI32>(this->mBufferCount));
 		}
 
-		void VulkanScreenBoundRenderTargetS::Terminate()
+		void VulkanScreenBoundRenderTarget::Terminate()
 		{
 			vSwapChain.Terminate();
 			vColorBuffer.Terminate();
@@ -42,7 +42,7 @@ namespace Flint
 			//DestroyChildCommandBuffers();
 		}
 
-		void VulkanScreenBoundRenderTargetS::BakeCommands()
+		void VulkanScreenBoundRenderTarget::BakeCommands()
 		{
 			VulkanCommandBufferList* pCommandBuffer = pCommandBufferList->GetAs<VulkanCommandBufferList>();
 			for (UI64 counter = 0; counter < mBufferCount; counter++)
@@ -102,7 +102,7 @@ namespace Flint
 			}
 		}
 
-		void VulkanScreenBoundRenderTargetS::PrepareToDraw()
+		void VulkanScreenBoundRenderTarget::PrepareToDraw()
 		{
 			VulkanDevice* pvDevice = pDevice->GetAs<VulkanDevice>();
 			FLINT_VK_ASSERT(vkWaitForFences(pvDevice->GetLogicalDevice(), 1, &vInFlightFences[mFrameIndex], VK_TRUE, std::numeric_limits<uint64_t>::max()), "Failed to wait for fence!");
@@ -118,11 +118,11 @@ namespace Flint
 				SubmitSecondaryCommands();
 		}
 
-		void VulkanScreenBoundRenderTargetS::Update()
+		void VulkanScreenBoundRenderTarget::Update()
 		{
 		}
 
-		void VulkanScreenBoundRenderTargetS::SubmitCommand()
+		void VulkanScreenBoundRenderTarget::SubmitCommand()
 		{
 			VulkanDevice* pvDevice = pDevice->GetAs<VulkanDevice>();
 
@@ -172,7 +172,7 @@ namespace Flint
 			IncrementIndex();
 		}
 
-		void VulkanScreenBoundRenderTargetS::Recreate()
+		void VulkanScreenBoundRenderTarget::Recreate()
 		{
 			VulkanDevice* pvDevice = pDevice->GetAs<VulkanDevice>();
 			pvDevice->WaitIdle();
@@ -226,7 +226,7 @@ namespace Flint
 			mFrameIndex = 0;
 		}
 
-		void VulkanScreenBoundRenderTargetS::SubmitSecondaryCommands()
+		void VulkanScreenBoundRenderTarget::SubmitSecondaryCommands()
 		{
 			//auto& pSecondaryCommandBuffers = mChildCommandBuffers[0];
 			//mCommandBufferManager.UpdateChild(pSecondaryCommandBuffers.get(), this);

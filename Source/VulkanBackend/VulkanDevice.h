@@ -3,8 +3,7 @@
 
 #pragma once
 
-#include "Core\Backend\Device.h"
-#include "Core\Backend\FBuffer.h"
+#include "Core\Backend\Buffer.h"
 #include "VulkanInstance.h"
 #include "VulkanDisplay.h"
 #include "VulkanQueue.h"
@@ -128,7 +127,7 @@ namespace Flint
 			void DestroyFences(const std::vector<VkFence>& vFences) const;
 		};
 
-		class VulkanDeviceBoundObject 
+		class VulkanDeviceBoundObject
 		{
 		public:
 			VulkanDeviceBoundObject() {}

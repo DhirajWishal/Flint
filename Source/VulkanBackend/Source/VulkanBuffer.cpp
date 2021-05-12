@@ -9,25 +9,25 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanBuffer::VulkanBuffer(FDevice* pDevice, UI64 size, BufferUsage usage, MemoryProfile profile)
-			: FBuffer(pDevice, size, usage, profile)
+		VulkanBuffer::VulkanBuffer(Backend::Device* pDevice, UI64 size, Backend::BufferUsage usage, Backend::MemoryProfile profile)
+			: Backend::Buffer(pDevice, size, usage, profile)
 		{
 			VkBufferUsageFlags vBufferUsage = {};
 			switch (GetUsage())
 			{
-			case Flint::BufferUsage::VERTEX:
+			case Flint::Backend::BufferUsage::VERTEX:
 				vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 				break;
 
-			case Flint::BufferUsage::INDEX:
+			case Flint::Backend::BufferUsage::INDEX:
 				vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 				break;
 
-			case Flint::BufferUsage::UNIFORM:
+			case Flint::Backend::BufferUsage::UNIFORM:
 				vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 				break;
 
-			case Flint::BufferUsage::STAGGING:
+			case Flint::Backend::BufferUsage::STAGGING:
 				vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 				break;
 
@@ -41,20 +41,20 @@ namespace Flint
 			VkMemoryPropertyFlags vMemoryProperties = {};
 			switch (GetMemoryProfile())
 			{
-			case Flint::MemoryProfile::TRANSFER_FRIENDLY:
+			case Flint::Backend::MemoryProfile::TRANSFER_FRIENDLY:
 				vMemoryProperties =
 					VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
 					| VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
 				break;
 
-			case Flint::MemoryProfile::DEVICE_ONLY:
+			case Flint::Backend::MemoryProfile::DEVICE_ONLY:
 				vMemoryProperties =
 					VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
 					| VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT
 					| VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_PROTECTED_BIT;
 				break;
 
-			case Flint::MemoryProfile::DRAW_RESOURCE:
+			case Flint::Backend::MemoryProfile::DRAW_RESOURCE:
 				vMemoryProperties = VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 				break;
 
@@ -105,7 +105,7 @@ namespace Flint
 			FLINT_VK_ASSERT(pDevice->GetAs<VulkanDevice>()->FlushMemoryRanges({ vMMR }), "Failed to flush memory mappings!");
 		}
 
-		void VulkanBuffer::CopyFrom(const FBuffer* pBuffer, UI64 size, UI64 srcOffset, UI64 dstOffset)
+		void VulkanBuffer::CopyFrom(const Backend::Buffer* pBuffer, UI64 size, UI64 srcOffset, UI64 dstOffset)
 		{
 			VkBufferCopy vBC = {};
 			vBC.size = size;

@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "FDevice.h"
-#include "FBuffer.h"
+#include "Device.h"
+#include "Buffer.h"
 #include "FPipeline.h"
 
 namespace Flint

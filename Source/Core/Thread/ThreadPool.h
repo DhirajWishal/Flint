@@ -25,7 +25,7 @@ namespace Flint
 
 			/**
 			 * Issue a thread function to the pool.
-			 * 
+			 *
 			 * @tparam ThreadFunc: The thread function type.
 			 * @tparam The function's VA args type.
 			 * @param index: The index of the thread pool.
@@ -40,7 +40,7 @@ namespace Flint
 
 			/**
 			 * Wait till a single thread finishes execution.
-			 * 
+			 *
 			 * @param index: The index of the thread.
 			 */
 			void WaitForThread(UI8 index);
@@ -52,7 +52,7 @@ namespace Flint
 
 			/**
 			 * Check if a thread has finished its execution.
-			 * 
+			 *
 			 * @param index: The index of the thread to be checked.
 			 */
 			bool IsExecuting(UI8 index) const;

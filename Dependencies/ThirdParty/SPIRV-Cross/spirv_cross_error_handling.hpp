@@ -34,39 +34,39 @@ namespace SPIRV_CROSS_NAMESPACE
 {
 #ifdef SPIRV_CROSS_EXCEPTIONS_TO_ASSERTIONS
 #if !defined(_MSC_VER) || defined(__clang__)
-[[noreturn]]
+	[[noreturn]]
 #elif defined(_MSC_VER)
-__declspec(noreturn)
+	__declspec(noreturn)
 #endif
-inline void
-report_and_abort(const std::string &msg)
-{
+		inline void
+		report_and_abort(const std::string& msg)
+	{
 #ifdef NDEBUG
-	(void)msg;
+		(void)msg;
 #else
-	fprintf(stderr, "There was a compiler error: %s\n", msg.c_str());
+		fprintf(stderr, "There was a compiler error: %s\n", msg.c_str());
 #endif
-	fflush(stderr);
-	abort();
-}
+		fflush(stderr);
+		abort();
+	}
 
 #define SPIRV_CROSS_THROW(x) report_and_abort(x)
 #else
-class CompilerError : public std::runtime_error
-{
-public:
-	explicit CompilerError(const std::string &str)
-	    : std::runtime_error(str)
+	class CompilerError : public std::runtime_error
 	{
-	}
-};
+	public:
+		explicit CompilerError(const std::string& str)
+			: std::runtime_error(str)
+		{
+		}
+	};
 
 #define SPIRV_CROSS_THROW(x) throw CompilerError(x)
 #endif
 
-// MSVC 2013 does not have noexcept. We need this for Variant to get move constructor to work correctly
-// instead of copy constructor.
-// MSVC 2013 ignores that move constructors cannot throw in std::vector, so just don't define it.
+	// MSVC 2013 does not have noexcept. We need this for Variant to get move constructor to work correctly
+	// instead of copy constructor.
+	// MSVC 2013 ignores that move constructors cannot throw in std::vector, so just don't define it.
 #if defined(_MSC_VER) && _MSC_VER < 1900
 #define SPIRV_CROSS_NOEXCEPT
 #else

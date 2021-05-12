@@ -3,7 +3,7 @@
 
 #include "VulkanBackend\VulkanCommandBufferList.h"
 #include "VulkanBackend\VulkanMacros.h"
-#include "VulkanBackend\RenderTargets\VulkanScreenBoundRenderTargetS.h"
+#include "VulkanBackend\RenderTargets\VulkanScreenBoundRenderTarget.h"
 #include "VulkanBackend\RenderTargets\Pipelines\VulkanGraphicsPipeline.h"
 #include "VulkanBackend\RenderTargets\Pipelines\VulkanPipelineResource.h"
 
@@ -99,7 +99,7 @@ namespace Flint
 
 		void VulkanCommandBufferList::BindRenderTarget(const FScreenBoundRenderTarget* pRenderTarget)
 		{
-			const VulkanScreenBoundRenderTargetS* pRT = pRenderTarget->GetAs<VulkanScreenBoundRenderTargetS>();
+			const VulkanScreenBoundRenderTarget* pRT = pRenderTarget->GetAs<VulkanScreenBoundRenderTarget>();
 
 			VkClearValue pClearValues[2] = {};
 			pClearValues[0].color.float32[0] = CREATE_COLOR_256(32.0f);

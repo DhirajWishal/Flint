@@ -15,7 +15,7 @@ namespace Flint
 			{
 				return std::thread::hardware_concurrency();
 			}
-			
+
 			void SleepThisThread(std::chrono::nanoseconds duration)
 			{
 				std::this_thread::sleep_for(duration);

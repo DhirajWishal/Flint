@@ -202,18 +202,18 @@ namespace Flint
 					case sizeof(UI8) * 2:
 						return VkFormat::VK_FORMAT_R8G8_SINT;
 
-					case sizeof(UI32) :
-						return VkFormat::VK_FORMAT_R32_SFLOAT;
+						case sizeof(UI32) :
+							return VkFormat::VK_FORMAT_R32_SFLOAT;
 
-					case sizeof(UI32) * 2:
-						return VkFormat::VK_FORMAT_R32G32_SFLOAT;
+						case sizeof(UI32) * 2:
+							return VkFormat::VK_FORMAT_R32G32_SFLOAT;
 
-					case sizeof(UI32) * 4:
-						return VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT;
+						case sizeof(UI32) * 4:
+							return VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT;
 
-					default:
-						FLINT_LOG_ERROR(TEXT("Invalid or Unsupported size!"))
-						break;
+						default:
+							FLINT_LOG_ERROR(TEXT("Invalid or Unsupported size!"))
+								break;
 				}
 
 				return VkFormat::VK_FORMAT_UNDEFINED;
@@ -237,7 +237,7 @@ namespace Flint
 
 				return vDescriptions;
 			}
-			
+
 			UI64 GetStride(const FShaderDigest& digest)
 			{
 				UI64 size = 0;

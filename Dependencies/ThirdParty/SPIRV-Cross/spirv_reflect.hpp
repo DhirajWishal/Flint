@@ -22,63 +22,62 @@
 
 namespace simple_json
 {
-class Stream;
+	class Stream;
 }
 
 namespace SPIRV_CROSS_NAMESPACE
 {
-class CompilerReflection : public CompilerGLSL
-{
-	using Parent = CompilerGLSL;
-
-public:
-	explicit CompilerReflection(std::vector<uint32_t> spirv_)
-	    : Parent(std::move(spirv_))
+	class CompilerReflection : public CompilerGLSL
 	{
-		options.vulkan_semantics = true;
-	}
+		using Parent = CompilerGLSL;
 
-	CompilerReflection(const uint32_t *ir_, size_t word_count)
-	    : Parent(ir_, word_count)
-	{
-		options.vulkan_semantics = true;
-	}
+	public:
+		explicit CompilerReflection(std::vector<uint32_t> spirv_)
+			: Parent(std::move(spirv_))
+		{
+			options.vulkan_semantics = true;
+		}
 
-	explicit CompilerReflection(const ParsedIR &ir_)
-	    : CompilerGLSL(ir_)
-	{
-		options.vulkan_semantics = true;
-	}
+		CompilerReflection(const uint32_t* ir_, size_t word_count)
+			: Parent(ir_, word_count)
+		{
+			options.vulkan_semantics = true;
+		}
 
-	explicit CompilerReflection(ParsedIR &&ir_)
-	    : CompilerGLSL(std::move(ir_))
-	{
-		options.vulkan_semantics = true;
-	}
+		explicit CompilerReflection(const ParsedIR& ir_)
+			: CompilerGLSL(ir_)
+		{
+			options.vulkan_semantics = true;
+		}
 
-	void set_format(const std::string &format);
-	std::string compile() override;
+		explicit CompilerReflection(ParsedIR&& ir_)
+			: CompilerGLSL(std::move(ir_))
+		{
+			options.vulkan_semantics = true;
+		}
 
-private:
-	static std::string execution_model_to_str(spv::ExecutionModel model);
+		void set_format(const std::string& format);
+		std::string compile() override;
 
-	void emit_entry_points();
-	void emit_types();
-	void emit_resources();
-	void emit_specialization_constants();
+	private:
+		static std::string execution_model_to_str(spv::ExecutionModel model);
 
-	void emit_type(uint32_t type_id, bool &emitted_open_tag);
-	void emit_type_member(const SPIRType &type, uint32_t index);
-	void emit_type_member_qualifiers(const SPIRType &type, uint32_t index);
-	void emit_type_array(const SPIRType &type);
-	void emit_resources(const char *tag, const SmallVector<Resource> &resources);
-	bool type_is_reference(const SPIRType &type) const;
+		void emit_entry_points();
+		void emit_types();
+		void emit_resources();
+		void emit_specialization_constants();
 
-	std::string to_member_name(const SPIRType &type, uint32_t index) const;
+		void emit_type(uint32_t type_id, bool& emitted_open_tag);
+		void emit_type_member(const SPIRType& type, uint32_t index);
+		void emit_type_member_qualifiers(const SPIRType& type, uint32_t index);
+		void emit_type_array(const SPIRType& type);
+		void emit_resources(const char* tag, const SmallVector<Resource>& resources);
+		bool type_is_reference(const SPIRType& type) const;
 
-	std::shared_ptr<simple_json::Stream> json_stream;
-};
+		std::string to_member_name(const SPIRType& type, uint32_t index) const;
 
+		std::shared_ptr<simple_json::Stream> json_stream;
+	};
 } // namespace SPIRV_CROSS_NAMESPACE
 
 #endif

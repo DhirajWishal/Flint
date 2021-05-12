@@ -10,13 +10,13 @@
 #include "VulkanBackend\VulkanMacros.h"
 #include "VulkanBackend\VulkanBuffer.h"
 #include "VulkanBackend\VulkanImage.h"
-#include "VulkanBackend\RenderTargets\VulkanScreenBoundRenderTargetS.h"
+#include "VulkanBackend\RenderTargets\VulkanScreenBoundRenderTarget.h"
 
 namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanScreenBoundRenderTargetS;
+		class VulkanScreenBoundRenderTarget;
 
 		class VulkanGraphicsPipeline final : public VulkanPipeline, public FGraphicsPipeline {
 		public:

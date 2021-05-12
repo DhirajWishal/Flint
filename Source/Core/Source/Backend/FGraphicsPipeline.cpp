@@ -43,12 +43,10 @@ namespace Flint
 		return container;
 	}
 
-
 	void FPipeline::DestroyUniformImages(UniformImageContainer& uniformImages) const
 	{
 		uniformImages.clear();
 	}
-
 
 	void FPipeline::ResolveUniformLayouts(const std::vector<FShaderDigest>& shaderDigests)
 	{

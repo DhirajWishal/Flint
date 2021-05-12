@@ -26,7 +26,7 @@ namespace Flint
 		shaderFile.read(reinterpret_cast<char*>(mShaderCode.data()), codeSize);
 		shaderFile.close();
 	}
-	
+
 	void FShader::PerformReflection()
 	{
 	}

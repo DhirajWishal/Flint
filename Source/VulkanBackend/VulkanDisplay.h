@@ -21,7 +21,7 @@ namespace Flint
 		/**
 		 * Structure containing support details for a Vulkan Swap Chain.
 		 */
-		struct SwapChainSupportDetails 
+		struct SwapChainSupportDetails
 		{
 			VkSurfaceCapabilitiesKHR mCapabilities = {};			// Swap Chain capabilities.
 			std::vector<VkSurfaceFormatKHR> mFormats = {};			// Swap Chain formats.
@@ -37,7 +37,7 @@ namespace Flint
 			static SwapChainSupportDetails Query(VkPhysicalDevice vPhysicalDevice, VkSurfaceKHR vSurface);
 		};
 
-		class VulkanDisplay final : public Backend::Display 
+		class VulkanDisplay final : public Backend::Display
 		{
 		public:
 			VulkanDisplay(VulkanInstance* pInstance, const Vector2 extent, const char* pTitle);

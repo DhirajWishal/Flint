@@ -13,20 +13,20 @@ namespace Flint
 	{
 		namespace _Helpers
 		{
-			VkImageType GetType(ImageUsage usage)
+			VkImageType GetType(Backend::ImageUsage usage)
 			{
-				if (usage == ImageUsage::GRAPHICS_1D || usage == ImageUsage::STORAGE_1D)
+				if (usage == Backend::ImageUsage::GRAPHICS_1D || usage == Backend::ImageUsage::STORAGE_1D)
 					return VkImageType::VK_IMAGE_TYPE_1D;
 
-				if (usage == ImageUsage::GRAPHICS_3D || usage == ImageUsage::STORAGE_3D)
+				if (usage == Backend::ImageUsage::GRAPHICS_3D || usage == Backend::ImageUsage::STORAGE_3D)
 					return VkImageType::VK_IMAGE_TYPE_3D;
 
 				return VkImageType::VK_IMAGE_TYPE_2D;
 			}
 
-			VkImageUsageFlags GetUsage(ImageUsage usage)
+			VkImageUsageFlags GetUsage(Backend::ImageUsage usage)
 			{
-				if (usage == ImageUsage::GRAPHICS_1D || usage == ImageUsage::GRAPHICS_2D || usage == ImageUsage::GRAPHICS_3D || usage == ImageUsage::GRAPHICS_CUBEMAP)
+				if (usage == Backend::ImageUsage::GRAPHICS_1D || usage == Backend::ImageUsage::GRAPHICS_2D || usage == Backend::ImageUsage::GRAPHICS_3D || usage == Backend::ImageUsage::GRAPHICS_CUBEMAP)
 					return VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_DST_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_SAMPLED_BIT;
 
 				return VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_DST_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_STORAGE_BIT;
@@ -100,34 +100,34 @@ namespace Flint
 				return VkFormat::VK_FORMAT_UNDEFINED;
 			}
 
-			VkImageViewType GetImageViewType(ImageUsage usage, UI8 layers)
+			VkImageViewType GetImageViewType(Backend::ImageUsage usage, UI8 layers)
 			{
-				if (usage == ImageUsage::GRAPHICS_1D || usage == ImageUsage::STORAGE_1D)
+				if (usage == Backend::ImageUsage::GRAPHICS_1D || usage == Backend::ImageUsage::STORAGE_1D)
 					return layers > 1 ? VkImageViewType::VK_IMAGE_VIEW_TYPE_1D_ARRAY : VkImageViewType::VK_IMAGE_VIEW_TYPE_1D;
 
-				if (usage == ImageUsage::GRAPHICS_2D || usage == ImageUsage::STORAGE_2D)
+				if (usage == Backend::ImageUsage::GRAPHICS_2D || usage == Backend::ImageUsage::STORAGE_2D)
 					return layers > 1 ? VkImageViewType::VK_IMAGE_VIEW_TYPE_2D_ARRAY : VkImageViewType::VK_IMAGE_VIEW_TYPE_2D;
 
-				if (usage == ImageUsage::GRAPHICS_3D || usage == ImageUsage::STORAGE_3D)
+				if (usage == Backend::ImageUsage::GRAPHICS_3D || usage == Backend::ImageUsage::STORAGE_3D)
 					return VkImageViewType::VK_IMAGE_VIEW_TYPE_3D;
 
-				if (usage == ImageUsage::GRAPHICS_CUBEMAP || usage == ImageUsage::STORAGE_CUBEMAP)
+				if (usage == Backend::ImageUsage::GRAPHICS_CUBEMAP || usage == Backend::ImageUsage::STORAGE_CUBEMAP)
 					return layers > 1 ? VkImageViewType::VK_IMAGE_VIEW_TYPE_CUBE_ARRAY : VkImageViewType::VK_IMAGE_VIEW_TYPE_CUBE;
 
 				return VkImageViewType::VK_IMAGE_VIEW_TYPE_2D;
 			}
 
-			VkFilter GetFilter(SamplerFilter filter)
+			VkFilter GetFilter(Backend::SamplerFilter filter)
 			{
 				switch (filter)
 				{
-				case Flint::SamplerFilter::NEAREST:
+				case Flint::Backend::SamplerFilter::NEAREST:
 					return VkFilter::VK_FILTER_NEAREST;
 
-				case Flint::SamplerFilter::LINEAR:
+				case Flint::Backend::SamplerFilter::LINEAR:
 					return VkFilter::VK_FILTER_LINEAR;
 
-				case Flint::SamplerFilter::CUBIC_IMAGE:
+				case Flint::Backend::SamplerFilter::CUBIC_IMAGE:
 					return VkFilter::VK_FILTER_CUBIC_IMG;
 
 				default:
@@ -139,8 +139,8 @@ namespace Flint
 			}
 		}
 
-		VulkanImage::VulkanImage(FDevice* pDevice, UI64 width, UI64 height, UI64 depth, ImageUsage usage, UI8 bitsPerPixel, UI8 layers)
-			: FImage(pDevice, width, height, depth, usage, bitsPerPixel, layers)
+		VulkanImage::VulkanImage(Backend::Device* pDevice, UI64 width, UI64 height, UI64 depth, Backend::ImageUsage usage, UI8 bitsPerPixel, UI8 layers)
+			: Backend::Image(pDevice, width, height, depth, usage, bitsPerPixel, layers)
 		{
 			VkImageCreateInfo vCI = {};
 			vCI.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -160,7 +160,7 @@ namespace Flint
 			vCI.extent.height = static_cast<UI32>(height);
 			vCI.extent.depth = static_cast<UI32>(depth);
 
-			if (mUsage == ImageUsage::GRAPHICS_CUBEMAP || mUsage == ImageUsage::STORAGE_CUBEMAP)
+			if (mUsage == Backend::ImageUsage::GRAPHICS_CUBEMAP || mUsage == Backend::ImageUsage::STORAGE_CUBEMAP)
 			{
 				vCI.flags = VkImageCreateFlagBits::VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
 				vCI.arrayLayers = 6;
@@ -201,7 +201,7 @@ namespace Flint
 			VkMemoryRequirements vMR = {};
 			vkGetImageMemoryRequirements(pDevice->GetAs<VulkanDevice>()->GetLogicalDevice(), vImage, &vMR);
 
-			VulkanBuffer staggingBuffer = { pDevice, vMR.size, BufferUsage::STAGGING, MemoryProfile::TRANSFER_FRIENDLY };
+			VulkanBuffer staggingBuffer = { pDevice, vMR.size, Backend::BufferUsage::STAGGING, Backend::MemoryProfile::TRANSFER_FRIENDLY };
 			BYTE* pDataStore = static_cast<BYTE*>(staggingBuffer.MapMemory(vMR.size, 0));
 			std::copy(pData, pData + size, pDataStore);
 
@@ -227,7 +227,7 @@ namespace Flint
 			vkCmdCopyBufferToImage(vCommandBuffer, staggingBuffer.vBuffer, vImage, VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &vBIC);
 		}
 
-		VkSampler VulkanImage::CreateSampler(SamplerSpecification spec) const
+		VkSampler VulkanImage::CreateSampler(Backend::SamplerSpecification spec) const
 		{
 			VkPhysicalDeviceProperties properties{};
 			vkGetPhysicalDeviceProperties(pDevice->GetAs<VulkanDevice>()->GetPhysicalDevice(), &properties);
@@ -347,11 +347,3 @@ namespace Flint
 		}
 	}
 }
-
-/*
-{ 01:33:10 } Vulkan Validation Layer (Validation): Validation Error: [ VUID-vkCmdCopyBufferToImage-imageOffset-00197 ] Object 0: handle = 0x89daef000000002a, type = VK_OBJECT_TYPE_IMAGE; | MessageID = 0x24a2680d | vkCmdCopyBufferToImage(): Both pRegion[0] imageoffset.x (0) and (imageExtent.width + imageOffset.x) (2048) must be >= zero or <= image subresource width (0). The Vulkan spec states: For each element of pRegions, imageOffset.x and (imageExtent.width + imageOffset.x) must both be greater than or equal to 0 and less than or equal to the width of the specified imageSubresource of dstImage (https://vulkan.lunarg.com/doc/view/1.2.162.1/windows/1.2-extensions/vkspec.html#VUID-vkCmdCopyBufferToImage-imageOffset-00197)
-{ 01:33:10 } Vulkan Validation Layer (Validation): Validation Error: [ VUID-vkCmdCopyBufferToImage-imageOffset-00198 ] Object 0: handle = 0x89daef000000002a, type = VK_OBJECT_TYPE_IMAGE; | MessageID = 0x846b33ce | vkCmdCopyBufferToImage(): Both pRegion[0] imageoffset.y (0) and (imageExtent.height + imageOffset.y) (2048) must be >= zero or <= image subresource height (0). The Vulkan spec states: For each element of pRegions, imageOffset.y and (imageExtent.height + imageOffset.y) must both be greater than or equal to 0 and less than or equal to the height of the specified imageSubresource of dstImage (https://vulkan.lunarg.com/doc/view/1.2.162.1/windows/1.2-extensions/vkspec.html#VUID-vkCmdCopyBufferToImage-imageOffset-00198)
-{ 01:33:10 } Vulkan Validation Layer (Validation): Validation Error: [ VUID-vkCmdCopyBufferToImage-imageOffset-00200 ] Object 0: handle = 0x89daef000000002a, type = VK_OBJECT_TYPE_IMAGE; | MessageID = 0x7239f3a5 | vkCmdCopyBufferToImage(): Both pRegion[0] imageoffset.z (0) and (imageExtent.depth + imageOffset.z) (1) must be >= zero or <= image subresource depth (0). The Vulkan spec states: For each element of pRegions, imageOffset.z and (imageExtent.depth + imageOffset.z) must both be greater than or equal to 0 and less than or equal to the depth of the specified imageSubresource of {imageparam} (https://vulkan.lunarg.com/doc/view/1.2.162.1/windows/1.2-extensions/vkspec.html#VUID-vkCmdCopyBufferToImage-imageOffset-00200)
-{ 01:33:10 } Vulkan Validation Layer (Validation): Validation Error: [ VUID-vkCmdCopyBufferToImage-pRegions-00172 ] Object 0: handle = 0x89daef000000002a, type = VK_OBJECT_TYPE_IMAGE; | MessageID = 0x86fa53ce | vkCmdCopyBufferToImage(): pRegion[0] exceeds image bounds.. The Vulkan spec states: The image region specified by each element of pRegions must be a region that is contained within dstImage (https://vulkan.lunarg.com/doc/view/1.2.162.1/windows/1.2-extensions/vkspec.html#VUID-vkCmdCopyBufferToImage-pRegions-00172)
-{ 01:33:10 } Vulkan Validation Layer (Validation): Validation Error: [ VUID-vkCmdCopyBufferToImage-imageSubresource-01701 ] Object 0: handle = 0x215e6226fc8, type = VK_OBJECT_TYPE_COMMAND_BUFFER; | MessageID = 0x98a953ab | In vkCmdCopyBufferToImage(), pRegions[0].imageSubresource.mipLevel is 12, but provided VkImage 0x89daef000000002a[] has 12 mip levels. The Vulkan spec states: The imageSubresource.mipLevel member of each element of pRegions must be less than the mipLevels specified in VkImageCreateInfo when dstImage was created (https://vulkan.lunarg.com/doc/view/1.2.162.1/windows/1.2-extensions/vkspec.html#VUID-vkCmdCopyBufferToImage-imageSubresource-01701)
-*/

@@ -27,6 +27,5 @@ namespace Flint
 
 	class FDrawBuffer : public FShaderResource {
 	public:
-
 	};
 }

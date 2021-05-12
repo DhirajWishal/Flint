@@ -19,7 +19,7 @@ namespace Flint
 		{
 			return XXH64(pData, size, seed);
 		}
-		
+
 		UI64 QuickHash64(const void* pData, UI64 size)
 		{
 			return XXH3_64bits(pData, size);

@@ -164,16 +164,16 @@ Flint::GraphicsPipelineSpecification Application::GetGraphicsPipelineSpec() cons
 * Flint::AssetRegistry* pAssetRegistry = new Flint::AssetRegistry();
 * auto pVertexShader = pAssetRegistry->CreateShader("vShader_1", GetAssetPath(), Flint::ShaderLocation::VERTEX, Flint::ShaderType::SPIRV);
 * auto pFragmentShader = pAssetRegistry->CreateShader("fShader_1", GetAssetPath(), Flint::ShaderLocation::FRAGMENT, Flint::ShaderType::SPIRV);
-* 
+*
 * auto shaderSamplers = pFragmentShader->GetShamplers();
 * shaderSamplers["texSampler"] = GetDefaultSamplerSpec();
 * pFragmentShader->SubmitSamplerSpecifications(shaderSamplers);
-* 
+*
 * auto pWireFrame = pAssetRegistry->GetWireFrame("vWireFrame_1");
 * auto pPipeline = pAssetRegistry->CreateGraphicsPipeline(pRenderTarget, pWireFrame, { pVertexShader, pFragmentShader }, GetPipelineSpec());
-* 
+*
 * UI64 drawID = pRenderTarget->SubmitToDraw(pPipeline, pWireFrame, { mModelViewProj }, { mWrappingTexture });
-* 
+*
 * pAssetRegistry->DestroyShader("vShader_1");
 * pAssetRegistry->DestroyShader("fShader_1");
 */

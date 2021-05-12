@@ -3,23 +3,24 @@
 
 #pragma once
 
-#include "Core/Backend/FBuffer.h"
+#include "Core/Backend/Buffer.h"
 #include "VulkanDevice.h"
 
 namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanBuffer final : public FBuffer {
+		class VulkanBuffer final : public Backend::Buffer
+		{
 		public:
-			VulkanBuffer(FDevice* pDevice, UI64 size, BufferUsage usage, MemoryProfile profile);
+			VulkanBuffer(Backend::Device* pDevice, UI64 size, Backend::BufferUsage usage, Backend::MemoryProfile profile);
 
 			virtual void Terminate() override final;
 			virtual void* MapMemory(UI64 size, UI64 offset) override final;
 			virtual void UnmapMemory() override final;
 			virtual void FlushMemoryMappings() override final;
 
-			virtual void CopyFrom(const FBuffer* pBuffer, UI64 size, UI64 srcOffset, UI64 dstOffset) override final;
+			virtual void CopyFrom(const Backend::Buffer* pBuffer, UI64 size, UI64 srcOffset, UI64 dstOffset) override final;
 
 		private:
 			void CreateBuffer(VkBufferUsageFlags vUsage);

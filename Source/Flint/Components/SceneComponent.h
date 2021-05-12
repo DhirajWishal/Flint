@@ -20,14 +20,14 @@ namespace Flint
 
 		/**
 		 * Destroy a created render resource.
-		 * 
+		 *
 		 * @param renderResource: The render resource to be destroyed.
 		 */
 		void DestroyRenderResources(RenderResource& renderResource);
 
 		/**
 		 * Get the uniform buffers required by the pipeline.
-		 * 
+		 *
 		 * @return The uniform buffer container with the respective uniform buffers.
 		 */
 		UniformBufferContainer GetUniformBuffers() const { return pPipeline->CreateUniformBuffers(); }

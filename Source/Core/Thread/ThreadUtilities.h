@@ -20,7 +20,7 @@ namespace Flint
 
 			/**
 			 * Sleep this thread for a period of time.
-			 * 
+			 *
 			 * @param duration: The duration in nanoseconds.
 			 */
 			void SleepThisThread(std::chrono::nanoseconds duration);

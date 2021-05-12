@@ -248,7 +248,7 @@ namespace Flint
 			: FGraphicsPipeline(pRenderTarget, shaderDigests, spec)
 		{
 			ResolveUniformLayouts(shaderDigests);
-			this->pvRenderTarget = pRenderTarget->GetAs<VulkanScreenBoundRenderTargetS>();
+			this->pvRenderTarget = pRenderTarget->GetAs<VulkanScreenBoundRenderTarget>();
 			VulkanDevice* pDevice = pRenderTarget->GetDevice()->GetAs<VulkanDevice>();
 
 			std::vector<VkPipelineShaderStageCreateInfo> vStages = {};
@@ -542,7 +542,7 @@ namespace Flint
 
 		FPipelineResource* VulkanGraphicsPipeline::CreatePipelineResource()
 		{
-			return std::make_shared<VulkanPipelineResource>(FGraphicsPipeline*(this));
+			return std::make_shared<VulkanPipelineResource>(FGraphicsPipeline * (this));
 		}
 	}
 }

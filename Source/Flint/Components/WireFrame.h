@@ -45,7 +45,7 @@ namespace Flint
 
 		/**
 		 * Load wire frame data from an external asset file.
-		 * 
+		 *
 		 * @param pDevice: The device pointer.
 		 * @param asset: The asset file.
 		 * @param vertexAttributes: The vertex attributes to be loaded.
@@ -54,7 +54,7 @@ namespace Flint
 
 		/**
 		 * Load wire frame data form a wire frame cache file.
-		 * 
+		 *
 		 * @param pDevice: The device pointer.
 		 * @param asset: The asset file.
 		 */
@@ -74,7 +74,7 @@ namespace Flint
 	public:
 		/**
 		 * Load wire frame content from an external file.
-		 * 
+		 *
 		 * @param pDevice: The device pointer.
 		 * @param asset: The asset file.
 		 * @param vertexAttributes: The vertex attributes to be loaded.
@@ -84,7 +84,7 @@ namespace Flint
 		/**
 		 * Load the wire frame content from a cache file.
 		 * This is much faster than loading from a object file.
-		 * 
+		 *
 		 * @param pDevice: The device object pointer.
 		 * @param asset: The cache file to be loaded from.
 		 */
@@ -92,7 +92,7 @@ namespace Flint
 
 		/**
 		 * Create a cache file using the wire frame content.
-		 * 
+		 *
 		 * @param title: The title of the file.
 		 */
 		void CreateCache(std::filesystem::path title);

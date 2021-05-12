@@ -5,7 +5,7 @@
 #include "VulkanBackend\VulkanMacros.h"
 #include "VulkanBackend\VulkanOneTimeCommandBuffer.h"
 #include "VulkanBackend\VulkanUtilities.h"
-#include "VulkanBackend\RenderTargets\VulkanScreenBoundRenderTargetS.h"
+#include "VulkanBackend\RenderTargets\VulkanScreenBoundRenderTarget.h"
 #include "VulkanBackend\VulkanBuffer.h"
 #include "VulkanBackend\RenderTargets\Pipelines/VulkanGraphicsPipeline.h"
 

@@ -83,7 +83,6 @@ namespace Flint
 				INSERT_INTO_VECTOR(mDigest.mInputAttributes, std::move(mInputAttribute));
 			}
 
-
 			// Resolve shader outputs.
 			ShaderAttribute mOutputAttribute = {};
 			for (auto& resource : mResources.stage_outputs)

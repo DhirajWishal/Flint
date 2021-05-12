@@ -11,7 +11,7 @@ namespace Flint
 	 * Vector Set for Flint.
 	 * Vector set is used as a std::unordered_map/ std::set but in this case, we store it in a vector. The entries
 	 * are sorted by the Key value, and we binary search out way finding the entry.
-	 * 
+	 *
 	 * @tparam Key: The key type.
 	 * @tparam Value: The value which is mapped to the Key type.
 	 * @param Compare: The compare struct. Default is std::less<Key>.

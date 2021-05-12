@@ -17,7 +17,7 @@ namespace Flint
 			for (auto itr = mThreads.begin(); itr != mThreads.end(); itr++)
 				itr->join();
 		}
-		
+
 		bool ThreadPool::IsExecuting(UI8 index) const
 		{
 			return !mThreads[index].joinable();

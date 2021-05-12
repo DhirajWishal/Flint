@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Core\Backend\FScreenBoundRenderTarget.h"
+#include "Core\Backend\ScreenBoundRenderTarget.h"
 #include "VulkanRenderTarget.h"
 
 #include "Attachments/VulkanColorBuffer.h"
@@ -17,13 +17,10 @@ namespace Flint
 	{
 		class VulkanGraphicsPipeline;
 
-		/**
-		 * Software/ compute.
-		 */
-		class VulkanScreenBoundRenderTargetS final : public VulkanRenderTarget, public FScreenBoundRenderTarget {
-		
+		class VulkanScreenBoundRenderTarget final : public VulkanRenderTarget, public Backend::ScreenBoundRenderTarget
+		{
 		public:
-			VulkanScreenBoundRenderTargetS(FDevice* pDevice, FDisplay* pDisplay, UI64 bufferCount);
+			VulkanScreenBoundRenderTarget(Backend::Device* pDevice, Backend::Display* pDisplay, UI64 bufferCount);
 
 			virtual void Terminate() override final;
 			virtual void BakeCommands() override final;
@@ -31,7 +28,7 @@ namespace Flint
 			virtual void Update() override final;
 			virtual void SubmitCommand() override final;
 
-			virtual Vector2 VulkanRenderTarget::GetExtent() const = 0 { return FScreenBoundRenderTarget::GetExtent(); }
+			virtual Vector2 VulkanRenderTarget::GetExtent() const = 0 { return ScreenBoundRenderTarget::GetExtent(); }
 
 			VkSwapchainKHR GetSwapChain() const { return vSwapChain.GetSwapChain(); }
 			VkFramebuffer GetCurrentFrameBuffer() const { return vFrameBuffers[GetFrameIndex()]; }

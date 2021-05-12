@@ -21,13 +21,13 @@ namespace Flint
 			virtual Vector2 GetExtent() const = 0;
 
 		protected:
-			void CreateRenderPass(VulkanDevice* pDevice,std::vector<VulkanRenderTargetAttachment*> pAttachments, VkPipelineBindPoint vBindPoint);
+			void CreateRenderPass(VulkanDevice* pDevice, std::vector<VulkanRenderTargetAttachment*> pAttachments, VkPipelineBindPoint vBindPoint);
 			void DestroyRenderPass(VulkanDevice* pDevice);
 
-			void CreateFrameBuffer(VulkanDevice* pDevice,std::vector<VulkanRenderTargetAttachment*> pAttachments, const Vector2& extent, UI32 bufferCount);
+			void CreateFrameBuffer(VulkanDevice* pDevice, std::vector<VulkanRenderTargetAttachment*> pAttachments, const Vector2& extent, UI32 bufferCount);
 			void DestroyFrameBuffers(VulkanDevice* pDevice);
 
-			void InitializeSyncObjects(VulkanDevice* pDevice,UI32 count);
+			void InitializeSyncObjects(VulkanDevice* pDevice, UI32 count);
 			void TerminateSyncObjects(VulkanDevice* pDevice);
 
 		protected:

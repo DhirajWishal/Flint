@@ -24,85 +24,85 @@ using namespace std;
 
 namespace simple_json
 {
-enum class Type
-{
-	Object,
-	Array,
-};
-
-using State = std::pair<Type, bool>;
-using Stack = std::stack<State>;
-
-class Stream
-{
-	Stack stack;
-	StringStream<> buffer;
-	uint32_t indent{ 0 };
-	char current_locale_radix_character = '.';
-
-public:
-	void set_current_locale_radix_character(char c)
+	enum class Type
 	{
-		current_locale_radix_character = c;
-	}
+		Object,
+		Array,
+	};
 
-	void begin_json_object();
-	void end_json_object();
-	void emit_json_key(const std::string &key);
-	void emit_json_key_value(const std::string &key, const std::string &value);
-	void emit_json_key_value(const std::string &key, bool value);
-	void emit_json_key_value(const std::string &key, uint32_t value);
-	void emit_json_key_value(const std::string &key, int32_t value);
-	void emit_json_key_value(const std::string &key, float value);
-	void emit_json_key_object(const std::string &key);
-	void emit_json_key_array(const std::string &key);
+	using State = std::pair<Type, bool>;
+	using Stack = std::stack<State>;
 
-	void begin_json_array();
-	void end_json_array();
-	void emit_json_array_value(const std::string &value);
-	void emit_json_array_value(uint32_t value);
-	void emit_json_array_value(bool value);
-
-	std::string str() const
+	class Stream
 	{
-		return buffer.str();
-	}
+		Stack stack;
+		StringStream<> buffer;
+		uint32_t indent{ 0 };
+		char current_locale_radix_character = '.';
 
-private:
-	inline void statement_indent()
-	{
-		for (uint32_t i = 0; i < indent; i++)
-			buffer << "    ";
-	}
+	public:
+		void set_current_locale_radix_character(char c)
+		{
+			current_locale_radix_character = c;
+		}
 
-	template <typename T>
-	inline void statement_inner(T &&t)
-	{
-		buffer << std::forward<T>(t);
-	}
+		void begin_json_object();
+		void end_json_object();
+		void emit_json_key(const std::string& key);
+		void emit_json_key_value(const std::string& key, const std::string& value);
+		void emit_json_key_value(const std::string& key, bool value);
+		void emit_json_key_value(const std::string& key, uint32_t value);
+		void emit_json_key_value(const std::string& key, int32_t value);
+		void emit_json_key_value(const std::string& key, float value);
+		void emit_json_key_object(const std::string& key);
+		void emit_json_key_array(const std::string& key);
 
-	template <typename T, typename... Ts>
-	inline void statement_inner(T &&t, Ts &&... ts)
-	{
-		buffer << std::forward<T>(t);
-		statement_inner(std::forward<Ts>(ts)...);
-	}
+		void begin_json_array();
+		void end_json_array();
+		void emit_json_array_value(const std::string& value);
+		void emit_json_array_value(uint32_t value);
+		void emit_json_array_value(bool value);
 
-	template <typename... Ts>
-	inline void statement(Ts &&... ts)
-	{
-		statement_indent();
-		statement_inner(std::forward<Ts>(ts)...);
-		buffer << '\n';
-	}
+		std::string str() const
+		{
+			return buffer.str();
+		}
 
-	template <typename... Ts>
-	void statement_no_return(Ts &&... ts)
-	{
-		statement_indent();
-		statement_inner(std::forward<Ts>(ts)...);
-	}
-};
+	private:
+		inline void statement_indent()
+		{
+			for (uint32_t i = 0; i < indent; i++)
+				buffer << "    ";
+		}
+
+		template <typename T>
+		inline void statement_inner(T&& t)
+		{
+			buffer << std::forward<T>(t);
+		}
+
+		template <typename T, typename... Ts>
+		inline void statement_inner(T&& t, Ts &&... ts)
+		{
+			buffer << std::forward<T>(t);
+			statement_inner(std::forward<Ts>(ts)...);
+		}
+
+		template <typename... Ts>
+		inline void statement(Ts &&... ts)
+		{
+			statement_indent();
+			statement_inner(std::forward<Ts>(ts)...);
+			buffer << '\n';
+		}
+
+		template <typename... Ts>
+		void statement_no_return(Ts &&... ts)
+		{
+			statement_indent();
+			statement_inner(std::forward<Ts>(ts)...);
+		}
+	};
 } // namespace simple_json
 
 using namespace simple_json;
@@ -137,7 +137,7 @@ void Stream::end_json_array()
 	}
 }
 
-void Stream::emit_json_array_value(const std::string &value)
+void Stream::emit_json_array_value(const std::string& value)
 {
 	if (stack.empty() || stack.top().first != Type::Array)
 		SPIRV_CROSS_THROW("Invalid JSON state");
@@ -197,7 +197,7 @@ void Stream::end_json_object()
 	}
 }
 
-void Stream::emit_json_key(const std::string &key)
+void Stream::emit_json_key(const std::string& key)
 {
 	if (stack.empty() || stack.top().first != Type::Object)
 		SPIRV_CROSS_THROW("Invalid JSON state");
@@ -208,37 +208,37 @@ void Stream::emit_json_key(const std::string &key)
 	stack.top().second = true;
 }
 
-void Stream::emit_json_key_value(const std::string &key, const std::string &value)
+void Stream::emit_json_key_value(const std::string& key, const std::string& value)
 {
 	emit_json_key(key);
 	statement_inner("\"", value, "\"");
 }
 
-void Stream::emit_json_key_value(const std::string &key, uint32_t value)
+void Stream::emit_json_key_value(const std::string& key, uint32_t value)
 {
 	emit_json_key(key);
 	statement_inner(value);
 }
 
-void Stream::emit_json_key_value(const std::string &key, int32_t value)
+void Stream::emit_json_key_value(const std::string& key, int32_t value)
 {
 	emit_json_key(key);
 	statement_inner(value);
 }
 
-void Stream::emit_json_key_value(const std::string &key, float value)
+void Stream::emit_json_key_value(const std::string& key, float value)
 {
 	emit_json_key(key);
 	statement_inner(convert_to_string(value, current_locale_radix_character));
 }
 
-void Stream::emit_json_key_value(const std::string &key, bool value)
+void Stream::emit_json_key_value(const std::string& key, bool value)
 {
 	emit_json_key(key);
 	statement_inner(value ? "true" : "false");
 }
 
-void Stream::emit_json_key_object(const std::string &key)
+void Stream::emit_json_key_object(const std::string& key)
 {
 	emit_json_key(key);
 	statement_inner("{\n");
@@ -246,7 +246,7 @@ void Stream::emit_json_key_object(const std::string &key)
 	stack.emplace(Type::Object, false);
 }
 
-void Stream::emit_json_key_array(const std::string &key)
+void Stream::emit_json_key_array(const std::string& key)
 {
 	emit_json_key(key);
 	statement_inner("[\n");
@@ -254,7 +254,7 @@ void Stream::emit_json_key_array(const std::string &key)
 	stack.emplace(Type::Array, false);
 }
 
-void CompilerReflection::set_format(const std::string &format)
+void CompilerReflection::set_format(const std::string& format)
 {
 	if (format != "json")
 	{
@@ -277,16 +277,16 @@ string CompilerReflection::compile()
 	return json_stream->str();
 }
 
-static bool naturally_emit_type(const SPIRType &type)
+static bool naturally_emit_type(const SPIRType& type)
 {
 	return type.basetype == SPIRType::Struct && !type.pointer && type.array.empty();
 }
 
-bool CompilerReflection::type_is_reference(const SPIRType &type) const
+bool CompilerReflection::type_is_reference(const SPIRType& type) const
 {
 	// Physical pointers and arrays of physical pointers need to refer to the pointee's type.
 	return type_is_top_level_physical_pointer(type) ||
-	       (!type.array.empty() && type_is_top_level_physical_pointer(get<SPIRType>(type.parent_type)));
+		(!type.array.empty() && type_is_top_level_physical_pointer(get<SPIRType>(type.parent_type)));
 }
 
 void CompilerReflection::emit_types()
@@ -297,7 +297,7 @@ void CompilerReflection::emit_types()
 
 	// If we have physical pointers or arrays of physical pointers, it's also helpful to emit the pointee type
 	// and chain the type hierarchy. For POD, arrays can emit the entire type in-place.
-	ir.for_each_typed_id<SPIRType>([&](uint32_t self, SPIRType &type) {
+	ir.for_each_typed_id<SPIRType>([&](uint32_t self, SPIRType& type) {
 		if (naturally_emit_type(type))
 		{
 			emit_type(self, emitted_open_tag);
@@ -305,13 +305,13 @@ void CompilerReflection::emit_types()
 		else if (type_is_reference(type))
 		{
 			if (!naturally_emit_type(this->get<SPIRType>(type.parent_type)) &&
-			    find(physical_pointee_types.begin(), physical_pointee_types.end(),
-			         type.parent_type) == physical_pointee_types.end())
+				find(physical_pointee_types.begin(), physical_pointee_types.end(),
+					type.parent_type) == physical_pointee_types.end())
 			{
 				physical_pointee_types.push_back(type.parent_type);
 			}
 		}
-	});
+		});
 
 	for (uint32_t pointee_type : physical_pointee_types)
 		emit_type(pointee_type, emitted_open_tag);
@@ -322,9 +322,9 @@ void CompilerReflection::emit_types()
 	}
 }
 
-void CompilerReflection::emit_type(uint32_t type_id, bool &emitted_open_tag)
+void CompilerReflection::emit_type(uint32_t type_id, bool& emitted_open_tag)
 {
-	auto &type = get<SPIRType>(type_id);
+	auto& type = get<SPIRType>(type_id);
 	auto name = type_to_glsl(type);
 
 	if (type.type_alias != TypeID(0))
@@ -374,9 +374,9 @@ void CompilerReflection::emit_type(uint32_t type_id, bool &emitted_open_tag)
 	json_stream->end_json_object();
 }
 
-void CompilerReflection::emit_type_member(const SPIRType &type, uint32_t index)
+void CompilerReflection::emit_type_member(const SPIRType& type, uint32_t index)
 {
-	auto &membertype = get<SPIRType>(type.member_types[index]);
+	auto& membertype = get<SPIRType>(type.member_types[index]);
 	json_stream->begin_json_object();
 	auto name = to_member_name(type, index);
 	// FIXME we'd like to emit the offset of each member, but such offsets are
@@ -399,7 +399,7 @@ void CompilerReflection::emit_type_member(const SPIRType &type, uint32_t index)
 	json_stream->end_json_object();
 }
 
-void CompilerReflection::emit_type_array(const SPIRType &type)
+void CompilerReflection::emit_type_array(const SPIRType& type)
 {
 	if (!type_is_top_level_physical_pointer(type) && !type.array.empty())
 	{
@@ -407,25 +407,25 @@ void CompilerReflection::emit_type_array(const SPIRType &type)
 		// Note that we emit the zeros here as a means of identifying
 		// unbounded arrays.  This is necessary as otherwise there would
 		// be no way of differentiating between float[4] and float[4][]
-		for (const auto &value : type.array)
+		for (const auto& value : type.array)
 			json_stream->emit_json_array_value(value);
 		json_stream->end_json_array();
 
 		json_stream->emit_json_key_array("array_size_is_literal");
-		for (const auto &value : type.array_size_literal)
+		for (const auto& value : type.array_size_literal)
 			json_stream->emit_json_array_value(value);
 		json_stream->end_json_array();
 	}
 }
 
-void CompilerReflection::emit_type_member_qualifiers(const SPIRType &type, uint32_t index)
+void CompilerReflection::emit_type_member_qualifiers(const SPIRType& type, uint32_t index)
 {
-	auto &membertype = get<SPIRType>(type.member_types[index]);
+	auto& membertype = get<SPIRType>(type.member_types[index]);
 	emit_type_array(membertype);
-	auto &memb = ir.meta[type.self].members;
+	auto& memb = ir.meta[type.self].members;
 	if (index < memb.size())
 	{
-		auto &dec = memb[index];
+		auto& dec = memb[index];
 		if (dec.decoration_flags.get(DecorationLocation))
 			json_stream->emit_json_key_value("location", dec.location);
 		if (dec.decoration_flags.get(DecorationOffset))
@@ -434,7 +434,7 @@ void CompilerReflection::emit_type_member_qualifiers(const SPIRType &type, uint3
 		// Array stride is a property of the array type, not the struct.
 		if (has_decoration(type.member_types[index], DecorationArrayStride))
 			json_stream->emit_json_key_value("array_stride",
-			                                 get_decoration(type.member_types[index], DecorationArrayStride));
+				get_decoration(type.member_types[index], DecorationArrayStride));
 
 		if (dec.decoration_flags.get(DecorationMatrixStride))
 			json_stream->emit_json_key_value("matrix_stride", dec.matrix_stride);
@@ -486,35 +486,35 @@ void CompilerReflection::emit_entry_points()
 	if (!entries.empty())
 	{
 		// Needed to make output deterministic.
-		sort(begin(entries), end(entries), [](const EntryPoint &a, const EntryPoint &b) -> bool {
+		sort(begin(entries), end(entries), [](const EntryPoint& a, const EntryPoint& b) -> bool {
 			if (a.execution_model < b.execution_model)
 				return true;
 			else if (a.execution_model > b.execution_model)
 				return false;
 			else
 				return a.name < b.name;
-		});
+			});
 
 		json_stream->emit_json_key_array("entryPoints");
-		for (auto &e : entries)
+		for (auto& e : entries)
 		{
 			json_stream->begin_json_object();
 			json_stream->emit_json_key_value("name", e.name);
 			json_stream->emit_json_key_value("mode", execution_model_to_str(e.execution_model));
 			if (e.execution_model == ExecutionModelGLCompute)
 			{
-				const auto &spv_entry = get_entry_point(e.name, e.execution_model);
+				const auto& spv_entry = get_entry_point(e.name, e.execution_model);
 
 				SpecializationConstant spec_x, spec_y, spec_z;
 				get_work_group_size_specialization_constants(spec_x, spec_y, spec_z);
 
 				json_stream->emit_json_key_array("workgroup_size");
 				json_stream->emit_json_array_value(spec_x.id != ID(0) ? spec_x.constant_id :
-				                                                        spv_entry.workgroup_size.x);
+					spv_entry.workgroup_size.x);
 				json_stream->emit_json_array_value(spec_y.id != ID(0) ? spec_y.constant_id :
-				                                                        spv_entry.workgroup_size.y);
+					spv_entry.workgroup_size.y);
 				json_stream->emit_json_array_value(spec_z.id != ID(0) ? spec_z.constant_id :
-				                                                        spv_entry.workgroup_size.z);
+					spv_entry.workgroup_size.z);
 				json_stream->end_json_array();
 
 				json_stream->emit_json_key_array("workgroup_size_is_spec_constant_id");
@@ -546,7 +546,7 @@ void CompilerReflection::emit_resources()
 	emit_resources("acceleration_structures", res.acceleration_structures);
 }
 
-void CompilerReflection::emit_resources(const char *tag, const SmallVector<Resource> &resources)
+void CompilerReflection::emit_resources(const char* tag, const SmallVector<Resource>& resources)
 {
 	if (resources.empty())
 	{
@@ -554,18 +554,18 @@ void CompilerReflection::emit_resources(const char *tag, const SmallVector<Resou
 	}
 
 	json_stream->emit_json_key_array(tag);
-	for (auto &res : resources)
+	for (auto& res : resources)
 	{
-		auto &type = get_type(res.type_id);
+		auto& type = get_type(res.type_id);
 		auto typeflags = ir.meta[type.self].decoration.decoration_flags;
-		auto &mask = get_decoration_bitset(res.id);
+		auto& mask = get_decoration_bitset(res.id);
 
 		// If we don't have a name, use the fallback for the type instead of the variable
 		// for SSBOs and UBOs since those are the only meaningful names to use externally.
 		// Push constant blocks are still accessed by name and not block name, even though they are technically Blocks.
 		bool is_push_constant = get_storage_class(res.id) == StorageClassPushConstant;
 		bool is_block = get_decoration_bitset(type.self).get(DecorationBlock) ||
-		                get_decoration_bitset(type.self).get(DecorationBufferBlock);
+			get_decoration_bitset(type.self).get(DecorationBufferBlock);
 
 		ID fallback_id = !is_push_constant && is_block ? ID(res.base_type_id) : ID(res.id);
 
@@ -583,7 +583,7 @@ void CompilerReflection::emit_resources(const char *tag, const SmallVector<Resou
 		json_stream->emit_json_key_value("name", !res.name.empty() ? res.name : get_fallback_name(fallback_id));
 		{
 			bool ssbo_block = type.storage == StorageClassStorageBuffer ||
-			                  (type.storage == StorageClassUniform && typeflags.get(DecorationBufferBlock));
+				(type.storage == StorageClassUniform && typeflags.get(DecorationBufferBlock));
 			if (ssbo_block)
 			{
 				auto buffer_flags = get_buffer_block_flags(res.id);
@@ -602,8 +602,8 @@ void CompilerReflection::emit_resources(const char *tag, const SmallVector<Resou
 
 		{
 			bool is_sized_block = is_block && (get_storage_class(res.id) == StorageClassUniform ||
-			                                   get_storage_class(res.id) == StorageClassUniformConstant ||
-			                                   get_storage_class(res.id) == StorageClassStorageBuffer);
+				get_storage_class(res.id) == StorageClassUniformConstant ||
+				get_storage_class(res.id) == StorageClassStorageBuffer);
 			if (is_sized_block)
 			{
 				uint32_t block_size = uint32_t(get_declared_struct_size(get_type(res.base_type_id)));
@@ -627,7 +627,7 @@ void CompilerReflection::emit_resources(const char *tag, const SmallVector<Resou
 			json_stream->emit_json_key_value("binding", get_decoration(res.id, DecorationBinding));
 		if (mask.get(DecorationInputAttachmentIndex))
 			json_stream->emit_json_key_value("input_attachment_index",
-			                                 get_decoration(res.id, DecorationInputAttachmentIndex));
+				get_decoration(res.id, DecorationInputAttachmentIndex));
 		if (mask.get(DecorationOffset))
 			json_stream->emit_json_key_value("offset", get_decoration(res.id, DecorationOffset));
 
@@ -635,7 +635,7 @@ void CompilerReflection::emit_resources(const char *tag, const SmallVector<Resou
 		// Only emit the format for storage images.
 		if (type.basetype == SPIRType::Image && type.image.sampled == 2)
 		{
-			const char *fmt = format_to_glsl(type.image.format);
+			const char* fmt = format_to_glsl(type.image.format);
 			if (fmt != nullptr)
 				json_stream->emit_json_key_value("format", std::string(fmt));
 		}
@@ -653,7 +653,7 @@ void CompilerReflection::emit_specialization_constants()
 	json_stream->emit_json_key_array("specialization_constants");
 	for (const auto spec_const : specialization_constants)
 	{
-		auto &c = get<SPIRConstant>(spec_const.id);
+		auto& c = get<SPIRConstant>(spec_const.id);
 		auto type = get<SPIRType>(c.constant_type);
 		json_stream->begin_json_object();
 		json_stream->emit_json_key_value("name", get_name(spec_const.id));
@@ -686,13 +686,13 @@ void CompilerReflection::emit_specialization_constants()
 	json_stream->end_json_array();
 }
 
-string CompilerReflection::to_member_name(const SPIRType &type, uint32_t index) const
+string CompilerReflection::to_member_name(const SPIRType& type, uint32_t index) const
 {
-	auto *type_meta = ir.find_meta(type.self);
+	auto* type_meta = ir.find_meta(type.self);
 
 	if (type_meta)
 	{
-		auto &memb = type_meta->members;
+		auto& memb = type_meta->members;
 		if (index < memb.size() && !memb[index].alias.empty())
 			return memb[index].alias;
 		else

@@ -5,13 +5,13 @@
 
 #include "Core\Backend\Instance.h"
 
-#include <vulkan/vulkan.h> 
+#include <vulkan/vulkan.h>
 
 namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanInstance final : public Backend::Instance 
+		class VulkanInstance final : public Backend::Instance
 		{
 		public:
 			VulkanInstance(bool enableValidation);
