@@ -9,7 +9,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanShaderModule::VulkanShaderModule(VulkanDevice* pDevice, const FShaderDigest& digest)
+		VulkanShaderModule::VulkanShaderModule(VulkanDevice* pDevice, const Backend::ShaderDigest& digest)
 			: pDevice(pDevice)
 		{
 			vShaderStage = Utilities::GetShaderStage(digest.mLocation);
@@ -45,7 +45,7 @@ namespace Flint
 			return vSSCI;
 		}
 
-		void VulkanShaderModule::SetupResources(const FShaderDigest& digest)
+		void VulkanShaderModule::SetupResources(const Backend::ShaderDigest& digest)
 		{
 			VkDescriptorSetLayoutBinding vBinding = {};
 			vBinding.stageFlags = vShaderStage;
@@ -57,7 +57,7 @@ namespace Flint
 			VkDescriptorPoolSize vPoolSize = {};
 			for (auto itr = digest.mUniforms.begin(); itr != digest.mUniforms.end(); itr++)
 			{
-				if (itr->mType == UniformType::CONSTANT)
+				if (itr->mType == Backend::UniformType::CONSTANT)
 				{
 					vRange.size = static_cast<UI32>(itr->mSize);
 					INSERT_INTO_VECTOR(mConstantRange, vRange);

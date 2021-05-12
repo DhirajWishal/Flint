@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Core/Backend/FShaderDigest.h"
+#include "Core/Backend/ShaderDigest.h"
 
 namespace Flint
 {
@@ -24,9 +24,9 @@ namespace Flint
 			 *
 			 * @param mShaderCode: The shader code to perform reflection.
 			 * @param location: The location of the shader code.
-			 * @return FShaderDigest object.
+			 * @return ShaderDigest object.
 			 */
-			FShaderDigest Reflect(const std::vector<UI32>& mShaderCode, ShaderLocation location);
+			ShaderDigest Reflect(const std::vector<UI32>& mShaderCode, ShaderLocation location);
 		};
 	}
 }

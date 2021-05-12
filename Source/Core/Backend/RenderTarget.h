@@ -5,7 +5,7 @@
 
 #include "Device.h"
 #include "Display.h"
-#include "FCommandBufferList.h"
+#include "CommandBufferList.h"
 
 namespace Flint
 {
@@ -27,7 +27,7 @@ namespace Flint
 				DrawEntry() = default;
 				DrawEntry(Buffer* pVertexBuffer, Buffer* pIndexBuffer) : pVertexBuffer(pVertexBuffer), pIndexBuffer(pIndexBuffer) {}
 
-				std::unordered_map<UI64, FPipeline*> pPipelines = {};
+				std::unordered_map<UI64, Pipeline*> pPipelines = {};
 
 				Buffer* pVertexBuffer = {};
 				Buffer* pIndexBuffer = {};
@@ -121,7 +121,7 @@ namespace Flint
 			 * @param pPipeline: The pipeline pointer.
 			 * @return The pipeline ID.
 			 */
-			UI64 AddPipelineToStaticDrawEntry(UI64 ID, FPipeline* pPipeline);
+			UI64 AddPipelineToStaticDrawEntry(UI64 ID, Pipeline* pPipeline);
 
 			/**
 			 * Add a pipeline to a dynamic draw entry.
@@ -130,7 +130,7 @@ namespace Flint
 			 * @param pPipeline: The pipeline pointer.
 			 * @return The pipeline ID.
 			 */
-			UI64 AddPipelineToDynamicDrawEntry(UI64 ID, FPipeline* pPipeline);
+			UI64 AddPipelineToDynamicDrawEntry(UI64 ID, Pipeline* pPipeline);
 
 			/**
 			 * Get the static draw entries of the render target.
@@ -164,7 +164,7 @@ namespace Flint
 			std::unordered_map<UI64, DrawEntry> mStaticDrawEntries;
 			std::unordered_map<UI64, DrawEntry> mDynamicDrawEntries;
 
-			std::unique_ptr<FCommandBufferList> pCommandBufferList = nullptr;
+			std::unique_ptr<CommandBufferList> pCommandBufferList = nullptr;
 			Device* pDevice = nullptr;
 
 			UI64 mStaticDrawIndex = 0;

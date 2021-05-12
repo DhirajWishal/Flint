@@ -4,7 +4,7 @@
 #pragma once
 
 #include "WireFrame.h"
-#include "Core/Backend/FPipeline.h"
+#include "Core/Backend/Pipeline.h"
 #include "RenderResource.h"
 #include "Core\Backend\FGraphicsPipeline.h"
 

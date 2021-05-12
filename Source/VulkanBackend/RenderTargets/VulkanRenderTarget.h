@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Core/Backend/FRenderTarget.h"
+#include "Core/Backend/RenderTarget.h"
 #include "Attachments/VulkanRenderTargetAttachment.h"
 
 namespace Flint

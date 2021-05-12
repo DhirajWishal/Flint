@@ -5,6 +5,7 @@
 
 #include "Core\Backend\Instance.h"
 
+#include <vector>
 #include <vulkan/vulkan.h>
 
 namespace Flint

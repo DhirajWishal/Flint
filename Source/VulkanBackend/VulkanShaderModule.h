@@ -4,24 +4,25 @@
 #pragma once
 
 #include "VulkanDevice.h"
-#include "Core/Backend/FShaderDigest.h"
+#include "Core/Backend/ShaderDigest.h"
 
 namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanShaderModule final : public VulkanDeviceBoundObject, public BackendObject {
+		class VulkanShaderModule final : public VulkanDeviceBoundObject, public Backend::BackendObject
+		{
 		public:
 			using DeviceType = VulkanDevice;
 
 		public:
-			VulkanShaderModule(VulkanDevice* pDevice, const FShaderDigest& digest);
+			VulkanShaderModule(VulkanDevice* pDevice, const Backend::ShaderDigest& digest);
 
 			virtual void Terminate() override final;
 			VkPipelineShaderStageCreateInfo GetStage() const;
 
 		private:
-			void SetupResources(const FShaderDigest& digest);
+			void SetupResources(const Backend::ShaderDigest& digest);
 
 		public:
 			VulkanDevice* pDevice = nullptr;

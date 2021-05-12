@@ -113,24 +113,24 @@ namespace Flint
 				return vFormat == VK_FORMAT_D32_SFLOAT_S8_UINT || vFormat == VK_FORMAT_D24_UNORM_S8_UINT;
 			}
 
-			VkShaderStageFlagBits GetShaderStage(ShaderLocation location)
+			VkShaderStageFlagBits GetShaderStage(Backend::ShaderLocation location)
 			{
 				switch (location)
 				{
-				case Flint::ShaderLocation::VERTEX:
+				case Flint::Backend::ShaderLocation::VERTEX:
 					return VkShaderStageFlagBits::VK_SHADER_STAGE_VERTEX_BIT;
 
-				case Flint::ShaderLocation::TESSELLATION:
+				case Flint::Backend::ShaderLocation::TESSELLATION:
 					return VkShaderStageFlagBits(VkShaderStageFlagBits::VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT | VkShaderStageFlagBits::VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT);
 
-				case Flint::ShaderLocation::GEOMETRY:
+				case Flint::Backend::ShaderLocation::GEOMETRY:
 					return VkShaderStageFlagBits::VK_SHADER_STAGE_GEOMETRY_BIT;
 
-				case Flint::ShaderLocation::FRAGMENT:
+				case Flint::Backend::ShaderLocation::FRAGMENT:
 					return VkShaderStageFlagBits::VK_SHADER_STAGE_FRAGMENT_BIT;
 					break;
 
-				case Flint::ShaderLocation::COMPUTE:
+				case Flint::Backend::ShaderLocation::COMPUTE:
 					return VkShaderStageFlagBits::VK_SHADER_STAGE_COMPUTE_BIT;
 
 				default:
@@ -141,47 +141,47 @@ namespace Flint
 				return VkShaderStageFlagBits::VK_SHADER_STAGE_ALL;
 			}
 
-			VkDescriptorType GetDescriptorType(UniformType type)
+			VkDescriptorType GetDescriptorType(Backend::UniformType type)
 			{
 				switch (type)
 				{
-				case Flint::UniformType::UNIFORM_BUFFER:
+				case Flint::Backend::UniformType::UNIFORM_BUFFER:
 					return VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 
-				case Flint::UniformType::STORAGE_BUFFER:
+				case Flint::Backend::UniformType::STORAGE_BUFFER:
 					return VkDescriptorType::VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 
-				case Flint::UniformType::UNIFORM_BUFFER_DYNAMIC:
+				case Flint::Backend::UniformType::UNIFORM_BUFFER_DYNAMIC:
 					return VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
 
-				case Flint::UniformType::STORAGE_BUFFER_DYNAMIC:
+				case Flint::Backend::UniformType::STORAGE_BUFFER_DYNAMIC:
 					return VkDescriptorType::VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC;
 
-				case Flint::UniformType::UNIFORM_TEXEL_BUFFER:
+				case Flint::Backend::UniformType::UNIFORM_TEXEL_BUFFER:
 					return VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER;
 
-				case Flint::UniformType::STORAGE_TEXEL_BUFFER:
+				case Flint::Backend::UniformType::STORAGE_TEXEL_BUFFER:
 					return VkDescriptorType::VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER;
 
-				case Flint::UniformType::INPUT_ATTACHMENT:
+				case Flint::Backend::UniformType::INPUT_ATTACHMENT:
 					return VkDescriptorType::VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
 
-				case Flint::UniformType::STORAGE_IMAGE:
+				case Flint::Backend::UniformType::STORAGE_IMAGE:
 					return VkDescriptorType::VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
 
-				case Flint::UniformType::SAMPLER_2D:
+				case Flint::Backend::UniformType::SAMPLER_2D:
 					return VkDescriptorType::VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
-				case Flint::UniformType::SAMPLER_CUBE:
+				case Flint::Backend::UniformType::SAMPLER_CUBE:
 					return VkDescriptorType::VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
-				case Flint::UniformType::SAMPLER_2D_ARRAY:
+				case Flint::Backend::UniformType::SAMPLER_2D_ARRAY:
 					return VkDescriptorType::VK_DESCRIPTOR_TYPE_SAMPLER;
 
-				case Flint::UniformType::SAMPLER_CUBE_ARRAY:
+				case Flint::Backend::UniformType::SAMPLER_CUBE_ARRAY:
 					return VkDescriptorType::VK_DESCRIPTOR_TYPE_SAMPLER;
 
-				case Flint::UniformType::ACCELERATION_STRUCTURE:
+				case Flint::Backend::UniformType::ACCELERATION_STRUCTURE:
 					return VkDescriptorType(VkDescriptorType::VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR | VkDescriptorType::VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV);
 
 				default:
@@ -219,7 +219,7 @@ namespace Flint
 				return VkFormat::VK_FORMAT_UNDEFINED;
 			}
 
-			std::vector<VkVertexInputAttributeDescription> GetInputAttributeDescriptions(const FShaderDigest& digest)
+			std::vector<VkVertexInputAttributeDescription> GetInputAttributeDescriptions(const Backend::ShaderDigest& digest)
 			{
 				std::vector<VkVertexInputAttributeDescription> vDescriptions = {};
 				VkVertexInputAttributeDescription vDesc = {};
@@ -238,7 +238,7 @@ namespace Flint
 				return vDescriptions;
 			}
 
-			UI64 GetStride(const FShaderDigest& digest)
+			UI64 GetStride(const Backend::ShaderDigest& digest)
 			{
 				UI64 size = 0;
 				for (auto itr = digest.mInputAttributes.begin(); itr != digest.mInputAttributes.end(); itr++)

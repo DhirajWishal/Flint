@@ -3,25 +3,27 @@
 
 #pragma once
 
-#include "Core\Backend\FPipelineResource.h"
+#include "Core/Backend/PipelineResource.h"
+#include "Core/Backend/GraphicsPipeline.h"
 #include "VulkanPipeline.h"
 
 namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanPipelineResource : public FPipelineResource {
+		class VulkanPipelineResource : public Backend::PipelineResource
+		{
 			friend VulkanPipeline;
 
 		public:
 			using DeviceType = VulkanDevice;
 
 		public:
-			VulkanPipelineResource(FGraphicsPipeline* pPipeline);
+			VulkanPipelineResource(Backend::GraphicsPipeline* pPipeline);
 
 			virtual void Terminate() override final;
-			virtual void RegisterUniformBuffers(const UniformBufferContainer& uniformBuffers) override final;
-			virtual void RegisterUniformImages(const UniformImageContainer& unformImages) override final;
+			virtual void RegisterUniformBuffers(const Backend::UniformBufferContainer& uniformBuffers) override final;
+			virtual void RegisterUniformImages(const Backend::UniformImageContainer& unformImages) override final;
 
 			VkPipelineBindPoint GetBindPoint() const { return pvPipeline->GetBindPoint(); }
 			VkPipelineLayout GetPipelineLayout() const { return pvPipeline->vPipelineLayout; }
@@ -32,7 +34,7 @@ namespace Flint
 		private:
 			void CreateDescriptorPool(const std::vector<VkDescriptorPoolSize>& vSizes);
 
-			std::unordered_map<SamplerSpecification, VkSampler> mSamplerMap;
+			std::unordered_map<Backend::SamplerSpecification, VkSampler> mSamplerMap;
 
 			VulkanPipeline* pvPipeline = nullptr;
 		};

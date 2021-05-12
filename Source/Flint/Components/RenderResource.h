@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Core\Backend\FPipelineResource.h"
+#include "Core\Backend\PipelineResource.h"
 
 namespace Flint
 {
@@ -21,7 +21,7 @@ namespace Flint
 		void Destroy();
 
 		UniformBufferContainer mUniformBuffers;
-		std::unique_ptr<FPipelineResource> pPipelineResource = nullptr;
+		std::unique_ptr<PipelineResource> pPipelineResource = nullptr;
 
 		std::vector<UI64> mDrawDataIDs;
 	};

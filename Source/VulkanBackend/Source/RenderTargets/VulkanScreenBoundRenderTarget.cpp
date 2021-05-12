@@ -56,15 +56,15 @@ namespace Flint
 						continue;
 
 					const auto& entry = mStaticDrawEntries[entryIndex];
-					pCommandBuffer->BindVertexBuffer(entry.pVertexBuffer.lock().get());
-					pCommandBuffer->BindIndexBuffer(entry.pIndexBuffer.lock().get());
+					pCommandBuffer->BindVertexBuffer(entry.pVertexBuffer);
+					pCommandBuffer->BindIndexBuffer(entry.pIndexBuffer);
 
 					for (UI64 pipelineIndex = 0; pipelineIndex < entry.mIndex; pipelineIndex++)
 					{
 						if (entry.pPipelines.find(pipelineIndex) == entry.pPipelines.end())
 							continue;
 
-						const auto pPipeline = static_cast<VulkanGraphicsPipeline*>(entry.pPipelines.at(pipelineIndex).lock().get());
+						const auto pPipeline = static_cast<VulkanGraphicsPipeline*>(entry.pPipelines.at(pipelineIndex));
 						pCommandBuffer->BindPipeline(pPipeline);
 
 						const auto& drawResources = pPipeline->GetDrawResources();
@@ -205,11 +205,11 @@ namespace Flint
 			// Re create renderable pipelines.
 			for (auto itr = mStaticDrawEntries.begin(); itr != mStaticDrawEntries.end(); itr++)
 				for (auto& pPipeline : itr->second.pPipelines)
-					pPipeline.second.lock()->Recreate();
+					pPipeline.second->Recreate();
 
 			for (auto itr = mDynamicDrawEntries.begin(); itr != mDynamicDrawEntries.end(); itr++)
 				for (auto& pPipeline : itr->second.pPipelines)
-					pPipeline.second.lock()->Recreate();
+					pPipeline.second->Recreate();
 
 			// Prepare command buffers to be rendered.
 			pCommandBufferList->ReceateBuffers();

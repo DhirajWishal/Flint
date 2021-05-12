@@ -9,7 +9,6 @@
 #include "VulkanBackend\VulkanBuffer.h"
 #include "VulkanBackend\RenderTargets\Pipelines/VulkanGraphicsPipeline.h"
 
-#include "Core\Interface\Display.h"
 #include "VulkanBackend\VulkanDisplay.h"
 
 #include <set>
@@ -89,19 +88,6 @@ namespace Flint
 					&& supportedFeatures.samplerAnisotropy;
 				return true;
 			}
-		}
-
-		Interface::DeviceHandle CreateDevice(Interface::InstanceHandle instanceHandle)
-		{
-			return Interface::DeviceHandle(reinterpret_cast<UI64>(new VulkanDevice(reinterpret_cast<VulkanInstance*>(instanceHandle))));
-		}
-
-		void DestroyDevice(Interface::DeviceHandle handle)
-		{
-			VulkanDevice* pDevice = reinterpret_cast<VulkanDevice*>(handle);
-			pDevice->Terminate();
-
-			delete pDevice;
 		}
 
 		VulkanDevice::VulkanDevice(VulkanInstance* pInstance)

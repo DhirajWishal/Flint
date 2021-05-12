@@ -4,7 +4,7 @@
 #pragma once
 
 #include "VulkanDevice.h"
-#include "Core/Backend/FShaderDigest.h"
+#include "Core/Backend/ShaderDigest.h"
 
 namespace Flint
 {
@@ -19,10 +19,10 @@ namespace Flint
 			VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features, VkPhysicalDevice vPhysicalDevice);
 			VkFormat FindDepthFormat(VkPhysicalDevice vPhysicalDevice);
 			bool HasStencilComponent(VkFormat vFormat);
-			VkShaderStageFlagBits GetShaderStage(ShaderLocation location);
-			VkDescriptorType GetDescriptorType(UniformType type);
-			std::vector<VkVertexInputAttributeDescription> GetInputAttributeDescriptions(const FShaderDigest& digest);
-			UI64 GetStride(const FShaderDigest& digest);
+			VkShaderStageFlagBits GetShaderStage(Backend::ShaderLocation location);
+			VkDescriptorType GetDescriptorType(Backend::UniformType type);
+			std::vector<VkVertexInputAttributeDescription> GetInputAttributeDescriptions(const Backend::ShaderDigest& digest);
+			UI64 GetStride(const Backend::ShaderDigest& digest);
 		}
 	}
 }

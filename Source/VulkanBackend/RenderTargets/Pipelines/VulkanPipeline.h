@@ -5,7 +5,7 @@
 
 #include <unordered_map>
 
-#include "Core\Backend\FPipeline.h"
+#include "Core\Backend\Pipeline.h"
 #include "VulkanBackend\VulkanBuffer.h"
 #include "VulkanBackend\VulkanImage.h"
 #include "VulkanBackend\RenderTargets\VulkanRenderTarget.h"
@@ -20,7 +20,7 @@ namespace Flint
 			virtual ~VulkanPipeline() {}
 
 			virtual VkPipelineBindPoint GetBindPoint() const = 0;
-			virtual std::unordered_map<String, UniformLayout> GetUniformLayouts() const = 0;
+			virtual std::unordered_map<String, Backend::UniformLayout> GetUniformLayouts() const = 0;
 
 			VkPipeline vPipeline = VK_NULL_HANDLE;
 			VkPipelineLayout vPipelineLayout = VK_NULL_HANDLE;

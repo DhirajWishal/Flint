@@ -11,10 +11,10 @@ namespace Flint
 {
 	namespace ShaderTools
 	{
-		FShaderDigest SPIRVReflection::Reflect(const std::vector<UI32>& mShaderCode, ShaderLocation location)
+		ShaderDigest SPIRVReflection::Reflect(const std::vector<UI32>& mShaderCode, ShaderLocation location)
 		{
 			// Create the reflection digest object.
-			FShaderDigest mDigest = {};
+			ShaderDigest mDigest = {};
 			mDigest.mCode = mShaderCode;
 			mDigest.mLocation = location;
 

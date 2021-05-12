@@ -11,6 +11,17 @@ namespace Flint
 	namespace Backend
 	{
 		class Display;
+		class Buffer;
+		class Image;
+
+		/**
+		 * Buffer usage enum.
+		 * Defines what the buffer will be used for,
+		 */
+		enum class BufferUsage : UI8 {
+			UNDEFINED,
+			VERTEX, INDEX, STAGGING, UNIFORM
+		};
 
 		/**
 		 * Memory profile enum.
@@ -64,6 +75,18 @@ namespace Flint
 			 * @return The instance pointer.
 			 */
 			Instance* GetInstance() const { return pInstance; }
+
+		public:
+			/**
+			 * Create a new buffer.
+			 *
+			 * @param size: The size of the buffer.
+			 * @param usage: The buffer usage.
+			 * @param memoryProfile: THe memory profile of the buffer.
+			 *
+			 * @return The buffer pointer.
+			 */
+			virtual Buffer* CreateBuffer(UI64 size, BufferUsage usage, MemoryProfile memoryProfile) = 0;
 
 		protected:
 			Instance* pInstance = nullptr;

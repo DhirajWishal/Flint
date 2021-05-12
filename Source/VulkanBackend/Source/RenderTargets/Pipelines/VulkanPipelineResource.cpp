@@ -11,8 +11,8 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanPipelineResource::VulkanPipelineResource(FGraphicsPipeline* pPipeline)
-			: FPipelineResource(pPipeline)
+		VulkanPipelineResource::VulkanPipelineResource(Backend::GraphicsPipeline* pPipeline)
+			: PipelineResource(pPipeline)
 		{
 			pvPipeline = pPipeline->GetAs<VulkanGraphicsPipeline>();
 			CreateDescriptorPool(pvPipeline->vPoolSizes);
@@ -38,7 +38,7 @@ namespace Flint
 			mSamplerMap.clear();
 		}
 
-		void VulkanPipelineResource::RegisterUniformBuffers(const UniformBufferContainer& uniformBuffers)
+		void VulkanPipelineResource::RegisterUniformBuffers(const Backend::UniformBufferContainer& uniformBuffers)
 		{
 			auto& uniformLayouts = pvPipeline->GetUniformLayouts();
 
@@ -73,7 +73,7 @@ namespace Flint
 				delete ptr;
 		}
 
-		void VulkanPipelineResource::RegisterUniformImages(const UniformImageContainer& unformImages)
+		void VulkanPipelineResource::RegisterUniformImages(const Backend::UniformImageContainer& unformImages)
 		{
 			auto& uniformLayouts = pPipeline->GetUniformLayouts();
 

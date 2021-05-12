@@ -4,7 +4,7 @@
 #pragma once
 
 #include "VulkanPipeline.h"
-#include "Core\Backend\FGraphicsPipeline.h"
+#include "Core\Backend\GraphicsPipeline.h"
 #include "VulkanBackend\VulkanShaderModule.h"
 #include "VulkanBackend\VulkanUtilities.h"
 #include "VulkanBackend\VulkanMacros.h"
@@ -18,9 +18,10 @@ namespace Flint
 	{
 		class VulkanScreenBoundRenderTarget;
 
-		class VulkanGraphicsPipeline final : public VulkanPipeline, public FGraphicsPipeline {
+		class VulkanGraphicsPipeline final : public VulkanPipeline, public Backend::GraphicsPipeline
+		{
 		public:
-			VulkanGraphicsPipeline(FScreenBoundRenderTarget* pRenderTarget, const std::vector<FShaderDigest>& shaderDigests, const GraphicsPipelineSpecification& spec);
+			VulkanGraphicsPipeline(Backend::ScreenBoundRenderTarget* pRenderTarget, const std::vector<Backend::ShaderDigest>& shaderDigests, const Backend::GraphicsPipelineSpecification& spec);
 
 			virtual void Terminate() override final;
 			virtual void PrepareToRecreate() override final;
@@ -28,9 +29,9 @@ namespace Flint
 
 			virtual VkPipelineBindPoint GetBindPoint() const override final { return VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_GRAPHICS; }
 
-			virtual FPipelineResource* CreatePipelineResource() override final;
+			virtual Backend::PipelineResource* CreatePipelineResource() override final;
 
-			virtual std::unordered_map<String, UniformLayout> VulkanPipeline::GetUniformLayouts() const { return VulkanPipeline::GetUniformLayouts(); }
+			virtual std::unordered_map<String, Backend::UniformLayout> VulkanPipeline::GetUniformLayouts() const { return VulkanPipeline::GetUniformLayouts(); }
 
 		private:
 			VkPipelineInputAssemblyStateCreateInfo vIASCI = {};

@@ -3,10 +3,7 @@
 
 #pragma once
 
-#include "BackendObject.h"
-#include "Core\Types\DataTypes.h"
-
-#include <filesystem>
+#include "Core/Types/DataTypes.h"
 
 namespace Flint
 {
@@ -19,15 +16,6 @@ namespace Flint
 		enum class ShaderLocation : UI8 {
 			UNDEFINED,
 			VERTEX, TESSELLATION, GEOMETRY, FRAGMENT, COMPUTE,
-		};
-
-		/**
-		 * Shader code type enum.
-		 * This defines the type of the shader code.
-		 */
-		enum class ShaderCodeType : UI8 {
-			UNDEFINED,
-			GLSL, SPIR_V, HLSL
 		};
 
 		/**
@@ -64,8 +52,7 @@ namespace Flint
 		 * Shader Attribute struct.
 		 * This defines how a single Shader attribute is made up of.
 		 */
-		struct ShaderAttribute
-		{
+		struct ShaderAttribute {
 			String mName = {};
 			UI64 mSize = 0;
 			UI32 mLocation = 0;
@@ -76,8 +63,7 @@ namespace Flint
 		 * Uniform Layout structure.
 		 * This structure contains information about a single unifom object.
 		 */
-		struct UniformLayout
-		{
+		struct UniformLayout {
 			UniformLayout() = default;
 			UniformLayout(UniformType type, UI32 binding) : mType(type), mBinding(binding) {}
 
@@ -89,22 +75,46 @@ namespace Flint
 		};
 
 		/**
-		 * Flint shader object.
+		 * Shader Digest object.
+		 * This contains the summary of the shader, including the shade code, inputs and output layouts, uniforms
+		 * and other information.
 		 */
-		class FShader final : public BackendObject
+		class ShaderDigest
 		{
 		public:
-			FShader(const std::filesystem::path& asset, const ShaderLocation& location, const ShaderCodeType& codeType);
-			~FShader() {}
+			ShaderDigest() = default;
 
-		private:
-			void PerformReflection();
+			/**
+			 * Construct the shader digest by initializing (copy)
+			 *
+			 * @param location: The location of the shader in the pipeline.
+			 * @param uniformLayouts: The uniform layouts of the shader.
+			 * @param code: The shader code.
+			 */
+			ShaderDigest(
+				ShaderLocation location,
+				const std::vector<UniformLayout>& uniformLayouts,
+				const std::vector<UI32>& code)
+				: mLocation(location), mUniforms(uniformLayouts), mCode(code) {}
 
-		private:
+			/**
+			 * Construct the shader digest by initializing (move)
+			 *
+			 * @param location: The location of the shader in the pipeline.
+			 * @param uniformLayouts: The uniform layouts of the shader.
+			 * @param code: The shader code.
+			 */
+			ShaderDigest(
+				ShaderLocation location,
+				std::vector<UniformLayout>&& uniformLayouts,
+				std::vector<UI32>&& code)
+				: mLocation(std::move(location)), mUniforms(std::move(uniformLayouts)), mCode(std::move(code)) {}
+
+			std::vector<ShaderAttribute> mInputAttributes;
+			std::vector<ShaderAttribute> mOutputAttributes;
+			std::vector<UniformLayout> mUniforms;
+			std::vector<UI32> mCode;
 			ShaderLocation mLocation = ShaderLocation::UNDEFINED;
-			ShaderCodeType mCodeType = ShaderCodeType::UNDEFINED;
-
-			std::vector<UI32> mShaderCode;
 		};
 	}
 }

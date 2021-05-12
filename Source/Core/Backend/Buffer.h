@@ -10,15 +10,6 @@ namespace Flint
 	namespace Backend
 	{
 		/**
-		 * Buffer usage enum.
-		 * Defines what the buffer will be used for,
-		 */
-		enum class BufferUsage : UI8 {
-			UNDEFINED,
-			VERTEX, INDEX, STAGGING, UNIFORM
-		};
-
-		/**
 		 * Buffer object.
 		 * This object represents a block of memory in the GPU and data can be copied to it.
 		 */

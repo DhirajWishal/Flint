@@ -3,6 +3,7 @@
 
 #include "Core/Backend/RenderTarget.h"
 #include "Core/ErrorHandler/Logger.h"
+#include "Core/Backend/Pipeline.h"
 
 namespace Flint
 {
@@ -30,7 +31,7 @@ namespace Flint
 			mDynamicDrawEntries.erase(index);
 		}
 
-		UI64 RenderTarget::AddPipelineToStaticDrawEntry(UI64 ID, FPipeline* pPipeline)
+		UI64 RenderTarget::AddPipelineToStaticDrawEntry(UI64 ID, Pipeline* pPipeline)
 		{
 			if (mStaticDrawEntries.find(ID) != mStaticDrawEntries.end())
 			{
@@ -43,7 +44,7 @@ namespace Flint
 			return 0;
 		}
 
-		UI64 RenderTarget::AddPipelineToDynamicDrawEntry(UI64 ID, FPipeline* pPipeline)
+		UI64 RenderTarget::AddPipelineToDynamicDrawEntry(UI64 ID, Pipeline* pPipeline)
 		{
 			if (mDynamicDrawEntries.find(ID) != mDynamicDrawEntries.end())
 			{

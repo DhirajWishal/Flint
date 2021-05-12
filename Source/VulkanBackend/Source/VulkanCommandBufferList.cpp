@@ -11,8 +11,8 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanCommandBufferList::VulkanCommandBufferList(FDevice* pDevice, UI64 bufferCount)
-			: FCommandBufferList(pDevice, bufferCount)
+		VulkanCommandBufferList::VulkanCommandBufferList(Backend::Device* pDevice, UI64 bufferCount)
+			: CommandBufferList(pDevice, bufferCount)
 		{
 			VkCommandPoolCreateInfo vCI = {};
 			vCI.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
@@ -78,10 +78,10 @@ namespace Flint
 			FLINT_VK_ASSERT(vkEndCommandBuffer(vBuffers[GetIndex()]), "Failed to end command buffer recording!");
 		}
 
-		void VulkanCommandBufferList::BindVertexBuffer(const FBuffer* pBuffer)
+		void VulkanCommandBufferList::BindVertexBuffer(const Backend::Buffer* pBuffer)
 		{
 #ifdef FLINT_DEBUG
-			if (pBuffer->GetUsage() != BufferUsage::VERTEX)
+			if (pBuffer->GetUsage() != Backend::BufferUsage::VERTEX)
 			{
 				FLINT_LOG_ERROR(TEXT("Buffer type is not vertex!"))
 					return;
@@ -92,12 +92,12 @@ namespace Flint
 			vkCmdBindVertexBuffers(GetCurrentBuffer(), 0, 1, &pBuffer->GetAs<VulkanBuffer>()->vBuffer, pOffset);
 		}
 
-		void VulkanCommandBufferList::BindIndexBuffer(const FBuffer* pBuffer)
+		void VulkanCommandBufferList::BindIndexBuffer(const Backend::Buffer* pBuffer)
 		{
 			vkCmdBindIndexBuffer(GetCurrentBuffer(), pBuffer->GetAs<VulkanBuffer>()->vBuffer, 0, VK_INDEX_TYPE_UINT32);
 		}
 
-		void VulkanCommandBufferList::BindRenderTarget(const FScreenBoundRenderTarget* pRenderTarget)
+		void VulkanCommandBufferList::BindRenderTarget(const Backend::ScreenBoundRenderTarget* pRenderTarget)
 		{
 			const VulkanScreenBoundRenderTarget* pRT = pRenderTarget->GetAs<VulkanScreenBoundRenderTarget>();
 
@@ -125,21 +125,21 @@ namespace Flint
 			vkCmdEndRenderPass(GetCurrentBuffer());
 		}
 
-		void VulkanCommandBufferList::BindPipeline(const FGraphicsPipeline* pGraphicsPipeline)
+		void VulkanCommandBufferList::BindPipeline(const Backend::GraphicsPipeline* pGraphicsPipeline)
 		{
 			const VulkanGraphicsPipeline* pGP = pGraphicsPipeline->GetAs<VulkanGraphicsPipeline>();
 			vkCmdBindPipeline(GetCurrentBuffer(), pGP->GetBindPoint(), pGP->vPipeline);
 		}
 
-		void VulkanCommandBufferList::SetDynamicStates(const FDynamicStateContainer& container)
+		void VulkanCommandBufferList::SetDynamicStates(const Backend::DynamicStateContainer& container)
 		{
 			for (auto& pState : container.pDynamicStates)
 			{
 				switch (pState->GetFlag())
 				{
-				case Flint::DynamicStateFlags::VIEWPORT:
+				case Flint::Backend::DynamicStateFlags::VIEWPORT:
 				{
-					FDynamicStateContainer::ViewPort* pViewPort = dynamic_cast<FDynamicStateContainer::ViewPort*>(pState.get());
+					Backend::DynamicStateContainer::ViewPort* pViewPort = dynamic_cast<Backend::DynamicStateContainer::ViewPort*>(pState.get());
 
 					VkViewport vVP = {};
 					vVP.width = pViewPort->mExtent.width;
@@ -153,9 +153,9 @@ namespace Flint
 				}
 				break;
 
-				case Flint::DynamicStateFlags::SCISSOR:
+				case Flint::Backend::DynamicStateFlags::SCISSOR:
 				{
-					FDynamicStateContainer::Scissor* pScissor = dynamic_cast<FDynamicStateContainer::Scissor*>(pState.get());
+					Backend::DynamicStateContainer::Scissor* pScissor = dynamic_cast<Backend::DynamicStateContainer::Scissor*>(pState.get());
 
 					VkRect2D vR2D = {};
 					vR2D.extent.width = static_cast<UI32>(pScissor->mExtent.width);
@@ -167,33 +167,33 @@ namespace Flint
 				}
 				break;
 
-				case Flint::DynamicStateFlags::LINE_WIDTH:
+				case Flint::Backend::DynamicStateFlags::LINE_WIDTH:
 				{
-					FDynamicStateContainer::LineWidth* pLineWidth = dynamic_cast<FDynamicStateContainer::LineWidth*>(pState.get());
+					Backend::DynamicStateContainer::LineWidth* pLineWidth = dynamic_cast<Backend::DynamicStateContainer::LineWidth*>(pState.get());
 
 					vkCmdSetLineWidth(GetCurrentBuffer(), pLineWidth->mLineWidth);
 				}
 				break;
 
-				case Flint::DynamicStateFlags::DEPTH_BIAS:
+				case Flint::Backend::DynamicStateFlags::DEPTH_BIAS:
 				{
-					FDynamicStateContainer::DepthBias* pDepthBias = dynamic_cast<FDynamicStateContainer::DepthBias*>(pState.get());
+					Backend::DynamicStateContainer::DepthBias* pDepthBias = dynamic_cast<Backend::DynamicStateContainer::DepthBias*>(pState.get());
 
 					vkCmdSetDepthBias(GetCurrentBuffer(), pDepthBias->mDepthBiasFactor, pDepthBias->mDepthClampFactor, pDepthBias->mDepthSlopeFactor);
 				}
 				break;
 
-				case Flint::DynamicStateFlags::BLEND_CONSTANTS:
+				case Flint::Backend::DynamicStateFlags::BLEND_CONSTANTS:
 				{
-					FDynamicStateContainer::BlendConstants* pBlendConstants = dynamic_cast<FDynamicStateContainer::BlendConstants*>(pState.get());
+					Backend::DynamicStateContainer::BlendConstants* pBlendConstants = dynamic_cast<Backend::DynamicStateContainer::BlendConstants*>(pState.get());
 
 					vkCmdSetBlendConstants(GetCurrentBuffer(), pBlendConstants->mConstants);
 				}
 				break;
 
-				case Flint::DynamicStateFlags::DEPTH_BOUNDS:
+				case Flint::Backend::DynamicStateFlags::DEPTH_BOUNDS:
 				{
-					FDynamicStateContainer::DepthBounds* pDepthBounds = dynamic_cast<FDynamicStateContainer::DepthBounds*>(pState.get());
+					Backend::DynamicStateContainer::DepthBounds* pDepthBounds = dynamic_cast<Backend::DynamicStateContainer::DepthBounds*>(pState.get());
 
 					vkCmdSetDepthBounds(GetCurrentBuffer(), pDepthBounds->mBounds.x, pDepthBounds->mBounds.y);
 				}
@@ -206,7 +206,7 @@ namespace Flint
 			}
 		}
 
-		void VulkanCommandBufferList::BindRenderResource(const FPipelineResource* pResource)
+		void VulkanCommandBufferList::BindRenderResource(const Backend::PipelineResource* pResource)
 		{
 			const VulkanPipelineResource* pPR = pResource->GetAs<VulkanPipelineResource>();
 			vkCmdBindDescriptorSets(GetCurrentBuffer(), pPR->GetBindPoint(), pPR->GetPipelineLayout(), 0, 1, &pPR->vDescriptorSet, 0, nullptr);
