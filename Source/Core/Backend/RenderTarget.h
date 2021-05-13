@@ -17,7 +17,7 @@ namespace Flint
 		 * 1. Screen bound render targets.
 		 * 2. Off screen render targets.
 		 */
-		class RenderTarget : public BackendObject
+		class RenderTarget : public DeviceBoundObject
 		{
 			/**
 			 * Draw entry structure.
@@ -36,7 +36,7 @@ namespace Flint
 			};
 
 		public:
-			RenderTarget(Device* pDevice, UI64 bufferCount) : pDevice(pDevice), mBufferCount(bufferCount) {}
+			RenderTarget(Device* pDevice, UI64 bufferCount) : DeviceBoundObject(pDevice), mBufferCount(bufferCount) {}
 			virtual ~RenderTarget() {}
 
 			/**
@@ -73,13 +73,6 @@ namespace Flint
 			 * @return The buffer count.
 			 */
 			UI64 GetBufferCount() const { return mBufferCount; }
-
-			/**
-			 * Get the device object of the render target.
-			 *
-			 * @return The device pointer.
-			 */
-			Device* GetDevice() const { return pDevice; }
 
 		public:
 			/**
@@ -165,7 +158,6 @@ namespace Flint
 			std::unordered_map<UI64, DrawEntry> mDynamicDrawEntries;
 
 			std::unique_ptr<CommandBufferList> pCommandBufferList = nullptr;
-			Device* pDevice = nullptr;
 
 			UI64 mStaticDrawIndex = 0;
 			UI64 mDynamicDrawIndex = 0;

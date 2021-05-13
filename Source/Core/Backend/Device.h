@@ -20,7 +20,7 @@ namespace Flint
 		 */
 		enum class BufferUsage : UI8 {
 			UNDEFINED,
-			VERTEX, INDEX, STAGGING, UNIFORM
+			VERTEX, INDEX, STAGGING, UNIFORM, STORAGE
 		};
 
 		/**
@@ -90,38 +90,6 @@ namespace Flint
 
 		protected:
 			Instance* pInstance = nullptr;
-		};
-
-		/**
-		 * Device bound object.
-		 * This object is the base class for all the device bound objects in Flint.
-		 */
-		class DeviceBoundObject : public BackendObject
-		{
-		public:
-			/**
-			 * Construct the device bound object.
-			 *
-			 * @param pDevice: The device object pointer.
-			 */
-			DeviceBoundObject(Device* pDevice) : pDevice(pDevice) {}
-
-			/**
-			 * Get the device object pointer.
-			 *
-			 * @return The device pointer.
-			 */
-			Device* GetDevice() { return pDevice; }
-
-			/**
-			 * Get the device object pointer.
-			 *
-			 * @return The device pointer.
-			 */
-			const Device* GetDevice() const { return pDevice; }
-
-		protected:
-			Device* pDevice = nullptr;
 		};
 	}
 }

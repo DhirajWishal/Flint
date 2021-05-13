@@ -3,8 +3,7 @@
 
 #pragma once
 
-#include "BackendObject.h"
-#include "Core\Types\DataTypes.h"
+#include "Buffers/ShaderResourceBuffer.h"
 
 #include <filesystem>
 
@@ -74,7 +73,7 @@ namespace Flint
 
 		/**
 		 * Uniform Layout structure.
-		 * This structure contains information about a single unifom object.
+		 * This structure contains information about a single uniform object.
 		 */
 		struct UniformLayout
 		{
@@ -89,13 +88,27 @@ namespace Flint
 		};
 
 		/**
-		 * Flint shader object.
+		 * Flint Shader object.
 		 */
-		class FShader final : public BackendObject
+		class Shader : public DeviceBoundObject
 		{
 		public:
-			FShader(const std::filesystem::path& asset, const ShaderLocation& location, const ShaderCodeType& codeType);
-			~FShader() {}
+			Shader(Device* pDevice, const std::filesystem::path& asset, const ShaderCodeType& codeType, const ShaderLocation& location);
+
+			/**
+			 * Get all the resource buffer names in the shader.
+			 *
+			 * @return The resource buffer names in the binding order.
+			 */
+			virtual std::vector<std::string> GetResourceBufferNames() const = 0;
+
+			/**
+			 * Bind resource buffers to the shader prior to being drawn.
+			 *
+			 * @param resourceName: The name of the buffer.
+			 * @param pBuffer: The buffer to be binded.
+			 */
+			virtual void BindResourceBuffer(const std::string& resourceName, ShaderResourceBuffer* pBuffer) = 0;
 
 		private:
 			void PerformReflection();

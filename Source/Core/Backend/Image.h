@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Device.h"
+#include "DeviceBoundObject.h"
 #include "Core/Hasher/Hasher.h"
 
 #define FLINT_DEFAULT_CHANNEL_COUNT		4
@@ -178,11 +178,11 @@ namespace Flint
 		 * Flint image object.
 		 * This object is the base class for all the backend image objects. Image objects are used to store image data in the GPU.
 		 */
-		class Image : public BackendObject
+		class Image : public DeviceBoundObject
 		{
 		public:
 			Image(Device* pDevice, UI64 width, UI64 height, UI64 depth, ImageUsage usage, UI8 bitsPerPixel = FLINT_DEFAULT_BPP, UI8 layers = 1)
-				: pDevice(pDevice), mWidth(width), mHeight(height), mDepth(depth), mUsage(usage), mBitsPerPixel(bitsPerPixel), mLayers(layers) {}
+				: DeviceBoundObject(pDevice), mWidth(width), mHeight(height), mDepth(depth), mUsage(usage), mBitsPerPixel(bitsPerPixel), mLayers(layers) {}
 			virtual ~Image() {}
 
 			/**
@@ -200,7 +200,6 @@ namespace Flint
 			virtual void CopyData(unsigned char* pData, UI64 width, UI64 widthOffset, UI64 height, UI64 heightOffset, UI64 depth, UI64 depthOffset, UI8 bitsPerPixel = FLINT_DEFAULT_BPP) = 0;
 
 		protected:
-			Device* pDevice = nullptr;
 			UI64 mWidth = 0, mHeight = 0, mDepth = 0;
 			UI32 mMipLevel = 1;
 			UI8 mBitsPerPixel = 8, mLayers = 1;

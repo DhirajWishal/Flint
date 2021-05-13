@@ -1,7 +1,7 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#include "Core\Backend\FShader.h"
+#include "Core\Backend\Shader.h"
 #include "Core\ErrorHandler\Logger.h"
 
 #include <fstream>
@@ -10,8 +10,8 @@ namespace Flint
 {
 	namespace Backend
 	{
-		FShader::FShader(const std::filesystem::path& asset, const ShaderLocation& location, const ShaderCodeType& codeType)
-			: mLocation(location), mCodeType(codeType)
+		Shader::Shader(Device* pDevice, const std::filesystem::path& asset, const ShaderCodeType& codeType, const ShaderLocation& location)
+			: DeviceBoundObject(pDevice), mLocation(location), mCodeType(codeType)
 		{
 			std::fstream shaderFile(asset, std::ios::binary | std::ios::ate);
 
@@ -29,7 +29,7 @@ namespace Flint
 			shaderFile.close();
 		}
 
-		void FShader::PerformReflection()
+		void Shader::PerformReflection()
 		{
 		}
 	}
