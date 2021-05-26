@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Core/Backend/Shader.h"
+#include "Shader.h"
 
 namespace Flint
 {

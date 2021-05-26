@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Core/Backend/Buffer.h"
+#include "Buffer.h"
 
 namespace Flint
 {

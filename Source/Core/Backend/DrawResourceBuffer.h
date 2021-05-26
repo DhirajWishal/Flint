@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Core/Backend/Buffer.h"
+#include "Buffer.h"
 
 namespace Flint
 {
@@ -18,7 +18,7 @@ namespace Flint
 		class DrawResourceBuffer : public Buffer
 		{
 		public:
-			DrawResourceBuffer(Device* pDevice, UI64 size, BufferUsage usage) : Buffer(pDevice, size, usage, MemoryProfile::DRAW_RESOURCE) {}
+			DrawResourceBuffer(Device* pDevice, UI64 size, MemoryProfile memoryProfile, BufferUsage usage) : Buffer(pDevice, size, usage, MemoryProfile::DRAW_RESOURCE) {}
 		};
 	}
 }

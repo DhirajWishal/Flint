@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Buffers/ShaderResourceBuffer.h"
+#include "ShaderResourceBuffer.h"
 
 #include <filesystem>
 

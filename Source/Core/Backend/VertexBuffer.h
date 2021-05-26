@@ -16,7 +16,7 @@ namespace Flint
 		class VertexBuffer : public DrawResourceBuffer
 		{
 		public:
-			VertexBuffer(Device* pDevice, UI64 size) : DrawResourceBuffer(pDevice, size, BufferUsage::VERTEX) {}
+			VertexBuffer(Device* pDevice, UI64 size, MemoryProfile memoryProfile) : DrawResourceBuffer(pDevice, size, memoryProfile, BufferUsage::VERTEX) {}
 		};
 	}
 }
