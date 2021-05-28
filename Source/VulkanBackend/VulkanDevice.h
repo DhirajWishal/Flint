@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "Core\Backend\Buffer.h"
 #include "VulkanInstance.h"
 #include "VulkanDisplay.h"
 #include "VulkanQueue.h"
@@ -12,13 +11,13 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanDevice final : public Backend::Device
+		class VulkanDevice 
 		{
 		public:
 			VulkanDevice(VulkanInstance* pInstance);
 
-			virtual void Terminate() override final;
-			virtual bool CheckDisplayCompatibility(const Backend::Display* pDisplay) override final;
+			void Terminate();
+			bool CheckDisplayCompatibility(const VulkanDisplay& display);
 
 		public:
 			VkPhysicalDeviceProperties GetPhysicalDeviceProperties() const;

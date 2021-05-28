@@ -165,32 +165,6 @@ namespace Flint
 			}
 		}
 
-		VulkanInstance::VulkanInstance(bool enableValidation)
-			: Instance(enableValidation)
-		{
-			InitializeGLFW();
-
-			if (enableValidation)
-			{
-				INSERT_INTO_VECTOR(mValidationLayers, "VK_LAYER_KHRONOS_validation");
-			}
-
-			CreateInstance();
-
-			if (enableValidation)
-				CreateDebugMessenger();
-		}
-
-		void VulkanInstance::Terminate()
-		{
-			if (bEnableValidation)
-				DestroyDebugMessenger();
-
-			DestroyInstance();
-
-			TerminateGLFW();
-		}
-
 		void VulkanInstance::InitializeGLFW()
 		{
 			glfwInit();
@@ -201,10 +175,13 @@ namespace Flint
 			glfwTerminate();
 		}
 
-		void VulkanInstance::CreateInstance()
+		void VulkanInstance::CreateInstance(bool enableValidation)
 		{
+			if (enableValidation)
+				INSERT_INTO_VECTOR(mValidationLayers, "VK_LAYER_KHRONOS_validation");
+
 			// Check if the validation layers are supported.
-			FLINT_ASSERT(bEnableValidation && !_Helpers::CheckValidationLayerSupport(mValidationLayers), TEXT("Requested validation layers are not available!"))
+			FLINT_ASSERT(enableValidation && !_Helpers::CheckValidationLayerSupport(mValidationLayers), TEXT("Requested validation layers are not available!"))
 
 				// Application info.
 				VkApplicationInfo appInfo = {};
@@ -221,13 +198,13 @@ namespace Flint
 			createInfo.pApplicationInfo = &appInfo;
 
 			// Get and insert the required instance extensions.
-			std::vector<const char*> requiredExtensions = std::move(_Helpers::GetRequiredInstanceExtensions(bEnableValidation));
+			std::vector<const char*> requiredExtensions = std::move(_Helpers::GetRequiredInstanceExtensions(enableValidation));
 			createInfo.enabledExtensionCount = static_cast<UI32>(requiredExtensions.size());
 			createInfo.ppEnabledExtensionNames = requiredExtensions.data();
 
 			// Initialize debugger.
 			VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo = {};
-			if (bEnableValidation)
+			if (enableValidation)
 			{
 				createInfo.enabledLayerCount = static_cast<UI32>(mValidationLayers.size());
 				createInfo.ppEnabledLayerNames = mValidationLayers.data();

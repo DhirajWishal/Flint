@@ -90,8 +90,7 @@ namespace Flint
 			}
 		}
 
-		VulkanDevice::VulkanDevice(VulkanInstance* pInstance)
-			: Device(pInstance)
+		VulkanDevice::VulkanDevice(VulkanInstance* pInstance) : pInstance(pInstance)
 		{
 			INSERT_INTO_VECTOR(mDeviceExtensions, VK_KHR_SWAPCHAIN_EXTENSION_NAME);
 
@@ -104,11 +103,10 @@ namespace Flint
 			DestroyLogicalDevice();
 		}
 
-		bool VulkanDevice::CheckDisplayCompatibility(const Backend::Display* pDisplay)
+		bool VulkanDevice::CheckDisplayCompatibility(const VulkanDisplay& display)
 		{
-			const VulkanDisplay* pvDisplay = pDisplay->GetAs<const VulkanDisplay>();
 			VkBool32 isSupported = VK_FALSE;
-			FLINT_VK_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(GetPhysicalDevice(), GetQueue().mGraphicsFamily.value(), pvDisplay->GetSurface(), &isSupported), "Failed to check swap chain -> display support!");
+			FLINT_VK_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(GetPhysicalDevice(), GetQueue().mGraphicsFamily.value(), display.GetSurface(), &isSupported), "Failed to check swap chain -> display support!");
 			return isSupported == VK_TRUE;
 		}
 
@@ -211,8 +209,6 @@ namespace Flint
 
 		void VulkanDevice::CreateLogicalDevice()
 		{
-			VulkanInstance& instance = *pInstance;
-
 			vQueue.Initialize(vPhysicalDevice);
 
 			std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
@@ -247,8 +243,8 @@ namespace Flint
 			createInfo.enabledExtensionCount = static_cast<UI32>(mDeviceExtensions.size());
 			createInfo.ppEnabledExtensionNames = mDeviceExtensions.data();
 
-			std::vector<const char*>& validationLayers = instance.GetValidationLayers();
-			if (instance.IsValidationEnabled())
+			std::vector<const char*>& validationLayers = pInstance->GetValidationLayers();
+			if (pInstance->IsValidationEnabled())
 			{
 				createInfo.enabledLayerCount = static_cast<UI32>(validationLayers.size());
 				createInfo.ppEnabledLayerNames = validationLayers.data();

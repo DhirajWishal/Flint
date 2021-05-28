@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Core\Backend\Instance.h"
+#include "Core/Backend/Templates/Instance.h"
 
 #include <vector>
 #include <vulkan/vulkan.h>
@@ -12,22 +12,22 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanInstance final : public Backend::Instance
+		class VulkanInstance final : public Templates::Instance
 		{
 		public:
-			VulkanInstance(bool enableValidation);
+			VulkanInstance() = default;
 
-			virtual void Terminate() override final;
-
-		private:
 			void InitializeGLFW();
 			void TerminateGLFW();
 
-			void CreateInstance();
+			void CreateInstance(bool enableValidation);
 			void DestroyInstance();
 
 			void CreateDebugMessenger();
 			void DestroyDebugMessenger();
+
+		public:
+			bool IsValidationEnabled() const { return vDebugUtilsMessenger != VK_NULL_HANDLE; }
 
 		public:
 			VkInstance GetInstance() const { return vInstance; }

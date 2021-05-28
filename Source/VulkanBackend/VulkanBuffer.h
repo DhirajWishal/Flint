@@ -3,32 +3,33 @@
 
 #pragma once
 
-#include "Core/Backend/Buffer.h"
+#include "Core/Backend/Templates/Buffer.h"
 #include "VulkanDevice.h"
 
 namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanBuffer
+		class VulkanBuffer final : public Templates::Buffer
 		{
 		public:
-			VulkanBuffer() {}
+			VulkanBuffer(VulkanDevice* pDevice, UI64 size, BufferUsage usage, MemoryProfile memoryProfile);
 
-			void Terminate(VulkanDevice* pDevice);
-			void* MapMemory(VulkanDevice* pDevice, UI64 size, UI64 offset);
-			void UnmapMemory(VulkanDevice* pDevice);
+			void Terminate();
+			void* MapMemory(UI64 size, UI64 offset);
+			void UnmapMemory();
 
-			void CopyFrom(VulkanDevice* pDevice, const Backend::Buffer* pBuffer, UI64 size, UI64 srcOffset, UI64 dstOffset);
+			void CopyFrom(const VulkanBuffer* pBuffer, UI64 size, UI64 srcOffset, UI64 dstOffset);
 
 		protected:
-			void CreateBuffer(VulkanDevice* pDevice, UI64 size, VkBufferUsageFlags vUsage);
-			void DestroyBuffer(VulkanDevice* pDevice);
+			void CreateBuffer(UI64 size, VkBufferUsageFlags vUsage);
+			void DestroyBuffer();
 
-			void AllocateBufferMemory(VulkanDevice* pDevice, VkMemoryPropertyFlags vMemoryProperties);
-			void FreeBufferMemory(VulkanDevice* pDevice);
+			void AllocateBufferMemory(VkMemoryPropertyFlags vMemoryProperties);
+			void FreeBufferMemory();
 
 		public:
+			VulkanDevice* pDevice = nullptr;
 			VkBuffer vBuffer = VK_NULL_HANDLE;
 			VkDeviceMemory vBufferMemory = VK_NULL_HANDLE;
 		};

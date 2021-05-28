@@ -9,36 +9,69 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		void VulkanBuffer::Terminate(VulkanDevice* pDevice)
+		VulkanBuffer::VulkanBuffer(VulkanDevice* pDevice, UI64 size, BufferUsage usage, MemoryProfile memoryProfile)
+			: Buffer(size, usage, memoryProfile)
 		{
-			DestroyBuffer(pDevice);
-			FreeBufferMemory(pDevice);
+			CreateBuffer(size, VkBufferUsageFlagBits::VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT);
+
+			VkMemoryPropertyFlags vMemoryProperties = {};
+			switch (GetMemoryProfile())
+			{
+			case Flint::MemoryProfile::TRANSFER_FRIENDLY:
+				vMemoryProperties =
+					VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+					| VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
+				break;
+
+			case Flint::MemoryProfile::DEVICE_ONLY:
+				vMemoryProperties =
+					VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+					| VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT
+					| VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_PROTECTED_BIT;
+				break;
+
+			case Flint::MemoryProfile::DRAW_RESOURCE:
+				vMemoryProperties = VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+				break;
+
+			default:
+				FLINT_LOG_ERROR(TEXT("Invalid or Undefined memory profile!"))
+					break;
+			}
+
+			AllocateBufferMemory(vMemoryProperties);
 		}
 
-		void* VulkanBuffer::MapMemory(VulkanDevice* pDevice, UI64 size, UI64 offset)
+		void VulkanBuffer::Terminate()
+		{
+			DestroyBuffer();
+			FreeBufferMemory();
+		}
+
+		void* VulkanBuffer::MapMemory(UI64 size, UI64 offset)
 		{
 			void* pDataStore = nullptr;
-			FLINT_VK_ASSERT(pDevice->GetAs<VulkanDevice>()->MapMemory(vBufferMemory, size, offset, &pDataStore), "Failed to map buffer memory!");
+			FLINT_VK_ASSERT(pDevice->MapMemory(vBufferMemory, size, offset, &pDataStore), "Failed to map buffer memory!");
 			return pDataStore;
 		}
 
-		void VulkanBuffer::UnmapMemory(VulkanDevice* pDevice)
+		void VulkanBuffer::UnmapMemory()
 		{
-			pDevice->GetAs<VulkanDevice>()->UnmapMemory(vBufferMemory);
+			pDevice->UnmapMemory(vBufferMemory);
 		}
 
-		void VulkanBuffer::CopyFrom(VulkanDevice* pDevice, const Backend::Buffer* pBuffer, UI64 size, UI64 srcOffset, UI64 dstOffset)
+		void VulkanBuffer::CopyFrom(const VulkanBuffer* pBuffer, UI64 size, UI64 srcOffset, UI64 dstOffset)
 		{
 			VkBufferCopy vBC = {};
 			vBC.size = size;
 			vBC.srcOffset = srcOffset;
 			vBC.dstOffset = dstOffset;
 
-			VulkanOneTimeCommandBuffer vCommandBuffer(pDevice->GetAs<VulkanDevice>());
-			vkCmdCopyBuffer(vCommandBuffer, pBuffer->GetAs<VulkanBuffer>()->vBuffer, vBuffer, 1, &vBC);
+			VulkanOneTimeCommandBuffer vCommandBuffer(pDevice);
+			vkCmdCopyBuffer(vCommandBuffer, pBuffer->vBuffer, vBuffer, 1, &vBC);
 		}
 
-		void VulkanBuffer::CreateBuffer(VulkanDevice* pDevice, UI64 size, VkBufferUsageFlags vUsage)
+		void VulkanBuffer::CreateBuffer(UI64 size, VkBufferUsageFlags vUsage)
 		{
 			VkBufferCreateInfo vCI = {};
 			vCI.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -50,22 +83,22 @@ namespace Flint
 			vCI.size = static_cast<UI32>(size);
 			vCI.usage = vUsage;
 
-			FLINT_VK_ASSERT(pDevice->GetAs<VulkanDevice>()->CreateBuffer(&vCI, &vBuffer), "Failed to create buffer!");
+			FLINT_VK_ASSERT(pDevice->CreateBuffer(&vCI, &vBuffer), "Failed to create buffer!");
 		}
 
-		void VulkanBuffer::DestroyBuffer(VulkanDevice* pDevice)
+		void VulkanBuffer::DestroyBuffer()
 		{
-			pDevice->GetAs<VulkanDevice>()->DestroyBuffer(vBuffer);
+			pDevice->DestroyBuffer(vBuffer);
 		}
 
-		void VulkanBuffer::AllocateBufferMemory(VulkanDevice* pDevice, VkMemoryPropertyFlags vMemoryProperties)
+		void VulkanBuffer::AllocateBufferMemory(VkMemoryPropertyFlags vMemoryProperties)
 		{
-			FLINT_VK_ASSERT(pDevice->GetAs<VulkanDevice>()->CreateBufferMemory({ vBuffer }, vMemoryProperties, &vBufferMemory), "Failed to create buffer memory!");
+			FLINT_VK_ASSERT(pDevice->CreateBufferMemory({ vBuffer }, vMemoryProperties, &vBufferMemory), "Failed to create buffer memory!");
 		}
 
-		void VulkanBuffer::FreeBufferMemory(VulkanDevice* pDevice)
+		void VulkanBuffer::FreeBufferMemory()
 		{
-			pDevice->GetAs<VulkanDevice>()->FreeMemory(vBufferMemory);
+			pDevice->FreeMemory(vBufferMemory);
 		}
 	}
 }

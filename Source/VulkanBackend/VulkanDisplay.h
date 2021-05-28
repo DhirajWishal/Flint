@@ -3,9 +3,8 @@
 
 #pragma once
 
-#include "Core\Backend\Display.h"
-#include "Core\Inputs\InputCenter.h"
-
+#include "Core/Backend/Templates/Display.h"
+#include "Core/Maths/Vector/Vector2.h"
 #include "VulkanInstance.h"
 
 #include <GLFW/glfw3.h>
@@ -37,13 +36,13 @@ namespace Flint
 			static SwapChainSupportDetails Query(VkPhysicalDevice vPhysicalDevice, VkSurfaceKHR vSurface);
 		};
 
-		class VulkanDisplay final : public Backend::Display
+		class VulkanDisplay final : public Templates::Display
 		{
 		public:
-			VulkanDisplay(VulkanInstance* pInstance, const Vector2 extent, const char* pTitle);
+			VulkanDisplay(VulkanInstance* pInstance, const Vector2 extent, const std::string& title);
 
-			virtual void Terminate();
-			virtual void Update();
+			void Terminate();
+			virtual void Update() override final;
 
 		public:
 			VkSurfaceKHR GetSurface() const { return vSurface; }

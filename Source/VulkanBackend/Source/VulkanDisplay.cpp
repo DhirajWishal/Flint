@@ -99,11 +99,10 @@ namespace Flint
 			return supportDetails;
 		}
 
-		VulkanDisplay::VulkanDisplay(VulkanInstance* pInstance, const Vector2 extent, const char* pTitle)
-			: Display(pInstance, extent, pTitle)
+		VulkanDisplay::VulkanDisplay(VulkanInstance* pInstance, const Vector2 extent, const std::string& title) : Display(extent, title)
 		{
 			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-			pWindowHandle = glfwCreateWindow(static_cast<UI32>(extent.width), static_cast<UI32>(extent.height), pTitle, nullptr, nullptr);
+			pWindowHandle = glfwCreateWindow(static_cast<UI32>(extent.width), static_cast<UI32>(extent.height), title.c_str(), nullptr, nullptr);
 
 			glfwSetWindowUserPointer(pWindowHandle, this);
 

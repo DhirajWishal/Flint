@@ -47,3 +47,8 @@ typedef BYTE* BPTR;				// Byte pointer.
 #define I16_MAX								std::numeric_limits<I16>::max()
 #define I32_MAX								std::numeric_limits<I32>::max()
 #define I64_MAX								std::numeric_limits<I64>::max()
+
+#define DEFINE_HANDLE_8(handle)				enum class handle : UI8  { INVALID = 0 }
+#define DEFINE_HANDLE_16(handle)			enum class handle : UI16 { INVALID = 0 }
+#define DEFINE_HANDLE_32(handle)			enum class handle : UI32 { INVALID = 0 }
+#define DEFINE_HANDLE_64(handle)			enum class handle : UI64 { INVALID = 0 }
