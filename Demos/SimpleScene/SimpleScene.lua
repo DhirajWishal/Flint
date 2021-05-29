@@ -31,7 +31,7 @@ project "SimpleScene"
 	}
 
 	includedirs {
-		"$(SolutionDir)Flint/",
+		"$(SolutionDir)Include/",
 		"$(SolutionDir)Demos/SimpleScene",
 	}
 

@@ -8,24 +8,7 @@
 
 namespace Flint
 {
-	class FDisplayManager;
-
-	/**
-	 * Flint display handle struct.
-	 */
-	struct FLINT_API FDisplayHandle
-	{
-		FDisplayHandle() = default;
-		FDisplayHandle(FDisplayManager* pManager, UI8 index) : pManager(pManager), mIndex(index) {}
-
-		void Update() { pManager->UpdateDisplay(*this); }
-
-		operator const UI8() const { return mIndex; }
-
-	private:
-		FDisplayManager* pManager = nullptr;
-		UI8 mIndex = 0;
-	};
+	DEFINE_HANDLE_UI8(FDisplayHandle);
 
 	/**
 	 * Flint display manager object.
@@ -54,10 +37,10 @@ namespace Flint
 		virtual void UpdateDisplay(const FDisplayHandle& handle) = 0;
 
 		/**
-		 * Terminate a created display handle.
+		 * Destroy a created display handle.
 		 *
 		 * @param handle: The display handle.
 		 */
-		virtual void Terminate(FDisplayHandle& handle) = 0;
+		virtual void DestroyDisplay(FDisplayHandle& handle) = 0;
 	};
 }

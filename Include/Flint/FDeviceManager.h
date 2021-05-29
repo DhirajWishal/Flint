@@ -7,22 +7,7 @@
 
 namespace Flint
 {
-	class FDeviceManager;
-
-	/**
-	 * Flint device handle struct.
-	 */
-	struct FLINT_API FDeviceHandle
-	{
-		FDeviceHandle() = default;
-		FDeviceHandle(FDeviceManager* pManager, UI8 index) : pManager(pManager), mIndex(index) {}
-
-		operator const UI8() const { return mIndex; }
-
-	private:
-		FDeviceManager* pManager = nullptr;
-		UI8 mIndex = 0;
-	};
+	DEFINE_HANDLE_UI8(FDeviceHandle);
 
 	/**
 	 * Flint device manager object.
@@ -41,10 +26,20 @@ namespace Flint
 		virtual FDeviceHandle CreateDevice() = 0;
 
 		/**
-		 * Terminate a created device.
+		 * Destroy a created device.
 		 * 
 		 * @param handle: The handle to be terminated.
 		 */
-		virtual void Terminate(FDeviceHandle& handle) = 0;
+		virtual void DestroyDevice(FDeviceHandle& handle) = 0;
+
+		/**
+		 * Check if a device and display is compatible.
+		 * This is necessary for screen bound render targets.
+		 * 
+		 * @param deviceHandle: The device handle to check with.
+		 * @param displayHandle: The display handle to check.
+		 * @return Boolean value stating if compatible or not (true or false respectively).
+		 */
+		virtual bool CheckDeviceAndDisplayCompatibility(const FDeviceHandle& deviceHandle, const FDisplayHandle& displayHandle) = 0;
 	};
 }

@@ -22,11 +22,20 @@ namespace Flint
 		
 		void VulkanBackend::Terminate()
 		{
-			// Destroy available devices.
+			// Destroy all available buffers.
+			for (auto& entry : mBuffers)
+				entry.second.Terminate();
+			mBuffers.clear();
+
+			// Destroy all available devices.
 			for (auto& entry : mDevices)
 				entry.second.Terminate();
-
 			mDevices.clear();
+
+			// Destroy all available displays.
+			for (auto& entry : mDisplays)
+				entry.second.Terminate();
+			mDisplays.clear();
 
 			// If created, destroy the debug messenger.
 			if (bEnableValidation)
@@ -42,32 +51,77 @@ namespace Flint
 		FDeviceHandle VulkanBackend::CreateDevice()
 		{
 			mDevices[mDeviceIndex] = VulkanDevice(&mInstance);
-			return FDeviceHandle(this, mDeviceIndex++);
+			return FDeviceHandle(mDeviceIndex++);
 		}
 
-		void VulkanBackend::Terminate(FDeviceHandle& handle)
+		void VulkanBackend::DestroyDevice(FDeviceHandle& handle)
 		{
-			mDevices[handle].Terminate();
-			mDevices.erase(handle);
+			UI8 index = static_cast<UI8>(handle);
+			mDevices[index].Terminate();
+			mDevices.erase(index);
 			handle = {};
+		}
+
+		bool VulkanBackend::CheckDeviceAndDisplayCompatibility(const FDeviceHandle& deviceHandle, const FDisplayHandle& displayHandle)
+		{
+			UI8 deviceIndex = static_cast<UI8>(deviceHandle);
+			UI8 displayIndex = static_cast<UI8>(displayHandle);
+			return mDevices[deviceIndex].CheckDisplayCompatibility(mDisplays[displayIndex]);
 		}
 
 		FDisplayHandle VulkanBackend::CreateDisplay(const UI32 width, const UI32 height, const std::string& title)
 		{
 			mDisplays[mDisplayIndex] = VulkanDisplay(&mInstance, Vector2(width, height), title);
-			return FDisplayHandle(this, mDisplayIndex++);
+			return FDisplayHandle(mDisplayIndex++);
 		}
 
 		void VulkanBackend::UpdateDisplay(const FDisplayHandle& handle)
 		{
-			mDisplays[handle].Update();
+			UI8 index = static_cast<UI8>(handle);
+			mDisplays[index].Update();
 		}
 
-		void VulkanBackend::Terminate(FDisplayHandle& handle)
+		void VulkanBackend::DestroyDisplay(FDisplayHandle& handle)
 		{
-			mDisplays[handle].Terminate();
-			mDisplays.erase(handle);
+			UI8 index = static_cast<UI8>(handle);
+			mDisplays[index].Terminate();
+			mDisplays.erase(index);
 			handle = {};
+		}
+
+		FBufferHandle VulkanBackend::CreatBuffer(const FDeviceHandle& deviceHandle, UI64 size, BufferUsage usage, MemoryProfile memoryProfile)
+		{
+			mBuffers[mBufferIndex] = VulkanBuffer(&mDevices[static_cast<UI8>(deviceHandle)], size, usage, memoryProfile);
+			return FBufferHandle(mBufferIndex++);
+		}
+
+		void* VulkanBackend::MapBufferMemory(const FBufferHandle& buffer, UI64 size, UI64 offset)
+		{
+			UI32 index = static_cast<UI32>(buffer);
+			return mBuffers[index].MapMemory(size, offset);
+		}
+
+		void VulkanBackend::UnmapBufferMemory(const FBufferHandle& buffer)
+		{
+			UI32 index = static_cast<UI32>(buffer);
+			mBuffers[index].UnmapMemory();
+		}
+
+		void VulkanBackend::DestroyBuffer(FBufferHandle& handle)
+		{
+			UI32 index = static_cast<UI32>(handle);
+			mBuffers[index].Terminate();
+			mBuffers.erase(index);
+			handle = {};
+		}
+
+		FRenderTargetHandle VulkanBackend::CreateScreenBoundRenderTarget(const FDeviceHandle& deviceHandle, const FDisplayHandle& displayHandle, const FExtent2D& extent, UI32 bufferCount)
+		{
+			return FRenderTargetHandle();
+		}
+
+		void VulkanBackend::DestroyRenderTarget(FRenderTargetHandle& handle)
+		{
 		}
 	}
 }

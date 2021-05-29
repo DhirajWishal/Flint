@@ -7,8 +7,6 @@
 
 namespace Flint
 {
-	class FBufferManager;
-
 	/**
 	 * Buffer usage enum.
 	 */
@@ -64,20 +62,7 @@ namespace Flint
 		DRAW_RESOURCE,
 	};
 
-	/**
-	 * Flint buffer handle.
-	 */
-	struct FLINT_API FBufferHandle
-	{
-		FBufferHandle() = default;
-		FBufferHandle(FBufferManager* pManager, UI32 index) : pManager(pManager), mIndex(index) {}
-
-		operator const UI32() const { return mIndex; }
-
-	private:
-		FBufferManager* pManager = nullptr;
-		UI32 mIndex = 0;
-	};
+	DEFINE_HANDLE_UI32(FBufferHandle);
 
 	/**
 	 * Flint buffer manager object.
@@ -121,6 +106,6 @@ namespace Flint
 		 *
 		 * @param handle: The buffer handle.
 		 */
-		virtual void Terminate(FBufferHandle& handle) = 0;
+		virtual void DestroyBuffer(FBufferHandle& handle) = 0;
 	};
 }

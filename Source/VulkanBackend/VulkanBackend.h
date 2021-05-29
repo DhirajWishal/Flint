@@ -8,6 +8,7 @@
 #include "VulkanInstance.h"
 #include "VulkanDevice.h"
 #include "VulkanDisplay.h"
+#include "VulkanBuffer.h"
 
 #include <unordered_map>
 
@@ -15,7 +16,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanBackend final : public FBackend
+		class FLINT_API VulkanBackend final : public FBackend
 		{
 		public:
 			VulkanBackend(bool enableValidation);
@@ -25,13 +26,26 @@ namespace Flint
 			/** Device functions. */
 		public:
 			virtual FDeviceHandle CreateDevice() override final;
-			virtual void Terminate(FDeviceHandle& handle) override final;
+			virtual void DestroyDevice(FDeviceHandle& handle) override final;
+			virtual bool CheckDeviceAndDisplayCompatibility(const FDeviceHandle& deviceHandle, const FDisplayHandle& displayHandle) override final;
 
 			/** Display functions. */
 		public:
 			virtual FDisplayHandle CreateDisplay(const UI32 width, const UI32 height, const std::string& title) override final;
 			virtual void UpdateDisplay(const FDisplayHandle& handle) override final;
-			virtual void Terminate(FDisplayHandle& handle) override final;
+			virtual void DestroyDisplay(FDisplayHandle& handle) override final;
+
+			/** Buffer functions. */
+		public:
+			virtual FBufferHandle CreatBuffer(const FDeviceHandle& deviceHandle, UI64 size, BufferUsage usage, MemoryProfile memoryProfile) override final;
+			virtual void* MapBufferMemory(const FBufferHandle& buffer, UI64 size, UI64 offset) override final;
+			virtual void UnmapBufferMemory(const FBufferHandle& buffer) override final;
+			virtual void DestroyBuffer(FBufferHandle& handle) override final;
+
+			/** Render Target functions. */
+		public:
+			virtual FRenderTargetHandle CreateScreenBoundRenderTarget(const FDeviceHandle& deviceHandle, const FDisplayHandle& displayHandle, const FExtent2D& extent, UI32 bufferCount = 0) override final;
+			virtual void DestroyRenderTarget(FRenderTargetHandle& handle) override final;
 
 		private:
 			VulkanInstance mInstance = {};
@@ -41,6 +55,9 @@ namespace Flint
 
 			std::unordered_map<UI8, VulkanDisplay> mDisplays;
 			UI8 mDisplayIndex = 0;
+
+			std::unordered_map<UI32, VulkanBuffer> mBuffers;
+			UI32 mBufferIndex = 0;
 		};
 	}
 }

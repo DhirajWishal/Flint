@@ -29,6 +29,5 @@ Then in Visual Studio, select the platform and configuration you need. You can s
 
 Where Static will build the library as a `.lib/.a` file, Shared will build the library as a `.dll/.so` file. Optionally you can try and build a demo application provided under the `Demos` section. 
 
-
 ## License
 This repository is licensed under Apache-2.0.

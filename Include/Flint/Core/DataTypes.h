@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "Interface.h"
+
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -48,7 +50,44 @@ typedef BYTE* BPTR;				// Byte pointer.
 #define I32_MAX								std::numeric_limits<I32>::max()
 #define I64_MAX								std::numeric_limits<I64>::max()
 
-#define DEFINE_HANDLE_8(handle)				enum class handle : UI8  { INVALID = 0 }
-#define DEFINE_HANDLE_16(handle)			enum class handle : UI16 { INVALID = 0 }
-#define DEFINE_HANDLE_32(handle)			enum class handle : UI32 { INVALID = 0 }
-#define DEFINE_HANDLE_64(handle)			enum class handle : UI64 { INVALID = 0 }
+#define DEFINE_HANDLE_UI8(handle)			enum class handle : UI8 {}
+#define DEFINE_HANDLE_UI16(handle)			enum class handle : UI16 {}
+#define DEFINE_HANDLE_UI32(handle)			enum class handle : UI32 {}
+#define DEFINE_HANDLE_UI64(handle)			enum class handle : UI64 {}
+
+namespace Flint
+{
+	/**
+	 * Flint extent 2D structure.
+	 */
+	struct FLINT_API FExtent2D
+	{
+		FExtent2D() = default;
+		FExtent2D(UI32 x, UI32 y) : x(x), y(y) {}
+
+		union
+		{
+			struct { UI32 mWidth, mHeight; };
+			struct { UI32 width, height; };
+			struct { UI32 x, y; };
+			struct { UI32 a, b; };
+		};
+	};
+
+	/**
+	 * Flint extent 3D structure.
+	 */
+	struct FLINT_API FExtent3D
+	{
+		FExtent3D() = default;
+		FExtent3D(UI32 x, UI32 y, UI32 z) : x(x), y(y), z(z) {}
+
+		union
+		{
+			struct { UI32 mWidth, mHeight, mDepth; };
+			struct { UI32 width, height, deth; };
+			struct { UI32 x, y, z; };
+			struct { UI32 a, b, c; };
+		};
+	};
+}
