@@ -31,7 +31,7 @@ project "SimpleScene"
 	}
 
 	includedirs {
-		"$(SolutionDir)Source/",
+		"$(SolutionDir)Flint/",
 		"$(SolutionDir)Demos/SimpleScene",
 	}
 
@@ -39,10 +39,10 @@ project "SimpleScene"
 		"Flint",
 	}
 
-	filter "configurations:Debug"
+	filter "configurations:Debug*"
 	    buildoptions "/MTd"
 
-	filter "configurations:Release"
+	filter "configurations:Release*"
 	    buildoptions "/MT"
 
 	filter ""

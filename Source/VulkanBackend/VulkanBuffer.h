@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Core/Backend/Templates/Buffer.h"
+#include "Core/Templates/Buffer.h"
 #include "VulkanDevice.h"
 
 namespace Flint

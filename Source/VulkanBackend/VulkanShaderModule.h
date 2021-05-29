@@ -4,7 +4,7 @@
 #pragma once
 
 #include "VulkanDevice.h"
-#include "Core/Backend/ShaderDigest.h"
+#include "Core/ShaderDigest.h"
 
 namespace Flint
 {

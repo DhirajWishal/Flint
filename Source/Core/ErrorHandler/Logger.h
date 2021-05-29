@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Core/Types/DataTypes.h"
+#include "Flint/Core/DataTypes.h"
 
 #define FLINT_LOGGER_COLOR_BLUE			{ 0x1b, '[', '1', ';', '3', '4', 'm', 0 }
 #define FLINT_LOGGER_COLOR_GREEN		{ 0x1b, '[', '1', ';', '9', '2', 'm', 0 }

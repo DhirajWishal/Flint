@@ -1,11 +1,10 @@
 # Flint
-Flint is a low level, OOP based, cross-platform, high performance graphics API. You have three main APIs to choose from at compile time. After that just build against the `Flint` static library and your all set!
+Flint is a low level, OOP based, cross-platform, high performance graphics library based on a simple API.
 
 ## How to use
-There are two ways to use Flint. Either build it on your local machine (which requires Windows) or download the pre-built binaries (which is currently unavailable). <br />
-Once you have the Flint binary, build your application against the static library. The include directory should be `...\Flint\Source`.
+Flint can be used as either a static library or as a shared library. If your building the project manually, make sure to select the correct platform and configuration. The binaries are built to the `/Builds/Binaries/[Configuration]` directory. The include directory should be set to `/Include`.
 
-For more information, head to our [wiki.](https://github.com/DhirajWishal/Flint/wiki)
+For in-depth API documentation, head onto our repository [wiki](https://github.com/DhirajWishal/Flint/wiki).
 
 ## How to build the binaries
 Before we actually build, we need the following dependencies.
@@ -22,18 +21,13 @@ For GitHub Desktop, go to File -> Clone Repository, set the download URL as `htt
 
 After this, run the `GenerateProjects.bat` file which will generate the required `.sln` and `.vcxproj` files. Once the files are created, open the `Flint.sln` file. 
 
-Then in Visual Studio, select the configuration you need. You can select one of the following.
-* Debug Vulkan
-* Release Vulkan
-* Debug DirectX 12
-* Release DirectX 12
-* Debug WebGPU
-* Release WebGPU
+Then in Visual Studio, select the platform and configuration you need. You can select one of the following configurations,
+* Debug Static
+* Debug Shared
+* Release Static
+* Release Shared
 
-Note: Flint currently only supports `Debug Vulkan` and `Release Vulkan`. Also make sure that the startup project is set to `Flint`.
-
-After configuring, build the library file. The binaries will be placed under `Flint\Builds\Binaries\<Configuration>\` directory. <br />
-Optionally you can try and build a demo application provided under the `Demos` section. 
+Where Static will build the library as a `.lib/.a` file, Shared will build the library as a `.dll/.so` file. Optionally you can try and build a demo application provided under the `Demos` section. 
 
 
 ## License

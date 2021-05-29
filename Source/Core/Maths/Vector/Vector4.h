@@ -4,7 +4,7 @@
 #pragma once
 
 #include "Vector.h"
-#include "Core/Types/DataTypes.h"
+#include "Flint/Core/DataTypes.h"
 #include <initializer_list>
 
 namespace Flint

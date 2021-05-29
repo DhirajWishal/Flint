@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "Core/Backend/PipelineResource.h"
-#include "Core/Backend/GraphicsPipeline.h"
+#include "Core/PipelineResource.h"
+#include "Core/GraphicsPipeline.h"
 #include "VulkanPipeline.h"
 
 namespace Flint

@@ -5,8 +5,10 @@ workspace "Flint"
 	architecture "x64"
 
 	configurations {
-		"Debug",
-		"Release",
+		"Debug Static",
+		"Debug Shared",
+		"Release Static",
+		"Release Shared",
 	}
 
 	platforms {
@@ -54,12 +56,12 @@ workspace "Flint"
 	
 	IncludeLib["zlib"] = ""	-- TODO
 
-	filter "configurations:Debug"
+	filter "configurations:Debug*"
 		defines { "FLINT_DEBUG" }
 		symbols "On"
 		IncludeLib["FreeImage"] = "$(SolutionDir)Dependencies/ThirdParty/Binaries/FreeImage/Debug"
 
-	filter "configurations:Release"
+	filter "configurations:Release*"
 		defines { "FLINT_RELEASE" }
 		optimize "On"
 		IncludeLib["FreeImage"] = "$(SolutionDir)Dependencies/ThirdParty/Binaries/FreeImage/Release"
@@ -77,17 +79,10 @@ workspace "Flint"
 	group "Demos"
 		include "Demos/SimpleScene/SimpleScene.lua"
 	
-	group "Engine"
-		include "Source/Flint/Flint.lua"
-	
-	group "LowLevel"
-		include "Source/Core/Core.lua"
-		include "Source/VulkanBackend/VulkanBackend.lua"
+	group "Source"
+		include "Source/Flint.lua"	
 	
 	group "ThirdParty"
 		include "Dependencies/ThirdParty/SPIRV-Cross/SPIRV-Cross.lua"
-	
-	group "Tools"
-		include "Source/ShaderTools/ShaderTools.lua"
 	
 	group ""
