@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "DataTypes.h"
+#include "Flint/Core/DataTypes.h"
 #include <type_traits>
 
 #define FLINT_DEFINE_HANDLE(handle)				enum class handle : UI64 { INVALID = 0 }

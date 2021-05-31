@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Core/Macros/Global.h"
+#include "Flint/Core/Global.h"
 #include "Core/ErrorHandler/Logger.h"
 
 namespace Flint

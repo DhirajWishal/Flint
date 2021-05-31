@@ -9,12 +9,12 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanDepthBuffer final : public VulkanRenderTargetAttachment {
+		class VulkanDepthBuffer final : public VulkanRenderTargetAttachment 
+		{
 		public:
-			VulkanDepthBuffer() : VulkanRenderTargetAttachment(RenderTargetAttachmenType::DEPTH_BUFFER) {}
+			VulkanDepthBuffer(VulkanDevice* pDevice, const FExtent2D& extent, UI32 bufferCount);
 
-			virtual void Initialize(VulkanDevice* pDevice, const Vector2& extent, UI32 bufferCount) override final;
-			virtual void Recreate(const Vector2& extent) override final;
+			virtual void Recreate(const FExtent2D& extent) override final;
 			virtual void Terminate() override final;
 
 			virtual VkAttachmentDescription GetAttachmentDescription() const override final;

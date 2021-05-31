@@ -184,8 +184,8 @@ namespace Flint
 			return (*this)();
 		}
 
-		inline Vector() {}
-		inline ~Vector() {}
+		Vector() {}
+		~Vector() {}
 
 		/**
 		 * Construct the vector using another vector.

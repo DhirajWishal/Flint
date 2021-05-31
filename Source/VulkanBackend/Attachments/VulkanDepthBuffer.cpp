@@ -1,21 +1,20 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#include "RenderTargets/Attachments/VulkanDepthBuffer.h"
-#include "VulkanMacros.h"
-#include "VulkanUtilities.h"
-#include "VulkanOneTimeCommandBuffer.h"
+#include "VulkanBackend/Attachments/VulkanDepthBuffer.h"
+#include "VulkanBackend/VulkanMacros.h"
+#include "VulkanBackend/VulkanUtilities.h"
+#include "VulkanBackend/VulkanOneTimeCommandBuffer.h"
+#include "VulkanDepthBuffer.h"
 
 namespace Flint
 {
 	namespace VulkanBackend
 	{
-		void VulkanDepthBuffer::Initialize(VulkanDevice* pDevice, const Vector2& extent, UI32 bufferCount)
+		VulkanDepthBuffer::VulkanDepthBuffer(VulkanDevice* pDevice, const FExtent2D& extent, UI32 bufferCount)
+			: VulkanRenderTargetAttachment(pDevice, RenderTargetAttachmentType::DEPTH_BUFFER, extent, bufferCount)
 		{
-			this->pDevice = pDevice;
-			this->mExtent = extent;
-			this->mBufferCount = bufferCount;
-			this->vFormat = Utilities::FindDepthFormat(pDevice->GetPhysicalDevice());
+			vFormat = Utilities::FindDepthFormat(pDevice->GetPhysicalDevice());
 			vSampleCount = pDevice->GetSampleCount();
 
 			VkImageCreateInfo vCI = {};
@@ -49,10 +48,40 @@ namespace Flint
 			}
 		}
 
-		void VulkanDepthBuffer::Recreate(const Vector2& extent)
+		void VulkanDepthBuffer::Recreate(const FExtent2D& extent)
 		{
 			Terminate();
-			Initialize(this->pDevice, extent, this->mBufferCount);
+			//Initialize(this->pDevice, extent, this->mBufferCount); TODO
+
+			VkImageCreateInfo vCI = {};
+			vCI.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+			vCI.flags = VK_NULL_HANDLE;
+			vCI.pNext = VK_NULL_HANDLE;
+			vCI.extent = { static_cast<UI32>(extent.x), static_cast<UI32>(extent.y), 1 };
+			vCI.samples = static_cast<VkSampleCountFlagBits>(vSampleCount);
+			vCI.format = vFormat;
+			vCI.arrayLayers = 1;
+			vCI.mipLevels = 1;
+			vCI.queueFamilyIndexCount = 0;
+			vCI.pQueueFamilyIndices = VK_NULL_HANDLE;
+			vCI.imageType = VK_IMAGE_TYPE_2D;
+			vCI.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+			vCI.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+			vCI.tiling = VK_IMAGE_TILING_OPTIMAL;
+			vCI.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+
+			vImages.resize(mBufferCount);
+			for (UI32 i = 0; i < mBufferCount; i++)
+				FLINT_VK_ASSERT(pDevice->CreateImage(&vCI, vImages.data() + i), "Failed to create Vulkan Image!");
+
+			FLINT_VK_ASSERT(pDevice->CreateImageMemory(vImages, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &vBufferMemory), "Failed to bind image memory!");
+			vImageViews = std::move(Utilities::CreateImageViews(vImages, vFormat, pDevice, VK_IMAGE_ASPECT_DEPTH_BIT));
+
+			{
+				VulkanOneTimeCommandBuffer vCommandBuffer(pDevice);
+				for (auto itr = vImages.begin(); itr != vImages.end(); itr++)
+					pDevice->SetImageLayout(vCommandBuffer, *itr, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, vFormat);
+			}
 		}
 
 		void VulkanDepthBuffer::Terminate()

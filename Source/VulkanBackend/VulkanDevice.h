@@ -129,7 +129,7 @@ namespace Flint
 		class VulkanDeviceBoundObject
 		{
 		public:
-			VulkanDeviceBoundObject() {}
+			VulkanDeviceBoundObject(VulkanDevice* pDevice) : pDevice(pDevice) {}
 
 			virtual void Terminate() {}
 

@@ -9,6 +9,7 @@
 #include "VulkanDevice.h"
 #include "VulkanDisplay.h"
 #include "VulkanBuffer.h"
+#include "VulkanRenderTarget.h"
 
 #include <unordered_map>
 
@@ -44,7 +45,7 @@ namespace Flint
 
 			/** Render Target functions. */
 		public:
-			virtual FRenderTargetHandle CreateScreenBoundRenderTarget(const FDeviceHandle& deviceHandle, const FDisplayHandle& displayHandle, const FExtent2D& extent, UI32 bufferCount = 0) override final;
+			virtual FRenderTargetHandle CreateRenderTarget(const FDeviceHandle& deviceHandle, const std::vector<std::unique_ptr<FRenderTargetAttachment>>& pAttachments, const FExtent2D& extent, UI32 bufferCount = 0) override final;
 			virtual void DestroyRenderTarget(FRenderTargetHandle& handle) override final;
 
 		private:
@@ -58,6 +59,9 @@ namespace Flint
 
 			std::unordered_map<UI32, VulkanBuffer> mBuffers;
 			UI32 mBufferIndex = 0;
+
+			std::unordered_map<UI16, VulkanRenderTarget> mRenderTargets;
+			UI16 mRenderTargetIndex = 0;
 		};
 	}
 }
