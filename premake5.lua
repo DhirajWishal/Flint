@@ -79,8 +79,8 @@ workspace "Flint"
 	group "Demos"
 		include "Demos/SimpleScene/SimpleScene.lua"
 	
-	group "Source"
-		include "Source/Flint.lua"	
+	group "Code"
+		include "Code/Flint.lua"	
 	
 	group "ThirdParty"
 		include "Dependencies/ThirdParty/SPIRV-Cross/SPIRV-Cross.lua"

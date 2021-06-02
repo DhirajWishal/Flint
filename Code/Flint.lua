@@ -22,7 +22,7 @@ project "Flint"
 	}
 
 	includedirs {
-		"$(SolutionDir)Code/",
+		"$(SolutionDir)Code/Source",
 		"$(SolutionDir)Code/Include/",
 		"$(SolutionDir)Dependencies/ThirdParty/SPIRV-Cross/",
 		"%{IncludeDir.Vulkan}",
@@ -67,12 +67,12 @@ project "Flint"
 
 	filter "configurations:Debug*"
 		links { 
-			"FreeImageLibd"
+			--"FreeImageLibd"
 		}
 
 	filter "configurations:Release*"
 		links { 
-			"FreeImageLib"
+			--"FreeImageLib"
 		}
 
 	filter "configurations:*Static"

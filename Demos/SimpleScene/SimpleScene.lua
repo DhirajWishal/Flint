@@ -24,14 +24,12 @@ project "SimpleScene"
 		"**.txt",
 		"**.cpp",
 		"**.h",
-		"src/**.cpp",
-		"src/**.h",
 		"**.lua",
 		"**.wfc",
 	}
 
 	includedirs {
-		"$(SolutionDir)Include/",
+		"$(SolutionDir)Code/Include",
 		"$(SolutionDir)Demos/SimpleScene",
 	}
 
