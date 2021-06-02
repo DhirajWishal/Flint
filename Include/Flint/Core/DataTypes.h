@@ -90,4 +90,25 @@ namespace Flint
 			struct { UI32 a, b, c; };
 		};
 	};
+
+	enum class ColorComponent : UI8 {
+		RED,
+		GREEN,
+		BLUE,
+		ALPHA
+	};
+
+	struct FFormat1
+	{
+		FFormat1(ColorComponent component) : mComponent(component) {}
+		ColorComponent mComponent = ColorComponent::ALPHA;
+	};
+
+	struct FFormat2
+	{
+		FFormat2(ColorComponent component1, ColorComponent component2) : mComponent(component) {}
+		
+		ColorComponent mComponentOne = ColorComponent::ALPHA;
+		ColorComponent mComponentTwo = ColorComponent::ALPHA;
+	};
 }

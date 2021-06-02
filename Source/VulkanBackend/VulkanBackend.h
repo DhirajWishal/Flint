@@ -52,16 +52,14 @@ namespace Flint
 			VulkanInstance mInstance = {};
 
 			std::unordered_map<UI8, VulkanDevice> mDevices;
-			UI8 mDeviceIndex = 0;
-
 			std::unordered_map<UI8, VulkanDisplay> mDisplays;
-			UI8 mDisplayIndex = 0;
-
 			std::unordered_map<UI32, VulkanBuffer> mBuffers;
-			UI32 mBufferIndex = 0;
-
 			std::unordered_map<UI16, VulkanRenderTarget> mRenderTargets;
+
+			UI32 mBufferIndex = 0;
 			UI16 mRenderTargetIndex = 0;
+			UI8 mDisplayIndex = 0;
+			UI8 mDeviceIndex = 0;
 		};
 	}
 }
