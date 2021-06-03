@@ -14,7 +14,7 @@ namespace Flint
 	class FLINT_API Device : public FObject
 	{
 	public:
-		Device(Instance& instance, DeviceFlags flags) : mInstance(instance), mFlags(flags) {}
+		Device(Instance& instance, DeviceFlags flags) noexcept : mInstance(instance), mFlags(flags) {}
 
 	protected:
 		Instance& mInstance;

@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "VulkanDevice.hpp"
 #include "Flint/Core/Error.hpp"
+#include <vulkan/vulkan.h>
 
 namespace Flint
 {

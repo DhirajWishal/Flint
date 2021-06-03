@@ -4,8 +4,9 @@
 #pragma once
 
 #include "Flint/Instance.hpp"
+#include "VulkanMacros.hpp"
 
-#include <vulkan/vulkan.hpp>
+#include <vector>
 
 namespace Flint
 {
@@ -20,6 +21,10 @@ namespace Flint
 			virtual void DestroyDevice(Device& device) override final;
 
 			virtual void Terminate() override final;
+
+		public:
+			VkInstance GetInstance() const noexcept { return vInstance; }
+			std::vector<const char*> GetValidationLayers() const noexcept { return mValidationLayers; }
 
 		private:
 			void InitializeGLFW();

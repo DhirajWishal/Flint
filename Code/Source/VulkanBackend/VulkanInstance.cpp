@@ -130,7 +130,7 @@ namespace Flint
 
 		Device& VulkanInstance::CreateDevice(DeviceFlags flags)
 		{
-			return *new VulkanDevice(*this);
+			return *new VulkanDevice(*this, flags);
 		}
 
 		void VulkanInstance::DestroyDevice(Device& device)

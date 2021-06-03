@@ -35,8 +35,8 @@ namespace Flint
 		   COMPUTE_COMPATIBLE = BIT_SHIFT(3)
 	};
 
-	DeviceFlags operator|(const DeviceFlags& lhs, const DeviceFlags& rhs) { return DeviceFlags{ static_cast<UI8>(lhs) | static_cast<UI8>(rhs) }; }
-	DeviceFlags operator&(const DeviceFlags& lhs, const DeviceFlags& rhs) { return DeviceFlags{ static_cast<UI8>(lhs) & static_cast<UI8>(rhs) }; }
+	constexpr DeviceFlags operator|(const DeviceFlags& lhs, const DeviceFlags& rhs) { return DeviceFlags(static_cast<UI8>(lhs) | static_cast<UI8>(rhs)); }
+	constexpr DeviceFlags operator&(const DeviceFlags& lhs, const DeviceFlags& rhs) { return DeviceFlags(static_cast<UI8>(lhs) & static_cast<UI8>(rhs)); }
 
 	/**
 	 * Flint instance object.

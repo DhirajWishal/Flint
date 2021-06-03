@@ -9,6 +9,9 @@ int main()
 	try
 	{
 		Flint::Instance& mInstance = Flint::CreateInstance(true);
+		Flint::Device& mDevice = mInstance.CreateDevice(Flint::DeviceFlags::EXTERNAL | Flint::DeviceFlags::GRAPHICS_COMPATIBLE | Flint::DeviceFlags::COMPUTE_COMPATIBLE);
+
+		mInstance.DestroyDevice(mDevice);
 		Flint::DestroyInstance(mInstance);
 	}
 	catch (std::exception& e)

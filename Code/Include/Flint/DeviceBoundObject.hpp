@@ -14,7 +14,7 @@ namespace Flint
 	class FLINT_API DeviceBoundObject : public FObject
 	{
 	public:
-		DeviceBoundObject(Device& device) : mDevice(device) {}
+		DeviceBoundObject(Device& device) noexcept : mDevice(device) {}
 
 	protected:
 		Device& mDevice;

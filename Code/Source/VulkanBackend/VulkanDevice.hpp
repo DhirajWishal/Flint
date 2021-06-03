@@ -5,6 +5,7 @@
 
 #include "Flint/Device.hpp"
 #include "VulkanInstance.hpp"
+#include "VulkanQueue.hpp"
 
 namespace Flint
 {
@@ -17,9 +18,24 @@ namespace Flint
 
 			virtual void Terminate() override final;
 
+		public:
+			VkDevice GetLogicalDevice() const noexcept { return vLogicalDevice; }
+
 		private:
+			void InitializePhysicalDevice();
+
+			void InitializeLogicalDevice();
+			void TerminateLogicalDevice();
+
+		private:
+			VulkanQueue vQueue = {};
+
+			std::vector<const char*> mDeviceExtensions;
+
 			VkDevice vLogicalDevice = VK_NULL_HANDLE;
 			VkPhysicalDevice vPhysicalDevice = VK_NULL_HANDLE;
+
+			VkSampleCountFlags vSampleCount = VkSampleCountFlagBits::VK_SAMPLE_COUNT_64_BIT;
 		};
 	}
 }
