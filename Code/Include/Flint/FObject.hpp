@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Core/DataType.h"
+#include "Core/DataType.hpp"
 #include <type_traits>
 
 namespace Flint

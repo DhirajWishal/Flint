@@ -15,7 +15,7 @@ project "Flint"
 	files {
 		"**.txt",
 		"**.cpp",
-		"**.h",
+		"**.hpp",
 		"**.lua",
 		"**.txt",
 		"**.md",

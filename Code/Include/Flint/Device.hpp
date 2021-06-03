@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Instance.h"
+#include "Instance.hpp"
 
 namespace Flint
 {

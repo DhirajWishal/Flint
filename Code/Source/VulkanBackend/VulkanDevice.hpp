@@ -3,22 +3,19 @@
 
 #pragma once
 
-#include "Flint/Instance.h"
+#include "Flint/Device.hpp"
+#include "VulkanInstance.hpp"
 
 namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanInstance final : public Instance
+		class VulkanDevice final : public Device
 		{
 		public:
-			VulkanInstance(bool enableValidation);
+			VulkanDevice(Instance& instance);
 
 			virtual void Terminate() override final;
-
-		private:
-			void InitializeGLFW();
-			void TerminateGLFW();
 		};
 	}
 }

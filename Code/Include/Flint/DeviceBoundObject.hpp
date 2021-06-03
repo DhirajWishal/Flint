@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Device.h"
+#include "Device.hpp"
 
 namespace Flint
 {

@@ -3,24 +3,21 @@
 
 #pragma once
 
-#include "Macros.h"
-#include <cstdint>
 #include <limits>
 
-typedef uint8_t UI8;
-typedef uint16_t UI16;
-typedef uint32_t UI32;
-typedef uint64_t UI64;
+#ifndef FLINT_BUILD_STATIC
+#	ifdef FLINT_EXPORT
+#		define FLINT_API	__declspec(dllexport)
 
-typedef int8_t I8;
-typedef int16_t I16;
-typedef int32_t I32;
-typedef int64_t I64;
+#	else
+#		define FLINT_API	__declspec(dllimport)
 
-typedef wchar_t wchar;
+#	endif
 
-typedef UI8 BYTE;
-typedef BYTE* BPTR;
+#else
+#	define FLINT_API
+
+#endif
 
 #define INSERT_INTO_VECTOR(vector, ...)		vector.insert(vector.end(), __VA_ARGS__)
 
@@ -43,3 +40,5 @@ typedef BYTE* BPTR;
 #define I16_MAX								std::numeric_limits<I16>::max()
 #define I32_MAX								std::numeric_limits<I32>::max()
 #define I64_MAX								std::numeric_limits<I64>::max()
+
+#define BIT_SHIFT(count)					(1 << count)
