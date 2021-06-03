@@ -4,6 +4,7 @@
 #pragma once
 
 #include "VulkanDevice.hpp"
+#include "Flint/Core/Error.hpp"
 
 namespace Flint
 {

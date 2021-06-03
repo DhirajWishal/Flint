@@ -13,9 +13,13 @@ namespace Flint
 		class VulkanDevice final : public Device
 		{
 		public:
-			VulkanDevice(Instance& instance);
+			VulkanDevice(Instance& instance, DeviceFlags flags);
 
 			virtual void Terminate() override final;
+
+		private:
+			VkDevice vLogicalDevice = VK_NULL_HANDLE;
+			VkPhysicalDevice vPhysicalDevice = VK_NULL_HANDLE;
 		};
 	}
 }

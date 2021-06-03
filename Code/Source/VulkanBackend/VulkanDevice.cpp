@@ -7,7 +7,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanDevice::VulkanDevice(Instance& instance) : Device(instance)
+		VulkanDevice::VulkanDevice(Instance& instance, DeviceFlags flags) : Device(instance, flags)
 		{
 		}
 

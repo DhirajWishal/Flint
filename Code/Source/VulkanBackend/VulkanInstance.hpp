@@ -4,7 +4,6 @@
 #pragma once
 
 #include "Flint/Instance.hpp"
-#include "VulkanMacros.hpp"
 
 #include <vulkan/vulkan.hpp>
 
@@ -18,6 +17,8 @@ namespace Flint
 			VulkanInstance(bool enableValidation);
 
 			virtual Device& CreateDevice(DeviceFlags flags) override final;
+			virtual void DestroyDevice(Device& device) override final;
+
 			virtual void Terminate() override final;
 
 		private:
@@ -31,6 +32,8 @@ namespace Flint
 			void TerminateDebugger();
 
 		private:
+			std::vector<const char*> mValidationLayers;
+
 			VkInstance vInstance = VK_NULL_HANDLE;
 			VkDebugUtilsMessengerEXT vDebugMessenger = VK_NULL_HANDLE;
 		};
