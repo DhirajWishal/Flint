@@ -4,16 +4,16 @@
 #pragma once
 
 #include "Flint/Core/Error.hpp"
-#include "VulkanDevice.hpp"
 
 #include <vulkan/vulkan.h>
 #include <vector>
-
 
 namespace Flint
 {
 	namespace VulkanBackend
 	{
+		class VulkanDevice;
+
 		namespace Utilities
 		{
 			void CheckResult(VkResult result);

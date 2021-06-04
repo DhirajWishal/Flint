@@ -3,43 +3,10 @@
 
 #pragma once
 
-#include "FObject.hpp"
-#include <string>
+#include "Display.hpp"
 
 namespace Flint
 {
-	class Device;
-	class Display;
-
-	/**
-	 * Device flags enum.
-	 * This determines the device characteristics.
-	 */
-	enum class DeviceFlags : UI8 {
-		/**
-		 * This flag states to use external device (GPU) if available over integrated.
-		 */
-		EXTERNAL = BIT_SHIFT(0),
-
-		/**
-		 * This flag states to use only the integrated device if available. If an integrated one doesn't exist but an external one exists, it will automatically select the external device.
-		 */
-		INTEGRATED = BIT_SHIFT(1),
-
-		/**
-		 * State that the device is used for graphics. This is a must if graphics needs to be enabled.
-		 */
-		GRAPHICS_COMPATIBLE = BIT_SHIFT(2),
-
-		/**
-		 * This states the device is used for compute.
-		 */
-		COMPUTE_COMPATIBLE = BIT_SHIFT(3)
-	};
-
-	constexpr DeviceFlags operator|(const DeviceFlags& lhs, const DeviceFlags& rhs) { return DeviceFlags(static_cast<UI8>(lhs) | static_cast<UI8>(rhs)); }
-	constexpr DeviceFlags operator&(const DeviceFlags& lhs, const DeviceFlags& rhs) { return DeviceFlags(static_cast<UI8>(lhs) & static_cast<UI8>(rhs)); }
-
 	/**
 	 * Flint instance object.
 	 * This object is the main object for any Flint instance.
@@ -79,6 +46,11 @@ namespace Flint
 		 */
 		virtual void DestroyDisplay(Display& display) = 0;
 
+		/**
+		 * Terminate the instance object.
+		 */
+		virtual void Terminate() = 0;
+
 	public:
 		/**
 		 * Check if validation is enabled.
@@ -86,6 +58,21 @@ namespace Flint
 		 * @return Boolean value stating true or false.
 		 */
 		bool IsValidationEnabled() const noexcept { return mEnableValidation; }
+
+	protected:
+		/**
+		 * Terminate a device object.
+		 *
+		 * @param device: The device to terminate.
+		 */
+		void TerminateDevice(Device& device) const { device.Terminate(); }
+
+		/**
+		 * Terminate a display object.
+		 * 
+		 * @param display: The display to terminate.
+		 */
+		void TerminateDisplay(Display& display) const { display.Terminate(); }
 
 	protected:
 		bool mEnableValidation = true;

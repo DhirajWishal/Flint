@@ -18,8 +18,6 @@ namespace Flint
 		FObject() = default;
 		virtual ~FObject() = default;
 
-		virtual void Terminate() = 0;
-
 	public:
 		/**
 		 * Dynamic cast the object to a derived class.

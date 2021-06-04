@@ -136,7 +136,7 @@ namespace Flint
 
 		void VulkanInstance::DestroyDevice(Device& device)
 		{
-			device.Terminate();
+			TerminateDevice(device);
 			delete& device;
 		}
 
@@ -147,7 +147,7 @@ namespace Flint
 
 		void VulkanInstance::DestroyDisplay(Display& display)
 		{
-			display.Terminate();
+			TerminateDisplay(display);
 			delete& display;
 		}
 

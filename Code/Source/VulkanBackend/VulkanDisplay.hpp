@@ -8,6 +8,8 @@
 #include "VulkanInstance.hpp"
 #include <GLFW/glfw3.h>
 
+#include <unordered_map>
+
 namespace Flint
 {
 	namespace VulkanBackend
@@ -16,17 +18,10 @@ namespace Flint
 
 		struct SwapChainSupportDetails
 		{
-			VkSurfaceCapabilitiesKHR mCapabilities = {};			// Swap Chain capabilities.
-			std::vector<VkSurfaceFormatKHR> mFormats = {};			// Swap Chain formats.
-			std::vector<VkPresentModeKHR> mPresentModes = {};		// Swap Chain present modes.
+			VkSurfaceCapabilitiesKHR mCapabilities = {};
+			std::vector<VkSurfaceFormatKHR> mFormats = {};
+			std::vector<VkPresentModeKHR> mPresentModes = {};
 
-			/**
-			 * Query swap chain support details.
-			 *
-			 * @param vPhysicalDevice: The physical device to be checked for.
-			 * @param vSurface: The surface to be checked with.
-			 * @return SwapChainSupportDetails structure.
-			 */
 			static SwapChainSupportDetails Query(VkPhysicalDevice vPhysicalDevice, VkSurfaceKHR vSurface);
 		};
 
@@ -64,9 +59,9 @@ namespace Flint
 			void SetupMaps();
 
 		private:
-			KeyCode mKeyMap[121] = {};
-			MouseButton mButtonMap[12] = {};
-			EventAction mActionMap[3] = {};
+			std::unordered_map<UI32, KeyCode> mKeyMap = {};
+			std::vector<MouseButton> mButtonMap = {};
+			std::vector<EventAction> mActionMap = {};
 
 			GLFWwindow* pWindow = nullptr;
 			VkSurfaceKHR vSurface = VK_NULL_HANDLE;

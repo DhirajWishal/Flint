@@ -179,6 +179,8 @@ namespace Flint
 	 */
 	class FLINT_API Display : public FObject
 	{
+		friend Instance;
+
 	public:
 		Display(Instance& instance, const FExtent2D& extent, const std::string& title) : mInstance(instance), mExtent(extent), mTitle(title) {}
 
@@ -187,6 +189,12 @@ namespace Flint
 		 * This polls inputs and prepares the display for the next draw.
 		 */
 		virtual void Update() = 0;
+
+	protected:
+		/**
+		 * Terminate the device object.
+		 */
+		virtual void Terminate() = 0;
 
 	public:
 		/**

@@ -3,6 +3,7 @@
 
 #include "VulkanUtilities.hpp"
 #include "VulkanMacros.hpp"
+#include "VulkanDevice.hpp"
 
 namespace Flint
 {

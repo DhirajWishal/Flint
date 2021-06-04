@@ -34,7 +34,7 @@ namespace Flint
 			for (UI32 i = 0; i < mBufferCount; i++)
 				FLINT_VK_ASSERT(vkCreateImage(vDevice.GetLogicalDevice(), &vCI, nullptr, vImages.data() + i));
 
-			FLINT_VK_ASSERT(vDevice.CreateImageMemory(vImages, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &vBufferMemory), "Failed to bind image memory!");
+			FLINT_VK_ASSERT(vDevice.CreateImageMemory(vImages, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &vBufferMemory));
 			vImageViews = std::move(Utilities::CreateImageViews(vImages, vFormat, vDevice, VK_IMAGE_ASPECT_DEPTH_BIT));
 
 			{
@@ -70,7 +70,7 @@ namespace Flint
 			for (UI32 i = 0; i < mBufferCount; i++)
 				FLINT_VK_ASSERT(vkCreateImage(vDevice.GetLogicalDevice(), &vCI, nullptr, vImages.data() + i));
 
-			FLINT_VK_ASSERT(vDevice.CreateImageMemory(vImages, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &vBufferMemory), "Failed to bind image memory!");
+			FLINT_VK_ASSERT(vDevice.CreateImageMemory(vImages, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &vBufferMemory));
 			vImageViews = std::move(Utilities::CreateImageViews(vImages, vFormat, vDevice, VK_IMAGE_ASPECT_DEPTH_BIT));
 
 			{

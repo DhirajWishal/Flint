@@ -318,10 +318,7 @@ namespace Flint
 			mKeyMap[glfwGetKeyScancode(GLFW_KEY_RIGHT_SUPER)] = KeyCode::KP_9;
 			mKeyMap[glfwGetKeyScancode(GLFW_KEY_MENU)] = KeyCode::KP_9;
 
-			mActionMap[GLFW_RELEASE] = EventAction::RELEASED;
-			mActionMap[GLFW_PRESS] = EventAction::PRESSED;
-			mActionMap[GLFW_REPEAT] = EventAction::ON_REPEAT;
-
+			mButtonMap.resize(12);
 			mButtonMap[GLFW_MOUSE_BUTTON_1] = MouseButton::BUTTON_1;
 			mButtonMap[GLFW_MOUSE_BUTTON_2] = MouseButton::BUTTON_2;
 			mButtonMap[GLFW_MOUSE_BUTTON_3] = MouseButton::BUTTON_3;
@@ -335,6 +332,11 @@ namespace Flint
 			mButtonMap[GLFW_MOUSE_BUTTON_LEFT] = MouseButton::LEFT;
 			mButtonMap[GLFW_MOUSE_BUTTON_RIGHT] = MouseButton::RIGHT;
 			mButtonMap[GLFW_MOUSE_BUTTON_MIDDLE] = MouseButton::MIDDLE;
+
+			mActionMap.resize(3);
+			mActionMap[GLFW_RELEASE] = EventAction::RELEASED;
+			mActionMap[GLFW_PRESS] = EventAction::PRESSED;
+			mActionMap[GLFW_REPEAT] = EventAction::ON_REPEAT;
 		}
 	}
 }
