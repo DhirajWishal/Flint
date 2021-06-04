@@ -4,7 +4,11 @@
 #pragma once
 
 #include "Flint/Core/Error.hpp"
+#include "VulkanDevice.hpp"
+
 #include <vulkan/vulkan.h>
+#include <vector>
+
 
 namespace Flint
 {
@@ -13,6 +17,8 @@ namespace Flint
 		namespace Utilities
 		{
 			void CheckResult(VkResult result);
+			std::vector<VkImageView> CreateImageViews(const std::vector<VkImage>& vImages, VkFormat imageFormat, VulkanDevice& device, VkImageAspectFlags aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT);
+			bool HasStencilComponent(VkFormat vFormat);
 		}
 	}
 }

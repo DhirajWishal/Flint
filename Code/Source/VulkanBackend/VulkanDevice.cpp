@@ -3,6 +3,7 @@
 
 #include "VulkanDevice.hpp"
 #include "VulkanDisplay.hpp"
+#include "VulkanOneTimeCommandBuffer.h"
 
 #include <set>
 
@@ -82,6 +83,150 @@ namespace Flint
 		void VulkanDevice::Terminate()
 		{
 			TerminateLogicalDevice();
+		}
+
+		VkResult VulkanDevice::CreateImageMemory(const std::vector<VkImage>& vImages, VkMemoryPropertyFlags vMemoryflags, VkDeviceMemory* pDeviceMemory) const
+		{
+			if (!vImages.size())
+				return VkResult::VK_ERROR_UNKNOWN;
+
+			VkMemoryRequirements vMR = {};
+			vkGetImageMemoryRequirements(GetLogicalDevice(), vImages[0], &vMR);
+
+			VkPhysicalDeviceMemoryProperties vMP = {};
+			vkGetPhysicalDeviceMemoryProperties(GetPhysicalDevice(), &vMP);
+
+			VkMemoryAllocateInfo vAI = {};
+			vAI.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+			vAI.allocationSize = vMR.size * vImages.size();
+
+			for (UI32 i = 0; i < vMP.memoryTypeCount; i++)
+			{
+				if ((vMR.memoryTypeBits & (1 << i)) && (vMP.memoryTypes[i].propertyFlags & vMemoryflags) == vMemoryflags)
+				{
+					vAI.memoryTypeIndex = i;
+					break;
+				}
+			}
+
+			FLINT_VK_ASSERT(vkAllocateMemory(GetLogicalDevice(), &vAI, nullptr, pDeviceMemory));
+
+			VkResult result = VkResult::VK_ERROR_UNKNOWN;
+			for (UI32 i = 0; i < vImages.size(); i++)
+				result = vkBindImageMemory(GetLogicalDevice(), vImages[i], *pDeviceMemory, vMR.size * i);
+
+			return result;
+		}
+
+		void VulkanDevice::SetImageLayout(VkCommandBuffer vCommandBuffer, VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, UI32 layerCount, UI32 currentLayer, UI32 mipLevels) const
+		{
+			VkImageMemoryBarrier vMB = {};
+			vMB.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+			vMB.oldLayout = vOldLayout;
+			vMB.newLayout = vNewLayout;
+			vMB.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+			vMB.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+			vMB.image = vImage;
+
+			if (vNewLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
+			{
+				vMB.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+
+				if (Utilities::HasStencilComponent(vFormat))
+					vMB.subresourceRange.aspectMask |= VK_IMAGE_ASPECT_STENCIL_BIT;
+			}
+			else
+				vMB.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+
+			vMB.subresourceRange.baseMipLevel = 0;
+			vMB.subresourceRange.levelCount = mipLevels;
+			vMB.subresourceRange.layerCount = layerCount;
+			vMB.subresourceRange.baseArrayLayer = currentLayer;
+			vMB.srcAccessMask = 0; // TODO
+			vMB.dstAccessMask = 0; // TODO
+
+			VkPipelineStageFlags sourceStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
+			VkPipelineStageFlags destinationStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
+
+			switch (vOldLayout)
+			{
+			case VK_IMAGE_LAYOUT_UNDEFINED:
+				sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+				vMB.srcAccessMask = 0;
+				break;
+
+			case VK_IMAGE_LAYOUT_PREINITIALIZED:
+				vMB.srcAccessMask = VK_ACCESS_HOST_WRITE_BIT;
+				break;
+
+			case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
+				vMB.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+				break;
+
+			case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
+				vMB.srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+				break;
+
+			case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
+				vMB.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+				break;
+
+			case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
+				sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+				vMB.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+				break;
+
+			case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
+				destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+				vMB.srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
+				break;
+			default:
+				FLINT_THROW_RUNTIME_ERROR("Unsupported layout transition!");
+			}
+
+			switch (vNewLayout)
+			{
+			case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
+				destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+				vMB.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+				break;
+
+			case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
+				vMB.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+				break;
+
+			case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
+				destinationStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+				vMB.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+				break;
+
+			case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
+				destinationStage = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+				vMB.dstAccessMask = vMB.dstAccessMask | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+				break;
+
+			case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
+				if (vMB.srcAccessMask == 0)
+					vMB.srcAccessMask = VK_ACCESS_HOST_WRITE_BIT | VK_ACCESS_TRANSFER_WRITE_BIT;
+
+				vMB.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+				destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+				break;
+
+			case VK_IMAGE_LAYOUT_GENERAL:
+				destinationStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
+				break;
+			default:
+				FLINT_THROW_RUNTIME_ERROR("Unsupported layout transition!");
+			}
+
+			vkCmdPipelineBarrier(vCommandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &vMB);
+		}
+
+		void VulkanDevice::SetImageLayout(VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, UI32 layerCount, UI32 currentLayer, UI32 mipLevels) const
+		{
+			VulkanOneTimeCommandBuffer vCommandBuffer(*this);
+			SetImageLayout(vCommandBuffer, vImage, vOldLayout, vNewLayout, vFormat, layerCount, currentLayer, mipLevels);
 		}
 
 		void VulkanDevice::InitializePhysicalDevice()

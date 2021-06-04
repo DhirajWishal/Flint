@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "VulkanUtilities.hpp"
+#include "VulkanMacros.hpp"
 
 namespace Flint
 {
@@ -51,6 +52,58 @@ namespace Flint
 				case VK_PIPELINE_COMPILE_REQUIRED_EXT:					FLINT_THROW_BACKEND_ERROR(FLINT_BACKEND_ERROR_PIPELINE_COMPILATION_REQUIRED);
 				default:												FLINT_THROW_BACKEND_ERROR(FLINT_BACKEND_ERROR_UNKNOWN);
 				}
+			}
+
+			std::vector<VkImageView> CreateImageViews(const std::vector<VkImage>& vImages, VkFormat imageFormat, VulkanDevice& device, VkImageAspectFlags aspectFlags)
+			{
+				VkImageViewCreateInfo vCI = {};
+				vCI.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+				vCI.flags = VK_NULL_HANDLE;
+				vCI.pNext = VK_NULL_HANDLE;
+				vCI.viewType = VkImageViewType::VK_IMAGE_VIEW_TYPE_2D;
+				vCI.format = imageFormat;
+
+				VkImageSubresourceRange vSR = {};
+				vSR.layerCount = 1;
+				vSR.baseArrayLayer = 0;
+				vSR.levelCount = 1;
+				vSR.baseMipLevel = 0;
+				vSR.aspectMask = aspectFlags;
+
+				vCI.subresourceRange = vSR;
+
+				std::vector<VkImageView> vImageViews(vImages.size());
+				VkImageView* pArray = vImageViews.data();
+				for (auto itr = vImages.begin(); itr != vImages.end(); itr++)
+				{
+					vCI.image = *itr;
+					FLINT_VK_ASSERT(vkCreateImageView(device.GetLogicalDevice(), &vCI, nullptr, pArray));
+					pArray++;
+				}
+
+				return vImageViews;
+			}
+
+			VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features, VkPhysicalDevice vPhysicalDevice)
+			{
+				for (VkFormat format : candidates) {
+					VkFormatProperties props = {};
+					vkGetPhysicalDeviceFormatProperties(vPhysicalDevice, format, &props);
+
+					if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features)
+						return format;
+
+					else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features)
+						return format;
+				}
+
+				FLINT_THROW_RUNTIME_ERROR("Unable to find suitable format!");
+				return VkFormat();
+			}
+
+			bool HasStencilComponent(VkFormat vFormat)
+			{
+				return vFormat == VK_FORMAT_D32_SFLOAT_S8_UINT || vFormat == VK_FORMAT_D24_UNORM_S8_UINT;
 			}
 		}
 	}

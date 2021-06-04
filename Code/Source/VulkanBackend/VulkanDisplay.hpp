@@ -12,6 +12,24 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
+		class VulkanDevice;
+
+		struct SwapChainSupportDetails
+		{
+			VkSurfaceCapabilitiesKHR mCapabilities = {};			// Swap Chain capabilities.
+			std::vector<VkSurfaceFormatKHR> mFormats = {};			// Swap Chain formats.
+			std::vector<VkPresentModeKHR> mPresentModes = {};		// Swap Chain present modes.
+
+			/**
+			 * Query swap chain support details.
+			 *
+			 * @param vPhysicalDevice: The physical device to be checked for.
+			 * @param vSurface: The surface to be checked with.
+			 * @return SwapChainSupportDetails structure.
+			 */
+			static SwapChainSupportDetails Query(VkPhysicalDevice vPhysicalDevice, VkSurfaceKHR vSurface);
+		};
+
 		class VulkanDisplay final : public Display
 		{
 		public:
@@ -20,6 +38,13 @@ namespace Flint
 			virtual void Update() override final;
 			virtual void Terminate() override final;
 
+			VkSurfaceFormatKHR ChooseSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
+			VkPresentModeKHR ChoosePresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
+			VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, UI32 width, UI32 height);
+			VkSurfaceCapabilitiesKHR GetSurfaceCapabilities(VulkanDevice& device) const;
+			UI32 FindSupporterBufferCount(VulkanDevice& device, UI32 count) const;
+
+		public:
 			void CallKeyCallback(I32 scancode, I32 action, I32 mods) { if (pKeyCallback) pKeyCallback(mKeyMap[scancode], mActionMap[action], static_cast<SpecialCharacter>(mods)); }
 			void CallMouseButtonCallback(I32 button, I32 action, I32 mods) { if (pMouseButtonCallback) pMouseButtonCallback(mButtonMap[button], mActionMap[action], static_cast<SpecialCharacter>(mods)); }
 			void CallCursorPositionCallback(double xOffset, double yOffset) { if (pCursorPositionCallback) pCursorPositionCallback(xOffset, yOffset); }

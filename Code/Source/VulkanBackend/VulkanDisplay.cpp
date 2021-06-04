@@ -3,6 +3,7 @@
 
 #include "VulkanDisplay.hpp"
 #include "Flint/Core/Error.hpp"
+#include "VulkanDevice.hpp"
 
 namespace Flint
 {
@@ -63,6 +64,32 @@ namespace Flint
 			}
 		}
 
+		SwapChainSupportDetails SwapChainSupportDetails::Query(VkPhysicalDevice vPhysicalDevice, VkSurfaceKHR vSurface)
+		{
+			SwapChainSupportDetails supportDetails = {};
+			vkGetPhysicalDeviceSurfaceCapabilitiesKHR(vPhysicalDevice, vSurface, &supportDetails.mCapabilities);
+
+			UI32 formatCount = 0;
+			vkGetPhysicalDeviceSurfaceFormatsKHR(vPhysicalDevice, vSurface, &formatCount, nullptr);
+
+			if (formatCount != 0)
+			{
+				supportDetails.mFormats.resize(formatCount);
+				vkGetPhysicalDeviceSurfaceFormatsKHR(vPhysicalDevice, vSurface, &formatCount, supportDetails.mFormats.data());
+			}
+
+			UI32 presentModeCount = 0;
+			vkGetPhysicalDeviceSurfacePresentModesKHR(vPhysicalDevice, vSurface, &presentModeCount, nullptr);
+
+			if (presentModeCount != 0)
+			{
+				supportDetails.mPresentModes.resize(presentModeCount);
+				vkGetPhysicalDeviceSurfacePresentModesKHR(vPhysicalDevice, vSurface, &presentModeCount, supportDetails.mPresentModes.data());
+			}
+
+			return supportDetails;
+		}
+
 		VulkanDisplay::VulkanDisplay(Instance& instance, const FExtent2D& extent, const std::string& title) : Display(instance, extent, title)
 		{
 			pWindow = glfwCreateWindow(extent.mWidth, extent.mHeight, title.c_str(), nullptr, nullptr);
@@ -93,6 +120,72 @@ namespace Flint
 		{
 			vkDestroySurfaceKHR(mInstance.StaticCast<VulkanInstance>().GetInstance(), vSurface, nullptr);
 			glfwDestroyWindow(pWindow);
+		}
+
+		VkSurfaceFormatKHR VulkanDisplay::ChooseSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
+		{
+			for (const auto& availableFormat : availableFormats)
+				if (availableFormat.format == VK_FORMAT_B8G8R8A8_UNORM
+					&& availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
+					return availableFormat;
+
+			return availableFormats[0];
+		}
+
+		VkPresentModeKHR VulkanDisplay::ChoosePresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes)
+		{
+			VkPresentModeKHR bestMode = VK_PRESENT_MODE_FIFO_KHR;
+
+			for (const auto& availablePresentMode : availablePresentModes)
+			{
+				if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR)
+					return availablePresentMode;
+				else if (availablePresentMode == VK_PRESENT_MODE_IMMEDIATE_KHR)
+					bestMode = availablePresentMode;
+			}
+
+			return bestMode;
+		}
+
+		VkExtent2D VulkanDisplay::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, UI32 width, UI32 height)
+		{
+			VkExtent2D actualExtent = {
+				width,
+				height
+			};
+
+			if ((width >= capabilities.maxImageExtent.width) || (width <= capabilities.minImageExtent.width))
+				actualExtent.width = std::max(capabilities.minImageExtent.width, std::min(capabilities.maxImageExtent.width, actualExtent.width));
+
+			if ((height >= capabilities.maxImageExtent.height) || (height <= capabilities.minImageExtent.height))
+				actualExtent.height = std::max(capabilities.minImageExtent.height, std::min(capabilities.maxImageExtent.height, actualExtent.height));
+
+			return actualExtent;
+		}
+
+		VkSurfaceCapabilitiesKHR VulkanDisplay::GetSurfaceCapabilities(VulkanDevice& device) const
+		{
+			VkSurfaceCapabilitiesKHR vCapabilities = {};
+			vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device.GetPhysicalDevice(), GetSurface(), &vCapabilities);
+			return vCapabilities;
+		}
+
+		UI32 VulkanDisplay::FindSupporterBufferCount(VulkanDevice& device, UI32 count) const
+		{
+			auto& vSurfaceCapabilities = GetSurfaceCapabilities(device);
+			if (count == std::numeric_limits<UI32>::max())
+				return vSurfaceCapabilities.maxImageCount - 1;
+			else if (count == 0)
+			{
+				UI32 bufferCount = vSurfaceCapabilities.minImageCount + 1;
+				if (vSurfaceCapabilities.maxImageCount > 0
+					&& bufferCount > vSurfaceCapabilities.maxImageCount)
+					bufferCount = vSurfaceCapabilities.maxImageCount;
+
+				return bufferCount;
+			}
+
+			return count;
 		}
 
 		void VulkanDisplay::SetupMaps()
