@@ -2,7 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "Flint/Instance.hpp"
+#include "Flint/Display.hpp"
 #include <iostream>
+
+void KeyCallback(Flint::KeyCode key, Flint::EventAction action, Flint::SpecialCharacter character)
+{
+	if (key == Flint::KeyCode::KEY_A)
+		std::cout << std::endl << "Key A is pressed!" << std::endl;
+}
 
 int main()
 {
@@ -10,7 +17,12 @@ int main()
 	{
 		Flint::Instance& mInstance = Flint::CreateInstance(true);
 		Flint::Device& mDevice = mInstance.CreateDevice(Flint::DeviceFlags::EXTERNAL | Flint::DeviceFlags::GRAPHICS_COMPATIBLE | Flint::DeviceFlags::COMPUTE_COMPATIBLE);
+		Flint::Display& mDisplay = mInstance.CreateDisplay({ 1280, 720 }, "Flint: Sample Scene");
 
+		mDisplay.SetKeyCallback(KeyCallback);
+		while (mDisplay.IsOpen()) mDisplay.Update();
+
+		mInstance.DestroyDisplay(mDisplay);
 		mInstance.DestroyDevice(mDevice);
 		Flint::DestroyInstance(mInstance);
 	}

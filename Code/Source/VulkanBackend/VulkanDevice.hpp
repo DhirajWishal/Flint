@@ -16,10 +16,15 @@ namespace Flint
 		public:
 			VulkanDevice(Instance& instance, DeviceFlags flags);
 
+			virtual bool IsDisplayCompatible(const Display& display) override final;
 			virtual void Terminate() override final;
 
 		public:
 			VkDevice GetLogicalDevice() const noexcept { return vLogicalDevice; }
+			VkPhysicalDevice GetPhysicalDevice() const noexcept { return vPhysicalDevice; }
+
+			VulkanQueue& GetQueue() { return vQueue; }
+			const VulkanQueue GetQueue() const { return vQueue; }
 
 		private:
 			void InitializePhysicalDevice();

@@ -66,6 +66,9 @@ workspace "Flint"
 		optimize "On"
 		IncludeLib["FreeImage"] = "$(SolutionDir)Dependencies/ThirdParty/Binaries/FreeImage/Release"
 
+	filter "configurations:*Static"
+		defines { "FLINT_BUILD_STATIC" }
+
 	filter "platforms:Windows"
 		system "windows"
 		defines { "FLINT_PLATFORM_WINDOWS" }

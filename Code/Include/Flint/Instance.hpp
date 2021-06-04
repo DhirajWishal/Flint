@@ -4,10 +4,12 @@
 #pragma once
 
 #include "FObject.hpp"
+#include <string>
 
 namespace Flint
 {
 	class Device;
+	class Display;
 
 	/**
 	 * Device flags enum.
@@ -22,17 +24,17 @@ namespace Flint
 		/**
 		 * This flag states to use only the integrated device if available. If an integrated one doesn't exist but an external one exists, it will automatically select the external device.
 		 */
-		 INTEGRATED = BIT_SHIFT(1),
+		INTEGRATED = BIT_SHIFT(1),
 
-		 /**
-		  * State that the device is used for graphics. This is a must if graphics needs to be enabled.
-		  */
-		  GRAPHICS_COMPATIBLE = BIT_SHIFT(2),
+		/**
+		 * State that the device is used for graphics. This is a must if graphics needs to be enabled.
+		 */
+		GRAPHICS_COMPATIBLE = BIT_SHIFT(2),
 
-		  /**
-		   * This states the device is used for compute.
-		   */
-		   COMPUTE_COMPATIBLE = BIT_SHIFT(3)
+		/**
+		 * This states the device is used for compute.
+		 */
+		COMPUTE_COMPATIBLE = BIT_SHIFT(3)
 	};
 
 	constexpr DeviceFlags operator|(const DeviceFlags& lhs, const DeviceFlags& rhs) { return DeviceFlags(static_cast<UI8>(lhs) | static_cast<UI8>(rhs)); }
@@ -61,6 +63,21 @@ namespace Flint
 		 * @param device: The device object.
 		 */
 		virtual void DestroyDevice(Device& device) = 0;
+
+		/**
+		 * Create a new display object.
+		 * 
+		 * @param extent: The display extent.
+		 * @param title: The display title.
+		 */
+		virtual Display& CreateDisplay(const FExtent2D& extent, const std::string& title) = 0;
+
+		/**
+		 * Destroy a created display.
+		 * 
+		 * @param display: The display to destroy.
+		 */
+		virtual void DestroyDisplay(Display& display) = 0;
 
 	public:
 		/**

@@ -18,8 +18,6 @@ project "SimpleScene"
 		"{COPY} \"$(SolutionDir)Dependencies/Runtime/shaderc_shared.dll\" \"%{cfg.targetdir}\"",
 		"{COPY} \"$(SolutionDir)Dependencies/Runtime/vulkan-1.dll\" \"%{cfg.targetdir}\"",
 		"{COPY} \"$(SolutionDir)Dependencies/Runtime/xxhash.dll\" \"%{cfg.targetdir}\"",
-
-		"{COPY} \"$(SolutionDir)Builds/Binaries/$(Configuration)/Flint.dll\" \"%{cfg.targetdir}\"",
 	}
 
 	files {
@@ -44,5 +42,8 @@ project "SimpleScene"
 
 	filter "configurations:Release*"
 	    buildoptions "/MT"
+
+	filter "configurations:Shared*"
+		postbuildcommands { "{COPY} \"$(SolutionDir)Builds/Binaries/$(Configuration)/Flint.dll\" \"%{cfg.targetdir}\"" }
 
 	filter ""

@@ -20,6 +20,9 @@ namespace Flint
 			virtual Device& CreateDevice(DeviceFlags flags) override final;
 			virtual void DestroyDevice(Device& device) override final;
 
+			virtual Display& CreateDisplay(const FExtent2D& extent, const std::string& title) override final;
+			virtual void DestroyDisplay(Display& display) override final;
+
 			virtual void Terminate() override final;
 
 		public:

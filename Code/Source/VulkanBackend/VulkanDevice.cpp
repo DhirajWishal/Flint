@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "VulkanDevice.hpp"
+#include "VulkanDisplay.hpp"
 
 #include <set>
 
@@ -70,6 +71,14 @@ namespace Flint
 			InitializeLogicalDevice();
 		}
 
+		bool VulkanDevice::IsDisplayCompatible(const Display& display)
+		{
+			const VulkanDisplay& vDisplay = display.StaticCast<VulkanDisplay>();
+			VkBool32 isSupported = VK_FALSE;
+			FLINT_VK_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(GetPhysicalDevice(), GetQueue().mGraphicsFamily.value(), vDisplay.GetSurface(), &isSupported));
+			return isSupported == VK_TRUE;
+		}
+
 		void VulkanDevice::Terminate()
 		{
 			TerminateLogicalDevice();
@@ -77,7 +86,7 @@ namespace Flint
 
 		void VulkanDevice::InitializePhysicalDevice()
 		{
-			VulkanInstance& instance = static_cast<VulkanInstance&>(mInstance);
+			VulkanInstance& instance = mInstance.StaticCast<VulkanInstance>();
 
 			UI32 deviceCount = 0;
 			vkEnumeratePhysicalDevices(instance.GetInstance(), &deviceCount, nullptr);
@@ -152,7 +161,7 @@ namespace Flint
 
 		void VulkanDevice::InitializeLogicalDevice()
 		{
-			VulkanInstance& instance = static_cast<VulkanInstance&>(mInstance);
+			VulkanInstance& instance = mInstance.StaticCast<VulkanInstance>();
 
 			vQueue.Initialize(vPhysicalDevice, mFlags);
 

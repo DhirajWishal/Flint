@@ -5,6 +5,7 @@
 #include "VulkanMacros.hpp"
 
 #include "VulkanDevice.hpp"
+#include "VulkanDisplay.hpp"
 
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -139,6 +140,17 @@ namespace Flint
 			delete& device;
 		}
 
+		Display& VulkanInstance::CreateDisplay(const FExtent2D& extent, const std::string& title)
+		{
+			return *new VulkanDisplay(*this, extent, title);
+		}
+
+		void VulkanInstance::DestroyDisplay(Display& display)
+		{
+			display.Terminate();
+			delete& display;
+		}
+
 		void VulkanInstance::Terminate()
 		{
 			if (IsValidationEnabled())
@@ -152,6 +164,7 @@ namespace Flint
 		{
 			glfwInit();
 			glfwSetErrorCallback(_Helpers::GLFWErrorCallback);
+			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 		}
 
 		void VulkanInstance::TerminateGLFW()
