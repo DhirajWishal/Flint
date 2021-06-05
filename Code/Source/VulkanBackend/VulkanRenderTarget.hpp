@@ -26,8 +26,7 @@ namespace Flint
 			void CreateSyncObjects(UI32 count);
 			void DestroySyncObjects();
 
-		protected:
-			VulkanDevice& vDevice;
+		public:
 			std::vector<VkSemaphore> vImageAvailables;
 			std::vector<VkSemaphore> vRenderFinishes;
 			std::vector<VkFence> vInFlightFences;
@@ -35,6 +34,9 @@ namespace Flint
 			std::vector<VkFramebuffer> vFrameBuffers = {};
 
 			VkRenderPass vRenderPass = VK_NULL_HANDLE;
+
+		private:
+			VulkanDevice& vDevice;
 		};
 	}
 }

@@ -11,148 +11,14 @@ namespace Flint
 		VulkanSwapChain::VulkanSwapChain(VulkanDevice& device, VulkanDisplay& display, const FExtent2D& extent, const UI32 bufferCount)
 			: VulkanRenderTargetAttachment(RenderTargetAttachmenType::SWAP_CHAIN, device, extent, bufferCount), vDisplay(display)
 		{
-			SwapChainSupportDetails& vSupport = SwapChainSupportDetails::Query(vDevice.GetPhysicalDevice(), vDisplay.GetSurface());
-			VkSurfaceFormatKHR surfaceFormat = vDisplay.ChooseSurfaceFormat(vSupport.mFormats);
-			VkPresentModeKHR presentMode = vDisplay.ChoosePresentMode(vSupport.mPresentModes);
-
-			auto& vCapabilities = vDisplay.GetSurfaceCapabilities(vDevice);
-
-			VkCompositeAlphaFlagBitsKHR surfaceComposite = static_cast<VkCompositeAlphaFlagBitsKHR>(vCapabilities.supportedCompositeAlpha);
-			surfaceComposite = (surfaceComposite & VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR)
-				? VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR
-				: (surfaceComposite & VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR)
-				? VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR
-				: (surfaceComposite & VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR)
-				? VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR
-				: VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR;
-
-			vFormat = surfaceFormat.format;
-
-			VkSwapchainCreateInfoKHR vCI = {};
-			vCI.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-			vCI.flags = VK_NULL_HANDLE;
-			vCI.pNext = VK_NULL_HANDLE;
-			vCI.surface = vDisplay.GetSurface();
-			vCI.minImageCount = mBufferCount;
-			vCI.imageFormat = vFormat;
-			vCI.imageColorSpace = surfaceFormat.colorSpace;
-			vCI.imageExtent = { static_cast<UI32>(mExtent.mWidth), static_cast<UI32>(mExtent.mHeight) };
-			vCI.imageArrayLayers = 1;
-			vCI.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-
-			UI32 queueFamilyindices[2] = {
-				vDevice.GetQueue().mGraphicsFamily.value(),
-				vDevice.GetQueue().mTransferFamily.value()
-			};
-
-			if (vDevice.GetQueue().mGraphicsFamily != vDevice.GetQueue().mTransferFamily)
-			{
-				vCI.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
-				vCI.queueFamilyIndexCount = 2;
-				vCI.pQueueFamilyIndices = queueFamilyindices;
-			}
-			else
-			{
-				vCI.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-				vCI.queueFamilyIndexCount = 0;
-				vCI.pQueueFamilyIndices = nullptr;
-			}
-
-			vCI.preTransform = vSupport.mCapabilities.currentTransform;
-			vCI.compositeAlpha = surfaceComposite;
-			vCI.presentMode = presentMode;
-			vCI.clipped = VK_TRUE;
-			vCI.oldSwapchain = vSwapChain;
-
-			if (!vDevice.IsDisplayCompatible(vDisplay))
-				FLINT_THROW_RUNTIME_ERROR("Submitted device and display are incompatible!");
-
-			VkSwapchainKHR vNewSwapChain = VK_NULL_HANDLE;
-			FLINT_VK_ASSERT(vkCreateSwapchainKHR(vDevice.GetLogicalDevice(), &vCI, nullptr, &vNewSwapChain));
-
-			if (vSwapChain != VK_NULL_HANDLE) Terminate();
-			vSwapChain = vNewSwapChain;
-
-			vCI.minImageCount = 0;
-			FLINT_VK_ASSERT(vkGetSwapchainImagesKHR(vDevice.GetLogicalDevice(), vSwapChain, &vCI.minImageCount, nullptr));
-			vImages.resize(vCI.minImageCount);
-			FLINT_VK_ASSERT(vkGetSwapchainImagesKHR(vDevice.GetLogicalDevice(), vSwapChain, &vCI.minImageCount, vImages.data()));
-
-			vImageViews = std::move(Utilities::CreateImageViews(vImages, vCI.imageFormat, vDevice));
+			Initialize();
 		}
 
 		void VulkanSwapChain::Recreate(const FExtent2D& extent)
 		{
 			mExtent = extent;
 
-			SwapChainSupportDetails& vSupport = SwapChainSupportDetails::Query(vDevice.GetPhysicalDevice(), vDisplay.GetSurface());
-			VkSurfaceFormatKHR surfaceFormat = vDisplay.ChooseSurfaceFormat(vSupport.mFormats);
-			VkPresentModeKHR presentMode = vDisplay.ChoosePresentMode(vSupport.mPresentModes);
-
-			auto& vCapabilities = vDisplay.GetSurfaceCapabilities(vDevice);
-
-			VkCompositeAlphaFlagBitsKHR surfaceComposite = static_cast<VkCompositeAlphaFlagBitsKHR>(vCapabilities.supportedCompositeAlpha);
-			surfaceComposite = (surfaceComposite & VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR)
-				? VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR
-				: (surfaceComposite & VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR)
-				? VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR
-				: (surfaceComposite & VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR)
-				? VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR
-				: VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR;
-
-			vFormat = surfaceFormat.format;
-
-			VkSwapchainCreateInfoKHR vCI = {};
-			vCI.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-			vCI.flags = VK_NULL_HANDLE;
-			vCI.pNext = VK_NULL_HANDLE;
-			vCI.surface = vDisplay.GetSurface();
-			vCI.minImageCount = mBufferCount;
-			vCI.imageFormat = vFormat;
-			vCI.imageColorSpace = surfaceFormat.colorSpace;
-			vCI.imageExtent = { static_cast<UI32>(mExtent.mWidth), static_cast<UI32>(mExtent.mHeight) };
-			vCI.imageArrayLayers = 1;
-			vCI.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-
-			UI32 queueFamilyindices[2] = {
-				vDevice.GetQueue().mGraphicsFamily.value(),
-				vDevice.GetQueue().mTransferFamily.value()
-			};
-
-			if (vDevice.GetQueue().mGraphicsFamily != vDevice.GetQueue().mTransferFamily)
-			{
-				vCI.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
-				vCI.queueFamilyIndexCount = 2;
-				vCI.pQueueFamilyIndices = queueFamilyindices;
-			}
-			else
-			{
-				vCI.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-				vCI.queueFamilyIndexCount = 0;
-				vCI.pQueueFamilyIndices = nullptr;
-			}
-
-			vCI.preTransform = vSupport.mCapabilities.currentTransform;
-			vCI.compositeAlpha = surfaceComposite;
-			vCI.presentMode = presentMode;
-			vCI.clipped = VK_TRUE;
-			vCI.oldSwapchain = vSwapChain;
-
-			if (!vDevice.IsDisplayCompatible(vDisplay))
-				FLINT_THROW_RUNTIME_ERROR("Submitted device and display are incompatible!");
-
-			VkSwapchainKHR vNewSwapChain = VK_NULL_HANDLE;
-			FLINT_VK_ASSERT(vkCreateSwapchainKHR(vDevice.GetLogicalDevice(), &vCI, nullptr, &vNewSwapChain));
-
-			if (vSwapChain != VK_NULL_HANDLE) Terminate();
-			vSwapChain = vNewSwapChain;
-
-			vCI.minImageCount = 0;
-			FLINT_VK_ASSERT(vkGetSwapchainImagesKHR(vDevice.GetLogicalDevice(), vSwapChain, &vCI.minImageCount, nullptr));
-			vImages.resize(vCI.minImageCount);
-			FLINT_VK_ASSERT(vkGetSwapchainImagesKHR(vDevice.GetLogicalDevice(), vSwapChain, &vCI.minImageCount, vImages.data()));
-
-			vImageViews = std::move(Utilities::CreateImageViews(vImages, vCI.imageFormat, vDevice));
+			Initialize();
 		}
 
 		void VulkanSwapChain::Terminate()
@@ -188,6 +54,78 @@ namespace Flint
 		VkImageLayout VulkanSwapChain::GetAttachmentLayout() const
 		{
 			return VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		}
+
+		void VulkanSwapChain::Initialize()
+		{
+			SwapChainSupportDetails& vSupport = SwapChainSupportDetails::Query(vDevice.GetPhysicalDevice(), vDisplay.GetSurface());
+			VkSurfaceFormatKHR surfaceFormat = vDisplay.ChooseSurfaceFormat(vSupport.mFormats);
+			VkPresentModeKHR presentMode = vDisplay.ChoosePresentMode(vSupport.mPresentModes);
+
+			auto& vCapabilities = vDisplay.GetSurfaceCapabilities(vDevice);
+
+			VkCompositeAlphaFlagBitsKHR surfaceComposite = static_cast<VkCompositeAlphaFlagBitsKHR>(vCapabilities.supportedCompositeAlpha);
+			surfaceComposite = (surfaceComposite & VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR)
+				? VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR
+				: (surfaceComposite & VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR)
+				? VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR
+				: (surfaceComposite & VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR)
+				? VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR
+				: VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR;
+
+			vFormat = surfaceFormat.format;
+
+			VkSwapchainCreateInfoKHR vCI = {};
+			vCI.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+			vCI.flags = VK_NULL_HANDLE;
+			vCI.pNext = VK_NULL_HANDLE;
+			vCI.surface = vDisplay.GetSurface();
+			vCI.minImageCount = mBufferCount;
+			vCI.imageFormat = vFormat;
+			vCI.imageColorSpace = surfaceFormat.colorSpace;
+			vCI.imageExtent = { static_cast<UI32>(mExtent.mWidth), static_cast<UI32>(mExtent.mHeight) };
+			vCI.imageArrayLayers = 1;
+			vCI.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+
+			UI32 queueFamilyindices[2] = {
+				vDevice.GetQueue().mGraphicsFamily.value(),
+				vDevice.GetQueue().mTransferFamily.value()
+			};
+
+			if (vDevice.GetQueue().mGraphicsFamily != vDevice.GetQueue().mTransferFamily)
+			{
+				vCI.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
+				vCI.queueFamilyIndexCount = 2;
+				vCI.pQueueFamilyIndices = queueFamilyindices;
+			}
+			else
+			{
+				vCI.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+				vCI.queueFamilyIndexCount = 0;
+				vCI.pQueueFamilyIndices = nullptr;
+			}
+
+			vCI.preTransform = vSupport.mCapabilities.currentTransform;
+			vCI.compositeAlpha = surfaceComposite;
+			vCI.presentMode = presentMode;
+			vCI.clipped = VK_TRUE;
+			vCI.oldSwapchain = vSwapChain;
+
+			if (!vDevice.IsDisplayCompatible(vDisplay))
+				FLINT_THROW_RUNTIME_ERROR("Submitted device and display are incompatible!");
+
+			VkSwapchainKHR vNewSwapChain = VK_NULL_HANDLE;
+			FLINT_VK_ASSERT(vkCreateSwapchainKHR(vDevice.GetLogicalDevice(), &vCI, nullptr, &vNewSwapChain));
+
+			if (vSwapChain != VK_NULL_HANDLE) Terminate();
+			vSwapChain = vNewSwapChain;
+
+			vCI.minImageCount = 0;
+			FLINT_VK_ASSERT(vkGetSwapchainImagesKHR(vDevice.GetLogicalDevice(), vSwapChain, &vCI.minImageCount, nullptr));
+			vImages.resize(vCI.minImageCount);
+			FLINT_VK_ASSERT(vkGetSwapchainImagesKHR(vDevice.GetLogicalDevice(), vSwapChain, &vCI.minImageCount, vImages.data()));
+
+			vImageViews = std::move(Utilities::CreateImageViews(vImages, vCI.imageFormat, vDevice));
 		}
 	}
 }

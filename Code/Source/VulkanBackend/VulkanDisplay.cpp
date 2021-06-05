@@ -54,13 +54,14 @@ namespace Flint
 				auto pDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window));
 				pDisplay->CallDisplayResizeCallback(FExtent2D(width, height));
 				pDisplay->SetNewExtent(FExtent2D(width, height));
+				pDisplay->Resized();
 			}
 
 			void WindowCloseCallback(GLFWwindow* window)
 			{
 				auto pDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window));
 				pDisplay->CallDisplayCloseCallback();
-				pDisplay->ToggleDisplayClose();
+				pDisplay->ToggleClose();
 			}
 		}
 
@@ -120,6 +121,24 @@ namespace Flint
 		{
 			vkDestroySurfaceKHR(mInstance.StaticCast<VulkanInstance>().GetInstance(), vSurface, nullptr);
 			glfwDestroyWindow(pWindow);
+		}
+
+		UI32 VulkanDisplay::FindBestBufferCount(Device& device, UI32 count)
+		{
+			auto& vSurfaceCapabilities = GetSurfaceCapabilities(device.StaticCast<VulkanDevice>());
+			if (count == std::numeric_limits<UI32>::max())
+				return vSurfaceCapabilities.maxImageCount - 1;
+			else if (count == 0)
+			{
+				UI32 bufferCount = vSurfaceCapabilities.minImageCount + 1;
+				if (vSurfaceCapabilities.maxImageCount > 0
+					&& bufferCount > vSurfaceCapabilities.maxImageCount)
+					bufferCount = vSurfaceCapabilities.maxImageCount;
+
+				return bufferCount;
+			}
+
+			return count;
 		}
 
 		VkSurfaceFormatKHR VulkanDisplay::ChooseSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)

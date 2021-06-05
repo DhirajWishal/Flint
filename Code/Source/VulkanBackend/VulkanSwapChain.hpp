@@ -24,6 +24,9 @@ namespace Flint
 			VkSwapchainKHR GetSwapChain() const { return vSwapChain; }
 
 		private:
+			void Initialize();
+
+		private:
 			VulkanDisplay& vDisplay;
 			VkSwapchainKHR vSwapChain = VK_NULL_HANDLE;
 		};

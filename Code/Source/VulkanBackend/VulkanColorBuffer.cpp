@@ -14,71 +14,15 @@ namespace Flint
 		{
 			vSampleCount = vDevice.GetSampleCount();
 
-			VkImageCreateInfo vCI = {};
-			vCI.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-			vCI.flags = VK_NULL_HANDLE;
-			vCI.pNext = VK_NULL_HANDLE;
-			vCI.imageType = VK_IMAGE_TYPE_2D;
-			vCI.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-			vCI.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-			vCI.tiling = VK_IMAGE_TILING_OPTIMAL;
-			vCI.usage = VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-			vCI.extent = { static_cast<UI32>(mExtent.mWidth), static_cast<UI32>(mExtent.mHeight), 1 };
-			vCI.samples = static_cast<VkSampleCountFlagBits>(vSampleCount);
-			vCI.format = vFormat;
-			vCI.arrayLayers = 1;
-			vCI.mipLevels = 1;
-			vCI.queueFamilyIndexCount = 0;
-			vCI.pQueueFamilyIndices = VK_NULL_HANDLE;
-
-			vImages.resize(mBufferCount);
-			for (UI32 i = 0; i < mBufferCount; i++)
-				FLINT_VK_ASSERT(vkCreateImage(vDevice.GetLogicalDevice(), &vCI, nullptr, vImages.data() + i));
-
-			FLINT_VK_ASSERT(vDevice.CreateImageMemory(vImages, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &vBufferMemory));
-			vImageViews = std::move(Utilities::CreateImageViews(vImages, vFormat, vDevice, VK_IMAGE_ASPECT_COLOR_BIT));
-
-			{
-				VulkanOneTimeCommandBuffer vCommandBuffer(vDevice);
-				for (auto itr = vImages.begin(); itr != vImages.end(); itr++)
-					vDevice.SetImageLayout(vCommandBuffer, *itr, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, vFormat);
-			}
+			Initialize();
 		}
 
 		void VulkanColorBuffer::Recreate(const FExtent2D& extent)
 		{
 			mExtent = extent;
+
 			Terminate();
-
-			VkImageCreateInfo vCI = {};
-			vCI.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-			vCI.flags = VK_NULL_HANDLE;
-			vCI.pNext = VK_NULL_HANDLE;
-			vCI.imageType = VK_IMAGE_TYPE_2D;
-			vCI.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-			vCI.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-			vCI.tiling = VK_IMAGE_TILING_OPTIMAL;
-			vCI.usage = VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-			vCI.extent = { static_cast<UI32>(mExtent.mWidth), static_cast<UI32>(mExtent.mHeight), 1 };
-			vCI.samples = static_cast<VkSampleCountFlagBits>(vSampleCount);
-			vCI.format = vFormat;
-			vCI.arrayLayers = 1;
-			vCI.mipLevels = 1;
-			vCI.queueFamilyIndexCount = 0;
-			vCI.pQueueFamilyIndices = VK_NULL_HANDLE;
-
-			vImages.resize(mBufferCount);
-			for (UI32 i = 0; i < mBufferCount; i++)
-				FLINT_VK_ASSERT(vkCreateImage(vDevice.GetLogicalDevice(), &vCI, nullptr, vImages.data() + i));
-
-			FLINT_VK_ASSERT(vDevice.CreateImageMemory(vImages, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &vBufferMemory));
-			vImageViews = std::move(Utilities::CreateImageViews(vImages, vFormat, vDevice, VK_IMAGE_ASPECT_COLOR_BIT));
-
-			{
-				VulkanOneTimeCommandBuffer vCommandBuffer(vDevice);
-				for (auto itr = vImages.begin(); itr != vImages.end(); itr++)
-					vDevice.SetImageLayout(vCommandBuffer, *itr, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, vFormat);
-			}
+			Initialize();
 		}
 
 		void VulkanColorBuffer::Terminate()
@@ -111,6 +55,39 @@ namespace Flint
 		VkImageLayout VulkanColorBuffer::GetAttachmentLayout() const
 		{
 			return VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		}
+		
+		void VulkanColorBuffer::Initialize()
+		{
+			VkImageCreateInfo vCI = {};
+			vCI.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+			vCI.flags = VK_NULL_HANDLE;
+			vCI.pNext = VK_NULL_HANDLE;
+			vCI.imageType = VK_IMAGE_TYPE_2D;
+			vCI.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+			vCI.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+			vCI.tiling = VK_IMAGE_TILING_OPTIMAL;
+			vCI.usage = VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+			vCI.extent = { static_cast<UI32>(mExtent.mWidth), static_cast<UI32>(mExtent.mHeight), 1 };
+			vCI.samples = static_cast<VkSampleCountFlagBits>(vSampleCount);
+			vCI.format = vFormat;
+			vCI.arrayLayers = 1;
+			vCI.mipLevels = 1;
+			vCI.queueFamilyIndexCount = 0;
+			vCI.pQueueFamilyIndices = VK_NULL_HANDLE;
+
+			vImages.resize(mBufferCount);
+			for (UI32 i = 0; i < mBufferCount; i++)
+				FLINT_VK_ASSERT(vkCreateImage(vDevice.GetLogicalDevice(), &vCI, nullptr, vImages.data() + i));
+
+			FLINT_VK_ASSERT(vDevice.CreateImageMemory(vImages, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &vBufferMemory));
+			vImageViews = std::move(Utilities::CreateImageViews(vImages, vFormat, vDevice, VK_IMAGE_ASPECT_COLOR_BIT));
+
+			{
+				VulkanOneTimeCommandBuffer vCommandBuffer(vDevice);
+				for (auto itr = vImages.begin(); itr != vImages.end(); itr++)
+					vDevice.SetImageLayout(vCommandBuffer, *itr, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, vFormat);
+			}
 		}
 	}
 }

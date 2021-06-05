@@ -32,6 +32,8 @@ namespace Flint
 
 			virtual void Update() override final;
 			virtual void Terminate() override final;
+			virtual void ToggleResize() override final { mIsDislayResized = false; }
+			virtual UI32 FindBestBufferCount(Device& device, UI32 count = 0) override final;
 
 			VkSurfaceFormatKHR ChooseSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 			VkPresentModeKHR ChoosePresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
@@ -50,7 +52,8 @@ namespace Flint
 			void CallDisplayCloseCallback() { if (pDisplayCloseCallback) pDisplayCloseCallback(); }
 
 			void SetNewExtent(FExtent2D extent) { mExtent = extent; }
-			void ToggleDisplayClose() { mIsDisplayOpen = false; }
+			void ToggleClose() { mIsDisplayOpen = false; }
+			void Resized() { mIsDislayResized = true; }
 
 		public:
 			VkSurfaceKHR GetSurface() const { return vSurface; }

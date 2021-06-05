@@ -21,6 +21,9 @@ namespace Flint
 			virtual VkImageLayout GetAttachmentLayout() const override final;
 
 		private:
+			void Initialize();
+
+		private:
 			VkDeviceMemory vBufferMemory = VK_NULL_HANDLE;
 			VkSampleCountFlags vSampleCount = VK_SAMPLE_COUNT_64_BIT;
 		};

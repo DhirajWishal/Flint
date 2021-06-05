@@ -4,6 +4,8 @@
 #include "VulkanDevice.hpp"
 #include "VulkanDisplay.hpp"
 #include "VulkanOneTimeCommandBuffer.h"
+#include "VulkanCommandBufferList.hpp"
+#include "VulkanScreenBoundRenderTarget.hpp"
 
 #include <set>
 
@@ -78,6 +80,43 @@ namespace Flint
 			VkBool32 isSupported = VK_FALSE;
 			FLINT_VK_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(GetPhysicalDevice(), GetQueue().mGraphicsFamily.value(), vDisplay.GetSurface(), &isSupported));
 			return isSupported == VK_TRUE;
+		}
+
+		CommandBufferList& VulkanDevice::CreatePrimaryCommandBufferList(UI32 bufferCount)
+		{
+			return *new VulkanCommandBufferList(*this, bufferCount);
+		}
+
+		CommandBufferList& VulkanDevice::CreateSecondaryCommandBufferList(UI32 bufferCount, CommandBufferList& parent)
+		{
+			return *new VulkanCommandBufferList(*this, bufferCount, parent);
+		}
+
+		void VulkanDevice::DestroyCommandBufferList(CommandBufferList& commandBufferList)
+		{
+			TerminateDeviceBoundObject(commandBufferList);
+			delete& commandBufferList;
+		}
+
+		ScreenBoundRenderTarget& VulkanDevice::CreateScreenBoundRenderTarget(Display& display, const FExtent2D& extent, const UI32 bufferCount)
+		{
+			return *new VulkanScreenBoundRenderTarget(*this, display, extent, bufferCount);
+		}
+
+		void VulkanDevice::DestroyRenderTarget(RenderTarget& renderTarget)
+		{
+			TerminateDeviceBoundObject(renderTarget);
+			delete& renderTarget;
+		}
+
+		void VulkanDevice::WaitIdle()
+		{
+			FLINT_VK_ASSERT(vkDeviceWaitIdle(GetLogicalDevice()));
+		}
+
+		void VulkanDevice::WaitForQueue()
+		{
+			FLINT_VK_ASSERT(vkQueueWaitIdle(GetQueue().vTransferQueue));
 		}
 
 		void VulkanDevice::Terminate()

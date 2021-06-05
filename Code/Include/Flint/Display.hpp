@@ -190,11 +190,26 @@ namespace Flint
 		 */
 		virtual void Update() = 0;
 
+		/**
+		 * Find the best buffer count for the swap chain.
+		 * If 0 is passed (by default), the minimum supported buffer count is given. If UI32_MAX is give, the maximum supported is given.
+		 *
+		 * @param device: The device object to check with.
+		 * @param count: The count that needs to be checked. Default is 0.
+		 * @return The best buffer count integer.
+		 */
+		virtual UI32 FindBestBufferCount(Device& device, UI32 count = 0) = 0;
+
 	protected:
 		/**
 		 * Terminate the device object.
 		 */
 		virtual void Terminate() = 0;
+
+		/**
+		 * Toggle the resize boolean to false.
+		 */
+		virtual void ToggleResize() = 0;
 
 	public:
 		/**
@@ -274,6 +289,13 @@ namespace Flint
 		 */
 		bool IsOpen() const { return mIsDisplayOpen; }
 
+		/**
+		 * Check if the display is resized.
+		 *
+		 * @return Boolean value.
+		 */
+		bool IsDisplayResized() const { return mIsDislayResized; }
+
 	protected:
 		std::string mTitle = "";
 		Instance& mInstance;
@@ -289,5 +311,6 @@ namespace Flint
 		TDisplayCloseCallbackFunc pDisplayCloseCallback = nullptr;
 
 		bool mIsDisplayOpen = true;
+		bool mIsDislayResized = false;
 	};
 }

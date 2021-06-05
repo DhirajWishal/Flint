@@ -18,7 +18,9 @@ namespace Flint
 		{
 			void CheckResult(VkResult result);
 			std::vector<VkImageView> CreateImageViews(const std::vector<VkImage>& vImages, VkFormat imageFormat, VulkanDevice& device, VkImageAspectFlags aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT);
+			VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features, VkPhysicalDevice vPhysicalDevice);
 			bool HasStencilComponent(VkFormat vFormat);
+			VkFormat FindDepthFormat(VkPhysicalDevice vPhysicalDevice);
 		}
 	}
 }

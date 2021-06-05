@@ -17,6 +17,17 @@ namespace Flint
 			VulkanDevice(Instance& instance, DeviceFlags flags);
 
 			virtual bool IsDisplayCompatible(const Display& display) override final;
+
+			virtual CommandBufferList& CreatePrimaryCommandBufferList(UI32 bufferCount) override final;
+			virtual CommandBufferList& CreateSecondaryCommandBufferList(UI32 bufferCount, CommandBufferList& parent) override final;
+			virtual void DestroyCommandBufferList(CommandBufferList& commandBufferList) override final;
+
+			virtual ScreenBoundRenderTarget& CreateScreenBoundRenderTarget(Display& display, const FExtent2D& extent, const UI32 bufferCount) override final;
+			virtual void DestroyRenderTarget(RenderTarget& renderTarget) override final;
+
+			virtual void WaitIdle() override final;
+			virtual void WaitForQueue() override final;
+
 			virtual void Terminate() override final;
 
 		public:

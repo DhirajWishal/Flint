@@ -3,6 +3,7 @@
 
 #include "Flint/Instance.hpp"
 #include "Flint/Display.hpp"
+#include "Flint/ScreenBoundRenderTarget.hpp"
 #include <iostream>
 
 void KeyCallback(Flint::KeyCode key, Flint::EventAction action, Flint::SpecialCharacter character)
@@ -19,9 +20,13 @@ int main()
 		Flint::Device& mDevice = mInstance.CreateDevice(Flint::DeviceFlags::EXTERNAL | Flint::DeviceFlags::GRAPHICS_COMPATIBLE | Flint::DeviceFlags::COMPUTE_COMPATIBLE);
 		Flint::Display& mDisplay = mInstance.CreateDisplay({ 1280, 720 }, "Flint: Sample Scene");
 
+		Flint::ScreenBoundRenderTarget& mRenderTarget = mDevice.CreateScreenBoundRenderTarget(mDisplay, { 1280, 720 }, mDisplay.FindBestBufferCount(mDevice));
+
 		mDisplay.SetKeyCallback(KeyCallback);
 		while (mDisplay.IsOpen()) mDisplay.Update();
 
+		mDevice.WaitIdle();
+		mDevice.DestroyRenderTarget(mRenderTarget);
 		mInstance.DestroyDisplay(mDisplay);
 		mInstance.DestroyDevice(mDevice);
 		Flint::DestroyInstance(mInstance);

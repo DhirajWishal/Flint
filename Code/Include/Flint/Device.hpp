@@ -10,6 +10,9 @@ namespace Flint
 	class Display;
 	class DeviceBoundObject;
 	class Instance;
+	class CommandBufferList;
+	class RenderTarget;
+	class ScreenBoundRenderTarget;
 
 	/**
 	 * Device flags enum.
@@ -53,11 +56,65 @@ namespace Flint
 
 		/**
 		 * Check if the display is compatible with the device.
-		 * 
+		 *
 		 * @param display: The display to check.
 		 * @return Boolean value stating if compatible or not.
 		 */
 		virtual bool IsDisplayCompatible(const Display& display) = 0;
+
+		/**
+		 * Create a new primary command buffer list.
+		 * These command buffers are used to submit data to the device.
+		 *
+		 * @param bufferCount: The number of command buffers in the list.
+		 * @return The command buffer list object.
+		 */
+		virtual CommandBufferList& CreatePrimaryCommandBufferList(UI32 bufferCount) = 0;
+
+		/**
+		 * Create a new secondary command buffer list.
+		 * Secondary command buffers are used in multi threading and it uses a primary command buffer to submit data to the device.
+		 *
+		 * @param bufferCount: The number of command buffers in the list.
+		 * @param parent: The parent command buffer list to derive information from.
+		 * @return The command buffer list object.
+		 */
+		virtual CommandBufferList& CreateSecondaryCommandBufferList(UI32 bufferCount, CommandBufferList& parent) = 0;
+
+		/**
+		 * Terminate a created command buffer list.
+		 *
+		 * @param commandBufferList: The command buffer list to terminate.
+		 */
+		virtual void DestroyCommandBufferList(CommandBufferList& commandBufferList) = 0;
+
+		/**
+		 * Create a new screen bound render target.
+		 * Screen bound render targets render frames to the display. This display must be compatible with the device object.
+		 *
+		 * @param display: The display object.
+		 * @param extent: The extent of the render target.
+		 * @param bufferCount: The buffer count of the frame buffer.
+		 * @return The screen bound render target object.
+		 */
+		virtual ScreenBoundRenderTarget& CreateScreenBoundRenderTarget(Display& display, const FExtent2D& extent, const UI32 bufferCount) = 0;
+
+		/**
+		 * Destroy a created render target.
+		 *
+		 * @param renderTarget: The render target to destroy.
+		 */
+		virtual void DestroyRenderTarget(RenderTarget& renderTarget) = 0;
+
+		/**
+		 * Wait till the device finish execution.
+		 */
+		virtual void WaitIdle() = 0;
+
+		/**
+		 * Wait for a queue finish its commands.
+		 */
+		virtual void WaitForQueue() = 0;
 
 	protected:
 		/**
@@ -67,7 +124,7 @@ namespace Flint
 
 		/**
 		 * Terminate a device bound object.
-		 * 
+		 *
 		 * @param object: The object to terminate.
 		 */
 		void TerminateDeviceBoundObject(DeviceBoundObject& object) const { object.Terminate(); }
