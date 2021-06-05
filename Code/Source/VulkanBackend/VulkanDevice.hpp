@@ -28,6 +28,13 @@ namespace Flint
 			virtual void WaitIdle() override final;
 			virtual void WaitForQueue() override final;
 
+			virtual StaggingBuffer& CreateStaggingBuffer(UI64 size) override final;
+			virtual UniformBuffer& CreateUniformBuffer(UI64 size) override final;
+			virtual StorageBuffer& CreateStorageBuffer(UI64 size) override final;
+			virtual VertexBuffer& CreateVertexBuffer(UI64 size, const VertexDescriptor& descriptor) override final;
+			virtual IndexBuffer& CreateIndexBuffer(UI64 size, UI64 stride) override final;
+			virtual void DestroyBuffer(Buffer& buffer) override final;
+
 			virtual void Terminate() override final;
 
 		public:

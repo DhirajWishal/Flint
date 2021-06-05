@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "VulkanDepthBuffer.hpp"
-#include "VulkanOneTimeCommandBuffer.h"
+#include "VulkanOneTimeCommandBuffer.hpp"
 
 namespace Flint
 {

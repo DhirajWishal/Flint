@@ -3,7 +3,7 @@
 
 #include "VulkanColorBuffer.hpp"
 #include "VulkanUtilities.hpp"
-#include "VulkanOneTimeCommandBuffer.h"
+#include "VulkanOneTimeCommandBuffer.hpp"
 
 namespace Flint
 {

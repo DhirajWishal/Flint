@@ -14,6 +14,13 @@ namespace Flint
 	class RenderTarget;
 	class ScreenBoundRenderTarget;
 
+	class Buffer;
+	class StaggingBuffer;
+	class UniformBuffer;
+	class StorageBuffer;
+	class VertexBuffer;
+	class IndexBuffer;
+
 	/**
 	 * Device flags enum.
 	 * This determines the device characteristics.
@@ -105,6 +112,62 @@ namespace Flint
 		 * @param renderTarget: The render target to destroy.
 		 */
 		virtual void DestroyRenderTarget(RenderTarget& renderTarget) = 0;
+
+		/**
+		 * Create a new stagging buffer.
+		 * Stagging buffers are used to transfer data to the device, and between buffers and images.
+		 * 
+		 * @param size: The buffer size.
+		 * @return The stagging buffer object.
+		 */
+		virtual StaggingBuffer& CreateStaggingBuffer(UI64 size) = 0;
+
+		/**
+		 * Create a new uniform buffer.
+		 * Uniform buffers are used to submit uniform information to the shaders.
+		 * 
+		 * @param size: The buffer size.
+		 * @return The uniform buffer object.
+		 */
+		virtual UniformBuffer& CreateUniformBuffer(UI64 size) = 0;
+
+		/**
+		 * Create a new storage buffer.
+		 * Storage buffers are used to store information from the shaders.
+		 * 
+		 * @param size: The buffer size.
+		 * @return The storage buffer.
+		 */
+		virtual StorageBuffer& CreateStorageBuffer(UI64 size) = 0;
+
+		/**
+		 * Create a new vertex buffer.
+		 * Vertex buffers are used to store information about vertexes and submitted to the pipeline to draw geometry.
+		 * Switching between vertex buffers are costly so it is recommended to use one large vertex buffer with multiple draw instances.
+		 * 
+		 * @param size: The size of the buffer.
+		 * @param descriptor: The vertex descriptor.
+		 * @return The vertex buffer object.
+		 */
+		virtual VertexBuffer& CreateVertexBuffer(UI64 size, const VertexDescriptor& descriptor) = 0;
+
+		/**
+		 * Create a new index buffer.
+		 * Index buffers are used to store index information and are submitted to the pipeline along with a vertex buffer.
+		 * Same as vertex buffers, switching index buffers are costly and is recommended to use one large index buffer along with a vertex buffer to draw.
+		 * 
+		 * @param size: The buffer size.
+		 * @param stride: The index stride.
+		 * @return The index buffer object.
+		 */
+		virtual IndexBuffer& CreateIndexBuffer(UI64 size, UI64 stride) = 0;
+
+		/**
+		 * Destroy a created buffer.
+		 * 
+		 * @param buffer: The buffer to be destroyed.
+		 */
+		virtual void DestroyBuffer(Buffer& buffer) = 0;
 
 		/**
 		 * Wait till the device finish execution.

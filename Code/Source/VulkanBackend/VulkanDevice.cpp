@@ -3,9 +3,14 @@
 
 #include "VulkanDevice.hpp"
 #include "VulkanDisplay.hpp"
-#include "VulkanOneTimeCommandBuffer.h"
+#include "VulkanOneTimeCommandBuffer.hpp"
 #include "VulkanCommandBufferList.hpp"
 #include "VulkanScreenBoundRenderTarget.hpp"
+#include "VulkanStaggingBuffer.hpp"
+#include "VulkanUniformBuffer.hpp"
+#include "VulkanStorageBuffer.hpp"
+#include "VulkanVertexBuffer.hpp"
+#include "VulkanIndexBuffer.hpp"
 
 #include <set>
 
@@ -117,6 +122,37 @@ namespace Flint
 		void VulkanDevice::WaitForQueue()
 		{
 			FLINT_VK_ASSERT(vkQueueWaitIdle(GetQueue().vTransferQueue));
+		}
+
+		StaggingBuffer& VulkanDevice::CreateStaggingBuffer(UI64 size)
+		{
+			return *new VulkanStaggingBuffer(*this, size);
+		}
+
+		UniformBuffer& VulkanDevice::CreateUniformBuffer(UI64 size)
+		{
+			return *new VulkanUniformBuffer(*this, size);
+		}
+
+		StorageBuffer& VulkanDevice::CreateStorageBuffer(UI64 size)
+		{
+			return *new VulkanStorageBuffer(*this, size);
+		}
+
+		VertexBuffer& VulkanDevice::CreateVertexBuffer(UI64 size, const VertexDescriptor& descriptor)
+		{
+			return *new VulkanVertexBuffer(*this, size, descriptor);
+		}
+
+		IndexBuffer& VulkanDevice::CreateIndexBuffer(UI64 size, UI64 stride)
+		{
+			return *new VulkanIndexBuffer(*this, size, stride);
+		}
+
+		void VulkanDevice::DestroyBuffer(Buffer& buffer)
+		{
+			TerminateDeviceBoundObject(buffer);
+			delete& buffer;
 		}
 
 		void VulkanDevice::Terminate()
