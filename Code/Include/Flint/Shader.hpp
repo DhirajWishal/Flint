@@ -1,0 +1,87 @@
+// Copyright 2021 Dhiraj Wishal
+// SPDX-License-Identifier: Apache-2.0
+
+#pragma once
+
+#include "DeviceBoundObject.hpp"
+#include <filesystem>
+
+namespace Flint
+{
+	/**
+	 * Shader resource type enum.
+	 */
+	enum class ShaderResourceType : UI8 {
+		UNIFORM_BUFFER,
+		STORAGE_BUFFER,
+		SAMPLER
+	};
+
+	/**
+	 * Shader resource structure.
+	 */
+	struct ShaderResource
+	{
+		std::string mResourceName = "";
+		ShaderResourceType mType = ShaderResourceType::UNIFORM_BUFFER;
+	};
+
+	/**
+	 * Shader attribute structure.
+	 */
+	struct ShaderAttribute
+	{
+		std::string mAttributeName = "";
+		VertexAttributeDataType mDataType = VertexAttributeDataType::VEC3;
+	};
+
+	/**
+	 * Shader code type enum.
+	 */
+	enum class ShaderCodeType : UI8 {
+		SPIR_V,
+		GLSL,
+		HLSL
+	};
+
+	/**
+	 * Flint shader object.
+	 * This object is the base class for all the shader objects.
+	 * Shader is a program which is run on the device and performs different tasks depending on its stage/ location.
+	 */
+	class FLINT_API Shader : public DeviceBoundObject
+	{
+	public:
+		Shader(Device& device, const std::filesystem::path& path, ShaderCodeType type) : DeviceBoundObject(device) {}
+		Shader(Device& device, const std::vector<UI32>& code, ShaderCodeType type = ShaderCodeType::SPIR_V) : DeviceBoundObject(device) {}
+		Shader(Device& device, const std::string& code, ShaderCodeType type = ShaderCodeType::GLSL) : DeviceBoundObject(device) {}
+
+		/**
+		 * Get the shader resources of the shader.
+		 *
+		 * @return The shader resources.
+		 */
+		std::vector<ShaderResource> GetShaderResources() const { return mResources; }
+
+		/**
+		 * Get shader input attributes.
+		 * Data to the shaders are passed via input attributes.
+		 *
+		 * @return The array of input attributes.
+		 */
+		std::vector<ShaderAttribute> GetInputAttributes() const { return mInputAttributes; }
+
+		/**
+		 * Get shader output attributes.
+		 * Data from one shader to another shader are passed using output attributes.
+		 *
+		 * @return The array of output attributes.
+		 */
+		std::vector<ShaderAttribute> GetOutputAttributes() const { return mOutputAttributes; }
+
+	protected:
+		std::vector<ShaderResource> mResources;
+		std::vector<ShaderAttribute> mInputAttributes;
+		std::vector<ShaderAttribute> mOutputAttributes;
+	};
+}

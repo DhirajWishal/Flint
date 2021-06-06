@@ -29,9 +29,9 @@ namespace Flint
 		void* VulkanBuffer::MapMemory(UI64 size, UI64 offset)
 		{
 			if (size + offset > mSize)
-				FLINT_THROW_OVERFLOW_ERROR("Submitted size and offset goes beyond the buffer dimensions!");
+				FLINT_THROW_RANGE_ERROR("Submitted size and offset goes beyond the buffer dimensions!");
 			else if (size <= 0)
-				FLINT_THROW_UNDERFLOW_ERROR("Submitted size is invalid!");
+				FLINT_THROW_RANGE_ERROR("Submitted size is invalid!");
 
 			void* pDataStore = nullptr;
 			FLINT_VK_ASSERT(vkMapMemory(vDevice.GetLogicalDevice(), vMemory, offset, size, 0, &pDataStore));
