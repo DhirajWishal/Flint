@@ -21,6 +21,10 @@ namespace Flint
 	class VertexBuffer;
 	class IndexBuffer;
 
+	class Shader;
+	class VertexShader;
+	class FragmentShader;
+
 	/**
 	 * Device flags enum.
 	 * This determines the device characteristics.
@@ -116,7 +120,7 @@ namespace Flint
 		/**
 		 * Create a new stagging buffer.
 		 * Stagging buffers are used to transfer data to the device, and between buffers and images.
-		 * 
+		 *
 		 * @param size: The buffer size.
 		 * @return The stagging buffer object.
 		 */
@@ -125,7 +129,7 @@ namespace Flint
 		/**
 		 * Create a new uniform buffer.
 		 * Uniform buffers are used to submit uniform information to the shaders.
-		 * 
+		 *
 		 * @param size: The buffer size.
 		 * @return The uniform buffer object.
 		 */
@@ -134,7 +138,7 @@ namespace Flint
 		/**
 		 * Create a new storage buffer.
 		 * Storage buffers are used to store information from the shaders.
-		 * 
+		 *
 		 * @param size: The buffer size.
 		 * @return The storage buffer.
 		 */
@@ -144,7 +148,7 @@ namespace Flint
 		 * Create a new vertex buffer.
 		 * Vertex buffers are used to store information about vertexes and submitted to the pipeline to draw geometry.
 		 * Switching between vertex buffers are costly so it is recommended to use one large vertex buffer with multiple draw instances.
-		 * 
+		 *
 		 * @param size: The size of the buffer.
 		 * @param descriptor: The vertex descriptor.
 		 * @return The vertex buffer object.
@@ -155,7 +159,7 @@ namespace Flint
 		 * Create a new index buffer.
 		 * Index buffers are used to store index information and are submitted to the pipeline along with a vertex buffer.
 		 * Same as vertex buffers, switching index buffers are costly and is recommended to use one large index buffer along with a vertex buffer to draw.
-		 * 
+		 *
 		 * @param size: The buffer size.
 		 * @param stride: The index stride.
 		 * @return The index buffer object.
@@ -164,11 +168,79 @@ namespace Flint
 
 		/**
 		 * Destroy a created buffer.
-		 * 
+		 *
 		 * @param buffer: The buffer to be destroyed.
 		 */
 		virtual void DestroyBuffer(Buffer& buffer) = 0;
 
+		/**
+		 * Create a new vertex shader.
+		 * Vertex shaders are used to perform computations per vertex in the graphics pipeline.
+		 *
+		 * @param path: The shade code path.
+		 * @param type: The shader code type.
+		 * @return The vertex shader object.
+		 */
+		virtual VertexShader& CreateVertexShader(const std::filesystem::path& path, ShaderCodeType type) = 0;
+
+		/**
+		 * Create a new vertex shader.
+		 * Vertex shaders are used to perform computations per vertex in the graphics pipeline.
+		 *
+		 * @param code: The shade code.
+		 * @param type: The shader code type. Default is SPIR_V.
+		 * @return The vertex shader object.
+		 */
+		virtual VertexShader& CreateVertexShader(const std::vector<UI32>& code, ShaderCodeType type = ShaderCodeType::SPIR_V) = 0;
+
+		/**
+		 * Create a new vertex shader.
+		 * Vertex shaders are used to perform computations per vertex in the graphics pipeline.
+		 *
+		 * @param code: The shade code.
+		 * @param type: The shader code type. Default is GLSL.
+		 * @return The vertex shader object.
+		 */
+		virtual VertexShader& CreateVertexShader(const std::string& code, ShaderCodeType type = ShaderCodeType::GLSL) = 0;
+
+		/**
+		 * Create a new vertex shader.
+		 * Fragment shaders are used to color pixels after rasterization in the graphics pipeline.
+		 *
+		 * @param path: The shade code path.
+		 * @param type: The shader code type.
+		 * @return The vertex shader object.
+		 */
+		virtual FragmentShader& CreateFragmentShader(const std::filesystem::path& path, ShaderCodeType type) = 0;
+
+		/**
+		 * Create a new vertex shader.
+		 * Fragment shaders are used to color pixels after rasterization in the graphics pipeline.
+		 *
+		 * @param code: The shade code.
+		 * @param type: The shader code type. Default is SPIR_V.
+		 * @return The vertex shader object.
+		 */
+		virtual FragmentShader& CreateFragmentShader(const std::vector<UI32>& code, ShaderCodeType type = ShaderCodeType::SPIR_V) = 0;
+
+		/**
+		 * Create a new vertex shader.
+		 * Fragment shaders are used to color pixels after rasterization in the graphics pipeline.
+		 *
+		 * @param code: The shade code.
+		 * @param type: The shader code type. Default is GLSL.
+		 * @return The vertex shader object.
+		 */
+		virtual FragmentShader& CreateFragmentShader(const std::string& code, ShaderCodeType type = ShaderCodeType::GLSL) = 0;
+
+		/**
+		 * Destroy a created shader.
+		 *
+		 * @param shader: The shader object to destroy.
+		 */
+		virtual void DestroyShader(Shader& shader) = 0;
+
+	public:
 		/**
 		 * Wait till the device finish execution.
 		 */

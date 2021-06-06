@@ -35,6 +35,14 @@ namespace Flint
 			virtual IndexBuffer& CreateIndexBuffer(UI64 size, UI64 stride) override final;
 			virtual void DestroyBuffer(Buffer& buffer) override final;
 
+			virtual VertexShader& CreateVertexShader(const std::filesystem::path& path, ShaderCodeType type) override final;
+			virtual VertexShader& CreateVertexShader(const std::vector<UI32>& code, ShaderCodeType type = ShaderCodeType::SPIR_V) override final;
+			virtual VertexShader& CreateVertexShader(const std::string& code, ShaderCodeType type = ShaderCodeType::GLSL) override final;
+			virtual FragmentShader& CreateFragmentShader(const std::filesystem::path& path, ShaderCodeType type) override final;
+			virtual FragmentShader& CreateFragmentShader(const std::vector<UI32>& code, ShaderCodeType type = ShaderCodeType::SPIR_V) override final;
+			virtual FragmentShader& CreateFragmentShader(const std::string& code, ShaderCodeType type = ShaderCodeType::GLSL) override final;
+			virtual void DestroyShader(Shader& shader) override final;
+
 			virtual void Terminate() override final;
 
 		public:

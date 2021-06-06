@@ -4,8 +4,10 @@
 #pragma once
 
 #include "FObject.hpp"
+
 #include <string>
 #include <vector>
+#include <filesystem>
 
 namespace Flint
 {
@@ -15,7 +17,7 @@ namespace Flint
 	 * Vertex attribute data type enum.
 	 * This enum contains all the supported vertex attribute data types.
 	 */
-	enum class VertexAttributeDataType : UI8 {
+	enum class ShaderAttributeDataType : UI8 {
 		BYTE = 1,
 
 		I8 = 1,
@@ -62,13 +64,22 @@ namespace Flint
 	};
 
 	/**
+	 * Shader code type enum.
+	 */
+	enum class ShaderCodeType : UI8 {
+		SPIR_V,
+		GLSL,
+		HLSL
+	};
+
+	/**
 	 * Flint vertex descriptor.
 	 * This describes the size and attributes of a single vertex.
 	 */
 	struct FLINT_API VertexDescriptor
 	{
 		VertexDescriptor() = default;
-		VertexDescriptor(const std::vector<VertexAttributeDataType>& attributes) : mAttributeTypes(attributes) {}
+		VertexDescriptor(const std::vector<ShaderAttributeDataType>& attributes) : mAttributeTypes(attributes) {}
 
 		/**
 		 * Get the stride (size of) the vertex.
@@ -77,7 +88,7 @@ namespace Flint
 		 */
 		UI64 Stride() const;
 
-		std::vector<VertexAttributeDataType> mAttributeTypes;
+		std::vector<ShaderAttributeDataType> mAttributeTypes;
 	};
 
 	/**

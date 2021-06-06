@@ -11,6 +11,8 @@
 #include "VulkanStorageBuffer.hpp"
 #include "VulkanVertexBuffer.hpp"
 #include "VulkanIndexBuffer.hpp"
+#include "VulkanVertexShader.hpp"
+#include "VulkanFragmentShader.hpp"
 
 #include <set>
 
@@ -153,6 +155,42 @@ namespace Flint
 		{
 			TerminateDeviceBoundObject(buffer);
 			delete& buffer;
+		}
+
+		VertexShader& VulkanDevice::CreateVertexShader(const std::filesystem::path& path, ShaderCodeType type)
+		{
+			return *new VulkanVertexShader(*this, path, type);
+		}
+
+		VertexShader& VulkanDevice::CreateVertexShader(const std::vector<UI32>& code, ShaderCodeType type)
+		{
+			return *new VulkanVertexShader(*this, code, type);
+		}
+
+		VertexShader& VulkanDevice::CreateVertexShader(const std::string& code, ShaderCodeType type)
+		{
+			return *new VulkanVertexShader(*this, code, type);
+		}
+
+		FragmentShader& VulkanDevice::CreateFragmentShader(const std::filesystem::path& path, ShaderCodeType type)
+		{
+			return *new VulkanFragmentShader(*this, path, type);
+		}
+
+		FragmentShader& VulkanDevice::CreateFragmentShader(const std::vector<UI32>& code, ShaderCodeType type)
+		{
+			return *new VulkanFragmentShader(*this, code, type);
+		}
+
+		FragmentShader& VulkanDevice::CreateFragmentShader(const std::string& code, ShaderCodeType type)
+		{
+			return *new VulkanFragmentShader(*this, code, type);
+		}
+
+		void VulkanDevice::DestroyShader(Shader& shader)
+		{
+			TerminateDeviceBoundObject(shader);
+			delete& shader;
 		}
 
 		void VulkanDevice::Terminate()

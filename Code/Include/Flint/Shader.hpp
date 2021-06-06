@@ -4,7 +4,6 @@
 #pragma once
 
 #include "DeviceBoundObject.hpp"
-#include <filesystem>
 
 namespace Flint
 {
@@ -22,7 +21,11 @@ namespace Flint
 	 */
 	struct ShaderResource
 	{
+		ShaderResource() = default;
+		ShaderResource(const std::string& name, UI32 binding, ShaderResourceType type) : mResourceName(name), mBinding(binding), mType(type) {}
+
 		std::string mResourceName = "";
+		UI32 mBinding = 0;
 		ShaderResourceType mType = ShaderResourceType::UNIFORM_BUFFER;
 	};
 
@@ -31,23 +34,20 @@ namespace Flint
 	 */
 	struct ShaderAttribute
 	{
-		std::string mAttributeName = "";
-		VertexAttributeDataType mDataType = VertexAttributeDataType::VEC3;
-	};
+		ShaderAttribute() = default;
+		ShaderAttribute(const std::string& name, UI32 location, ShaderAttributeDataType type) : mAttributeName(name), mLocation(location), mDataType(type) {}
 
-	/**
-	 * Shader code type enum.
-	 */
-	enum class ShaderCodeType : UI8 {
-		SPIR_V,
-		GLSL,
-		HLSL
+		std::string mAttributeName = "";
+		UI32 mLocation = 0;
+		ShaderAttributeDataType mDataType = ShaderAttributeDataType::VEC3;
 	};
 
 	/**
 	 * Flint shader object.
 	 * This object is the base class for all the shader objects.
 	 * Shader is a program which is run on the device and performs different tasks depending on its stage/ location.
+	 * 
+	 * Internally, we use SPIRV to store shaders.
 	 */
 	class FLINT_API Shader : public DeviceBoundObject
 	{

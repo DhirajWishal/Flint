@@ -24,9 +24,11 @@ namespace Flint
 			VulkanShader(VulkanDevice& device, VkShaderStageFlags stageFlags, const std::vector<UI32>& code, ShaderCodeType type);
 			VulkanShader(VulkanDevice& device, VkShaderStageFlags stageFlags, const std::string& code, ShaderCodeType type);
 
-			VkShaderModule GetModule() const { return vModule; }
-
+			void Terminate();
+			VkPipelineShaderStageCreateInfo GetShaderStageCreateInfo() const;
 			ShaderDescriptor PerformReflection() const;
+
+			VkShaderModule GetModule() const { return vModule; }
 
 		private:
 			void CreateShaderModule();
@@ -36,6 +38,7 @@ namespace Flint
 			std::vector<UI32> mShaderCode;
 
 			VkShaderModule vModule = VK_NULL_HANDLE;
+			VkShaderStageFlags vStageFlags = VkShaderStageFlagBits::VK_SHADER_STAGE_ALL;
 		};
 	}
 }

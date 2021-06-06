@@ -9,6 +9,7 @@
 
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <fstream>
 
 namespace Flint
 {
@@ -80,9 +81,15 @@ namespace Flint
 				void* pUserData)
 			{
 				std::string myMessagePreStatement = ": ";
+				static std::ofstream generalOutputFile("VulkanGeneralOutput.txt");
 
 				if (messageType == VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT)
+				{
 					myMessagePreStatement = "(General): ";
+					generalOutputFile << "Vulkan Validation Layer " << myMessagePreStatement << pCallbackData->pMessage << std::endl;
+
+					return VK_FALSE;
+				}
 				else if (messageType == VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT)
 					myMessagePreStatement = "(Validation): ";
 				else if (messageType == VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT)

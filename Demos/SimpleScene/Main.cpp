@@ -5,6 +5,7 @@
 #include "Flint/Display.hpp"
 #include "Flint/ScreenBoundRenderTarget.hpp"
 #include "Flint/StaggingBuffer.hpp"
+#include "Flint/VertexShader.hpp"
 #include <iostream>
 
 void KeyCallback(Flint::KeyCode key, Flint::EventAction action, Flint::SpecialCharacter character)
@@ -23,10 +24,12 @@ int main()
 
 		Flint::ScreenBoundRenderTarget& mRenderTarget = mDevice.CreateScreenBoundRenderTarget(mDisplay, { 1280, 720 }, mDisplay.FindBestBufferCount(mDevice));
 		Flint::StaggingBuffer& mBuffer = mDevice.CreateStaggingBuffer(1024);
+		Flint::VertexShader& mVertexShader = mDevice.CreateVertexShader(std::filesystem::path("E:\\Flint\\Assets\\Shaders\\3D\\shader.vert.spv"), Flint::ShaderCodeType::SPIR_V);
 
 		mDisplay.SetKeyCallback(KeyCallback);
 		while (mDisplay.IsOpen()) mDisplay.Update();
 
+		mDevice.DestroyShader(mVertexShader);
 		mDevice.DestroyBuffer(mBuffer);
 		mDevice.DestroyRenderTarget(mRenderTarget);
 		mInstance.DestroyDisplay(mDisplay);
