@@ -11,7 +11,7 @@ namespace Flint
 	 * Flint command buffer list object.
 	 * This object stored multiple command buffers which are used to submit commands to the GPU.
 	 */
-	class FLINT_API CommandBufferList : public DeviceBoundObject
+	class CommandBufferList : public DeviceBoundObject
 	{
 	public:
 		/**

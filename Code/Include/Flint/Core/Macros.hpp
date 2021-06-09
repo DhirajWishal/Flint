@@ -5,20 +5,6 @@
 
 #include <limits>
 
-#ifndef FLINT_BUILD_STATIC
-#	ifdef FLINT_EXPORT
-#		define FLINT_API	__declspec(dllexport)
-
-#	else
-#		define FLINT_API	__declspec(dllimport)
-
-#	endif
-
-#else
-#	define FLINT_API
-
-#endif
-
 #define INSERT_INTO_VECTOR(vector, ...)		vector.insert(vector.end(), __VA_ARGS__)
 
 #define UI8_MIN								std::numeric_limits<UI8>::min()

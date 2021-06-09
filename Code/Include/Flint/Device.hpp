@@ -58,7 +58,7 @@ namespace Flint
 	 * Flint device object.
 	 * This object is the basis for all the resources. Almost all the resources are bound to a device.
 	 */
-	class FLINT_API Device : public FObject
+	class Device : public FObject
 	{
 		friend Instance;
 

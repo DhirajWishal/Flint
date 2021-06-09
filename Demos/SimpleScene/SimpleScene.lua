@@ -37,13 +37,10 @@ project "SimpleScene"
 		"Flint",
 	}
 
-	filter "configurations:Debug*"
+	filter "configurations:Debug"
 	    buildoptions "/MTd"
 
-	filter "configurations:Release*"
+	filter "configurations:Release"
 	    buildoptions "/MT"
-
-	filter "configurations:Shared*"
-		postbuildcommands { "{COPY} \"$(SolutionDir)Builds/Binaries/$(Configuration)/Flint.dll\" \"%{cfg.targetdir}\"" }
 
 	filter ""

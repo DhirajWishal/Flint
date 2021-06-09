@@ -11,7 +11,7 @@ namespace Flint
 	 * Flint transfer friendly buffer object.
 	 * These buffers can be mapped to the local address space to transfer data.
 	 */
-	class FLINT_API TransferFriendlyBuffer : public Buffer
+	class TransferFriendlyBuffer : public Buffer
 	{
 	public:
 		TransferFriendlyBuffer(Device& device, UI64 size) : Buffer(device, size) {}

@@ -49,7 +49,7 @@ namespace Flint
 	 * 
 	 * Internally, we use SPIRV to store shaders.
 	 */
-	class FLINT_API Shader : public DeviceBoundObject
+	class Shader : public DeviceBoundObject
 	{
 	public:
 		Shader(Device& device, const std::filesystem::path& path, ShaderCodeType type) : DeviceBoundObject(device) {}

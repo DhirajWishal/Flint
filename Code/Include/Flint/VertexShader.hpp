@@ -11,7 +11,7 @@ namespace Flint
 	 * Flint vertex shader object.
 	 * Vertex shaders are used in the graphics pipeline and is called per vertex.
 	 */
-	class FLINT_API VertexShader : public Shader
+	class VertexShader : public Shader
 	{
 	public:
 		VertexShader(Device& device, const std::filesystem::path& path, ShaderCodeType type) : Shader(device, path, type) {}

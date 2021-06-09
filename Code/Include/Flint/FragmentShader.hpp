@@ -11,7 +11,7 @@ namespace Flint
 	 * Flint fragment shader object.
 	 * Fragment shaders are used to color pixels after rasterization.
 	 */
-	class FLINT_API FragmentShader : public Shader
+	class FragmentShader : public Shader
 	{
 	public:
 		FragmentShader(Device& device, const std::filesystem::path& path, ShaderCodeType type) : Shader(device, path, type) {}

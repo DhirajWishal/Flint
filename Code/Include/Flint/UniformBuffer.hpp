@@ -11,7 +11,7 @@ namespace Flint
 	 * Flint uniform buffer object.
 	 * Uniform buffers are used to store and submit uniform data to the shaders.
 	 */
-	class FLINT_API UniformBuffer : public ShaderResourceBuffer
+	class UniformBuffer : public ShaderResourceBuffer
 	{
 	public:
 		UniformBuffer(Device& device, UI64 size) : ShaderResourceBuffer(device, size) {}

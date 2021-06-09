@@ -12,7 +12,7 @@ namespace Flint
 	 * Flint screen bound render target.
 	 * Screen bound render targets renders frames to a display object. This display object must be compatible with a device object.
 	 */
-	class FLINT_API ScreenBoundRenderTarget : public RenderTarget
+	class ScreenBoundRenderTarget : public RenderTarget
 	{
 	public:
 		ScreenBoundRenderTarget(Device& device, Display& display, const FExtent2D& extent, const UI32 bufferCount, CommandBufferList& commandBufferList)

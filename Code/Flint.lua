@@ -5,6 +5,7 @@
 
 project "Flint"
 	language "C++"
+	kind "StaticLib"
 	systemversion "latest"
 	cppdialect "C++17"
 	staticruntime "On"
@@ -65,22 +66,14 @@ project "Flint"
 		"shaderc_util",
 	}
 
-	filter "configurations:Debug*"
+	filter "configurations:Debug"
 		links { 
 			--"FreeImageLibd"
 		}
 
-	filter "configurations:Release*"
+	filter "configurations:Release"
 		links { 
 			--"FreeImageLib"
 		}
-
-	filter "configurations:*Static"
-		kind "StaticLib"
-		defines { "FLINT_BUILD_STATIC" }
-
-	filter "configurations:*Shared"
-		kind "SharedLib"
-		defines { "FLINT_EXPORT" }
 
 	filter ""

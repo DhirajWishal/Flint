@@ -25,7 +25,7 @@ namespace Flint
 	/**
 	 * Flint extent 2D structure.
 	 */
-	struct FLINT_API FExtent2D
+	struct FExtent2D
 	{
 		FExtent2D() = default;
 		FExtent2D(UI32 width, UI32 height) : mWidth(width), mHeight(height) {}
@@ -36,7 +36,7 @@ namespace Flint
 	/**
 	 * Flint extent 3D structure.
 	 */
-	struct FLINT_API FExtent3D
+	struct FExtent3D
 	{
 		FExtent3D() = default;
 		FExtent3D(UI32 width, UI32 height, UI32 depth) : mWidth(width), mHeight(height), mDepth(depth) {}

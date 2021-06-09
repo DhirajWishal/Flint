@@ -5,10 +5,8 @@ workspace "Flint"
 	architecture "x64"
 
 	configurations {
-		"Debug Static",
-		"Debug Shared",
-		"Release Static",
-		"Release Shared",
+		"Debug",
+		"Release",
 	}
 
 	platforms {
@@ -56,18 +54,15 @@ workspace "Flint"
 	
 	IncludeLib["zlib"] = ""	-- TODO
 
-	filter "configurations:Debug*"
+	filter "configurations:Debug"
 		defines { "FLINT_DEBUG" }
 		symbols "On"
 		IncludeLib["FreeImage"] = "$(SolutionDir)Dependencies/ThirdParty/Binaries/FreeImage/Debug"
 
-	filter "configurations:Release*"
+	filter "configurations:Release"
 		defines { "FLINT_RELEASE" }
 		optimize "On"
 		IncludeLib["FreeImage"] = "$(SolutionDir)Dependencies/ThirdParty/Binaries/FreeImage/Release"
-
-	filter "configurations:*Static"
-		defines { "FLINT_BUILD_STATIC" }
 
 	filter "platforms:Windows"
 		system "windows"

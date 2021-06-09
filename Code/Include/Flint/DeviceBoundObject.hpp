@@ -76,7 +76,7 @@ namespace Flint
 	 * Flint vertex descriptor.
 	 * This describes the size and attributes of a single vertex.
 	 */
-	struct FLINT_API VertexDescriptor
+	struct VertexDescriptor
 	{
 		VertexDescriptor() = default;
 		VertexDescriptor(const std::vector<ShaderAttributeDataType>& attributes) : mAttributeTypes(attributes) {}
@@ -95,7 +95,7 @@ namespace Flint
 	 * Flint device bound object.
 	 * This object is the base class for all the resources in Flint which are based on a device.
 	 */
-	class FLINT_API DeviceBoundObject : public FObject
+	class DeviceBoundObject : public FObject
 	{
 		friend Device;
 

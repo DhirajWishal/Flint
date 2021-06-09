@@ -11,7 +11,7 @@ namespace Flint
 	 * Flint buffer object.
 	 * Buffers are used to store data in the device.
 	 */
-	class FLINT_API Buffer : public DeviceBoundObject
+	class Buffer : public DeviceBoundObject
 	{
 	public:
 		Buffer(Device& device, const UI64 size) : DeviceBoundObject(device), mSize(size) {}

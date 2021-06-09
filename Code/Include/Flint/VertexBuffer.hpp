@@ -11,7 +11,7 @@ namespace Flint
 	 * Flint vertex buffer object.
 	 * Vertex buffers are used to submit information to the pipeline when drawing.
 	 */
-	class FLINT_API VertexBuffer : public DrawResourceBuffer
+	class VertexBuffer : public DrawResourceBuffer
 	{
 	public:
 		VertexBuffer(Device& device, UI64 size, const VertexDescriptor& descriptor) : DrawResourceBuffer(device, size), mVertexDescriptor(descriptor) {}

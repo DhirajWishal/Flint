@@ -11,7 +11,7 @@ namespace Flint
 	 * Flint shader resource buffer object.
 	 * These buffers are used to submit data to the shaders at draw time.
 	 */
-	class FLINT_API ShaderResourceBuffer : public TransferFriendlyBuffer
+	class ShaderResourceBuffer : public TransferFriendlyBuffer
 	{
 	public:
 		ShaderResourceBuffer(Device& device, UI64 size) : TransferFriendlyBuffer(device, size) {}

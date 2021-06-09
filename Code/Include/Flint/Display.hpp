@@ -177,7 +177,7 @@ namespace Flint
 	 * Flint display object.
 	 * This object is responsible for a single display/ window instance.
 	 */
-	class FLINT_API Display : public FObject
+	class Display : public FObject
 	{
 		friend Instance;
 

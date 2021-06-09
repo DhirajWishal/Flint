@@ -11,7 +11,7 @@ namespace Flint
 	 * Flint index buffer object.
 	 * Index buffers are used to submit index data to a pipeline.
 	 */
-	class FLINT_API IndexBuffer : public DrawResourceBuffer
+	class IndexBuffer : public DrawResourceBuffer
 	{
 	public:
 		IndexBuffer(Device& device, UI64 size, UI64 stride) : DrawResourceBuffer(device, size), mStride(stride) {}

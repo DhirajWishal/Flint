@@ -12,7 +12,7 @@ namespace Flint
 	 * Flint object class.
 	 * This is the base class for all the Flint objects and contains common and utility functions.
 	 */
-	class FLINT_API FObject
+	class FObject
 	{
 	public:
 		FObject() = default;
