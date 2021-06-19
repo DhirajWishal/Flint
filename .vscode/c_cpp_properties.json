@@ -5,7 +5,14 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/Include/",
-                "${workspaceFolder}/Include/Flint/VulkanBackend/"
+                "${workspaceFolder}/Include/Flint/VulkanBackend/",
+                "${workspaceFolder}/Include/Vulkan/include/",
+                "${workspaceFolder}/Include/SPIRV-Cross/",
+                "${workspaceFolder}/Include/shaderc/Include/",
+                "${workspaceFolder}/Include/glslang/include/",
+                "${workspaceFolder}/Include/glfw/include/",
+                "${workspaceFolder}/Include/FreeImage/Include/",
+                "${workspaceFolder}/Include/Assimp/include/",
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
