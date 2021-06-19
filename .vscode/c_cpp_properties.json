@@ -4,9 +4,8 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/Code/**",
-                "${workspaceFolder}/Code/Include/",
-                "${workspaceFolder}/Code/Include/Flint/VulkanBackend/"
+                "${workspaceFolder}/Include/",
+                "${workspaceFolder}/Include/Flint/VulkanBackend/"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
