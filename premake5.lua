@@ -77,17 +77,10 @@ workspace "Flint"
 	group "Demos"
 		include "Demos/SimpleScene/SimpleScene.lua"
 	
-	group "Engine"
-		include "Source/Flint/Flint.lua"
-	
-	group "LowLevel"
-		include "Source/Core/Core.lua"
-		include "Source/VulkanBackend/VulkanBackend.lua"
+	group "Code"
+		include "Code/Flint.lua"	
 	
 	group "ThirdParty"
 		include "Dependencies/ThirdParty/SPIRV-Cross/SPIRV-Cross.lua"
-	
-	group "Tools"
-		include "Source/ShaderTools/ShaderTools.lua"
 	
 	group ""
