@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Flint/Instance.hpp"
+#include "Instance.hpp"
 
 #include <vulkan/vulkan.h>
 #include <optional>

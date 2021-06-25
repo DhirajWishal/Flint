@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Flint/UniformBuffer.hpp"
+#include "UniformBuffer.hpp"
 #include "VulkanBuffer.hpp"
 
 namespace Flint

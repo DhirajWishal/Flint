@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Flint/Shader.hpp"
+#include "Shader.hpp"
 #include "VulkanDevice.hpp"
 
 namespace Flint

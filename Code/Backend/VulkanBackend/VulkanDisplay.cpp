@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "VulkanDisplay.hpp"
-#include "Flint/Core/Error.hpp"
+#include "Core/Error.hpp"
 #include "VulkanDevice.hpp"
 
 namespace Flint

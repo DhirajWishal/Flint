@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Flint/ScreenBoundRenderTarget.hpp"
+#include "ScreenBoundRenderTarget.hpp"
 #include "VulkanRenderTarget.hpp"
 #include "VulkanSwapChain.hpp"
 #include "VulkanColorBuffer.hpp"

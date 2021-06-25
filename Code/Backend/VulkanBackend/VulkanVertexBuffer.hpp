@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Flint/VertexBuffer.hpp"
+#include "VertexBuffer.hpp"
 #include "VulkanBuffer.hpp"
 
 namespace Flint

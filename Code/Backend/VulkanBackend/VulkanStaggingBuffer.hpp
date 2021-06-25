@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Flint/StaggingBuffer.hpp"
+#include "StaggingBuffer.hpp"
 #include "VulkanBuffer.hpp"
 
 namespace Flint

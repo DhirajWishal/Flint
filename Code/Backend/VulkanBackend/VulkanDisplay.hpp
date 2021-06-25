@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Flint/Display.hpp"
+#include "Display.hpp"
 
 #include "VulkanInstance.hpp"
 #include <GLFW/glfw3.h>

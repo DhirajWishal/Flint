@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Flint/CommandBufferList.hpp"
+#include "CommandBufferList.hpp"
 #include "VulkanDevice.hpp"
 
 namespace Flint

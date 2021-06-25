@@ -23,8 +23,8 @@ project "Flint"
 	}
 
 	includedirs {
-		"$(SolutionDir)Code/Source",
-		"$(SolutionDir)Code/Include/",
+		"$(SolutionDir)Code/Engine",
+		"$(SolutionDir)Code/Backend",
 		"$(SolutionDir)Dependencies/ThirdParty/SPIRV-Cross/",
 		"%{IncludeDir.Vulkan}",
 		"%{IncludeDir.GLFW}",

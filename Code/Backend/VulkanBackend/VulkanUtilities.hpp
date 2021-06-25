@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Flint/Core/Error.hpp"
+#include "Core/Error.hpp"
 
 #include <vulkan/vulkan.h>
 #include <vector>

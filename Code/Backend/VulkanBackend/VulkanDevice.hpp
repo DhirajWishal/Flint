@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Flint/Device.hpp"
+#include "Device.hpp"
 #include "VulkanInstance.hpp"
 #include "VulkanQueue.hpp"
 

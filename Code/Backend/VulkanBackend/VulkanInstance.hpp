@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Flint/Instance.hpp"
+#include "Instance.hpp"
 #include "VulkanMacros.hpp"
 
 #include <vector>

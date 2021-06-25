@@ -1,48 +1,48 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#include "Flint/Instance.hpp"
-#include "Flint/Display.hpp"
-#include "Flint/ScreenBoundRenderTarget.hpp"
-#include "Flint/StaggingBuffer.hpp"
-#include "Flint/VertexShader.hpp"
-#include <iostream>
-
-void KeyCallback(Flint::KeyCode key, Flint::EventAction action, Flint::SpecialCharacter character)
-{
-	if (key == Flint::KeyCode::KEY_A)
-		std::cout << std::endl << "Key A is pressed!" << std::endl;
-}
-
-int main()
-{
-	try
-	{
-		Flint::Instance& mInstance = Flint::CreateInstance(true);
-		Flint::Device& mDevice = mInstance.CreateDevice(Flint::DeviceFlags::EXTERNAL | Flint::DeviceFlags::GRAPHICS_COMPATIBLE | Flint::DeviceFlags::COMPUTE_COMPATIBLE);
-		Flint::Display& mDisplay = mInstance.CreateDisplay({ 1280, 720 }, "Flint: Sample Scene");
-
-		Flint::ScreenBoundRenderTarget& mRenderTarget = mDevice.CreateScreenBoundRenderTarget(mDisplay, { 1280, 720 }, mDisplay.FindBestBufferCount(mDevice));
-		Flint::StaggingBuffer& mBuffer = mDevice.CreateStaggingBuffer(1024);
-		Flint::VertexShader& mVertexShader = mDevice.CreateVertexShader(std::filesystem::path("E:\\Flint\\Assets\\Shaders\\3D\\shader.vert.spv"), Flint::ShaderCodeType::SPIR_V);
-
-		mDisplay.SetKeyCallback(KeyCallback);
-		while (mDisplay.IsOpen()) mDisplay.Update();
-
-		mDevice.DestroyShader(mVertexShader);
-		mDevice.DestroyBuffer(mBuffer);
-		mDevice.DestroyRenderTarget(mRenderTarget);
-		mInstance.DestroyDisplay(mDisplay);
-		mInstance.DestroyDevice(mDevice);
-		Flint::DestroyInstance(mInstance);
-	}
-	catch (std::exception& e)
-	{
-		std::cout << e.what() << std::endl;
-	}
-
-	return 0;
-}
+//#include "Flint/Instance.hpp"
+//#include "Flint/Display.hpp"
+//#include "Flint/ScreenBoundRenderTarget.hpp"
+//#include "Flint/StaggingBuffer.hpp"
+//#include "Flint/VertexShader.hpp"
+//#include <iostream>
+//
+//void KeyCallback(Flint::KeyCode key, Flint::EventAction action, Flint::SpecialCharacter character)
+//{
+//	if (key == Flint::KeyCode::KEY_A)
+//		std::cout << std::endl << "Key A is pressed!" << std::endl;
+//}
+//
+//int main()
+//{
+//	try
+//	{
+//		Flint::Instance& mInstance = Flint::CreateInstance(true);
+//		Flint::Device& mDevice = mInstance.CreateDevice(Flint::DeviceFlags::EXTERNAL | Flint::DeviceFlags::GRAPHICS_COMPATIBLE | Flint::DeviceFlags::COMPUTE_COMPATIBLE);
+//		Flint::Display& mDisplay = mInstance.CreateDisplay({ 1280, 720 }, "Flint: Sample Scene");
+//
+//		Flint::ScreenBoundRenderTarget& mRenderTarget = mDevice.CreateScreenBoundRenderTarget(mDisplay, { 1280, 720 }, mDisplay.FindBestBufferCount(mDevice));
+//		Flint::StaggingBuffer& mBuffer = mDevice.CreateStaggingBuffer(1024);
+//		Flint::VertexShader& mVertexShader = mDevice.CreateVertexShader(std::filesystem::path("E:\\Flint\\Assets\\Shaders\\3D\\shader.vert.spv"), Flint::ShaderCodeType::SPIR_V);
+//
+//		mDisplay.SetKeyCallback(KeyCallback);
+//		while (mDisplay.IsOpen()) mDisplay.Update();
+//
+//		mDevice.DestroyShader(mVertexShader);
+//		mDevice.DestroyBuffer(mBuffer);
+//		mDevice.DestroyRenderTarget(mRenderTarget);
+//		mInstance.DestroyDisplay(mDisplay);
+//		mInstance.DestroyDevice(mDevice);
+//		Flint::DestroyInstance(mInstance);
+//	}
+//	catch (std::exception& e)
+//	{
+//		std::cout << e.what() << std::endl;
+//	}
+//
+//	return 0;
+//}
 
 /**
  * Flint::Instance& mInstance = Flint::CreateInstance(Flint::BackendAPI::VULKAN, true);
