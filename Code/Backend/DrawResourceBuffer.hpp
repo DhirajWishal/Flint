@@ -18,16 +18,6 @@ namespace Flint
 		DrawResourceBuffer(Device& device, UI64 size) : Buffer(device, size) {}
 
 		/**
-		 * Copy data to this buffer using another buffer.
-		 *
-		 * @param srcBuffer: The source stagging buffer.
-		 * @param size: The copy size.
-		 * @param srcOffet: The source buffer offset.
-		 * @param dstOffset: The destination (this) buffer offset.
-		 */
-		virtual void CopyFromBuffer(const StaggingBuffer& srcBuffer, UI64 size, UI64 srcOffset, UI64 dstOffset) = 0;
-
-		/**
 		 * Get the stride of the buffer.
 		 * 
 		 * @return The stride in bytes.

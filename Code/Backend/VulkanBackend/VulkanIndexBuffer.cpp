@@ -16,7 +16,11 @@ namespace Flint
 		{
 		}
 
-		void VulkanIndexBuffer::CopyFromBuffer(const StaggingBuffer& srcBuffer, UI64 size, UI64 srcOffset, UI64 dstOffset)
+		void VulkanIndexBuffer::Resize(UI64 size, BufferResizeMode mode)
+		{
+		}
+
+		void VulkanIndexBuffer::CopyFromBuffer(const Buffer& srcBuffer, UI64 size, UI64 srcOffset, UI64 dstOffset)
 		{
 			vBuffer.CopyFromBuffer(srcBuffer.StaticCast<VulkanStaggingBuffer>().vBuffer, size, srcOffset, dstOffset);
 		}

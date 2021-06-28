@@ -16,11 +16,13 @@ namespace Flint
 	 */
 	class WireFrame
 	{
+	public:
 		/**
 		 * Draw Segment structure.
 		 */
 		struct DrawSegment
 		{
+			DrawSegment() = default;
 			DrawSegment(const std::string& name, UI64 vertexOffset, UI64 vertexCount, UI64 indexOffset, UI64 indexCount)
 				: mSegmentName(name), mVertexOffset(vertexCount), mVertexCount(vertexCount), mIndexOffset(indexOffset), mIndexCount(indexCount) {}
 

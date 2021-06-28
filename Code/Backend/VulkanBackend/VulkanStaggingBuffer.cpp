@@ -15,6 +15,15 @@ namespace Flint
 		{
 		}
 
+		void VulkanStaggingBuffer::Resize(UI64 size, BufferResizeMode mode)
+		{
+		}
+
+		void VulkanStaggingBuffer::CopyFromBuffer(const Buffer& srcBuffer, UI64 size, UI64 srcOffset, UI64 dstOffset)
+		{
+			vBuffer.CopyFromBuffer(srcBuffer.StaticCast<VulkanStaggingBuffer>().vBuffer, size, srcOffset, dstOffset);
+		}
+
 		void* VulkanStaggingBuffer::MapMemory(UI64 size, UI64 offset)
 		{
 			return vBuffer.MapMemory(size, offset);

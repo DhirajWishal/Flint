@@ -14,6 +14,21 @@ namespace Flint
 	class Device;
 
 	/**
+	 * Shader attribute type enum.
+	 * This defines what the shader attribute type is.
+	 */
+	enum class ShaderAttribueType : UI8 {
+		UNDEFINED,
+		POSITION, NORMAL, UV_COORDINATES,
+		COLOR_0, COLOR_1, COLOR_2, COLOR_3,
+		TEXTURE_COORDINATES_0, TEXTURE_COORDINATES_1, TEXTURE_COORDINATES_2, TEXTURE_COORDINATES_3,
+		TEXTURE_COORDINATES_4, TEXTURE_COORDINATES_5, TEXTURE_COORDINATES_6, TEXTURE_COORDINATES_7,
+		TANGENT, BITANGENT,
+		BONE_ID, BONE_WEIGHT,
+		CUSTOM
+	};
+
+	/**
 	 * Vertex attribute data type enum.
 	 * This enum contains all the supported vertex attribute data types.
 	 */
@@ -73,13 +88,23 @@ namespace Flint
 	};
 
 	/**
+	 * Shader attribute structure.
+	 * This structure contains information about a single shader attribute.
+	 */
+	struct ShaderAttribute
+	{
+		ShaderAttribueType mType = ShaderAttribueType::UNDEFINED;
+		ShaderAttributeDataType mDataType = ShaderAttributeDataType::VEC3;
+	};
+
+	/**
 	 * Flint vertex descriptor.
 	 * This describes the size and attributes of a single vertex.
 	 */
 	struct VertexDescriptor
 	{
 		VertexDescriptor() = default;
-		VertexDescriptor(const std::vector<ShaderAttributeDataType>& attributes) : mAttributeTypes(attributes) {}
+		VertexDescriptor(const std::vector<ShaderAttribute>& attributes) : mAttributeTypes(attributes) {}
 
 		/**
 		 * Get the stride (size of) the vertex.
@@ -88,7 +113,7 @@ namespace Flint
 		 */
 		UI64 Stride() const;
 
-		std::vector<ShaderAttributeDataType> mAttributeTypes;
+		std::vector<ShaderAttribute> mAttributeTypes;
 	};
 
 	/**

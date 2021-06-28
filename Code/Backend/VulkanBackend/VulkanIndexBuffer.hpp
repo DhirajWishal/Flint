@@ -15,7 +15,8 @@ namespace Flint
 		public:
 			VulkanIndexBuffer(Device& device, UI64 size, UI64 stride);
 
-			virtual void CopyFromBuffer(const StaggingBuffer& srcBuffer, UI64 size, UI64 srcOffset, UI64 dstOffset) override final;
+			virtual void Resize(UI64 size, BufferResizeMode mode) override final;
+			virtual void CopyFromBuffer(const Buffer& srcBuffer, UI64 size, UI64 srcOffset, UI64 dstOffset) override final;
 			virtual void Terminate() override final;
 
 		private:

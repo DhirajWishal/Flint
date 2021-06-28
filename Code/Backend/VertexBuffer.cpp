@@ -9,7 +9,7 @@ namespace Flint
 	{
 		UI64 size = 0;
 		for (auto attribute : mAttributeTypes)
-			size += static_cast<UI8>(attribute);
+			size += static_cast<UI8>(attribute.mDataType);
 
 		return size;
 	}
