@@ -78,7 +78,7 @@ namespace Flint
 			}
 		}
 
-		VulkanShader::VulkanShader(VulkanDevice& device, VkShaderStageFlags stageFlags, const std::filesystem::path& path, ShaderCodeType type) : vDevice(device), vStageFlags(stageFlags)
+		VulkanShader::VulkanShader(VulkanDevice& device, VkShaderStageFlags stageFlags, const std::filesystem::path& path, Backend::ShaderCodeType type) : vDevice(device), vStageFlags(stageFlags)
 		{
 			std::ifstream shaderFile(path, std::ios::ate | std::ios::binary);
 
@@ -88,12 +88,12 @@ namespace Flint
 			UI64 codeSize = shaderFile.tellg();
 			shaderFile.seekg(0);
 
-			if (type == ShaderCodeType::SPIR_V)
+			if (type == Backend::ShaderCodeType::SPIR_V)
 			{
 				mShaderCode.resize(codeSize);
 				shaderFile.read(reinterpret_cast<char*>(mShaderCode.data()), codeSize);
 			}
-			else if (type == ShaderCodeType::GLSL)
+			else if (type == Backend::ShaderCodeType::GLSL)
 			{
 				std::string codeString;
 				codeString.resize(codeSize);
@@ -110,18 +110,18 @@ namespace Flint
 			CreateShaderModule();
 		}
 
-		VulkanShader::VulkanShader(VulkanDevice& device, VkShaderStageFlags stageFlags, const std::vector<UI32>& code, ShaderCodeType type) : vDevice(device), vStageFlags(stageFlags)
+		VulkanShader::VulkanShader(VulkanDevice& device, VkShaderStageFlags stageFlags, const std::vector<UI32>& code, Backend::ShaderCodeType type) : vDevice(device), vStageFlags(stageFlags)
 		{
-			if (type != ShaderCodeType::SPIR_V) // TODO
+			if (type != Backend::ShaderCodeType::SPIR_V) // TODO
 				FLINT_THROW_RUNTIME_ERROR("Invalid shader code type!");
 
 			mShaderCode = code;
 			CreateShaderModule();
 		}
 
-		VulkanShader::VulkanShader(VulkanDevice& device, VkShaderStageFlags stageFlags, const std::string& code, ShaderCodeType type) : vDevice(device), vStageFlags(stageFlags)
+		VulkanShader::VulkanShader(VulkanDevice& device, VkShaderStageFlags stageFlags, const std::string& code, Backend::ShaderCodeType type) : vDevice(device), vStageFlags(stageFlags)
 		{
-			if (type != ShaderCodeType::SPIR_V) // TODO
+			if (type != Backend::ShaderCodeType::SPIR_V) // TODO
 				FLINT_THROW_RUNTIME_ERROR("Invalid shader code type!");
 
 			mShaderCode.resize(code.size());
@@ -158,26 +158,26 @@ namespace Flint
 			UI64 shaderOffset = 0;
 
 			for (auto& resource : resources.uniform_buffers)
-				INSERT_INTO_VECTOR(descriptor.mResources, ShaderResource(compiler.get_name(resource.id), compiler.get_decoration(resource.id, spv::DecorationBinding), ShaderResourceType::UNIFORM_BUFFER));
+				INSERT_INTO_VECTOR(descriptor.mResources, Backend::ShaderResource(compiler.get_name(resource.id), compiler.get_decoration(resource.id, spv::DecorationBinding), Backend::ShaderResourceType::UNIFORM_BUFFER));
 
 			for (auto& resource : resources.storage_buffers)
-				INSERT_INTO_VECTOR(descriptor.mResources, ShaderResource(compiler.get_name(resource.id), compiler.get_decoration(resource.id, spv::DecorationBinding), ShaderResourceType::STORAGE_BUFFER));
+				INSERT_INTO_VECTOR(descriptor.mResources, Backend::ShaderResource(compiler.get_name(resource.id), compiler.get_decoration(resource.id, spv::DecorationBinding), Backend::ShaderResourceType::STORAGE_BUFFER));
 
 			for (auto& resource : resources.sampled_images)
-				INSERT_INTO_VECTOR(descriptor.mResources, ShaderResource(compiler.get_name(resource.id), compiler.get_decoration(resource.id, spv::DecorationBinding), ShaderResourceType::SAMPLER));
+				INSERT_INTO_VECTOR(descriptor.mResources, Backend::ShaderResource(compiler.get_name(resource.id), compiler.get_decoration(resource.id, spv::DecorationBinding), Backend::ShaderResourceType::SAMPLER));
 
 			for (auto& resource : resources.stage_inputs)
 			{
 				auto& Ty = compiler.get_type(resource.base_type_id);
 				UI64 size = (static_cast<UI64>(Ty.width) / 8) * (Ty.vecsize == 3 ? 4 : Ty.vecsize);
-				INSERT_INTO_VECTOR(descriptor.mInputAttributes, ShaderAttribute(compiler.get_name(resource.id), compiler.get_decoration(resource.id, spv::DecorationBinding), static_cast<ShaderAttributeDataType>(size)));
+				INSERT_INTO_VECTOR(descriptor.mInputAttributes, Backend::ShaderAttribute(compiler.get_name(resource.id), compiler.get_decoration(resource.id, spv::DecorationBinding), static_cast<Backend::ShaderAttributeDataType>(size)));
 			}
 
 			for (auto& resource : resources.stage_outputs)
 			{
 				auto& Ty = compiler.get_type(resource.base_type_id);
 				UI64 size = (static_cast<UI64>(Ty.width) / 8) * (Ty.vecsize == 3 ? 4 : Ty.vecsize);
-				INSERT_INTO_VECTOR(descriptor.mOutputAttributes, ShaderAttribute(compiler.get_name(resource.id), compiler.get_decoration(resource.id, spv::DecorationBinding), static_cast<ShaderAttributeDataType>(size)));
+				INSERT_INTO_VECTOR(descriptor.mOutputAttributes, Backend::ShaderAttribute(compiler.get_name(resource.id), compiler.get_decoration(resource.id, spv::DecorationBinding), static_cast<Backend::ShaderAttributeDataType>(size)));
 			}
 
 			return descriptor;

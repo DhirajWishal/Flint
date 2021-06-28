@@ -7,13 +7,16 @@
 
 namespace Flint
 {
-	/**
-	 * Flint uniform buffer object.
-	 * Uniform buffers are used to store and submit uniform data to the shaders.
-	 */
-	class UniformBuffer : public ShaderResourceBuffer
+	namespace Backend
 	{
-	public:
-		UniformBuffer(Device& device, UI64 size) : ShaderResourceBuffer(device, size) {}
-	};
+		/**
+		 * Flint uniform buffer object.
+		 * Uniform buffers are used to store and submit uniform data to the shaders.
+		 */
+		class UniformBuffer : public ShaderResourceBuffer
+		{
+		public:
+			UniformBuffer(Device& device, UI64 size) : ShaderResourceBuffer(device, size) {}
+		};
+	}
 }

@@ -13,10 +13,10 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanScreenBoundRenderTarget final : public ScreenBoundRenderTarget
+		class VulkanScreenBoundRenderTarget final : public Backend::ScreenBoundRenderTarget
 		{
 		public:
-			VulkanScreenBoundRenderTarget(Device& device, Display& display, const FExtent2D& extent, const UI32 bufferCount);
+			VulkanScreenBoundRenderTarget(Backend::Device& device, Backend::Display& display, const FExtent2D& extent, const UI32 bufferCount);
 
 			virtual void BeginFrame() override final;
 			virtual void Update() override final;

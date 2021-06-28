@@ -10,12 +10,12 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanFragmentShader final : public FragmentShader
+		class VulkanFragmentShader final : public Backend::FragmentShader
 		{
 		public:
-			VulkanFragmentShader(Device& device, const std::filesystem::path& path, ShaderCodeType type);
-			VulkanFragmentShader(Device& device, const std::vector<UI32>& code, ShaderCodeType type = ShaderCodeType::SPIR_V);
-			VulkanFragmentShader(Device& device, const std::string& code, ShaderCodeType type = ShaderCodeType::GLSL);
+			VulkanFragmentShader(Backend::Device& device, const std::filesystem::path& path, Backend::ShaderCodeType type);
+			VulkanFragmentShader(Backend::Device& device, const std::vector<UI32>& code, Backend::ShaderCodeType type = Backend::ShaderCodeType::SPIR_V);
+			VulkanFragmentShader(Backend::Device& device, const std::string& code, Backend::ShaderCodeType type = Backend::ShaderCodeType::GLSL);
 
 			virtual void Terminate() override final;
 

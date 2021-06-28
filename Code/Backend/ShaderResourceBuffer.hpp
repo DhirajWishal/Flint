@@ -7,13 +7,16 @@
 
 namespace Flint
 {
-	/**
-	 * Flint shader resource buffer object.
-	 * These buffers are used to submit data to the shaders at draw time.
-	 */
-	class ShaderResourceBuffer : public TransferFriendlyBuffer
+	namespace Backend
 	{
-	public:
-		ShaderResourceBuffer(Device& device, UI64 size) : TransferFriendlyBuffer(device, size) {}
-	};
+		/**
+		 * Flint shader resource buffer object.
+		 * These buffers are used to submit data to the shaders at draw time.
+		 */
+		class ShaderResourceBuffer : public TransferFriendlyBuffer
+		{
+		public:
+			ShaderResourceBuffer(Device& device, UI64 size) : TransferFriendlyBuffer(device, size) {}
+		};
+	}
 }

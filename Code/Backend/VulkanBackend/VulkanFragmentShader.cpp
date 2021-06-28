@@ -7,7 +7,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanFragmentShader::VulkanFragmentShader(Device& device, const std::filesystem::path& path, ShaderCodeType type)
+		VulkanFragmentShader::VulkanFragmentShader(Backend::Device& device, const std::filesystem::path& path, Backend::ShaderCodeType type)
 			: FragmentShader(device, path, type), vShader(device.StaticCast<VulkanDevice>(), VkShaderStageFlagBits::VK_SHADER_STAGE_FRAGMENT_BIT, path, type)
 		{
 			ShaderDescriptor resource = std::move(vShader.PerformReflection());
@@ -16,7 +16,7 @@ namespace Flint
 			mOutputAttributes = std::move(resource.mOutputAttributes);
 		}
 
-		VulkanFragmentShader::VulkanFragmentShader(Device& device, const std::vector<UI32>& code, ShaderCodeType type)
+		VulkanFragmentShader::VulkanFragmentShader(Backend::Device& device, const std::vector<UI32>& code, Backend::ShaderCodeType type)
 			: FragmentShader(device, code, type), vShader(device.StaticCast<VulkanDevice>(), VkShaderStageFlagBits::VK_SHADER_STAGE_FRAGMENT_BIT, code, type)
 		{
 			ShaderDescriptor resource = std::move(vShader.PerformReflection());
@@ -25,7 +25,7 @@ namespace Flint
 			mOutputAttributes = std::move(resource.mOutputAttributes);
 		}
 
-		VulkanFragmentShader::VulkanFragmentShader(Device& device, const std::string& code, ShaderCodeType type)
+		VulkanFragmentShader::VulkanFragmentShader(Backend::Device& device, const std::string& code, Backend::ShaderCodeType type)
 			: FragmentShader(device, code, type), vShader(device.StaticCast<VulkanDevice>(), VkShaderStageFlagBits::VK_SHADER_STAGE_FRAGMENT_BIT, code, type)
 		{
 			ShaderDescriptor resource = std::move(vShader.PerformReflection());

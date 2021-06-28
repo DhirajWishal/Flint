@@ -5,12 +5,15 @@
 
 namespace Flint
 {
-	UI64 VertexDescriptor::Stride() const
+	namespace Backend
 	{
-		UI64 size = 0;
-		for (auto attribute : mAttributeTypes)
-			size += static_cast<UI8>(attribute.mDataType);
+		UI64 VertexDescriptor::Stride() const
+		{
+			UI64 size = 0;
+			for (auto attribute : mAttributeTypes)
+				size += static_cast<UI8>(attribute.mDataType);
 
-		return size;
+			return size;
+		}
 	}
 }

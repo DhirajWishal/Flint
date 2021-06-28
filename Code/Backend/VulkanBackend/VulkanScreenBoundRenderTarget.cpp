@@ -8,7 +8,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanScreenBoundRenderTarget::VulkanScreenBoundRenderTarget(Device& device, Display& display, const FExtent2D& extent, const UI32 bufferCount)
+		VulkanScreenBoundRenderTarget::VulkanScreenBoundRenderTarget(Backend::Device& device, Backend::Display& display, const FExtent2D& extent, const UI32 bufferCount)
 			: ScreenBoundRenderTarget(device, display, extent, bufferCount, device.CreatePrimaryCommandBufferList(bufferCount)), vRenderTarget(device.StaticCast<VulkanDevice>())
 		{
 			auto& vDevice = mDevice.StaticCast<VulkanDevice>();

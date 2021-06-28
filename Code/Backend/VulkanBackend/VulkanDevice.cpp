@@ -6,11 +6,7 @@
 #include "VulkanOneTimeCommandBuffer.hpp"
 #include "VulkanCommandBufferList.hpp"
 #include "VulkanScreenBoundRenderTarget.hpp"
-#include "VulkanStaggingBuffer.hpp"
-#include "VulkanUniformBuffer.hpp"
-#include "VulkanStorageBuffer.hpp"
-#include "VulkanVertexBuffer.hpp"
-#include "VulkanIndexBuffer.hpp"
+#include "VulkanBuffer.hpp"
 #include "VulkanVertexShader.hpp"
 #include "VulkanFragmentShader.hpp"
 
@@ -54,7 +50,7 @@ namespace Flint
 				return requiredExtensions.empty();
 			}
 
-			bool IsPhysicalDeviceSuitable(VkPhysicalDevice vDevice, const std::vector<const char*>& deviceExtensions, DeviceFlags flags)
+			bool IsPhysicalDeviceSuitable(VkPhysicalDevice vDevice, const std::vector<const char*>& deviceExtensions, Backend::DeviceFlags flags)
 			{
 				VulkanQueue vQueue = {};
 				vQueue.Initialize(vDevice, flags);
@@ -72,16 +68,16 @@ namespace Flint
 			}
 		}
 
-		VulkanDevice::VulkanDevice(Instance& instance, DeviceFlags flags) : Device(instance, flags)
+		VulkanDevice::VulkanDevice(Backend::Instance& instance, Backend::DeviceFlags flags) : Device(instance, flags)
 		{
-			if ((flags & DeviceFlags::GRAPHICS_COMPATIBLE) == DeviceFlags::GRAPHICS_COMPATIBLE)
+			if ((flags & Backend::DeviceFlags::GRAPHICS_COMPATIBLE) == Backend::DeviceFlags::GRAPHICS_COMPATIBLE)
 				INSERT_INTO_VECTOR(mDeviceExtensions, VK_KHR_SWAPCHAIN_EXTENSION_NAME);
 
 			InitializePhysicalDevice();
 			InitializeLogicalDevice();
 		}
 
-		bool VulkanDevice::IsDisplayCompatible(const Display& display)
+		bool VulkanDevice::IsDisplayCompatible(const Backend::Display& display)
 		{
 			const VulkanDisplay& vDisplay = display.StaticCast<VulkanDisplay>();
 			VkBool32 isSupported = VK_FALSE;
@@ -89,28 +85,28 @@ namespace Flint
 			return isSupported == VK_TRUE;
 		}
 
-		CommandBufferList& VulkanDevice::CreatePrimaryCommandBufferList(UI32 bufferCount)
+		Backend::CommandBufferList& VulkanDevice::CreatePrimaryCommandBufferList(UI32 bufferCount)
 		{
 			return *new VulkanCommandBufferList(*this, bufferCount);
 		}
 
-		CommandBufferList& VulkanDevice::CreateSecondaryCommandBufferList(UI32 bufferCount, CommandBufferList& parent)
+		Backend::CommandBufferList& VulkanDevice::CreateSecondaryCommandBufferList(UI32 bufferCount, Backend::CommandBufferList& parent)
 		{
 			return *new VulkanCommandBufferList(*this, bufferCount, parent);
 		}
 
-		void VulkanDevice::DestroyCommandBufferList(CommandBufferList& commandBufferList)
+		void VulkanDevice::DestroyCommandBufferList(Backend::CommandBufferList& commandBufferList)
 		{
 			TerminateDeviceBoundObject(commandBufferList);
 			delete& commandBufferList;
 		}
 
-		ScreenBoundRenderTarget& VulkanDevice::CreateScreenBoundRenderTarget(Display& display, const FExtent2D& extent, const UI32 bufferCount)
+		Backend::ScreenBoundRenderTarget& VulkanDevice::CreateScreenBoundRenderTarget(Backend::Display& display, const FExtent2D& extent, const UI32 bufferCount)
 		{
 			return *new VulkanScreenBoundRenderTarget(*this, display, extent, bufferCount);
 		}
 
-		void VulkanDevice::DestroyRenderTarget(RenderTarget& renderTarget)
+		void VulkanDevice::DestroyRenderTarget(Backend::RenderTarget& renderTarget)
 		{
 			TerminateDeviceBoundObject(renderTarget);
 			delete& renderTarget;
@@ -126,68 +122,48 @@ namespace Flint
 			FLINT_VK_ASSERT(vkQueueWaitIdle(GetQueue().vTransferQueue));
 		}
 
-		StaggingBuffer& VulkanDevice::CreateStaggingBuffer(UI64 size)
+		Backend::Buffer& VulkanDevice::CreateBuffer(Backend::BufferType type, UI64 size)
 		{
-			return *new VulkanStaggingBuffer(*this, size);
+			return *new VulkanBuffer(*this, type, size);
 		}
 
-		UniformBuffer& VulkanDevice::CreateUniformBuffer(UI64 size)
-		{
-			return *new VulkanUniformBuffer(*this, size);
-		}
-
-		StorageBuffer& VulkanDevice::CreateStorageBuffer(UI64 size)
-		{
-			return *new VulkanStorageBuffer(*this, size);
-		}
-
-		VertexBuffer& VulkanDevice::CreateVertexBuffer(UI64 size, const VertexDescriptor& descriptor)
-		{
-			return *new VulkanVertexBuffer(*this, size, descriptor);
-		}
-
-		IndexBuffer& VulkanDevice::CreateIndexBuffer(UI64 size, UI64 stride)
-		{
-			return *new VulkanIndexBuffer(*this, size, stride);
-		}
-
-		void VulkanDevice::DestroyBuffer(Buffer& buffer)
+		void VulkanDevice::DestroyBuffer(Backend::Buffer& buffer)
 		{
 			TerminateDeviceBoundObject(buffer);
 			delete& buffer;
 		}
 
-		VertexShader& VulkanDevice::CreateVertexShader(const std::filesystem::path& path, ShaderCodeType type)
+		Backend::VertexShader& VulkanDevice::CreateVertexShader(const std::filesystem::path& path, Backend::ShaderCodeType type)
 		{
 			return *new VulkanVertexShader(*this, path, type);
 		}
 
-		VertexShader& VulkanDevice::CreateVertexShader(const std::vector<UI32>& code, ShaderCodeType type)
+		Backend::VertexShader& VulkanDevice::CreateVertexShader(const std::vector<UI32>& code, Backend::ShaderCodeType type)
 		{
 			return *new VulkanVertexShader(*this, code, type);
 		}
 
-		VertexShader& VulkanDevice::CreateVertexShader(const std::string& code, ShaderCodeType type)
+		Backend::VertexShader& VulkanDevice::CreateVertexShader(const std::string& code, Backend::ShaderCodeType type)
 		{
 			return *new VulkanVertexShader(*this, code, type);
 		}
 
-		FragmentShader& VulkanDevice::CreateFragmentShader(const std::filesystem::path& path, ShaderCodeType type)
+		Backend::FragmentShader& VulkanDevice::CreateFragmentShader(const std::filesystem::path& path, Backend::ShaderCodeType type)
 		{
 			return *new VulkanFragmentShader(*this, path, type);
 		}
 
-		FragmentShader& VulkanDevice::CreateFragmentShader(const std::vector<UI32>& code, ShaderCodeType type)
+		Backend::FragmentShader& VulkanDevice::CreateFragmentShader(const std::vector<UI32>& code, Backend::ShaderCodeType type)
 		{
 			return *new VulkanFragmentShader(*this, code, type);
 		}
 
-		FragmentShader& VulkanDevice::CreateFragmentShader(const std::string& code, ShaderCodeType type)
+		Backend::FragmentShader& VulkanDevice::CreateFragmentShader(const std::string& code, Backend::ShaderCodeType type)
 		{
 			return *new VulkanFragmentShader(*this, code, type);
 		}
 
-		void VulkanDevice::DestroyShader(Shader& shader)
+		void VulkanDevice::DestroyShader(Backend::Shader& shader)
 		{
 			TerminateDeviceBoundObject(shader);
 			delete& shader;
@@ -363,9 +339,9 @@ namespace Flint
 				{
 					vkGetPhysicalDeviceProperties(device, &vPhysicalDeviceProperties);
 
-					if (vPhysicalDeviceProperties.deviceType == VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU && (mFlags & DeviceFlags::EXTERNAL) == DeviceFlags::EXTERNAL)
+					if (vPhysicalDeviceProperties.deviceType == VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU && (mFlags & Backend::DeviceFlags::EXTERNAL) == Backend::DeviceFlags::EXTERNAL)
 						vPhysicalDevice = device;
-					else if (vPhysicalDeviceProperties.deviceType == VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU && (mFlags & DeviceFlags::INTEGRATED) == DeviceFlags::INTEGRATED)
+					else if (vPhysicalDeviceProperties.deviceType == VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU && (mFlags & Backend::DeviceFlags::INTEGRATED) == Backend::DeviceFlags::INTEGRATED)
 						vPhysicalDevice = device;
 					else
 						vPhysicalDevice = device;
@@ -467,10 +443,10 @@ namespace Flint
 			// Create the logical device.
 			FLINT_VK_ASSERT(vkCreateDevice(vPhysicalDevice, &createInfo, nullptr, &vLogicalDevice));
 
-			if ((mFlags & DeviceFlags::GRAPHICS_COMPATIBLE) == DeviceFlags::GRAPHICS_COMPATIBLE)
+			if ((mFlags & Backend::DeviceFlags::GRAPHICS_COMPATIBLE) == Backend::DeviceFlags::GRAPHICS_COMPATIBLE)
 				vkGetDeviceQueue(GetLogicalDevice(), vQueue.mGraphicsFamily.value(), 0, &vQueue.vGraphicsQueue);
 
-			if ((mFlags & DeviceFlags::COMPUTE_COMPATIBLE) == DeviceFlags::COMPUTE_COMPATIBLE)
+			if ((mFlags & Backend::DeviceFlags::COMPUTE_COMPATIBLE) == Backend::DeviceFlags::COMPUTE_COMPATIBLE)
 				vkGetDeviceQueue(GetLogicalDevice(), vQueue.mComputeFamily.value(), 0, &vQueue.vComputeQueue);
 
 			vkGetDeviceQueue(GetLogicalDevice(), vQueue.mTransferFamily.value(), 0, &vQueue.vTransferQueue);

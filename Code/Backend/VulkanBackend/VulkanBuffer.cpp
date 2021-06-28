@@ -4,26 +4,64 @@
 #include "VulkanBuffer.hpp"
 #include "VulkanOneTimeCommandBuffer.hpp"
 
+#include "Core/Error.hpp"
+
 namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanBuffer::VulkanBuffer(VulkanDevice& device, UI64 size, VkBufferUsageFlags usage, VkMemoryPropertyFlags memoryProperties)
-			: vDevice(device), mSize(size), vBufferUsage(usage), vMemoryProperties(memoryProperties)
+		VulkanBuffer::VulkanBuffer(Backend::Device& device, Backend::BufferType type, const UI64 size)
+			: Buffer(device, type, size)
 		{
+			switch (type)
+			{
+			case Flint::Backend::BufferType::STAGGING:
+				vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+				vMemoryProperties = VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
+				break;
+
+			case Flint::Backend::BufferType::VERTEX:
+				vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+				vMemoryProperties = VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+				break;
+
+			case Flint::Backend::BufferType::INDEX:
+				vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+				vMemoryProperties = VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+				break;
+
+			case Flint::Backend::BufferType::UNIFORM:
+				vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+				vMemoryProperties = VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
+				break;
+
+			case Flint::Backend::BufferType::STORAGE:
+				vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
+				vMemoryProperties = VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
+				break;
+
+			default:
+				FLINT_THROW_RANGE_ERROR("Invalid or Undefined buffer type!");
+				break;
+			}
+
 			CreateBuffer();
 			CreateBufferMemory();
 		}
 
-		void VulkanBuffer::CopyFromBuffer(const VulkanBuffer& srcBuffer, UI64 size, UI64 srcOffset, UI64 dstOffset)
+		void VulkanBuffer::Resize(UI64 size, Backend::BufferResizeMode mode)
+		{
+		}
+
+		void VulkanBuffer::CopyFromBuffer(const Backend::Buffer& srcBuffer, UI64 size, UI64 srcOffset, UI64 dstOffset)
 		{
 			VkBufferCopy vBufferCopy = {};
 			vBufferCopy.size = size;
 			vBufferCopy.srcOffset = srcOffset;
 			vBufferCopy.dstOffset = dstOffset;
 
-			VulkanOneTimeCommandBuffer vCommandBuffer(vDevice);
-			vkCmdCopyBuffer(vCommandBuffer, srcBuffer.vBuffer, vBuffer, 1, &vBufferCopy);
+			VulkanOneTimeCommandBuffer vCommandBuffer(mDevice.StaticCast<VulkanDevice>());
+			vkCmdCopyBuffer(vCommandBuffer, srcBuffer.StaticCast<VulkanBuffer>().vBuffer, vBuffer, 1, &vBufferCopy);
 		}
 
 		void* VulkanBuffer::MapMemory(UI64 size, UI64 offset)
@@ -34,18 +72,19 @@ namespace Flint
 				FLINT_THROW_RANGE_ERROR("Submitted size is invalid!");
 
 			void* pDataStore = nullptr;
-			FLINT_VK_ASSERT(vkMapMemory(vDevice.GetLogicalDevice(), vMemory, offset, size, 0, &pDataStore));
+			FLINT_VK_ASSERT(vkMapMemory(mDevice.StaticCast<VulkanDevice>().GetLogicalDevice(), vMemory, offset, size, 0, &pDataStore));
 
 			return pDataStore;
 		}
 
 		void VulkanBuffer::UnmapMemory()
 		{
-			vkUnmapMemory(vDevice.GetLogicalDevice(), vMemory);
+			vkUnmapMemory(mDevice.StaticCast<VulkanDevice>().GetLogicalDevice(), vMemory);
 		}
 
 		void VulkanBuffer::Terminate()
 		{
+			VulkanDevice& vDevice = mDevice.StaticCast<VulkanDevice>();
 			vkDestroyBuffer(vDevice.GetLogicalDevice(), vBuffer, nullptr);
 			vkFreeMemory(vDevice.GetLogicalDevice(), vMemory, nullptr);
 		}
@@ -62,11 +101,13 @@ namespace Flint
 			vCI.size = static_cast<UI32>(mSize);
 			vCI.usage = vBufferUsage;
 
-			FLINT_VK_ASSERT(vkCreateBuffer(vDevice.GetLogicalDevice(), &vCI, nullptr, &vBuffer));
+			FLINT_VK_ASSERT(vkCreateBuffer(mDevice.StaticCast<VulkanDevice>().GetLogicalDevice(), &vCI, nullptr, &vBuffer));
 		}
 
 		void VulkanBuffer::CreateBufferMemory()
 		{
+			VulkanDevice& vDevice = mDevice.StaticCast<VulkanDevice>();
+
 			VkMemoryRequirements vMR = {};
 			vkGetBufferMemoryRequirements(vDevice.GetLogicalDevice(), vBuffer, &vMR);
 

@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "Engine.hpp"
-#include "FlintSubsystem.h"
 
 namespace Flint
 {
@@ -14,10 +13,8 @@ namespace Flint
 	{
 	}
 
-	void Engine::RunFlintSubsystem(Instance& instance)
+	void Engine::RunFlintSubsystem(Backend::Instance& instance)
 	{
-		FlintSubsystem subsystem = FlintSubsystem(instance);
-
 		bool bShouldRun = true;
 		do
 		{

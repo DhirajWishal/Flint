@@ -7,7 +7,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanCommandBufferList::VulkanCommandBufferList(Device& device, const UI32 bufferCount) : CommandBufferList(device, bufferCount)
+		VulkanCommandBufferList::VulkanCommandBufferList(Backend::Device& device, const UI32 bufferCount) : CommandBufferList(device, bufferCount)
 		{
 			auto vDevice = device.StaticCast<VulkanDevice>();
 
@@ -30,7 +30,7 @@ namespace Flint
 			FLINT_VK_ASSERT(vkAllocateCommandBuffers(vDevice.GetLogicalDevice(), &vAI, vCommandBuffers.data()));
 		}
 
-		VulkanCommandBufferList::VulkanCommandBufferList(Device& device, const UI32 bufferCount, CommandBufferList& parent) : CommandBufferList(device, bufferCount, parent)
+		VulkanCommandBufferList::VulkanCommandBufferList(Backend::Device& device, const UI32 bufferCount, CommandBufferList& parent) : CommandBufferList(device, bufferCount, parent)
 		{
 			auto vDevice = device.StaticCast<VulkanDevice>();
 

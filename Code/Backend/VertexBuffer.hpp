@@ -7,30 +7,33 @@
 
 namespace Flint
 {
-	/**
-	 * Flint vertex buffer object.
-	 * Vertex buffers are used to submit information to the pipeline when drawing.
-	 */
-	class VertexBuffer : public DrawResourceBuffer
+	namespace Backend
 	{
-	public:
-		VertexBuffer(Device& device, UI64 size, const VertexDescriptor& descriptor) : DrawResourceBuffer(device, size), mVertexDescriptor(descriptor) {}
-
 		/**
-		 * Get the vertex descriptor of the vertex buffer.
-		 *
-		 * @return The vertex descriptor.
+		 * Flint vertex buffer object.
+		 * Vertex buffers are used to submit information to the pipeline when drawing.
 		 */
-		VertexDescriptor GetVertexDescriptor() const { return mVertexDescriptor; }
+		class VertexBuffer : public DrawResourceBuffer
+		{
+		public:
+			VertexBuffer(Device& device, UI64 size, const VertexDescriptor& descriptor) : DrawResourceBuffer(device, size), mVertexDescriptor(descriptor) {}
 
-		/**
-		 * Get the vertex stride.
-		 *
-		 * @return The size in bytes.
-		 */
-		virtual UI64 GetStride() const override final { return mVertexDescriptor.Stride(); }
+			/**
+			 * Get the vertex descriptor of the vertex buffer.
+			 *
+			 * @return The vertex descriptor.
+			 */
+			VertexDescriptor GetVertexDescriptor() const { return mVertexDescriptor; }
 
-	protected:
-		VertexDescriptor mVertexDescriptor = {};
-	};
+			/**
+			 * Get the vertex stride.
+			 *
+			 * @return The size in bytes.
+			 */
+			virtual UI64 GetStride() const override final { return mVertexDescriptor.Stride(); }
+
+		protected:
+			VertexDescriptor mVertexDescriptor = {};
+		};
+	}
 }

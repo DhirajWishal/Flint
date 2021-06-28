@@ -35,6 +35,7 @@ namespace Flint
 		};
 
 	public:
+		WireFrame() = default;
 		WireFrame(UI64 storageID, const std::string& wireFrameName, const std::vector<DrawSegment>& segments) : mStorageID(storageID), mWireFrameName(wireFrameName), mSegments(segments) {}
 
 		/**

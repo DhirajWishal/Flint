@@ -11,37 +11,33 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanDevice final : public Device
+		class VulkanDevice final : public Backend::Device
 		{
 		public:
-			VulkanDevice(Instance& instance, DeviceFlags flags);
+			VulkanDevice(Backend::Instance& instance, Backend::DeviceFlags flags);
 
-			virtual bool IsDisplayCompatible(const Display& display) override final;
+			virtual bool IsDisplayCompatible(const Backend::Display& display) override final;
 
-			virtual CommandBufferList& CreatePrimaryCommandBufferList(UI32 bufferCount) override final;
-			virtual CommandBufferList& CreateSecondaryCommandBufferList(UI32 bufferCount, CommandBufferList& parent) override final;
-			virtual void DestroyCommandBufferList(CommandBufferList& commandBufferList) override final;
+			virtual Backend::CommandBufferList& CreatePrimaryCommandBufferList(UI32 bufferCount) override final;
+			virtual Backend::CommandBufferList& CreateSecondaryCommandBufferList(UI32 bufferCount, Backend::CommandBufferList& parent) override final;
+			virtual void DestroyCommandBufferList(Backend::CommandBufferList& commandBufferList) override final;
 
-			virtual ScreenBoundRenderTarget& CreateScreenBoundRenderTarget(Display& display, const FExtent2D& extent, const UI32 bufferCount) override final;
-			virtual void DestroyRenderTarget(RenderTarget& renderTarget) override final;
+			virtual Backend::ScreenBoundRenderTarget& CreateScreenBoundRenderTarget(Backend::Display& display, const FExtent2D& extent, const UI32 bufferCount) override final;
+			virtual void DestroyRenderTarget(Backend::RenderTarget& renderTarget) override final;
 
 			virtual void WaitIdle() override final;
 			virtual void WaitForQueue() override final;
 
-			virtual StaggingBuffer& CreateStaggingBuffer(UI64 size) override final;
-			virtual UniformBuffer& CreateUniformBuffer(UI64 size) override final;
-			virtual StorageBuffer& CreateStorageBuffer(UI64 size) override final;
-			virtual VertexBuffer& CreateVertexBuffer(UI64 size, const VertexDescriptor& descriptor) override final;
-			virtual IndexBuffer& CreateIndexBuffer(UI64 size, UI64 stride) override final;
-			virtual void DestroyBuffer(Buffer& buffer) override final;
+			virtual Backend::Buffer& CreateBuffer(Backend::BufferType type, UI64 size) override final;
+			virtual void DestroyBuffer(Backend::Buffer& buffer) override final;
 
-			virtual VertexShader& CreateVertexShader(const std::filesystem::path& path, ShaderCodeType type) override final;
-			virtual VertexShader& CreateVertexShader(const std::vector<UI32>& code, ShaderCodeType type = ShaderCodeType::SPIR_V) override final;
-			virtual VertexShader& CreateVertexShader(const std::string& code, ShaderCodeType type = ShaderCodeType::GLSL) override final;
-			virtual FragmentShader& CreateFragmentShader(const std::filesystem::path& path, ShaderCodeType type) override final;
-			virtual FragmentShader& CreateFragmentShader(const std::vector<UI32>& code, ShaderCodeType type = ShaderCodeType::SPIR_V) override final;
-			virtual FragmentShader& CreateFragmentShader(const std::string& code, ShaderCodeType type = ShaderCodeType::GLSL) override final;
-			virtual void DestroyShader(Shader& shader) override final;
+			virtual Backend::VertexShader& CreateVertexShader(const std::filesystem::path& path, Backend::ShaderCodeType type) override final;
+			virtual Backend::VertexShader& CreateVertexShader(const std::vector<UI32>& code, Backend::ShaderCodeType type = Backend::ShaderCodeType::SPIR_V) override final;
+			virtual Backend::VertexShader& CreateVertexShader(const std::string& code, Backend::ShaderCodeType type = Backend::ShaderCodeType::GLSL) override final;
+			virtual Backend::FragmentShader& CreateFragmentShader(const std::filesystem::path& path, Backend::ShaderCodeType type) override final;
+			virtual Backend::FragmentShader& CreateFragmentShader(const std::vector<UI32>& code, Backend::ShaderCodeType type = Backend::ShaderCodeType::SPIR_V) override final;
+			virtual Backend::FragmentShader& CreateFragmentShader(const std::string& code, Backend::ShaderCodeType type = Backend::ShaderCodeType::GLSL) override final;
+			virtual void DestroyShader(Backend::Shader& shader) override final;
 
 			virtual void Terminate() override final;
 

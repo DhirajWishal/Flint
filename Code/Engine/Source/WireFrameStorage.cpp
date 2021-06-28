@@ -25,11 +25,7 @@ namespace Flint
 
 		// Check if the scene could be loaded.
 		if (!pScene)
-		{
-			//FLINT_LOG_ERROR(TEXT("Failed to load wire frame from asset path: #8"), file.string());
 			FLINT_THROW_RUNTIME_ERROR("Failed to load wire frame form the asset file!");
-			//return {};
-		}
 
 		UI64 vertexStride = mVertexDescriptor.Stride();
 
@@ -38,7 +34,7 @@ namespace Flint
 			vertexBufferSize += pScene->mMeshes[i]->mNumVertices * vertexStride;
 
 		// Create stagging buffer and map its memory.
-		StaggingBuffer& staggingBuffer = mDevice.CreateStaggingBuffer(vertexBufferSize);
+		Backend::Buffer& staggingBuffer = mDevice.CreateBuffer(Backend::BufferType::STAGGING, vertexBufferSize);
 		float* pDataStore = static_cast<float*>(staggingBuffer.MapMemory(vertexBufferSize));
 
 		UI64 indexBufferSize = 0;
@@ -66,104 +62,104 @@ namespace Flint
 
 					switch (attribute.mType)
 					{
-					case Flint::ShaderAttribueType::POSITION:
+					case Flint::Backend::ShaderAttribueType::POSITION:
 						if (pMesh->HasPositions())
 							std::copy(&pMesh->mVertices[j].x, (&pMesh->mVertices[j].x) + copyAmount, pDataStore);
 						break;
 
-					case Flint::ShaderAttribueType::NORMAL:
+					case Flint::Backend::ShaderAttribueType::NORMAL:
 						if (pMesh->HasNormals())
 							std::copy(&pMesh->mNormals[j].x, (&pMesh->mNormals[j].x) + copyAmount, pDataStore);
 						break;
 
-					case Flint::ShaderAttribueType::COLOR_0:
+					case Flint::Backend::ShaderAttribueType::COLOR_0:
 						if (pMesh->HasVertexColors(0))
 							std::copy(&pMesh->mColors[0][j].r, (&pMesh->mColors[0][j].r) + copyAmount, pDataStore);
 						else
 							std::fill(pDataStore, pDataStore + (static_cast<UI32>(attribute.mDataType) / sizeof(float)), 1.0f);
 						break;
 
-					case Flint::ShaderAttribueType::COLOR_1:
+					case Flint::Backend::ShaderAttribueType::COLOR_1:
 						if (pMesh->HasVertexColors(1))
 							std::copy(&pMesh->mColors[1][j].r, (&pMesh->mColors[1][j].r) + copyAmount, pDataStore);
 						break;
 
-					case Flint::ShaderAttribueType::COLOR_2:
+					case Flint::Backend::ShaderAttribueType::COLOR_2:
 						if (pMesh->HasVertexColors(2))
 							std::copy(&pMesh->mColors[2][j].r, (&pMesh->mColors[1][j].r) + copyAmount, pDataStore);
 						break;
 
-					case Flint::ShaderAttribueType::COLOR_3:
+					case Flint::Backend::ShaderAttribueType::COLOR_3:
 						if (pMesh->HasVertexColors(3))
 							std::copy(&pMesh->mColors[3][j].r, (&pMesh->mColors[2][j].r) + copyAmount, pDataStore);
 						break;
 
-					case Flint::ShaderAttribueType::TEXTURE_COORDINATES_0:
+					case Flint::Backend::ShaderAttribueType::TEXTURE_COORDINATES_0:
 						if (pMesh->HasTextureCoords(0))
 							std::copy(&pMesh->mTextureCoords[0][j].x, (&pMesh->mTextureCoords[0][j].x) + copyAmount, pDataStore);
 						break;
 
-					case Flint::ShaderAttribueType::TEXTURE_COORDINATES_1:
+					case Flint::Backend::ShaderAttribueType::TEXTURE_COORDINATES_1:
 						if (pMesh->HasTextureCoords(1))
 							std::copy(&pMesh->mTextureCoords[1][j].x, (&pMesh->mTextureCoords[1][j].x) + copyAmount, pDataStore);
 						break;
 
-					case Flint::ShaderAttribueType::TEXTURE_COORDINATES_2:
+					case Flint::Backend::ShaderAttribueType::TEXTURE_COORDINATES_2:
 						if (pMesh->HasTextureCoords(2))
 							std::copy(&pMesh->mTextureCoords[2][j].x, (&pMesh->mTextureCoords[2][j].x) + copyAmount, pDataStore);
 						break;
 
-					case Flint::ShaderAttribueType::TEXTURE_COORDINATES_3:
+					case Flint::Backend::ShaderAttribueType::TEXTURE_COORDINATES_3:
 						if (pMesh->HasTextureCoords(3))
 							std::copy(&pMesh->mTextureCoords[3][j].x, (&pMesh->mTextureCoords[3][j].x) + copyAmount, pDataStore);
 						break;
 
-					case Flint::ShaderAttribueType::TEXTURE_COORDINATES_4:
+					case Flint::Backend::ShaderAttribueType::TEXTURE_COORDINATES_4:
 						if (pMesh->HasTextureCoords(4))
 							std::copy(&pMesh->mTextureCoords[4][j].x, (&pMesh->mTextureCoords[4][j].x) + copyAmount, pDataStore);
 						break;
 
-					case Flint::ShaderAttribueType::TEXTURE_COORDINATES_5:
+					case Flint::Backend::ShaderAttribueType::TEXTURE_COORDINATES_5:
 						if (pMesh->HasTextureCoords(5))
 							std::copy(&pMesh->mTextureCoords[5][j].x, (&pMesh->mTextureCoords[5][j].x) + copyAmount, pDataStore);
 						break;
 
-					case Flint::ShaderAttribueType::TEXTURE_COORDINATES_6:
+					case Flint::Backend::ShaderAttribueType::TEXTURE_COORDINATES_6:
 						if (pMesh->HasTextureCoords(6))
 							std::copy(&pMesh->mTextureCoords[6][j].x, (&pMesh->mTextureCoords[6][j].x) + copyAmount, pDataStore);
 						break;
 
-					case Flint::ShaderAttribueType::TEXTURE_COORDINATES_7:
+					case Flint::Backend::ShaderAttribueType::TEXTURE_COORDINATES_7:
 						if (pMesh->HasTextureCoords(7))
 							std::copy(&pMesh->mTextureCoords[7][j].x, (&pMesh->mTextureCoords[7][j].x) + copyAmount, pDataStore);
 						break;
 
-					case Flint::ShaderAttribueType::UV_COORDINATES:
+					case Flint::Backend::ShaderAttribueType::UV_COORDINATES:
 						//if (pMesh->HasPositions())
 						//	std::copy(&pMesh->mVertices[j].x, (&pMesh->mVertices[j].x) + copyAmount, pDataStore);
 						//break;
 
-					case Flint::ShaderAttribueType::TANGENT:
+					case Flint::Backend::ShaderAttribueType::TANGENT:
 						if (pMesh->HasTangentsAndBitangents())
 							std::copy(&pMesh->mTangents[j].x, (&pMesh->mTangents[j].x) + copyAmount, pDataStore);
 						break;
 
-					case Flint::ShaderAttribueType::BITANGENT:
+					case Flint::Backend::ShaderAttribueType::BITANGENT:
 						if (pMesh->HasTangentsAndBitangents())
 							std::copy(&pMesh->mBitangents[j].x, (&pMesh->mBitangents[j].x) + copyAmount, pDataStore);
 						break;
 
-					case Flint::ShaderAttribueType::BONE_ID:
+					case Flint::Backend::ShaderAttribueType::BONE_ID:
 						//if (pMesh->HasPositions())
 						//	std::copy(&pMesh->mVertices[j].x, (&pMesh->mVertices[j].x) + copyAmount, pDataStore);
 						//break;
 
-					case Flint::ShaderAttribueType::BONE_WEIGHT:
+					case Flint::Backend::ShaderAttribueType::BONE_WEIGHT:
 						//if (pMesh->HasPositions())
 						//	std::copy(&pMesh->mVertices[j].x, (&pMesh->mVertices[j].x) + copyAmount, pDataStore);
 						//break;
 
-					case Flint::ShaderAttribueType::CUSTOM:
+					case Flint::Backend::ShaderAttribueType::CUSTOM:
 						break;
 
 					default:
@@ -196,11 +192,11 @@ namespace Flint
 		staggingBuffer.UnmapMemory();
 		mDevice.DestroyBuffer(staggingBuffer);
 
-		//return WireFrame();
+		return WireFrame();
 	}
 
 	WireFrame WireFrameStorage::LoadFromCache(const std::filesystem::path& file)
 	{
-		//return WireFrame();
+		return WireFrame();
 	}
 }

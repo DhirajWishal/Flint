@@ -14,10 +14,10 @@ namespace Flint
 	 * Flint wire frame storage object.
 	 * This object contains a vertex and index buffer and is responsible of loading, maintaining and unloading vertex and index data.
 	 */
-	class WireFrameStorage final : public DeviceBoundObject
+	class WireFrameStorage final : public Backend::DeviceBoundObject
 	{
 	public:
-		WireFrameStorage(Device& device, UI64 ID, const VertexDescriptor& descriptor, UI64 indexStride)
+		WireFrameStorage(Backend::Device& device, UI64 ID, const Backend::VertexDescriptor& descriptor, UI64 indexStride)
 			: DeviceBoundObject(device), mID(ID), mVertexDescriptor(descriptor), mIndexStride(indexStride) {}
 
 		/**
@@ -37,10 +37,10 @@ namespace Flint
 		WireFrame LoadFromCache(const std::filesystem::path& file);
 
 	protected:
-		VertexDescriptor mVertexDescriptor = {};
+		Backend::VertexDescriptor mVertexDescriptor = {};
 
-		std::unique_ptr<VertexBuffer> pVertexBuffer = nullptr;
-		std::unique_ptr<IndexBuffer> pIndexBuffer = nullptr;
+		std::unique_ptr<Backend::VertexBuffer> pVertexBuffer = nullptr;
+		std::unique_ptr<Backend::IndexBuffer> pIndexBuffer = nullptr;
 
 		UI64 mIndexStride = 0;
 		UI64 mID = 0;

@@ -12,16 +12,16 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanInstance final : public Instance
+		class VulkanInstance final : public Backend::Instance
 		{
 		public:
 			VulkanInstance(bool enableValidation);
 
-			virtual Device& CreateDevice(DeviceFlags flags) override final;
-			virtual void DestroyDevice(Device& device) override final;
+			virtual Backend::Device& CreateDevice(Backend::DeviceFlags flags) override final;
+			virtual void DestroyDevice(Backend::Device& device) override final;
 
-			virtual Display& CreateDisplay(const FExtent2D& extent, const std::string& title) override final;
-			virtual void DestroyDisplay(Display& display) override final;
+			virtual Backend::Display& CreateDisplay(const FExtent2D& extent, const std::string& title) override final;
+			virtual void DestroyDisplay(Backend::Display& display) override final;
 
 			virtual void Terminate() override final;
 

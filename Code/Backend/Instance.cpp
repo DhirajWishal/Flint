@@ -7,14 +7,17 @@
 
 namespace Flint
 {
-	Instance& CreateInstance(bool enableValidation)
+	namespace Backend
 	{
-		return *new VulkanBackend::VulkanInstance(enableValidation);
-	}
+		Instance& CreateInstance(bool enableValidation)
+		{
+			return *new VulkanBackend::VulkanInstance(enableValidation);
+		}
 
-	void DestroyInstance(Instance& instance)
-	{
-		instance.Terminate();
-		delete& instance;
+		void DestroyInstance(Instance& instance)
+		{
+			instance.Terminate();
+			delete& instance;
+		}
 	}
 }

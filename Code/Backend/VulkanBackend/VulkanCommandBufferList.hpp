@@ -10,11 +10,11 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanCommandBufferList final : public CommandBufferList
+		class VulkanCommandBufferList final : public Backend::CommandBufferList
 		{
 		public:
-			VulkanCommandBufferList(Device& device, const UI32 bufferCount);
-			VulkanCommandBufferList(Device& device, const UI32 bufferCount, CommandBufferList& parent);
+			VulkanCommandBufferList(Backend::Device& device, const UI32 bufferCount);
+			VulkanCommandBufferList(Backend::Device& device, const UI32 bufferCount, CommandBufferList& parent);
 
 			virtual void BeginBufferRecording(UI32 index) override final;
 			virtual void BeginBufferRecording(UI32 index, CommandBufferList& parent) override final;

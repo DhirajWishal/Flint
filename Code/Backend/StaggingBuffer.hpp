@@ -7,13 +7,16 @@
 
 namespace Flint
 {
-	/**
-	 * Flint stagging buffer object.
-	 * Stagging buffers are used to submit data to the device and is used to transfer data between other buffers and images.
-	 */
-	class StaggingBuffer : public TransferFriendlyBuffer
+	namespace Backend
 	{
-	public:
-		StaggingBuffer(Device& device, UI64 size) : TransferFriendlyBuffer(device, size) {}
-	};
+		/**
+		 * Flint stagging buffer object.
+		 * Stagging buffers are used to submit data to the device and is used to transfer data between other buffers and images.
+		 */
+		class StaggingBuffer : public TransferFriendlyBuffer
+		{
+		public:
+			StaggingBuffer(Device& device, UI64 size) : TransferFriendlyBuffer(device, size) {}
+		};
+	}
 }
