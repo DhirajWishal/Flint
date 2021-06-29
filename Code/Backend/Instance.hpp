@@ -10,7 +10,7 @@ namespace Flint
 	namespace Backend
 	{
 		/**
-		 * Flint instance object.
+		 * Flint instance backend object.
 		 * This object is the main object for any Flint instance.
 		 */
 		class Instance : public FObject

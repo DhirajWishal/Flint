@@ -16,9 +16,9 @@ namespace Flint
 		class FragmentShader : public Shader
 		{
 		public:
-			FragmentShader(Device& device, const std::filesystem::path& path, ShaderCodeType type) : Shader(device, path, type) {}
-			FragmentShader(Device& device, const std::vector<UI32>& code, ShaderCodeType type = ShaderCodeType::SPIR_V) : Shader(device, code, type) {}
-			FragmentShader(Device& device, const std::string& code, ShaderCodeType type = ShaderCodeType::GLSL) : Shader(device, code, type) {}
+			FragmentShader(Device& device, const std::filesystem::path& path, ShaderCodeType type) : Shader(device, ShaderType::FRAGMENT, path, type) {}
+			FragmentShader(Device& device, const std::vector<UI32>& code, ShaderCodeType type = ShaderCodeType::SPIR_V) : Shader(device, ShaderType::FRAGMENT, code, type) {}
+			FragmentShader(Device& device, const std::string& code, ShaderCodeType type = ShaderCodeType::GLSL) : Shader(device, ShaderType::FRAGMENT, code, type) {}
 		};
 	}
 }

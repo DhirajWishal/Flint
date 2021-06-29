@@ -132,6 +132,16 @@ namespace Flint
 		};
 
 		/**
+		 * Shader code type enum.
+		 */
+		enum class ShaderType : UI8 {
+			UNDEFINED,
+			VERTEX, TESSELLATION_CONTROL, TESSELLATION_EVALUATION, GEOMETRY, FRAGMENT,
+			COMPUTE,
+			RAY_GEN, ANY_HIT, CLOSEST_HIT, RAY_MISS
+		};
+
+		/**
 		 * Flint device bound object.
 		 * This object is the base class for all the resources in Flint which are based on a device.
 		 */

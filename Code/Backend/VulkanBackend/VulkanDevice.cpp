@@ -7,8 +7,7 @@
 #include "VulkanCommandBufferList.hpp"
 #include "VulkanScreenBoundRenderTarget.hpp"
 #include "VulkanBuffer.hpp"
-#include "VulkanVertexShader.hpp"
-#include "VulkanFragmentShader.hpp"
+#include "VulkanShader.hpp"
 
 #include <set>
 
@@ -133,34 +132,19 @@ namespace Flint
 			delete& buffer;
 		}
 
-		Backend::VertexShader& VulkanDevice::CreateVertexShader(const std::filesystem::path& path, Backend::ShaderCodeType type)
+		Backend::Shader& VulkanDevice::CreateShader(Backend::ShaderType type, const std::filesystem::path& path, Backend::ShaderCodeType codeType)
 		{
-			return *new VulkanVertexShader(*this, path, type);
+			return *new VulkanShader(*this, type, path, codeType);
 		}
 
-		Backend::VertexShader& VulkanDevice::CreateVertexShader(const std::vector<UI32>& code, Backend::ShaderCodeType type)
+		Backend::Shader& VulkanDevice::CreateShader(Backend::ShaderType type, const std::vector<UI32>& code, Backend::ShaderCodeType codeType)
 		{
-			return *new VulkanVertexShader(*this, code, type);
+			return *new VulkanShader(*this, type, code, codeType);
 		}
 
-		Backend::VertexShader& VulkanDevice::CreateVertexShader(const std::string& code, Backend::ShaderCodeType type)
+		Backend::Shader& VulkanDevice::CreateShader(Backend::ShaderType type, const std::string& code, Backend::ShaderCodeType codeType)
 		{
-			return *new VulkanVertexShader(*this, code, type);
-		}
-
-		Backend::FragmentShader& VulkanDevice::CreateFragmentShader(const std::filesystem::path& path, Backend::ShaderCodeType type)
-		{
-			return *new VulkanFragmentShader(*this, path, type);
-		}
-
-		Backend::FragmentShader& VulkanDevice::CreateFragmentShader(const std::vector<UI32>& code, Backend::ShaderCodeType type)
-		{
-			return *new VulkanFragmentShader(*this, code, type);
-		}
-
-		Backend::FragmentShader& VulkanDevice::CreateFragmentShader(const std::string& code, Backend::ShaderCodeType type)
-		{
-			return *new VulkanFragmentShader(*this, code, type);
+			return *new VulkanShader(*this, type, code, codeType);
 		}
 
 		void VulkanDevice::DestroyShader(Backend::Shader& shader)

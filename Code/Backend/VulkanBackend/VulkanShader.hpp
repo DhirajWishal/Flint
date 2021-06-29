@@ -10,31 +10,25 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		struct ShaderDescriptor
-		{
-			std::vector<Backend::ShaderResource> mResources;
-			std::vector<Backend::ShaderAttribute> mInputAttributes;
-			std::vector<Backend::ShaderAttribute> mOutputAttributes;
-		};
-
-		class VulkanShader
+		class VulkanShader final : public Backend::Shader
 		{
 		public:
-			VulkanShader(VulkanDevice& device, VkShaderStageFlags stageFlags, const std::filesystem::path& path, Backend::ShaderCodeType type);
-			VulkanShader(VulkanDevice& device, VkShaderStageFlags stageFlags, const std::vector<UI32>& code, Backend::ShaderCodeType type);
-			VulkanShader(VulkanDevice& device, VkShaderStageFlags stageFlags, const std::string& code, Backend::ShaderCodeType type);
+			VulkanShader(Backend::Device& device, Backend::ShaderType type, const std::filesystem::path& path, Backend::ShaderCodeType codeType);
+			VulkanShader(Backend::Device& device, Backend::ShaderType type, const std::vector<UI32>& code, Backend::ShaderCodeType codeType);
+			VulkanShader(Backend::Device& device, Backend::ShaderType type, const std::string& code, Backend::ShaderCodeType codeType);
 
-			void Terminate();
+			virtual void Terminate() override final;
+
 			VkPipelineShaderStageCreateInfo GetShaderStageCreateInfo() const;
-			ShaderDescriptor PerformReflection() const;
+			void PerformReflection();
 
 			VkShaderModule GetModule() const { return vModule; }
 
 		private:
+			void ResolveShaderStage();
 			void CreateShaderModule();
 
 		private:
-			VulkanDevice& vDevice;
 			std::vector<UI32> mShaderCode;
 
 			VkShaderModule vModule = VK_NULL_HANDLE;

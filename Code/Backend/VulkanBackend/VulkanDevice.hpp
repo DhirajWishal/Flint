@@ -31,12 +31,9 @@ namespace Flint
 			virtual Backend::Buffer& CreateBuffer(Backend::BufferType type, UI64 size) override final;
 			virtual void DestroyBuffer(Backend::Buffer& buffer) override final;
 
-			virtual Backend::VertexShader& CreateVertexShader(const std::filesystem::path& path, Backend::ShaderCodeType type) override final;
-			virtual Backend::VertexShader& CreateVertexShader(const std::vector<UI32>& code, Backend::ShaderCodeType type = Backend::ShaderCodeType::SPIR_V) override final;
-			virtual Backend::VertexShader& CreateVertexShader(const std::string& code, Backend::ShaderCodeType type = Backend::ShaderCodeType::GLSL) override final;
-			virtual Backend::FragmentShader& CreateFragmentShader(const std::filesystem::path& path, Backend::ShaderCodeType type) override final;
-			virtual Backend::FragmentShader& CreateFragmentShader(const std::vector<UI32>& code, Backend::ShaderCodeType type = Backend::ShaderCodeType::SPIR_V) override final;
-			virtual Backend::FragmentShader& CreateFragmentShader(const std::string& code, Backend::ShaderCodeType type = Backend::ShaderCodeType::GLSL) override final;
+			virtual Backend::Shader& CreateShader(Backend::ShaderType type, const std::filesystem::path& path, Backend::ShaderCodeType codeType) override final;
+			virtual Backend::Shader& CreateShader(Backend::ShaderType type, const std::vector<UI32>& code, Backend::ShaderCodeType codeType = Backend::ShaderCodeType::SPIR_V) override final;
+			virtual Backend::Shader& CreateShader(Backend::ShaderType type, const std::string& code, Backend::ShaderCodeType codeType = Backend::ShaderCodeType::GLSL) override final;
 			virtual void DestroyShader(Backend::Shader& shader) override final;
 
 			virtual void Terminate() override final;
