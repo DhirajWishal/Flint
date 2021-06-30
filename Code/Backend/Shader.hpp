@@ -54,9 +54,9 @@ namespace Flint
 		class Shader : public DeviceBoundObject
 		{
 		public:
-			Shader(Device& device, ShaderType type, const std::filesystem::path& path, ShaderCodeType codeType) : DeviceBoundObject(device), mType(type) {}
-			Shader(Device& device, ShaderType type, const std::vector<UI32>& code, ShaderCodeType codeType = ShaderCodeType::SPIR_V) : DeviceBoundObject(device), mType(type) {}
-			Shader(Device& device, ShaderType type, const std::string& code, ShaderCodeType codeType = ShaderCodeType::GLSL) : DeviceBoundObject(device), mType(type) {}
+			Shader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::filesystem::path& path, ShaderCodeType codeType) : DeviceBoundObject(pDevice), mType(type) {}
+			Shader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::vector<UI32>& code, ShaderCodeType codeType = ShaderCodeType::SPIR_V) : DeviceBoundObject(pDevice), mType(type) {}
+			Shader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::string& code, ShaderCodeType codeType = ShaderCodeType::GLSL) : DeviceBoundObject(pDevice), mType(type) {}
 
 			/**
 			 * Get the shader resources of the shader.

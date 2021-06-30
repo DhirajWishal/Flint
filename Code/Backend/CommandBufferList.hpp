@@ -22,7 +22,7 @@ namespace Flint
 			 * @param device: The device to which the buffer list is bound to.
 			 * @param bufferCount: The number of command buffers needed.
 			 */
-			CommandBufferList(Device& device, const UI32 bufferCount) : DeviceBoundObject(device), mBufferCount(bufferCount) {}
+			CommandBufferList(const std::shared_ptr<Device>& pDevice, const UI32 bufferCount) : DeviceBoundObject(pDevice), mBufferCount(bufferCount) {}
 
 			/**
 			 * Construct the command buffer list as a secondary command buffer list.
@@ -32,7 +32,7 @@ namespace Flint
 			 * @param bufferCount: The number of buffers needed.
 			 * @param parent: The parent command buffer list.
 			 */
-			CommandBufferList(Device& device, const UI32 bufferCount, CommandBufferList& parent) : DeviceBoundObject(device), mBufferCount(bufferCount) {}
+			CommandBufferList(const std::shared_ptr<Device>& pDevice, const UI32 bufferCount, CommandBufferList& parent) : DeviceBoundObject(pDevice), mBufferCount(bufferCount) {}
 
 			/**
 			 * Begin command buffer recording.

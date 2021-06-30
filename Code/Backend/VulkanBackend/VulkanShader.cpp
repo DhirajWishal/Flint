@@ -78,8 +78,8 @@ namespace Flint
 			}
 		}
 
-		VulkanShader::VulkanShader(Backend::Device& device, Backend::ShaderType type, const std::filesystem::path& path, Backend::ShaderCodeType codeType)
-			: Shader(device, type, path, codeType)
+		VulkanShader::VulkanShader(const std::shared_ptr<Backend::Device>& pDevice, Backend::ShaderType type, const std::filesystem::path& path, Backend::ShaderCodeType codeType)
+			: Shader(pDevice, type, path, codeType)
 		{
 			ResolveShaderStage();
 			std::ifstream shaderFile(path, std::ios::ate | std::ios::binary);
@@ -113,8 +113,8 @@ namespace Flint
 			PerformReflection();
 		}
 
-		VulkanShader::VulkanShader(Backend::Device& device, Backend::ShaderType type, const std::vector<UI32>& code, Backend::ShaderCodeType codeType)
-			: Shader(device, type, code, codeType)
+		VulkanShader::VulkanShader(const std::shared_ptr<Backend::Device>& pDevice, Backend::ShaderType type, const std::vector<UI32>& code, Backend::ShaderCodeType codeType)
+			: Shader(pDevice, type, code, codeType)
 		{
 			ResolveShaderStage();
 
@@ -126,8 +126,8 @@ namespace Flint
 			PerformReflection();
 		}
 
-		VulkanShader::VulkanShader(Backend::Device& device, Backend::ShaderType type, const std::string& code, Backend::ShaderCodeType codeType)
-			: Shader(device, type, code, codeType)
+		VulkanShader::VulkanShader(const std::shared_ptr<Backend::Device>& pDevice, Backend::ShaderType type, const std::string& code, Backend::ShaderCodeType codeType)
+			: Shader(pDevice, type, code, codeType)
 		{
 			ResolveShaderStage();
 			if (codeType != Backend::ShaderCodeType::SPIR_V) // TODO
@@ -142,7 +142,7 @@ namespace Flint
 
 		void VulkanShader::Terminate()
 		{
-			vkDestroyShaderModule(mDevice.StaticCast<VulkanDevice>().GetLogicalDevice(), vModule, nullptr);
+			vkDestroyShaderModule(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), vModule, nullptr);
 		}
 
 		VkPipelineShaderStageCreateInfo VulkanShader::GetShaderStageCreateInfo() const
@@ -249,7 +249,7 @@ namespace Flint
 			vCreateInfo.codeSize = mShaderCode.size();
 			vCreateInfo.pCode = mShaderCode.data();
 
-			FLINT_VK_ASSERT(vkCreateShaderModule(mDevice.StaticCast<VulkanDevice>().GetLogicalDevice(), &vCreateInfo, nullptr, &vModule));
+			FLINT_VK_ASSERT(vkCreateShaderModule(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), &vCreateInfo, nullptr, &vModule));
 		}
 	}
 }

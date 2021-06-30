@@ -10,8 +10,8 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanBuffer::VulkanBuffer(Backend::Device& device, Backend::BufferType type, const UI64 size)
-			: Buffer(device, type, size)
+		VulkanBuffer::VulkanBuffer(const std::shared_ptr<Backend::Device>& pDevice, Backend::BufferType type, const UI64 size)
+			: Buffer(pDevice, type, size)
 		{
 			switch (type)
 			{
@@ -60,7 +60,7 @@ namespace Flint
 			vBufferCopy.srcOffset = srcOffset;
 			vBufferCopy.dstOffset = dstOffset;
 
-			VulkanOneTimeCommandBuffer vCommandBuffer(mDevice.StaticCast<VulkanDevice>());
+			VulkanOneTimeCommandBuffer vCommandBuffer(pDevice->StaticCast<VulkanDevice>());
 			vkCmdCopyBuffer(vCommandBuffer, srcBuffer.StaticCast<VulkanBuffer>().vBuffer, vBuffer, 1, &vBufferCopy);
 		}
 
@@ -72,19 +72,19 @@ namespace Flint
 				FLINT_THROW_RANGE_ERROR("Submitted size is invalid!");
 
 			void* pDataStore = nullptr;
-			FLINT_VK_ASSERT(vkMapMemory(mDevice.StaticCast<VulkanDevice>().GetLogicalDevice(), vMemory, offset, size, 0, &pDataStore));
+			FLINT_VK_ASSERT(vkMapMemory(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), vMemory, offset, size, 0, &pDataStore));
 
 			return pDataStore;
 		}
 
 		void VulkanBuffer::UnmapMemory()
 		{
-			vkUnmapMemory(mDevice.StaticCast<VulkanDevice>().GetLogicalDevice(), vMemory);
+			vkUnmapMemory(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), vMemory);
 		}
 
 		void VulkanBuffer::Terminate()
 		{
-			VulkanDevice& vDevice = mDevice.StaticCast<VulkanDevice>();
+			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 			vkDestroyBuffer(vDevice.GetLogicalDevice(), vBuffer, nullptr);
 			vkFreeMemory(vDevice.GetLogicalDevice(), vMemory, nullptr);
 		}
@@ -101,12 +101,12 @@ namespace Flint
 			vCI.size = static_cast<UI32>(mSize);
 			vCI.usage = vBufferUsage;
 
-			FLINT_VK_ASSERT(vkCreateBuffer(mDevice.StaticCast<VulkanDevice>().GetLogicalDevice(), &vCI, nullptr, &vBuffer));
+			FLINT_VK_ASSERT(vkCreateBuffer(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), &vCI, nullptr, &vBuffer));
 		}
 
 		void VulkanBuffer::CreateBufferMemory()
 		{
-			VulkanDevice& vDevice = mDevice.StaticCast<VulkanDevice>();
+			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 
 			VkMemoryRequirements vMR = {};
 			vkGetBufferMemoryRequirements(vDevice.GetLogicalDevice(), vBuffer, &vMR);

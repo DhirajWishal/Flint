@@ -16,7 +16,7 @@ namespace Flint
 		class ShaderResourceBuffer : public TransferFriendlyBuffer
 		{
 		public:
-			ShaderResourceBuffer(Device& device, UI64 size) : TransferFriendlyBuffer(device, size) {}
+			ShaderResourceBuffer(const std::shared_ptr<Device>& pDevice, UI64 size) : TransferFriendlyBuffer(pDevice, size) {}
 		};
 	}
 }

@@ -57,7 +57,7 @@ namespace Flint
 			friend Instance;
 
 		public:
-			Device(Instance& instance, DeviceFlags flags) noexcept : mInstance(instance), mFlags(flags) {}
+			Device(const std::shared_ptr<Instance>& pInstance, DeviceFlags flags) noexcept : pInstance(pInstance), mFlags(flags) {}
 
 			/**
 			 * Check if the display is compatible with the device.
@@ -65,7 +65,7 @@ namespace Flint
 			 * @param display: The display to check.
 			 * @return Boolean value stating if compatible or not.
 			 */
-			virtual bool IsDisplayCompatible(const Display& display) = 0;
+			virtual bool IsDisplayCompatible(const const std::shared_ptr<Display>& pDisplay) = 0;
 
 			/**
 			 * Create a new primary command buffer list.
@@ -102,7 +102,7 @@ namespace Flint
 			 * @param bufferCount: The buffer count of the frame buffer.
 			 * @return The screen bound render target object.
 			 */
-			virtual ScreenBoundRenderTarget& CreateScreenBoundRenderTarget(Display& display, const FExtent2D& extent, const UI32 bufferCount) = 0;
+			virtual ScreenBoundRenderTarget& CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FExtent2D& extent, const UI32 bufferCount) = 0;
 
 			/**
 			 * Destroy a created render target.
@@ -192,7 +192,7 @@ namespace Flint
 			void TerminateDeviceBoundObject(DeviceBoundObject& object) const { object.Terminate(); }
 
 		protected:
-			Instance& mInstance;
+			std::shared_ptr<Instance> pInstance = nullptr;
 			DeviceFlags mFlags = DeviceFlags::EXTERNAL | DeviceFlags::GRAPHICS_COMPATIBLE;
 		};
 	}

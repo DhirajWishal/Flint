@@ -17,7 +17,7 @@ namespace Flint
 		class DrawResourceBuffer : public Buffer
 		{
 		public:
-			DrawResourceBuffer(Device& device, UI64 size) : Buffer(device, size) {}
+			DrawResourceBuffer(const std::shared_ptr<Device>& pDevice, UI64 size) : Buffer(pDevice, size) {}
 
 			/**
 			 * Get the stride of the buffer.

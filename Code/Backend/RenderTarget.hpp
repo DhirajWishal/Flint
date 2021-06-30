@@ -18,8 +18,8 @@ namespace Flint
 		class RenderTarget : public DeviceBoundObject
 		{
 		public:
-			RenderTarget(Device& device, const FExtent2D& extent, const UI32 bufferCount, CommandBufferList& commandBufferList)
-				: DeviceBoundObject(device), mExtent(extent), mBufferCount(bufferCount), mCommandBufferList(commandBufferList) {}
+			RenderTarget(const std::shared_ptr<Device>& pDevice, const FExtent2D& extent, const UI32 bufferCount, CommandBufferList& commandBufferList)
+				: DeviceBoundObject(pDevice), mExtent(extent), mBufferCount(bufferCount), mCommandBufferList(commandBufferList) {}
 
 		protected:
 			CommandBufferList& mCommandBufferList;

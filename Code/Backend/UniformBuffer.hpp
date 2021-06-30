@@ -16,7 +16,7 @@ namespace Flint
 		class UniformBuffer : public ShaderResourceBuffer
 		{
 		public:
-			UniformBuffer(Device& device, UI64 size) : ShaderResourceBuffer(device, size) {}
+			UniformBuffer(const std::shared_ptr<Device>& pDevice, UI64 size) : ShaderResourceBuffer(pDevice, size) {}
 		};
 	}
 }

@@ -16,7 +16,7 @@ namespace Flint
 		class IndexBuffer : public DrawResourceBuffer
 		{
 		public:
-			IndexBuffer(Device& device, UI64 size, UI64 stride) : DrawResourceBuffer(device, size), mStride(stride) {}
+			IndexBuffer(const std::shared_ptr<Device>& pDevice, UI64 size, UI64 stride) : DrawResourceBuffer(pDevice, size), mStride(stride) {}
 
 			/**
 			 * Get the index stride.

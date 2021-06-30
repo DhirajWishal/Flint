@@ -150,7 +150,7 @@ namespace Flint
 			friend Device;
 
 		public:
-			DeviceBoundObject(Device& device) noexcept : mDevice(device) {}
+			DeviceBoundObject(const std::shared_ptr<Device>& device) noexcept : pDevice(device) {}
 
 		protected:
 			/**
@@ -159,7 +159,7 @@ namespace Flint
 			virtual void Terminate() = 0;
 
 		protected:
-			Device& mDevice;
+			std::shared_ptr<Device> pDevice = nullptr;
 		};
 	}
 }

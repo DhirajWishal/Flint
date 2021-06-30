@@ -9,15 +9,14 @@ namespace Flint
 {
 	namespace Backend
 	{
-		Instance& CreateInstance(bool enableValidation)
+		std::shared_ptr<Instance> CreateInstance(bool enableValidation)
 		{
 			return *new VulkanBackend::VulkanInstance(enableValidation);
 		}
 
-		void DestroyInstance(Instance& instance)
+		void DestroyInstance(const std::shared_ptr<Instance>& pInstance)
 		{
-			instance.Terminate();
-			delete& instance;
+			pInstance->Terminate();
 		}
 	}
 }

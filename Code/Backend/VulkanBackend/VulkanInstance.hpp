@@ -17,11 +17,11 @@ namespace Flint
 		public:
 			VulkanInstance(bool enableValidation);
 
-			virtual Backend::Device& CreateDevice(Backend::DeviceFlags flags) override final;
-			virtual void DestroyDevice(Backend::Device& device) override final;
+			virtual std::shared_ptr<Backend::Device> CreateDevice(Backend::DeviceFlags flags) override final;
+			virtual void DestroyDevice(const std::shared_ptr<Backend::Device>& pDevice) override final;
 
-			virtual Backend::Display& CreateDisplay(const FExtent2D& extent, const std::string& title) override final;
-			virtual void DestroyDisplay(Backend::Display& display) override final;
+			virtual std::shared_ptr<Backend::Display> CreateDisplay(const FExtent2D& extent, const std::string& title) override final;
+			virtual void DestroyDisplay(const std::shared_ptr<Backend::Display>& pDisplay) override final;
 
 			virtual void Terminate() override final;
 

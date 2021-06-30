@@ -16,9 +16,9 @@ namespace Flint
 		class VertexShader : public Shader
 		{
 		public:
-			VertexShader(Device& device, const std::filesystem::path& path, ShaderCodeType type) : Shader(device, ShaderType::VERTEX, path, type) {}
-			VertexShader(Device& device, const std::vector<UI32>& code, ShaderCodeType type = ShaderCodeType::SPIR_V) : Shader(device, ShaderType::VERTEX, code, type) {}
-			VertexShader(Device& device, const std::string& code, ShaderCodeType type = ShaderCodeType::GLSL) : Shader(device, ShaderType::VERTEX, code, type) {}
+			VertexShader(const std::shared_ptr<Device>& pDevice, const std::filesystem::path& path, ShaderCodeType type) : Shader(pDevice, ShaderType::VERTEX, path, type) {}
+			VertexShader(const std::shared_ptr<Device>& pDevice, const std::vector<UI32>& code, ShaderCodeType type = ShaderCodeType::SPIR_V) : Shader(pDevice, ShaderType::VERTEX, code, type) {}
+			VertexShader(const std::shared_ptr<Device>& pDevice, const std::string& code, ShaderCodeType type = ShaderCodeType::GLSL) : Shader(pDevice, ShaderType::VERTEX, code, type) {}
 		};
 	}
 }

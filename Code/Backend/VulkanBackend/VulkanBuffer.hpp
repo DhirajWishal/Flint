@@ -13,7 +13,7 @@ namespace Flint
 		class VulkanBuffer final : public Backend::Buffer
 		{
 		public:
-			VulkanBuffer(Backend::Device& device, Backend::BufferType type, const UI64 size);
+			VulkanBuffer(const std::shared_ptr<Backend::Device>& pDevice, Backend::BufferType type, const UI64 size);
 
 			virtual void Resize(UI64 size, Backend::BufferResizeMode mode) override final;
 			virtual void CopyFromBuffer(const Backend::Buffer& srcBuffer, UI64 size, UI64 srcOffset, UI64 dstOffset) override final;

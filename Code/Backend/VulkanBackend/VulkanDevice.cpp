@@ -67,7 +67,7 @@ namespace Flint
 			}
 		}
 
-		VulkanDevice::VulkanDevice(Backend::Instance& instance, Backend::DeviceFlags flags) : Device(instance, flags)
+		VulkanDevice::VulkanDevice(const std::shared_ptr<Backend::Instance>& pInstance, Backend::DeviceFlags flags) : Device(pInstance, flags)
 		{
 			if ((flags & Backend::DeviceFlags::GRAPHICS_COMPATIBLE) == Backend::DeviceFlags::GRAPHICS_COMPATIBLE)
 				INSERT_INTO_VECTOR(mDeviceExtensions, VK_KHR_SWAPCHAIN_EXTENSION_NAME);
@@ -76,7 +76,7 @@ namespace Flint
 			InitializeLogicalDevice();
 		}
 
-		bool VulkanDevice::IsDisplayCompatible(const Backend::Display& display)
+		bool VulkanDevice::IsDisplayCompatible(const Backend::const std::shared_ptr<Display>& pDisplay)
 		{
 			const VulkanDisplay& vDisplay = display.StaticCast<VulkanDisplay>();
 			VkBool32 isSupported = VK_FALSE;
@@ -100,7 +100,7 @@ namespace Flint
 			delete& commandBufferList;
 		}
 
-		Backend::ScreenBoundRenderTarget& VulkanDevice::CreateScreenBoundRenderTarget(Backend::Display& display, const FExtent2D& extent, const UI32 bufferCount)
+		Backend::ScreenBoundRenderTarget& VulkanDevice::CreateScreenBoundRenderTarget(Backend::const std::shared_ptr<Display>& pDisplay, const FExtent2D& extent, const UI32 bufferCount)
 		{
 			return *new VulkanScreenBoundRenderTarget(*this, display, extent, bufferCount);
 		}
@@ -304,7 +304,7 @@ namespace Flint
 
 		void VulkanDevice::InitializePhysicalDevice()
 		{
-			VulkanInstance& instance = mInstance.StaticCast<VulkanInstance>();
+			VulkanInstance& instance = pInstance->StaticCast<VulkanInstance>();
 
 			UI32 deviceCount = 0;
 			vkEnumeratePhysicalDevices(instance.GetInstance(), &deviceCount, nullptr);
@@ -379,7 +379,7 @@ namespace Flint
 
 		void VulkanDevice::InitializeLogicalDevice()
 		{
-			VulkanInstance& instance = mInstance.StaticCast<VulkanInstance>();
+			VulkanInstance& instance = pInstance->StaticCast<VulkanInstance>();
 
 			vQueue.Initialize(vPhysicalDevice, mFlags);
 

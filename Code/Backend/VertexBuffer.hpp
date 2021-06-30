@@ -16,7 +16,7 @@ namespace Flint
 		class VertexBuffer : public DrawResourceBuffer
 		{
 		public:
-			VertexBuffer(Device& device, UI64 size, const VertexDescriptor& descriptor) : DrawResourceBuffer(device, size), mVertexDescriptor(descriptor) {}
+			VertexBuffer(const std::shared_ptr<Device>& pDevice, UI64 size, const VertexDescriptor& descriptor) : DrawResourceBuffer(pDevice, size), mVertexDescriptor(descriptor) {}
 
 			/**
 			 * Get the vertex descriptor of the vertex buffer.

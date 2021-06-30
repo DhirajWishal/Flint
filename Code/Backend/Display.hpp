@@ -184,7 +184,7 @@ namespace Flint
 			friend Instance;
 
 		public:
-			Display(Instance& instance, const FExtent2D& extent, const std::string& title) : mInstance(instance), mExtent(extent), mTitle(title) {}
+			Display(const std::shared_ptr<Backend::Instance>& pInstance, const FExtent2D& extent, const std::string& title) : pInstance(pInstance), mExtent(extent), mTitle(title) {}
 
 			/**
 			 * Update the display object.
@@ -200,7 +200,7 @@ namespace Flint
 			 * @param count: The count that needs to be checked. Default is 0.
 			 * @return The best buffer count integer.
 			 */
-			virtual UI32 FindBestBufferCount(Device& device, UI32 count = 0) = 0;
+			virtual UI32 FindBestBufferCount(const std::shared_ptr<Device>& pDevice, UI32 count = 0) = 0;
 
 		protected:
 			/**
@@ -300,7 +300,7 @@ namespace Flint
 
 		protected:
 			std::string mTitle = "";
-			Instance& mInstance;
+			std::shared_ptr<Backend::Instance> pInstance = nullptr;
 			FExtent2D mExtent = {};
 
 			TKeyCallbackFunc pKeyCallback = nullptr;

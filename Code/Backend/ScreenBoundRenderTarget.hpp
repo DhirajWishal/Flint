@@ -17,8 +17,8 @@ namespace Flint
 		class ScreenBoundRenderTarget : public RenderTarget
 		{
 		public:
-			ScreenBoundRenderTarget(Device& device, Display& display, const FExtent2D& extent, const UI32 bufferCount, CommandBufferList& commandBufferList)
-				: RenderTarget(device, extent, bufferCount, commandBufferList), mDisplay(display) {}
+			ScreenBoundRenderTarget(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, const FExtent2D& extent, const UI32 bufferCount, CommandBufferList& commandBufferList)
+				: RenderTarget(pDevice, extent, bufferCount, commandBufferList), mDisplay(display) {}
 
 			/**
 			 * Begin a new frame.

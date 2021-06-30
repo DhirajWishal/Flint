@@ -16,7 +16,7 @@ namespace Flint
 		class TransferFriendlyBuffer : public Buffer
 		{
 		public:
-			TransferFriendlyBuffer(Device& device, UI64 size) : Buffer(device, size) {}
+			TransferFriendlyBuffer(const std::shared_ptr<Device>& pDevice, UI64 size) : Buffer(pDevice, size) {}
 
 			/**
 			 * Map the buffer memory to the local address space.

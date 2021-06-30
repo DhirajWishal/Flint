@@ -16,7 +16,7 @@ namespace Flint
 		class StaggingBuffer : public TransferFriendlyBuffer
 		{
 		public:
-			StaggingBuffer(Device& device, UI64 size) : TransferFriendlyBuffer(device, size) {}
+			StaggingBuffer(const std::shared_ptr<Device>& pDevice, UI64 size) : TransferFriendlyBuffer(pDevice, size) {}
 		};
 	}
 }

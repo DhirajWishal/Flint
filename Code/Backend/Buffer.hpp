@@ -25,8 +25,8 @@ namespace Flint
 		class Buffer : public DeviceBoundObject
 		{
 		public:
-			Buffer(Device& device, const UI64 size) : DeviceBoundObject(device), mSize(size) {}
-			Buffer(Device& device, BufferType type, const UI64 size) : DeviceBoundObject(device), mSize(size) {}
+			Buffer(const std::shared_ptr<Device>& pDevice, const UI64 size) : DeviceBoundObject(pDevice), mSize(size) {}
+			Buffer(const std::shared_ptr<Device>& pDevice, BufferType type, const UI64 size) : DeviceBoundObject(pDevice), mSize(size) {}
 
 			/**
 			 * Resize the buffer.

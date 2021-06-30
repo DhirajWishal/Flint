@@ -24,14 +24,14 @@ namespace Flint
 			 * @param flags: The device flags.
 			 * @return The created device object.
 			 */
-			virtual Device& CreateDevice(DeviceFlags flags) = 0;
+			virtual std::shared_ptr<Device> CreateDevice(DeviceFlags flags) = 0;
 
 			/**
 			 * Destroy a created device.
 			 *
 			 * @param device: The device object.
 			 */
-			virtual void DestroyDevice(Device& device) = 0;
+			virtual void DestroyDevice(const std::shared_ptr<Device>& pDevice) = 0;
 
 			/**
 			 * Create a new display object.
@@ -39,14 +39,14 @@ namespace Flint
 			 * @param extent: The display extent.
 			 * @param title: The display title.
 			 */
-			virtual Display& CreateDisplay(const FExtent2D& extent, const std::string& title) = 0;
+			virtual std::shared_ptr<Display> CreateDisplay(const FExtent2D& extent, const std::string& title) = 0;
 
 			/**
 			 * Destroy a created display.
 			 *
 			 * @param display: The display to destroy.
 			 */
-			virtual void DestroyDisplay(Display& display) = 0;
+			virtual void DestroyDisplay(const std::shared_ptr<Display>& pDisplay) = 0;
 
 			/**
 			 * Terminate the instance object.
@@ -67,14 +67,14 @@ namespace Flint
 			 *
 			 * @param device: The device to terminate.
 			 */
-			void TerminateDevice(Device& device) const { device.Terminate(); }
+			void TerminateDevice(const std::shared_ptr<Device>& pDevice) const { pDevice->Terminate(); }
 
 			/**
 			 * Terminate a display object.
 			 *
 			 * @param display: The display to terminate.
 			 */
-			void TerminateDisplay(Display& display) const { display.Terminate(); }
+			void TerminateDisplay(const std::shared_ptr<Display>& pDisplay) const { pDisplay->Terminate(); }
 
 		protected:
 			bool mEnableValidation = true;
@@ -86,13 +86,13 @@ namespace Flint
 		 * @param enableValidation: Whether or not to enable validation. We recommend using validation only in debug stage as it uses more resources.
 		 * @return The instance object reference.
 		 */
-		Instance& CreateInstance(bool enableValidation);
+		std::shared_ptr<Instance> CreateInstance(bool enableValidation);
 
 		/**
 		 * Destroy a created instance.
 		 *
 		 * @param instance: The instance to destroy.
 		 */
-		void DestroyInstance(Instance& instance);
+		void DestroyInstance(const std::shared_ptr<Instance>& pInstance);
 	}
 }

@@ -34,7 +34,7 @@ namespace Flint
 			vertexBufferSize += pScene->mMeshes[i]->mNumVertices * vertexStride;
 
 		// Create stagging buffer and map its memory.
-		Backend::Buffer& staggingBuffer = mDevice.CreateBuffer(Backend::BufferType::STAGGING, vertexBufferSize);
+		Backend::Buffer& staggingBuffer = pDevice->CreateBuffer(Backend::BufferType::STAGGING, vertexBufferSize);
 		float* pDataStore = static_cast<float*>(staggingBuffer.MapMemory(vertexBufferSize));
 
 		UI64 indexBufferSize = 0;
@@ -190,7 +190,7 @@ namespace Flint
 			INSERT_INTO_VECTOR(indexArrays, std::move(indexes));
 		}
 		staggingBuffer.UnmapMemory();
-		mDevice.DestroyBuffer(staggingBuffer);
+		pDevice->DestroyBuffer(staggingBuffer);
 
 		return WireFrame();
 	}

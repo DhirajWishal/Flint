@@ -22,7 +22,7 @@ namespace Flint
 
 	FInstance::~FInstance()
 	{
-		mInstance.Terminate();
+		pInstance->Terminate();
 		delete& mInstance;
 	}
 }

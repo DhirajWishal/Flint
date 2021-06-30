@@ -91,7 +91,7 @@ namespace Flint
 			return supportDetails;
 		}
 
-		VulkanDisplay::VulkanDisplay(Backend::Instance& instance, const FExtent2D& extent, const std::string& title) : Display(instance, extent, title)
+		VulkanDisplay::VulkanDisplay(const std::shared_ptr<Backend::Instance>& pInstance, const FExtent2D& extent, const std::string& title) : Display(pInstance, extent, title)
 		{
 			pWindow = glfwCreateWindow(extent.mWidth, extent.mHeight, title.c_str(), nullptr, nullptr);
 
@@ -107,7 +107,7 @@ namespace Flint
 			glfwSetDropCallback(pWindow, _Callbacks::ApplicationDropPathCallback);
 			glfwSetWindowCloseCallback(pWindow, _Callbacks::WindowCloseCallback);
 
-			FLINT_VK_ASSERT(glfwCreateWindowSurface(mInstance.StaticCast<VulkanInstance>().GetInstance(), pWindow, nullptr, &vSurface));
+			FLINT_VK_ASSERT(glfwCreateWindowSurface(pInstance->StaticCast<VulkanInstance>().GetInstance(), pWindow, nullptr, &vSurface));
 
 			SetupMaps();
 		}
@@ -119,13 +119,13 @@ namespace Flint
 
 		void VulkanDisplay::Terminate()
 		{
-			vkDestroySurfaceKHR(mInstance.StaticCast<VulkanInstance>().GetInstance(), vSurface, nullptr);
+			vkDestroySurfaceKHR(pInstance->StaticCast<VulkanInstance>().GetInstance(), vSurface, nullptr);
 			glfwDestroyWindow(pWindow);
 		}
 
-		UI32 VulkanDisplay::FindBestBufferCount(Backend::Device& device, UI32 count)
+		UI32 VulkanDisplay::FindBestBufferCount(const std::shared_ptr<Backend::Device>& pDevice, UI32 count)
 		{
-			auto& vSurfaceCapabilities = GetSurfaceCapabilities(device.StaticCast<VulkanDevice>());
+			auto& vSurfaceCapabilities = GetSurfaceCapabilities(pDevice->StaticCast<VulkanDevice>());
 			if (count == std::numeric_limits<UI32>::max())
 				return vSurfaceCapabilities.maxImageCount - 1;
 			else if (count == 0)

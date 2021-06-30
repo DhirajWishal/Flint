@@ -136,23 +136,23 @@ namespace Flint
 				InitializeDebugger();
 		}
 
-		Backend::Device& VulkanInstance::CreateDevice(Backend::DeviceFlags flags)
+		std::shared_ptr<Backend::Device> VulkanInstance::CreateDevice(Backend::DeviceFlags flags)
 		{
-			return *new VulkanDevice(*this, flags);
+			return new VulkanDevice(*this, flags);
 		}
 
-		void VulkanInstance::DestroyDevice(Backend::Device& device)
+		void VulkanInstance::DestroyDevice(const std::shared_ptr<Backend::Device>& pDevice)
 		{
 			TerminateDevice(device);
 			delete& device;
 		}
 
-		Backend::Display& VulkanInstance::CreateDisplay(const FExtent2D& extent, const std::string& title)
+		std::shared_ptr<Backend::Display> VulkanInstance::CreateDisplay(const FExtent2D& extent, const std::string& title)
 		{
 			return *new VulkanDisplay(*this, extent, title);
 		}
 
-		void VulkanInstance::DestroyDisplay(Backend::Display& display)
+		void VulkanInstance::DestroyDisplay(const std::shared_ptr<Backend::Display>& pDisplay)
 		{
 			TerminateDisplay(display);
 			delete& display;

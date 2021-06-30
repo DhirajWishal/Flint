@@ -17,7 +17,7 @@ namespace Flint
 	class WireFrameStorage final : public Backend::DeviceBoundObject
 	{
 	public:
-		WireFrameStorage(Backend::Device& device, UI64 ID, const Backend::VertexDescriptor& descriptor, UI64 indexStride)
+		WireFrameStorage(const std::shared_ptr<Backend::Device>& pDevice, UI64 ID, const Backend::VertexDescriptor& descriptor, UI64 indexStride)
 			: DeviceBoundObject(device), mID(ID), mVertexDescriptor(descriptor), mIndexStride(indexStride) {}
 
 		/**

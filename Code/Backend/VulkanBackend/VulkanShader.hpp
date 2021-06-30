@@ -13,9 +13,9 @@ namespace Flint
 		class VulkanShader final : public Backend::Shader
 		{
 		public:
-			VulkanShader(Backend::Device& device, Backend::ShaderType type, const std::filesystem::path& path, Backend::ShaderCodeType codeType);
-			VulkanShader(Backend::Device& device, Backend::ShaderType type, const std::vector<UI32>& code, Backend::ShaderCodeType codeType);
-			VulkanShader(Backend::Device& device, Backend::ShaderType type, const std::string& code, Backend::ShaderCodeType codeType);
+			VulkanShader(const std::shared_ptr<Backend::Device>& pDevice, Backend::ShaderType type, const std::filesystem::path& path, Backend::ShaderCodeType codeType);
+			VulkanShader(const std::shared_ptr<Backend::Device>& pDevice, Backend::ShaderType type, const std::vector<UI32>& code, Backend::ShaderCodeType codeType);
+			VulkanShader(const std::shared_ptr<Backend::Device>& pDevice, Backend::ShaderType type, const std::string& code, Backend::ShaderCodeType codeType);
 
 			virtual void Terminate() override final;
 

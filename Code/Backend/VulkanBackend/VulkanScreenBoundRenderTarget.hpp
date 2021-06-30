@@ -16,7 +16,7 @@ namespace Flint
 		class VulkanScreenBoundRenderTarget final : public Backend::ScreenBoundRenderTarget
 		{
 		public:
-			VulkanScreenBoundRenderTarget(Backend::Device& device, Backend::Display& display, const FExtent2D& extent, const UI32 bufferCount);
+			VulkanScreenBoundRenderTarget(const std::shared_ptr<Backend::Device>& pDevice, Backend::const std::shared_ptr<Display>& pDisplay, const FExtent2D& extent, const UI32 bufferCount);
 
 			virtual void BeginFrame() override final;
 			virtual void Update() override final;

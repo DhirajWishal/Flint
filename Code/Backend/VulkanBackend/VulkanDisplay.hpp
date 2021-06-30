@@ -28,12 +28,12 @@ namespace Flint
 		class VulkanDisplay final : public Backend::Display
 		{
 		public:
-			VulkanDisplay(Backend::Instance& instance, const FExtent2D& extent, const std::string& title);
+			VulkanDisplay(const std::shared_ptr<Backend::Instance>& pInstance, const FExtent2D& extent, const std::string& title);
 
 			virtual void Update() override final;
 			virtual void Terminate() override final;
 			virtual void ToggleResize() override final { mIsDislayResized = false; }
-			virtual UI32 FindBestBufferCount(Backend::Device& device, UI32 count = 0) override final;
+			virtual UI32 FindBestBufferCount(const std::shared_ptr<Backend::Device>& pDevice, UI32 count = 0) override final;
 
 			VkSurfaceFormatKHR ChooseSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 			VkPresentModeKHR ChoosePresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);

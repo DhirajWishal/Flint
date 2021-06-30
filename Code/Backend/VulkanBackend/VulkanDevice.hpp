@@ -14,15 +14,15 @@ namespace Flint
 		class VulkanDevice final : public Backend::Device
 		{
 		public:
-			VulkanDevice(Backend::Instance& instance, Backend::DeviceFlags flags);
+			VulkanDevice(const std::shared_ptr<Backend::Instance>& pInstance, Backend::DeviceFlags flags);
 
-			virtual bool IsDisplayCompatible(const Backend::Display& display) override final;
+			virtual bool IsDisplayCompatible(const Backend::const std::shared_ptr<Display>& pDisplay) override final;
 
 			virtual Backend::CommandBufferList& CreatePrimaryCommandBufferList(UI32 bufferCount) override final;
 			virtual Backend::CommandBufferList& CreateSecondaryCommandBufferList(UI32 bufferCount, Backend::CommandBufferList& parent) override final;
 			virtual void DestroyCommandBufferList(Backend::CommandBufferList& commandBufferList) override final;
 
-			virtual Backend::ScreenBoundRenderTarget& CreateScreenBoundRenderTarget(Backend::Display& display, const FExtent2D& extent, const UI32 bufferCount) override final;
+			virtual Backend::ScreenBoundRenderTarget& CreateScreenBoundRenderTarget(Backend::const std::shared_ptr<Display>& pDisplay, const FExtent2D& extent, const UI32 bufferCount) override final;
 			virtual void DestroyRenderTarget(Backend::RenderTarget& renderTarget) override final;
 
 			virtual void WaitIdle() override final;
