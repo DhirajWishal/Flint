@@ -49,7 +49,7 @@ namespace Flint
 				return requiredExtensions.empty();
 			}
 
-			bool IsPhysicalDeviceSuitable(VkPhysicalDevice vDevice, const std::vector<const char*>& deviceExtensions, Backend::DeviceFlags flags)
+			bool IsPhysicalDeviceSuitable(VkPhysicalDevice vDevice, const std::vector<const char*>& deviceExtensions, DeviceFlags flags)
 			{
 				VulkanQueue vQueue = {};
 				vQueue.Initialize(vDevice, flags);
@@ -67,48 +67,76 @@ namespace Flint
 			}
 		}
 
-		VulkanDevice::VulkanDevice(const std::shared_ptr<Backend::Instance>& pInstance, Backend::DeviceFlags flags) : Device(pInstance, flags)
+		VulkanDevice::VulkanDevice(const std::shared_ptr<Instance>& pInstance, DeviceFlags flags) : Device(pInstance, flags)
 		{
-			if ((flags & Backend::DeviceFlags::GRAPHICS_COMPATIBLE) == Backend::DeviceFlags::GRAPHICS_COMPATIBLE)
+			if ((flags & DeviceFlags::GRAPHICS_COMPATIBLE) == DeviceFlags::GRAPHICS_COMPATIBLE)
 				INSERT_INTO_VECTOR(mDeviceExtensions, VK_KHR_SWAPCHAIN_EXTENSION_NAME);
 
 			InitializePhysicalDevice();
 			InitializeLogicalDevice();
 		}
 
-		bool VulkanDevice::IsDisplayCompatible(const Backend::const std::shared_ptr<Display>& pDisplay)
+		bool VulkanDevice::IsDisplayCompatible(const const std::shared_ptr<Display>& pDisplay)
 		{
-			const VulkanDisplay& vDisplay = display.StaticCast<VulkanDisplay>();
+			const VulkanDisplay& vDisplay = pDisplay->StaticCast<VulkanDisplay>();
 			VkBool32 isSupported = VK_FALSE;
 			FLINT_VK_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(GetPhysicalDevice(), GetQueue().mGraphicsFamily.value(), vDisplay.GetSurface(), &isSupported));
 			return isSupported == VK_TRUE;
 		}
 
-		Backend::CommandBufferList& VulkanDevice::CreatePrimaryCommandBufferList(UI32 bufferCount)
+		std::shared_ptr<CommandBufferList> VulkanDevice::CreatePrimaryCommandBufferList(UI32 bufferCount)
 		{
-			return *new VulkanCommandBufferList(*this, bufferCount);
+			return std::make_shared<VulkanCommandBufferList>(shared_from_this(), bufferCount);
 		}
 
-		Backend::CommandBufferList& VulkanDevice::CreateSecondaryCommandBufferList(UI32 bufferCount, Backend::CommandBufferList& parent)
+		std::shared_ptr<CommandBufferList> VulkanDevice::CreateSecondaryCommandBufferList(UI32 bufferCount, const std::shared_ptr<CommandBufferList>& pParent)
 		{
-			return *new VulkanCommandBufferList(*this, bufferCount, parent);
+			return std::make_shared<VulkanCommandBufferList>(shared_from_this(), bufferCount, pParent);
 		}
 
-		void VulkanDevice::DestroyCommandBufferList(Backend::CommandBufferList& commandBufferList)
+		void VulkanDevice::DestroyCommandBufferList(const std::shared_ptr<CommandBufferList>& pCommandBufferList)
 		{
-			TerminateDeviceBoundObject(commandBufferList);
-			delete& commandBufferList;
+			TerminateDeviceBoundObject(*pCommandBufferList);
 		}
 
-		Backend::ScreenBoundRenderTarget& VulkanDevice::CreateScreenBoundRenderTarget(Backend::const std::shared_ptr<Display>& pDisplay, const FExtent2D& extent, const UI32 bufferCount)
+		std::shared_ptr<ScreenBoundRenderTarget> VulkanDevice::CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FExtent2D& extent, const UI32 bufferCount)
 		{
-			return *new VulkanScreenBoundRenderTarget(*this, display, extent, bufferCount);
+			return std::make_shared<VulkanScreenBoundRenderTarget>(shared_from_this(), pDisplay, extent, bufferCount);
 		}
 
-		void VulkanDevice::DestroyRenderTarget(Backend::RenderTarget& renderTarget)
+		void VulkanDevice::DestroyRenderTarget(const std::shared_ptr<RenderTarget>& pRenderTarget)
 		{
-			TerminateDeviceBoundObject(renderTarget);
-			delete& renderTarget;
+			TerminateDeviceBoundObject(*pRenderTarget);
+		}
+
+		std::shared_ptr<Buffer> VulkanDevice::CreateBuffer(BufferType type, UI64 size)
+		{
+			return std::make_shared<VulkanBuffer>(shared_from_this(), type, size);
+		}
+
+		void VulkanDevice::DestroyBuffer(const std::shared_ptr<Buffer>& pBuffer)
+		{
+			TerminateDeviceBoundObject(*pBuffer);
+		}
+
+		std::shared_ptr<Shader> VulkanDevice::CreateShader(ShaderType type, const std::filesystem::path& path, ShaderCodeType codeType)
+		{
+			return std::make_shared<VulkanShader>(shared_from_this(), type, path, codeType);
+		}
+
+		std::shared_ptr<Shader> VulkanDevice::CreateShader(ShaderType type, const std::vector<UI32>& code, ShaderCodeType codeType)
+		{
+			return std::make_shared<VulkanShader>(shared_from_this(), type, code, codeType);
+		}
+
+		std::shared_ptr<Shader> VulkanDevice::CreateShader(ShaderType type, const std::string& code, ShaderCodeType codeType)
+		{
+			return std::make_shared<VulkanShader>(shared_from_this(), type, code, codeType);
+		}
+
+		void VulkanDevice::DestroyShader(const std::shared_ptr<Shader>& pShader)
+		{
+			TerminateDeviceBoundObject(*pShader);
 		}
 
 		void VulkanDevice::WaitIdle()
@@ -119,38 +147,6 @@ namespace Flint
 		void VulkanDevice::WaitForQueue()
 		{
 			FLINT_VK_ASSERT(vkQueueWaitIdle(GetQueue().vTransferQueue));
-		}
-
-		Backend::Buffer& VulkanDevice::CreateBuffer(Backend::BufferType type, UI64 size)
-		{
-			return *new VulkanBuffer(*this, type, size);
-		}
-
-		void VulkanDevice::DestroyBuffer(Backend::Buffer& buffer)
-		{
-			TerminateDeviceBoundObject(buffer);
-			delete& buffer;
-		}
-
-		Backend::Shader& VulkanDevice::CreateShader(Backend::ShaderType type, const std::filesystem::path& path, Backend::ShaderCodeType codeType)
-		{
-			return *new VulkanShader(*this, type, path, codeType);
-		}
-
-		Backend::Shader& VulkanDevice::CreateShader(Backend::ShaderType type, const std::vector<UI32>& code, Backend::ShaderCodeType codeType)
-		{
-			return *new VulkanShader(*this, type, code, codeType);
-		}
-
-		Backend::Shader& VulkanDevice::CreateShader(Backend::ShaderType type, const std::string& code, Backend::ShaderCodeType codeType)
-		{
-			return *new VulkanShader(*this, type, code, codeType);
-		}
-
-		void VulkanDevice::DestroyShader(Backend::Shader& shader)
-		{
-			TerminateDeviceBoundObject(shader);
-			delete& shader;
 		}
 
 		void VulkanDevice::Terminate()
@@ -323,9 +319,9 @@ namespace Flint
 				{
 					vkGetPhysicalDeviceProperties(device, &vPhysicalDeviceProperties);
 
-					if (vPhysicalDeviceProperties.deviceType == VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU && (mFlags & Backend::DeviceFlags::EXTERNAL) == Backend::DeviceFlags::EXTERNAL)
+					if (vPhysicalDeviceProperties.deviceType == VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU && (mFlags & DeviceFlags::EXTERNAL) == DeviceFlags::EXTERNAL)
 						vPhysicalDevice = device;
-					else if (vPhysicalDeviceProperties.deviceType == VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU && (mFlags & Backend::DeviceFlags::INTEGRATED) == Backend::DeviceFlags::INTEGRATED)
+					else if (vPhysicalDeviceProperties.deviceType == VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU && (mFlags & DeviceFlags::INTEGRATED) == DeviceFlags::INTEGRATED)
 						vPhysicalDevice = device;
 					else
 						vPhysicalDevice = device;
@@ -427,10 +423,10 @@ namespace Flint
 			// Create the logical device.
 			FLINT_VK_ASSERT(vkCreateDevice(vPhysicalDevice, &createInfo, nullptr, &vLogicalDevice));
 
-			if ((mFlags & Backend::DeviceFlags::GRAPHICS_COMPATIBLE) == Backend::DeviceFlags::GRAPHICS_COMPATIBLE)
+			if ((mFlags & DeviceFlags::GRAPHICS_COMPATIBLE) == DeviceFlags::GRAPHICS_COMPATIBLE)
 				vkGetDeviceQueue(GetLogicalDevice(), vQueue.mGraphicsFamily.value(), 0, &vQueue.vGraphicsQueue);
 
-			if ((mFlags & Backend::DeviceFlags::COMPUTE_COMPATIBLE) == Backend::DeviceFlags::COMPUTE_COMPATIBLE)
+			if ((mFlags & DeviceFlags::COMPUTE_COMPATIBLE) == DeviceFlags::COMPUTE_COMPATIBLE)
 				vkGetDeviceQueue(GetLogicalDevice(), vQueue.mComputeFamily.value(), 0, &vQueue.vComputeQueue);
 
 			vkGetDeviceQueue(GetLogicalDevice(), vQueue.mTransferFamily.value(), 0, &vQueue.vTransferQueue);

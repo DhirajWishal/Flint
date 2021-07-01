@@ -13,7 +13,7 @@ namespace Flint
 	{
 	}
 
-	void Engine::RunFlintSubsystem(Backend::Instance& instance)
+	void Engine::RunFlintSubsystem(Instance& instance)
 	{
 		bool bShouldRun = true;
 		do

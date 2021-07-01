@@ -8,11 +8,11 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanScreenBoundRenderTarget::VulkanScreenBoundRenderTarget(const std::shared_ptr<Backend::Device>& pDevice, Backend::const std::shared_ptr<Display>& pDisplay, const FExtent2D& extent, const UI32 bufferCount)
-			: ScreenBoundRenderTarget(pDevice, display, extent, bufferCount, pDevice->CreatePrimaryCommandBufferList(bufferCount)), vRenderTarget(pDevice->StaticCast<VulkanDevice>())
+		VulkanScreenBoundRenderTarget::VulkanScreenBoundRenderTarget(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, const FExtent2D& extent, const UI32 bufferCount)
+			: ScreenBoundRenderTarget(pDevice, pDisplay, extent, bufferCount, pDevice->CreatePrimaryCommandBufferList(bufferCount)), vRenderTarget(pDevice->StaticCast<VulkanDevice>())
 		{
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
-			auto& vDisplay = display.StaticCast<VulkanDisplay>();
+			auto& vDisplay = pDisplay->StaticCast<VulkanDisplay>();
 
 			pSwapChain = new VulkanSwapChain(vDevice, vDisplay, extent, bufferCount);
 			pColorBuffer = new VulkanColorBuffer(vDevice, extent, bufferCount, pSwapChain->GetFormat());
@@ -43,8 +43,8 @@ namespace Flint
 		void VulkanScreenBoundRenderTarget::SubmitFrame()
 		{
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
-			auto& vCommandBufferList = mCommandBufferList.StaticCast<VulkanCommandBufferList>();
-			auto& vDisplay = mDisplay.StaticCast<VulkanDisplay>();
+			auto& vCommandBufferList = pCommandBufferList->StaticCast<VulkanCommandBufferList>();
+			auto& vDisplay = pDisplay->StaticCast<VulkanDisplay>();
 
 			if (vRenderTarget.vImagesInFlightFences[mImageIndex] != VK_NULL_HANDLE)
 				FLINT_VK_ASSERT(vkWaitForFences(vDevice.GetLogicalDevice(), 1, &vRenderTarget.vImagesInFlightFences[mImageIndex], VK_TRUE, std::numeric_limits<uint64_t>::max()));
@@ -103,13 +103,13 @@ namespace Flint
 			pDepthBuffer->Terminate();
 			delete pDepthBuffer;
 
-			pDevice->DestroyCommandBufferList(mCommandBufferList);
+			pDevice->DestroyCommandBufferList(pCommandBufferList);
 		}
 
 		void VulkanScreenBoundRenderTarget::Recreate()
 		{
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
-			auto& vDisplay = mDisplay.StaticCast<VulkanDisplay>();
+			auto& vDisplay = pDisplay->StaticCast<VulkanDisplay>();
 			mExtent = vDisplay.GetExtent();
 
 			pSwapChain->Recreate(mExtent);

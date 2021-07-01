@@ -78,7 +78,7 @@ namespace Flint
 			}
 		}
 
-		VulkanShader::VulkanShader(const std::shared_ptr<Backend::Device>& pDevice, Backend::ShaderType type, const std::filesystem::path& path, Backend::ShaderCodeType codeType)
+		VulkanShader::VulkanShader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::filesystem::path& path, ShaderCodeType codeType)
 			: Shader(pDevice, type, path, codeType)
 		{
 			ResolveShaderStage();
@@ -90,12 +90,12 @@ namespace Flint
 			UI64 codeSize = shaderFile.tellg();
 			shaderFile.seekg(0);
 
-			if (codeType == Backend::ShaderCodeType::SPIR_V)
+			if (codeType == ShaderCodeType::SPIR_V)
 			{
 				mShaderCode.resize(codeSize);
 				shaderFile.read(reinterpret_cast<char*>(mShaderCode.data()), codeSize);
 			}
-			else if (codeType == Backend::ShaderCodeType::GLSL)
+			else if (codeType == ShaderCodeType::GLSL)
 			{
 				std::string codeString;
 				codeString.resize(codeSize);
@@ -113,12 +113,12 @@ namespace Flint
 			PerformReflection();
 		}
 
-		VulkanShader::VulkanShader(const std::shared_ptr<Backend::Device>& pDevice, Backend::ShaderType type, const std::vector<UI32>& code, Backend::ShaderCodeType codeType)
+		VulkanShader::VulkanShader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::vector<UI32>& code, ShaderCodeType codeType)
 			: Shader(pDevice, type, code, codeType)
 		{
 			ResolveShaderStage();
 
-			if (codeType != Backend::ShaderCodeType::SPIR_V) // TODO
+			if (codeType != ShaderCodeType::SPIR_V) // TODO
 				FLINT_THROW_RUNTIME_ERROR("Invalid shader code type!");
 
 			mShaderCode = code;
@@ -126,11 +126,11 @@ namespace Flint
 			PerformReflection();
 		}
 
-		VulkanShader::VulkanShader(const std::shared_ptr<Backend::Device>& pDevice, Backend::ShaderType type, const std::string& code, Backend::ShaderCodeType codeType)
+		VulkanShader::VulkanShader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::string& code, ShaderCodeType codeType)
 			: Shader(pDevice, type, code, codeType)
 		{
 			ResolveShaderStage();
-			if (codeType != Backend::ShaderCodeType::SPIR_V) // TODO
+			if (codeType != ShaderCodeType::SPIR_V) // TODO
 				FLINT_THROW_RUNTIME_ERROR("Invalid shader code type!");
 
 			mShaderCode.resize(code.size());
@@ -167,26 +167,26 @@ namespace Flint
 			UI64 shaderOffset = 0;
 
 			for (auto& resource : resources.uniform_buffers)
-				INSERT_INTO_VECTOR(mResources, Backend::ShaderResource(compiler.get_name(resource.id), compiler.get_decoration(resource.id, spv::DecorationBinding), Backend::ShaderResourceType::UNIFORM_BUFFER));
+				INSERT_INTO_VECTOR(mResources, ShaderResource(compiler.get_name(resource.id), compiler.get_decoration(resource.id, spv::DecorationBinding), ShaderResourceType::UNIFORM_BUFFER));
 
 			for (auto& resource : resources.storage_buffers)
-				INSERT_INTO_VECTOR(mResources, Backend::ShaderResource(compiler.get_name(resource.id), compiler.get_decoration(resource.id, spv::DecorationBinding), Backend::ShaderResourceType::STORAGE_BUFFER));
+				INSERT_INTO_VECTOR(mResources, ShaderResource(compiler.get_name(resource.id), compiler.get_decoration(resource.id, spv::DecorationBinding), ShaderResourceType::STORAGE_BUFFER));
 
 			for (auto& resource : resources.sampled_images)
-				INSERT_INTO_VECTOR(mResources, Backend::ShaderResource(compiler.get_name(resource.id), compiler.get_decoration(resource.id, spv::DecorationBinding), Backend::ShaderResourceType::SAMPLER));
+				INSERT_INTO_VECTOR(mResources, ShaderResource(compiler.get_name(resource.id), compiler.get_decoration(resource.id, spv::DecorationBinding), ShaderResourceType::SAMPLER));
 
 			for (auto& resource : resources.stage_inputs)
 			{
 				auto& Ty = compiler.get_type(resource.base_type_id);
 				UI64 size = (static_cast<UI64>(Ty.width) / 8) * (Ty.vecsize == 3 ? 4 : Ty.vecsize);
-				INSERT_INTO_VECTOR(mInputAttributes, Backend::ShaderAttribute(compiler.get_name(resource.id), compiler.get_decoration(resource.id, spv::DecorationBinding), static_cast<Backend::ShaderAttributeDataType>(size)));
+				INSERT_INTO_VECTOR(mInputAttributes, ShaderAttribute(compiler.get_name(resource.id), compiler.get_decoration(resource.id, spv::DecorationBinding), static_cast<ShaderAttributeDataType>(size)));
 			}
 
 			for (auto& resource : resources.stage_outputs)
 			{
 				auto& Ty = compiler.get_type(resource.base_type_id);
 				UI64 size = (static_cast<UI64>(Ty.width) / 8) * (Ty.vecsize == 3 ? 4 : Ty.vecsize);
-				INSERT_INTO_VECTOR(mOutputAttributes, Backend::ShaderAttribute(compiler.get_name(resource.id), compiler.get_decoration(resource.id, spv::DecorationBinding), static_cast<Backend::ShaderAttributeDataType>(size)));
+				INSERT_INTO_VECTOR(mOutputAttributes, ShaderAttribute(compiler.get_name(resource.id), compiler.get_decoration(resource.id, spv::DecorationBinding), static_cast<ShaderAttributeDataType>(size)));
 			}
 		}
 
@@ -194,43 +194,43 @@ namespace Flint
 		{
 			switch (mType)
 			{
-			case Flint::Backend::ShaderType::VERTEX:
+			case Flint::ShaderType::VERTEX:
 				vStageFlags = VkShaderStageFlagBits::VK_SHADER_STAGE_VERTEX_BIT;
 				break;
 
-			case Flint::Backend::ShaderType::TESSELLATION_CONTROL:
+			case Flint::ShaderType::TESSELLATION_CONTROL:
 				vStageFlags = VkShaderStageFlagBits::VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
 				break;
 
-			case Flint::Backend::ShaderType::TESSELLATION_EVALUATION:
+			case Flint::ShaderType::TESSELLATION_EVALUATION:
 				vStageFlags = VkShaderStageFlagBits::VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
 				break;
 
-			case Flint::Backend::ShaderType::GEOMETRY:
+			case Flint::ShaderType::GEOMETRY:
 				vStageFlags = VkShaderStageFlagBits::VK_SHADER_STAGE_GEOMETRY_BIT;
 				break;
 
-			case Flint::Backend::ShaderType::FRAGMENT:
+			case Flint::ShaderType::FRAGMENT:
 				vStageFlags = VkShaderStageFlagBits::VK_SHADER_STAGE_FRAGMENT_BIT;
 				break;
 
-			case Flint::Backend::ShaderType::COMPUTE:
+			case Flint::ShaderType::COMPUTE:
 				vStageFlags = VkShaderStageFlagBits::VK_SHADER_STAGE_COMPUTE_BIT;
 				break;
 
-			case Flint::Backend::ShaderType::RAY_GEN:
+			case Flint::ShaderType::RAY_GEN:
 				vStageFlags = VkShaderStageFlagBits::VK_SHADER_STAGE_RAYGEN_BIT_KHR;
 				break;
 
-			case Flint::Backend::ShaderType::ANY_HIT:
+			case Flint::ShaderType::ANY_HIT:
 				vStageFlags = VkShaderStageFlagBits::VK_SHADER_STAGE_ANY_HIT_BIT_KHR;
 				break;
 
-			case Flint::Backend::ShaderType::CLOSEST_HIT:
+			case Flint::ShaderType::CLOSEST_HIT:
 				vStageFlags = VkShaderStageFlagBits::VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
 				break;
 
-			case Flint::Backend::ShaderType::RAY_MISS:
+			case Flint::ShaderType::RAY_MISS:
 				vStageFlags = VkShaderStageFlagBits::VK_SHADER_STAGE_MISS_BIT_KHR;
 				break;
 

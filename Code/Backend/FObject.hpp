@@ -8,47 +8,44 @@
 
 namespace Flint
 {
-	namespace Backend
+	/**
+	 * Flint object class.
+	 * This is the base class for all the Flint objects and contains common and utility functions.
+	 */
+	class FObject
 	{
+	public:
+		FObject() = default;
+		virtual ~FObject() = default;
+
+	public:
 		/**
-		 * Flint object class.
-		 * This is the base class for all the Flint objects and contains common and utility functions.
+		 * Dynamic cast the object to a derived class.
+		 *
+		 * @tparam Derived: The derived type.
+		 * @return The derived class reference.
 		 */
-		class FObject
-		{
-		public:
-			FObject() = default;
-			virtual ~FObject() = default;
+		template<class Derived, std::enable_if_t<std::is_base_of<Derived, FObject>::value, bool> = true>
+		Derived& DynamicCast() { return *dynamic_cast<Derived*>(this); }
 
-		public:
-			/**
-			 * Dynamic cast the object to a derived class.
-			 *
-			 * @tparam Derived: The derived type.
-			 * @return The derived class reference.
-			 */
-			template<class Derived, std::enable_if_t<std::is_base_of<Derived, FObject>::value, bool> = true>
-			Derived& DynamicCast() { return *dynamic_cast<Derived*>(this); }
+		/**
+		 * Static cast the object to another type.
+		 * If used for dynamic casting, this performs a touch better than DynamicCast.
+		 *
+		 * @tparam Type: The type to cast to.
+		 * @return The casted type reference.
+		 */
+		template<class Type>
+		Type& StaticCast() { return *static_cast<Type*>(this); }
 
-			/**
-			 * Static cast the object to another type.
-			 * If used for dynamic casting, this performs a touch better than DynamicCast.
-			 *
-			 * @tparam Type: The type to cast to.
-			 * @return The casted type reference.
-			 */
-			template<class Type>
-			Type& StaticCast() { return *static_cast<Type*>(this); }
-
-			/**
-			 * Static cast the object to another type.
-			 * If used for dynamic casting, this performs a touch better than DynamicCast.
-			 *
-			 * @tparam Type: The type to cast to.
-			 * @return The casted type reference.
-			 */
-			template<class Type>
-			const Type& StaticCast() const { return *static_cast<const Type*>(this); }
-		};
-	}
+		/**
+		 * Static cast the object to another type.
+		 * If used for dynamic casting, this performs a touch better than DynamicCast.
+		 *
+		 * @tparam Type: The type to cast to.
+		 * @return The casted type reference.
+		 */
+		template<class Type>
+		const Type& StaticCast() const { return *static_cast<const Type*>(this); }
+	};
 }

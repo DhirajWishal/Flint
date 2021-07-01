@@ -47,14 +47,14 @@ namespace Flint
 		 * 
 		 * @return The instance object reference.
 		 */
-		Backend::Instance& GetPrimitive() { return mInstance; }
+		Instance& GetPrimitive() { return mInstance; }
 
 		/**
 		 * Get the primitive backend object.
 		 *
 		 * @return The instance object reference.
 		 */
-		const Backend::Instance& GetPrimitive() const { return mInstance; }
+		const Instance& GetPrimitive() const { return mInstance; }
 
 	public:
 		/**
@@ -62,31 +62,31 @@ namespace Flint
 		 *
 		 * @return The backend instance object reference.
 		 */
-		Backend::Instance& operator->() { return mInstance; }
+		Instance& operator->() { return mInstance; }
 
 		/**
 		 * Arrow operator overload.
 		 *
 		 * @return The backend instance object reference.
 		 */
-		const Backend::Instance& operator->() const { return mInstance; }
+		const Instance& operator->() const { return mInstance; }
 
 		/**
 		 * Backend instance object reference operator
 		 *
 		 * @return The backend instance object reference.
 		 */
-		operator Backend::Instance& () { return mInstance; }
+		operator Instance& () { return mInstance; }
 
 		/**
 		 * Backend instance object reference operator
 		 *
 		 * @return The backend instance object reference.
 		 */
-		operator const Backend::Instance& () const { return mInstance; }
+		operator const Instance& () const { return mInstance; }
 
 	protected:
-		Backend::Instance& mInstance;
+		Instance& mInstance;
 		BackendAPI mAPI = BackendAPI::VULKAN;
 	};
 }

@@ -10,32 +10,32 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanBuffer::VulkanBuffer(const std::shared_ptr<Backend::Device>& pDevice, Backend::BufferType type, const UI64 size)
+		VulkanBuffer::VulkanBuffer(const std::shared_ptr<Device>& pDevice, BufferType type, const UI64 size)
 			: Buffer(pDevice, type, size)
 		{
 			switch (type)
 			{
-			case Flint::Backend::BufferType::STAGGING:
+			case Flint::BufferType::STAGGING:
 				vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 				vMemoryProperties = VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
 				break;
 
-			case Flint::Backend::BufferType::VERTEX:
+			case Flint::BufferType::VERTEX:
 				vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 				vMemoryProperties = VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 				break;
 
-			case Flint::Backend::BufferType::INDEX:
+			case Flint::BufferType::INDEX:
 				vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
 				vMemoryProperties = VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 				break;
 
-			case Flint::Backend::BufferType::UNIFORM:
+			case Flint::BufferType::UNIFORM:
 				vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
 				vMemoryProperties = VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
 				break;
 
-			case Flint::Backend::BufferType::STORAGE:
+			case Flint::BufferType::STORAGE:
 				vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
 				vMemoryProperties = VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
 				break;
@@ -49,11 +49,11 @@ namespace Flint
 			CreateBufferMemory();
 		}
 
-		void VulkanBuffer::Resize(UI64 size, Backend::BufferResizeMode mode)
+		void VulkanBuffer::Resize(UI64 size, BufferResizeMode mode)
 		{
 		}
 
-		void VulkanBuffer::CopyFromBuffer(const Backend::Buffer& srcBuffer, UI64 size, UI64 srcOffset, UI64 dstOffset)
+		void VulkanBuffer::CopyFromBuffer(const Buffer& srcBuffer, UI64 size, UI64 srcOffset, UI64 dstOffset)
 		{
 			VkBufferCopy vBufferCopy = {};
 			vBufferCopy.size = size;

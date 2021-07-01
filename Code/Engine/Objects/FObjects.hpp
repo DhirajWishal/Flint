@@ -10,7 +10,7 @@
 
 namespace Flint
 {
-	using FInstance = BackendWrapper<Backend::Instance>;
-	using FDevice = BackendWrapper<Backend::Device>;
-	using FDisplay = BackendWrapper<Backend::Display>;
+	using FInstance = BackendWrapper<Instance>;
+	using FDevice = BackendWrapper<Device>;
+	using FDisplay = BackendWrapper<Display>;
 }

@@ -7,9 +7,9 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanCommandBufferList::VulkanCommandBufferList(const std::shared_ptr<Backend::Device>& pDevice, const UI32 bufferCount) : CommandBufferList(pDevice, bufferCount)
+		VulkanCommandBufferList::VulkanCommandBufferList(const std::shared_ptr<Device>& pDevice, const UI32 bufferCount) : CommandBufferList(pDevice, bufferCount)
 		{
-			auto vDevice = pDevice.StaticCast<VulkanDevice>();
+			auto vDevice = pDevice->StaticCast<VulkanDevice>();
 
 			VkCommandPoolCreateInfo vPoolCI = {};
 			vPoolCI.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
@@ -30,9 +30,9 @@ namespace Flint
 			FLINT_VK_ASSERT(vkAllocateCommandBuffers(vDevice.GetLogicalDevice(), &vAI, vCommandBuffers.data()));
 		}
 
-		VulkanCommandBufferList::VulkanCommandBufferList(const std::shared_ptr<Backend::Device>& pDevice, const UI32 bufferCount, CommandBufferList& parent) : CommandBufferList(pDevice, bufferCount, parent)
+		VulkanCommandBufferList::VulkanCommandBufferList(const std::shared_ptr<Device>& pDevice, const UI32 bufferCount, CommandBufferList& parent) : CommandBufferList(pDevice, bufferCount, parent)
 		{
-			auto vDevice = pDevice.StaticCast<VulkanDevice>();
+			auto vDevice = pDevice->StaticCast<VulkanDevice>();
 
 			VkCommandPoolCreateInfo vPoolCI = {};
 			vPoolCI.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;

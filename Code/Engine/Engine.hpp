@@ -31,6 +31,6 @@ namespace Flint
 		 * Run flint subsystem function.
 		 * This function will be executed on another thread and will carry out the graphics operations.
 		 */
-		static void RunFlintSubsystem(Backend::Instance& instance);
+		static void RunFlintSubsystem(Instance& instance);
 	};
 }

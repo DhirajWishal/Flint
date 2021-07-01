@@ -14,7 +14,7 @@ namespace Flint
 	template<class Type>
 	class BackendWrapper
 	{
-		static_assert(std::is_base_of<Backend::FObject, Type>::value, "The 'Type' must be a valid derived class of Flint::Backend::FObject!");
+		static_assert(std::is_base_of<FObject, Type>::value, "The 'Type' must be a valid derived class of Flint::FObject!");
 
 	public:
 		BackendWrapper(Type& object) : mObject(object) {}

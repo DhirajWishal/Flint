@@ -9,7 +9,7 @@ namespace Flint
 {
 	namespace _Helpers
 	{
-		inline Backend::Instance& CreateInstance(BackendAPI api, bool enableValidation)
+		inline Instance& CreateInstance(BackendAPI api, bool enableValidation)
 		{
 			return *new VulkanBackend::VulkanInstance(enableValidation);
 		}

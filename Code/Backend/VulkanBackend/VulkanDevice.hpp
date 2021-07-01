@@ -11,30 +11,30 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanDevice final : public Backend::Device
+		class VulkanDevice final : public Device, public std::enable_shared_from_this<VulkanDevice>
 		{
 		public:
-			VulkanDevice(const std::shared_ptr<Backend::Instance>& pInstance, Backend::DeviceFlags flags);
+			VulkanDevice(const std::shared_ptr<Instance>& pInstance, DeviceFlags flags);
 
-			virtual bool IsDisplayCompatible(const Backend::const std::shared_ptr<Display>& pDisplay) override final;
+			virtual bool IsDisplayCompatible(const const std::shared_ptr<Display>& pDisplay) override final;
 
-			virtual Backend::CommandBufferList& CreatePrimaryCommandBufferList(UI32 bufferCount) override final;
-			virtual Backend::CommandBufferList& CreateSecondaryCommandBufferList(UI32 bufferCount, Backend::CommandBufferList& parent) override final;
-			virtual void DestroyCommandBufferList(Backend::CommandBufferList& commandBufferList) override final;
+			virtual std::shared_ptr<CommandBufferList> CreatePrimaryCommandBufferList(UI32 bufferCount) override final;
+			virtual std::shared_ptr<CommandBufferList> CreateSecondaryCommandBufferList(UI32 bufferCount, const std::shared_ptr<CommandBufferList>& pParent) override final;
+			virtual void DestroyCommandBufferList(const std::shared_ptr<CommandBufferList>& pCommandBufferList) override final;
 
-			virtual Backend::ScreenBoundRenderTarget& CreateScreenBoundRenderTarget(Backend::const std::shared_ptr<Display>& pDisplay, const FExtent2D& extent, const UI32 bufferCount) override final;
-			virtual void DestroyRenderTarget(Backend::RenderTarget& renderTarget) override final;
+			virtual std::shared_ptr<ScreenBoundRenderTarget> CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FExtent2D& extent, const UI32 bufferCount) override final;
+			virtual void DestroyRenderTarget(const std::shared_ptr<RenderTarget>& pRenderTarget) override final;
+
+			virtual std::shared_ptr<Buffer> CreateBuffer(BufferType type, UI64 size) override final;
+			virtual void DestroyBuffer(const std::shared_ptr<Buffer>& pBuffer) override final;
+
+			virtual std::shared_ptr<Shader> CreateShader(ShaderType type, const std::filesystem::path& path, ShaderCodeType codeType) override final;
+			virtual std::shared_ptr<Shader> CreateShader(ShaderType type, const std::vector<UI32>& code, ShaderCodeType codeType = ShaderCodeType::SPIR_V) override final;
+			virtual std::shared_ptr<Shader> CreateShader(ShaderType type, const std::string& code, ShaderCodeType codeType = ShaderCodeType::GLSL) override final;
+			virtual void DestroyShader(const std::shared_ptr<Shader>& pShader) override final;
 
 			virtual void WaitIdle() override final;
 			virtual void WaitForQueue() override final;
-
-			virtual Backend::Buffer& CreateBuffer(Backend::BufferType type, UI64 size) override final;
-			virtual void DestroyBuffer(Backend::Buffer& buffer) override final;
-
-			virtual Backend::Shader& CreateShader(Backend::ShaderType type, const std::filesystem::path& path, Backend::ShaderCodeType codeType) override final;
-			virtual Backend::Shader& CreateShader(Backend::ShaderType type, const std::vector<UI32>& code, Backend::ShaderCodeType codeType = Backend::ShaderCodeType::SPIR_V) override final;
-			virtual Backend::Shader& CreateShader(Backend::ShaderType type, const std::string& code, Backend::ShaderCodeType codeType = Backend::ShaderCodeType::GLSL) override final;
-			virtual void DestroyShader(Backend::Shader& shader) override final;
 
 			virtual void Terminate() override final;
 
