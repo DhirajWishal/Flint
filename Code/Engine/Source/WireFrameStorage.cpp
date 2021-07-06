@@ -5,7 +5,6 @@
 #include "Core/Error.hpp"
 
 #include "Device.hpp"
-#include "StaggingBuffer.hpp"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -34,8 +33,8 @@ namespace Flint
 			vertexBufferSize += pScene->mMeshes[i]->mNumVertices * vertexStride;
 
 		// Create stagging buffer and map its memory.
-		Buffer& staggingBuffer = pDevice->CreateBuffer(BufferType::STAGGING, vertexBufferSize);
-		float* pDataStore = static_cast<float*>(staggingBuffer.MapMemory(vertexBufferSize));
+		auto staggingBuffer = pDevice->CreateBuffer(BufferType::STAGGING, vertexBufferSize);
+		float* pDataStore = static_cast<float*>(staggingBuffer->MapMemory(vertexBufferSize));
 
 		UI64 indexBufferSize = 0;
 		std::vector<std::vector<UI32>> indexArrays;
@@ -189,7 +188,7 @@ namespace Flint
 			// Add the indexes to the index array.
 			INSERT_INTO_VECTOR(indexArrays, std::move(indexes));
 		}
-		staggingBuffer.UnmapMemory();
+		staggingBuffer->UnmapMemory();
 		pDevice->DestroyBuffer(staggingBuffer);
 
 		return WireFrame();

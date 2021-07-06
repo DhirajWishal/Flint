@@ -56,7 +56,7 @@ namespace Flint
 		{
 			return VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 		}
-		
+
 		void VulkanColorBuffer::Initialize()
 		{
 			VkImageCreateInfo vCI = {};

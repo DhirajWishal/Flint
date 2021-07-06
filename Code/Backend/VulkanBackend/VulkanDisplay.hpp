@@ -25,7 +25,7 @@ namespace Flint
 			static SwapChainSupportDetails Query(VkPhysicalDevice vPhysicalDevice, VkSurfaceKHR vSurface);
 		};
 
-		class VulkanDisplay final : public Display
+		class VulkanDisplay final : public Display, public std::enable_shared_from_this<VulkanDisplay>
 		{
 		public:
 			VulkanDisplay(const std::shared_ptr<Instance>& pInstance, const FExtent2D& extent, const std::string& title);

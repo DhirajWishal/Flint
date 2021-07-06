@@ -30,7 +30,8 @@ namespace Flint
 			FLINT_VK_ASSERT(vkAllocateCommandBuffers(vDevice.GetLogicalDevice(), &vAI, vCommandBuffers.data()));
 		}
 
-		VulkanCommandBufferList::VulkanCommandBufferList(const std::shared_ptr<Device>& pDevice, const UI32 bufferCount, CommandBufferList& parent) : CommandBufferList(pDevice, bufferCount, parent)
+		VulkanCommandBufferList::VulkanCommandBufferList(const std::shared_ptr<Device>& pDevice, const UI32 bufferCount, const std::shared_ptr<CommandBufferList>& pParent)
+			: CommandBufferList(pDevice, bufferCount, pParent)
 		{
 			auto vDevice = pDevice->StaticCast<VulkanDevice>();
 
@@ -108,7 +109,7 @@ namespace Flint
 			vkFreeCommandBuffers(vDevice.GetLogicalDevice(), vCommandPool, static_cast<UI32>(vCommandBuffers.size()), vCommandBuffers.data());
 			vkDestroyCommandPool(vDevice.GetLogicalDevice(), vCommandPool, nullptr);
 		}
-		
+
 		VkCommandBufferInheritanceInfo VulkanCommandBufferList::GetInheritanceInfo() const
 		{
 			return VkCommandBufferInheritanceInfo();

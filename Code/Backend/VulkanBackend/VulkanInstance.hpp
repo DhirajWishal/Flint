@@ -12,7 +12,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanInstance final : public Instance, std::enable_shared_from_this<VulkanInstance>
+		class VulkanInstance final : public Instance, public std::enable_shared_from_this<VulkanInstance>
 		{
 		public:
 			VulkanInstance(bool enableValidation);

@@ -16,6 +16,14 @@ namespace Flint
 	class RenderTarget : public DeviceBoundObject
 	{
 	public:
+		/**
+		 * Default constructor.
+		 *
+		 * @param pDevice: The device pointer.
+		 * @param extent: The render target extent.
+		 * @param bufferCount: The frame buffer count.
+		 * @param pCommandBufferList: The command buffer list used by the render target.
+		 */
 		RenderTarget(const std::shared_ptr<Device>& pDevice, const FExtent2D& extent, const UI32 bufferCount, const std::shared_ptr<CommandBufferList>& pCommandBufferList)
 			: DeviceBoundObject(pDevice), mExtent(extent), mBufferCount(bufferCount), pCommandBufferList(pCommandBufferList) {}
 

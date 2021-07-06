@@ -3,8 +3,9 @@
 
 #pragma once
 
-#include "VertexBuffer.hpp"
-#include "IndexBuffer.hpp"
+//#include "VertexBuffer.hpp"
+//#include "IndexBuffer.hpp"
+#include "Buffer.hpp"
 
 #include "Registries/Components/WireFrame.hpp"
 
@@ -38,7 +39,6 @@ namespace Flint
 
 	protected:
 		virtual void ExtendVertexBuffer() = 0;
-
 
 		virtual void ExtendIndexBuffer() = 0;
 

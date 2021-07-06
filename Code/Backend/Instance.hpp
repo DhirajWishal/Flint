@@ -14,6 +14,11 @@ namespace Flint
 	class Instance : public FObject
 	{
 	public:
+		/**
+		 * Default constructor.
+		 *
+		 * @param enableValidation: Whether or not to enable backend validation.
+		 */
 		Instance(bool enableValidation) noexcept : mEnableValidation(enableValidation) {}
 
 		/**

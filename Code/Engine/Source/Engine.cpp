@@ -18,7 +18,6 @@ namespace Flint
 		bool bShouldRun = true;
 		do
 		{
-
 		} while (bShouldRun);
 	}
 }

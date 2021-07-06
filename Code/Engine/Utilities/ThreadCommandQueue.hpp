@@ -20,7 +20,5 @@ namespace Flint
 	{
 	public:
 		ThreadCommandQueue() {}
-
-
 	};
 }

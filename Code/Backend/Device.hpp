@@ -55,6 +55,12 @@ namespace Flint
 		friend Instance;
 
 	public:
+		/**
+		 * Default constructor.
+		 *
+		 * @param pInstance: The instance pointer.
+		 * @param flags: The device flags.
+		 */
 		Device(const std::shared_ptr<Instance>& pInstance, DeviceFlags flags) noexcept : pInstance(pInstance), mFlags(flags) {}
 
 		/**

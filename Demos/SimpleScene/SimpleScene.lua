@@ -29,7 +29,7 @@ project "SimpleScene"
 	}
 
 	includedirs {
-		"$(SolutionDir)Code/Include",
+		"$(SolutionDir)Code",
 		"$(SolutionDir)Demos/SimpleScene",
 	}
 

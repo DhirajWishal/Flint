@@ -19,7 +19,7 @@ namespace Flint
 	class backend_error final : public std::runtime_error
 	{
 	public:
-		backend_error(const std::string & msg) : std::runtime_error(msg) {}
+		backend_error(const std::string& msg) : std::runtime_error(msg) {}
 		backend_error(const char* msg) : std::runtime_error(msg) {}
 	};
 }
@@ -36,11 +36,11 @@ namespace Flint
 #define FLINT_THROW_UNDERFLOW_ERROR										throw std::underflow_error
 
 #ifdef FLINT_DEBUG
-#	define FLINT_ASSERT(expression, condition, error)					if (expression != condition) error  
+#	define FLINT_ASSERT(expression, condition, error)					if (expression != condition) error
 #	define FLINT_ASSERT_DISCARDABLE(expression, condition, error)		if (expression != condition) error;
 
 #else
-#	define FLINT_ASSERT_DISCARDABLE(expression, condition, error)	
+#	define FLINT_ASSERT_DISCARDABLE(expression, condition, error)
 #	define FLINT_ASSERT(expression, condition, error)					expression
 
 #endif // FLINT_DEBUG

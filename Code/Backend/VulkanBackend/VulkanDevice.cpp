@@ -76,7 +76,7 @@ namespace Flint
 			InitializeLogicalDevice();
 		}
 
-		bool VulkanDevice::IsDisplayCompatible(const const std::shared_ptr<Display>& pDisplay)
+		bool VulkanDevice::IsDisplayCompatible(const std::shared_ptr<Display>& pDisplay)
 		{
 			const VulkanDisplay& vDisplay = pDisplay->StaticCast<VulkanDisplay>();
 			VkBool32 isSupported = VK_FALSE;

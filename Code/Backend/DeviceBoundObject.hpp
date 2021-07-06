@@ -148,7 +148,12 @@ namespace Flint
 		friend Device;
 
 	public:
-		DeviceBoundObject(const std::shared_ptr<Device>& device) noexcept : pDevice(device) {}
+		/**
+		 * Default constructor.
+		 *
+		 * @param pDevice: The device pointer.
+		 */
+		DeviceBoundObject(const std::shared_ptr<Device>& pDevice) noexcept : pDevice(pDevice) {}
 
 	protected:
 		/**

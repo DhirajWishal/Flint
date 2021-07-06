@@ -182,6 +182,13 @@ namespace Flint
 		friend Instance;
 
 	public:
+		/**
+		 * Default constructor.
+		 *
+		 * @param pInstance: The instance pointer.
+		 * @param extent: The display extent.
+		 * @param title: The display title.
+		 */
 		Display(const std::shared_ptr<Instance>& pInstance, const FExtent2D& extent, const std::string& title) : pInstance(pInstance), mExtent(extent), mTitle(title) {}
 
 		/**

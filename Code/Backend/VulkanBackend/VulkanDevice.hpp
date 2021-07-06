@@ -16,7 +16,7 @@ namespace Flint
 		public:
 			VulkanDevice(const std::shared_ptr<Instance>& pInstance, DeviceFlags flags);
 
-			virtual bool IsDisplayCompatible(const const std::shared_ptr<Display>& pDisplay) override final;
+			virtual bool IsDisplayCompatible(const std::shared_ptr<Display>& pDisplay) override final;
 
 			virtual std::shared_ptr<CommandBufferList> CreatePrimaryCommandBufferList(UI32 bufferCount) override final;
 			virtual std::shared_ptr<CommandBufferList> CreateSecondaryCommandBufferList(UI32 bufferCount, const std::shared_ptr<CommandBufferList>& pParent) override final;

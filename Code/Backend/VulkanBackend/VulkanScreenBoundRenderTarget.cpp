@@ -37,7 +37,6 @@ namespace Flint
 
 		void VulkanScreenBoundRenderTarget::Update()
 		{
-
 		}
 
 		void VulkanScreenBoundRenderTarget::SubmitFrame()

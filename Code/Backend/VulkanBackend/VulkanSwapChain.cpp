@@ -111,7 +111,7 @@ namespace Flint
 			vCI.clipped = VK_TRUE;
 			vCI.oldSwapchain = vSwapChain;
 
-			if (!vDevice.IsDisplayCompatible(vDisplay))
+			if (!vDevice.IsDisplayCompatible(vDisplay.shared_from_this()))
 				FLINT_THROW_RUNTIME_ERROR("Submitted device and display are incompatible!");
 
 			VkSwapchainKHR vNewSwapChain = VK_NULL_HANDLE;

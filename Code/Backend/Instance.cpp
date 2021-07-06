@@ -9,7 +9,7 @@ namespace Flint
 {
 	std::shared_ptr<Instance> CreateInstance(bool enableValidation)
 	{
-		return *new VulkanBackend::VulkanInstance(enableValidation);
+		return std::make_shared<VulkanBackend::VulkanInstance>(enableValidation);
 	}
 
 	void DestroyInstance(const std::shared_ptr<Instance>& pInstance)

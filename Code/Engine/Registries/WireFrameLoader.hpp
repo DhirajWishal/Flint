@@ -10,7 +10,7 @@ namespace Flint
 {
 	/**
 	 * Wire frame payload structure.
-	 * This contains the raw data which are to be sent to the 
+	 * This contains the raw data which are to be sent to the
 	 */
 	struct WireFramePayload
 	{

@@ -55,7 +55,7 @@ namespace Flint
 		{
 			return VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 		}
-		
+
 		void VulkanDepthBuffer::Initialize()
 		{
 			VkImageCreateInfo vCI = {};
