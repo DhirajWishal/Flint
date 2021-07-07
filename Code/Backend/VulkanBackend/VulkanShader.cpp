@@ -150,7 +150,7 @@ namespace Flint
 			VkPipelineShaderStageCreateInfo vCreateInfo = {};
 			vCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 			vCreateInfo.pNext = VK_NULL_HANDLE;
-			vCreateInfo.flags = VK_NULL_HANDLE;
+			vCreateInfo.flags = 0;
 			vCreateInfo.pSpecializationInfo = VK_NULL_HANDLE;
 			vCreateInfo.pName = "main";
 			vCreateInfo.stage = static_cast<VkShaderStageFlagBits>(vStageFlags);
@@ -245,7 +245,7 @@ namespace Flint
 			VkShaderModuleCreateInfo vCreateInfo = {};
 			vCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
 			vCreateInfo.pNext = VK_NULL_HANDLE;
-			vCreateInfo.flags = VK_NULL_HANDLE;
+			vCreateInfo.flags = 0;
 			vCreateInfo.codeSize = mShaderCode.size();
 			vCreateInfo.pCode = mShaderCode.data();
 

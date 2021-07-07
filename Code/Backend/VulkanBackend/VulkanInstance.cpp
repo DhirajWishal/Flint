@@ -113,7 +113,7 @@ namespace Flint
 
 				createInfo.pNext = VK_NULL_HANDLE;
 				createInfo.pUserData = VK_NULL_HANDLE;
-				createInfo.flags = VK_NULL_HANDLE;
+				createInfo.flags = 0;
 
 				return createInfo;
 			}

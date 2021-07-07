@@ -38,7 +38,7 @@ namespace Flint
 		VkAttachmentDescription VulkanSwapChain::GetAttachmentDescription() const
 		{
 			VkAttachmentDescription vDesc = {};
-			vDesc.flags = VK_NULL_HANDLE;
+			vDesc.flags = 0;
 			vDesc.format = vFormat;
 			vDesc.samples = VK_SAMPLE_COUNT_1_BIT;
 			vDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
@@ -77,7 +77,7 @@ namespace Flint
 
 			VkSwapchainCreateInfoKHR vCI = {};
 			vCI.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-			vCI.flags = VK_NULL_HANDLE;
+			vCI.flags = 0;
 			vCI.pNext = VK_NULL_HANDLE;
 			vCI.surface = vDisplay.GetSurface();
 			vCI.minImageCount = mBufferCount;

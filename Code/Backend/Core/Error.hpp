@@ -24,16 +24,27 @@ namespace Flint
 	};
 }
 
-#define FLINT_THROW_BACKEND_ERROR										throw ::Flint::backend_error
-#define FLINT_THROW_LOGIC_ERROR											throw std::logic_error
-#define FLINT_THROW_DOMAIN_ERROR										throw std::domain_error
-#define FLINT_THROW_INVALID_ARGUMENT									throw std::invalid_argument
-#define FLINT_THROW_LENGTH_ERROR										throw std::length_error
-#define FLINT_THROW_OUT_OF_RANGE										throw std::out_of_range
-#define FLINT_THROW_RUNTIME_ERROR										throw std::runtime_error
-#define FLINT_THROW_RANGE_ERROR											throw std::range_error
-#define FLINT_THROW_OVERFLOW_ERROR										throw std::overflow_error
-#define FLINT_THROW_UNDERFLOW_ERROR										throw std::underflow_error
+#define FLINT_EXCEPTION_BACKEND_ERROR									::Flint::backend_error
+#define FLINT_EXCEPTION_LOGIC_ERROR										std::logic_error
+#define FLINT_EXCEPTION_DOMAIN_ERROR									std::domain_error
+#define FLINT_EXCEPTION_INVALID_ARGUMENT								std::invalid_argument
+#define FLINT_EXCEPTION_LENGTH_ERROR									std::length_error
+#define FLINT_EXCEPTION_OUT_OF_RANGE									std::out_of_range
+#define FLINT_EXCEPTION_RUNTIME_ERROR									std::runtime_error
+#define FLINT_EXCEPTION_RANGE_ERROR										std::range_error
+#define FLINT_EXCEPTION_OVERFLOW_ERROR									std::overflow_error
+#define FLINT_EXCEPTION_UNDERFLOW_ERROR									std::underflow_error
+
+#define FLINT_THROW_BACKEND_ERROR										throw FLINT_EXCEPTION_BACKEND_ERROR	
+#define FLINT_THROW_LOGIC_ERROR											throw FLINT_EXCEPTION_LOGIC_ERROR		
+#define FLINT_THROW_DOMAIN_ERROR										throw FLINT_EXCEPTION_DOMAIN_ERROR	
+#define FLINT_THROW_INVALID_ARGUMENT									throw FLINT_EXCEPTION_INVALID_ARGUMENT
+#define FLINT_THROW_LENGTH_ERROR										throw FLINT_EXCEPTION_LENGTH_ERROR	
+#define FLINT_THROW_OUT_OF_RANGE										throw FLINT_EXCEPTION_OUT_OF_RANGE	
+#define FLINT_THROW_RUNTIME_ERROR										throw FLINT_EXCEPTION_RUNTIME_ERROR	
+#define FLINT_THROW_RANGE_ERROR											throw FLINT_EXCEPTION_RANGE_ERROR		
+#define FLINT_THROW_OVERFLOW_ERROR										throw FLINT_EXCEPTION_OVERFLOW_ERROR	
+#define FLINT_THROW_UNDERFLOW_ERROR										throw FLINT_EXCEPTION_UNDERFLOW_ERROR	
 
 #ifdef FLINT_DEBUG
 #	define FLINT_ASSERT(expression, condition, error)					if (expression != condition) error

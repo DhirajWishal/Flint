@@ -48,7 +48,17 @@ namespace Flint
 			pFragmentShader(pFragmentShader),
 			pTessellationControlShader(pTessellationControlShader),
 			pTessellationEvaluationShader(pTessellationEvaluationShader),
-			pGeometryShader(pGeometryShader) {}
+			pGeometryShader(pGeometryShader)
+		{
+			if (!pRenderTarget)
+				FLINT_THROW_INVALID_ARGUMENT("Render target pointer should not be null!");
+
+			if (pVertexShader == nullptr)
+				FLINT_THROW_INVALID_ARGUMENT("Vertex shader pointer should not be null!");
+
+			if (pFragmentShader == nullptr)
+				FLINT_THROW_INVALID_ARGUMENT("Fragment shader pointer should not be null!");
+		}
 
 	protected:
 		std::shared_ptr<RenderTarget> pRenderTarget = nullptr;

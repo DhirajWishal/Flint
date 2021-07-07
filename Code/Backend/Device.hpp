@@ -30,17 +30,17 @@ namespace Flint
 		/**
 		 * This flag states to use only the integrated device if available. If an integrated one doesn't exist but an external one exists, it will automatically select the external device.
 		 */
-		 INTEGRATED = BIT_SHIFT(1),
+		INTEGRATED = BIT_SHIFT(1),
 
-		 /**
-		  * State that the device is used for graphics. This is a must if graphics needs to be enabled.
-		  */
-		  GRAPHICS_COMPATIBLE = BIT_SHIFT(2),
+		/**
+		 * State that the device is used for graphics. This is a must if graphics needs to be enabled.
+		 */
+		GRAPHICS_COMPATIBLE = BIT_SHIFT(2),
 
-		  /**
-		   * This states the device is used for compute.
-		   */
-		   COMPUTE_COMPATIBLE = BIT_SHIFT(3)
+		/**
+		 * This states the device is used for compute.
+		 */
+		COMPUTE_COMPATIBLE = BIT_SHIFT(3)
 	};
 
 	constexpr DeviceFlags operator|(const DeviceFlags& lhs, const DeviceFlags& rhs) { return DeviceFlags(static_cast<UI8>(lhs) | static_cast<UI8>(rhs)); }
@@ -61,7 +61,11 @@ namespace Flint
 		 * @param pInstance: The instance pointer.
 		 * @param flags: The device flags.
 		 */
-		Device(const std::shared_ptr<Instance>& pInstance, DeviceFlags flags) noexcept : pInstance(pInstance), mFlags(flags) {}
+		Device(const std::shared_ptr<Instance>& pInstance, DeviceFlags flags) : pInstance(pInstance), mFlags(flags) 
+		{
+			if (!pInstance)
+				FLINT_THROW_INVALID_ARGUMENT("Instance pointer should not be null!");
+		}
 
 		/**
 		 * Check if the display is compatible with the device.

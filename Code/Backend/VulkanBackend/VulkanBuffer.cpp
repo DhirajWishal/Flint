@@ -4,8 +4,6 @@
 #include "VulkanBuffer.hpp"
 #include "VulkanOneTimeCommandBuffer.hpp"
 
-#include "Core/Error.hpp"
-
 namespace Flint
 {
 	namespace VulkanBackend
@@ -93,7 +91,7 @@ namespace Flint
 		{
 			VkBufferCreateInfo vCI = {};
 			vCI.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-			vCI.flags = VK_NULL_HANDLE;
+			vCI.flags = 0;
 			vCI.pNext = VK_NULL_HANDLE;
 			vCI.queueFamilyIndexCount = 0;
 			vCI.pQueueFamilyIndices = VK_NULL_HANDLE;

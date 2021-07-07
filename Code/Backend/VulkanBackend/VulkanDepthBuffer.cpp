@@ -60,7 +60,7 @@ namespace Flint
 		{
 			VkImageCreateInfo vCI = {};
 			vCI.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-			vCI.flags = VK_NULL_HANDLE;
+			vCI.flags = 0;
 			vCI.pNext = VK_NULL_HANDLE;
 			vCI.extent = { static_cast<UI32>(mExtent.mWidth), static_cast<UI32>(mExtent.mHeight), 1 };
 			vCI.samples = static_cast<VkSampleCountFlagBits>(vSampleCount);

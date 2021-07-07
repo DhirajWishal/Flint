@@ -31,7 +31,7 @@ namespace Flint
 			vAR.attachment = 0;
 
 			VkSubpassDescription vSD = {};
-			vSD.flags = VK_NULL_HANDLE;
+			vSD.flags = 0;
 			vSD.colorAttachmentCount = 0;
 			vSD.inputAttachmentCount = 0;
 			vSD.preserveAttachmentCount = 0;
@@ -69,34 +69,34 @@ namespace Flint
 			vSD.pDepthStencilAttachment = vDepthAttachmentRef.data();
 			vSD.pResolveAttachments = vResolveAttachmentRef.data();
 
-			VkSubpassDependency dependencies[2] = {};
+			VkSubpassDependency vDependencies[2] = {};
 
-			dependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
-			dependencies[0].dstSubpass = 0;
-			dependencies[0].srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
-			dependencies[0].dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-			dependencies[0].srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-			dependencies[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-			dependencies[0].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+			vDependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
+			vDependencies[0].dstSubpass = 0;
+			vDependencies[0].srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+			vDependencies[0].dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+			vDependencies[0].srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+			vDependencies[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+			vDependencies[0].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
 
-			dependencies[1].srcSubpass = 0;
-			dependencies[1].dstSubpass = VK_SUBPASS_EXTERNAL;
-			dependencies[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-			dependencies[1].dstStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
-			dependencies[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-			dependencies[1].dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-			dependencies[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+			vDependencies[1].srcSubpass = 0;
+			vDependencies[1].dstSubpass = VK_SUBPASS_EXTERNAL;
+			vDependencies[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+			vDependencies[1].dstStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+			vDependencies[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+			vDependencies[1].dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+			vDependencies[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
 
 			VkRenderPassCreateInfo vCI = {};
 			vCI.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-			vCI.flags = VK_NULL_HANDLE;
+			vCI.flags = 0;
 			vCI.pNext = VK_NULL_HANDLE;
 			vCI.attachmentCount = static_cast<UI32>(vDescriptions.size());
 			vCI.pAttachments = vDescriptions.data();
 			vCI.subpassCount = 1;
 			vCI.pSubpasses = &vSD;
 			vCI.dependencyCount = 2;
-			vCI.pDependencies = dependencies;
+			vCI.pDependencies = vDependencies;
 
 			FLINT_VK_ASSERT(vkCreateRenderPass(vDevice.GetLogicalDevice(), &vCI, nullptr, &vRenderPass));
 		}
@@ -110,7 +110,7 @@ namespace Flint
 		{
 			VkFramebufferCreateInfo vCI = {};
 			vCI.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-			vCI.flags = VK_NULL_HANDLE;
+			vCI.flags = 0;
 			vCI.pNext = VK_NULL_HANDLE;
 			vCI.layers = 1;
 			vCI.renderPass = vRenderPass;

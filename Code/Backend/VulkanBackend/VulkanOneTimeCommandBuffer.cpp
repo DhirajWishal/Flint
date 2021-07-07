@@ -11,7 +11,7 @@ namespace Flint
 		{
 			VkCommandPoolCreateInfo vPoolCI = {};
 			vPoolCI.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-			vPoolCI.flags = VK_NULL_HANDLE;
+			vPoolCI.flags = 0;
 			vPoolCI.pNext = VK_NULL_HANDLE;
 			vPoolCI.queueFamilyIndex = vDevice.GetQueue().mTransferFamily.value();
 
@@ -44,7 +44,7 @@ namespace Flint
 			VkFenceCreateInfo vFCI = {};
 			vFCI.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
 			vFCI.pNext = VK_NULL_HANDLE;
-			vFCI.flags = VK_NULL_HANDLE;
+			vFCI.flags = 0;
 
 			VkFence vFence = VK_NULL_HANDLE;
 			FLINT_VK_ASSERT(vkCreateFence(vDevice.GetLogicalDevice(), &vFCI, nullptr, &vFence));

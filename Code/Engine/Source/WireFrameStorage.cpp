@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "WireFrameStorage.hpp"
-#include "Core/Error.hpp"
 
 #include "Device.hpp"
 

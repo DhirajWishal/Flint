@@ -30,7 +30,14 @@ namespace Flint
 		 * @param type: The buffer type.
 		 * @param size: The size of the buffer.
 		 */
-		Buffer(const std::shared_ptr<Device>& pDevice, BufferType type, const UI64 size) : DeviceBoundObject(pDevice), mType(type), mSize(size) {}
+		Buffer(const std::shared_ptr<Device>& pDevice, BufferType type, const UI64 size) : DeviceBoundObject(pDevice), mType(type), mSize(size) 
+		{
+			if (type == BufferType::UNDEFINED)
+				FLINT_THROW_INVALID_ARGUMENT("Buffer type should not be UNDEFINED!");
+
+			if (size == 0)
+				FLINT_THROW_INVALID_ARGUMENT("Buffer size should be greater than 0!");
+		}
 
 		/**
 		 * Resize the buffer.

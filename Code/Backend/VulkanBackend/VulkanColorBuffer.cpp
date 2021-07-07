@@ -39,7 +39,7 @@ namespace Flint
 		VkAttachmentDescription VulkanColorBuffer::GetAttachmentDescription() const
 		{
 			VkAttachmentDescription vDesc = {};
-			vDesc.flags = VK_NULL_HANDLE;
+			vDesc.flags = 0;
 			vDesc.format = vFormat;
 			vDesc.samples = static_cast<VkSampleCountFlagBits>(vSampleCount);
 			vDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
@@ -61,7 +61,7 @@ namespace Flint
 		{
 			VkImageCreateInfo vCI = {};
 			vCI.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-			vCI.flags = VK_NULL_HANDLE;
+			vCI.flags = 0;
 			vCI.pNext = VK_NULL_HANDLE;
 			vCI.imageType = VK_IMAGE_TYPE_2D;
 			vCI.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;

@@ -25,7 +25,11 @@ namespace Flint
 		 * @param pCommandBufferList: The command buffer list pointer.
 		 */
 		ScreenBoundRenderTarget(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, const FExtent2D& extent, const UI32 bufferCount, const std::shared_ptr<CommandBufferList>& pCommandBufferList)
-			: RenderTarget(pDevice, extent, bufferCount, pCommandBufferList), pDisplay(pDisplay) {}
+			: RenderTarget(pDevice, extent, bufferCount, pCommandBufferList), pDisplay(pDisplay)
+		{
+			if (!pDisplay)
+				FLINT_THROW_INVALID_ARGUMENT("Screen bound render target device pointer should not be null!");
+		}
 
 		/**
 		 * Begin a new frame.
