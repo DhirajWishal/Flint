@@ -14,34 +14,57 @@ namespace Flint
 	 * Flint backend error exception.
 	 * This error is thrown if there was an error in the backend (in the backend API).
 	 *
-	 * This exception is a derived class of std::runtime_error
+	 * This exception is a derived class of std::runtime_error.
 	 */
 	class backend_error final : public std::runtime_error
 	{
 	public:
-		backend_error(const std::string& msg) : std::runtime_error(msg) {}
-		backend_error(const char* msg) : std::runtime_error(msg) {}
+		backend_error(const std::string& msg);
+		backend_error(const char* msg);
+	};
+
+	/**
+	 * Flint extended error exception.
+	 * This exception behaves as a normal runtime error but with extended support to display other information like file name, function signature and line number.
+	 *
+	 * This exception is a derived class of std::runtime_error.
+	 */
+	class runtime_error_extended final : public std::runtime_error
+	{
+	public:
+		runtime_error_extended(const std::string& msg, const char* pErrorLocation);
+		runtime_error_extended(const char* msg, const char* pErrorLocation);
+
+		/**
+		 * Get the location info from which the error is thrown.
+		 *
+		 * @return The function signature.
+		 */
+		const char* GetErrorLocationInfo() const { return pErrorLocationInfo; }
+
+	private:
+		const char* pErrorLocationInfo = nullptr;
 	};
 }
 
 #define FLINT_EXCEPTION_BACKEND_ERROR									::Flint::backend_error
+#define FLINT_EXCEPTION_RUNTIME_ERROR									::Flint::runtime_error_extended
 #define FLINT_EXCEPTION_LOGIC_ERROR										std::logic_error
 #define FLINT_EXCEPTION_DOMAIN_ERROR									std::domain_error
 #define FLINT_EXCEPTION_INVALID_ARGUMENT								std::invalid_argument
 #define FLINT_EXCEPTION_LENGTH_ERROR									std::length_error
 #define FLINT_EXCEPTION_OUT_OF_RANGE									std::out_of_range
-#define FLINT_EXCEPTION_RUNTIME_ERROR									std::runtime_error
 #define FLINT_EXCEPTION_RANGE_ERROR										std::range_error
 #define FLINT_EXCEPTION_OVERFLOW_ERROR									std::overflow_error
 #define FLINT_EXCEPTION_UNDERFLOW_ERROR									std::underflow_error
 
 #define FLINT_THROW_BACKEND_ERROR										throw FLINT_EXCEPTION_BACKEND_ERROR	
+#define FLINT_THROW_RUNTIME_ERROR(...)									throw FLINT_EXCEPTION_RUNTIME_ERROR(__VA_ARGS__, "\nFile:\t\t" __FILE__ "\nFunction:\t" __FUNCSIG__ "\nLine:\t\t" TO_STRING(__LINE__))
 #define FLINT_THROW_LOGIC_ERROR											throw FLINT_EXCEPTION_LOGIC_ERROR		
 #define FLINT_THROW_DOMAIN_ERROR										throw FLINT_EXCEPTION_DOMAIN_ERROR	
 #define FLINT_THROW_INVALID_ARGUMENT									throw FLINT_EXCEPTION_INVALID_ARGUMENT
 #define FLINT_THROW_LENGTH_ERROR										throw FLINT_EXCEPTION_LENGTH_ERROR	
 #define FLINT_THROW_OUT_OF_RANGE										throw FLINT_EXCEPTION_OUT_OF_RANGE	
-#define FLINT_THROW_RUNTIME_ERROR										throw FLINT_EXCEPTION_RUNTIME_ERROR	
 #define FLINT_THROW_RANGE_ERROR											throw FLINT_EXCEPTION_RANGE_ERROR		
 #define FLINT_THROW_OVERFLOW_ERROR										throw FLINT_EXCEPTION_OVERFLOW_ERROR	
 #define FLINT_THROW_UNDERFLOW_ERROR										throw FLINT_EXCEPTION_UNDERFLOW_ERROR	
