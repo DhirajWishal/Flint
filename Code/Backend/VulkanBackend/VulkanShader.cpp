@@ -111,6 +111,7 @@ namespace Flint
 			shaderFile.close();
 			CreateShaderModule();
 			PerformReflection();
+			CreateDescriptorSetLayout();
 		}
 
 		VulkanShader::VulkanShader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::vector<UI32>& code, ShaderCodeType codeType)
@@ -124,6 +125,7 @@ namespace Flint
 			mShaderCode = code;
 			CreateShaderModule();
 			PerformReflection();
+			CreateDescriptorSetLayout();
 		}
 
 		VulkanShader::VulkanShader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::string& code, ShaderCodeType codeType)
@@ -138,6 +140,7 @@ namespace Flint
 
 			CreateShaderModule();
 			PerformReflection();
+			CreateDescriptorSetLayout();
 		}
 
 		void VulkanShader::Terminate()
@@ -166,15 +169,51 @@ namespace Flint
 			spirv_cross::SPIRType type = {};
 			UI64 shaderOffset = 0;
 
+			VkDescriptorSetLayoutBinding vBinding = {};
+			vBinding.stageFlags = vStageFlags;
+			vBinding.pImmutableSamplers = VK_NULL_HANDLE;
+			vBinding.descriptorCount = 1;	// TODO
+
+			VkDescriptorPoolSize vSize = {};
+			vSize.descriptorCount = 1;
+
+			// Resolve uniform buffers.
+			vBinding.descriptorType = VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			vSize.type = vBinding.descriptorType;
 			for (auto& resource : resources.uniform_buffers)
-				INSERT_INTO_VECTOR(mResources, ShaderResource(compiler.get_name(resource.id), compiler.get_decoration(resource.id, spv::DecorationBinding), ShaderResourceType::UNIFORM_BUFFER));
+			{
+				vBinding.binding = compiler.get_decoration(resource.id, spv::DecorationBinding);
+				INSERT_INTO_VECTOR(mBindings, vBinding);
+				INSERT_INTO_VECTOR(mSizes, vSize);
 
+				INSERT_INTO_VECTOR(mResources, ShaderResource(compiler.get_name(resource.id), vBinding.binding, ShaderResourceType::UNIFORM_BUFFER));
+			}
+
+			// Resolve storage buffers.
+			vBinding.descriptorType = VkDescriptorType::VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+			vSize.type = vBinding.descriptorType;
 			for (auto& resource : resources.storage_buffers)
+			{
+				vBinding.binding = compiler.get_decoration(resource.id, spv::DecorationBinding);
+				INSERT_INTO_VECTOR(mBindings, vBinding);
+				INSERT_INTO_VECTOR(mSizes, vSize);
+
 				INSERT_INTO_VECTOR(mResources, ShaderResource(compiler.get_name(resource.id), compiler.get_decoration(resource.id, spv::DecorationBinding), ShaderResourceType::STORAGE_BUFFER));
+			}
 
+			// Resolve samplers.
+			vBinding.descriptorType = VkDescriptorType::VK_DESCRIPTOR_TYPE_SAMPLER;
+			vSize.type = vBinding.descriptorType;
 			for (auto& resource : resources.sampled_images)
-				INSERT_INTO_VECTOR(mResources, ShaderResource(compiler.get_name(resource.id), compiler.get_decoration(resource.id, spv::DecorationBinding), ShaderResourceType::SAMPLER));
+			{
+				vBinding.binding = compiler.get_decoration(resource.id, spv::DecorationBinding);
+				INSERT_INTO_VECTOR(mBindings, vBinding);
+				INSERT_INTO_VECTOR(mSizes, vSize);
 
+				INSERT_INTO_VECTOR(mResources, ShaderResource(compiler.get_name(resource.id), compiler.get_decoration(resource.id, spv::DecorationBinding), ShaderResourceType::SAMPLER));
+			}
+
+			// Resolve shader inputs.
 			for (auto& resource : resources.stage_inputs)
 			{
 				auto& Ty = compiler.get_type(resource.base_type_id);
@@ -182,6 +221,7 @@ namespace Flint
 				INSERT_INTO_VECTOR(mInputAttributes, ShaderAttribute(compiler.get_name(resource.id), compiler.get_decoration(resource.id, spv::DecorationBinding), static_cast<ShaderAttributeDataType>(size)));
 			}
 
+			// Resolve shader outputs.
 			for (auto& resource : resources.stage_outputs)
 			{
 				auto& Ty = compiler.get_type(resource.base_type_id);
@@ -250,6 +290,18 @@ namespace Flint
 			vCreateInfo.pCode = mShaderCode.data();
 
 			FLINT_VK_ASSERT(vkCreateShaderModule(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), &vCreateInfo, nullptr, &vModule));
+		}
+
+		void VulkanShader::CreateDescriptorSetLayout()
+		{
+			VkDescriptorSetLayoutCreateInfo vCreateInfo = {};
+			vCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+			vCreateInfo.pNext = VK_NULL_HANDLE;
+			vCreateInfo.flags = 0;
+			vCreateInfo.bindingCount = static_cast<UI32>(mBindings.size());
+			vCreateInfo.pBindings = mBindings.data();
+
+			FLINT_VK_ASSERT(vkCreateDescriptorSetLayout(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), &vCreateInfo, nullptr, &vDescriptorSetLayout));
 		}
 	}
 }

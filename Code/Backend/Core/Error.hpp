@@ -51,8 +51,8 @@ namespace Flint
 #	define FLINT_ASSERT_DISCARDABLE(expression, condition, error)		if (expression != condition) error;
 
 #else
-#	define FLINT_ASSERT_DISCARDABLE(expression, condition, error)
 #	define FLINT_ASSERT(expression, condition, error)					expression
+#	define FLINT_ASSERT_DISCARDABLE(expression, condition, error)
 
 #endif // FLINT_DEBUG
 
