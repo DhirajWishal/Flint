@@ -31,24 +31,6 @@ namespace Flint
 				FLINT_THROW_INVALID_ARGUMENT("Screen bound render target device pointer should not be null!");
 		}
 
-		/**
-		 * Begin a new frame.
-		 * This call prepares resources for a new draw call and must be called prior to updating resources.
-		 */
-		virtual void BeginFrame() = 0;
-
-		/**
-		 * Update the resources.
-		 * This call updates draw resources.
-		 */
-		virtual void Update() = 0;
-
-		/**
-		 * Submit the frame to the device.
-		 * This call draws data to the screen by submitting the draw call to the device.
-		 */
-		virtual void SubmitFrame() = 0;
-
 	public:
 		/**
 		 * Get the current frame index.

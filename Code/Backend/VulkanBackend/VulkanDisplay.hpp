@@ -34,6 +34,8 @@ namespace Flint
 			virtual void Terminate() override final;
 			virtual void ToggleResize() override final { mIsDislayResized = false; }
 			virtual UI32 FindBestBufferCount(const std::shared_ptr<Device>& pDevice, UI32 count = 0) override final;
+			virtual void SetTitle(const std::string& title) override final;
+			virtual void SetExtent(FExtent2D newExtent) override final;
 
 			VkSurfaceFormatKHR ChooseSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 			VkPresentModeKHR ChoosePresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
@@ -48,7 +50,7 @@ namespace Flint
 			void CallMouseScrollCallback(double xOffset, double yOffset) { if (pMouseScrollCallback) pMouseScrollCallback(xOffset, yOffset); }
 			void CallCursorWithinDisplayCallback(bool state) { if (pCursorWithinDisplayCallback) pCursorWithinDisplayCallback(state); }
 			void CallDragAndDropCallback(std::vector<std::filesystem::path> paths) { if (pDragAndDropCallback) pDragAndDropCallback(paths); }
-			void CallDisplayResizeCallback(FExtent2D extent) { if (pDisplayResizeCallback) pDisplayResizeCallback(extent); }
+			void CallDisplayResizeCallback(FExtent2D extent) { mExtent = extent; if (pDisplayResizeCallback) pDisplayResizeCallback(extent); }
 			void CallDisplayCloseCallback() { if (pDisplayCloseCallback) pDisplayCloseCallback(); }
 
 			void SetNewExtent(FExtent2D extent) { mExtent = extent; }

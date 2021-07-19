@@ -105,6 +105,7 @@ namespace Flint
 			glfwSetCursorEnterCallback(pWindow, _Callbacks::MouseCursorEnterCallback);
 			glfwSetDropCallback(pWindow, _Callbacks::ApplicationDropPathCallback);
 			glfwSetWindowCloseCallback(pWindow, _Callbacks::WindowCloseCallback);
+			glfwSetWindowSizeCallback(pWindow, _Callbacks::ApplicationResizeCallback);
 
 			FLINT_VK_ASSERT(glfwCreateWindowSurface(pInstance->StaticCast<VulkanInstance>().GetInstance(), pWindow, nullptr, &vSurface));
 
@@ -138,6 +139,21 @@ namespace Flint
 			}
 
 			return count;
+		}
+
+		void VulkanDisplay::SetTitle(const std::string& title)
+		{
+			glfwSetWindowTitle(pWindow, title.c_str());
+			mTitle = title;
+		}
+
+		void VulkanDisplay::SetExtent(FExtent2D newExtent)
+		{
+			if (newExtent.mWidth == 0 || newExtent.mHeight == 0)
+				FLINT_THROW_RUNTIME_ERROR("Window extent should be grater than 0!");
+
+			glfwSetWindowSize(pWindow, static_cast<int>(newExtent.mWidth), static_cast<int>(newExtent.mHeight));
+			mExtent = newExtent;
 		}
 
 		VkSurfaceFormatKHR VulkanDisplay::ChooseSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)

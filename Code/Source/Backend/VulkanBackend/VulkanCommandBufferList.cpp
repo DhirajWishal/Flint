@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "VulkanBackend/VulkanCommandBufferList.hpp"
+#include "VulkanBackend/VulkanScreenBoundRenderTarget.hpp"
 
 namespace Flint
 {
@@ -68,7 +69,7 @@ namespace Flint
 			FLINT_VK_ASSERT(vkBeginCommandBuffer(vCurrentBuffer, &vBeginInfo));
 		}
 
-		void VulkanCommandBufferList::BeginBufferRecording(UI32 index, CommandBufferList& parent)
+		void VulkanCommandBufferList::BeginBufferRecording(UI32 index, const std::shared_ptr<CommandBufferList> pParent)
 		{
 			mCurrentBufferIndex = index;
 			vCurrentBuffer = vCommandBuffers[index];
@@ -90,12 +91,41 @@ namespace Flint
 			BeginBufferRecording(mCurrentBufferIndex);
 		}
 
-		void VulkanCommandBufferList::BeginNextBufferRecording(CommandBufferList& parent)
+		void VulkanCommandBufferList::BeginNextBufferRecording(const std::shared_ptr<CommandBufferList> pParent)
 		{
 			mCurrentBufferIndex++;
 			if (mCurrentBufferIndex >= mBufferCount) mCurrentBufferIndex = 0;
 
-			BeginBufferRecording(mCurrentBufferIndex, parent);
+			BeginBufferRecording(mCurrentBufferIndex, pParent);
+		}
+
+		void VulkanCommandBufferList::BindRenderTarget(const std::shared_ptr<ScreenBoundRenderTarget>& pRenderTarget)
+		{
+			VulkanScreenBoundRenderTarget& vRenderTarget = pRenderTarget->StaticCast<VulkanScreenBoundRenderTarget>();
+
+			VkClearValue pClearValues[2] = {};
+			pClearValues[0].color.float32[0] = CREATE_COLOR_256(32.0f);
+			pClearValues[0].color.float32[1] = CREATE_COLOR_256(32.0f);
+			pClearValues[0].color.float32[2] = CREATE_COLOR_256(32.0f);
+			pClearValues[0].color.float32[3] = 1.0f;
+			pClearValues[1].depthStencil = { 1.0f, 0 };
+
+			VkRenderPassBeginInfo vBeginInfo = {};
+			vBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+			vBeginInfo.pNext = VK_NULL_HANDLE;
+			vBeginInfo.renderPass = vRenderTarget.GetRenderPass();
+			vBeginInfo.framebuffer = vRenderTarget.GetFrameBuffer(GetCurrentBufferIndex());
+			vBeginInfo.clearValueCount = 2;
+			vBeginInfo.pClearValues = pClearValues;
+			vBeginInfo.renderArea.extent.width = vRenderTarget.GetExtent().mWidth;
+			vBeginInfo.renderArea.extent.height = vRenderTarget.GetExtent().mHeight;
+
+			vkCmdBeginRenderPass(GetCurrentCommandBuffer(), &vBeginInfo, VkSubpassContents::VK_SUBPASS_CONTENTS_INLINE);
+		}
+
+		void VulkanCommandBufferList::UnbindRenderTarget()
+		{
+			vkCmdEndRenderPass(GetCurrentCommandBuffer());
 		}
 
 		void VulkanCommandBufferList::EndBufferRecording()
@@ -108,6 +138,12 @@ namespace Flint
 			auto vDevice = pDevice->StaticCast<VulkanDevice>();
 			vkFreeCommandBuffers(vDevice.GetLogicalDevice(), vCommandPool, static_cast<UI32>(vCommandBuffers.size()), vCommandBuffers.data());
 			vkDestroyCommandPool(vDevice.GetLogicalDevice(), vCommandPool, nullptr);
+		}
+
+		void VulkanCommandBufferList::ClearBuffers()
+		{
+			for (VkCommandBuffer vBuffer : vCommandBuffers)
+				vkResetCommandBuffer(vBuffer, 0);
 		}
 
 		VkCommandBufferInheritanceInfo VulkanCommandBufferList::GetInheritanceInfo() const

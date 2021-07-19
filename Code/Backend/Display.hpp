@@ -290,6 +290,20 @@ namespace Flint
 		std::string GetTitle() const { return mTitle; }
 
 		/**
+		 * Set a new window title.
+		 *
+		 * @param title: The window title to set.
+		 */
+		virtual void SetTitle(const std::string& title) = 0;
+
+		/**
+		 * Set a new extent to the window.
+		 *
+		 * @param newExtent: The new extent to set.
+		 */
+		virtual void SetExtent(FExtent2D newExtent) = 0;
+
+		/**
 		 * Get the display's current extent.
 		 *
 		 * @return The extent.

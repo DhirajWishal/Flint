@@ -10,18 +10,23 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanCommandBufferList final : public CommandBufferList
+		class VulkanCommandBufferList final : public CommandBufferList, public std::enable_shared_from_this<VulkanCommandBufferList>
 		{
 		public:
 			VulkanCommandBufferList(const std::shared_ptr<Device>& pDevice, const UI32 bufferCount);
 			VulkanCommandBufferList(const std::shared_ptr<Device>& pDevice, const UI32 bufferCount, const std::shared_ptr<CommandBufferList>& pParent);
 
 			virtual void BeginBufferRecording(UI32 index) override final;
-			virtual void BeginBufferRecording(UI32 index, CommandBufferList& parent) override final;
+			virtual void BeginBufferRecording(UI32 index, const std::shared_ptr<CommandBufferList> pParent) override final;
 			virtual void BeginNextBufferRecording() override final;
-			virtual void BeginNextBufferRecording(CommandBufferList& parent) override final;
+			virtual void BeginNextBufferRecording(const std::shared_ptr<CommandBufferList> pParent) override final;
+
+			virtual void BindRenderTarget(const std::shared_ptr<ScreenBoundRenderTarget>& pRenderTarget) override final;
+			virtual void UnbindRenderTarget() override final;
+
 			virtual void EndBufferRecording() override final;
 			virtual void Terminate() override final;
+			virtual void ClearBuffers() override final;
 
 			VkCommandPool GetCommandPool() const { return vCommandPool; }
 			VkCommandBuffer GetCurrentCommandBuffer() const { return vCurrentBuffer; }

@@ -25,7 +25,15 @@ int main()
 		auto pVertexShader = pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("E:\\Flint\\Assets\\Shaders\\3D\\shader.vert.spv"), Flint::ShaderCodeType::SPIR_V);
 
 		pDisplay->SetKeyCallback(KeyCallback);
-		while (pDisplay->IsOpen()) pDisplay->Update();
+		pRenderTarget->PrepareStaticResources();
+		while (pDisplay->IsOpen())
+		{
+			pDisplay->Update();
+
+			pRenderTarget->BeginFrame();
+			pRenderTarget->Update();
+			pRenderTarget->SubmitFrame();
+		}
 
 		pDevice->DestroyShader(pVertexShader);
 		pDevice->DestroyBuffer(pBuffer);

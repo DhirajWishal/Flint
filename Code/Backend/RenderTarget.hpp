@@ -37,6 +37,44 @@ namespace Flint
 				FLINT_THROW_INVALID_ARGUMENT("Render target command buffer pointer should not be null!");
 		}
 
+		/**
+		 * Prepare the static resources to draw.
+		 * This will bind all of the current content to the command buffer to be drawn.
+		 */
+		virtual void PrepareStaticResources() = 0;
+
+		/**
+		 * Begin a new frame.
+		 * This call prepares resources for a new draw call and must be called prior to updating resources.
+		 */
+		virtual void BeginFrame() = 0;
+
+		/**
+		 * Update the resources.
+		 * This call updates draw resources.
+		 */
+		virtual void Update() = 0;
+
+		/**
+		 * Submit the frame to the device.
+		 * This call draws data to the screen by submitting the draw call to the device.
+		 */
+		virtual void SubmitFrame() = 0;
+
+		/**
+		 * Get the render target extent.
+		 *
+		 * @return The extent.
+		 */
+		FExtent2D GetExtent() const { return mExtent; }
+
+		/**
+		 * Get the render target buffer count.
+		 *
+		 * @return The buffer count.
+		 */
+		UI32 GetBufferCount() const { return mBufferCount; }
+
 	protected:
 		std::shared_ptr<CommandBufferList> pCommandBufferList = nullptr;
 

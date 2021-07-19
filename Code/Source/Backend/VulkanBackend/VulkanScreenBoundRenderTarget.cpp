@@ -18,13 +18,33 @@ namespace Flint
 			pColorBuffer = new VulkanColorBuffer(vDevice, extent, bufferCount, pSwapChain->GetFormat());
 			pDepthBuffer = new VulkanDepthBuffer(vDevice, extent, bufferCount);
 
-			vRenderTarget.CreateRenderPass({ pSwapChain, pColorBuffer, pDepthBuffer }, VK_PIPELINE_BIND_POINT_GRAPHICS);
-			vRenderTarget.CreateFrameBuffer({ pSwapChain, pColorBuffer, pDepthBuffer }, extent, bufferCount);
+			vRenderTarget.CreateRenderPass({ pColorBuffer, pDepthBuffer, pSwapChain }, VK_PIPELINE_BIND_POINT_GRAPHICS);
+			vRenderTarget.CreateFrameBuffer({ pColorBuffer, pDepthBuffer, pSwapChain }, extent, bufferCount);
 			vRenderTarget.CreateSyncObjects(bufferCount);
+		}
+
+		void VulkanScreenBoundRenderTarget::PrepareStaticResources()
+		{
+			VulkanCommandBufferList& vCommandBufferList = pCommandBufferList->StaticCast<VulkanCommandBufferList>();
+			std::shared_ptr<ScreenBoundRenderTarget> pThisRenderTarget = this->shared_from_this();
+
+			for (UI32 iter = 0; iter < vCommandBufferList.GetBufferCount(); iter++)
+			{
+				vCommandBufferList.BeginNextBufferRecording();
+				vCommandBufferList.BindRenderTarget(pThisRenderTarget);
+
+				// bind resources here. TODO
+
+				vCommandBufferList.UnbindRenderTarget();
+				vCommandBufferList.EndBufferRecording();
+			}
 		}
 
 		void VulkanScreenBoundRenderTarget::BeginFrame()
 		{
+			if (bShouldSkip)
+				return;
+
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 			FLINT_VK_ASSERT(vkWaitForFences(vDevice.GetLogicalDevice(), 1, &vRenderTarget.vInFlightFences[mFrameIndex], VK_TRUE, std::numeric_limits<uint64_t>::max()));
 			//FLINT_VK_ASSERT(pvDevice->ResetFences({ vInFlightFences[mFrameIndex] }), "Failed to reset fence!")
@@ -41,6 +61,9 @@ namespace Flint
 
 		void VulkanScreenBoundRenderTarget::SubmitFrame()
 		{
+			if (bShouldSkip)
+				return;
+
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 			auto& vCommandBufferList = pCommandBufferList->StaticCast<VulkanCommandBufferList>();
 			auto& vDisplay = pDisplay->StaticCast<VulkanDisplay>();
@@ -78,6 +101,7 @@ namespace Flint
 			vPI.pSwapchains = &vSwapChain;
 			vPI.pImageIndices = &mImageIndex;
 
+			IncrementFrameIndex();
 			VkResult result = vkQueuePresentKHR(vDevice.GetQueue().vTransferQueue, &vPI);
 			if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || vDisplay.IsDisplayResized())
 			{
@@ -109,17 +133,38 @@ namespace Flint
 		{
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 			auto& vDisplay = pDisplay->StaticCast<VulkanDisplay>();
-			mExtent = vDisplay.GetExtent();
+			FExtent2D newExtent = vDisplay.GetExtent();
+
+			// Wait while the window contains the right width and height. 
+			// Until the window contains a valid size, it will skip draw calls.
+			if (newExtent.mWidth == 0 || newExtent.mHeight == 0)
+			{
+				bShouldSkip = true;
+				return;
+			}
+			else
+			{
+				bShouldSkip = false;
+				mExtent = newExtent;
+			}
+
+			vDevice.WaitIdle();
+			pCommandBufferList->ClearBuffers();
+
+			vRenderTarget.DestroyRenderPass();
+			vRenderTarget.DestroyFrameBuffers();
 
 			pSwapChain->Recreate(mExtent);
 			pColorBuffer->Recreate(mExtent);
 			pDepthBuffer->Recreate(mExtent);
 
-			vRenderTarget.DestroyRenderPass();
-			vRenderTarget.DestroyFrameBuffers();
+			vRenderTarget.CreateRenderPass({ pColorBuffer, pDepthBuffer, pSwapChain }, VK_PIPELINE_BIND_POINT_GRAPHICS);
+			vRenderTarget.CreateFrameBuffer({ pColorBuffer, pDepthBuffer, pSwapChain }, mExtent, mBufferCount);
 
-			vRenderTarget.CreateRenderPass({ pSwapChain, pColorBuffer, pDepthBuffer }, VK_PIPELINE_BIND_POINT_GRAPHICS);
-			vRenderTarget.CreateFrameBuffer({ pSwapChain, pColorBuffer, pDepthBuffer }, mExtent, mBufferCount);
+			PrepareStaticResources();
+			vRenderTarget.vInFlightFences.resize(vRenderTarget.vInFlightFences.size(), VK_NULL_HANDLE);
+
+			mImageIndex = 0, mFrameIndex = 0;
 		}
 	}
 }

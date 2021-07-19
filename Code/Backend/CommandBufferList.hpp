@@ -7,6 +7,8 @@
 
 namespace Flint
 {
+	class ScreenBoundRenderTarget;
+
 	/**
 	 * Flint command buffer list object.
 	 * This object stored multiple command buffers which are used to submit commands to the GPU.
@@ -49,8 +51,9 @@ namespace Flint
 		 * Before binding objects to a command buffer, it must first start recording.
 		 *
 		 * @param index: The index of the command buffer.
+		 * @param pParent: The parent command buffer pointer.
 		 */
-		virtual void BeginBufferRecording(UI32 index, CommandBufferList& parent) = 0;
+		virtual void BeginBufferRecording(UI32 index, const std::shared_ptr<CommandBufferList> pParent) = 0;
 
 		/**
 		 * Begin the next buffer recording.
@@ -59,13 +62,39 @@ namespace Flint
 
 		/**
 		 * Begin the next buffer recording.
+		 *
+		 * @param pParent: The parent command buffer pointer.
 		 */
-		virtual void BeginNextBufferRecording(CommandBufferList& parent) = 0;
+		virtual void BeginNextBufferRecording(const std::shared_ptr<CommandBufferList> pParent) = 0;
+
+		/**
+		 * Bind a render target to the current command buffer.
+		 *
+		 * @param pRenderTarget: The render target pointer.
+		 */
+		virtual void BindRenderTarget(const std::shared_ptr<ScreenBoundRenderTarget>& pRenderTarget) = 0;
+
+		/**
+		 * Unbind the render target from the current buffer.
+		 */
+		virtual void UnbindRenderTarget() = 0;
 
 		/**
 		 * End the currently active command buffer recording.
 		 */
 		virtual void EndBufferRecording() = 0;
+
+		/**
+		 * Clear the command buffers.
+		 */
+		virtual void ClearBuffers() = 0;
+
+		/**
+		 * Get the command buffer list buffer count.
+		 *
+		 * @return The buffer count.
+		 */
+		UI32 GetBufferCount() const { return mBufferCount; }
 
 		/**
 		 * Get the current buffer index.
