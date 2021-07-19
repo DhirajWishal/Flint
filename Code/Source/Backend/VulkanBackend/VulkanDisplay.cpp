@@ -1,8 +1,8 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#include "VulkanDisplay.hpp"
-#include "VulkanDevice.hpp"
+#include "VulkanBackend/VulkanDisplay.hpp"
+#include "VulkanBackend/VulkanDevice.hpp"
 
 namespace Flint
 {

@@ -1,7 +1,7 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#include "Error.hpp"
+#include "Core/Error.hpp"
 
 namespace Flint
 {

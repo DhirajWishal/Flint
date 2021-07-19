@@ -1,7 +1,7 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#include "VulkanShader.hpp"
+#include "VulkanBackend/VulkanShader.hpp"
 
 #define SHADERC_SHAREDLIB
 #include <shaderc/shaderc.hpp>

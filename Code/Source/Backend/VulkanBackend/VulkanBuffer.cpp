@@ -1,8 +1,8 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#include "VulkanBuffer.hpp"
-#include "VulkanOneTimeCommandBuffer.hpp"
+#include "VulkanBackend/VulkanBuffer.hpp"
+#include "VulkanBackend/VulkanOneTimeCommandBuffer.hpp"
 
 namespace Flint
 {

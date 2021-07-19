@@ -1,9 +1,9 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#include "VulkanUtilities.hpp"
-#include "VulkanMacros.hpp"
-#include "VulkanDevice.hpp"
+#include "VulkanBackend/VulkanUtilities.hpp"
+#include "VulkanBackend/VulkanMacros.hpp"
+#include "VulkanBackend/VulkanDevice.hpp"
 
 namespace Flint
 {

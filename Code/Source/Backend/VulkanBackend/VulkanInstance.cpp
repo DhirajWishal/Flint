@@ -1,11 +1,11 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#include "VulkanInstance.hpp"
-#include "VulkanMacros.hpp"
+#include "VulkanBackend/VulkanInstance.hpp"
+#include "VulkanBackend/VulkanMacros.hpp"
 
-#include "VulkanDevice.hpp"
-#include "VulkanDisplay.hpp"
+#include "VulkanBackend/VulkanDevice.hpp"
+#include "VulkanBackend/VulkanDisplay.hpp"
 
 #include <GLFW/glfw3.h>
 #include <iostream>
