@@ -43,4 +43,16 @@ namespace Flint
 
 		UI32 mWidth = 0, mHeight = 0, mDepth = 0;
 	};
+
+	/**
+	 * Flint color 4D structure.
+	 */
+	struct FColor4D
+	{
+		FColor4D() = default;
+		FColor4D(float red, float green, float blue, float alpha)
+			: mRed(red), mGreen(green), mBlue(blue), mAlpha(alpha) {}
+
+		float mRed = 0.0f, mGreen = 0.0f, mBlue = 0.0f, mAlpha = 0.0f;
+	};
 }

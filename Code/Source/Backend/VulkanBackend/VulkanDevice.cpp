@@ -337,7 +337,7 @@ namespace Flint
 				FLINT_THROW_RUNTIME_ERROR("Unable to find suitable physical device!");
 
 #ifdef FLINT_DEBUG
-			printf("\n\t---------- VULKAN PHYSICAL DEVICE INFO ----------\n");
+			printf("\n\t----------- VULKAN PHYSICAL DEVICE INFO -----------\n");
 			printf("API Version: %I32d\n", vPhysicalDeviceProperties.apiVersion);
 			printf("Driver Version: %I32d\n", vPhysicalDeviceProperties.driverVersion);
 			printf("Vendor ID: %I32d\n", vPhysicalDeviceProperties.vendorID);
@@ -361,12 +361,12 @@ namespace Flint
 				printf("Device Type: CPU\n");
 				break;
 			default:
-				printf("Device Type: *UNIDENTIFIED\n");
+				printf("Device Type: UNIDENTIFIED\n");
 				break;
 			}
 
 			printf("Device Name: %hs\n", vPhysicalDeviceProperties.deviceName);
-			printf("\t------------------------------------------------ - \n\n");
+			printf("\t---------------------------------------------------\n\n");
 
 #endif	// FLINT_DEBUG
 

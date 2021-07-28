@@ -154,11 +154,7 @@ namespace Flint
 		 *
 		 * @param pDevice: The device pointer.
 		 */
-		DeviceBoundObject(const std::shared_ptr<Device>& pDevice) : pDevice(pDevice)
-		{
-			if (!pDevice)
-				FLINT_THROW_INVALID_ARGUMENT("Device pointer should not be null!");
-		}
+		DeviceBoundObject(const std::shared_ptr<Device>& pDevice);
 
 	protected:
 		/**

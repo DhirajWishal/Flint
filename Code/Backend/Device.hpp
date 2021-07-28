@@ -61,11 +61,7 @@ namespace Flint
 		 * @param pInstance: The instance pointer.
 		 * @param flags: The device flags.
 		 */
-		Device(const std::shared_ptr<Instance>& pInstance, DeviceFlags flags) : pInstance(pInstance), mFlags(flags) 
-		{
-			if (!pInstance)
-				FLINT_THROW_INVALID_ARGUMENT("Instance pointer should not be null!");
-		}
+		Device(const std::shared_ptr<Instance>& pInstance, DeviceFlags flags);
 
 		/**
 		 * Check if the display is compatible with the device.

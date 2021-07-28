@@ -22,11 +22,7 @@ namespace Flint
 		 * @param pDevice: The device to which the buffer list is bound to.
 		 * @param bufferCount: The number of command buffers needed.
 		 */
-		CommandBufferList(const std::shared_ptr<Device>& pDevice, const UI32 bufferCount) : DeviceBoundObject(pDevice), mBufferCount(bufferCount)
-		{
-			if (bufferCount == 0)
-				FLINT_THROW_INVALID_ARGUMENT("Command buffer count should be greater than 0!");
-		}
+		CommandBufferList(const std::shared_ptr<Device>& pDevice, const UI32 bufferCount);
 
 		/**
 		 * Construct the command buffer list as a secondary command buffer list.

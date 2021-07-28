@@ -46,6 +46,20 @@ namespace Flint
 		 */
 		UI32 GetImageIndex() const { return mImageIndex; }
 
+		/**
+		 * Get the render targets clear screen color.
+		 *
+		 * @return The color container.
+		 */
+		virtual FColor4D GetClearColor() const = 0;
+
+		/**
+		 * Set the clear color values.
+		 *
+		 * @param newColor: The new color to set.
+		 */
+		virtual void SetClearColor(const FColor4D& newColor) = 0;
+
 	protected:
 		/**
 		 * Increment the frame index.

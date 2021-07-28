@@ -26,6 +26,7 @@ int main()
 
 		pDisplay->SetKeyCallback(KeyCallback);
 		pRenderTarget->PrepareStaticResources();
+
 		while (pDisplay->IsOpen())
 		{
 			pDisplay->Update();

@@ -102,21 +102,15 @@ namespace Flint
 		void VulkanCommandBufferList::BindRenderTarget(const std::shared_ptr<ScreenBoundRenderTarget>& pRenderTarget)
 		{
 			VulkanScreenBoundRenderTarget& vRenderTarget = pRenderTarget->StaticCast<VulkanScreenBoundRenderTarget>();
-
-			VkClearValue pClearValues[2] = {};
-			pClearValues[0].color.float32[0] = CREATE_COLOR_256(32.0f);
-			pClearValues[0].color.float32[1] = CREATE_COLOR_256(32.0f);
-			pClearValues[0].color.float32[2] = CREATE_COLOR_256(32.0f);
-			pClearValues[0].color.float32[3] = 1.0f;
-			pClearValues[1].depthStencil = { 1.0f, 0 };
+			FColor4D clearColors = vRenderTarget.GetClearColor();
 
 			VkRenderPassBeginInfo vBeginInfo = {};
 			vBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 			vBeginInfo.pNext = VK_NULL_HANDLE;
 			vBeginInfo.renderPass = vRenderTarget.GetRenderPass();
 			vBeginInfo.framebuffer = vRenderTarget.GetFrameBuffer(GetCurrentBufferIndex());
-			vBeginInfo.clearValueCount = 2;
-			vBeginInfo.pClearValues = pClearValues;
+			vBeginInfo.clearValueCount = vRenderTarget.GetClearScreenValueCount();
+			vBeginInfo.pClearValues = vRenderTarget.GetClearScreenValues();
 			vBeginInfo.renderArea.extent.width = vRenderTarget.GetExtent().mWidth;
 			vBeginInfo.renderArea.extent.height = vRenderTarget.GetExtent().mHeight;
 

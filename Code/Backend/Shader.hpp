@@ -61,14 +61,7 @@ namespace Flint
 		 * @param path: The file path to the asset file.
 		 * @param codeType: The shader code type.
 		 */
-		Shader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::filesystem::path& path, ShaderCodeType codeType) : DeviceBoundObject(pDevice), mType(type)
-		{
-			if (type == ShaderType::UNDEFINED)
-				FLINT_THROW_INVALID_ARGUMENT("Shader type should not be UNDEFINED!");
-
-			if (path.empty())
-				FLINT_THROW_INVALID_ARGUMENT("Shader file path should not be empty!");
-		}
+		Shader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::filesystem::path& path, ShaderCodeType codeType);
 
 		/**
 		 * Construct the shader using a shader code.
@@ -79,14 +72,7 @@ namespace Flint
 		 * @param code: The shader code as a vector of UI32.
 		 * @param codeType: The shader code type.
 		 */
-		Shader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::vector<UI32>& code, ShaderCodeType codeType = ShaderCodeType::SPIR_V) : DeviceBoundObject(pDevice), mType(type)
-		{
-			if (type == ShaderType::UNDEFINED)
-				FLINT_THROW_INVALID_ARGUMENT("Shader type should not be UNDEFINED!");
-
-			if (code.empty())
-				FLINT_THROW_INVALID_ARGUMENT("Shader code should not be empty!");
-		}
+		Shader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::vector<UI32>& code, ShaderCodeType codeType = ShaderCodeType::SPIR_V);
 
 		/**
 		 * Construct the shader using a shader code.
@@ -97,14 +83,7 @@ namespace Flint
 		 * @param code: The shader code as a string.
 		 * @param codeType: The shader code type.
 		 */
-		Shader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::string& code, ShaderCodeType codeType = ShaderCodeType::GLSL) : DeviceBoundObject(pDevice), mType(type)
-		{
-			if (type == ShaderType::UNDEFINED)
-				FLINT_THROW_INVALID_ARGUMENT("Shader type should not be UNDEFINED!");
-
-			if (code.empty())
-				FLINT_THROW_INVALID_ARGUMENT("Shader code should not be empty!");
-		}
+		Shader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::string& code, ShaderCodeType codeType = ShaderCodeType::GLSL);
 
 		/**
 		 * Get the shader resources of the shader.

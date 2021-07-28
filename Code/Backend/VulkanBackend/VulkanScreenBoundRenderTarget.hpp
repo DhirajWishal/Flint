@@ -26,8 +26,14 @@ namespace Flint
 
 			virtual void Recreate() override final;
 
+			virtual FColor4D GetClearColor() const override final;
+			virtual void SetClearColor(const FColor4D& newColor) override final;
+
 			VkRenderPass GetRenderPass() const { return vRenderTarget.vRenderPass; }
 			VkFramebuffer GetFrameBuffer(UI32 index) const { return vRenderTarget.vFrameBuffers[index]; }
+
+			UI32 GetClearScreenValueCount() const { return  2; }
+			const VkClearValue* GetClearScreenValues() const { return pClearValues; }
 
 		private:
 			VulkanRenderTarget vRenderTarget;
@@ -37,6 +43,8 @@ namespace Flint
 			VulkanDepthBuffer* pDepthBuffer = nullptr;
 
 			bool bShouldSkip = false;
+
+			VkClearValue pClearValues[2] = {};
 		};
 	}
 }

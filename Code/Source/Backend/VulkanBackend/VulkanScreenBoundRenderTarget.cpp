@@ -21,6 +21,14 @@ namespace Flint
 			vRenderTarget.CreateRenderPass({ pColorBuffer, pDepthBuffer, pSwapChain }, VK_PIPELINE_BIND_POINT_GRAPHICS);
 			vRenderTarget.CreateFrameBuffer({ pColorBuffer, pDepthBuffer, pSwapChain }, extent, bufferCount);
 			vRenderTarget.CreateSyncObjects(bufferCount);
+
+			// Setup default clear color values.
+			pClearValues[0].color.float32[0] = CREATE_COLOR_256(32.0f);
+			pClearValues[0].color.float32[1] = CREATE_COLOR_256(32.0f);
+			pClearValues[0].color.float32[2] = CREATE_COLOR_256(32.0f);
+			pClearValues[0].color.float32[3] = 1.0f;
+			pClearValues[1].depthStencil.depth = 1.0f;
+			pClearValues[1].depthStencil.stencil = 0;
 		}
 
 		void VulkanScreenBoundRenderTarget::PrepareStaticResources()
@@ -42,6 +50,7 @@ namespace Flint
 
 		void VulkanScreenBoundRenderTarget::BeginFrame()
 		{
+			// Skip if the screen is reported to be 0 in width or height.
 			if (bShouldSkip)
 				return;
 
@@ -61,12 +70,17 @@ namespace Flint
 
 		void VulkanScreenBoundRenderTarget::SubmitFrame()
 		{
+			auto& vDisplay = pDisplay->StaticCast<VulkanDisplay>();
+
+			// Skip if the screen is reported to be 0 in width or height.
 			if (bShouldSkip)
+			{
+				Recreate();
 				return;
+			}
 
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 			auto& vCommandBufferList = pCommandBufferList->StaticCast<VulkanCommandBufferList>();
-			auto& vDisplay = pDisplay->StaticCast<VulkanDisplay>();
 
 			if (vRenderTarget.vImagesInFlightFences[mImageIndex] != VK_NULL_HANDLE)
 				FLINT_VK_ASSERT(vkWaitForFences(vDevice.GetLogicalDevice(), 1, &vRenderTarget.vImagesInFlightFences[mImageIndex], VK_TRUE, std::numeric_limits<uint64_t>::max()));
@@ -131,9 +145,7 @@ namespace Flint
 
 		void VulkanScreenBoundRenderTarget::Recreate()
 		{
-			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
-			auto& vDisplay = pDisplay->StaticCast<VulkanDisplay>();
-			FExtent2D newExtent = vDisplay.GetExtent();
+			FExtent2D newExtent = pDisplay->GetExtent();
 
 			// Wait while the window contains the right width and height. 
 			// Until the window contains a valid size, it will skip draw calls.
@@ -142,13 +154,11 @@ namespace Flint
 				bShouldSkip = true;
 				return;
 			}
-			else
-			{
-				bShouldSkip = false;
-				mExtent = newExtent;
-			}
 
-			vDevice.WaitIdle();
+			mExtent = newExtent;
+			bShouldSkip = false;
+
+			pDevice->WaitIdle();
 			pCommandBufferList->ClearBuffers();
 
 			vRenderTarget.DestroyRenderPass();
@@ -165,6 +175,19 @@ namespace Flint
 			vRenderTarget.vInFlightFences.resize(vRenderTarget.vInFlightFences.size(), VK_NULL_HANDLE);
 
 			mImageIndex = 0, mFrameIndex = 0;
+		}
+
+		FColor4D VulkanScreenBoundRenderTarget::GetClearColor() const
+		{
+			return FColor4D(pClearValues[0].color.float32[0], pClearValues[0].color.float32[1], pClearValues[0].color.float32[2], pClearValues[0].color.float32[3]);
+		}
+
+		void VulkanScreenBoundRenderTarget::SetClearColor(const FColor4D& newColor)
+		{
+			pClearValues[0].color.float32[0] = newColor.mRed;
+			pClearValues[0].color.float32[1] = newColor.mGreen;
+			pClearValues[0].color.float32[2] = newColor.mBlue;
+			pClearValues[0].color.float32[3] = newColor.mAlpha;
 		}
 	}
 }
