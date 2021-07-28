@@ -5,7 +5,6 @@
 
 #include "DataType.hpp"
 
-#include <string>
 #include <stdexcept>
 
 namespace Flint

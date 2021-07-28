@@ -4,6 +4,7 @@
 #include "Backend/Instance.hpp"
 #include "Backend/Display.hpp"
 #include "Backend/ScreenBoundRenderTarget.hpp"
+#include "Backend/Core/Profiler.hpp"
 #include <iostream>
 
 void KeyCallback(Flint::KeyCode key, Flint::EventAction action, Flint::SpecialCharacter character)
@@ -29,6 +30,7 @@ int main()
 
 		while (pDisplay->IsOpen())
 		{
+			FLINT_SETUP_PROFILER();
 			pDisplay->Update();
 
 			pRenderTarget->BeginFrame();

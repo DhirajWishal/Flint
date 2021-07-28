@@ -21,6 +21,8 @@ namespace Flint
 
 		void VulkanRenderTarget::CreateRenderPass(std::vector<VulkanRenderTargetAttachment*> pAttachments, VkPipelineBindPoint vBindPoint)
 		{
+			FLINT_SETUP_PROFILER();
+
 			std::vector<VkAttachmentDescription> vDescriptions;
 
 			std::vector<VkAttachmentReference> vColorAttachmentRef;
@@ -108,6 +110,8 @@ namespace Flint
 
 		void VulkanRenderTarget::CreateFrameBuffer(std::vector<VulkanRenderTargetAttachment*> pAttachments, const FExtent2D& extent, UI32 bufferCount)
 		{
+			FLINT_SETUP_PROFILER();
+
 			VkFramebufferCreateInfo vCI = {};
 			vCI.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 			vCI.flags = 0;
@@ -141,6 +145,8 @@ namespace Flint
 
 		void VulkanRenderTarget::CreateSyncObjects(UI32 count)
 		{
+			FLINT_SETUP_PROFILER();
+
 			vImageAvailables.resize(count);
 			vRenderFinishes.resize(count);
 			vInFlightFences.resize(count);

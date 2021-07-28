@@ -9,6 +9,8 @@ namespace Flint
 	{
 		VulkanOneTimeCommandBuffer::VulkanOneTimeCommandBuffer(const VulkanDevice& device) : vDevice(const_cast<VulkanDevice&>(device))
 		{
+			FLINT_SETUP_PROFILER();
+
 			VkCommandPoolCreateInfo vPoolCI = {};
 			vPoolCI.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 			vPoolCI.flags = 0;
@@ -34,6 +36,8 @@ namespace Flint
 
 		VulkanOneTimeCommandBuffer::~VulkanOneTimeCommandBuffer()
 		{
+			FLINT_SETUP_PROFILER();
+
 			FLINT_VK_ASSERT(vkEndCommandBuffer(vBuffer));
 
 			VkSubmitInfo vSI = {};

@@ -6,7 +6,6 @@
 #include "FObject.hpp"
 #include "Core/Error.hpp"
 
-#include <string>
 #include <vector>
 #include <filesystem>
 

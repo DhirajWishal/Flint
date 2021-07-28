@@ -81,6 +81,8 @@ namespace Flint
 		VulkanShader::VulkanShader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::filesystem::path& path, ShaderCodeType codeType)
 			: Shader(pDevice, type, path, codeType)
 		{
+			FLINT_SETUP_PROFILER();
+
 			ResolveShaderStage();
 			std::ifstream shaderFile(path, std::ios::ate | std::ios::binary);
 
@@ -117,6 +119,8 @@ namespace Flint
 		VulkanShader::VulkanShader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::vector<UI32>& code, ShaderCodeType codeType)
 			: Shader(pDevice, type, code, codeType)
 		{
+			FLINT_SETUP_PROFILER();
+
 			ResolveShaderStage();
 
 			if (codeType != ShaderCodeType::SPIR_V) // TODO
@@ -131,6 +135,8 @@ namespace Flint
 		VulkanShader::VulkanShader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::string& code, ShaderCodeType codeType)
 			: Shader(pDevice, type, code, codeType)
 		{
+			FLINT_SETUP_PROFILER();
+
 			ResolveShaderStage();
 			if (codeType != ShaderCodeType::SPIR_V) // TODO
 				FLINT_THROW_RUNTIME_ERROR("Invalid shader code type!");
@@ -166,6 +172,8 @@ namespace Flint
 
 		void VulkanShader::PerformReflection()
 		{
+			FLINT_SETUP_PROFILER();
+
 			spirv_cross::Compiler compiler(_Helpers::ResolvePadding(mShaderCode));
 			spirv_cross::ShaderResources resources = compiler.get_shader_resources();
 			spirv_cross::SPIRType type = {};

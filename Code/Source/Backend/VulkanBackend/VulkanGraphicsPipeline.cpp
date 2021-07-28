@@ -17,6 +17,8 @@ namespace Flint
 			const std::shared_ptr<Shader>& pFragmentShader)
 			: GraphicsPipeline(pDevice, pRenderTarget, pVertexShader, pTessellationControlShader, pTessellationEvaluationShader, pGeometryShader, pFragmentShader)
 		{
+			FLINT_SETUP_PROFILER();
+
 			CreatePipelineLayout();
 			CreatePipeline();
 		}
@@ -30,6 +32,8 @@ namespace Flint
 
 		void VulkanGraphicsPipeline::CreatePipelineLayout()
 		{
+			FLINT_SETUP_PROFILER();
+
 			VkPipelineLayoutCreateInfo vCI = {};
 			vCI.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 			vCI.pNext = VK_NULL_HANDLE;
@@ -40,6 +44,8 @@ namespace Flint
 
 		void VulkanGraphicsPipeline::CreatePipeline()
 		{
+			FLINT_SETUP_PROFILER();
+
 			VkGraphicsPipelineCreateInfo vCI = {};
 
 			FLINT_VK_ASSERT(vkCreateGraphicsPipelines(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), VK_NULL_HANDLE, 1, &vCI, nullptr, &vPipeline));

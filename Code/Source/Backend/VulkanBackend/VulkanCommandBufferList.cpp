@@ -10,6 +10,8 @@ namespace Flint
 	{
 		VulkanCommandBufferList::VulkanCommandBufferList(const std::shared_ptr<Device>& pDevice, const UI32 bufferCount) : CommandBufferList(pDevice, bufferCount)
 		{
+			FLINT_SETUP_PROFILER();
+
 			auto vDevice = pDevice->StaticCast<VulkanDevice>();
 
 			VkCommandPoolCreateInfo vPoolCI = {};
@@ -34,6 +36,8 @@ namespace Flint
 		VulkanCommandBufferList::VulkanCommandBufferList(const std::shared_ptr<Device>& pDevice, const UI32 bufferCount, const std::shared_ptr<CommandBufferList>& pParent)
 			: CommandBufferList(pDevice, bufferCount, pParent)
 		{
+			FLINT_SETUP_PROFILER();
+
 			auto vDevice = pDevice->StaticCast<VulkanDevice>();
 
 			VkCommandPoolCreateInfo vPoolCI = {};
@@ -57,6 +61,8 @@ namespace Flint
 
 		void VulkanCommandBufferList::BeginBufferRecording(UI32 index)
 		{
+			FLINT_SETUP_PROFILER();
+
 			mCurrentBufferIndex = index;
 			vCurrentBuffer = vCommandBuffers[index];
 
@@ -71,6 +77,8 @@ namespace Flint
 
 		void VulkanCommandBufferList::BeginBufferRecording(UI32 index, const std::shared_ptr<CommandBufferList> pParent)
 		{
+			FLINT_SETUP_PROFILER();
+
 			mCurrentBufferIndex = index;
 			vCurrentBuffer = vCommandBuffers[index];
 
@@ -85,6 +93,8 @@ namespace Flint
 
 		void VulkanCommandBufferList::BeginNextBufferRecording()
 		{
+			FLINT_SETUP_PROFILER();
+
 			mCurrentBufferIndex++;
 			if (mCurrentBufferIndex >= mBufferCount) mCurrentBufferIndex = 0;
 
@@ -93,6 +103,8 @@ namespace Flint
 
 		void VulkanCommandBufferList::BeginNextBufferRecording(const std::shared_ptr<CommandBufferList> pParent)
 		{
+			FLINT_SETUP_PROFILER();
+
 			mCurrentBufferIndex++;
 			if (mCurrentBufferIndex >= mBufferCount) mCurrentBufferIndex = 0;
 
@@ -101,6 +113,8 @@ namespace Flint
 
 		void VulkanCommandBufferList::BindRenderTarget(const std::shared_ptr<ScreenBoundRenderTarget>& pRenderTarget)
 		{
+			FLINT_SETUP_PROFILER();
+
 			VulkanScreenBoundRenderTarget& vRenderTarget = pRenderTarget->StaticCast<VulkanScreenBoundRenderTarget>();
 			FColor4D clearColors = vRenderTarget.GetClearColor();
 

@@ -1,0 +1,82 @@
+// Copyright 2021 Dhiraj Wishal
+// SPDX-License-Identifier: Apache-2.0
+
+#pragma once
+
+#include <string>
+#include <chrono>
+#include <fstream>
+
+namespace Flint
+{
+	class ProfileLogger;
+
+	/**
+	 * Flint profiler class.
+	 * This object is used to store time stamp and function information while profiling.
+	 *
+	 * This counts the starting time using the constructor and logs it to the profiler upon its destruction.
+	 * The object functions only in debug and pre release modes.
+	 */
+	class Profiler
+	{
+		friend ProfileLogger;
+
+	public:
+		Profiler(const char* pFunctionSignature);
+		~Profiler();
+
+	private:
+#ifndef FLINT_RELEASE
+		const char* pFunctionSignature = nullptr;
+		std::chrono::time_point<std::chrono::high_resolution_clock> mStart = {};
+		std::chrono::time_point<std::chrono::high_resolution_clock> mEnd = {};
+
+#endif // !FLINT_RELEASE
+	};
+
+#ifndef FLINT_RELEASE
+	/**
+	 * Flint profile logger class.
+	 * This object is used to store information to the logger file. The file type is json.
+	 *
+	 * This object can only be used in debug and pre release modes.
+	 */
+	class ProfileLogger
+	{
+		ProfileLogger();
+		~ProfileLogger();
+		static ProfileLogger mInstance;
+
+	public:
+		/**
+		 * Get the current profiler instance.
+		 *
+		 * @return the instance reference.
+		 */
+		static ProfileLogger& GetInstance() { return mInstance; }
+
+		/**
+		 * Write a profile content to the file.
+		 *
+		 * @param profiler: The profiler object.
+		 */
+		void WriteContent(const Profiler& profiler);
+
+		/**
+		 * Set profile context from another profiler to this.
+		 *
+		 * @param other: The other profile logger.
+		 */
+		void SetInstanceContext(const ProfileLogger& other);
+
+	private:
+		std::shared_ptr<std::ofstream> pLoggerFile = nullptr;
+		bool bIsFirst = true;
+	};
+
+#endif // !FLINT_RELEASE
+
+}
+
+#define FLINT_SETUP_PROFILER()	::Flint::Profiler __profiler{ __FUNCSIG__ }

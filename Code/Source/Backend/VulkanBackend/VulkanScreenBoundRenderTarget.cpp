@@ -4,6 +4,8 @@
 #include "VulkanBackend/VulkanScreenBoundRenderTarget.hpp"
 #include "VulkanBackend/VulkanCommandBufferList.hpp"
 
+#include "Core/Profiler.hpp"
+
 namespace Flint
 {
 	namespace VulkanBackend
@@ -11,6 +13,8 @@ namespace Flint
 		VulkanScreenBoundRenderTarget::VulkanScreenBoundRenderTarget(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, const FExtent2D& extent, const UI32 bufferCount)
 			: ScreenBoundRenderTarget(pDevice, pDisplay, extent, bufferCount, pDevice->CreatePrimaryCommandBufferList(bufferCount)), vRenderTarget(pDevice->StaticCast<VulkanDevice>())
 		{
+			FLINT_SETUP_PROFILER();
+
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 			auto& vDisplay = pDisplay->StaticCast<VulkanDisplay>();
 
@@ -33,6 +37,8 @@ namespace Flint
 
 		void VulkanScreenBoundRenderTarget::PrepareStaticResources()
 		{
+			FLINT_SETUP_PROFILER();
+
 			VulkanCommandBufferList& vCommandBufferList = pCommandBufferList->StaticCast<VulkanCommandBufferList>();
 			std::shared_ptr<ScreenBoundRenderTarget> pThisRenderTarget = this->shared_from_this();
 
@@ -50,6 +56,7 @@ namespace Flint
 
 		void VulkanScreenBoundRenderTarget::BeginFrame()
 		{
+			FLINT_SETUP_PROFILER();
 			// Skip if the screen is reported to be 0 in width or height.
 			if (bShouldSkip)
 				return;
@@ -66,10 +73,13 @@ namespace Flint
 
 		void VulkanScreenBoundRenderTarget::Update()
 		{
+			FLINT_SETUP_PROFILER();
 		}
 
 		void VulkanScreenBoundRenderTarget::SubmitFrame()
 		{
+			FLINT_SETUP_PROFILER();
+
 			auto& vDisplay = pDisplay->StaticCast<VulkanDisplay>();
 
 			// Skip if the screen is reported to be 0 in width or height.

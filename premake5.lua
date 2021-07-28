@@ -6,6 +6,7 @@ workspace "Flint"
 
 	configurations {
 		"Debug",
+		"PreRelease",
 		"Release",
 	}
 
@@ -58,6 +59,11 @@ workspace "Flint"
 		defines { "FLINT_DEBUG" }
 		symbols "On"
 		IncludeLib["FreeImage"] = "$(SolutionDir)Dependencies/ThirdParty/Binaries/FreeImage/Debug"
+
+	filter "configurations:PreRelease"
+		defines { "FLINT_PRE_RELEASE" }
+		optimize "On"
+		IncludeLib["FreeImage"] = "$(SolutionDir)Dependencies/ThirdParty/Binaries/FreeImage/Release"
 
 	filter "configurations:Release"
 		defines { "FLINT_RELEASE" }

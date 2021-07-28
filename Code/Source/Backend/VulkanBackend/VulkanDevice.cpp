@@ -156,6 +156,8 @@ namespace Flint
 
 		VkResult VulkanDevice::CreateImageMemory(const std::vector<VkImage>& vImages, VkMemoryPropertyFlags vMemoryflags, VkDeviceMemory* pDeviceMemory) const
 		{
+			FLINT_SETUP_PROFILER();
+
 			if (!vImages.size())
 				return VkResult::VK_ERROR_UNKNOWN;
 
@@ -189,6 +191,8 @@ namespace Flint
 
 		void VulkanDevice::SetImageLayout(VkCommandBuffer vCommandBuffer, VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, UI32 layerCount, UI32 currentLayer, UI32 mipLevels) const
 		{
+			FLINT_SETUP_PROFILER();
+
 			VkImageMemoryBarrier vMB = {};
 			vMB.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
 			vMB.oldLayout = vOldLayout;
@@ -294,12 +298,16 @@ namespace Flint
 
 		void VulkanDevice::SetImageLayout(VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, UI32 layerCount, UI32 currentLayer, UI32 mipLevels) const
 		{
+			FLINT_SETUP_PROFILER();
+
 			VulkanOneTimeCommandBuffer vCommandBuffer(*this);
 			SetImageLayout(vCommandBuffer, vImage, vOldLayout, vNewLayout, vFormat, layerCount, currentLayer, mipLevels);
 		}
 
 		void VulkanDevice::InitializePhysicalDevice()
 		{
+			FLINT_SETUP_PROFILER();
+
 			VulkanInstance& instance = pInstance->StaticCast<VulkanInstance>();
 
 			UI32 deviceCount = 0;
@@ -375,6 +383,8 @@ namespace Flint
 
 		void VulkanDevice::InitializeLogicalDevice()
 		{
+			FLINT_SETUP_PROFILER();
+
 			VulkanInstance& instance = pInstance->StaticCast<VulkanInstance>();
 
 			vQueue.Initialize(vPhysicalDevice, mFlags);

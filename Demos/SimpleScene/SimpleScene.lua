@@ -40,6 +40,9 @@ project "SimpleScene"
 	filter "configurations:Debug"
 	    buildoptions "/MTd"
 
+	filter "configurations:PreRelease"
+	    buildoptions "/MT"
+
 	filter "configurations:Release"
 	    buildoptions "/MT"
 

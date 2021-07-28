@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "Profiler.hpp"
 #include <limits>
 
 #define INSERT_INTO_VECTOR(vector, ...)		vector.insert(vector.end(), __VA_ARGS__)

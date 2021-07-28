@@ -11,6 +11,8 @@ namespace Flint
 		VulkanBuffer::VulkanBuffer(const std::shared_ptr<Device>& pDevice, BufferType type, const UI64 size)
 			: Buffer(pDevice, type, size)
 		{
+			FLINT_SETUP_PROFILER();
+
 			switch (type)
 			{
 			case Flint::BufferType::STAGGING:
@@ -49,10 +51,13 @@ namespace Flint
 
 		void VulkanBuffer::Resize(UI64 size, BufferResizeMode mode)
 		{
+			FLINT_SETUP_PROFILER();
 		}
 
 		void VulkanBuffer::CopyFromBuffer(const Buffer& srcBuffer, UI64 size, UI64 srcOffset, UI64 dstOffset)
 		{
+			FLINT_SETUP_PROFILER();
+
 			VkBufferCopy vBufferCopy = {};
 			vBufferCopy.size = size;
 			vBufferCopy.srcOffset = srcOffset;
@@ -64,6 +69,8 @@ namespace Flint
 
 		void* VulkanBuffer::MapMemory(UI64 size, UI64 offset)
 		{
+			FLINT_SETUP_PROFILER();
+
 			if (size + offset > mSize)
 				FLINT_THROW_RANGE_ERROR("Submitted size and offset goes beyond the buffer dimensions!");
 			else if (size <= 0)
@@ -77,6 +84,8 @@ namespace Flint
 
 		void VulkanBuffer::UnmapMemory()
 		{
+			FLINT_SETUP_PROFILER();
+
 			vkUnmapMemory(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), vMemory);
 		}
 
@@ -89,6 +98,8 @@ namespace Flint
 
 		void VulkanBuffer::CreateBuffer()
 		{
+			FLINT_SETUP_PROFILER();
+
 			VkBufferCreateInfo vCI = {};
 			vCI.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
 			vCI.flags = 0;
@@ -104,6 +115,8 @@ namespace Flint
 
 		void VulkanBuffer::CreateBufferMemory()
 		{
+			FLINT_SETUP_PROFILER();
+
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 
 			VkMemoryRequirements vMR = {};

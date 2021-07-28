@@ -11,6 +11,8 @@ namespace Flint
 		VulkanDepthBuffer::VulkanDepthBuffer(VulkanDevice& device, const FExtent2D& extent, const UI32 bufferCount)
 			: VulkanRenderTargetAttachment(RenderTargetAttachmenType::DEPTH_BUFFER, device, extent, bufferCount)
 		{
+			FLINT_SETUP_PROFILER();
+
 			vSampleCount = vDevice.GetSampleCount();
 			vFormat = Utilities::FindDepthFormat(vDevice.GetPhysicalDevice());
 
@@ -19,6 +21,8 @@ namespace Flint
 
 		void VulkanDepthBuffer::Recreate(const FExtent2D& extent)
 		{
+			FLINT_SETUP_PROFILER();
+
 			mExtent = extent;
 
 			Terminate();
@@ -58,6 +62,8 @@ namespace Flint
 
 		void VulkanDepthBuffer::Initialize()
 		{
+			FLINT_SETUP_PROFILER();
+
 			VkImageCreateInfo vCI = {};
 			vCI.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 			vCI.flags = 0;

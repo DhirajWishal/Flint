@@ -6,7 +6,6 @@
 #include "Core/DataType.hpp"
 
 #include <vector>
-#include <string>
 
 namespace Flint
 {

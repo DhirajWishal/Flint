@@ -92,6 +92,8 @@ namespace Flint
 
 		VulkanDisplay::VulkanDisplay(const std::shared_ptr<Instance>& pInstance, const FExtent2D& extent, const std::string& title) : Display(pInstance, extent, title)
 		{
+			FLINT_SETUP_PROFILER();
+
 			pWindow = glfwCreateWindow(extent.mWidth, extent.mHeight, title.c_str(), nullptr, nullptr);
 
 			if (!pWindow)
@@ -125,6 +127,8 @@ namespace Flint
 
 		UI32 VulkanDisplay::FindBestBufferCount(const std::shared_ptr<Device>& pDevice, UI32 count)
 		{
+			FLINT_SETUP_PROFILER();
+
 			auto& vSurfaceCapabilities = GetSurfaceCapabilities(pDevice->StaticCast<VulkanDevice>());
 			if (count == std::numeric_limits<UI32>::max())
 				return vSurfaceCapabilities.maxImageCount - 1;
@@ -224,6 +228,8 @@ namespace Flint
 
 		void VulkanDisplay::SetupMaps()
 		{
+			FLINT_SETUP_PROFILER();
+
 			mKeyMap[glfwGetKeyScancode(GLFW_KEY_SPACE)] = KeyCode::SPACE;
 			mKeyMap[glfwGetKeyScancode(GLFW_KEY_APOSTROPHE)] = KeyCode::APOSTROPHE;
 			mKeyMap[glfwGetKeyScancode(GLFW_KEY_COMMA)] = KeyCode::COMMA;

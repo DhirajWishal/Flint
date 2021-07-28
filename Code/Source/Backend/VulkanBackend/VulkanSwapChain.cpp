@@ -11,11 +11,15 @@ namespace Flint
 		VulkanSwapChain::VulkanSwapChain(VulkanDevice& device, VulkanDisplay& display, const FExtent2D& extent, const UI32 bufferCount)
 			: VulkanRenderTargetAttachment(RenderTargetAttachmenType::SWAP_CHAIN, device, extent, bufferCount), vDisplay(display)
 		{
+			FLINT_SETUP_PROFILER();
+
 			Initialize();
 		}
 
 		void VulkanSwapChain::Recreate(const FExtent2D& extent)
 		{
+			FLINT_SETUP_PROFILER();
+
 			mExtent = extent;
 
 			Initialize();
@@ -58,6 +62,8 @@ namespace Flint
 
 		void VulkanSwapChain::Initialize()
 		{
+			FLINT_SETUP_PROFILER();
+
 			SwapChainSupportDetails& vSupport = SwapChainSupportDetails::Query(vDevice.GetPhysicalDevice(), vDisplay.GetSurface());
 			VkSurfaceFormatKHR surfaceFormat = vDisplay.ChooseSurfaceFormat(vSupport.mFormats);
 			VkPresentModeKHR presentMode = vDisplay.ChoosePresentMode(vSupport.mPresentModes);

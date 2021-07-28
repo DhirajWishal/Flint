@@ -12,6 +12,8 @@ namespace Flint
 		VulkanColorBuffer::VulkanColorBuffer(VulkanDevice& device, const FExtent2D& extent, const UI32 bufferCount, VkFormat format)
 			: VulkanRenderTargetAttachment(RenderTargetAttachmenType::COLOR_BUFFER, device, extent, bufferCount, format)
 		{
+			FLINT_SETUP_PROFILER();
+
 			vSampleCount = vDevice.GetSampleCount();
 
 			Initialize();
@@ -19,6 +21,8 @@ namespace Flint
 
 		void VulkanColorBuffer::Recreate(const FExtent2D& extent)
 		{
+			FLINT_SETUP_PROFILER();
+
 			mExtent = extent;
 
 			Terminate();
@@ -59,6 +63,8 @@ namespace Flint
 
 		void VulkanColorBuffer::Initialize()
 		{
+			FLINT_SETUP_PROFILER();
+
 			VkImageCreateInfo vCI = {};
 			vCI.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 			vCI.flags = 0;

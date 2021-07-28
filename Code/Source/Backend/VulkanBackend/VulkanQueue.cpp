@@ -11,6 +11,8 @@ namespace Flint
 	{
 		void VulkanQueue::Initialize(VkPhysicalDevice vPhysicalDevice, DeviceFlags flags)
 		{
+			FLINT_SETUP_PROFILER();
+
 			UI32 queueFamilyCount = 0;
 			vkGetPhysicalDeviceQueueFamilyProperties(vPhysicalDevice, &queueFamilyCount, nullptr);
 

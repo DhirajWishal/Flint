@@ -9,7 +9,6 @@
 
 #include <GLFW/glfw3.h>
 #include <iostream>
-#include <fstream>
 
 namespace Flint
 {
@@ -121,6 +120,8 @@ namespace Flint
 
 		VulkanInstance::VulkanInstance(bool enableValidation) : Instance(enableValidation)
 		{
+			FLINT_SETUP_PROFILER();
+
 			InitializeGLFW();
 
 			// Check if Vulkan is supported.
@@ -179,6 +180,8 @@ namespace Flint
 
 		void VulkanInstance::InitializeInstance()
 		{
+			FLINT_SETUP_PROFILER();
+
 			// Check if the validation layers are supported.
 			if (mEnableValidation && !_Helpers::CheckValidationLayerSupport(mValidationLayers))
 				FLINT_THROW_RUNTIME_ERROR("Validation layers requested but not available!");
