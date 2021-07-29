@@ -12,3 +12,5 @@
 #	define FLINT_VK_ASSERT(expression)	expression
 
 #endif // FLINT_DEBUG
+
+#define GET_VK_BOOL(value)		(value ? VK_TRUE : VK_FALSE)

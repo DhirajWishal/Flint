@@ -101,7 +101,7 @@ namespace Flint
 			FLINT_SETUP_PROFILER();
 
 			VkBufferCreateInfo vCI = {};
-			vCI.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+			vCI.sType = VkStructureType::VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
 			vCI.flags = 0;
 			vCI.pNext = VK_NULL_HANDLE;
 			vCI.queueFamilyIndexCount = 0;
@@ -126,7 +126,7 @@ namespace Flint
 			vkGetPhysicalDeviceMemoryProperties(vDevice.GetPhysicalDevice(), &vMP);
 
 			VkMemoryAllocateInfo vAI = {};
-			vAI.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+			vAI.sType = VkStructureType::VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 			vAI.allocationSize = vMR.size;
 
 			for (UI32 i = 0; i < vMP.memoryTypeCount; i++)

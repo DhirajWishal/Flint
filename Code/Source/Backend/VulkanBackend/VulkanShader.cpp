@@ -159,7 +159,7 @@ namespace Flint
 		VkPipelineShaderStageCreateInfo VulkanShader::GetShaderStageCreateInfo() const
 		{
 			VkPipelineShaderStageCreateInfo vCreateInfo = {};
-			vCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 			vCreateInfo.pNext = VK_NULL_HANDLE;
 			vCreateInfo.flags = 0;
 			vCreateInfo.pSpecializationInfo = VK_NULL_HANDLE;
@@ -196,7 +196,8 @@ namespace Flint
 				INSERT_INTO_VECTOR(mBindings, vBinding);
 				INSERT_INTO_VECTOR(mSizes, vSize);
 
-				INSERT_INTO_VECTOR(mResources, ShaderResource(compiler.get_name(resource.id), vBinding.binding, ShaderResourceType::UNIFORM_BUFFER));
+				const std::string name = compiler.get_name(resource.id);
+				mResources[name] = ShaderResource(vBinding.binding, compiler.get_decoration(resource.id, spv::DecorationDescriptorSet), ShaderResourceType::UNIFORM_BUFFER);
 			}
 
 			// Resolve storage buffers.
@@ -208,11 +209,12 @@ namespace Flint
 				INSERT_INTO_VECTOR(mBindings, vBinding);
 				INSERT_INTO_VECTOR(mSizes, vSize);
 
-				INSERT_INTO_VECTOR(mResources, ShaderResource(compiler.get_name(resource.id), compiler.get_decoration(resource.id, spv::DecorationBinding), ShaderResourceType::STORAGE_BUFFER));
+				const std::string name = compiler.get_name(resource.id);
+				mResources[name] = ShaderResource(vBinding.binding, compiler.get_decoration(resource.id, spv::DecorationDescriptorSet), ShaderResourceType::STORAGE_BUFFER);
 			}
 
 			// Resolve samplers.
-			vBinding.descriptorType = VkDescriptorType::VK_DESCRIPTOR_TYPE_SAMPLER;
+			vBinding.descriptorType = VkDescriptorType::VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 			vSize.type = vBinding.descriptorType;
 			for (auto& resource : resources.sampled_images)
 			{
@@ -220,7 +222,8 @@ namespace Flint
 				INSERT_INTO_VECTOR(mBindings, vBinding);
 				INSERT_INTO_VECTOR(mSizes, vSize);
 
-				INSERT_INTO_VECTOR(mResources, ShaderResource(compiler.get_name(resource.id), compiler.get_decoration(resource.id, spv::DecorationBinding), ShaderResourceType::SAMPLER));
+				const std::string name = compiler.get_name(resource.id);
+				mResources[name] = ShaderResource(vBinding.binding, compiler.get_decoration(resource.id, spv::DecorationDescriptorSet), ShaderResourceType::SAMPLER);
 			}
 
 			// Resolve shader inputs.
@@ -228,7 +231,7 @@ namespace Flint
 			{
 				auto& Ty = compiler.get_type(resource.base_type_id);
 				UI64 size = (static_cast<UI64>(Ty.width) / 8) * (Ty.vecsize == 3 ? 4 : Ty.vecsize);
-				INSERT_INTO_VECTOR(mInputAttributes, ShaderAttribute(compiler.get_name(resource.id), compiler.get_decoration(resource.id, spv::DecorationBinding), static_cast<ShaderAttributeDataType>(size)));
+				INSERT_INTO_VECTOR(mInputAttributes[compiler.get_decoration(resource.id, spv::DecorationBinding)], ShaderAttribute(compiler.get_name(resource.id), compiler.get_decoration(resource.id, spv::DecorationLocation), static_cast<ShaderAttributeDataType>(size)));
 			}
 
 			// Resolve shader outputs.
@@ -236,7 +239,7 @@ namespace Flint
 			{
 				auto& Ty = compiler.get_type(resource.base_type_id);
 				UI64 size = (static_cast<UI64>(Ty.width) / 8) * (Ty.vecsize == 3 ? 4 : Ty.vecsize);
-				INSERT_INTO_VECTOR(mOutputAttributes, ShaderAttribute(compiler.get_name(resource.id), compiler.get_decoration(resource.id, spv::DecorationBinding), static_cast<ShaderAttributeDataType>(size)));
+				INSERT_INTO_VECTOR(mOutputAttributes[compiler.get_decoration(resource.id, spv::DecorationBinding)], ShaderAttribute(compiler.get_name(resource.id), compiler.get_decoration(resource.id, spv::DecorationLocation), static_cast<ShaderAttributeDataType>(size)));
 			}
 		}
 
@@ -293,7 +296,7 @@ namespace Flint
 		void VulkanShader::CreateShaderModule()
 		{
 			VkShaderModuleCreateInfo vCreateInfo = {};
-			vCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
 			vCreateInfo.pNext = VK_NULL_HANDLE;
 			vCreateInfo.flags = 0;
 			vCreateInfo.codeSize = mShaderCode.size();
@@ -305,7 +308,7 @@ namespace Flint
 		void VulkanShader::CreateDescriptorSetLayout()
 		{
 			VkDescriptorSetLayoutCreateInfo vCreateInfo = {};
-			vCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 			vCreateInfo.pNext = VK_NULL_HANDLE;
 			vCreateInfo.flags = 0;
 			vCreateInfo.bindingCount = static_cast<UI32>(mBindings.size());

@@ -5,6 +5,8 @@
 #include "Backend/Display.hpp"
 #include "Backend/ScreenBoundRenderTarget.hpp"
 #include "Backend/Core/Profiler.hpp"
+#include "Backend/Shader.hpp"
+#include "Backend/GraphicsPipeline.hpp"
 #include <iostream>
 
 void KeyCallback(Flint::KeyCode key, Flint::EventAction action, Flint::SpecialCharacter character)
@@ -22,11 +24,20 @@ int main()
 		auto pDisplay = pInstance->CreateDisplay({ 1280, 720 }, "Flint: Sample Scene");
 
 		auto pRenderTarget = pDevice->CreateScreenBoundRenderTarget(pDisplay, { 1280, 720 }, pDisplay->FindBestBufferCount(pDevice));
+
 		auto pBuffer = pDevice->CreateBuffer(Flint::BufferType::STAGGING, 1024);
-		auto pVertexShader = pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("E:\\Flint\\Assets\\Shaders\\3D\\shader.vert.spv"), Flint::ShaderCodeType::SPIR_V);
+
+		auto pVertexShader = pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("E:\\Flint\\Assets\\Shaders\\PBR\\TBL\\shader.vert.spv"), Flint::ShaderCodeType::SPIR_V);
+		auto pFragmentShader = pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("E:\\Flint\\Assets\\Shaders\\PBR\\TBL\\shader.frag.spv"), Flint::ShaderCodeType::SPIR_V);
+		const auto resourceVS = pVertexShader->GetShaderResources();
+		const auto resourceFS = pFragmentShader->GetShaderResources();
+
+		auto pPipeline = pDevice->CreateGraphicsPipeline(pRenderTarget, pVertexShader, nullptr, nullptr, nullptr, pFragmentShader, Flint::GraphicsPipelineSpecification());
 
 		pDisplay->SetKeyCallback(KeyCallback);
 		pRenderTarget->PrepareStaticResources();
+
+		pPipeline->Recreate(pRenderTarget);
 
 		while (pDisplay->IsOpen())
 		{
@@ -39,8 +50,14 @@ int main()
 		}
 
 		pDevice->DestroyShader(pVertexShader);
+		pDevice->DestroyShader(pFragmentShader);
+
+		pDevice->DestroyPipeline(pPipeline);
+
 		pDevice->DestroyBuffer(pBuffer);
+
 		pDevice->DestroyRenderTarget(pRenderTarget);
+
 		pInstance->DestroyDisplay(pDisplay);
 		pInstance->DestroyDevice(pDevice);
 		Flint::DestroyInstance(pInstance);

@@ -12,7 +12,7 @@ namespace Flint
 			FLINT_SETUP_PROFILER();
 
 			VkCommandPoolCreateInfo vPoolCI = {};
-			vPoolCI.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+			vPoolCI.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 			vPoolCI.flags = 0;
 			vPoolCI.pNext = VK_NULL_HANDLE;
 			vPoolCI.queueFamilyIndex = vDevice.GetQueue().mTransferFamily.value();
@@ -20,7 +20,7 @@ namespace Flint
 			FLINT_VK_ASSERT(vkCreateCommandPool(vDevice.GetLogicalDevice(), &vPoolCI, nullptr, &vPool));
 
 			VkCommandBufferAllocateInfo vAI = {};
-			vAI.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+			vAI.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 			vAI.pNext = VK_NULL_HANDLE;
 			vAI.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 			vAI.commandPool = vPool;
@@ -29,7 +29,7 @@ namespace Flint
 			FLINT_VK_ASSERT(vkAllocateCommandBuffers(vDevice.GetLogicalDevice(), &vAI, &vBuffer));
 
 			VkCommandBufferBeginInfo vBI = {};
-			vBI.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+			vBI.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 			//vBI.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 			FLINT_VK_ASSERT(vkBeginCommandBuffer(vBuffer, &vBI));
 		}
@@ -41,12 +41,12 @@ namespace Flint
 			FLINT_VK_ASSERT(vkEndCommandBuffer(vBuffer));
 
 			VkSubmitInfo vSI = {};
-			vSI.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+			vSI.sType = VkStructureType::VK_STRUCTURE_TYPE_SUBMIT_INFO;
 			vSI.commandBufferCount = 1;
 			vSI.pCommandBuffers = &vBuffer;
 
 			VkFenceCreateInfo vFCI = {};
-			vFCI.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+			vFCI.sType = VkStructureType::VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
 			vFCI.pNext = VK_NULL_HANDLE;
 			vFCI.flags = 0;
 

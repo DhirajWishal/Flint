@@ -82,7 +82,7 @@ namespace Flint
 			vFormat = surfaceFormat.format;
 
 			VkSwapchainCreateInfoKHR vCI = {};
-			vCI.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+			vCI.sType = VkStructureType::VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
 			vCI.flags = 0;
 			vCI.pNext = VK_NULL_HANDLE;
 			vCI.surface = vDisplay.GetSurface();

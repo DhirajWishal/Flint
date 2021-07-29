@@ -33,6 +33,16 @@ namespace Flint
 			virtual std::shared_ptr<Shader> CreateShader(ShaderType type, const std::string& code, ShaderCodeType codeType = ShaderCodeType::GLSL) override final;
 			virtual void DestroyShader(const std::shared_ptr<Shader>& pShader) override final;
 
+			virtual std::shared_ptr<GraphicsPipeline> CreateGraphicsPipeline(
+				const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget,
+				const std::shared_ptr<Shader>& pVertexShader,
+				const std::shared_ptr<Shader>& pTessellationControlShader,
+				const std::shared_ptr<Shader>& pTessellationEvaluationShader,
+				const std::shared_ptr<Shader>& pGeometryShader,
+				const std::shared_ptr<Shader>& pFragmentShader,
+				const GraphicsPipelineSpecification& specification) override final;
+			virtual void DestroyPipeline(const std::shared_ptr<Pipeline>& pPipeline) override final;
+
 			virtual void WaitIdle() override final;
 			virtual void WaitForQueue() override final;
 

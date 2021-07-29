@@ -6,6 +6,8 @@
 #include <string>
 #include <chrono>
 #include <fstream>
+#include <mutex>
+#include <filesystem>
 
 namespace Flint
 {
@@ -36,6 +38,29 @@ namespace Flint
 	};
 
 #ifndef FLINT_RELEASE
+	/**
+	 * Atomic profile control block structure.
+	 * This contains the output file and the mutex which is used in multi threading.
+	 */
+	struct AtomicProfileControlBlock
+	{
+		AtomicProfileControlBlock(const std::filesystem::path& filePath);
+		~AtomicProfileControlBlock();
+
+		/**
+		 * Lock the resources.
+		 */
+		void Lock() { while(!mMutex.try_lock()); }
+
+		/**
+		 * Unlock the resources.
+		 */
+		void Unlock() { mMutex.unlock(); }
+
+		std::ofstream mProfileFile = {};
+		std::mutex mMutex = {};
+	};
+
 	/**
 	 * Flint profile logger class.
 	 * This object is used to store information to the logger file. The file type is json.
@@ -71,12 +96,11 @@ namespace Flint
 		void SetInstanceContext(const ProfileLogger& other);
 
 	private:
-		std::shared_ptr<std::ofstream> pLoggerFile = nullptr;
+		std::shared_ptr<AtomicProfileControlBlock> pControlBlock = nullptr;
 		bool bIsFirst = true;
 	};
 
 #endif // !FLINT_RELEASE
-
 }
 
 #define FLINT_SETUP_PROFILER()	::Flint::Profiler __profiler{ __FUNCSIG__ }

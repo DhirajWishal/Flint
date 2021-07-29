@@ -4,14 +4,14 @@ layout (location = 0) in vec3 inWorldPos;
 layout (location = 1) in vec3 inNormal;
 layout (location = 2) in vec2 inUV;
 
-layout (binding = 1) uniform UBO {
+layout (set = 1, binding = 0) uniform UBO {
 	mat4 projection;
 	mat4 model;
 	mat4 view;
 	vec3 camPos;
 } ubo;
 
-layout (binding = 2) uniform UBOParams {
+layout (set = 1, binding = 1) uniform UBOParams {
 	vec4 light1;	// Cannot use arrays since SPIRV Cross does not recognize static arrays properly.
 	vec4 light2;
 	vec4 light3;
@@ -20,15 +20,15 @@ layout (binding = 2) uniform UBOParams {
 	float gamma;
 } uboParams;
 
-layout (binding = 3) uniform sampler2D albedoMap;
-layout (binding = 4) uniform sampler2D normalMap;
-layout (binding = 5) uniform sampler2D aoMap;
-layout (binding = 6) uniform sampler2D metallicMap;
-layout (binding = 7) uniform sampler2D roughnessMap;
+layout (set = 1, binding = 2) uniform sampler2D albedoMap;
+layout (set = 1, binding = 3) uniform sampler2D normalMap;
+layout (set = 1, binding = 4) uniform sampler2D aoMap;
+layout (set = 1, binding = 5) uniform sampler2D metallicMap;
+layout (set = 1, binding = 6) uniform sampler2D roughnessMap;
 
-layout (binding = 8) uniform samplerCube samplerIrradiance;
-layout (binding = 9) uniform sampler2D samplerBRDFLUT;
-layout (binding = 10) uniform samplerCube prefilteredMap;
+layout (set = 1, binding = 7) uniform samplerCube samplerIrradiance;
+layout (set = 1, binding = 8) uniform sampler2D samplerBRDFLUT;
+layout (set = 1, binding = 9) uniform samplerCube prefilteredMap;
 
 layout (location = 0) out vec4 outColor;
 

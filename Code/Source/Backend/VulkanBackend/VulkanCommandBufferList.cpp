@@ -15,7 +15,7 @@ namespace Flint
 			auto vDevice = pDevice->StaticCast<VulkanDevice>();
 
 			VkCommandPoolCreateInfo vPoolCI = {};
-			vPoolCI.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+			vPoolCI.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 			vPoolCI.flags = VkCommandPoolCreateFlagBits::VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 			vPoolCI.pNext = VK_NULL_HANDLE;
 			vPoolCI.queueFamilyIndex = vDevice.GetQueue().mTransferFamily.value();
@@ -23,7 +23,7 @@ namespace Flint
 			FLINT_VK_ASSERT(vkCreateCommandPool(vDevice.GetLogicalDevice(), &vPoolCI, nullptr, &vCommandPool));
 
 			VkCommandBufferAllocateInfo vAI = {};
-			vAI.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+			vAI.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 			vAI.pNext = VK_NULL_HANDLE;
 			vAI.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 			vAI.commandPool = vCommandPool;
@@ -41,7 +41,7 @@ namespace Flint
 			auto vDevice = pDevice->StaticCast<VulkanDevice>();
 
 			VkCommandPoolCreateInfo vPoolCI = {};
-			vPoolCI.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+			vPoolCI.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 			vPoolCI.flags = VkCommandPoolCreateFlagBits::VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 			vPoolCI.pNext = VK_NULL_HANDLE;
 			vPoolCI.queueFamilyIndex = vDevice.GetQueue().mTransferFamily.value();
@@ -49,7 +49,7 @@ namespace Flint
 			FLINT_VK_ASSERT(vkCreateCommandPool(vDevice.GetLogicalDevice(), &vPoolCI, nullptr, &vCommandPool));
 
 			VkCommandBufferAllocateInfo vAI = {};
-			vAI.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+			vAI.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 			vAI.pNext = VK_NULL_HANDLE;
 			vAI.level = VK_COMMAND_BUFFER_LEVEL_SECONDARY;
 			vAI.commandPool = vCommandPool;
@@ -67,7 +67,7 @@ namespace Flint
 			vCurrentBuffer = vCommandBuffers[index];
 
 			VkCommandBufferBeginInfo vBeginInfo = {};
-			vBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+			vBeginInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 			vBeginInfo.pNext = VK_NULL_HANDLE;
 			vBeginInfo.flags = VkCommandBufferUsageFlagBits::VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
 			vBeginInfo.pInheritanceInfo = VK_NULL_HANDLE;
@@ -83,7 +83,7 @@ namespace Flint
 			vCurrentBuffer = vCommandBuffers[index];
 
 			VkCommandBufferBeginInfo vBeginInfo = {};
-			vBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+			vBeginInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 			vBeginInfo.pNext = VK_NULL_HANDLE;
 			vBeginInfo.flags = VkCommandBufferUsageFlagBits::VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
 			vBeginInfo.pInheritanceInfo = VK_NULL_HANDLE;
@@ -119,7 +119,7 @@ namespace Flint
 			FColor4D clearColors = vRenderTarget.GetClearColor();
 
 			VkRenderPassBeginInfo vBeginInfo = {};
-			vBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+			vBeginInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 			vBeginInfo.pNext = VK_NULL_HANDLE;
 			vBeginInfo.renderPass = vRenderTarget.GetRenderPass();
 			vBeginInfo.framebuffer = vRenderTarget.GetFrameBuffer(GetCurrentBufferIndex());

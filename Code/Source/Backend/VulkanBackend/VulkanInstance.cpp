@@ -101,7 +101,7 @@ namespace Flint
 			VkDebugUtilsMessengerCreateInfoEXT CreateDebugMessengerCreateInfo()
 			{
 				VkDebugUtilsMessengerCreateInfoEXT createInfo = {};
-				createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+				createInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
 				createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT
 					| VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT
 					| VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
@@ -188,7 +188,7 @@ namespace Flint
 
 			// Application info.
 			VkApplicationInfo appInfo = {};
-			appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+			appInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_APPLICATION_INFO;
 			appInfo.pApplicationName = "Flint Engine";
 			appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
 			appInfo.pEngineName = "Flint";
@@ -197,7 +197,7 @@ namespace Flint
 
 			// FInstance create info.
 			VkInstanceCreateInfo createInfo = {};
-			createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+			createInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 			createInfo.pApplicationInfo = &appInfo;
 
 			// Get and insert the required instance extensions.

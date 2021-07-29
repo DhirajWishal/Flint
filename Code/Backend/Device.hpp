@@ -17,6 +17,11 @@ namespace Flint
 	class Buffer;
 	class Shader;
 
+	class Pipeline;
+	class GraphicsPipeline;
+
+	struct GraphicsPipelineSpecification;
+
 	/**
 	 * Device flags enum.
 	 * This determines the device characteristics.
@@ -170,6 +175,33 @@ namespace Flint
 		 * @param pShader: The shader object to destroy.
 		 */
 		virtual void DestroyShader(const std::shared_ptr<Shader>& pShader) = 0;
+
+		/**
+		 * Create a new graphics pipeline bound to this render target.
+		 *
+		 * @param pRenderTarget: The screen bound render target pointer.
+		 * @param pVertexShader: The vertex shader pointer.
+		 * @param pTessellationControlShader: The tessellation control shader pointer.
+		 * @param pTessellationEvaluationShader: The tessellation evaluation shader pointer.
+		 * @param pGeometryShader: The geometry shader pointer.
+		 * @param pFragmentShader: The fragment shader pointer.
+		 * @return The pipeline pointer.
+		 */
+		virtual std::shared_ptr<GraphicsPipeline> CreateGraphicsPipeline(
+			const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget,
+			const std::shared_ptr<Shader>& pVertexShader,
+			const std::shared_ptr<Shader>& pTessellationControlShader,
+			const std::shared_ptr<Shader>& pTessellationEvaluationShader,
+			const std::shared_ptr<Shader>& pGeometryShader,
+			const std::shared_ptr<Shader>& pFragmentShader,
+			const GraphicsPipelineSpecification& specification) = 0;
+
+		/**
+		 * Destroy the created pipeline.
+		 *
+		 * @param pPipeline: The pipeline pointer.
+		 */
+		virtual void DestroyPipeline(const std::shared_ptr<Pipeline>& pPipeline) = 0;
 
 	public:
 		/**

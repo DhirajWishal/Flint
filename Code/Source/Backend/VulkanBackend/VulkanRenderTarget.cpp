@@ -90,7 +90,7 @@ namespace Flint
 			vDependencies[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
 
 			VkRenderPassCreateInfo vCI = {};
-			vCI.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+			vCI.sType = VkStructureType::VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 			vCI.flags = 0;
 			vCI.pNext = VK_NULL_HANDLE;
 			vCI.attachmentCount = static_cast<UI32>(vDescriptions.size());
@@ -113,7 +113,7 @@ namespace Flint
 			FLINT_SETUP_PROFILER();
 
 			VkFramebufferCreateInfo vCI = {};
-			vCI.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+			vCI.sType = VkStructureType::VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 			vCI.flags = 0;
 			vCI.pNext = VK_NULL_HANDLE;
 			vCI.layers = 1;
@@ -153,10 +153,10 @@ namespace Flint
 			vImagesInFlightFences.resize(count);
 
 			VkSemaphoreCreateInfo vSCI = {};
-			vSCI.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+			vSCI.sType = VkStructureType::VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
 			VkFenceCreateInfo vFCI = {};
-			vFCI.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+			vFCI.sType = VkStructureType::VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
 			vFCI.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
 			for (auto& itr : vImageAvailables)

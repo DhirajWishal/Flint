@@ -8,6 +8,7 @@
 #include "VulkanBackend/VulkanScreenBoundRenderTarget.hpp"
 #include "VulkanBackend/VulkanBuffer.hpp"
 #include "VulkanBackend/VulkanShader.hpp"
+#include "VulkanBackend/VulkanGraphicsPipeline.hpp"
 
 #include <set>
 
@@ -139,6 +140,16 @@ namespace Flint
 			TerminateDeviceBoundObject(*pShader);
 		}
 
+		std::shared_ptr<GraphicsPipeline> VulkanDevice::CreateGraphicsPipeline(const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget, const std::shared_ptr<Shader>& pVertexShader, const std::shared_ptr<Shader>& pTessellationControlShader, const std::shared_ptr<Shader>& pTessellationEvaluationShader, const std::shared_ptr<Shader>& pGeometryShader, const std::shared_ptr<Shader>& pFragmentShader, const GraphicsPipelineSpecification& specification)
+		{
+			return std::make_shared<VulkanGraphicsPipeline>(shared_from_this(), pScreenBoundRenderTarget, pVertexShader, pTessellationControlShader, pTessellationEvaluationShader, pGeometryShader, pFragmentShader, specification);
+		}
+
+		void VulkanDevice::DestroyPipeline(const std::shared_ptr<Pipeline>& pPipeline)
+		{
+			TerminateDeviceBoundObject(*pPipeline);
+		}
+
 		void VulkanDevice::WaitIdle()
 		{
 			FLINT_VK_ASSERT(vkDeviceWaitIdle(GetLogicalDevice()));
@@ -168,7 +179,7 @@ namespace Flint
 			vkGetPhysicalDeviceMemoryProperties(GetPhysicalDevice(), &vMP);
 
 			VkMemoryAllocateInfo vAI = {};
-			vAI.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+			vAI.sType = VkStructureType::VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 			vAI.allocationSize = vMR.size * vImages.size();
 
 			for (UI32 i = 0; i < vMP.memoryTypeCount; i++)
@@ -194,7 +205,7 @@ namespace Flint
 			FLINT_SETUP_PROFILER();
 
 			VkImageMemoryBarrier vMB = {};
-			vMB.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+			vMB.sType = VkStructureType::VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
 			vMB.oldLayout = vOldLayout;
 			vMB.newLayout = vNewLayout;
 			vMB.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
@@ -400,7 +411,7 @@ namespace Flint
 			for (UI32 queueFamily : uniqueQueueFamilies)
 			{
 				VkDeviceQueueCreateInfo queueCreateInfo = {};
-				queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+				queueCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 				queueCreateInfo.queueFamilyIndex = queueFamily;
 				queueCreateInfo.queueCount = 1;
 				queueCreateInfo.pQueuePriorities = &queuePriority;
@@ -414,7 +425,7 @@ namespace Flint
 
 			// Device create info.
 			VkDeviceCreateInfo createInfo = {};
-			createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+			createInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 			createInfo.queueCreateInfoCount = static_cast<UI32>(queueCreateInfos.size());
 			createInfo.pQueueCreateInfos = queueCreateInfos.data();
 			createInfo.pEnabledFeatures = &deviceFeatures;

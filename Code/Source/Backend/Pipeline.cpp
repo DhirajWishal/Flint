@@ -1,0 +1,15 @@
+// Copyright 2021 Dhiraj Wishal
+// SPDX-License-Identifier: Apache-2.0
+
+#include "Pipeline.hpp"
+
+namespace Flint
+{
+	namespace Helpers
+	{
+		ResourceDescriptor::BufferAttachment CreateBufferResourceAttachment(const std::string& resourceName, const std::shared_ptr<Buffer>& pBuffer)
+		{
+			return ResourceDescriptor::BufferAttachment(resourceName, pBuffer);
+		}
+	}
+}

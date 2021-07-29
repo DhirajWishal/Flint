@@ -66,7 +66,7 @@ namespace Flint
 			FLINT_SETUP_PROFILER();
 
 			VkImageCreateInfo vCI = {};
-			vCI.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+			vCI.sType = VkStructureType::VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 			vCI.flags = 0;
 			vCI.pNext = VK_NULL_HANDLE;
 			vCI.imageType = VK_IMAGE_TYPE_2D;

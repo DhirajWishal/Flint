@@ -15,13 +15,15 @@ namespace Flint
 		public:
 			VulkanGraphicsPipeline(
 				const std::shared_ptr<Device>& pDevice,
-				const std::shared_ptr<RenderTarget>& pRenderTarget,
+				const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget,
 				const std::shared_ptr<Shader>& pVertexShader,
 				const std::shared_ptr<Shader>& pTessellationControlShader,
 				const std::shared_ptr<Shader>& pTessellationEvaluationShader,
 				const std::shared_ptr<Shader>& pGeometryShader,
-				const std::shared_ptr<Shader>& pFragmentShader);
+				const std::shared_ptr<Shader>& pFragmentShader,
+				const GraphicsPipelineSpecification& specification);
 
+			virtual void Recreate(const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget) override final;
 			virtual void Terminate() override final;
 
 		private:
@@ -29,8 +31,20 @@ namespace Flint
 			void CreatePipeline();
 
 		private:
+			VkPipelineVertexInputStateCreateInfo vVertexInputStateCreateInfo = {};
+			VkPipelineInputAssemblyStateCreateInfo vInputAssemblyStateCreateInfo = {};
+			VkPipelineTessellationStateCreateInfo vTessellationStateCreateInfo = {};
+			VkPipelineRasterizationStateCreateInfo vRasterizationStateCreateInfo = {};
+			VkPipelineMultisampleStateCreateInfo vMultisampleStateCreateInfo = {};
+			VkPipelineDepthStencilStateCreateInfo vDepthStencilStateCreateInfo = {};
+
+			std::vector<VkPipelineShaderStageCreateInfo> vShaderStageCreateInfo;
+			std::vector<VkVertexInputAttributeDescription> vVertexAttributes;
+			std::vector<VkVertexInputBindingDescription> vVertexBindings;
+
 			VkPipelineLayout vPipelineLayout = VK_NULL_HANDLE;
 			VkPipeline vPipeline = VK_NULL_HANDLE;
+			VkRenderPass vRenderPass = VK_NULL_HANDLE;
 		};
 	}
 }

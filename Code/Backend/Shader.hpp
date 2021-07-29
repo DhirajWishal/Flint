@@ -5,6 +5,8 @@
 
 #include "DeviceBoundObject.hpp"
 
+#include <unordered_map>
+
 namespace Flint
 {
 	/**
@@ -22,10 +24,10 @@ namespace Flint
 	struct ShaderResource
 	{
 		ShaderResource() = default;
-		ShaderResource(const std::string& name, UI32 binding, ShaderResourceType type) : mResourceName(name), mBinding(binding), mType(type) {}
+		ShaderResource(UI32 binding, UI32 setIndex, ShaderResourceType type) : mBinding(binding), mSetIndex(setIndex), mType(type) {}
 
-		std::string mResourceName = "";
 		UI32 mBinding = 0;
+		UI32 mSetIndex = 0;
 		ShaderResourceType mType = ShaderResourceType::UNIFORM_BUFFER;
 	};
 
@@ -90,7 +92,7 @@ namespace Flint
 		 *
 		 * @return The shader resources.
 		 */
-		std::vector<ShaderResource> GetShaderResources() const { return mResources; }
+		const std::unordered_map<std::string, ShaderResource> GetShaderResources() const { return mResources; }
 
 		/**
 		 * Get shader input attributes.
@@ -98,7 +100,7 @@ namespace Flint
 		 *
 		 * @return The array of input attributes.
 		 */
-		std::vector<ShaderAttribute> GetInputAttributes() const { return mInputAttributes; }
+		const std::unordered_map<UI32, std::vector<ShaderAttribute>> GetInputAttributes() const { return mInputAttributes; }
 
 		/**
 		 * Get shader output attributes.
@@ -106,12 +108,12 @@ namespace Flint
 		 *
 		 * @return The array of output attributes.
 		 */
-		std::vector<ShaderAttribute> GetOutputAttributes() const { return mOutputAttributes; }
+		const std::unordered_map<UI32, std::vector<ShaderAttribute>> GetOutputAttributes() const { return mOutputAttributes; }
 
 	protected:
-		std::vector<ShaderResource> mResources;
-		std::vector<ShaderAttribute> mInputAttributes;
-		std::vector<ShaderAttribute> mOutputAttributes;
+		std::unordered_map<std::string, ShaderResource> mResources;
+		std::unordered_map<UI32, std::vector<ShaderAttribute>> mInputAttributes;
+		std::unordered_map<UI32, std::vector<ShaderAttribute>> mOutputAttributes;
 
 		ShaderType mType = ShaderType::UNDEFINED;
 	};

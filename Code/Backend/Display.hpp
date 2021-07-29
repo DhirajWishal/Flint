@@ -5,7 +5,6 @@
 
 #include "Device.hpp"
 
-#include <filesystem>
 #include <functional>
 
 namespace Flint

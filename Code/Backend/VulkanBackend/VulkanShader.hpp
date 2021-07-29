@@ -24,6 +24,7 @@ namespace Flint
 
 			VkShaderModule GetModule() const { return vModule; }
 			VkDescriptorSetLayout GetLayout() const { return vDescriptorSetLayout; }
+			std::vector<VkDescriptorSetLayoutBinding> GetResourceBindings() const { return mBindings; }
 			std::vector<VkDescriptorPoolSize> GetPoolSizes() const { return mSizes; }
 
 		private:

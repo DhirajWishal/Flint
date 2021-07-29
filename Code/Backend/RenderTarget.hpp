@@ -7,6 +7,8 @@
 
 namespace Flint
 {
+	class Pipeline;
+
 	/**
 	 * Flint render target object.
 	 * This object is the base class for all the supported render targets.
@@ -50,6 +52,7 @@ namespace Flint
 		 */
 		virtual void SubmitFrame() = 0;
 
+	public:
 		/**
 		 * Get the render target extent.
 		 *

@@ -4,8 +4,6 @@
 #include "VulkanBackend/VulkanScreenBoundRenderTarget.hpp"
 #include "VulkanBackend/VulkanCommandBufferList.hpp"
 
-#include "Core/Profiler.hpp"
-
 namespace Flint
 {
 	namespace VulkanBackend
@@ -101,7 +99,7 @@ namespace Flint
 			VkCommandBuffer vCommandBuffer[1] = { vCommandBufferList.GetCommandBuffer(mFrameIndex) };
 
 			VkSubmitInfo vSI = {};
-			vSI.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+			vSI.sType = VkStructureType::VK_STRUCTURE_TYPE_SUBMIT_INFO;
 			vSI.pNext = VK_NULL_HANDLE;
 			vSI.commandBufferCount = 1;
 			vSI.pCommandBuffers = vCommandBuffer;
@@ -115,7 +113,7 @@ namespace Flint
 			FLINT_VK_ASSERT(vkQueueSubmit(vDevice.GetQueue().vGraphicsQueue, 1, &vSI, vRenderTarget.vInFlightFences[mFrameIndex]));
 
 			VkPresentInfoKHR vPI = {};
-			vPI.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+			vPI.sType = VkStructureType::VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 			vPI.pNext = VK_NULL_HANDLE;
 			vPI.waitSemaphoreCount = 1;
 			vPI.pWaitSemaphores = &vRenderTarget.vRenderFinishes[mFrameIndex];
@@ -155,6 +153,8 @@ namespace Flint
 
 		void VulkanScreenBoundRenderTarget::Recreate()
 		{
+			FLINT_SETUP_PROFILER();
+
 			FExtent2D newExtent = pDisplay->GetExtent();
 
 			// Wait while the window contains the right width and height. 

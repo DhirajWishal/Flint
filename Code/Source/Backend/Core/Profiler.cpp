@@ -20,25 +20,31 @@ namespace Flint
 		ProfileLogger::GetInstance().WriteContent(*this);
 	}
 
+	AtomicProfileControlBlock::AtomicProfileControlBlock(const std::filesystem::path& filePath) : mProfileFile(filePath)
+	{
+		if (!mProfileFile.is_open())
+			FLINT_THROW_RUNTIME_ERROR("Failed to open the profile logger!");
+
+		mProfileFile << "{\"otherData\": {},\"traceEvents\":[";
+		mProfileFile.flush();
+	}
+
+	AtomicProfileControlBlock::~AtomicProfileControlBlock()
+	{
+		mProfileFile << "]}";
+		mProfileFile.flush();
+		mProfileFile.close();
+	}
+
 	ProfileLogger::ProfileLogger()
 	{
 		std::stringstream threadID;
 		threadID << std::this_thread::get_id();
-		pLoggerFile = std::make_shared<std::ofstream>("ProfileLog_" + threadID.str() + ".json");
-
-		if (!pLoggerFile->is_open())
-			FLINT_THROW_RUNTIME_ERROR("Failed to open the profile logger!");
-
-		*pLoggerFile << "{\"otherData\": {},\"traceEvents\":[";
-		pLoggerFile->flush();
+		pControlBlock = std::make_shared<AtomicProfileControlBlock>("ProfileLog_" + threadID.str() + ".json");
 	}
 
 	ProfileLogger::~ProfileLogger()
 	{
-		std::ofstream& file = *pLoggerFile;
-		file << "]}";
-		file.flush();
-		file.close();
 	}
 
 	ProfileLogger ProfileLogger::mInstance;
@@ -46,7 +52,8 @@ namespace Flint
 	void ProfileLogger::WriteContent(const Profiler& profiler)
 	{
 		long long start = std::chrono::time_point_cast<std::chrono::microseconds>(profiler.mStart).time_since_epoch().count();
-		std::ofstream& file = *pLoggerFile;
+		pControlBlock->Lock();
+		std::ofstream& file = pControlBlock->mProfileFile;
 
 		if (GetInstance().bIsFirst)
 			GetInstance().bIsFirst = false;
@@ -64,14 +71,12 @@ namespace Flint
 		file << "}";
 
 		file.flush();
+		pControlBlock->Unlock();
 	}
 
 	void ProfileLogger::SetInstanceContext(const ProfileLogger& other)
 	{
-		if (pLoggerFile->is_open())
-			pLoggerFile->close();
-
-		pLoggerFile = other.pLoggerFile;
+		pControlBlock = other.pControlBlock;
 		bIsFirst = other.bIsFirst;
 	}
 
