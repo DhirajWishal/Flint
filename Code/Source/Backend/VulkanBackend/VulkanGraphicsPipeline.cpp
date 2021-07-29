@@ -252,10 +252,23 @@ namespace Flint
 
 				return states;
 			}
+
+			void AddPoolSizesToVector(std::vector<VkDescriptorPoolSize>& poolSizes, const VulkanShader& shader)
+			{
+				std::vector<VkDescriptorPoolSize> tempPoolSizes = shader.GetPoolSizes();
+				poolSizes.insert(poolSizes.end(), tempPoolSizes.begin(), tempPoolSizes.end());
+			}
+
+			void AddResourcesToMap(std::unordered_map<std::string, ShaderResource>& resources, const VulkanShader& shader)
+			{
+				const std::unordered_map<std::string, ShaderResource> tempResources = shader.GetShaderResources();
+				resources.insert(tempResources.begin(), tempResources.end());
+			}
 		}
 
 		VulkanGraphicsPipeline::VulkanGraphicsPipeline(
 			const std::shared_ptr<Device>& pDevice,
+			const std::string& pipelineName,
 			const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget,
 			const std::shared_ptr<Shader>& pVertexShader,
 			const std::shared_ptr<Shader>& pTessellationControlShader,
@@ -265,6 +278,7 @@ namespace Flint
 			const GraphicsPipelineSpecification& specification)
 			: GraphicsPipeline(
 				pDevice,
+				pipelineName,
 				pScreenBoundRenderTarget,
 				pVertexShader,
 				pTessellationControlShader,
@@ -337,6 +351,19 @@ namespace Flint
 			vTessellationStateCreateInfo.flags = 0;
 			vTessellationStateCreateInfo.patchControlPoints = mSpecification.mTessellationPatchControlPoints;
 
+			// Color blend state.
+			vCBAS.colorWriteMask = 0xf;
+			vCBAS.blendEnable = GET_VK_BOOL(mSpecification.bEnableColorBlend);
+
+			vColorBlendStateCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+			vColorBlendStateCreateInfo.pNext = VK_NULL_HANDLE;
+			vColorBlendStateCreateInfo.flags = 0;
+			vColorBlendStateCreateInfo.logicOp = _Helpers::GetLogicOp(mSpecification.mColorBlendLogic);
+			vColorBlendStateCreateInfo.logicOpEnable = GET_VK_BOOL(mSpecification.bEnableColorBlendLogic);
+			std::copy(mSpecification.mColorBlendConstants, mSpecification.mColorBlendConstants + 4, vColorBlendStateCreateInfo.blendConstants);
+			vColorBlendStateCreateInfo.pAttachments = &vCBAS;
+			vColorBlendStateCreateInfo.attachmentCount = 1;
+
 			// Rasterization state.
 			vRasterizationStateCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
 			vRasterizationStateCreateInfo.pNext = VK_NULL_HANDLE;
@@ -373,7 +400,17 @@ namespace Flint
 			vDepthStencilStateCreateInfo.depthWriteEnable = GET_VK_BOOL(mSpecification.bEnableDepthWrite);
 			vDepthStencilStateCreateInfo.depthCompareOp = _Helpers::GetCompareOp(mSpecification.mDepthCompareLogic);
 
+			// Dynamic state.
+			vDynamicStates = std::move(_Helpers::GetDynamicStates(mSpecification.mDynamicStateFlags));
+
+			vDynamicStateCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+			vDynamicStateCreateInfo.pNext = VK_NULL_HANDLE;
+			vDynamicStateCreateInfo.flags = 0;
+			vDynamicStateCreateInfo.dynamicStateCount = static_cast<UI32>(vDynamicStates.size());
+			vDynamicStateCreateInfo.pDynamicStates = vDynamicStates.data();
+
 			CreatePipelineLayout();
+			CreatePipelineCache();
 			CreatePipeline();
 		}
 
@@ -390,8 +427,147 @@ namespace Flint
 		void VulkanGraphicsPipeline::Terminate()
 		{
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
+
+			// Write cache data.
+			UI64 cacheSize = 0;
+			FLINT_VK_ASSERT(vkGetPipelineCacheData(vDevice.GetLogicalDevice(), vPipelineCache, &cacheSize, nullptr));
+
+			unsigned char* pDataStore = new unsigned char[cacheSize];
+			FLINT_VK_ASSERT(vkGetPipelineCacheData(vDevice.GetLogicalDevice(), vPipelineCache, &cacheSize, pDataStore));
+
+			WriteDataToCacheFile(cacheSize, pDataStore);
+			delete[] pDataStore;
+
+			// Delete pipeline objects.
 			vkDestroyPipeline(vDevice.GetLogicalDevice(), vPipeline, nullptr);
 			vkDestroyPipelineLayout(vDevice.GetLogicalDevice(), vPipelineLayout, nullptr);
+			vkDestroyPipelineCache(vDevice.GetLogicalDevice(), vPipelineCache, nullptr);
+
+			if (vDescriptorSetPool)
+			{
+				vkFreeDescriptorSets(vDevice.GetLogicalDevice(), vDescriptorSetPool, static_cast<UI32>(vDescriptorSets.size()), vDescriptorSets.data());
+				vkDestroyDescriptorPool(vDevice.GetLogicalDevice(), vDescriptorSetPool, nullptr);
+			}
+		}
+
+		void VulkanGraphicsPipeline::PrepareResourcesToDraw()
+		{
+			std::vector<VkDescriptorSetLayout> vSetLayouts;
+			std::vector<VkDescriptorPoolSize> vPoolSizes;
+			std::unordered_map<std::string, ShaderResource> mResources;
+
+			// Resolve vertex shader data.
+			{
+				VulkanShader& vVertexShader = pVertexShader->StaticCast<VulkanShader>();
+				INSERT_INTO_VECTOR(vSetLayouts, vVertexShader.GetLayout());
+				_Helpers::AddPoolSizesToVector(vPoolSizes, vVertexShader);
+				_Helpers::AddResourcesToMap(mResources, vVertexShader);
+			}
+
+			// Resolve fragment shader data.
+			{
+				VulkanShader& vFragmentShader = pFragmentShader->StaticCast<VulkanShader>();
+				INSERT_INTO_VECTOR(vSetLayouts, vFragmentShader.GetLayout());
+				_Helpers::AddPoolSizesToVector(vPoolSizes, vFragmentShader);
+				_Helpers::AddResourcesToMap(mResources, vFragmentShader);
+			}
+
+			// Check and resolve tessellation control shader data.
+			if (pTessellationControlShader)
+			{
+				VulkanShader& vShader = pTessellationControlShader->StaticCast<VulkanShader>();
+				INSERT_INTO_VECTOR(vSetLayouts, vShader.GetLayout());
+				_Helpers::AddPoolSizesToVector(vPoolSizes, vShader);
+				_Helpers::AddResourcesToMap(mResources, vShader);
+			}
+
+			// Check and resolve tessellation evaluation shader data.
+			if (pTessellationEvaluationShader)
+			{
+				VulkanShader& vShader = pTessellationEvaluationShader->StaticCast<VulkanShader>();
+				INSERT_INTO_VECTOR(vSetLayouts, vShader.GetLayout());
+				_Helpers::AddPoolSizesToVector(vPoolSizes, vShader);
+				_Helpers::AddResourcesToMap(mResources, vShader);
+			}
+
+			// Check and resolve geometry shader data.
+			if (pGeometryShader)
+			{
+				VulkanShader& vShader = pGeometryShader->StaticCast<VulkanShader>();
+				INSERT_INTO_VECTOR(vSetLayouts, vShader.GetLayout());
+				_Helpers::AddPoolSizesToVector(vPoolSizes, vShader);
+				_Helpers::AddResourcesToMap(mResources, vShader);
+			}
+
+			UI32 descriptorSetCount = static_cast<UI32>(mDrawDataList.size());
+			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
+
+			// Create descriptor pool.
+			VkDescriptorPoolCreateInfo vPoolCreateInfo = {};
+			vPoolCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO;
+			vPoolCreateInfo.pNext = VK_NULL_HANDLE;
+			vPoolCreateInfo.flags = 0;
+			vPoolCreateInfo.maxSets = descriptorSetCount;
+			vPoolCreateInfo.poolSizeCount = static_cast<UI32>(vPoolSizes.size());
+			vPoolCreateInfo.pPoolSizes = vPoolSizes.data();
+
+			FLINT_VK_ASSERT(vkCreateDescriptorPool(vDevice.GetLogicalDevice(), &vPoolCreateInfo, nullptr, &vDescriptorSetPool));
+
+			// Allocate descriptor sets.
+			VkDescriptorSetAllocateInfo vAllocateInfo = {};
+			vAllocateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+			vAllocateInfo.pNext = VK_NULL_HANDLE;
+			vAllocateInfo.descriptorPool = vDescriptorSetPool;
+			vAllocateInfo.pSetLayouts = vSetLayouts.data();
+			vAllocateInfo.descriptorSetCount = descriptorSetCount;
+
+			vDescriptorSets.resize(descriptorSetCount);
+			FLINT_VK_ASSERT(vkAllocateDescriptorSets(vDevice.GetLogicalDevice(), &vAllocateInfo, vDescriptorSets.data()));
+
+			// Update descriptor sets.
+			std::vector<VkWriteDescriptorSet> vWrites;
+			VkWriteDescriptorSet vWrite = {};
+			vWrite.sType = VkStructureType::VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			vWrite.pNext = VK_NULL_HANDLE;
+			vWrite.pTexelBufferView = VK_NULL_HANDLE;
+			vWrite.descriptorCount = 1;
+			vWrite.dstArrayElement = 0;
+
+			for (UI64 index = 0; index < mDrawDataList.size(); index++)
+			{
+				const auto drawData = mDrawDataList[index];
+
+				vWrite.dstSet = vDescriptorSets[index];
+
+				vWrite.pImageInfo = VK_NULL_HANDLE;
+
+				const auto bufferResources = drawData.pResourceMap->GetBufferResourceMap();
+				for (const auto resource : bufferResources)
+				{
+					vWrite.pBufferInfo = VK_NULL_HANDLE;
+
+				}
+
+				INSERT_INTO_VECTOR(vWrites, vWrite);
+			}
+
+			vkUpdateDescriptorSets(vDevice.GetLogicalDevice(), static_cast<UI32>(vWrites.size()), vWrites.data(), 0, nullptr);
+		}
+
+		void VulkanGraphicsPipeline::CreatePipelineCache()
+		{
+			auto [size, data] = ReadDataFromCacheFile();
+
+			VkPipelineCacheCreateInfo vCreateInfo = {};
+			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
+			vCreateInfo.pNext = VK_NULL_HANDLE;
+			vCreateInfo.flags = 0;
+			vCreateInfo.initialDataSize = size;
+			vCreateInfo.pInitialData = data;
+
+			FLINT_VK_ASSERT(vkCreatePipelineCache(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), &vCreateInfo, nullptr, &vPipelineCache));
+
+			delete[] data;
 		}
 
 		void VulkanGraphicsPipeline::CreatePipelineLayout()
@@ -451,31 +627,6 @@ namespace Flint
 			vViewportStateCreateInfo.viewportCount = 1;
 			vViewportStateCreateInfo.pViewports = &vVP;
 
-			// Color blend state.
-			VkPipelineColorBlendAttachmentState vCBAS = {};
-			vCBAS.colorWriteMask = 0xf;
-			vCBAS.blendEnable = GET_VK_BOOL(mSpecification.bEnableColorBlend);
-
-			VkPipelineColorBlendStateCreateInfo vColorBlendStateCreateInfo = {};
-			vColorBlendStateCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-			vColorBlendStateCreateInfo.pNext = VK_NULL_HANDLE;
-			vColorBlendStateCreateInfo.flags = 0;
-			vColorBlendStateCreateInfo.logicOp = _Helpers::GetLogicOp(mSpecification.mColorBlendLogic);
-			vColorBlendStateCreateInfo.logicOpEnable = GET_VK_BOOL(mSpecification.bEnableColorBlendLogic);
-			std::copy(mSpecification.mColorBlendConstants, mSpecification.mColorBlendConstants + 4, vColorBlendStateCreateInfo.blendConstants);
-			vColorBlendStateCreateInfo.pAttachments = &vCBAS;
-			vColorBlendStateCreateInfo.attachmentCount = 1;
-
-			// Dynamic state.
-			std::vector<VkDynamicState> vDynamicStates = std::move(_Helpers::GetDynamicStates(mSpecification.mDynamicStateFlags));
-
-			VkPipelineDynamicStateCreateInfo vDynamicStateCreateInfo = {};
-			vDynamicStateCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-			vDynamicStateCreateInfo.pNext = VK_NULL_HANDLE;
-			vDynamicStateCreateInfo.flags = 0;
-			vDynamicStateCreateInfo.dynamicStateCount = static_cast<UI32>(vDynamicStates.size());
-			vDynamicStateCreateInfo.pDynamicStates = vDynamicStates.data();
-
 			// Pipeline create info.
 			VkGraphicsPipelineCreateInfo vCreateInfo = {};
 			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -500,12 +651,7 @@ namespace Flint
 
 			// TODO Pipeline cache
 
-			FLINT_VK_ASSERT(vkCreateGraphicsPipelines(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), VK_NULL_HANDLE, 1, &vCreateInfo, nullptr, &vPipeline));
+			FLINT_VK_ASSERT(vkCreateGraphicsPipelines(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), vPipelineCache, 1, &vCreateInfo, nullptr, &vPipeline));
 		}
 	}
 }
-
-/*
-Vulkan Validation Layer (Validation): Validation Error: [ VUID-VkPipelineColorBlendStateCreateInfo-logicOpEnable-00606 ] Object 0: handle = 0x299e1222618, type = VK_OBJECT_TYPE_DEVICE; | MessageID = 0x234f6296 | Invalid Pipeline CreateInfo[0]: If logic operations feature not enabled, logicOpEnable must be VK_FALSE. The Vulkan spec states: If the logic operations feature is not enabled, logicOpEnable must be VK_FALSE (https://vulkan.lunarg.com/doc/view/1.2.162.1/windows/1.2-extensions/vkspec.html#VUID-VkPipelineColorBlendStateCreateInfo-logicOpEnable-00606)
-Vulkan Validation Layer (Validation): Validation Error: [ VUID-VkPipelineMultisampleStateCreateInfo-alphaToOneEnable-00785 ] Object 0: handle = 0x299e1222618, type = VK_OBJECT_TYPE_DEVICE; | MessageID = 0x8fe75dbf | vkCreateGraphicsPipelines() pCreateInfo[0]: the alphaToOne device feature is disabled: the alphaToOneEnable member of the VkPipelineMultisampleStateCreateInfo structure must be set to VK_FALSE. The Vulkan spec states: If the alpha to one feature is not enabled, alphaToOneEnable must be VK_FALSE (https://vulkan.lunarg.com/doc/view/1.2.162.1/windows/1.2-extensions/vkspec.html#VUID-VkPipelineMultisampleStateCreateInfo-alphaToOneEnable-00785)
-*/

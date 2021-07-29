@@ -34,6 +34,7 @@ namespace Flint
 			virtual void DestroyShader(const std::shared_ptr<Shader>& pShader) override final;
 
 			virtual std::shared_ptr<GraphicsPipeline> CreateGraphicsPipeline(
+				const std::string& pipelineName,
 				const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget,
 				const std::shared_ptr<Shader>& pVertexShader,
 				const std::shared_ptr<Shader>& pTessellationControlShader,

@@ -32,12 +32,13 @@ int main()
 		const auto resourceVS = pVertexShader->GetShaderResources();
 		const auto resourceFS = pFragmentShader->GetShaderResources();
 
-		auto pPipeline = pDevice->CreateGraphicsPipeline(pRenderTarget, pVertexShader, nullptr, nullptr, nullptr, pFragmentShader, Flint::GraphicsPipelineSpecification());
+		auto pPipeline = pDevice->CreateGraphicsPipeline("TestPipeline", pRenderTarget, pVertexShader, nullptr, nullptr, nullptr, pFragmentShader, Flint::GraphicsPipelineSpecification());
 
 		pDisplay->SetKeyCallback(KeyCallback);
 		pRenderTarget->PrepareStaticResources();
 
 		pPipeline->Recreate(pRenderTarget);
+		auto resourceMap = pPipeline->GetDrawData();
 
 		while (pDisplay->IsOpen())
 		{

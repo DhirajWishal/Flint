@@ -8,6 +8,7 @@
 namespace Flint
 {
 	class ScreenBoundRenderTarget;
+	class GraphicsPipeline;
 
 	/**
 	 * Flint command buffer list object.
@@ -69,6 +70,13 @@ namespace Flint
 		 * @param pRenderTarget: The render target pointer.
 		 */
 		virtual void BindRenderTarget(const std::shared_ptr<ScreenBoundRenderTarget>& pRenderTarget) = 0;
+
+		/**
+		 * Bind a graphics pipeline to the current command buffer.
+		 * 
+		 * @param pGraphicsPipeline: The graphics pipeline pointer.
+		 */
+		virtual void BindGraphicsPipeline(const std::shared_ptr<GraphicsPipeline>& pGraphicsPipeline) = 0;
 
 		/**
 		 * Unbind the render target from the current buffer.

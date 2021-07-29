@@ -58,7 +58,6 @@ namespace Flint
 #define FLINT_EXCEPTION_UNDERFLOW_ERROR									std::underflow_error
 
 #define FLINT_THROW_BACKEND_ERROR										throw FLINT_EXCEPTION_BACKEND_ERROR	
-#define FLINT_THROW_RUNTIME_ERROR(...)									throw FLINT_EXCEPTION_RUNTIME_ERROR(__VA_ARGS__, "\nFile:\t\t" __FILE__ "\nFunction:\t" __FUNCSIG__ "\nLine:\t\t" TO_STRING(__LINE__))
 #define FLINT_THROW_LOGIC_ERROR											throw FLINT_EXCEPTION_LOGIC_ERROR		
 #define FLINT_THROW_DOMAIN_ERROR										throw FLINT_EXCEPTION_DOMAIN_ERROR	
 #define FLINT_THROW_INVALID_ARGUMENT									throw FLINT_EXCEPTION_INVALID_ARGUMENT
@@ -68,15 +67,17 @@ namespace Flint
 #define FLINT_THROW_OVERFLOW_ERROR										throw FLINT_EXCEPTION_OVERFLOW_ERROR	
 #define FLINT_THROW_UNDERFLOW_ERROR										throw FLINT_EXCEPTION_UNDERFLOW_ERROR	
 
-#ifdef FLINT_DEBUG
+#ifndef FLINT_RELEASE
+#	define FLINT_THROW_RUNTIME_ERROR(...)								throw FLINT_EXCEPTION_RUNTIME_ERROR(__VA_ARGS__, "\nFile:\t\t" __FILE__ "\nFunction:\t" __FUNCSIG__ "\nLine:\t\t" TO_STRING(__LINE__))
 #	define FLINT_ASSERT(expression, condition, error)					if (expression != condition) error
 #	define FLINT_ASSERT_DISCARDABLE(expression, condition, error)		if (expression != condition) error;
 
 #else
+#	define FLINT_THROW_RUNTIME_ERROR									throw std::runtime_error
 #	define FLINT_ASSERT(expression, condition, error)					expression
 #	define FLINT_ASSERT_DISCARDABLE(expression, condition, error)
 
-#endif // FLINT_DEBUG
+#endif // !FLINT_RELEASE
 
 #define FLINT_BACKEND_ERROR_UNKNOWN										"Unknown error!"
 #define FLINT_BACKEND_ERROR_DEVICE_NOT_READY							"Device not ready!"

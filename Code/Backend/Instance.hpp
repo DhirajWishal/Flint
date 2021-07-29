@@ -19,7 +19,7 @@ namespace Flint
 		 *
 		 * @param enableValidation: Whether or not to enable backend validation.
 		 */
-		Instance(bool enableValidation) noexcept : mEnableValidation(enableValidation) {}
+		Instance(bool enableValidation);
 
 		/**
 		 * Create a new device object.

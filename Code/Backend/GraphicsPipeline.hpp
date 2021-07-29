@@ -7,6 +7,7 @@
 #include "Shader.hpp"
 #include "RenderTarget.hpp"
 #include "DynamicStateContainer.h"
+#include "ResourceMap.hpp"
 
 namespace Flint
 {
@@ -109,8 +110,6 @@ namespace Flint
 	struct GraphicsPipelineSpecification {
 		GraphicsPipelineSpecification() = default;
 
-		UI32 mTessellationPatchControlPoints = 0;
-
 		float mColorBlendConstants[4] = {
 			CREATE_COLOR_256(255), CREATE_COLOR_256(255),
 			CREATE_COLOR_256(255), CREATE_COLOR_256(255)
@@ -120,6 +119,8 @@ namespace Flint
 		float mDepthSlopeFactor = 0.0f;
 		float mRasterizerLineWidth = 1.0f;
 		float mMinSampleShading = 1.0f;
+
+		UI32 mTessellationPatchControlPoints = 0;
 
 		PrimitiveTopology mPrimitiveTopology = PrimitiveTopology::TRIANGLE_LIST;
 		CullMode mCullMode = CullMode::BACK;
@@ -156,11 +157,31 @@ namespace Flint
 	 */
 	class GraphicsPipeline : public Pipeline
 	{
+	protected:
+		struct DrawData
+		{
+			DrawData(
+				const std::shared_ptr<ResourceMap>& pResourceMap,
+				const std::shared_ptr<DynamicStateContainer>& pDynamicStates,
+				UI64 vertexOffset, UI64 vertexCount,
+				UI64 indexOffset, UI64 indexCount)
+				: pResourceMap(pResourceMap), pDynamicStates(pDynamicStates),
+				mVertexOffset(vertexOffset), mVertexCount(vertexCount),
+				mIndexOffset(indexOffset), mIndexCount(indexCount) {}
+
+			UI64 mVertexOffset = 0, mVertexCount = 0;
+			UI64 mIndexOffset = 0, mIndexCount = 0;
+
+			std::shared_ptr<ResourceMap> pResourceMap = nullptr;
+			std::shared_ptr<DynamicStateContainer> pDynamicStates = nullptr;
+		};
+
 	public:
 		/**
 		 * Default constructor.
 		 *
 		 * @param pDevice: The device pointer.
+		 * @param pipelineName: The name of the pipeline.
 		 * @param pScreenBoundRenderTarget: The screen bound render target pointer.
 		 * @param pVertexShader: The vertex shader pointer.
 		 * @param pTessellationControlShader: The tessellation control shader (optional).
@@ -170,6 +191,7 @@ namespace Flint
 		 */
 		GraphicsPipeline(
 			const std::shared_ptr<Device>& pDevice,
+			const std::string& pipelineName,
 			const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget,
 			const std::shared_ptr<Shader>& pVertexShader,
 			const std::shared_ptr<Shader>& pTessellationControlShader,
@@ -193,8 +215,49 @@ namespace Flint
 		 */
 		const GraphicsPipelineSpecification GetSpecification() const { return mSpecification; }
 
+		/**
+		 * Create a new resource map.
+		 *
+		 * @return The newly created resource map.
+		 */
+		std::shared_ptr<ResourceMap> CreateResourceMap() const;
+
+		/**
+		 * Get draw data from the pipeline.
+		 *
+		 * @return The draw data array.
+		 */
+		const std::vector<DrawData> GetDrawData() const { return mDrawDataList; }
+
+		/**
+		 * Add draw data to draw.
+		 *
+		 * @param pResourceMap: The resource map to bind with.
+		 * @param pDynamicStates: The dynamic states of the draw.
+		 * @param vertexOffset: The vertex offset to begin.
+		 * @param vertexCount: The number of vertexes to draw.
+		 * @param indexOffset: The index offset to begin.
+		 * @param indexCount: The number of index to draw.
+		 */
+		void AddDrawData(const std::shared_ptr<ResourceMap>& pResourceMap, const std::shared_ptr<DynamicStateContainer>& pDynamicStates, UI64 vertexOffset, UI64 vertexCount, UI64 indexOffset, UI64 indexCount);
+
+	protected:
+		/**
+		 * Get all the resource names bound to this pipeline.
+		 *
+		 * @return The resource name array.
+		 */
+		const std::vector<std::string> GetResourceNames() const;
+
+		/**
+		 * Prepare resources to draw.
+		 */
+		virtual void PrepareResourcesToDraw() = 0;
+
 	protected:
 		GraphicsPipelineSpecification mSpecification = {};
+
+		std::vector<DrawData> mDrawDataList = {};
 
 		std::shared_ptr<RenderTarget> pRenderTarget = nullptr;
 

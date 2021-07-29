@@ -3,6 +3,7 @@
 
 #include "VulkanBackend/VulkanCommandBufferList.hpp"
 #include "VulkanBackend/VulkanScreenBoundRenderTarget.hpp"
+#include "VulkanBackend/VulkanGraphicsPipeline.hpp"
 
 namespace Flint
 {
@@ -134,6 +135,11 @@ namespace Flint
 		void VulkanCommandBufferList::UnbindRenderTarget()
 		{
 			vkCmdEndRenderPass(GetCurrentCommandBuffer());
+		}
+
+		void VulkanCommandBufferList::BindGraphicsPipeline(const std::shared_ptr<GraphicsPipeline>& pGraphicsPipeline)
+		{
+			vkCmdBindPipeline(GetCurrentCommandBuffer(), VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_GRAPHICS, pGraphicsPipeline->StaticCast<VulkanGraphicsPipeline>().GetPipeline());
 		}
 
 		void VulkanCommandBufferList::EndBufferRecording()

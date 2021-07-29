@@ -179,6 +179,7 @@ namespace Flint
 		/**
 		 * Create a new graphics pipeline bound to this render target.
 		 *
+		 * @param pipelineName: The unique name of the pipeline.
 		 * @param pRenderTarget: The screen bound render target pointer.
 		 * @param pVertexShader: The vertex shader pointer.
 		 * @param pTessellationControlShader: The tessellation control shader pointer.
@@ -188,6 +189,7 @@ namespace Flint
 		 * @return The pipeline pointer.
 		 */
 		virtual std::shared_ptr<GraphicsPipeline> CreateGraphicsPipeline(
+			const std::string& pipelineName,
 			const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget,
 			const std::shared_ptr<Shader>& pVertexShader,
 			const std::shared_ptr<Shader>& pTessellationControlShader,

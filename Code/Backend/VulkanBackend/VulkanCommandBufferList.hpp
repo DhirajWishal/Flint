@@ -23,6 +23,7 @@ namespace Flint
 
 			virtual void BindRenderTarget(const std::shared_ptr<ScreenBoundRenderTarget>& pRenderTarget) override final;
 			virtual void UnbindRenderTarget() override final;
+			virtual void BindGraphicsPipeline(const std::shared_ptr<GraphicsPipeline>& pGraphicsPipeline) override final;
 
 			virtual void EndBufferRecording() override final;
 			virtual void Terminate() override final;

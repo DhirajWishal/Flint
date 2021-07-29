@@ -45,8 +45,30 @@ namespace Flint
 		 * Default constructor.
 		 *
 		 * @param pDevice: The device pointer.
+		 * @param pipelineName: The name of the pipeline. This name is given to the pipeline cache object created upon destruction. Make sure that this name is unique.
+		 *	If you wish to not save cache externally, keep this field empty ("").
 		 */
-		Pipeline(const std::shared_ptr<Device>& pDevice) : DeviceBoundObject(pDevice) {}
+		Pipeline(const std::shared_ptr<Device>& pDevice, const std::string& pipelineName) : DeviceBoundObject(pDevice), mPipelineName(pipelineName) {}
+
+	protected:
+		/**
+		 * Write the pipeline cache data to an external file.
+		 * If the file does not exist, this creates a new file. The file name is "<pipeline name>.fpc". The FPC extension is Flint Pipeline Cache.
+		 *
+		 * @param size: The size of the data block.
+		 * @param pData: The data to be written.
+		 */
+		void WriteDataToCacheFile(UI64 size, unsigned char* pData) const;
+
+		/**
+		 * Read the pipeline cache data from an external file.
+		 *
+		 * @return The pair of size and data.
+		 */
+		std::pair<UI64, unsigned char*> ReadDataFromCacheFile() const;
+
+	protected:
+		std::string mPipelineName = "";
 	};
 
 	namespace Helpers
