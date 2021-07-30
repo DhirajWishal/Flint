@@ -22,6 +22,7 @@ namespace Flint
 			virtual void Terminate() override final;
 
 			VkBuffer GetBuffer() const { return vBuffer; }
+			const VkBuffer* GetBufferAddress() const { return &vBuffer; }
 			VkDeviceMemory GetMemory() const { return vMemory; }
 
 		private:

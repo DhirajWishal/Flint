@@ -7,12 +7,50 @@
 #include "Backend/Core/Profiler.hpp"
 #include "Backend/Shader.hpp"
 #include "Backend/GraphicsPipeline.hpp"
+#include "Backend/GeometryStore.hpp"
 #include <iostream>
 
 void KeyCallback(Flint::KeyCode key, Flint::EventAction action, Flint::SpecialCharacter character)
 {
 	if (key == Flint::KeyCode::KEY_A)
 		std::cout << std::endl << "Key A is pressed!" << std::endl;
+}
+
+std::vector<float> GetVertexes()
+{
+	std::vector<float> vertexes;
+	const float zIndex = 0.5f;
+
+	vertexes.push_back(0.0f);
+	vertexes.push_back(0.5f);
+	vertexes.push_back(zIndex);
+	vertexes.push_back(0.0f);
+
+	vertexes.push_back(0.5f);
+	vertexes.push_back(0.0f);
+	vertexes.push_back(zIndex);
+	vertexes.push_back(0.0f);
+
+	vertexes.push_back(-0.5f);
+	vertexes.push_back(-0.5f);
+	vertexes.push_back(zIndex);
+	vertexes.push_back(0.0f);
+
+	return vertexes;
+}
+
+std::vector<UI32> GetIndexes()
+{
+	std::vector<UI32> indexes;
+
+	indexes.push_back(0);
+	indexes.push_back(1);
+	indexes.push_back(2);
+
+	//indexes.push_back(2);
+	//indexes.push_back(0);
+
+	return indexes;
 }
 
 int main()
@@ -27,17 +65,24 @@ int main()
 
 		auto pBuffer = pDevice->CreateBuffer(Flint::BufferType::STAGGING, 1024);
 
-		auto pVertexShader = pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("E:\\Flint\\Assets\\Shaders\\PBR\\TBL\\shader.vert.spv"), Flint::ShaderCodeType::SPIR_V);
-		auto pFragmentShader = pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("E:\\Flint\\Assets\\Shaders\\PBR\\TBL\\shader.frag.spv"), Flint::ShaderCodeType::SPIR_V);
+		auto pVertexShader = pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("E:\\Flint\\Assets\\Shaders\\DebugGeometry\\shader.vert.spv"), Flint::ShaderCodeType::SPIR_V);
+		auto pFragmentShader = pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("E:\\Flint\\Assets\\Shaders\\DebugGeometry\\shader.frag.spv"), Flint::ShaderCodeType::SPIR_V);
 		const auto resourceVS = pVertexShader->GetShaderResources();
 		const auto resourceFS = pFragmentShader->GetShaderResources();
 
 		auto pPipeline = pDevice->CreateGraphicsPipeline("TestPipeline", pRenderTarget, pVertexShader, nullptr, nullptr, nullptr, pFragmentShader, Flint::GraphicsPipelineSpecification());
 
+		auto pGeometryStore = pDevice->CreateGeometryStore(pVertexShader->GetInputAttributes(), sizeof(UI32));
+
+		const auto vertexes = GetVertexes();
+		const auto indexes = GetIndexes();
+		pGeometryStore->AddGeometry(vertexes.size(), vertexes.data(), indexes.size(), indexes.data());
+		pPipeline->AddDrawData(pPipeline->CreateResourceMap(), std::make_shared<Flint::DynamicStateContainer>(), 0, vertexes.size(), 0, indexes.size());
+		pRenderTarget->SubmitPipeline(pGeometryStore, pPipeline);
+
 		pDisplay->SetKeyCallback(KeyCallback);
 		pRenderTarget->PrepareStaticResources();
 
-		pPipeline->Recreate(pRenderTarget);
 		auto resourceMap = pPipeline->GetDrawData();
 
 		while (pDisplay->IsOpen())
@@ -50,6 +95,7 @@ int main()
 			pRenderTarget->SubmitFrame();
 		}
 
+		pDevice->DestroyGeometryStore(pGeometryStore);
 		pDevice->DestroyShader(pVertexShader);
 		pDevice->DestroyShader(pFragmentShader);
 

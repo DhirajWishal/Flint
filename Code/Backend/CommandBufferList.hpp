@@ -4,11 +4,14 @@
 #pragma once
 
 #include "DeviceBoundObject.hpp"
+#include "DynamicStateContainer.h"
+#include "Buffer.hpp"
 
 namespace Flint
 {
 	class ScreenBoundRenderTarget;
 	class GraphicsPipeline;
+	class ResourceMap;
 
 	/**
 	 * Flint command buffer list object.
@@ -73,10 +76,50 @@ namespace Flint
 
 		/**
 		 * Bind a graphics pipeline to the current command buffer.
-		 * 
+		 *
 		 * @param pGraphicsPipeline: The graphics pipeline pointer.
 		 */
 		virtual void BindGraphicsPipeline(const std::shared_ptr<GraphicsPipeline>& pGraphicsPipeline) = 0;
+
+		/**
+		 * Bind a vertex buffer to the current command buffer.
+		 *
+		 * @param pVertexBuffer: The vertex buffer to bind.
+		 */
+		virtual void BindVertexBuffer(const std::shared_ptr<Buffer>& pVertexBuffer) = 0;
+
+		/**
+		 * Bind an index buffer to the current command buffer.
+		 *
+		 * @param pIndexBuffer: The index buffer to bind.
+		 * @param indexSize: The size of a single index.
+		 */
+		virtual void BindIndexBuffer(const std::shared_ptr<Buffer>& pIndexBuffer, UI64 indexSize) = 0;
+
+		/**
+		 * Bind draw resources to the current command buffer.
+		 *
+		 * @param pPipeline: The pipeline pointer.
+		 * @param pResourceMap: The resource map to bind.
+		 */
+		virtual void BindDrawResources(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::shared_ptr<ResourceMap>& pResourceMap) = 0;
+
+		/**
+		 * Bind dynamic states to the current command buffer.
+		 *
+		 * @param pDynamicStates: The dynamic states to bind.
+		 */
+		virtual void BindDynamicStates(const std::shared_ptr<DynamicStateContainer>& pDynamicStates) = 0;
+
+		/**
+		 * Issue a draw call to the current command buffer.
+		 *
+		 * @param vertexOffset: The vertex offset of the vertex buffer to find the first vertex.
+		 * @param vertexCount: The number of vertexes to draw.
+		 * @param indexOffset: The index offset of the index buffer to find the first index.
+		 * @param indexCount: The number of indexes to draw.
+		 */
+		virtual void IssueDrawCall(UI64 vertexOffset, UI64 vertexCount, UI64 indexOffset, UI64 indexCount) = 0;
 
 		/**
 		 * Unbind the render target from the current buffer.
@@ -93,6 +136,7 @@ namespace Flint
 		 */
 		virtual void ClearBuffers() = 0;
 
+	public:
 		/**
 		 * Get the command buffer list buffer count.
 		 *

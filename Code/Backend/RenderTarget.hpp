@@ -4,10 +4,12 @@
 #pragma once
 
 #include "CommandBufferList.hpp"
+#include <unordered_map>
 
 namespace Flint
 {
-	class Pipeline;
+	class GraphicsPipeline;
+	class GeometryStore;
 
 	/**
 	 * Flint render target object.
@@ -54,6 +56,15 @@ namespace Flint
 
 	public:
 		/**
+		 * Submit a pipeline to the render target to be drawn.
+		 * 
+		 * @param pGeometryStore: The geometry store to bind to.
+		 * @param pPipeline: The pipeline to submit.
+		 */
+		void SubmitPipeline(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::shared_ptr<GraphicsPipeline>& pPipeline);
+
+	public:
+		/**
 		 * Get the render target extent.
 		 *
 		 * @return The extent.
@@ -68,7 +79,17 @@ namespace Flint
 		UI32 GetBufferCount() const { return mBufferCount; }
 
 	protected:
+		/**
+		 * Prepare the pipeline resource.
+		 * This function is used to call the PrepareResourceToDraw function of the pipeline.
+		 *
+		 * @param pPipeline: The pipeline pointer.
+		 */
+		void PreparePipelineResources(const std::shared_ptr<GraphicsPipeline>& pPipeline) const;
+
+	protected:
 		std::shared_ptr<CommandBufferList> pCommandBufferList = nullptr;
+		std::unordered_map<std::shared_ptr<GeometryStore>, std::vector<std::shared_ptr<GraphicsPipeline>>> mDrawInstances;
 
 		FExtent2D mExtent = {};
 		UI32 mBufferCount = 0;

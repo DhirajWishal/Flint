@@ -10,6 +10,8 @@
 #include "VulkanBackend/VulkanShader.hpp"
 #include "VulkanBackend/VulkanGraphicsPipeline.hpp"
 
+#include "GeometryStore.hpp"
+
 #include <set>
 
 namespace Flint
@@ -148,6 +150,16 @@ namespace Flint
 		void VulkanDevice::DestroyPipeline(const std::shared_ptr<Pipeline>& pPipeline)
 		{
 			TerminateDeviceBoundObject(*pPipeline);
+		}
+
+		std::shared_ptr<GeometryStore> VulkanDevice::CreateGeometryStore(const std::unordered_map<UI32, std::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize)
+		{
+			return std::make_shared<GeometryStore>(shared_from_this(), vertexAttributes, indexSize);
+		}
+
+		void VulkanDevice::DestroyGeometryStore(const std::shared_ptr<GeometryStore>& pGeometryStore)
+		{
+			TerminateDeviceBoundObject(*pGeometryStore);
 		}
 
 		void VulkanDevice::WaitIdle()

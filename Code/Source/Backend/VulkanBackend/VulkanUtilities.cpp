@@ -116,6 +116,26 @@ namespace Flint
 					vPhysicalDevice
 				);
 			}
+
+			VkDescriptorType GetDescriptorType(ShaderResourceType type)
+			{
+				switch (type)
+				{
+				case Flint::ShaderResourceType::UNIFORM_BUFFER:
+					return VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+
+				case Flint::ShaderResourceType::STORAGE_BUFFER:
+					return VkDescriptorType::VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+
+				case Flint::ShaderResourceType::SAMPLER:
+					return VkDescriptorType::VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+
+				default:
+					FLINT_THROW_BACKEND_ERROR("Invalid or undefined shader resource type!");
+				}
+
+				return VkDescriptorType();
+			}
 		}
 	}
 }

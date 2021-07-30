@@ -25,6 +25,14 @@ namespace Flint
 			virtual void UnbindRenderTarget() override final;
 			virtual void BindGraphicsPipeline(const std::shared_ptr<GraphicsPipeline>& pGraphicsPipeline) override final;
 
+			virtual void BindVertexBuffer(const std::shared_ptr<Buffer>& pVertexBuffer) override final;
+			virtual void BindIndexBuffer(const std::shared_ptr<Buffer>& pIndexBuffer, UI64 indexSize) override final;
+
+			virtual void BindDrawResources(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::shared_ptr<ResourceMap>& pResourceMap) override final;
+			virtual void BindDynamicStates(const std::shared_ptr<DynamicStateContainer>& pDynamicStates) override final;
+
+			virtual void IssueDrawCall(UI64 vertexOffset, UI64 vertexCount, UI64 indexOffset, UI64 indexCount) override final;
+
 			virtual void EndBufferRecording() override final;
 			virtual void Terminate() override final;
 			virtual void ClearBuffers() override final;

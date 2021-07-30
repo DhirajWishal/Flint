@@ -249,11 +249,6 @@ namespace Flint
 		 */
 		const std::vector<std::string> GetResourceNames() const;
 
-		/**
-		 * Prepare resources to draw.
-		 */
-		virtual void PrepareResourcesToDraw() = 0;
-
 	protected:
 		GraphicsPipelineSpecification mSpecification = {};
 
@@ -266,5 +261,7 @@ namespace Flint
 		std::shared_ptr<Shader> pTessellationControlShader = nullptr;
 		std::shared_ptr<Shader> pTessellationEvaluationShader = nullptr;
 		std::shared_ptr<Shader> pGeometryShader = nullptr;
+
+		bool bShouldPrepareResources = true;
 	};
 }

@@ -44,6 +44,9 @@ namespace Flint
 				const GraphicsPipelineSpecification& specification) override final;
 			virtual void DestroyPipeline(const std::shared_ptr<Pipeline>& pPipeline) override final;
 
+			virtual std::shared_ptr<GeometryStore> CreateGeometryStore(const std::unordered_map<UI32, std::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize) override final;
+			virtual void DestroyGeometryStore(const std::shared_ptr<GeometryStore>& pGeometryStore) override final;
+
 			virtual void WaitIdle() override final;
 			virtual void WaitForQueue() override final;
 

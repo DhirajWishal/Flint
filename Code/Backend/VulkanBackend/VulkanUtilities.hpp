@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Core/Error.hpp"
+#include "Shader.hpp"
 
 #include <vulkan/vulkan.h>
 #include <vector>
@@ -21,6 +21,7 @@ namespace Flint
 			VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features, VkPhysicalDevice vPhysicalDevice);
 			bool HasStencilComponent(VkFormat vFormat);
 			VkFormat FindDepthFormat(VkPhysicalDevice vPhysicalDevice);
+			VkDescriptorType GetDescriptorType(ShaderResourceType type);
 		}
 	}
 }

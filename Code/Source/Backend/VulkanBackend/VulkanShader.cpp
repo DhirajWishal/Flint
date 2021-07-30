@@ -113,7 +113,6 @@ namespace Flint
 			shaderFile.close();
 			CreateShaderModule();
 			PerformReflection();
-			CreateDescriptorSetLayout();
 		}
 
 		VulkanShader::VulkanShader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::vector<UI32>& code, ShaderCodeType codeType)
@@ -129,7 +128,6 @@ namespace Flint
 			mShaderCode = code;
 			CreateShaderModule();
 			PerformReflection();
-			CreateDescriptorSetLayout();
 		}
 
 		VulkanShader::VulkanShader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::string& code, ShaderCodeType codeType)
@@ -146,14 +144,12 @@ namespace Flint
 
 			CreateShaderModule();
 			PerformReflection();
-			CreateDescriptorSetLayout();
 		}
 
 		void VulkanShader::Terminate()
 		{
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 			vkDestroyShaderModule(vDevice.GetLogicalDevice(), vModule, nullptr);
-			vkDestroyDescriptorSetLayout(vDevice.GetLogicalDevice(), vDescriptorSetLayout, nullptr);
 		}
 
 		VkPipelineShaderStageCreateInfo VulkanShader::GetShaderStageCreateInfo() const
@@ -303,18 +299,6 @@ namespace Flint
 			vCreateInfo.pCode = mShaderCode.data();
 
 			FLINT_VK_ASSERT(vkCreateShaderModule(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), &vCreateInfo, nullptr, &vModule));
-		}
-
-		void VulkanShader::CreateDescriptorSetLayout()
-		{
-			VkDescriptorSetLayoutCreateInfo vCreateInfo = {};
-			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-			vCreateInfo.pNext = VK_NULL_HANDLE;
-			vCreateInfo.flags = 0;
-			vCreateInfo.bindingCount = static_cast<UI32>(mBindings.size());
-			vCreateInfo.pBindings = mBindings.data();
-
-			FLINT_VK_ASSERT(vkCreateDescriptorSetLayout(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), &vCreateInfo, nullptr, &vDescriptorSetLayout));
 		}
 	}
 }

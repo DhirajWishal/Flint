@@ -5,6 +5,8 @@
 
 #include "DeviceBoundObject.hpp"
 
+#include <unordered_map>
+
 namespace Flint
 {
 	class Display;
@@ -21,6 +23,9 @@ namespace Flint
 	class GraphicsPipeline;
 
 	struct GraphicsPipelineSpecification;
+	struct ShaderAttribute;
+
+	class GeometryStore;
 
 	/**
 	 * Device flags enum.
@@ -35,17 +40,17 @@ namespace Flint
 		/**
 		 * This flag states to use only the integrated device if available. If an integrated one doesn't exist but an external one exists, it will automatically select the external device.
 		 */
-		INTEGRATED = BIT_SHIFT(1),
+		 INTEGRATED = BIT_SHIFT(1),
 
-		/**
-		 * State that the device is used for graphics. This is a must if graphics needs to be enabled.
-		 */
-		GRAPHICS_COMPATIBLE = BIT_SHIFT(2),
+		 /**
+		  * State that the device is used for graphics. This is a must if graphics needs to be enabled.
+		  */
+		  GRAPHICS_COMPATIBLE = BIT_SHIFT(2),
 
-		/**
-		 * This states the device is used for compute.
-		 */
-		COMPUTE_COMPATIBLE = BIT_SHIFT(3)
+		  /**
+		   * This states the device is used for compute.
+		   */
+		   COMPUTE_COMPATIBLE = BIT_SHIFT(3)
 	};
 
 	constexpr DeviceFlags operator|(const DeviceFlags& lhs, const DeviceFlags& rhs) { return DeviceFlags(static_cast<UI8>(lhs) | static_cast<UI8>(rhs)); }
@@ -204,6 +209,22 @@ namespace Flint
 		 * @param pPipeline: The pipeline pointer.
 		 */
 		virtual void DestroyPipeline(const std::shared_ptr<Pipeline>& pPipeline) = 0;
+
+		/**
+		 * Create a new geometry store.
+		 *
+		 * @param vertexAttributes: The vertex attributes of the store.
+		 * @param indexSize: The size of a single index.
+		 * @return The newly created geometry store pointer.
+		 */
+		virtual std::shared_ptr<GeometryStore> CreateGeometryStore(const std::unordered_map<UI32, std::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize) = 0;
+
+		/**
+		 * Destroy a created geometry store.
+		 *
+		 * @param pGeometryStore: The geometry store pointer.
+		 */
+		virtual void DestroyGeometryStore(const std::shared_ptr<GeometryStore>& pGeometryStore) = 0;
 
 	public:
 		/**

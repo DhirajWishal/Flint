@@ -49,9 +49,41 @@ namespace Flint
 			CreateBufferMemory();
 		}
 
-		void VulkanBuffer::Resize(UI64 size, BufferResizeMode mode)
+		void VulkanBuffer::Resize(UI64 size, BufferResizeMode mode)	// TODO
 		{
 			FLINT_SETUP_PROFILER();
+			UI64 oldSize = mSize;
+
+			if (mode == BufferResizeMode::COPY)
+			{
+				// Create a stagging buffer to copy data to.
+				VulkanBuffer staggingBuffer(pDevice, BufferType::STAGGING, oldSize);
+				staggingBuffer.CopyFromBuffer(*this, oldSize, 0, 0);
+
+				// Terminate the existing buffer and get the new size.
+				Terminate();
+				mSize += size;
+
+				// Create the new buffer.
+				CreateBuffer();
+				CreateBufferMemory();
+
+				// Copy buffer content.
+				CopyFromBuffer(staggingBuffer, oldSize, 0, 0);
+				staggingBuffer.Terminate();
+			}
+			else if (mode == BufferResizeMode::CLEAR)
+			{
+				// Terminate the existing buffer and get the new size.
+				Terminate();
+				mSize += size;
+
+				// Create the new buffer.
+				CreateBuffer();
+				CreateBufferMemory();
+			}
+			else
+				FLINT_THROW_INVALID_ARGUMENT("Buffer copy mode is invalid or undefined!");
 		}
 
 		void VulkanBuffer::CopyFromBuffer(const Buffer& srcBuffer, UI64 size, UI64 srcOffset, UI64 dstOffset)

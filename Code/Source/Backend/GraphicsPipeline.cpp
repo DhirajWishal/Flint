@@ -59,6 +59,7 @@ namespace Flint
 
 	void GraphicsPipeline::AddDrawData(const std::shared_ptr<ResourceMap>& pResourceMap, const std::shared_ptr<DynamicStateContainer>& pDynamicStates, UI64 vertexOffset, UI64 vertexCount, UI64 indexOffset, UI64 indexCount)
 	{
+		bShouldPrepareResources = true;
 		INSERT_INTO_VECTOR(mDrawDataList, DrawData(pResourceMap, pDynamicStates, vertexOffset, vertexCount, indexOffset, indexCount));
 	}
 

@@ -3,6 +3,8 @@
 
 #include "VulkanBackend/VulkanScreenBoundRenderTarget.hpp"
 #include "VulkanBackend/VulkanCommandBufferList.hpp"
+#include "VulkanBackend/VulkanGraphicsPipeline.hpp"
+#include "GeometryStore.hpp"
 
 namespace Flint
 {
@@ -45,7 +47,31 @@ namespace Flint
 				vCommandBufferList.BeginNextBufferRecording();
 				vCommandBufferList.BindRenderTarget(pThisRenderTarget);
 
-				// bind resources here. TODO
+				// Iterate through the draw instances.
+				for (auto& instance : mDrawInstances)
+				{
+					const auto geometryStore = instance.first;
+					vCommandBufferList.BindVertexBuffer(geometryStore->GetVertexBuffer());
+					vCommandBufferList.BindIndexBuffer(geometryStore->GetIndexBuffer(), geometryStore->GetIndexSize());
+
+					// Iterate through the pipelines.
+					for (auto& pipeline : instance.second)
+					{
+						PreparePipelineResources(pipeline);
+						vCommandBufferList.BindGraphicsPipeline(pipeline);
+
+						const VulkanGraphicsPipeline& vPipeline = pipeline->StaticCast<VulkanGraphicsPipeline>();
+						const auto drawData = vPipeline.GetDrawData();
+
+						// Bind draw data.
+						for (const auto draw : drawData)
+						{
+							vCommandBufferList.BindDrawResources(pipeline, draw.pResourceMap);
+							vCommandBufferList.BindDynamicStates(draw.pDynamicStates);
+							vCommandBufferList.IssueDrawCall(draw.mVertexOffset, draw.mVertexCount, draw.mIndexOffset, draw.mIndexCount);
+						}
+					}
+				}
 
 				vCommandBufferList.UnbindRenderTarget();
 				vCommandBufferList.EndBufferRecording();
@@ -180,6 +206,11 @@ namespace Flint
 
 			vRenderTarget.CreateRenderPass({ pColorBuffer, pDepthBuffer, pSwapChain }, VK_PIPELINE_BIND_POINT_GRAPHICS);
 			vRenderTarget.CreateFrameBuffer({ pColorBuffer, pDepthBuffer, pSwapChain }, mExtent, mBufferCount);
+
+			std::shared_ptr<ScreenBoundRenderTarget> pThisRenderTarget = this->shared_from_this();
+			for (auto& instance : mDrawInstances)
+				for (auto& pipeline : instance.second)
+					pipeline->Recreate(pThisRenderTarget);
 
 			PrepareStaticResources();
 			vRenderTarget.vInFlightFences.resize(vRenderTarget.vInFlightFences.size(), VK_NULL_HANDLE);
