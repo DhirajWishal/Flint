@@ -11,6 +11,10 @@
 #include <iostream>
 
 #include "Components/Camera.hpp"
+#include "Components/AssetLoader.hpp"
+
+glm::vec3 rotations = glm::vec3(0.0f);
+const float rotationBias = 0.0000005f;
 
 Camera mCamera = {};
 void KeyCallback(std::shared_ptr<Flint::Display> pDisplay)
@@ -29,6 +33,42 @@ void KeyCallback(std::shared_ptr<Flint::Display> pDisplay)
 
 	if (pDisplay->GetMouseButtonEvent(Flint::MouseButton::LEFT).IsPressed())
 		mCamera.MousePosition(pDisplay->GetMousePosition());
+
+	if (pDisplay->GetMouseButtonEvent(Flint::MouseButton::LEFT).IsReleased())
+		mCamera.ResetFirstMouse();
+
+	// Rotate x
+	if (pDisplay->GetKeyEvent(Flint::KeyCode::KEY_X).IsPressed() || pDisplay->GetKeyEvent(Flint::KeyCode::KEY_X).IsOnRepeat())
+	{
+		if ((pDisplay->GetKeyEvent(Flint::KeyCode::KEY_X).GetSpecialCharacter() & Flint::SpecialCharacter::SHIFT) == Flint::SpecialCharacter::SHIFT)
+			rotations += glm::vec3(1.0f, 0.0f, 0.0f) * rotationBias;
+		else
+			rotations -= glm::vec3(1.0f, 0.0f, 0.0f) * rotationBias;
+
+		mCamera.Rotate(rotations[0], 0);
+	}
+
+	// Rotate y
+	if (pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Y).IsPressed() || pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Y).IsOnRepeat())
+	{
+		if ((pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Y).GetSpecialCharacter() & Flint::SpecialCharacter::SHIFT) == Flint::SpecialCharacter::SHIFT)
+			rotations += glm::vec3(0.0f, 1.0f, 0.0f) * rotationBias;
+		else
+			rotations -= glm::vec3(0.0f, 1.0f, 0.0f) * rotationBias;
+
+		mCamera.Rotate(rotations[1], 1);
+	}
+
+	// Rotate z
+	if (pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Z).IsPressed() || pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Z).IsOnRepeat())
+	{
+		if ((pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Z).GetSpecialCharacter() & Flint::SpecialCharacter::SHIFT) == Flint::SpecialCharacter::SHIFT)
+			rotations += glm::vec3(0.0f, 0.0f, 1.0f) * rotationBias;
+		else
+			rotations -= glm::vec3(0.0f, 0.0f, 1.0f) * rotationBias;
+
+		mCamera.Rotate(rotations[2], 2);
+	}
 }
 
 std::vector<float> GetVertexes()
@@ -91,8 +131,7 @@ int main()
 		auto pResourceMap = pPipeline->CreateResourceMap();
 		pResourceMap->SetResource("Ubo", pBuffer);
 
-		const auto vertexes = GetVertexes();
-		const auto indexes = GetIndexes();
+		const auto [vertexes, indexes] = LoadAsset("E:\\Dynamik\\Game Repository\\assets\\assets\\chalet\\chalet.obj");
 		pGeometryStore->AddGeometry(vertexes.size(), vertexes.data(), indexes.size(), indexes.data());
 		pPipeline->AddDrawData(pResourceMap, std::make_shared<Flint::DynamicStateContainer>(), 0, vertexes.size(), 0, indexes.size());
 		pRenderTarget->SubmitPipeline(pGeometryStore, pPipeline);
@@ -101,10 +140,13 @@ int main()
 
 		auto resourceMap = pPipeline->GetDrawData();
 
+		mCamera.SetAspectRatio(pDisplay->GetExtent());
 		while (pDisplay->IsOpen())
 		{
 			FLINT_SETUP_PROFILER();
-			pDisplay->Update();
+			if (pDisplay->IsDisplayResized())
+				mCamera.SetAspectRatio(pDisplay->GetExtent());
+
 			KeyCallback(pDisplay);
 
 			mCamera.Update();
@@ -117,6 +159,8 @@ int main()
 			pRenderTarget->BeginFrame();
 			pRenderTarget->Update();
 			pRenderTarget->SubmitFrame();
+
+			pDisplay->Update();
 		}
 
 		pDevice->DestroyGeometryStore(pGeometryStore);

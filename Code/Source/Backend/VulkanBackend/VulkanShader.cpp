@@ -226,16 +226,24 @@ namespace Flint
 			for (auto& resource : resources.stage_inputs)
 			{
 				auto& Ty = compiler.get_type(resource.base_type_id);
-				UI64 size = (static_cast<UI64>(Ty.width) / 8) * (Ty.vecsize == 3 ? 4 : Ty.vecsize);
-				INSERT_INTO_VECTOR(mInputAttributes[compiler.get_decoration(resource.id, spv::DecorationBinding)], ShaderAttribute(compiler.get_name(resource.id), compiler.get_decoration(resource.id, spv::DecorationLocation), static_cast<ShaderAttributeDataType>(size)));
+				INSERT_INTO_VECTOR(
+					mInputAttributes[compiler.get_decoration(resource.id, spv::DecorationBinding)],
+					ShaderAttribute(
+						compiler.get_name(resource.id),
+						compiler.get_decoration(resource.id, spv::DecorationLocation),
+						static_cast<ShaderAttributeDataType>((static_cast<UI64>(Ty.width) / 8) * Ty.vecsize)));
 			}
 
 			// Resolve shader outputs.
 			for (auto& resource : resources.stage_outputs)
 			{
 				auto& Ty = compiler.get_type(resource.base_type_id);
-				UI64 size = (static_cast<UI64>(Ty.width) / 8) * (Ty.vecsize == 3 ? 4 : Ty.vecsize);
-				INSERT_INTO_VECTOR(mOutputAttributes[compiler.get_decoration(resource.id, spv::DecorationBinding)], ShaderAttribute(compiler.get_name(resource.id), compiler.get_decoration(resource.id, spv::DecorationLocation), static_cast<ShaderAttributeDataType>(size)));
+				INSERT_INTO_VECTOR(
+					mOutputAttributes[compiler.get_decoration(resource.id, spv::DecorationBinding)],
+					ShaderAttribute(
+						compiler.get_name(resource.id),
+						compiler.get_decoration(resource.id, spv::DecorationLocation),
+						static_cast<ShaderAttributeDataType>((static_cast<UI64>(Ty.width) / 8) * Ty.vecsize)));
 			}
 		}
 

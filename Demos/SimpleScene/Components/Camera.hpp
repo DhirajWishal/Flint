@@ -11,7 +11,7 @@
  */
 struct ModelViewProjection
 {
-	ModelViewProjection(const glm::mat4& view, const glm::mat4& projection) : viewMatrix(view), projectionMatrix(projection) {}
+	ModelViewProjection(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection) : modelMatrix(model), viewMatrix(view), projectionMatrix(projection) {}
 
 	glm::mat4 modelMatrix = glm::mat4(1);
 	glm::mat4 viewMatrix = glm::mat4(1);
@@ -64,9 +64,29 @@ public:
 	 *
 	 * @return The Model View Projection.
 	 */
-	ModelViewProjection GetModelViewProjection() const { return ModelViewProjection(viewMatrix, projectionMatrix); }
+	ModelViewProjection GetModelViewProjection() const { return ModelViewProjection(modelMatrix, viewMatrix, projectionMatrix); }
+
+	/**
+	 * Reset the first mouse boolean value to its default (true).
+	 */
+	void ResetFirstMouse();
+
+	/**
+	 * Set the camera aspect ratio.
+	 * 
+	 * @param extent: The display extent.
+	 */
+	void SetAspectRatio(Flint::FBox2D extent);
+
+	/**
+	 * Rotate the camera.
+	 * 
+	 * @param degrees: The number of degrees to rotate.
+	 */
+	void Rotate(float degrees, I8 coord);
 
 private:
+	glm::mat4 modelMatrix = glm::mat4(1);
 	glm::mat4 viewMatrix = glm::mat4(1);
 	glm::mat4 projectionMatrix = glm::mat4(1);
 
@@ -78,7 +98,7 @@ private:
 
 	float movementBias = 0.005f;
 
-	float fieldOfView = 45.0f;
+	float fieldOfView = 60.0f;
 	float aspectRatio = 0.5f;
 	float cameraFar = 256.0f;
 	float cameraNear = 0.001f;

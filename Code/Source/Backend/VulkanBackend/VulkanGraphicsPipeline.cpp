@@ -23,6 +23,9 @@ namespace Flint
 					return VkFormat::VK_FORMAT_R32G32_SFLOAT;
 
 				case Flint::ShaderAttributeDataType::VEC3:
+					return VkFormat::VK_FORMAT_R32G32B32_SFLOAT;
+
+				case Flint::ShaderAttributeDataType::VEC4:
 					return VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT;
 
 				default:

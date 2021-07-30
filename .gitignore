@@ -332,7 +332,7 @@ ASALocalRun/
 # Other files and folders
 Builds/
 .vscode/
-Demos/*.json
+Demos/**/*.json
 
 *.sln
 *.vcxproj

@@ -40,7 +40,7 @@ void Camera::MousePosition(Flint::FExtent2D<float> _pos)
 	float yoffset = lastY - _pos.Y; // reversed since y-coordinates go from bottom to top
 
 	float sensitivity = 0.05f;
-	xoffset *= sensitivity;
+	xoffset *= sensitivity * 0.75f;
 	yoffset *= sensitivity;
 
 	lastX = _pos.X;
@@ -70,4 +70,29 @@ void Camera::Update()
 	viewMatrix = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
 	projectionMatrix = glm::perspective(glm::radians(fieldOfView), aspectRatio, cameraNear, cameraFar);
 	projectionMatrix[1][1] *= -1.0f;
+}
+
+void Camera::ResetFirstMouse()
+{
+	firstMouse = true;
+}
+
+void Camera::SetAspectRatio(Flint::FBox2D extent)
+{
+	aspectRatio = static_cast<float>(extent.mWidth) / static_cast<float>(extent.mHeight);
+}
+
+void Camera::Rotate(float degrees, I8 coord)
+{
+	// Rotate x
+	if (coord == 0)
+		modelMatrix *= glm::rotate(glm::mat4(1.0f), degrees, glm::vec3(1.0f, 0.0f, 0.0f));
+
+	// Rotate y
+	else if (coord == 1)
+		modelMatrix *= glm::rotate(glm::mat4(1.0f), degrees, glm::vec3(0.0f, 1.0f, 0.0f));
+
+	// Rotate z
+	else if (coord == 1)
+		modelMatrix *= glm::rotate(glm::mat4(1.0f), degrees, glm::vec3(0.0f, 0.0f, 1.0f));
 }
