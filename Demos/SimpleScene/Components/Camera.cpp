@@ -1,0 +1,73 @@
+// Copyright 2021 Dhiraj Wishal
+// SPDX-License-Identifier: Apache-2.0
+
+#include "Camera.hpp"
+
+#include <glm/gtc/matrix_transform.hpp>
+
+void Camera::WalkUp()
+{
+	cameraPosition += cameraFront * movementBias;
+}
+
+void Camera::WalkDown()
+{
+	cameraPosition -= cameraFront * movementBias;
+}
+
+void Camera::WalkLeft()
+{
+	cameraPosition -= cameraRight * movementBias;
+}
+
+void Camera::WalkRight()
+{
+	cameraPosition += cameraRight * movementBias;
+}
+
+void Camera::MousePosition(Flint::FExtent2D<float> _pos)
+{
+	_pos.X *= -1.0f;
+	_pos.Y *= -1.0f;
+	if (firstMouse)
+	{
+		lastX = _pos.X;
+		lastY = _pos.Y;
+		firstMouse = false;
+	}
+
+	float xoffset = _pos.X - lastX;
+	float yoffset = lastY - _pos.Y; // reversed since y-coordinates go from bottom to top
+
+	float sensitivity = 0.05f;
+	xoffset *= sensitivity;
+	yoffset *= sensitivity;
+
+	lastX = _pos.X;
+	lastY = _pos.Y;
+
+	Yaw += xoffset;
+	Pitch += yoffset;
+
+	if (Pitch > 89.0f)
+		Pitch = 89.0f;
+	if (Pitch < -89.0f)
+		Pitch = -89.0f;
+
+	Update();
+}
+
+void Camera::Update()
+{
+	glm::vec3 front;
+	front.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));
+	front.y = sin(glm::radians(Pitch));
+	front.z = sin(glm::radians(Yaw)) * cos(glm::radians(Pitch));
+	cameraFront = glm::normalize(front);
+	cameraRight = glm::normalize(glm::cross(cameraFront, worldUp));
+	cameraUp = glm::normalize(glm::cross(cameraRight, cameraFront));
+
+	viewMatrix = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
+	projectionMatrix = glm::perspective(glm::radians(fieldOfView), aspectRatio, cameraNear, cameraFar);
+	projectionMatrix[1][1] *= -1.0f;
+}

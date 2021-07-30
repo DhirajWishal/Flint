@@ -22,7 +22,7 @@ namespace Flint
 			virtual std::shared_ptr<CommandBufferList> CreateSecondaryCommandBufferList(UI32 bufferCount, const std::shared_ptr<CommandBufferList>& pParent) override final;
 			virtual void DestroyCommandBufferList(const std::shared_ptr<CommandBufferList>& pCommandBufferList) override final;
 
-			virtual std::shared_ptr<ScreenBoundRenderTarget> CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FExtent2D& extent, const UI32 bufferCount) override final;
+			virtual std::shared_ptr<ScreenBoundRenderTarget> CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount) override final;
 			virtual void DestroyRenderTarget(const std::shared_ptr<RenderTarget>& pRenderTarget) override final;
 
 			virtual std::shared_ptr<Buffer> CreateBuffer(BufferType type, UI64 size) override final;

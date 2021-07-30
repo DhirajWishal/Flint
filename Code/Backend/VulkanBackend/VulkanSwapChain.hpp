@@ -13,9 +13,9 @@ namespace Flint
 		class VulkanSwapChain final : public VulkanRenderTargetAttachment
 		{
 		public:
-			VulkanSwapChain(VulkanDevice& device, VulkanDisplay& display, const FExtent2D& extent, const UI32 bufferCount);
+			VulkanSwapChain(VulkanDevice& device, VulkanDisplay& display, const FBox2D& extent, const UI32 bufferCount);
 
-			virtual void Recreate(const FExtent2D& extent) override final;
+			virtual void Recreate(const FBox2D& extent) override final;
 			virtual void Terminate() override final;
 
 			virtual VkAttachmentDescription GetAttachmentDescription() const override final;

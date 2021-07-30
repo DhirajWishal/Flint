@@ -42,7 +42,7 @@ namespace Flint
 		 * @param extent: The display extent.
 		 * @param title: The display title.
 		 */
-		virtual std::shared_ptr<Display> CreateDisplay(const FExtent2D& extent, const std::string& title) = 0;
+		virtual std::shared_ptr<Display> CreateDisplay(const FBox2D& extent, const std::string& title) = 0;
 
 		/**
 		 * Destroy a created display.

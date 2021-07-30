@@ -116,7 +116,7 @@ namespace Flint
 		 * @param bufferCount: The buffer count of the frame buffer.
 		 * @return The screen bound render target object.
 		 */
-		virtual std::shared_ptr<ScreenBoundRenderTarget> CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FExtent2D& extent, const UI32 bufferCount) = 0;
+		virtual std::shared_ptr<ScreenBoundRenderTarget> CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount) = 0;
 
 		/**
 		 * Destroy a created render target.

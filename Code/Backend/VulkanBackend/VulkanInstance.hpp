@@ -20,7 +20,7 @@ namespace Flint
 			virtual std::shared_ptr<Device> CreateDevice(DeviceFlags flags) override final;
 			virtual void DestroyDevice(const std::shared_ptr<Device>& pDevice) override final;
 
-			virtual std::shared_ptr<Display> CreateDisplay(const FExtent2D& extent, const std::string& title) override final;
+			virtual std::shared_ptr<Display> CreateDisplay(const FBox2D& extent, const std::string& title) override final;
 			virtual void DestroyDisplay(const std::shared_ptr<Display>& pDisplay) override final;
 
 			virtual void Terminate() override final;

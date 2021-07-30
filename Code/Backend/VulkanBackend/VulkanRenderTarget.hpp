@@ -20,7 +20,7 @@ namespace Flint
 			void CreateRenderPass(std::vector<VulkanRenderTargetAttachment*> pAttachments, VkPipelineBindPoint vBindPoint);
 			void DestroyRenderPass();
 
-			void CreateFrameBuffer(std::vector<VulkanRenderTargetAttachment*> pAttachments, const FExtent2D& extent, UI32 bufferCount);
+			void CreateFrameBuffer(std::vector<VulkanRenderTargetAttachment*> pAttachments, const FBox2D& extent, UI32 bufferCount);
 			void DestroyFrameBuffers();
 
 			void CreateSyncObjects(UI32 count);

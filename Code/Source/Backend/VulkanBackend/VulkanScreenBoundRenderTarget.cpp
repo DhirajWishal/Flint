@@ -10,7 +10,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanScreenBoundRenderTarget::VulkanScreenBoundRenderTarget(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, const FExtent2D& extent, const UI32 bufferCount)
+		VulkanScreenBoundRenderTarget::VulkanScreenBoundRenderTarget(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount)
 			: ScreenBoundRenderTarget(pDevice, pDisplay, extent, bufferCount, pDevice->CreatePrimaryCommandBufferList(bufferCount)), vRenderTarget(pDevice->StaticCast<VulkanDevice>())
 		{
 			FLINT_SETUP_PROFILER();
@@ -181,7 +181,7 @@ namespace Flint
 		{
 			FLINT_SETUP_PROFILER();
 
-			FExtent2D newExtent = pDisplay->GetExtent();
+			FBox2D newExtent = pDisplay->GetExtent();
 
 			// Wait while the window contains the right width and height. 
 			// Until the window contains a valid size, it will skip draw calls.

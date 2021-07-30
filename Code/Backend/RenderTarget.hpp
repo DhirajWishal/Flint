@@ -28,7 +28,7 @@ namespace Flint
 		 * @param bufferCount: The frame buffer count.
 		 * @param pCommandBufferList: The command buffer list used by the render target.
 		 */
-		RenderTarget(const std::shared_ptr<Device>& pDevice, const FExtent2D& extent, const UI32 bufferCount, const std::shared_ptr<CommandBufferList>& pCommandBufferList);
+		RenderTarget(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, const std::shared_ptr<CommandBufferList>& pCommandBufferList);
 
 		/**
 		 * Prepare the static resources to draw.
@@ -69,7 +69,7 @@ namespace Flint
 		 *
 		 * @return The extent.
 		 */
-		FExtent2D GetExtent() const { return mExtent; }
+		FBox2D GetExtent() const { return mExtent; }
 
 		/**
 		 * Get the render target buffer count.
@@ -91,7 +91,7 @@ namespace Flint
 		std::shared_ptr<CommandBufferList> pCommandBufferList = nullptr;
 		std::unordered_map<std::shared_ptr<GeometryStore>, std::vector<std::shared_ptr<GraphicsPipeline>>> mDrawInstances;
 
-		FExtent2D mExtent = {};
+		FBox2D mExtent = {};
 		UI32 mBufferCount = 0;
 	};
 }

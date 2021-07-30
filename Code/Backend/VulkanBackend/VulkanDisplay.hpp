@@ -28,14 +28,14 @@ namespace Flint
 		class VulkanDisplay final : public Display, public std::enable_shared_from_this<VulkanDisplay>
 		{
 		public:
-			VulkanDisplay(const std::shared_ptr<Instance>& pInstance, const FExtent2D& extent, const std::string& title);
+			VulkanDisplay(const std::shared_ptr<Instance>& pInstance, const FBox2D& extent, const std::string& title);
 
 			virtual void Update() override final;
 			virtual void Terminate() override final;
 			virtual void ToggleResize() override final { mIsDislayResized = false; }
 			virtual UI32 FindBestBufferCount(const std::shared_ptr<Device>& pDevice, UI32 count = 0) override final;
 			virtual void SetTitle(const std::string& title) override final;
-			virtual void SetExtent(FExtent2D newExtent) override final;
+			virtual void SetExtent(FBox2D newExtent) override final;
 
 			VkSurfaceFormatKHR ChooseSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 			VkPresentModeKHR ChoosePresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
@@ -43,17 +43,15 @@ namespace Flint
 			VkSurfaceCapabilitiesKHR GetSurfaceCapabilities(VulkanDevice& device) const;
 			UI32 FindSupporterBufferCount(VulkanDevice& device, UI32 count) const;
 
-		public:
-			void CallKeyCallback(I32 scancode, I32 action, I32 mods) { if (pKeyCallback) pKeyCallback(mKeyMap[scancode], mActionMap[action], static_cast<SpecialCharacter>(mods)); }
-			void CallMouseButtonCallback(I32 button, I32 action, I32 mods) { if (pMouseButtonCallback) pMouseButtonCallback(mButtonMap[button], mActionMap[action], static_cast<SpecialCharacter>(mods)); }
-			void CallCursorPositionCallback(double xOffset, double yOffset) { if (pCursorPositionCallback) pCursorPositionCallback(xOffset, yOffset); }
-			void CallMouseScrollCallback(double xOffset, double yOffset) { if (pMouseScrollCallback) pMouseScrollCallback(xOffset, yOffset); }
-			void CallCursorWithinDisplayCallback(bool state) { if (pCursorWithinDisplayCallback) pCursorWithinDisplayCallback(state); }
-			void CallDragAndDropCallback(std::vector<std::filesystem::path> paths) { if (pDragAndDropCallback) pDragAndDropCallback(paths); }
-			void CallDisplayResizeCallback(FExtent2D extent) { mExtent = extent; if (pDisplayResizeCallback) pDisplayResizeCallback(extent); }
-			void CallDisplayCloseCallback() { if (pDisplayCloseCallback) pDisplayCloseCallback(); }
+			void ActivateKey(UI32 scanCode, UI32 action, SpecialCharacter character);
+			void ActivateMouseButton(UI32 scanCode, UI32 action, SpecialCharacter character);
+			void SetMousePosition(float x, float y);
+			void SetMouseScroll(float x, float y);
+			void SetCursorWithinDisplay(bool value);
+			void SetDragAndDropPaths(std::vector<std::filesystem::path>&& paths);
 
-			void SetNewExtent(FExtent2D extent) { mExtent = extent; }
+		public:
+			void SetNewExtent(FBox2D extent) { mExtent = extent; }
 			void ToggleClose() { mIsDisplayOpen = false; }
 			void Resized() { mIsDislayResized = true; }
 

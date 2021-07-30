@@ -80,7 +80,9 @@ namespace Flint
 
 		LEFT_SHIFT, LEFT_CONTROL, LEFT_ALT, LEFT_SUPER,
 		RIGHT_SHIFT, RIGHT_CONTROL, RIGHT_ALT, RIGHT_SUPER,
-		MENU
+		MENU,
+
+		KEY_CODE_MAX
 	};
 
 	/**
@@ -106,71 +108,81 @@ namespace Flint
 		BUTTON_5, BUTTON_6, BUTTON_7, BUTTON_8,
 
 		LAST, LEFT,
-		RIGHT, MIDDLE
+		RIGHT, MIDDLE,
+
+		MOUSE_BUTTON_MAX
 	};
 
 	/**
-	 * Key callback function type.
-	 *
-	 * @param KeyCode: The key code of the key.
-	 * @param EventAction: The key action.
-	 * @param SpecialCharacter: The special characters pressed at the time.
+	 * Button event structure.
+	 * This structure contains information regarding a single button input.
 	 */
-	using TKeyCallbackFunc = std::function<void(KeyCode, EventAction, SpecialCharacter)>;
+	struct ButtonEvent
+	{
+		/**
+		 * Default constructor.
+		 */
+		ButtonEvent() = default;
 
-	/**
-	 * Mouse button callback function type.
-	 *
-	 * @param MouseButton: The mouse button.
-	 * @param EventAction: The button action.
-	 * @param SpecialCharacter: The special characters pressed at the time.
-	 */
-	using TMouseButtonCallbackFunc = std::function<void(MouseButton, EventAction, SpecialCharacter)>;
+		/**
+		 * Construct the button event using its action and special character.
+		 *
+		 * @param action: The action of the event.
+		 * @param special: The special character of the event.
+		 */
+		ButtonEvent(EventAction action, SpecialCharacter special) : mAction(action), mSpecialCharacter(special) {}
 
-	/**
-	 * Cursor position callback function type.
-	 *
-	 * @param xOffset: The x offset of the cursor.
-	 * @param yOffset: The y offset of the cursor.
-	 */
-	using TCursorPositionCallbackFunc = std::function<void(double, double)>;
+		/**
+		 * Activate the event.
+		 *
+		 * @param action: The action of the event.
+		 * @param special: The special character of th event.
+		 */
+		void Activate(EventAction action, SpecialCharacter special) { mAction = action, mSpecialCharacter = special; }
 
-	/**
-	 * Mouse scroll callback function type.
-	 *
-	 * @param xOffset: The x offset.
-	 * @param yOffset: The y offset.
-	 */
-	using TMouseScrollCallbackFunc = std::function<void(double, double)>;
+		/**
+		 * Reset the event back to its defaults.
+		 */
+		void Reset() { mAction = EventAction::RELEASED, mSpecialCharacter = SpecialCharacter(0); }
 
-	/**
-	 * Cursor within display callback function type.
-	 * This function is called if the cursor leaves or enters the current display.
-	 *
-	 * @param bool: Cursor state.
-	 */
-	using TCursorWithinDisplayCallbackFunc = std::function<void(bool)>;
+		/**
+		 * Get the event action.
+		 *
+		 * @return The event action.
+		 */
+		const EventAction GetEventAction() const { return mAction; }
 
-	/**
-	 * Drag and drop callback function type.
-	 *
-	 * @param std::vector<std::filesystem::path>: The list of paths.
-	 */
-	using TDragAndDropCallbackFunc = std::function<void(std::vector<std::filesystem::path>)>;
+		/**
+		 * Get the special character of the event.
+		 *
+		 * @return The special character.
+		 */
+		const SpecialCharacter GetSpecialCharacter() const { return mSpecialCharacter; }
 
-	/**
-	 * Display resize callback function type.
-	 * This function is called once the display is resized.
-	 *
-	 * @param FExtent2D: The new display size.
-	 */
-	using TDisplayResizeCallbackFunc = std::function<void(FExtent2D)>;
+		/**
+		 * Check if the event is released.
+		 *
+		 * @return Boolean value.
+		 */
+		const bool IsReleased() const { return mAction == EventAction::RELEASED; }
 
-	/**
-	 * Display close callback function type.
-	 * This function is called once the display is closed.
-	 */
-	using TDisplayCloseCallbackFunc = std::function<void()>;
+		/**
+		 * Check if the event is pressed.
+		 *
+		 * @return Boolean value.
+		 */
+		const bool IsPressed() const { return mAction == EventAction::PRESSED; }
+
+		/**
+		 * Check if the event is on repeat.
+		 *
+		 * @return Boolean value.
+		 */
+		const bool IsOnRepeat() const { return mAction == EventAction::ON_REPEAT; }
+
+		EventAction mAction = EventAction::RELEASED;
+		SpecialCharacter mSpecialCharacter = SpecialCharacter(0);
+	};
 
 	/**
 	 * Flint display object.
@@ -188,7 +200,7 @@ namespace Flint
 		 * @param extent: The display extent.
 		 * @param title: The display title.
 		 */
-		Display(const std::shared_ptr<Instance>& pInstance, const FExtent2D& extent, const std::string& title);
+		Display(const std::shared_ptr<Instance>& pInstance, const FBox2D& extent, const std::string& title);
 
 		/**
 		 * Update the display object.
@@ -219,60 +231,19 @@ namespace Flint
 
 	public:
 		/**
-		 * Set the key callback function.
+		 * Check if drag and drop paths exist.
 		 *
-		 * @param pFunction: The function pointer.
+		 * @return Boolean value.
 		 */
-		void SetKeyCallback(const TKeyCallbackFunc& pFunction) { pKeyCallback = pFunction; }
+		const bool ContainsDragAndDrop() const { return mDragAndDropPaths.empty(); }
 
 		/**
-		 * Set the mouse button callback function.
+		 * Get the drag and drop values.
+		 * Once you get this value, it will automatically clear itself from the display.
 		 *
-		 * @param pFunction: The function pointer.
+		 * @return The vector of paths.
 		 */
-		void SetMouseButtonCallback(const TMouseButtonCallbackFunc& pFunction) { pMouseButtonCallback = pFunction; }
-
-		/**
-		 * Set the cursor position callback function.
-		 *
-		 * @param pFunction: The function pointer.
-		 */
-		void SetCursorPositionCallback(const TCursorPositionCallbackFunc& pFunction) { pCursorPositionCallback = pFunction; }
-
-		/**
-		 * Set the mouse scroll callback function.
-		 *
-		 * @param pFunction: The function pointer.
-		 */
-		void SetMouseScrollCallback(const TMouseScrollCallbackFunc& pFunction) { pMouseScrollCallback = pFunction; }
-
-		/**
-		 * Set the cursor within display callback function.
-		 *
-		 * @param pFunction: The function pointer.
-		 */
-		void SetCursorWithinDisplayCallback(const TCursorWithinDisplayCallbackFunc& pFunction) { pCursorWithinDisplayCallback = pFunction; }
-
-		/**
-		 * Set the drag and drop callback function.
-		 *
-		 * @param pFunction: The function pointer.
-		 */
-		void SetDragAndDropCallback(const TDragAndDropCallbackFunc& pFunction) { pDragAndDropCallback = pFunction; }
-
-		/**
-		 * Set the display resize callback function.
-		 *
-		 * @param pFunction: The function pointer.
-		 */
-		void SetDisplayResizeCallback(const TDisplayResizeCallbackFunc& pFunction) { pDisplayResizeCallback = pFunction; }
-
-		/**
-		 * Set the display close callback function.
-		 *
-		 * @param pFunction: The function pointer.
-		 */
-		void SetDisplayCloseCallback(const TDisplayCloseCallbackFunc& pFunction) { pDisplayCloseCallback = pFunction; }
+		const std::vector<std::filesystem::path> GetDragAndDropValues();
 
 		/**
 		 * Get the title of the display.
@@ -293,14 +264,44 @@ namespace Flint
 		 *
 		 * @param newExtent: The new extent to set.
 		 */
-		virtual void SetExtent(FExtent2D newExtent) = 0;
+		virtual void SetExtent(FBox2D newExtent) = 0;
 
 		/**
 		 * Get the display's current extent.
 		 *
 		 * @return The extent.
 		 */
-		FExtent2D GetExtent() const { return mExtent; }
+		FBox2D GetExtent() const { return mExtent; }
+
+		/**
+		 * Get a key event from the event store.
+		 *
+		 * @param key: The key code.
+		 * @return The button event.
+		 */
+		const ButtonEvent GetKeyEvent(KeyCode key) const { return mKeyEvents[static_cast<UI8>(key)]; }
+
+		/**
+		 * Get a mouse button event from the event store.
+		 *
+		 * @param button: The mouse button code.
+		 * @return The button event.
+		 */
+		const ButtonEvent GetMouseButtonEvent(MouseButton button) const { return mMouseButtonEvents[static_cast<UI8>(button)]; }
+
+		/**
+		 * Get the mouse position.
+		 *
+		 * @return The position.
+		 */
+		const FExtent2D<float> GetMousePosition() const { return FExtent2D<float>(mMousePositionX, mMousePositionY); }
+
+		/**
+		 * Get the mouse scroll.
+		 *
+		 * @return The mouse scroll as (up, down).
+		 */
+		const FExtent2D<float> GetMouseScroll() const { return FExtent2D<float>(mMouseScrollUp, mMouseScrollDown); }
 
 		/**
 		 * Check if the display is open.
@@ -316,21 +317,31 @@ namespace Flint
 		 */
 		bool IsDisplayResized() const { return mIsDislayResized; }
 
+		/**
+		 * Check if the cursor is within the display.
+		 *
+		 * @return Boolean value.
+		 */
+		bool IsCursorWithinDisplay() const { return mIsCursorWithinDisplay; }
+
 	protected:
+		std::vector<std::filesystem::path> mDragAndDropPaths;
+
 		std::string mTitle = "";
 		std::shared_ptr<Instance> pInstance = nullptr;
-		FExtent2D mExtent = {};
+		FBox2D mExtent = {};
 
-		TKeyCallbackFunc pKeyCallback = nullptr;
-		TMouseButtonCallbackFunc pMouseButtonCallback = nullptr;
-		TCursorPositionCallbackFunc pCursorPositionCallback = nullptr;
-		TMouseScrollCallbackFunc pMouseScrollCallback = nullptr;
-		TCursorWithinDisplayCallbackFunc pCursorWithinDisplayCallback = nullptr;
-		TDragAndDropCallbackFunc pDragAndDropCallback = nullptr;
-		TDisplayResizeCallbackFunc pDisplayResizeCallback = nullptr;
-		TDisplayCloseCallbackFunc pDisplayCloseCallback = nullptr;
+		ButtonEvent mKeyEvents[static_cast<UI8>(KeyCode::KEY_CODE_MAX)] = {};
+		ButtonEvent mMouseButtonEvents[static_cast<UI8>(MouseButton::MOUSE_BUTTON_MAX)] = {};
+
+		float mMousePositionX = 0.0f;
+		float mMousePositionY = 0.0f;
+
+		float mMouseScrollUp = 0.0f;
+		float mMouseScrollDown = 0.0f;
 
 		bool mIsDisplayOpen = true;
 		bool mIsDislayResized = false;
+		bool mIsCursorWithinDisplay = false;
 	};
 }

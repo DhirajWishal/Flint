@@ -12,9 +12,9 @@ namespace Flint
 		class VulkanColorBuffer final : public VulkanRenderTargetAttachment
 		{
 		public:
-			VulkanColorBuffer(VulkanDevice& device, const FExtent2D& extent, const UI32 bufferCount, VkFormat format);
+			VulkanColorBuffer(VulkanDevice& device, const FBox2D& extent, const UI32 bufferCount, VkFormat format);
 
-			virtual void Recreate(const FExtent2D& extent) override final;
+			virtual void Recreate(const FBox2D& extent) override final;
 			virtual void Terminate() override final;
 
 			virtual VkAttachmentDescription GetAttachmentDescription() const override final;

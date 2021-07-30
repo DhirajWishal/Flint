@@ -76,12 +76,12 @@ namespace Flint
 		 */
 		struct ViewPort : public DynamicStateObject {
 			ViewPort() : DynamicStateObject(DynamicStateFlags::VIEWPORT) {}
-			ViewPort(const FExtent2D& extent, const FExtent2D& offset, const FExtent2D& depth)
+			ViewPort(const FBox2D& extent, const FBox2D& offset, const FBox2D& depth)
 				: DynamicStateObject(DynamicStateFlags::VIEWPORT), mExtent(extent), mOffset(offset), mDepth(depth) {}
 
-			FExtent2D mExtent = {};
-			FExtent2D mOffset = {};
-			FExtent2D mDepth = {};	// { Min, Max }
+			FBox2D mExtent = {};
+			FBox2D mOffset = {};
+			FBox2D mDepth = {};	// { Min, Max }
 		};
 
 		/**
@@ -89,10 +89,10 @@ namespace Flint
 		 */
 		struct Scissor : public DynamicStateObject {
 			Scissor() : DynamicStateObject(DynamicStateFlags::SCISSOR) {}
-			Scissor(const FExtent2D& extent, const FExtent2D& offset) : DynamicStateObject(DynamicStateFlags::SCISSOR), mExtent(extent), mOffset(offset) {}
+			Scissor(const FBox2D& extent, const FBox2D& offset) : DynamicStateObject(DynamicStateFlags::SCISSOR), mExtent(extent), mOffset(offset) {}
 
-			FExtent2D mExtent = {};
-			FExtent2D mOffset = {};
+			FBox2D mExtent = {};
+			FBox2D mOffset = {};
 		};
 
 		/**
@@ -138,9 +138,9 @@ namespace Flint
 		 */
 		struct DepthBounds : public DynamicStateObject {
 			DepthBounds() : DynamicStateObject(DynamicStateFlags::DEPTH_BOUNDS) {}
-			DepthBounds(const FExtent2D& bounds) : DynamicStateObject(DynamicStateFlags::DEPTH_BOUNDS), mBounds(bounds) {}
+			DepthBounds(const FBox2D& bounds) : DynamicStateObject(DynamicStateFlags::DEPTH_BOUNDS), mBounds(bounds) {}
 
-			FExtent2D mBounds = {};	// { Min, Max }
+			FBox2D mBounds = {};	// { Min, Max }
 		};
 
 	public:
@@ -153,7 +153,7 @@ namespace Flint
 		 * @param depth: The viewport depth.
 		 * @pram offset: The viewport offset.
 		 */
-		void AddViewPort(const FExtent2D& extent, const FExtent2D& depth, const FExtent2D& offset);
+		void AddViewPort(const FBox2D& extent, const FBox2D& depth, const FBox2D& offset);
 
 		/**
 		 * Add a scissor to the container.
@@ -161,7 +161,7 @@ namespace Flint
 		 * @param extent: The scissor extent.
 		 * @param offset: The scissor offset.
 		 */
-		void AddScissor(const FExtent2D& extent, const FExtent2D& offset);
+		void AddScissor(const FBox2D& extent, const FBox2D& offset);
 
 		/**
 		 * Add a line width to the container.
@@ -191,7 +191,7 @@ namespace Flint
 		 *
 		 * @param bounds: The depth bounds.
 		 */
-		void AddDepthBounds(const FExtent2D& bounds);
+		void AddDepthBounds(const FBox2D& bounds);
 
 		std::vector<std::shared_ptr<DynamicStateObject>> pDynamicStates;
 	};

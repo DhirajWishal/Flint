@@ -30,6 +30,7 @@ project "SimpleScene"
 
 	includedirs {
 		"$(SolutionDir)Code",
+		"$(SolutionDir)Demos/ThirdParty/glm",
 		"$(SolutionDir)Demos/SimpleScene",
 	}
 

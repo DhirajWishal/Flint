@@ -8,7 +8,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanDepthBuffer::VulkanDepthBuffer(VulkanDevice& device, const FExtent2D& extent, const UI32 bufferCount)
+		VulkanDepthBuffer::VulkanDepthBuffer(VulkanDevice& device, const FBox2D& extent, const UI32 bufferCount)
 			: VulkanRenderTargetAttachment(RenderTargetAttachmenType::DEPTH_BUFFER, device, extent, bufferCount)
 		{
 			FLINT_SETUP_PROFILER();
@@ -19,7 +19,7 @@ namespace Flint
 			Initialize();
 		}
 
-		void VulkanDepthBuffer::Recreate(const FExtent2D& extent)
+		void VulkanDepthBuffer::Recreate(const FBox2D& extent)
 		{
 			FLINT_SETUP_PROFILER();
 

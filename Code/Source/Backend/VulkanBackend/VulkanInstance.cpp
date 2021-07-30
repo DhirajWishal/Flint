@@ -147,7 +147,7 @@ namespace Flint
 			TerminateDevice(pDevice);
 		}
 
-		std::shared_ptr<Display> VulkanInstance::CreateDisplay(const FExtent2D& extent, const std::string& title)
+		std::shared_ptr<Display> VulkanInstance::CreateDisplay(const FBox2D& extent, const std::string& title)
 		{
 			return std::make_shared<VulkanDisplay>(shared_from_this(), extent, title);
 		}

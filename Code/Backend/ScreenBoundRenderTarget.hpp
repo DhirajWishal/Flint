@@ -24,7 +24,7 @@ namespace Flint
 		 * @param bufferCount: The frame buffer count.
 		 * @param pCommandBufferList: The command buffer list pointer.
 		 */
-		ScreenBoundRenderTarget(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, const FExtent2D& extent, const UI32 bufferCount, const std::shared_ptr<CommandBufferList>& pCommandBufferList)
+		ScreenBoundRenderTarget(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const std::shared_ptr<CommandBufferList>& pCommandBufferList)
 			: RenderTarget(pDevice, extent, bufferCount, pCommandBufferList), pDisplay(pDisplay)
 		{
 			if (!pDisplay)

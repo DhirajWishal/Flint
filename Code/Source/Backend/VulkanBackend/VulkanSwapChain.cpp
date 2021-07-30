@@ -8,7 +8,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanSwapChain::VulkanSwapChain(VulkanDevice& device, VulkanDisplay& display, const FExtent2D& extent, const UI32 bufferCount)
+		VulkanSwapChain::VulkanSwapChain(VulkanDevice& device, VulkanDisplay& display, const FBox2D& extent, const UI32 bufferCount)
 			: VulkanRenderTargetAttachment(RenderTargetAttachmenType::SWAP_CHAIN, device, extent, bufferCount), vDisplay(display)
 		{
 			FLINT_SETUP_PROFILER();
@@ -16,7 +16,7 @@ namespace Flint
 			Initialize();
 		}
 
-		void VulkanSwapChain::Recreate(const FExtent2D& extent)
+		void VulkanSwapChain::Recreate(const FBox2D& extent)
 		{
 			FLINT_SETUP_PROFILER();
 

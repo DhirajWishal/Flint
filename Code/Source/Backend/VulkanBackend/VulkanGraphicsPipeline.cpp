@@ -453,13 +453,13 @@ namespace Flint
 
 			if (vDescriptorSetPool)
 			{
-				std::vector<VkDescriptorSet> vDescriptorSets;
-				vDescriptorSets.reserve(vDescriptorSetMap.size());
-
-				for (const auto pair : vDescriptorSetMap)
-					vDescriptorSets.push_back(pair.second);
-
-				vkFreeDescriptorSets(vDevice.GetLogicalDevice(), vDescriptorSetPool, static_cast<UI32>(vDescriptorSets.size()), vDescriptorSets.data());
+				//std::vector<VkDescriptorSet> vDescriptorSets;
+				//vDescriptorSets.reserve(vDescriptorSetMap.size());
+				//
+				//for (const auto pair : vDescriptorSetMap)
+				//	vDescriptorSets.push_back(pair.second);
+				//
+				//vkFreeDescriptorSets(vDevice.GetLogicalDevice(), vDescriptorSetPool, static_cast<UI32>(vDescriptorSets.size()), vDescriptorSets.data());
 				vkDestroyDescriptorPool(vDevice.GetLogicalDevice(), vDescriptorSetPool, nullptr);
 			}
 		}

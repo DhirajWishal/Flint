@@ -5,12 +5,12 @@
 
 namespace Flint
 {
-	void DynamicStateContainer::AddViewPort(const FExtent2D& extent, const FExtent2D& depth, const FExtent2D& offset)
+	void DynamicStateContainer::AddViewPort(const FBox2D& extent, const FBox2D& depth, const FBox2D& offset)
 	{
 		INSERT_INTO_VECTOR(pDynamicStates, std::make_shared<ViewPort>(extent, offset, depth));
 	}
 
-	void DynamicStateContainer::AddScissor(const FExtent2D& extent, const FExtent2D& offset)
+	void DynamicStateContainer::AddScissor(const FBox2D& extent, const FBox2D& offset)
 	{
 		INSERT_INTO_VECTOR(pDynamicStates, std::make_shared<Scissor>(extent, offset));
 	}
@@ -30,7 +30,7 @@ namespace Flint
 		INSERT_INTO_VECTOR(pDynamicStates, std::make_shared<BlendConstants>(constants));
 	}
 
-	void DynamicStateContainer::AddDepthBounds(const FExtent2D& bounds)
+	void DynamicStateContainer::AddDepthBounds(const FBox2D& bounds)
 	{
 		INSERT_INTO_VECTOR(pDynamicStates, std::make_shared<DepthBounds>(bounds));
 	}

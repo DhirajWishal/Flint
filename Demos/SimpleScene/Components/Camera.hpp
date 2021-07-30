@@ -1,0 +1,100 @@
+// Copyright 2021 Dhiraj Wishal
+// SPDX-License-Identifier: Apache-2.0
+
+#pragma once
+
+#include "Backend/Core/DataType.hpp"
+#include <glm/glm.hpp>
+
+/**
+ * Model View Projection struct.
+ */
+struct ModelViewProjection
+{
+	ModelViewProjection(const glm::mat4& view, const glm::mat4& projection) : viewMatrix(view), projectionMatrix(projection) {}
+
+	glm::mat4 modelMatrix = glm::mat4(1);
+	glm::mat4 viewMatrix = glm::mat4(1);
+	glm::mat4 projectionMatrix = glm::mat4(1);
+};
+
+/**
+ * Basic camera object for debugging.
+ */
+class Camera
+{
+public:
+	Camera() = default;
+
+	/**
+	 * Walk the camera up.
+	 */
+	void WalkUp();
+
+	/**
+	 * Walk the camera down.
+	 */
+	void WalkDown();
+
+	/**
+	 * Walk the camera left.
+	 */
+	void WalkLeft();
+
+	/**
+	 * Walk the camera right.
+	 */
+	void WalkRight();
+
+	/**
+	 * Handle mouse position.
+	 *
+	 * @param _pos: The mouse position.
+	 */
+	void MousePosition(Flint::FExtent2D<float> _pos);
+
+	/**
+	 * Update the camera.
+	 * This updates all the vectors and matrices.
+	 */
+	void Update();
+
+	/**
+	 * Get the default model view projection matrices.
+	 *
+	 * @return The Model View Projection.
+	 */
+	ModelViewProjection GetModelViewProjection() const { return ModelViewProjection(viewMatrix, projectionMatrix); }
+
+private:
+	glm::mat4 viewMatrix = glm::mat4(1);
+	glm::mat4 projectionMatrix = glm::mat4(1);
+
+	glm::vec3 cameraPosition = { 0.0f, 1.0f, 0.0f };
+	glm::vec3 cameraUp = { 0.0f, 1.0f, 0.0f };
+	glm::vec3 cameraFront = { 0.0f, 0.0f, -1.0f };
+	glm::vec3 cameraRight = { 1.0f, 0.0f, 0.0f };
+	glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+	float movementBias = 0.005f;
+
+	float fieldOfView = 45.0f;
+	float aspectRatio = 0.5f;
+	float cameraFar = 256.0f;
+	float cameraNear = 0.001f;
+
+	float angelX = 0.0f;
+	float angelY = 0.0f;
+	float angelZ = 0.0f;
+
+	float lastX = 0.0f;
+	float lastY = 0.0f;
+
+	float Yaw = 90.0f;
+	float Pitch = 0.0f;
+
+	UI32 windowWidth = 0;
+	UI32 windowHeight = 0;
+
+	bool firstMouse = true;
+};

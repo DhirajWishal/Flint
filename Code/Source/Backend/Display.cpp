@@ -5,12 +5,17 @@
 
 namespace Flint
 {
-	Display::Display(const std::shared_ptr<Instance>& pInstance, const FExtent2D& extent, const std::string& title) : pInstance(pInstance), mExtent(extent), mTitle(title)
+	Display::Display(const std::shared_ptr<Instance>& pInstance, const FBox2D& extent, const std::string& title) : pInstance(pInstance), mExtent(extent), mTitle(title)
 	{
 		if (!pInstance)
 			FLINT_THROW_INVALID_ARGUMENT("Instance pointer should not be null!");
 
 		if (extent.mWidth == 0 || extent.mHeight == 0)
 			FLINT_THROW_INVALID_ARGUMENT("Display width and height should be greater than 0!");
+	}
+
+	const std::vector<std::filesystem::path> Display::GetDragAndDropValues()
+	{
+		return std::move(mDragAndDropPaths);
 	}
 }

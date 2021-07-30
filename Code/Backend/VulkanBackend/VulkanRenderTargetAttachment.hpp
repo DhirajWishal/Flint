@@ -19,13 +19,13 @@ namespace Flint
 		class VulkanRenderTargetAttachment
 		{
 		public:
-			VulkanRenderTargetAttachment(RenderTargetAttachmenType type, VulkanDevice& device, const FExtent2D& extent, const UI32 bufferCount, VkFormat format)
+			VulkanRenderTargetAttachment(RenderTargetAttachmenType type, VulkanDevice& device, const FBox2D& extent, const UI32 bufferCount, VkFormat format)
 				: mType(type), vDevice(device), mExtent(extent), mBufferCount(bufferCount), vFormat(format) {}
 
-			VulkanRenderTargetAttachment(RenderTargetAttachmenType type, VulkanDevice& device, const FExtent2D& extent, const UI32 bufferCount)
+			VulkanRenderTargetAttachment(RenderTargetAttachmenType type, VulkanDevice& device, const FBox2D& extent, const UI32 bufferCount)
 				: mType(type), vDevice(device), mExtent(extent), mBufferCount(bufferCount) {}
 
-			virtual void Recreate(const FExtent2D& extent) = 0;
+			virtual void Recreate(const FBox2D& extent) = 0;
 			virtual void Terminate() = 0;
 
 			virtual VkAttachmentDescription GetAttachmentDescription() const = 0;
@@ -41,7 +41,7 @@ namespace Flint
 			std::vector<VkImage> vImages;
 			std::vector<VkImageView> vImageViews;
 			VulkanDevice& vDevice;
-			FExtent2D mExtent = {};
+			FBox2D mExtent = {};
 			UI32 mBufferCount = 0;
 			VkFormat vFormat = VkFormat::VK_FORMAT_UNDEFINED;
 			RenderTargetAttachmenType mType = RenderTargetAttachmenType::UNDEFINED;

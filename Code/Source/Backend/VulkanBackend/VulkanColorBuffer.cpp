@@ -9,7 +9,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanColorBuffer::VulkanColorBuffer(VulkanDevice& device, const FExtent2D& extent, const UI32 bufferCount, VkFormat format)
+		VulkanColorBuffer::VulkanColorBuffer(VulkanDevice& device, const FBox2D& extent, const UI32 bufferCount, VkFormat format)
 			: VulkanRenderTargetAttachment(RenderTargetAttachmenType::COLOR_BUFFER, device, extent, bufferCount, format)
 		{
 			FLINT_SETUP_PROFILER();
@@ -19,7 +19,7 @@ namespace Flint
 			Initialize();
 		}
 
-		void VulkanColorBuffer::Recreate(const FExtent2D& extent)
+		void VulkanColorBuffer::Recreate(const FBox2D& extent)
 		{
 			FLINT_SETUP_PROFILER();
 

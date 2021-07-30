@@ -10,10 +10,25 @@
 #include "Backend/GeometryStore.hpp"
 #include <iostream>
 
-void KeyCallback(Flint::KeyCode key, Flint::EventAction action, Flint::SpecialCharacter character)
+#include "Components/Camera.hpp"
+
+Camera mCamera = {};
+void KeyCallback(std::shared_ptr<Flint::Display> pDisplay)
 {
-	if (key == Flint::KeyCode::KEY_A)
-		std::cout << std::endl << "Key A is pressed!" << std::endl;
+	if (pDisplay->GetKeyEvent(Flint::KeyCode::KEY_W).IsPressed() || pDisplay->GetKeyEvent(Flint::KeyCode::KEY_W).IsOnRepeat())
+		mCamera.WalkUp();
+
+	if (pDisplay->GetKeyEvent(Flint::KeyCode::KEY_A).IsPressed() || pDisplay->GetKeyEvent(Flint::KeyCode::KEY_A).IsOnRepeat())
+		mCamera.WalkLeft();
+
+	if (pDisplay->GetKeyEvent(Flint::KeyCode::KEY_S).IsPressed() || pDisplay->GetKeyEvent(Flint::KeyCode::KEY_S).IsOnRepeat())
+		mCamera.WalkDown();
+
+	if (pDisplay->GetKeyEvent(Flint::KeyCode::KEY_D).IsPressed() || pDisplay->GetKeyEvent(Flint::KeyCode::KEY_D).IsOnRepeat())
+		mCamera.WalkRight();
+
+	if (pDisplay->GetMouseButtonEvent(Flint::MouseButton::LEFT).IsPressed())
+		mCamera.MousePosition(pDisplay->GetMousePosition());
 }
 
 std::vector<float> GetVertexes()
@@ -63,7 +78,7 @@ int main()
 
 		auto pRenderTarget = pDevice->CreateScreenBoundRenderTarget(pDisplay, { 1280, 720 }, pDisplay->FindBestBufferCount(pDevice));
 
-		auto pBuffer = pDevice->CreateBuffer(Flint::BufferType::STAGGING, 1024);
+		auto pBuffer = pDevice->CreateBuffer(Flint::BufferType::UNIFORM, sizeof(ModelViewProjection));
 
 		auto pVertexShader = pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("E:\\Flint\\Assets\\Shaders\\DebugGeometry\\shader.vert.spv"), Flint::ShaderCodeType::SPIR_V);
 		auto pFragmentShader = pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("E:\\Flint\\Assets\\Shaders\\DebugGeometry\\shader.frag.spv"), Flint::ShaderCodeType::SPIR_V);
@@ -73,14 +88,15 @@ int main()
 		auto pPipeline = pDevice->CreateGraphicsPipeline("TestPipeline", pRenderTarget, pVertexShader, nullptr, nullptr, nullptr, pFragmentShader, Flint::GraphicsPipelineSpecification());
 
 		auto pGeometryStore = pDevice->CreateGeometryStore(pVertexShader->GetInputAttributes(), sizeof(UI32));
+		auto pResourceMap = pPipeline->CreateResourceMap();
+		pResourceMap->SetResource("Ubo", pBuffer);
 
 		const auto vertexes = GetVertexes();
 		const auto indexes = GetIndexes();
 		pGeometryStore->AddGeometry(vertexes.size(), vertexes.data(), indexes.size(), indexes.data());
-		pPipeline->AddDrawData(pPipeline->CreateResourceMap(), std::make_shared<Flint::DynamicStateContainer>(), 0, vertexes.size(), 0, indexes.size());
+		pPipeline->AddDrawData(pResourceMap, std::make_shared<Flint::DynamicStateContainer>(), 0, vertexes.size(), 0, indexes.size());
 		pRenderTarget->SubmitPipeline(pGeometryStore, pPipeline);
 
-		pDisplay->SetKeyCallback(KeyCallback);
 		pRenderTarget->PrepareStaticResources();
 
 		auto resourceMap = pPipeline->GetDrawData();
@@ -89,6 +105,14 @@ int main()
 		{
 			FLINT_SETUP_PROFILER();
 			pDisplay->Update();
+			KeyCallback(pDisplay);
+
+			mCamera.Update();
+
+			ModelViewProjection matrix = mCamera.GetModelViewProjection();
+			BYTE* pData = static_cast<BYTE*>(pBuffer->MapMemory(sizeof(ModelViewProjection)));
+			std::copy(reinterpret_cast<BYTE*>(&matrix), reinterpret_cast<BYTE*>(&matrix) + sizeof(ModelViewProjection), pData);
+			pBuffer->UnmapMemory();
 
 			pRenderTarget->BeginFrame();
 			pRenderTarget->Update();

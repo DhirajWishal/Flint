@@ -24,24 +24,60 @@ namespace Flint
 {
 	/**
 	 * Flint extent 2D structure.
+	 *
+	 * @tparam Type: The type of the struct.
 	 */
+	template<class Type>
 	struct FExtent2D
 	{
 		FExtent2D() = default;
-		FExtent2D(UI32 width, UI32 height) : mWidth(width), mHeight(height) {}
+		FExtent2D(Type width, Type height) : mWidth(width), mHeight(height) {}
 
-		UI32 mWidth = 0, mHeight = 0;
+	public:
+		union
+		{
+			struct
+			{
+				Type mWidth;
+				Type mHeight;
+			};
+
+			struct
+			{
+				Type X;
+				Type Y;
+			};
+		};
 	};
 
 	/**
 	 * Flint extent 3D structure.
+	 *
+	 * @tparam Type: The type of the struct.
 	 */
+	template<class Type>
 	struct FExtent3D
 	{
 		FExtent3D() = default;
-		FExtent3D(UI32 width, UI32 height, UI32 depth) : mWidth(width), mHeight(height), mDepth(depth) {}
+		FExtent3D(Type width, Type height, Type depth) : mWidth(width), mHeight(height), mDepth(depth) {}
 
-		UI32 mWidth = 0, mHeight = 0, mDepth = 0;
+	public:
+		union
+		{
+			struct
+			{
+				Type mWidth;
+				Type mHeight;
+				Type mDepth;
+			};
+
+			struct
+			{
+				Type X;
+				Type Y;
+				Type Z;
+			};
+		};
 	};
 
 	/**
@@ -55,4 +91,7 @@ namespace Flint
 
 		float mRed = 0.0f, mGreen = 0.0f, mBlue = 0.0f, mAlpha = 0.0f;
 	};
+
+	typedef FExtent2D<UI32> FBox2D;
+	typedef FExtent3D<UI32> FBox3D;
 }
