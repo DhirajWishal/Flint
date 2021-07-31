@@ -136,6 +136,12 @@ namespace Flint
 		DIMENSIONS_1,
 		DIMENSIONS_2,
 		DIMENSIONS_3,
+		CUBEMAP,
+
+		DIMENSIONS_1_ARRAY,
+		DIMENSIONS_2_ARRAY,
+		DIMENSIONS_3_ARRAY,
+		CUBEMAP_ARRAY,
 	};
 
 	/**
@@ -144,7 +150,6 @@ namespace Flint
 	enum class ImageUsage : UI8 {
 		GRAPHICS,
 		STORAGE,
-		CUBEMAP,
 	};
 
 	/**

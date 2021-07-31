@@ -55,6 +55,7 @@ namespace Flint
 
 			FLINT_VK_ASSERT(vkQueueSubmit(vDevice.GetQueue().vTransferQueue, 1, &vSI, vFence));
 			FLINT_VK_ASSERT(vkWaitForFences(vDevice.GetLogicalDevice(), 1, &vFence, VK_TRUE, UINT64_MAX));
+			FLINT_VK_ASSERT(vkQueueWaitIdle(vDevice.GetQueue().vTransferQueue));
 			vkDestroyFence(vDevice.GetLogicalDevice(), vFence, nullptr);
 
 			vkFreeCommandBuffers(vDevice.GetLogicalDevice(), vPool, 1, &vBuffer);

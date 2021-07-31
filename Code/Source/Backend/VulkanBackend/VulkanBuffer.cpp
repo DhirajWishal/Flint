@@ -51,26 +51,30 @@ namespace Flint
 
 		void VulkanBuffer::Resize(UI64 size, BufferResizeMode mode)	// TODO
 		{
+			/*
+			* pRegions[0].srcOffset (114048) is greater than pRegions[0].size (14112). 
+			*/
+
 			FLINT_SETUP_PROFILER();
 			UI64 oldSize = mSize;
 
 			if (mode == BufferResizeMode::COPY)
 			{
 				// Create a stagging buffer to copy data to.
-				VulkanBuffer staggingBuffer(pDevice, BufferType::STAGGING, oldSize);
-				staggingBuffer.CopyFromBuffer(this->shared_from_this(), oldSize, 0, 0);
+				std::shared_ptr<Buffer> pStaggingBuffer = pDevice->CreateBuffer(BufferType::STAGGING, oldSize);
+				pStaggingBuffer->CopyFromBuffer(this->shared_from_this(), oldSize, 0, 0);
 
 				// Terminate the existing buffer and get the new size.
 				Terminate();
-				mSize += size;
+				mSize = size;
 
 				// Create the new buffer.
 				CreateBuffer();
 				CreateBufferMemory();
 
 				// Copy buffer content.
-				CopyFromBuffer(staggingBuffer.shared_from_this(), oldSize, 0, 0);
-				staggingBuffer.Terminate();
+				CopyFromBuffer(pStaggingBuffer, oldSize, 0, 0);
+				pDevice->DestroyBuffer(pStaggingBuffer);
 			}
 			else if (mode == BufferResizeMode::CLEAR)
 			{

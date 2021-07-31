@@ -579,8 +579,8 @@ namespace Flint
 
 						VkDescriptorBufferInfo* pBufferInfo = new VkDescriptorBufferInfo;
 						pBufferInfo->buffer = resource.second->StaticCast<VulkanBuffer>().GetBuffer();
+						pBufferInfo->range = resource.second->GetSize();
 						pBufferInfo->offset = 0;
-						pBufferInfo->range = VK_WHOLE_SIZE;
 
 						vWrite.pBufferInfo = pBufferInfo;
 						INSERT_INTO_VECTOR(vWrites, vWrite);

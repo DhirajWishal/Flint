@@ -55,17 +55,18 @@ namespace Flint
 				}
 			}
 
-			std::vector<VkImageView> CreateImageViews(const std::vector<VkImage>& vImages, VkFormat imageFormat, VulkanDevice& device, VkImageAspectFlags aspectFlags)
+			std::vector<VkImageView> CreateImageViews(const std::vector<VkImage>& vImages, VkFormat imageFormat, VulkanDevice& device, VkImageAspectFlags aspectFlags, VkImageViewType viewType, UI32 layerCount, VkComponentMapping mapping)
 			{
 				VkImageViewCreateInfo vCI = {};
 				vCI.sType = VkStructureType::VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 				vCI.flags = 0;
 				vCI.pNext = VK_NULL_HANDLE;
-				vCI.viewType = VkImageViewType::VK_IMAGE_VIEW_TYPE_2D;
+				vCI.viewType = viewType;
 				vCI.format = imageFormat;
+				vCI.components = mapping;
 
 				VkImageSubresourceRange vSR = {};
-				vSR.layerCount = 1;
+				vSR.layerCount = layerCount;
 				vSR.baseArrayLayer = 0;
 				vSR.levelCount = 1;
 				vSR.baseMipLevel = 0;

@@ -129,7 +129,6 @@ namespace Flint
 		ColorBlendLogic mColorBlendLogic = ColorBlendLogic::CLEAR;
 		DepthCompareLogic mDepthCompareLogic = DepthCompareLogic::LESS_OR_EQUAL;
 		DynamicStateFlags mDynamicStateFlags = DynamicStateFlags(0);
-		//DynamicStateFlags mDynamicStateFlags = DynamicStateFlags::VIEWPORT | DynamicStateFlags::SCISSOR;
 
 		bool bEnablePrimitiveRestart = false;
 		bool bEnableDepthBias = false;

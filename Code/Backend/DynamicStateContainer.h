@@ -76,12 +76,12 @@ namespace Flint
 		 */
 		struct ViewPort : public DynamicStateObject {
 			ViewPort() : DynamicStateObject(DynamicStateFlags::VIEWPORT) {}
-			ViewPort(const FBox2D& extent, const FBox2D& offset, const FBox2D& depth)
+			ViewPort(const FExtent2D<float>& extent, const FExtent2D<float>& offset, const FExtent2D<float>& depth)
 				: DynamicStateObject(DynamicStateFlags::VIEWPORT), mExtent(extent), mOffset(offset), mDepth(depth) {}
 
-			FBox2D mExtent = {};
-			FBox2D mOffset = {};
-			FBox2D mDepth = {};	// { Min, Max }
+			FExtent2D<float> mExtent = {};
+			FExtent2D<float> mOffset = {};
+			FExtent2D<float> mDepth = {};	// { Min, Max }
 		};
 
 		/**
@@ -138,61 +138,69 @@ namespace Flint
 		 */
 		struct DepthBounds : public DynamicStateObject {
 			DepthBounds() : DynamicStateObject(DynamicStateFlags::DEPTH_BOUNDS) {}
-			DepthBounds(const FBox2D& bounds) : DynamicStateObject(DynamicStateFlags::DEPTH_BOUNDS), mBounds(bounds) {}
+			DepthBounds(const FExtent2D<float>& bounds) : DynamicStateObject(DynamicStateFlags::DEPTH_BOUNDS), mBounds(bounds) {}
 
-			FBox2D mBounds = {};	// { Min, Max }
+			FExtent2D<float> mBounds = {};	// { Min, Max }
 		};
 
 	public:
 		DynamicStateContainer() = default;
 
 		/**
-		 * Add a viewport to the container.
+		 * Set a viewport to the container.
 		 *
 		 * @param extent: The extent of the viewport.
 		 * @param depth: The viewport depth.
 		 * @pram offset: The viewport offset.
 		 */
-		void AddViewPort(const FBox2D& extent, const FBox2D& depth, const FBox2D& offset);
+		void SetViewPort(const FExtent2D<float>& extent, const FExtent2D<float>& depth, const FExtent2D<float>& offset);
 
 		/**
-		 * Add a scissor to the container.
+		 * Set a scissor to the container.
 		 *
 		 * @param extent: The scissor extent.
 		 * @param offset: The scissor offset.
 		 */
-		void AddScissor(const FBox2D& extent, const FBox2D& offset);
+		void SetScissor(const FBox2D& extent, const FBox2D& offset);
 
 		/**
-		 * Add a line width to the container.
+		 * Set a line width to the container.
 		 *
 		 * @param width: The line width in float.
 		 */
-		void AddLineWidth(const float width);
+		void SetLineWidth(const float width);
 
 		/**
-		 * Add depth bias to the container.
+		 * Set depth bias to the container.
 		 *
 		 * @param biasFactor: The depth bias factor.
 		 * @param clampFactor: The depth bias clamp factor.
 		 * @param slopeFacror: The depth bias slope factor.
 		 */
-		void AddDepthBias(const float biasFactor, const float clampFactor, const float slopeFactor);
+		void SetDepthBias(const float biasFactor, const float clampFactor, const float slopeFactor);
 
 		/**
-		 * Add blend constants to the container.
+		 * Set blend constants to the container.
 		 *
 		 * @param constants: The static float[4] constants.
 		 */
-		void AddBlendConstants(const float(&constants)[4]);
+		void SetBlendConstants(const float(&constants)[4]);
 
 		/**
-		 * Add depth bounds to the container.
+		 * Set depth bounds to the container.
 		 *
 		 * @param bounds: The depth bounds.
 		 */
-		void AddDepthBounds(const FBox2D& bounds);
+		void SetDepthBounds(const FExtent2D<float>& bounds);
 
-		std::vector<std::shared_ptr<DynamicStateObject>> pDynamicStates;
+	public:
+		ViewPort mViewPort = {};
+		Scissor mScissor = {};
+		LineWidth mLineWidth = {};
+		DepthBias mDepthBias = {};
+		BlendConstants mBlendConstants = {};
+		DepthBounds mDepthBounds = {};
+
+		DynamicStateFlags mFlags = DynamicStateFlags::UNDEFINED;
 	};
 }

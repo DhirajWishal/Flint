@@ -5,33 +5,39 @@
 
 namespace Flint
 {
-	void DynamicStateContainer::AddViewPort(const FBox2D& extent, const FBox2D& depth, const FBox2D& offset)
+	void DynamicStateContainer::SetViewPort(const FExtent2D<float>& extent, const FExtent2D<float>& depth, const FExtent2D<float>& offset)
 	{
-		INSERT_INTO_VECTOR(pDynamicStates, std::make_shared<ViewPort>(extent, offset, depth));
+		mViewPort = ViewPort(extent, offset, depth);
+		mFlags = mFlags | DynamicStateFlags::VIEWPORT;
 	}
 
-	void DynamicStateContainer::AddScissor(const FBox2D& extent, const FBox2D& offset)
+	void DynamicStateContainer::SetScissor(const FBox2D& extent, const FBox2D& offset)
 	{
-		INSERT_INTO_VECTOR(pDynamicStates, std::make_shared<Scissor>(extent, offset));
+		mScissor = Scissor(extent, offset);
+		mFlags = mFlags | DynamicStateFlags::SCISSOR;
 	}
 
-	void DynamicStateContainer::AddLineWidth(const float width)
+	void DynamicStateContainer::SetLineWidth(const float width)
 	{
-		INSERT_INTO_VECTOR(pDynamicStates, std::make_shared<LineWidth>(width));
+		mLineWidth = LineWidth(width);
+		mFlags = mFlags | DynamicStateFlags::LINE_WIDTH;
 	}
 
-	void DynamicStateContainer::AddDepthBias(const float biasFactor, const float clampFactor, const float slopeFactor)
+	void DynamicStateContainer::SetDepthBias(const float biasFactor, const float clampFactor, const float slopeFactor)
 	{
-		INSERT_INTO_VECTOR(pDynamicStates, std::make_shared<DepthBias>(biasFactor, clampFactor, slopeFactor));
+		mDepthBias = DepthBias(biasFactor, clampFactor, slopeFactor);
+		mFlags = mFlags | DynamicStateFlags::DEPTH_BIAS;
 	}
 
-	void DynamicStateContainer::AddBlendConstants(const float(&constants)[4])
+	void DynamicStateContainer::SetBlendConstants(const float(&constants)[4])
 	{
-		INSERT_INTO_VECTOR(pDynamicStates, std::make_shared<BlendConstants>(constants));
+		mBlendConstants = BlendConstants(constants);
+		mFlags = mFlags | DynamicStateFlags::BLEND_CONSTANTS;
 	}
 
-	void DynamicStateContainer::AddDepthBounds(const FBox2D& bounds)
+	void DynamicStateContainer::SetDepthBounds(const FExtent2D<float>& bounds)
 	{
-		INSERT_INTO_VECTOR(pDynamicStates, std::make_shared<DepthBounds>(bounds));
+		mDepthBounds = DepthBounds(bounds);
+		mFlags = mFlags | DynamicStateFlags::DEPTH_BOUNDS;
 	}
 }

@@ -28,7 +28,7 @@ namespace Flint
 		if (vertexCount)
 		{
 			UI64 srcSize = mVertexCount * mVertexSize;
-			UI64 newSize = mVertexSize * vertexCount;
+			UI64 newSize = vertexCount * mVertexSize;
 
 			// Create new stagging buffer and copy content to it.
 			std::shared_ptr<Buffer> pStaggingBuffer = pDevice->CreateBuffer(BufferType::STAGGING, newSize);
@@ -42,7 +42,7 @@ namespace Flint
 			else
 				pVertexBuffer->Extend(newSize, BufferResizeMode::COPY);
 
-			pVertexBuffer->CopyFromBuffer(pStaggingBuffer, newSize, srcSize, 0);
+			pVertexBuffer->CopyFromBuffer(pStaggingBuffer, newSize, 0, srcSize);
 			pDevice->DestroyBuffer(pStaggingBuffer);
 
 			mVertexCount += vertexCount;
@@ -66,7 +66,7 @@ namespace Flint
 			else
 				pIndexBuffer->Extend(newSize, BufferResizeMode::COPY);
 
-			pIndexBuffer->CopyFromBuffer(pStaggingBuffer, newSize, srcSize, 0);
+			pIndexBuffer->CopyFromBuffer(pStaggingBuffer, newSize, 0, srcSize);
 			pDevice->DestroyBuffer(pStaggingBuffer);
 
 			mIndexCount += indexCount;

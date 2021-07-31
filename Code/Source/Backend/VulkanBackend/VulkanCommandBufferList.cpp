@@ -182,75 +182,58 @@ namespace Flint
 
 		void VulkanCommandBufferList::BindDynamicStates(const std::shared_ptr<DynamicStateContainer>& pDynamicStates)
 		{
-			for (auto& pState : pDynamicStates->pDynamicStates)
+			if (!pDynamicStates)
+				return;
+
+			DynamicStateFlags flags = pDynamicStates->mFlags;
+			if (flags & DynamicStateFlags::VIEWPORT)
 			{
-				switch (pState->GetFlag())
-				{
-				case Flint::DynamicStateFlags::VIEWPORT:
-				{
-					DynamicStateContainer::ViewPort* pViewPort = dynamic_cast<DynamicStateContainer::ViewPort*>(pState.get());
+				DynamicStateContainer::ViewPort& viewPort = pDynamicStates->mViewPort;
 
-					VkViewport vVP = {};
-					vVP.width = static_cast<float>(pViewPort->mExtent.mWidth);
-					vVP.height = static_cast<float>(pViewPort->mExtent.mHeight);
-					vVP.minDepth = static_cast<float>(pViewPort->mDepth.mWidth);
-					vVP.maxDepth = static_cast<float>(pViewPort->mDepth.mHeight);
-					vVP.x = static_cast<float>(pViewPort->mOffset.mWidth);
-					vVP.y = static_cast<float>(pViewPort->mOffset.mHeight);
+				VkViewport vVP = {};
+				vVP.width = viewPort.mExtent.mWidth;
+				vVP.height = viewPort.mExtent.mHeight;
+				vVP.minDepth = viewPort.mDepth.mWidth;
+				vVP.maxDepth = viewPort.mDepth.mHeight;
+				vVP.x = viewPort.mOffset.mWidth;
+				vVP.y = viewPort.mOffset.mHeight;
 
-					vkCmdSetViewport(GetCurrentCommandBuffer(), 0, 1, &vVP);
-				}
-				break;
+				vkCmdSetViewport(GetCurrentCommandBuffer(), 0, 1, &vVP);
+			}
 
-				case Flint::DynamicStateFlags::SCISSOR:
-				{
-					DynamicStateContainer::Scissor* pScissor = dynamic_cast<DynamicStateContainer::Scissor*>(pState.get());
+			if (flags & DynamicStateFlags::SCISSOR)
+			{
+				DynamicStateContainer::Scissor& scissor = pDynamicStates->mScissor;
 
-					VkRect2D vR2D = {};
-					vR2D.extent.width = static_cast<UI32>(pScissor->mExtent.mWidth);
-					vR2D.extent.height = static_cast<UI32>(pScissor->mExtent.mHeight);
-					vR2D.offset.x = static_cast<I32>(pScissor->mOffset.mWidth);
-					vR2D.offset.y = static_cast<I32>(pScissor->mOffset.mHeight);
+				VkRect2D vR2D = {};
+				vR2D.extent.width = scissor.mExtent.mWidth;
+				vR2D.extent.height = scissor.mExtent.mHeight;
+				vR2D.offset.x = scissor.mOffset.mWidth;
+				vR2D.offset.y = scissor.mOffset.mHeight;
 
-					vkCmdSetScissor(GetCurrentCommandBuffer(), 0, 1, &vR2D);
-				}
-				break;
+				vkCmdSetScissor(GetCurrentCommandBuffer(), 0, 1, &vR2D);
+			}
 
-				case Flint::DynamicStateFlags::LINE_WIDTH:
-				{
-					DynamicStateContainer::LineWidth* pLineWidth = dynamic_cast<DynamicStateContainer::LineWidth*>(pState.get());
+			if (flags & DynamicStateFlags::LINE_WIDTH)
+			{
+				vkCmdSetLineWidth(GetCurrentCommandBuffer(), pDynamicStates->mLineWidth.mLineWidth);
+			}
 
-					vkCmdSetLineWidth(GetCurrentCommandBuffer(), pLineWidth->mLineWidth);
-				}
-				break;
+			if (flags & DynamicStateFlags::DEPTH_BIAS)
+			{
+				DynamicStateContainer::DepthBias& depthBias = pDynamicStates->mDepthBias;
+				vkCmdSetDepthBias(GetCurrentCommandBuffer(), depthBias.mDepthBiasFactor, depthBias.mDepthClampFactor, depthBias.mDepthSlopeFactor);
+			}
 
-				case Flint::DynamicStateFlags::DEPTH_BIAS:
-				{
-					DynamicStateContainer::DepthBias* pDepthBias = dynamic_cast<DynamicStateContainer::DepthBias*>(pState.get());
+			if (flags & DynamicStateFlags::BLEND_CONSTANTS)
+			{
+				vkCmdSetBlendConstants(GetCurrentCommandBuffer(), pDynamicStates->mBlendConstants.mConstants);
+			}
 
-					vkCmdSetDepthBias(GetCurrentCommandBuffer(), pDepthBias->mDepthBiasFactor, pDepthBias->mDepthClampFactor, pDepthBias->mDepthSlopeFactor);
-				}
-				break;
-
-				case Flint::DynamicStateFlags::BLEND_CONSTANTS:
-				{
-					DynamicStateContainer::BlendConstants* pBlendConstants = dynamic_cast<DynamicStateContainer::BlendConstants*>(pState.get());
-
-					vkCmdSetBlendConstants(GetCurrentCommandBuffer(), pBlendConstants->mConstants);
-				}
-				break;
-
-				case Flint::DynamicStateFlags::DEPTH_BOUNDS:
-				{
-					DynamicStateContainer::DepthBounds* pDepthBounds = dynamic_cast<DynamicStateContainer::DepthBounds*>(pState.get());
-
-					vkCmdSetDepthBounds(GetCurrentCommandBuffer(), static_cast<float>(pDepthBounds->mBounds.mWidth), static_cast<float>(pDepthBounds->mBounds.mHeight));
-				}
-				break;
-
-				default:
-					FLINT_THROW_BACKEND_ERROR("Invalid or undefined dynamic state!");
-				}
+			if (flags & DynamicStateFlags::DEPTH_BOUNDS)
+			{
+				DynamicStateContainer::DepthBounds& bounds = pDynamicStates->mDepthBounds;
+				vkCmdSetDepthBounds(GetCurrentCommandBuffer(), bounds.mBounds.mWidth, bounds.mBounds.mHeight);
 			}
 		}
 

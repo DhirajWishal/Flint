@@ -6,16 +6,12 @@
 #include "Backend/Core/DataType.hpp"
 #include <glm/glm.hpp>
 
-/**
- * Model View Projection struct.
- */
-struct ModelViewProjection
+struct CameraMatrix
 {
-	ModelViewProjection(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection) : modelMatrix(model), viewMatrix(view), projectionMatrix(projection) {}
+	CameraMatrix(const glm::mat4& view, const glm::mat4& projection) : mViewMatrix(view), mProjectionMatrix(projection) {}
 
-	glm::mat4 modelMatrix = glm::mat4(1);
-	glm::mat4 viewMatrix = glm::mat4(1);
-	glm::mat4 projectionMatrix = glm::mat4(1);
+	glm::mat4 mViewMatrix = glm::mat4(1);
+	glm::mat4 mProjectionMatrix = glm::mat4(1);
 };
 
 /**
@@ -60,11 +56,11 @@ public:
 	void Update();
 
 	/**
-	 * Get the default model view projection matrices.
+	 * Get the default view projection matrices.
 	 *
-	 * @return The Model View Projection.
+	 * @return The camera matrix.
 	 */
-	ModelViewProjection GetModelViewProjection() const { return ModelViewProjection(modelMatrix, viewMatrix, projectionMatrix); }
+	CameraMatrix GetMatrix() const { return CameraMatrix(viewMatrix, projectionMatrix); }
 
 	/**
 	 * Reset the first mouse boolean value to its default (true).
@@ -78,15 +74,7 @@ public:
 	 */
 	void SetAspectRatio(Flint::FBox2D extent);
 
-	/**
-	 * Rotate the camera.
-	 * 
-	 * @param degrees: The number of degrees to rotate.
-	 */
-	void Rotate(float degrees, I8 coord);
-
 private:
-	glm::mat4 modelMatrix = glm::mat4(1);
 	glm::mat4 viewMatrix = glm::mat4(1);
 	glm::mat4 projectionMatrix = glm::mat4(1);
 

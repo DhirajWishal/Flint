@@ -166,7 +166,7 @@ namespace Flint
 
 		/**
 		 * Create a new image sampler.
-		 * 
+		 *
 		 * @param specification: The sampler specification.
 		 * @return The newly created sampler.
 		 */
@@ -174,7 +174,7 @@ namespace Flint
 
 		/**
 		 * Destroy a created image sampler.
-		 * 
+		 *
 		 * @param pSampler: The sampler pointer.
 		 */
 		virtual void DestroyImageSampler(const std::shared_ptr<ImageSampler>& pSampler) = 0;

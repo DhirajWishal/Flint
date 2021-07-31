@@ -30,8 +30,8 @@ namespace Flint
 	template<class Type>
 	struct FExtent2D
 	{
-		FExtent2D() = default;
-		FExtent2D(Type width, Type height) : mWidth(width), mHeight(height) {}
+		constexpr FExtent2D() = default;
+		constexpr FExtent2D(Type width, Type height) : mWidth(width), mHeight(height) {}
 
 	public:
 		union
@@ -58,8 +58,8 @@ namespace Flint
 	template<class Type>
 	struct FExtent3D
 	{
-		FExtent3D() = default;
-		FExtent3D(Type width, Type height, Type depth) : mWidth(width), mHeight(height), mDepth(depth) {}
+		constexpr FExtent3D() = default;
+		constexpr FExtent3D(Type width, Type height, Type depth) : mWidth(width), mHeight(height), mDepth(depth) {}
 
 	public:
 		union

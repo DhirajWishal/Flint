@@ -17,12 +17,17 @@ namespace Flint
 				switch (type)
 				{
 				case Flint::ImageType::DIMENSIONS_1:
+				case Flint::ImageType::DIMENSIONS_1_ARRAY:
 					return VkImageType::VK_IMAGE_TYPE_1D;
 
 				case Flint::ImageType::DIMENSIONS_2:
+				case Flint::ImageType::DIMENSIONS_2_ARRAY:
+				case Flint::ImageType::CUBEMAP:
+				case Flint::ImageType::CUBEMAP_ARRAY:
 					return VkImageType::VK_IMAGE_TYPE_2D;
 
 				case Flint::ImageType::DIMENSIONS_3:
+				case Flint::ImageType::DIMENSIONS_3_ARRAY:
 					return VkImageType::VK_IMAGE_TYPE_3D;
 
 				default:
@@ -71,9 +76,6 @@ namespace Flint
 				case Flint::ImageUsage::STORAGE:
 					return VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_DST_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_STORAGE_BIT;
 
-				case Flint::ImageUsage::CUBEMAP:
-					return VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_DST_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_SAMPLED_BIT;
-
 				default:
 					FLINT_THROW_BACKEND_ERROR("Invalid image usage type!");
 				}
@@ -106,6 +108,41 @@ namespace Flint
 
 				return 0;
 			}
+
+			VkImageViewType GetImageViewType(ImageType type)
+			{
+				switch (type)
+				{
+				case Flint::ImageType::DIMENSIONS_1:
+					return VkImageViewType::VK_IMAGE_VIEW_TYPE_1D;
+
+				case Flint::ImageType::DIMENSIONS_1_ARRAY:
+					return VkImageViewType::VK_IMAGE_VIEW_TYPE_1D_ARRAY;
+
+				case Flint::ImageType::DIMENSIONS_2:
+					return VkImageViewType::VK_IMAGE_VIEW_TYPE_2D;
+
+				case Flint::ImageType::DIMENSIONS_2_ARRAY:
+					return VkImageViewType::VK_IMAGE_VIEW_TYPE_2D_ARRAY;
+
+				case Flint::ImageType::CUBEMAP:
+					return VkImageViewType::VK_IMAGE_VIEW_TYPE_CUBE;
+				case Flint::ImageType::CUBEMAP_ARRAY:
+					return VkImageViewType::VK_IMAGE_VIEW_TYPE_CUBE_ARRAY;
+
+
+				case Flint::ImageType::DIMENSIONS_3:
+					return VkImageViewType::VK_IMAGE_VIEW_TYPE_2D;
+
+				case Flint::ImageType::DIMENSIONS_3_ARRAY:
+					return VkImageViewType::VK_IMAGE_VIEW_TYPE_2D_ARRAY;
+
+				default:
+					FLINT_THROW_BACKEND_ERROR("Invalid image type!");
+				}
+
+				return VkImageViewType::VK_IMAGE_VIEW_TYPE_2D;
+			}
 		}
 
 		VulkanImage::VulkanImage(const std::shared_ptr<Device>& pDevice, ImageType type, ImageUsage usage, const FBox3D& extent, PixelFormat format, UI8 layers, UI32 mipLevels, const void* pImageData)
@@ -116,7 +153,7 @@ namespace Flint
 			CreateImageView();
 
 			// Copy date to the device.
-			UI64 size = static_cast<UI64>(mExtent.mWidth) * mExtent.mHeight * mExtent.mDepth * _Helpers::GetByteDepth(mFormat);
+			UI64 size = static_cast<UI64>(mExtent.mWidth) * mExtent.mHeight * mExtent.mDepth * _Helpers::GetByteDepth(mFormat) * mLayerCount;
 			VulkanBuffer vStaggingBuffer(pDevice, BufferType::STAGGING, size);
 
 			BYTE* pBytes = static_cast<BYTE*>(vStaggingBuffer.MapMemory(size));
@@ -125,7 +162,7 @@ namespace Flint
 
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 			vDevice.SetImageLayout(vImage, vCurrentLayout, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, _Helpers::GetImageFormat(mFormat), mLayerCount, 0, mMipLevels);
-			vCurrentLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL; 
+			vCurrentLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
 
 			// Copy from buffer. TODO
 			{
@@ -148,7 +185,11 @@ namespace Flint
 
 			vStaggingBuffer.Terminate();
 
-			GenerateMipMaps();
+			if (mType != ImageType::CUBEMAP && mType != ImageType::CUBEMAP_ARRAY)
+				GenerateMipMaps();
+			else
+				vDevice.SetImageLayout(vImage, vCurrentLayout, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, _Helpers::GetImageFormat(mFormat), mLayerCount, 0, mMipLevels);
+
 			vCurrentLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		}
 
@@ -181,7 +222,7 @@ namespace Flint
 			vCreateInfo.tiling = VkImageTiling::VK_IMAGE_TILING_OPTIMAL;
 			vCreateInfo.usage = _Helpers::GetImageUsage(mUsage);
 
-			if (mUsage == ImageUsage::CUBEMAP)
+			if (mType == ImageType::CUBEMAP || mType == ImageType::CUBEMAP_ARRAY)
 				vCreateInfo.flags = VkImageCreateFlagBits::VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
 
 			FLINT_VK_ASSERT(vkCreateImage(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), &vCreateInfo, nullptr, &vImage));
@@ -194,16 +235,19 @@ namespace Flint
 
 		void VulkanImage::CreateImageView()
 		{
-			vImageView = Utilities::CreateImageViews({ vImage }, _Helpers::GetImageFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT)[0];
+			if (mType == ImageType::CUBEMAP || mType == ImageType::CUBEMAP_ARRAY)
+				vImageView = Utilities::CreateImageViews({ vImage }, _Helpers::GetImageFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT, _Helpers::GetImageViewType(mType), mLayerCount, { VK_COMPONENT_SWIZZLE_R, VK_COMPONENT_SWIZZLE_G, VK_COMPONENT_SWIZZLE_B, VK_COMPONENT_SWIZZLE_A })[0];
+			else
+				vImageView = Utilities::CreateImageViews({ vImage }, _Helpers::GetImageFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT, _Helpers::GetImageViewType(mType), mLayerCount)[0];
 		}
 
 		void VulkanImage::GenerateMipMaps()
 		{
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-			VkFormatProperties vProps = {};
-			vkGetPhysicalDeviceFormatProperties(vDevice.GetPhysicalDevice(), _Helpers::GetImageFormat(mFormat), &vProps);
+			VkFormatProperties vProperties = {};
+			vkGetPhysicalDeviceFormatProperties(vDevice.GetPhysicalDevice(), _Helpers::GetImageFormat(mFormat), &vProperties);
 
-			if (!(vProps.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT))
+			if (!(vProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT))
 				FLINT_THROW_BACKEND_ERROR("Texture format does not support linear bitting!");
 
 			VulkanOneTimeCommandBuffer vCommandBuffer(vDevice);
@@ -216,7 +260,7 @@ namespace Flint
 				barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
 				barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
 				barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-				barrier.subresourceRange.layerCount = mLayerCount;
+				barrier.subresourceRange.layerCount = mLayerCount - i;
 				barrier.subresourceRange.levelCount = 1;
 				barrier.subresourceRange.baseArrayLayer = i;
 
@@ -250,7 +294,7 @@ namespace Flint
 					blit.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 					blit.dstSubresource.mipLevel = j;
 					blit.dstSubresource.baseArrayLayer = i;
-					blit.dstSubresource.layerCount = mLayerCount;
+					blit.dstSubresource.layerCount = mLayerCount - i;
 
 					vkCmdBlitImage(vCommandBuffer,
 						vImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
@@ -289,3 +333,11 @@ namespace Flint
 		}
 	}
 }
+
+/*
+Vulkan Validation Layer (Validation): Validation Error: [ VUID-VkImageMemoryBarrier-subresourceRange-01725 ] Object 0: handle = 0x7dceed0000000068, type = VK_OBJECT_TYPE_IMAGE; | MessageID = 0xe9dbfc10 | vkCmdPipelineBarrier(): pImageMemoryBarriers[0].subresourceRange.baseArrayLayer + .layerCount (= 1 + 6 = 7) is greater than the arrayLayers of the image when it was created (i.e. greater than 6). The Vulkan spec states: If subresourceRange.layerCount is not VK_REMAINING_ARRAY_LAYERS, subresourceRange.baseArrayLayer + subresourceRange.layerCount must be less than or equal to the arrayLayers specified in VkImageCreateInfo when image was created (https://vulkan.lunarg.com/doc/view/1.2.162.1/windows/1.2-extensions/vkspec.html#VUID-VkImageMemoryBarrier-subresourceRange-01725)
+Vulkan Validation Layer (Validation): Validation Error: [ VUID-VkImageMemoryBarrier-subresourceRange-01725 ] Object 0: handle = 0x7dceed0000000068, type = VK_OBJECT_TYPE_IMAGE; | MessageID = 0xe9dbfc10 | vkCmdPipelineBarrier(): pImageMemoryBarriers[0].subresourceRange.baseArrayLayer + .layerCount (= 2 + 6 = 8) is greater than the arrayLayers of the image when it was created (i.e. greater than 6). The Vulkan spec states: If subresourceRange.layerCount is not VK_REMAINING_ARRAY_LAYERS, subresourceRange.baseArrayLayer + subresourceRange.layerCount must be less than or equal to the arrayLayers specified in VkImageCreateInfo when image was created (https://vulkan.lunarg.com/doc/view/1.2.162.1/windows/1.2-extensions/vkspec.html#VUID-VkImageMemoryBarrier-subresourceRange-01725)
+Vulkan Validation Layer (Validation): Validation Error: [ VUID-VkImageMemoryBarrier-subresourceRange-01725 ] Object 0: handle = 0x7dceed0000000068, type = VK_OBJECT_TYPE_IMAGE; | MessageID = 0xe9dbfc10 | vkCmdPipelineBarrier(): pImageMemoryBarriers[0].subresourceRange.baseArrayLayer + .layerCount (= 3 + 6 = 9) is greater than the arrayLayers of the image when it was created (i.e. greater than 6). The Vulkan spec states: If subresourceRange.layerCount is not VK_REMAINING_ARRAY_LAYERS, subresourceRange.baseArrayLayer + subresourceRange.layerCount must be less than or equal to the arrayLayers specified in VkImageCreateInfo when image was created (https://vulkan.lunarg.com/doc/view/1.2.162.1/windows/1.2-extensions/vkspec.html#VUID-VkImageMemoryBarrier-subresourceRange-01725)
+Vulkan Validation Layer (Validation): Validation Error: [ VUID-VkImageMemoryBarrier-subresourceRange-01725 ] Object 0: handle = 0x7dceed0000000068, type = VK_OBJECT_TYPE_IMAGE; | MessageID = 0xe9dbfc10 | vkCmdPipelineBarrier(): pImageMemoryBarriers[0].subresourceRange.baseArrayLayer + .layerCount (= 4 + 6 = 10) is greater than the arrayLayers of the image when it was created (i.e. greater than 6). The Vulkan spec states: If subresourceRange.layerCount is not VK_REMAINING_ARRAY_LAYERS, subresourceRange.baseArrayLayer + subresourceRange.layerCount must be less than or equal to the arrayLayers specified in VkImageCreateInfo when image was created (https://vulkan.lunarg.com/doc/view/1.2.162.1/windows/1.2-extensions/vkspec.html#VUID-VkImageMemoryBarrier-subresourceRange-01725)
+Vulkan Validation Layer (Validation): Validation Error: [ VUID-VkImageMemoryBarrier-subresourceRange-01725 ] Object 0: handle = 0x7dceed0000000068, type = VK_OBJECT_TYPE_IMAGE; | MessageID = 0xe9dbfc10 | vkCmdPipelineBarrier(): pImageMemoryBarriers[0].subresourceRange.baseArrayLayer + .layerCount (= 5 + 6 = 11) is greater than the arrayLayers of the image when it was created (i.e. greater than 6). The Vulkan spec states: If subresourceRange.layerCount is not VK_REMAINING_ARRAY_LAYERS, subresourceRange.baseArrayLayer + subresourceRange.layerCount must be less than or equal to the arrayLayers specified in VkImageCreateInfo when image was created (https://vulkan.lunarg.com/doc/view/1.2.162.1/windows/1.2-extensions/vkspec.html#VUID-VkImageMemoryBarrier-subresourceRange-01725)
+*/
