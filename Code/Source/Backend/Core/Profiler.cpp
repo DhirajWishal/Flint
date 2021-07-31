@@ -40,7 +40,7 @@ namespace Flint
 	{
 		std::stringstream threadID;
 		threadID << std::this_thread::get_id();
-		pControlBlock = std::make_shared<AtomicProfileControlBlock>("ProfileLog_" + threadID.str() + ".json");
+		pControlBlock = std::make_shared<AtomicProfileControlBlock>("ProfileLog.json");
 	}
 
 	ProfileLogger::~ProfileLogger()

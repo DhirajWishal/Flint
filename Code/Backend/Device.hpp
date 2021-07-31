@@ -17,6 +17,8 @@ namespace Flint
 	class ScreenBoundRenderTarget;
 
 	class Buffer;
+	class Image;
+	class ImageSampler;
 	class Shader;
 
 	class Pipeline;
@@ -140,6 +142,42 @@ namespace Flint
 		 * @param pBuffer: The buffer to be destroyed.
 		 */
 		virtual void DestroyBuffer(const std::shared_ptr<Buffer>& pBuffer) = 0;
+
+		/**
+		 * Create a new image.
+		 *
+		 * @param type: The image type.
+		 * @param usage: The image usage.
+		 * @param extent: The image extent.
+		 * @param format: The image format.
+		 * @param layers: The number of layers in the image.
+		 * @param mipLevels: The mip levels of the image.
+		 * @param pImageData: The image data pointer to load data from.
+		 * @return The newly created image.
+		 */
+		virtual std::shared_ptr<Image> CreateImage(const ImageType type, ImageUsage usage, const FBox3D& extent, PixelFormat format, UI8 layers, UI32 mipLevels, const void* pImageData) = 0;
+
+		/**
+		 * Destroy a created image.
+		 *
+		 * @param pImage: The image pointer.
+		 */
+		virtual void DestroyImage(const std::shared_ptr<Image>& pImage) = 0;
+
+		/**
+		 * Create a new image sampler.
+		 * 
+		 * @param specification: The sampler specification.
+		 * @return The newly created sampler.
+		 */
+		virtual std::shared_ptr<ImageSampler> CreateImageSampler(const ImageSamplerSpecification& specification) = 0;
+
+		/**
+		 * Destroy a created image sampler.
+		 * 
+		 * @param pSampler: The sampler pointer.
+		 */
+		virtual void DestroyImageSampler(const std::shared_ptr<ImageSampler>& pSampler) = 0;
 
 		/**
 		 * Create a new shader.

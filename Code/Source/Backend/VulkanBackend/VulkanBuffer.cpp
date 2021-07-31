@@ -58,7 +58,7 @@ namespace Flint
 			{
 				// Create a stagging buffer to copy data to.
 				VulkanBuffer staggingBuffer(pDevice, BufferType::STAGGING, oldSize);
-				staggingBuffer.CopyFromBuffer(*this, oldSize, 0, 0);
+				staggingBuffer.CopyFromBuffer(this->shared_from_this(), oldSize, 0, 0);
 
 				// Terminate the existing buffer and get the new size.
 				Terminate();
@@ -69,7 +69,7 @@ namespace Flint
 				CreateBufferMemory();
 
 				// Copy buffer content.
-				CopyFromBuffer(staggingBuffer, oldSize, 0, 0);
+				CopyFromBuffer(staggingBuffer.shared_from_this(), oldSize, 0, 0);
 				staggingBuffer.Terminate();
 			}
 			else if (mode == BufferResizeMode::CLEAR)
@@ -86,7 +86,7 @@ namespace Flint
 				FLINT_THROW_INVALID_ARGUMENT("Buffer copy mode is invalid or undefined!");
 		}
 
-		void VulkanBuffer::CopyFromBuffer(const Buffer& srcBuffer, UI64 size, UI64 srcOffset, UI64 dstOffset)
+		void VulkanBuffer::CopyFromBuffer(const std::shared_ptr<Buffer>& pSrcBuffer, UI64 size, UI64 srcOffset, UI64 dstOffset)
 		{
 			FLINT_SETUP_PROFILER();
 
@@ -96,7 +96,7 @@ namespace Flint
 			vBufferCopy.dstOffset = dstOffset;
 
 			VulkanOneTimeCommandBuffer vCommandBuffer(pDevice->StaticCast<VulkanDevice>());
-			vkCmdCopyBuffer(vCommandBuffer, srcBuffer.StaticCast<VulkanBuffer>().vBuffer, vBuffer, 1, &vBufferCopy);
+			vkCmdCopyBuffer(vCommandBuffer, pSrcBuffer->StaticCast<VulkanBuffer>().vBuffer, vBuffer, 1, &vBufferCopy);
 		}
 
 		void* VulkanBuffer::MapMemory(UI64 size, UI64 offset)

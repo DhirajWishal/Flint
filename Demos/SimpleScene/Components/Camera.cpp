@@ -93,6 +93,6 @@ void Camera::Rotate(float degrees, I8 coord)
 		modelMatrix *= glm::rotate(glm::mat4(1.0f), degrees, glm::vec3(0.0f, 1.0f, 0.0f));
 
 	// Rotate z
-	else if (coord == 1)
+	else if (coord == 2)
 		modelMatrix *= glm::rotate(glm::mat4(1.0f), degrees, glm::vec3(0.0f, 0.0f, 1.0f));
 }

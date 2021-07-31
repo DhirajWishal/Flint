@@ -28,6 +28,12 @@ namespace Flint
 			virtual std::shared_ptr<Buffer> CreateBuffer(BufferType type, UI64 size) override final;
 			virtual void DestroyBuffer(const std::shared_ptr<Buffer>& pBuffer) override final;
 
+			virtual std::shared_ptr<Image> CreateImage(const ImageType type, ImageUsage usage, const FBox3D& extent, PixelFormat format, UI8 layers, UI32 mipLevels, const void* pImageData) override final;
+			virtual void DestroyImage(const std::shared_ptr<Image>& pImage) override final;
+
+			virtual std::shared_ptr<ImageSampler> CreateImageSampler(const ImageSamplerSpecification& specification) override final;
+			virtual void DestroyImageSampler(const std::shared_ptr<ImageSampler>& pSampler) override final;
+
 			virtual std::shared_ptr<Shader> CreateShader(ShaderType type, const std::filesystem::path& path, ShaderCodeType codeType) override final;
 			virtual std::shared_ptr<Shader> CreateShader(ShaderType type, const std::vector<UI32>& code, ShaderCodeType codeType = ShaderCodeType::SPIR_V) override final;
 			virtual std::shared_ptr<Shader> CreateShader(ShaderType type, const std::string& code, ShaderCodeType codeType = ShaderCodeType::GLSL) override final;

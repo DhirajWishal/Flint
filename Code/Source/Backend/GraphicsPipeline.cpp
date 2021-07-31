@@ -8,16 +8,32 @@ namespace Flint
 {
 	namespace _Helpers
 	{
-		std::vector<std::string> GetResourceNames(const std::shared_ptr<Shader>& pShader)
+		std::vector<std::string> GetBufferResourceNames(const std::shared_ptr<Shader>& pShader)
 		{
 			if (!pShader)
 				return {};
 
-			std::vector<std::string> names;
 			const auto resources = pShader->GetShaderResources();
 
+			std::vector<std::string> names;
 			for (const auto resource : resources)
-				INSERT_INTO_VECTOR(names, resource.first);
+				if (resource.second.mType != ShaderResourceType::SAMPLER)
+					INSERT_INTO_VECTOR(names, resource.first);
+
+			return names;
+		}
+
+		std::vector<std::string> GetImageResourceNames(const std::shared_ptr<Shader>& pShader)
+		{
+			if (!pShader)
+				return {};
+
+			const auto resources = pShader->GetShaderResources();
+
+			std::vector<std::string> names;
+			for (const auto resource : resources)
+				if (resource.second.mType == ShaderResourceType::SAMPLER)
+					INSERT_INTO_VECTOR(names, resource.first);
 
 			return names;
 		}
@@ -54,7 +70,7 @@ namespace Flint
 
 	std::shared_ptr<ResourceMap> GraphicsPipeline::CreateResourceMap() const
 	{
-		return std::make_shared<ResourceMap>(GetResourceNames());
+		return std::make_shared<ResourceMap>(GetBufferResourceNames(), GetImageResourceNames());
 	}
 
 	void GraphicsPipeline::AddDrawData(const std::shared_ptr<ResourceMap>& pResourceMap, const std::shared_ptr<DynamicStateContainer>& pDynamicStates, UI64 vertexOffset, UI64 vertexCount, UI64 indexOffset, UI64 indexCount)
@@ -63,20 +79,39 @@ namespace Flint
 		INSERT_INTO_VECTOR(mDrawDataList, DrawData(pResourceMap, pDynamicStates, vertexOffset, vertexCount, indexOffset, indexCount));
 	}
 
-	const std::vector<std::string> GraphicsPipeline::GetResourceNames() const
+	const std::vector<std::string> GraphicsPipeline::GetBufferResourceNames() const
 	{
-		std::vector<std::string> nameList = _Helpers::GetResourceNames(pVertexShader);
+		std::vector<std::string> nameList = _Helpers::GetBufferResourceNames(pVertexShader);
 
-		std::vector<std::string> tempNameList = _Helpers::GetResourceNames(pTessellationControlShader);
+		std::vector<std::string> tempNameList = _Helpers::GetBufferResourceNames(pTessellationControlShader);
 		nameList.insert(nameList.end(), tempNameList.begin(), tempNameList.end());
 
-		tempNameList = _Helpers::GetResourceNames(pTessellationEvaluationShader);
+		tempNameList = _Helpers::GetBufferResourceNames(pTessellationEvaluationShader);
 		nameList.insert(nameList.end(), tempNameList.begin(), tempNameList.end());
 
-		tempNameList = _Helpers::GetResourceNames(pGeometryShader);
+		tempNameList = _Helpers::GetBufferResourceNames(pGeometryShader);
 		nameList.insert(nameList.end(), tempNameList.begin(), tempNameList.end());
 
-		tempNameList = _Helpers::GetResourceNames(pFragmentShader);
+		tempNameList = _Helpers::GetBufferResourceNames(pFragmentShader);
+		nameList.insert(nameList.end(), tempNameList.begin(), tempNameList.end());
+
+		return nameList;
+	}
+
+	const std::vector<std::string> GraphicsPipeline::GetImageResourceNames() const
+	{
+		std::vector<std::string> nameList = _Helpers::GetImageResourceNames(pVertexShader);
+
+		std::vector<std::string> tempNameList = _Helpers::GetImageResourceNames(pTessellationControlShader);
+		nameList.insert(nameList.end(), tempNameList.begin(), tempNameList.end());
+
+		tempNameList = _Helpers::GetImageResourceNames(pTessellationEvaluationShader);
+		nameList.insert(nameList.end(), tempNameList.begin(), tempNameList.end());
+
+		tempNameList = _Helpers::GetImageResourceNames(pGeometryShader);
+		nameList.insert(nameList.end(), tempNameList.begin(), tempNameList.end());
+
+		tempNameList = _Helpers::GetImageResourceNames(pFragmentShader);
 		nameList.insert(nameList.end(), tempNameList.begin(), tempNameList.end());
 
 		return nameList;

@@ -6,6 +6,9 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "../ThirdParty/tiny_obj_loader.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "../ThirdParty/stb_image.h"
+
 #include <unordered_map>
 
 namespace std
@@ -63,4 +66,20 @@ std::pair<std::vector<Vertex>, std::vector<UI32>> LoadAsset(const std::filesyste
 	}
 
 	return std::pair<std::vector<Vertex>, std::vector<UI32>>{ vertexes, indexes };
+}
+
+ImageData LoadImage(const std::filesystem::path& path)
+{
+	I32 texWidth = 0, texHeight = 0, texChannels = 0;
+	stbi_uc* pixels = stbi_load(path.string().c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+
+	ImageData data;
+	data.pImageData = pixels;
+	data.mExtent = Flint::FBox3D(texWidth, texHeight, 1);
+	return data;
+}
+
+void DestroyImage(ImageData data)
+{
+	stbi_image_free(data.pImageData);
 }

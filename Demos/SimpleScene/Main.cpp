@@ -14,7 +14,7 @@
 #include "Components/AssetLoader.hpp"
 
 glm::vec3 rotations = glm::vec3(0.0f);
-const float rotationBias = 0.0000005f;
+const float rotationBias = 0.0005f;
 
 Camera mCamera = {};
 void KeyCallback(std::shared_ptr<Flint::Display> pDisplay)
@@ -41,71 +41,29 @@ void KeyCallback(std::shared_ptr<Flint::Display> pDisplay)
 	if (pDisplay->GetKeyEvent(Flint::KeyCode::KEY_X).IsPressed() || pDisplay->GetKeyEvent(Flint::KeyCode::KEY_X).IsOnRepeat())
 	{
 		if ((pDisplay->GetKeyEvent(Flint::KeyCode::KEY_X).GetSpecialCharacter() & Flint::SpecialCharacter::SHIFT) == Flint::SpecialCharacter::SHIFT)
-			rotations += glm::vec3(1.0f, 0.0f, 0.0f) * rotationBias;
+			mCamera.Rotate(rotationBias, 0);
 		else
-			rotations -= glm::vec3(1.0f, 0.0f, 0.0f) * rotationBias;
+			mCamera.Rotate(-rotationBias, 0);
 
-		mCamera.Rotate(rotations[0], 0);
 	}
 
 	// Rotate y
 	if (pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Y).IsPressed() || pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Y).IsOnRepeat())
 	{
 		if ((pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Y).GetSpecialCharacter() & Flint::SpecialCharacter::SHIFT) == Flint::SpecialCharacter::SHIFT)
-			rotations += glm::vec3(0.0f, 1.0f, 0.0f) * rotationBias;
+			mCamera.Rotate(rotationBias, 1);
 		else
-			rotations -= glm::vec3(0.0f, 1.0f, 0.0f) * rotationBias;
-
-		mCamera.Rotate(rotations[1], 1);
+			mCamera.Rotate(-rotationBias, 1);
 	}
 
 	// Rotate z
 	if (pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Z).IsPressed() || pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Z).IsOnRepeat())
 	{
 		if ((pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Z).GetSpecialCharacter() & Flint::SpecialCharacter::SHIFT) == Flint::SpecialCharacter::SHIFT)
-			rotations += glm::vec3(0.0f, 0.0f, 1.0f) * rotationBias;
+			mCamera.Rotate(rotationBias, 2);
 		else
-			rotations -= glm::vec3(0.0f, 0.0f, 1.0f) * rotationBias;
-
-		mCamera.Rotate(rotations[2], 2);
+			mCamera.Rotate(-rotationBias, 2);
 	}
-}
-
-std::vector<float> GetVertexes()
-{
-	std::vector<float> vertexes;
-	const float zIndex = 0.5f;
-
-	vertexes.push_back(0.0f);
-	vertexes.push_back(0.5f);
-	vertexes.push_back(zIndex);
-	vertexes.push_back(0.0f);
-
-	vertexes.push_back(0.5f);
-	vertexes.push_back(0.0f);
-	vertexes.push_back(zIndex);
-	vertexes.push_back(0.0f);
-
-	vertexes.push_back(-0.5f);
-	vertexes.push_back(-0.5f);
-	vertexes.push_back(zIndex);
-	vertexes.push_back(0.0f);
-
-	return vertexes;
-}
-
-std::vector<UI32> GetIndexes()
-{
-	std::vector<UI32> indexes;
-
-	indexes.push_back(0);
-	indexes.push_back(1);
-	indexes.push_back(2);
-
-	//indexes.push_back(2);
-	//indexes.push_back(0);
-
-	return indexes;
 }
 
 int main()
@@ -120,8 +78,15 @@ int main()
 
 		auto pBuffer = pDevice->CreateBuffer(Flint::BufferType::UNIFORM, sizeof(ModelViewProjection));
 
-		auto pVertexShader = pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("E:\\Flint\\Assets\\Shaders\\DebugGeometry\\shader.vert.spv"), Flint::ShaderCodeType::SPIR_V);
-		auto pFragmentShader = pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("E:\\Flint\\Assets\\Shaders\\DebugGeometry\\shader.frag.spv"), Flint::ShaderCodeType::SPIR_V);
+		const auto [vertexes, indexes] = LoadAsset("E:\\Dynamik\\Game Repository\\assets\\assets\\VikingRoom\\untitled.obj");
+		auto image = LoadImage("E:\\Dynamik\\Game Repository\\assets\\assets\\VikingRoom\\texture.png");
+		UI32 mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(image.mExtent.mWidth, image.mExtent.mHeight)))) + 1;
+		auto pImage = pDevice->CreateImage(Flint::ImageType::DIMENSIONS_2, Flint::ImageUsage::GRAPHICS, image.mExtent, Flint::PixelFormat::R8G8B8A8_SRGB, 1, mipLevels, image.pImageData);
+		auto pSampler = pDevice->CreateImageSampler(Flint::ImageSamplerSpecification());
+		DestroyImage(image);
+
+		auto pVertexShader = pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("E:\\Flint\\Assets\\Shaders\\3D\\shader.vert.spv"), Flint::ShaderCodeType::SPIR_V);
+		auto pFragmentShader = pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("E:\\Flint\\Assets\\Shaders\\3D\\shader.frag.spv"), Flint::ShaderCodeType::SPIR_V);
 		const auto resourceVS = pVertexShader->GetShaderResources();
 		const auto resourceFS = pFragmentShader->GetShaderResources();
 
@@ -130,8 +95,8 @@ int main()
 		auto pGeometryStore = pDevice->CreateGeometryStore(pVertexShader->GetInputAttributes(), sizeof(UI32));
 		auto pResourceMap = pPipeline->CreateResourceMap();
 		pResourceMap->SetResource("Ubo", pBuffer);
+		pResourceMap->SetResource("texSampler", pSampler, pImage);
 
-		const auto [vertexes, indexes] = LoadAsset("E:\\Dynamik\\Game Repository\\assets\\assets\\chalet\\chalet.obj");
 		pGeometryStore->AddGeometry(vertexes.size(), vertexes.data(), indexes.size(), indexes.data());
 		pPipeline->AddDrawData(pResourceMap, std::make_shared<Flint::DynamicStateContainer>(), 0, vertexes.size(), 0, indexes.size());
 		pRenderTarget->SubmitPipeline(pGeometryStore, pPipeline);
@@ -145,7 +110,11 @@ int main()
 		{
 			FLINT_SETUP_PROFILER();
 			if (pDisplay->IsDisplayResized())
-				mCamera.SetAspectRatio(pDisplay->GetExtent());
+			{
+				auto extent = pDisplay->GetExtent();
+				if (extent.mWidth > 0 && extent.mHeight > 0)
+					mCamera.SetAspectRatio(extent);
+			}
 
 			KeyCallback(pDisplay);
 
@@ -169,6 +138,8 @@ int main()
 
 		pDevice->DestroyPipeline(pPipeline);
 
+		pDevice->DestroyImage(pImage);
+		pDevice->DestroyImageSampler(pSampler);
 		pDevice->DestroyBuffer(pBuffer);
 
 		pDevice->DestroyRenderTarget(pRenderTarget);

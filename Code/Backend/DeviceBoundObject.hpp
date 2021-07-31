@@ -130,6 +130,124 @@ namespace Flint
 	};
 
 	/**
+	 * Image type enum.
+	 */
+	enum class ImageType : UI8 {
+		DIMENSIONS_1,
+		DIMENSIONS_2,
+		DIMENSIONS_3,
+	};
+
+	/**
+	 * Image usage enum.
+	 */
+	enum class ImageUsage : UI8 {
+		GRAPHICS,
+		STORAGE,
+		CUBEMAP,
+	};
+
+	/**
+	 * Pixel format enum.
+	 */
+	enum class PixelFormat : UI8 {
+		UNDEFINED,
+
+		R8_SRGB,
+		R8G8_SRGB,
+		R8G8B8_SRGB,
+		R8G8B8A8_SRGB,
+
+		B8G8R8_SRGB,
+		B8G8R8A8_SRGB,
+	};
+
+	/**
+	 * Address mode enum.
+	 */
+	enum class AddressMode : UI8 {
+		REPEAT,
+		MIRRORED_REPEAT,
+		CLAMP_TO_EDGE,
+		CLAMP_TO_BORDER,
+		MIRROR_CLAMP_TO_EDGE,
+	};
+
+	/**
+	 * Border color enum.
+	 */
+	enum class BorderColor : UI8 {
+		FLOAT_TRANSPARENT_BLACK,
+		INT_TRANSPARENT_BLACK,
+		FLOAT_OPAQUE_BLACK,
+		INT_OPAQUE_BLACK,
+		FLOAT_OPAQUE_WHITE,
+		INT_OPAQUE_WHITE,
+	};
+
+	/**
+	 * Compare operator enum.
+	 */
+	enum class CompareOperator : UI8 {
+		NEVER,
+		LESS,
+		EQUAL,
+		LESS_OR_EQUAL,
+		GREATER,
+		NOT_EQUAL,
+		GREATER_OR_EQUAL,
+		ALWAYS,
+	};
+
+	/**
+	 * Image filter enum.
+	 */
+	enum class ImageFilter : UI8 {
+		NEAREST,
+		LINEAR,
+		CUBIC_IMG,
+	};
+
+	/**
+	 *Image mip map mode enum.
+	 */
+	enum class ImageMipMapMode : UI8 {
+		NEAREST,
+		LINEAR,
+	};
+
+	/**
+	 * Image sampler specification structure.
+	 */
+	struct ImageSamplerSpecification
+	{
+		// If set to 0.0f, the maximum supported will be set.
+		float mMaxAnisotrophy = 0.0f;
+
+		float mMaxLevelOfDetail = 0.0f;
+		float mMinLevelOfDetail = 0.0f;
+
+		float mMipLoadBias = 0.0f;
+
+		AddressMode mAddressModeU = AddressMode::REPEAT;
+		AddressMode mAddressModeV = AddressMode::REPEAT;
+		AddressMode mAddressModeW = AddressMode::REPEAT;
+
+		BorderColor mBorderColor = BorderColor::INT_OPAQUE_BLACK;
+
+		CompareOperator mCompareOperator = CompareOperator::ALWAYS;
+
+		ImageFilter mImageMagificationFilter = ImageFilter::LINEAR;
+		ImageFilter mImageMinificationFilter = ImageFilter::LINEAR;
+
+		ImageMipMapMode mMipMapMode = ImageMipMapMode::LINEAR;
+
+		bool bEnableAnisotropy = true;
+		bool bEnableCompare = false;
+		bool bEnableUnnormalizedCoordinates = false;
+	};
+
+	/**
 	 * Shader code type enum.
 	 */
 	enum class ShaderType : UI8 {

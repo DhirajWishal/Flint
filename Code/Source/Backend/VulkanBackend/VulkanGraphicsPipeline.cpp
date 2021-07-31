@@ -5,6 +5,8 @@
 #include "VulkanBackend/VulkanShader.hpp"
 #include "VulkanBackend/VulkanScreenBoundRenderTarget.hpp"
 #include "VulkanBackend/VulkanBuffer.hpp"
+#include "VulkanBackend/VulkanImage.hpp"
+#include "VulkanBackend/VulkanImageSampler.hpp"
 
 namespace Flint
 {
@@ -564,23 +566,47 @@ namespace Flint
 				vWrite.dstSet = vDescriptorSets[index];
 				vDescriptorSetMap[drawData.pResourceMap] = vWrite.dstSet;
 
-				vWrite.pBufferInfo = VK_NULL_HANDLE;
 				vWrite.pImageInfo = VK_NULL_HANDLE;
 
-				const auto bufferResources = drawData.pResourceMap->GetBufferResourceMap();
-				for (const auto resource : bufferResources)
+				// Get buffer resources.
 				{
-					VkDescriptorBufferInfo* pBufferInfo = new VkDescriptorBufferInfo;
-					pBufferInfo->buffer = resource.second->StaticCast<VulkanBuffer>().GetBuffer();
-					pBufferInfo->offset = 0;
-					pBufferInfo->range = VK_WHOLE_SIZE;
+					const auto bufferResources = drawData.pResourceMap->GetBufferResourceMap();
+					for (const auto resource : bufferResources)
+					{
+						const ShaderResource sResource = resources[resource.first];
+						vWrite.descriptorType = Utilities::GetDescriptorType(sResource.mType);
+						vWrite.dstBinding = sResource.mBinding;
 
-					const ShaderResource sResource = resources[resource.first];
-					vWrite.descriptorType = Utilities::GetDescriptorType(sResource.mType);
-					vWrite.dstBinding = sResource.mBinding;
+						VkDescriptorBufferInfo* pBufferInfo = new VkDescriptorBufferInfo;
+						pBufferInfo->buffer = resource.second->StaticCast<VulkanBuffer>().GetBuffer();
+						pBufferInfo->offset = 0;
+						pBufferInfo->range = VK_WHOLE_SIZE;
 
-					vWrite.pBufferInfo = pBufferInfo;
-					INSERT_INTO_VECTOR(vWrites, vWrite);
+						vWrite.pBufferInfo = pBufferInfo;
+						INSERT_INTO_VECTOR(vWrites, vWrite);
+					}
+				}
+
+				vWrite.pBufferInfo = VK_NULL_HANDLE;
+
+				// Get image resources.
+				{
+					const auto imageResources = drawData.pResourceMap->GetImageResourceMap();
+					for (const auto resource : imageResources)
+					{
+						const ShaderResource sResource = resources[resource.first];
+						vWrite.descriptorType = Utilities::GetDescriptorType(sResource.mType);
+						vWrite.dstBinding = sResource.mBinding;
+
+						VulkanImage& vImage = resource.second.second->StaticCast<VulkanImage>();
+						VkDescriptorImageInfo* pImageInfo = new VkDescriptorImageInfo;
+						pImageInfo->imageLayout = vImage.GetImageLayout();
+						pImageInfo->imageView = vImage.GetImageView();
+						pImageInfo->sampler = resource.second.first->StaticCast<VulkanImageSampler>().GetSampler();
+
+						vWrite.pImageInfo = pImageInfo;
+						INSERT_INTO_VECTOR(vWrites, vWrite);
+					}
 				}
 			}
 
@@ -591,6 +617,7 @@ namespace Flint
 			{
 				if (write.pBufferInfo)
 					delete write.pBufferInfo;
+
 				else if (write.pImageInfo)
 					delete write.pImageInfo;
 			}
@@ -727,8 +754,6 @@ namespace Flint
 			vCreateInfo.subpass = 0;	// TODO
 			vCreateInfo.basePipelineHandle = VK_NULL_HANDLE;
 			vCreateInfo.basePipelineIndex = 0;
-
-			// TODO Pipeline cache
 
 			FLINT_VK_ASSERT(vkCreateGraphicsPipelines(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), vPipelineCache, 1, &vCreateInfo, nullptr, &vPipeline));
 		}

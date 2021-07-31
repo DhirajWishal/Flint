@@ -42,7 +42,7 @@ namespace Flint
 			else
 				pVertexBuffer->Extend(newSize, BufferResizeMode::COPY);
 
-			pVertexBuffer->CopyFromBuffer(*pStaggingBuffer, newSize, srcSize, 0);
+			pVertexBuffer->CopyFromBuffer(pStaggingBuffer, newSize, srcSize, 0);
 			pDevice->DestroyBuffer(pStaggingBuffer);
 
 			mVertexCount += vertexCount;
@@ -66,7 +66,7 @@ namespace Flint
 			else
 				pIndexBuffer->Extend(newSize, BufferResizeMode::COPY);
 
-			pIndexBuffer->CopyFromBuffer(*pStaggingBuffer, newSize, srcSize, 0);
+			pIndexBuffer->CopyFromBuffer(pStaggingBuffer, newSize, srcSize, 0);
 			pDevice->DestroyBuffer(pStaggingBuffer);
 
 			mIndexCount += indexCount;

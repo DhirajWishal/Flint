@@ -7,6 +7,8 @@
 #include "VulkanBackend/VulkanCommandBufferList.hpp"
 #include "VulkanBackend/VulkanScreenBoundRenderTarget.hpp"
 #include "VulkanBackend/VulkanBuffer.hpp"
+#include "VulkanBackend/VulkanImage.hpp"
+#include "VulkanBackend/VulkanImageSampler.hpp"
 #include "VulkanBackend/VulkanShader.hpp"
 #include "VulkanBackend/VulkanGraphicsPipeline.hpp"
 
@@ -120,6 +122,26 @@ namespace Flint
 		void VulkanDevice::DestroyBuffer(const std::shared_ptr<Buffer>& pBuffer)
 		{
 			TerminateDeviceBoundObject(*pBuffer);
+		}
+
+		std::shared_ptr<Image> VulkanDevice::CreateImage(const ImageType type, ImageUsage usage, const FBox3D& extent, PixelFormat format, UI8 layers, UI32 mipLevels, const void* pImageData)
+		{
+			return std::make_shared<VulkanImage>(shared_from_this(), type, usage, extent, format, layers, mipLevels, pImageData);
+		}
+
+		void VulkanDevice::DestroyImage(const std::shared_ptr<Image>& pImage)
+		{
+			TerminateDeviceBoundObject(*pImage);
+		}
+
+		std::shared_ptr<ImageSampler> VulkanDevice::CreateImageSampler(const ImageSamplerSpecification& specification)
+		{
+			return std::make_shared<VulkanImageSampler>(shared_from_this(), specification);
+		}
+
+		void VulkanDevice::DestroyImageSampler(const std::shared_ptr<ImageSampler>& pSampler)
+		{
+			TerminateDeviceBoundObject(*pSampler);
 		}
 
 		std::shared_ptr<Shader> VulkanDevice::CreateShader(ShaderType type, const std::filesystem::path& path, ShaderCodeType codeType)

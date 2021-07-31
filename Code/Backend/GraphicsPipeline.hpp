@@ -243,11 +243,18 @@ namespace Flint
 
 	protected:
 		/**
-		 * Get all the resource names bound to this pipeline.
+		 * Get all the buffer resource names bound to this pipeline.
 		 *
 		 * @return The resource name array.
 		 */
-		const std::vector<std::string> GetResourceNames() const;
+		const std::vector<std::string> GetBufferResourceNames() const;
+
+		/**
+		 * Get all the image resource names bound to this pipeline.
+		 *
+		 * @return The resource name array.
+		 */
+		const std::vector<std::string> GetImageResourceNames() const;
 
 	protected:
 		GraphicsPipelineSpecification mSpecification = {};

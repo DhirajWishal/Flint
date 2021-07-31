@@ -44,12 +44,12 @@ namespace Flint
 		/**
 		 * Copy data to this buffer using another buffer.
 		 *
-		 * @param srcBuffer: The source buffer.
+		 * @param pSrcBuffer: The source buffer.
 		 * @param size: The copy size.
 		 * @param srcOffet: The source buffer offset.
 		 * @param dstOffset: The destination (this) buffer offset.
 		 */
-		virtual void CopyFromBuffer(const Buffer& srcBuffer, UI64 size, UI64 srcOffset, UI64 dstOffset) = 0;
+		virtual void CopyFromBuffer(const std::shared_ptr<Buffer>& pSrcBuffer, UI64 size, UI64 srcOffset, UI64 dstOffset) = 0;
 
 		/**
 		 * Map the buffer memory to the local address space.

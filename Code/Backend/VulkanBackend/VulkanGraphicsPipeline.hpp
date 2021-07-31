@@ -10,11 +10,6 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		struct VulkanDrawData
-		{
-			VkDescriptorSet vDescriptorSet = VK_NULL_HANDLE;
-		};
-
 		class VulkanGraphicsPipeline final : public GraphicsPipeline, public std::shared_ptr<VulkanGraphicsPipeline>
 		{
 		public:

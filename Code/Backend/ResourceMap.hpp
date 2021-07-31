@@ -4,6 +4,7 @@
 #pragma once
 
 #include "Buffer.hpp"
+#include "ImageSampler.hpp"
 
 #include <unordered_map>
 
@@ -24,11 +25,12 @@ namespace Flint
 		 * Construct the resource map using the resource names.
 		 *
 		 * @param bufferResourceNames: The buffer resource names in the map.
+		 * @param imageResourceNames: The image resource names in the map.
 		 */
-		ResourceMap(const std::vector<std::string>& bufferResourceNames);
+		ResourceMap(const std::vector<std::string>& bufferResourceNames, const std::vector<std::string>& imageResourceNames);
 
 		/**
-		 * Set a resource to the map.
+		 * Set a buffer resource to the map.
 		 *
 		 * @param name: The name of the resource to bind to.
 		 * @param pBuffer: The buffer pointer.
@@ -42,7 +44,7 @@ namespace Flint
 		 * @param name: The name of the buffer in the shader.
 		 * @return The buffer pointer.
 		 */
-		std::shared_ptr<Buffer> GetBufferResource(const std::string& name) const { return pBufferMap.at(name); }
+		const std::shared_ptr<Buffer> GetBufferResource(const std::string& name) const { return pBufferMap.at(name); }
 
 		/**
 		 * Get the buffer resource map.
@@ -50,6 +52,31 @@ namespace Flint
 		 * @return The resource map.
 		 */
 		const std::unordered_map<std::string, std::shared_ptr<Buffer>> GetBufferResourceMap() const { return pBufferMap; }
+
+		/**
+		 * Set an image resource to the map.
+		 *
+		 * @param name: THe name of the resource to bind to.
+		 * @param pSampler: The image sampler pointer.
+		 * @param pImage: The image pointer.
+		 * @return Boolean value stating if it was successfully bound or not.
+		 */
+		bool SetResource(const std::string& name, const std::shared_ptr<ImageSampler>& pSampler, const std::shared_ptr<Image>& pImage);
+
+		/**
+		 * Get an image resource from the map.
+		 *
+		 * @param name: The name of the image in the shader.
+		 * @return The specification and image pointer.
+		 */
+		const std::pair<std::shared_ptr<ImageSampler>, std::shared_ptr<Image>> GetImageResource(const std::string& name) const { return pImageMap.at(name); }
+
+		/**
+		 * Get the image resource map.
+		 *
+		 * @return The resource map.
+		 */
+		const std::unordered_map<std::string, std::pair<std::shared_ptr<ImageSampler>, std::shared_ptr<Image>>> GetImageResourceMap() const { return pImageMap; }
 
 	public:
 		/**
@@ -62,5 +89,6 @@ namespace Flint
 
 	protected:
 		std::unordered_map<std::string, std::shared_ptr<Buffer>> pBufferMap;
+		std::unordered_map<std::string, std::pair<std::shared_ptr<ImageSampler>, std::shared_ptr<Image>>> pImageMap;
 	};
 }

@@ -20,3 +20,11 @@ struct Vertex
 
 std::pair<std::vector<Vertex>, std::vector<UI32>> LoadAsset(const std::filesystem::path& path);
 
+struct ImageData
+{
+	void* pImageData = nullptr;
+	Flint::FBox3D mExtent;
+};
+
+ImageData LoadImage(const std::filesystem::path& path);
+void DestroyImage(ImageData data);
