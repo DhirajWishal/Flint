@@ -151,7 +151,7 @@ namespace Flint
 			vkCmdEndRenderPass(GetCurrentCommandBuffer());
 		}
 
-		void VulkanCommandBufferList::BindGraphicsPipeline(const SafeSharedPtr<GraphicsPipeline>& pGraphicsPipeline)
+		void VulkanCommandBufferList::BindGraphicsPipeline(const std::shared_ptr<GraphicsPipeline>& pGraphicsPipeline)
 		{
 			FLINT_SETUP_PROFILER();
 
@@ -190,7 +190,7 @@ namespace Flint
 			vkCmdBindIndexBuffer(GetCurrentCommandBuffer(), pIndexBuffer->StaticCast<VulkanBuffer>().GetBuffer(), 0, indexType);
 		}
 
-		void VulkanCommandBufferList::BindDrawResources(const SafeSharedPtr<GraphicsPipeline>& pPipeline, const std::shared_ptr<ResourceMap>& pResourceMap)
+		void VulkanCommandBufferList::BindDrawResources(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::shared_ptr<ResourceMap>& pResourceMap)
 		{
 			FLINT_SETUP_PROFILER();
 

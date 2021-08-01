@@ -86,7 +86,7 @@ namespace Flint
 		 *
 		 * @param pGraphicsPipeline: The graphics pipeline pointer.
 		 */
-		virtual void BindGraphicsPipeline(const SafeSharedPtr<GraphicsPipeline>& pGraphicsPipeline) = 0;
+		virtual void BindGraphicsPipeline(const std::shared_ptr<GraphicsPipeline>& pGraphicsPipeline) = 0;
 
 		/**
 		 * Bind a vertex buffer to the current command buffer.
@@ -109,7 +109,7 @@ namespace Flint
 		 * @param pPipeline: The pipeline pointer.
 		 * @param pResourceMap: The resource map to bind.
 		 */
-		virtual void BindDrawResources(const SafeSharedPtr<GraphicsPipeline>& pPipeline, const std::shared_ptr<ResourceMap>& pResourceMap) = 0;
+		virtual void BindDrawResources(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::shared_ptr<ResourceMap>& pResourceMap) = 0;
 
 		/**
 		 * Bind dynamic states to the current command buffer.

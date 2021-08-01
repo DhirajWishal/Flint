@@ -471,6 +471,8 @@ namespace Flint
 
 		void VulkanGraphicsPipeline::PrepareResourcesToDraw()
 		{
+			FLINT_SETUP_PROFILER();
+
 			// Check if should prepare resources, and return if not.
 			if (!bShouldPrepareResources)
 				return;
@@ -643,6 +645,8 @@ namespace Flint
 
 		void VulkanGraphicsPipeline::CreatePipelineCache()
 		{
+			FLINT_SETUP_PROFILER();
+
 			auto [size, data] = ReadDataFromCacheFile();
 
 			VkPipelineCacheCreateInfo vCreateInfo = {};

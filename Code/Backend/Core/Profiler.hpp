@@ -103,4 +103,5 @@ namespace Flint
 #endif // !FLINT_RELEASE
 }
 
-#define FLINT_SETUP_PROFILER()	::Flint::Profiler __profiler{ __FUNCSIG__ }
+
+#define FLINT_SETUP_PROFILER()	::Flint::Profiler __profiler{ __FUNCSIG__ }  

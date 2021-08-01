@@ -58,9 +58,9 @@ namespace Flint
 		private:
 			VulkanRenderTarget vRenderTarget;
 
-			VkCommandBufferInheritanceInfo vInheritanceInfo = {};
+			std::atomic<VkCommandBufferInheritanceInfo> vInheritanceInfo = {};
+			std::atomic<bool> bShouldRun = true;
 
-			std::atomic<std::shared_ptr<Thread::CommandCenter>> pCommandCenter;
 			std::thread mWorkerThread;
 
 			VulkanSwapChain* pSwapChain = nullptr;

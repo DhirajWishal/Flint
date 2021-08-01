@@ -62,7 +62,7 @@ namespace Flint
 		 * @param pGeometryStore: The geometry store to bind to.
 		 * @param pPipeline: The pipeline to submit.
 		 */
-		void SubmitPipeline(const std::shared_ptr<GeometryStore>& pGeometryStore, const SafeSharedPtr<GraphicsPipeline>& pPipeline);
+		void SubmitPipeline(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::shared_ptr<GraphicsPipeline>& pPipeline);
 
 	public:
 		/**
@@ -81,7 +81,7 @@ namespace Flint
 
 	protected:
 		std::atomic<std::shared_ptr<CommandBufferList>> pCommandBufferList;
-		std::unordered_map<std::shared_ptr<GeometryStore>, std::vector<SafeSharedPtr<GraphicsPipeline>>> mDrawInstances;
+		std::unordered_map<std::shared_ptr<GeometryStore>, std::vector<std::shared_ptr<GraphicsPipeline>>> mDrawInstances;
 
 		FBox2D mExtent = {};
 		UI32 mBufferCount = 0;

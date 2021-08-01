@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "Thread/CommandCenter.hpp"
+#include "Core/Profiler.hpp"
 
 namespace Flint
 {
@@ -9,6 +10,8 @@ namespace Flint
 	{
 		bool CommandCenter::AddCommand(std::unique_ptr<CommandBase>&& pCommand)
 		{
+			FLINT_SETUP_PROFILER();
+
 			if (pCommandQueue.size() == mMaxCommandQueueLength)
 				return false;
 
@@ -18,6 +21,8 @@ namespace Flint
 
 		std::unique_ptr<CommandBase> CommandCenter::GetCommand()
 		{
+			FLINT_SETUP_PROFILER();
+
 			if (pCommandQueue.empty())
 				return nullptr;
 

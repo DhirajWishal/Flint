@@ -51,6 +51,7 @@ namespace Flint
 
 	void ProfileLogger::WriteContent(const Profiler& profiler)
 	{
+		/*
 		long long start = std::chrono::time_point_cast<std::chrono::microseconds>(profiler.mStart).time_since_epoch().count();
 		pControlBlock->Lock();
 		std::ofstream& file = pControlBlock->mProfileFile;
@@ -72,6 +73,7 @@ namespace Flint
 
 		file.flush();
 		pControlBlock->Unlock();
+		*/
 	}
 
 	void ProfileLogger::SetInstanceContext(const ProfileLogger& other)

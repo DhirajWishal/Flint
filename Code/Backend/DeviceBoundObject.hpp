@@ -5,9 +5,9 @@
 
 #include "FObject.hpp"
 #include "Core/Error.hpp"
-#include "Core/SafeSharedPtr.hpp"
 
 #include <vector>
+#include <memory>
 
 namespace Flint
 {

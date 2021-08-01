@@ -19,7 +19,7 @@ namespace Flint
 			FLINT_THROW_INVALID_ARGUMENT("Render target command buffer pointer should not be null!");
 	}
 
-	void RenderTarget::SubmitPipeline(const std::shared_ptr<GeometryStore>& pGeometryStore, const SafeSharedPtr<GraphicsPipeline>& pPipeline)
+	void RenderTarget::SubmitPipeline(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::shared_ptr<GraphicsPipeline>& pPipeline)
 	{
 		INSERT_INTO_VECTOR(mDrawInstances[pGeometryStore], pPipeline);
 	}
