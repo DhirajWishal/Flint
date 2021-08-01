@@ -25,7 +25,7 @@ public:
 	Camera mCamera = {};
 
 	std::unordered_map<std::string, std::shared_ptr<Flint::ScreenBoundRenderTarget>> pScreenBoundRenderTargets;
-	std::unordered_map<std::string, std::shared_ptr<Flint::GraphicsPipeline>> pGraphicsPipelines;
+	std::unordered_map<std::string, Flint::SafeSharedPtr<Flint::GraphicsPipeline>> pGraphicsPipelines;
 	std::unordered_map<std::string, std::shared_ptr<Flint::GeometryStore>> pGeometryStores;
 
 	std::shared_ptr<Flint::Instance> pInstance = nullptr;

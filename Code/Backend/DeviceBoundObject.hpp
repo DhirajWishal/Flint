@@ -5,9 +5,9 @@
 
 #include "FObject.hpp"
 #include "Core/Error.hpp"
+#include "Core/SafeSharedPtr.hpp"
 
 #include <vector>
-#include <memory>
 
 namespace Flint
 {
@@ -277,6 +277,13 @@ namespace Flint
 		 * @param pDevice: The device pointer.
 		 */
 		DeviceBoundObject(const std::shared_ptr<Device>& pDevice);
+
+		/**
+		 * Get the device of this object.
+		 * 
+		 * @return The device pointer.
+		 */
+		std::shared_ptr<Device> GetDevice() const { return pDevice; }
 
 	protected:
 		/**

@@ -164,7 +164,7 @@ namespace Flint
 			TerminateDeviceBoundObject(*pShader);
 		}
 
-		std::shared_ptr<GraphicsPipeline> VulkanDevice::CreateGraphicsPipeline(const std::string& pipelineName, const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget, const std::shared_ptr<Shader>& pVertexShader, const std::shared_ptr<Shader>& pTessellationControlShader, const std::shared_ptr<Shader>& pTessellationEvaluationShader, const std::shared_ptr<Shader>& pGeometryShader, const std::shared_ptr<Shader>& pFragmentShader, const GraphicsPipelineSpecification& specification)
+		SafeSharedPtr<GraphicsPipeline> VulkanDevice::CreateGraphicsPipeline(const std::string& pipelineName, const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget, const std::shared_ptr<Shader>& pVertexShader, const std::shared_ptr<Shader>& pTessellationControlShader, const std::shared_ptr<Shader>& pTessellationEvaluationShader, const std::shared_ptr<Shader>& pGeometryShader, const std::shared_ptr<Shader>& pFragmentShader, const GraphicsPipelineSpecification& specification)
 		{
 			return std::make_shared<VulkanGraphicsPipeline>(shared_from_this(), pipelineName, pScreenBoundRenderTarget, pVertexShader, pTessellationControlShader, pTessellationEvaluationShader, pGeometryShader, pFragmentShader, specification);
 		}
@@ -466,7 +466,7 @@ namespace Flint
 			createInfo.enabledExtensionCount = static_cast<UI32>(mDeviceExtensions.size());
 			createInfo.ppEnabledExtensionNames = mDeviceExtensions.data();
 
-			std::vector<const char*>& validationLayers = instance.GetValidationLayers();
+			std::vector<const char*> validationLayers = instance.GetValidationLayers();
 			if (instance.IsValidationEnabled())
 			{
 				createInfo.enabledLayerCount = static_cast<UI32>(validationLayers.size());

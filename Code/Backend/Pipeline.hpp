@@ -53,12 +53,12 @@ namespace Flint
 		 */
 		Pipeline(const std::shared_ptr<Device>& pDevice, const std::string& pipelineName) : DeviceBoundObject(pDevice), mPipelineName(pipelineName) {}
 
-	protected:
 		/**
 		 * Prepare resources to draw.
 		 */
 		virtual void PrepareResourcesToDraw() = 0;
 
+	protected:
 		/**
 		 * Write the pipeline cache data to an external file.
 		 * If the file does not exist, this creates a new file. The file name is "<pipeline name>.fpc". The FPC extension is Flint Pipeline Cache.

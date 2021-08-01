@@ -75,22 +75,13 @@ namespace Flint
 			vBeginInfo.pInheritanceInfo = VK_NULL_HANDLE;
 
 			FLINT_VK_ASSERT(vkBeginCommandBuffer(vCurrentBuffer, &vBeginInfo));
+
+			bIsRecording = true;
 		}
 
 		void VulkanCommandBufferList::BeginBufferRecording(UI32 index, const std::shared_ptr<CommandBufferList> pParent)
 		{
-			FLINT_SETUP_PROFILER();
-
-			mCurrentBufferIndex = index;
-			vCurrentBuffer = vCommandBuffers[index];
-
-			VkCommandBufferBeginInfo vBeginInfo = {};
-			vBeginInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-			vBeginInfo.pNext = VK_NULL_HANDLE;
-			vBeginInfo.flags = VkCommandBufferUsageFlagBits::VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
-			vBeginInfo.pInheritanceInfo = VK_NULL_HANDLE;
-
-			FLINT_VK_ASSERT(vkBeginCommandBuffer(vCurrentBuffer, &vBeginInfo));
+			BeginBufferRecording(index);
 		}
 
 		void VulkanCommandBufferList::BeginNextBufferRecording()
@@ -133,18 +124,44 @@ namespace Flint
 			vkCmdBeginRenderPass(GetCurrentCommandBuffer(), &vBeginInfo, VkSubpassContents::VK_SUBPASS_CONTENTS_INLINE);
 		}
 
+		void VulkanCommandBufferList::BindRenderTargetSecondary(const std::shared_ptr<ScreenBoundRenderTarget>& pRenderTarget)
+		{
+			FLINT_SETUP_PROFILER();
+
+			VulkanScreenBoundRenderTarget& vRenderTarget = pRenderTarget->StaticCast<VulkanScreenBoundRenderTarget>();
+			FColor4D clearColors = vRenderTarget.GetClearColor();
+
+			VkRenderPassBeginInfo vBeginInfo = {};
+			vBeginInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+			vBeginInfo.pNext = VK_NULL_HANDLE;
+			vBeginInfo.renderPass = vRenderTarget.GetRenderPass();
+			vBeginInfo.framebuffer = vRenderTarget.GetFrameBuffer(GetCurrentBufferIndex());
+			vBeginInfo.clearValueCount = vRenderTarget.GetClearScreenValueCount();
+			vBeginInfo.pClearValues = vRenderTarget.GetClearScreenValues();
+			vBeginInfo.renderArea.extent.width = vRenderTarget.GetExtent().mWidth;
+			vBeginInfo.renderArea.extent.height = vRenderTarget.GetExtent().mHeight;
+
+			vkCmdBeginRenderPass(GetCurrentCommandBuffer(), &vBeginInfo, VkSubpassContents::VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+		}
+
 		void VulkanCommandBufferList::UnbindRenderTarget()
 		{
+			FLINT_SETUP_PROFILER();
+
 			vkCmdEndRenderPass(GetCurrentCommandBuffer());
 		}
 
-		void VulkanCommandBufferList::BindGraphicsPipeline(const std::shared_ptr<GraphicsPipeline>& pGraphicsPipeline)
+		void VulkanCommandBufferList::BindGraphicsPipeline(const SafeSharedPtr<GraphicsPipeline>& pGraphicsPipeline)
 		{
+			FLINT_SETUP_PROFILER();
+
 			vkCmdBindPipeline(GetCurrentCommandBuffer(), VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_GRAPHICS, pGraphicsPipeline->StaticCast<VulkanGraphicsPipeline>().GetPipeline());
 		}
 
 		void VulkanCommandBufferList::BindVertexBuffer(const std::shared_ptr<Buffer>& pVertexBuffer)
 		{
+			FLINT_SETUP_PROFILER();
+
 			if (pVertexBuffer->GetType() != BufferType::VERTEX)
 				FLINT_THROW_INVALID_ARGUMENT("Invalid buffer type submitted to bind! Make sure that the buffer type is VERTEX.");
 
@@ -154,6 +171,8 @@ namespace Flint
 
 		void VulkanCommandBufferList::BindIndexBuffer(const std::shared_ptr<Buffer>& pIndexBuffer, UI64 indexSize)
 		{
+			FLINT_SETUP_PROFILER();
+
 			if (pIndexBuffer->GetType() != BufferType::INDEX)
 				FLINT_THROW_INVALID_ARGUMENT("Invalid buffer type submitted to bind! Make sure that the buffer type is INDEX.");
 
@@ -171,9 +190,11 @@ namespace Flint
 			vkCmdBindIndexBuffer(GetCurrentCommandBuffer(), pIndexBuffer->StaticCast<VulkanBuffer>().GetBuffer(), 0, indexType);
 		}
 
-		void VulkanCommandBufferList::BindDrawResources(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::shared_ptr<ResourceMap>& pResourceMap)
+		void VulkanCommandBufferList::BindDrawResources(const SafeSharedPtr<GraphicsPipeline>& pPipeline, const std::shared_ptr<ResourceMap>& pResourceMap)
 		{
-			VulkanGraphicsPipeline& vPipeline = pPipeline->StaticCast<VulkanGraphicsPipeline>();
+			FLINT_SETUP_PROFILER();
+
+			const VulkanGraphicsPipeline& vPipeline = pPipeline->StaticCast<VulkanGraphicsPipeline>();
 			const VkDescriptorSet* pDescriptorSet = vPipeline.GetDescriptorSetAddress(pResourceMap);
 
 			if (pDescriptorSet)
@@ -182,6 +203,8 @@ namespace Flint
 
 		void VulkanCommandBufferList::BindDynamicStates(const std::shared_ptr<DynamicStateContainer>& pDynamicStates)
 		{
+			FLINT_SETUP_PROFILER();
+
 			if (!pDynamicStates)
 				return;
 
@@ -239,12 +262,25 @@ namespace Flint
 
 		void VulkanCommandBufferList::IssueDrawCall(UI64 vertexOffset, UI64 vertexCount, UI64 indexOffset, UI64 indexCount)
 		{
+			FLINT_SETUP_PROFILER();
+
 			vkCmdDrawIndexed(GetCurrentCommandBuffer(), static_cast<UI32>(indexCount), 1, static_cast<UI32>(indexOffset), static_cast<UI32>(vertexOffset), 0);
+		}
+
+		void VulkanCommandBufferList::ExecuteSecondaryCommands()
+		{
+			FLINT_SETUP_PROFILER();
+
+			vkCmdExecuteCommands(GetCurrentCommandBuffer(), static_cast<UI32>(vSecondaryCommandBuffers.size()), vSecondaryCommandBuffers.data());
+			vSecondaryCommandBuffers.clear();
 		}
 
 		void VulkanCommandBufferList::EndBufferRecording()
 		{
+			FLINT_SETUP_PROFILER();
+
 			FLINT_VK_ASSERT(vkEndCommandBuffer(vCurrentBuffer));
+			bIsRecording = false;
 		}
 
 		void VulkanCommandBufferList::Terminate()
@@ -263,6 +299,27 @@ namespace Flint
 		VkCommandBufferInheritanceInfo VulkanCommandBufferList::GetInheritanceInfo() const
 		{
 			return VkCommandBufferInheritanceInfo();
+		}
+
+		void VulkanCommandBufferList::AddSecondaryCommandBuffer(const VkCommandBuffer vCommandBuffer)
+		{
+			INSERT_INTO_VECTOR(vSecondaryCommandBuffers, vCommandBuffer);
+		}
+
+		void VulkanCommandBufferList::VulkanBeginSecondaryCommandBuffer(UI32 bufferIndex, const VkCommandBufferInheritanceInfo* pInheritanceInfo)
+		{
+			FLINT_SETUP_PROFILER();
+
+			mCurrentBufferIndex = bufferIndex;
+			vCurrentBuffer = vCommandBuffers[bufferIndex];
+
+			VkCommandBufferBeginInfo vBeginInfo = {};
+			vBeginInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+			vBeginInfo.pNext = VK_NULL_HANDLE;
+			vBeginInfo.flags = VkCommandBufferUsageFlagBits::VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT | VkCommandBufferUsageFlagBits::VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
+			vBeginInfo.pInheritanceInfo = pInheritanceInfo;
+
+			FLINT_VK_ASSERT(vkBeginCommandBuffer(vCurrentBuffer, &vBeginInfo));
 		}
 	}
 }

@@ -12,7 +12,7 @@ namespace Flint
 		{
 			void KeyCallback(GLFWwindow* window, I32 key, I32 scancode, I32 action, I32 mods)
 			{
-				std::shared_ptr<VulkanDisplay>& vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window))->shared_from_this();
+				std::shared_ptr<VulkanDisplay> vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window))->shared_from_this();
 				vDisplay->ActivateKey(scancode, action, static_cast<SpecialCharacter>(mods));
 			}
 
@@ -22,25 +22,25 @@ namespace Flint
 
 			void CursorPositionCallback(GLFWwindow* window, double xOffset, double yOffset)
 			{
-				std::shared_ptr<VulkanDisplay>& vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window))->shared_from_this();
+				std::shared_ptr<VulkanDisplay> vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window))->shared_from_this();
 				vDisplay->SetMousePosition(static_cast<float>(xOffset), static_cast<float>(yOffset));
 			}
 
 			void MouseButtonCallback(GLFWwindow* window, I32 button, I32 action, I32 mods)
 			{
-				std::shared_ptr<VulkanDisplay>& vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window))->shared_from_this();
+				std::shared_ptr<VulkanDisplay> vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window))->shared_from_this();
 				vDisplay->ActivateMouseButton(button, action, static_cast<SpecialCharacter>(mods));
 			}
 
 			void MouseScrollCallback(GLFWwindow* window, double xOffset, double yOffset)
 			{
-				std::shared_ptr<VulkanDisplay>& vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window))->shared_from_this();
+				std::shared_ptr<VulkanDisplay> vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window))->shared_from_this();
 				vDisplay->SetMouseScroll(static_cast<float>(xOffset), static_cast<float>(yOffset));
 			}
 
 			void MouseCursorEnterCallback(GLFWwindow* window, I32 entered)
 			{
-				std::shared_ptr<VulkanDisplay>& vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window))->shared_from_this();
+				std::shared_ptr<VulkanDisplay> vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window))->shared_from_this();
 				vDisplay->SetCursorWithinDisplay(entered == GLFW_TRUE);
 			}
 
@@ -50,20 +50,20 @@ namespace Flint
 				for (UI32 i = 0; i < static_cast<UI32>(count); i++)
 					paths[i] = strings[i];
 
-				std::shared_ptr<VulkanDisplay>& vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window))->shared_from_this();
+				std::shared_ptr<VulkanDisplay> vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window))->shared_from_this();
 				vDisplay->SetDragAndDropPaths(std::move(paths));
 			}
 
 			void ApplicationResizeCallback(GLFWwindow* window, I32 width, I32 height)
 			{
-				std::shared_ptr<VulkanDisplay>& vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window))->shared_from_this();
+				std::shared_ptr<VulkanDisplay> vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window))->shared_from_this();
 				vDisplay->SetNewExtent(FBox2D(width, height));
 				vDisplay->Resized();
 			}
 
 			void WindowCloseCallback(GLFWwindow* window)
 			{
-				std::shared_ptr<VulkanDisplay>& vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window))->shared_from_this();
+				std::shared_ptr<VulkanDisplay> vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window))->shared_from_this();
 				vDisplay->ToggleClose();
 			}
 		}
@@ -148,7 +148,7 @@ namespace Flint
 		{
 			FLINT_SETUP_PROFILER();
 
-			auto& vSurfaceCapabilities = GetSurfaceCapabilities(pDevice->StaticCast<VulkanDevice>());
+			auto vSurfaceCapabilities = GetSurfaceCapabilities(pDevice->StaticCast<VulkanDevice>());
 			if (count == std::numeric_limits<UI32>::max())
 				return vSurfaceCapabilities.maxImageCount - 1;
 			else if (count == 0)
@@ -229,7 +229,7 @@ namespace Flint
 
 		UI32 VulkanDisplay::FindSupporterBufferCount(VulkanDevice& device, UI32 count) const
 		{
-			auto& vSurfaceCapabilities = GetSurfaceCapabilities(device);
+			auto vSurfaceCapabilities = GetSurfaceCapabilities(device);
 			if (count == std::numeric_limits<UI32>::max())
 				return vSurfaceCapabilities.maxImageCount - 1;
 			else if (count == 0)

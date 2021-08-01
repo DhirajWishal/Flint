@@ -4,15 +4,31 @@
 #pragma once
 
 #include "ScreenBoundRenderTarget.hpp"
+#include "Thread/CommandCenter.hpp"
+
 #include "VulkanRenderTarget.hpp"
 #include "VulkanSwapChain.hpp"
 #include "VulkanColorBuffer.hpp"
 #include "VulkanDepthBuffer.hpp"
 
+#include <semaphore>
+
 namespace Flint
 {
 	namespace VulkanBackend
 	{
+		struct RecordCommandBuffer final : public Thread::CommandBase
+		{
+			RecordCommandBuffer(VkCommandBufferInheritanceInfo* pInheritanceInfo) : CommandBase(0), pInheritanceInfo(pInheritanceInfo) {}
+
+			VkCommandBufferInheritanceInfo* pInheritanceInfo = nullptr;
+		};
+
+		struct TerminateWorker final : public Thread::CommandBase
+		{
+			TerminateWorker() : CommandBase(1) {}
+		};
+
 		class VulkanScreenBoundRenderTarget final : public ScreenBoundRenderTarget, public std::enable_shared_from_this<VulkanScreenBoundRenderTarget>
 		{
 		public:
@@ -36,7 +52,16 @@ namespace Flint
 			const VkClearValue* GetClearScreenValues() const { return pClearValues; }
 
 		private:
+			void BindSecondaryCommands();
+			void SecondaryCommandWorker();
+
+		private:
 			VulkanRenderTarget vRenderTarget;
+
+			VkCommandBufferInheritanceInfo vInheritanceInfo = {};
+
+			std::atomic<std::shared_ptr<Thread::CommandCenter>> pCommandCenter;
+			std::thread mWorkerThread;
 
 			VulkanSwapChain* pSwapChain = nullptr;
 			VulkanColorBuffer* pColorBuffer = nullptr;
@@ -45,6 +70,8 @@ namespace Flint
 			bool bShouldSkip = false;
 
 			VkClearValue pClearValues[2] = {};
+			std::shared_ptr<ScreenBoundRenderTarget> pThisRenderTarget = nullptr;
+			std::binary_semaphore mRenderTargetToThreadSemaphore{ 0 }, mThreadToRenderTargetSemaphore{ 0 };
 		};
 	}
 }

@@ -5,6 +5,7 @@
 
 #include "CommandBufferList.hpp"
 #include <unordered_map>
+#include <atomic>
 
 namespace Flint
 {
@@ -61,7 +62,7 @@ namespace Flint
 		 * @param pGeometryStore: The geometry store to bind to.
 		 * @param pPipeline: The pipeline to submit.
 		 */
-		void SubmitPipeline(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::shared_ptr<GraphicsPipeline>& pPipeline);
+		void SubmitPipeline(const std::shared_ptr<GeometryStore>& pGeometryStore, const SafeSharedPtr<GraphicsPipeline>& pPipeline);
 
 	public:
 		/**
@@ -79,17 +80,8 @@ namespace Flint
 		UI32 GetBufferCount() const { return mBufferCount; }
 
 	protected:
-		/**
-		 * Prepare the pipeline resource.
-		 * This function is used to call the PrepareResourceToDraw function of the pipeline.
-		 *
-		 * @param pPipeline: The pipeline pointer.
-		 */
-		void PreparePipelineResources(const std::shared_ptr<GraphicsPipeline>& pPipeline) const;
-
-	protected:
-		std::shared_ptr<CommandBufferList> pCommandBufferList = nullptr;
-		std::unordered_map<std::shared_ptr<GeometryStore>, std::vector<std::shared_ptr<GraphicsPipeline>>> mDrawInstances;
+		std::atomic<std::shared_ptr<CommandBufferList>> pCommandBufferList;
+		std::unordered_map<std::shared_ptr<GeometryStore>, std::vector<SafeSharedPtr<GraphicsPipeline>>> mDrawInstances;
 
 		FBox2D mExtent = {};
 		UI32 mBufferCount = 0;

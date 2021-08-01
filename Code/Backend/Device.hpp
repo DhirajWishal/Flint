@@ -231,7 +231,7 @@ namespace Flint
 		 * @param pFragmentShader: The fragment shader pointer.
 		 * @return The pipeline pointer.
 		 */
-		virtual std::shared_ptr<GraphicsPipeline> CreateGraphicsPipeline(
+		virtual SafeSharedPtr<GraphicsPipeline> CreateGraphicsPipeline(
 			const std::string& pipelineName,
 			const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget,
 			const std::shared_ptr<Shader>& pVertexShader,

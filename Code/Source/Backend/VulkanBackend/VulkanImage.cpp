@@ -148,6 +148,8 @@ namespace Flint
 		VulkanImage::VulkanImage(const std::shared_ptr<Device>& pDevice, ImageType type, ImageUsage usage, const FBox3D& extent, PixelFormat format, UI8 layers, UI32 mipLevels, const void* pImageData)
 			: Image(pDevice, type, usage, extent, format, layers, mipLevels, pImageData)
 		{
+			FLINT_SETUP_PROFILER();
+
 			CreateImage();
 			CreateImageMemory();
 			CreateImageView();
@@ -203,6 +205,8 @@ namespace Flint
 
 		void VulkanImage::CreateImage()
 		{
+			FLINT_SETUP_PROFILER();
+
 			VkImageCreateInfo vCreateInfo = {};
 			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 			vCreateInfo.pNext = VK_NULL_HANDLE;
@@ -230,11 +234,15 @@ namespace Flint
 
 		void VulkanImage::CreateImageMemory()
 		{
+			FLINT_SETUP_PROFILER();
+
 			FLINT_VK_ASSERT(pDevice->StaticCast<VulkanDevice>().CreateImageMemory({ vImage }, VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &vImageMemory));
 		}
 
 		void VulkanImage::CreateImageView()
 		{
+			FLINT_SETUP_PROFILER();
+
 			if (mType == ImageType::CUBEMAP || mType == ImageType::CUBEMAP_ARRAY)
 				vImageView = Utilities::CreateImageViews({ vImage }, _Helpers::GetImageFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT, _Helpers::GetImageViewType(mType), mLayerCount, { VK_COMPONENT_SWIZZLE_R, VK_COMPONENT_SWIZZLE_G, VK_COMPONENT_SWIZZLE_B, VK_COMPONENT_SWIZZLE_A })[0];
 			else
@@ -243,6 +251,8 @@ namespace Flint
 
 		void VulkanImage::GenerateMipMaps()
 		{
+			FLINT_SETUP_PROFILER();
+
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 			VkFormatProperties vProperties = {};
 			vkGetPhysicalDeviceFormatProperties(vDevice.GetPhysicalDevice(), _Helpers::GetImageFormat(mFormat), &vProperties);
@@ -333,11 +343,3 @@ namespace Flint
 		}
 	}
 }
-
-/*
-Vulkan Validation Layer (Validation): Validation Error: [ VUID-VkImageMemoryBarrier-subresourceRange-01725 ] Object 0: handle = 0x7dceed0000000068, type = VK_OBJECT_TYPE_IMAGE; | MessageID = 0xe9dbfc10 | vkCmdPipelineBarrier(): pImageMemoryBarriers[0].subresourceRange.baseArrayLayer + .layerCount (= 1 + 6 = 7) is greater than the arrayLayers of the image when it was created (i.e. greater than 6). The Vulkan spec states: If subresourceRange.layerCount is not VK_REMAINING_ARRAY_LAYERS, subresourceRange.baseArrayLayer + subresourceRange.layerCount must be less than or equal to the arrayLayers specified in VkImageCreateInfo when image was created (https://vulkan.lunarg.com/doc/view/1.2.162.1/windows/1.2-extensions/vkspec.html#VUID-VkImageMemoryBarrier-subresourceRange-01725)
-Vulkan Validation Layer (Validation): Validation Error: [ VUID-VkImageMemoryBarrier-subresourceRange-01725 ] Object 0: handle = 0x7dceed0000000068, type = VK_OBJECT_TYPE_IMAGE; | MessageID = 0xe9dbfc10 | vkCmdPipelineBarrier(): pImageMemoryBarriers[0].subresourceRange.baseArrayLayer + .layerCount (= 2 + 6 = 8) is greater than the arrayLayers of the image when it was created (i.e. greater than 6). The Vulkan spec states: If subresourceRange.layerCount is not VK_REMAINING_ARRAY_LAYERS, subresourceRange.baseArrayLayer + subresourceRange.layerCount must be less than or equal to the arrayLayers specified in VkImageCreateInfo when image was created (https://vulkan.lunarg.com/doc/view/1.2.162.1/windows/1.2-extensions/vkspec.html#VUID-VkImageMemoryBarrier-subresourceRange-01725)
-Vulkan Validation Layer (Validation): Validation Error: [ VUID-VkImageMemoryBarrier-subresourceRange-01725 ] Object 0: handle = 0x7dceed0000000068, type = VK_OBJECT_TYPE_IMAGE; | MessageID = 0xe9dbfc10 | vkCmdPipelineBarrier(): pImageMemoryBarriers[0].subresourceRange.baseArrayLayer + .layerCount (= 3 + 6 = 9) is greater than the arrayLayers of the image when it was created (i.e. greater than 6). The Vulkan spec states: If subresourceRange.layerCount is not VK_REMAINING_ARRAY_LAYERS, subresourceRange.baseArrayLayer + subresourceRange.layerCount must be less than or equal to the arrayLayers specified in VkImageCreateInfo when image was created (https://vulkan.lunarg.com/doc/view/1.2.162.1/windows/1.2-extensions/vkspec.html#VUID-VkImageMemoryBarrier-subresourceRange-01725)
-Vulkan Validation Layer (Validation): Validation Error: [ VUID-VkImageMemoryBarrier-subresourceRange-01725 ] Object 0: handle = 0x7dceed0000000068, type = VK_OBJECT_TYPE_IMAGE; | MessageID = 0xe9dbfc10 | vkCmdPipelineBarrier(): pImageMemoryBarriers[0].subresourceRange.baseArrayLayer + .layerCount (= 4 + 6 = 10) is greater than the arrayLayers of the image when it was created (i.e. greater than 6). The Vulkan spec states: If subresourceRange.layerCount is not VK_REMAINING_ARRAY_LAYERS, subresourceRange.baseArrayLayer + subresourceRange.layerCount must be less than or equal to the arrayLayers specified in VkImageCreateInfo when image was created (https://vulkan.lunarg.com/doc/view/1.2.162.1/windows/1.2-extensions/vkspec.html#VUID-VkImageMemoryBarrier-subresourceRange-01725)
-Vulkan Validation Layer (Validation): Validation Error: [ VUID-VkImageMemoryBarrier-subresourceRange-01725 ] Object 0: handle = 0x7dceed0000000068, type = VK_OBJECT_TYPE_IMAGE; | MessageID = 0xe9dbfc10 | vkCmdPipelineBarrier(): pImageMemoryBarriers[0].subresourceRange.baseArrayLayer + .layerCount (= 5 + 6 = 11) is greater than the arrayLayers of the image when it was created (i.e. greater than 6). The Vulkan spec states: If subresourceRange.layerCount is not VK_REMAINING_ARRAY_LAYERS, subresourceRange.baseArrayLayer + subresourceRange.layerCount must be less than or equal to the arrayLayers specified in VkImageCreateInfo when image was created (https://vulkan.lunarg.com/doc/view/1.2.162.1/windows/1.2-extensions/vkspec.html#VUID-VkImageMemoryBarrier-subresourceRange-01725)
-*/

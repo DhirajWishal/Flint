@@ -64,11 +64,11 @@ namespace Flint
 		{
 			FLINT_SETUP_PROFILER();
 
-			SwapChainSupportDetails& vSupport = SwapChainSupportDetails::Query(vDevice.GetPhysicalDevice(), vDisplay.GetSurface());
+			SwapChainSupportDetails vSupport = SwapChainSupportDetails::Query(vDevice.GetPhysicalDevice(), vDisplay.GetSurface());
 			VkSurfaceFormatKHR surfaceFormat = vDisplay.ChooseSurfaceFormat(vSupport.mFormats);
 			VkPresentModeKHR presentMode = vDisplay.ChoosePresentMode(vSupport.mPresentModes);
 
-			auto& vCapabilities = vDisplay.GetSurfaceCapabilities(vDevice);
+			auto vCapabilities = vDisplay.GetSurfaceCapabilities(vDevice);
 
 			VkCompositeAlphaFlagBitsKHR surfaceComposite = static_cast<VkCompositeAlphaFlagBitsKHR>(vCapabilities.supportedCompositeAlpha);
 			surfaceComposite = (surfaceComposite & VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR)

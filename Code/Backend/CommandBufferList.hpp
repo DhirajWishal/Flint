@@ -4,7 +4,7 @@
 #pragma once
 
 #include "DeviceBoundObject.hpp"
-#include "DynamicStateContainer.h"
+#include "DynamicStateContainer.hpp"
 #include "Buffer.hpp"
 
 namespace Flint
@@ -75,11 +75,18 @@ namespace Flint
 		virtual void BindRenderTarget(const std::shared_ptr<ScreenBoundRenderTarget>& pRenderTarget) = 0;
 
 		/**
+		 * Bind a render target to the current command buffer as secondary.
+		 *
+		 * @param pRenderTarget: The render target pointer.
+		 */
+		virtual void BindRenderTargetSecondary(const std::shared_ptr<ScreenBoundRenderTarget>& pRenderTarget) = 0;
+
+		/**
 		 * Bind a graphics pipeline to the current command buffer.
 		 *
 		 * @param pGraphicsPipeline: The graphics pipeline pointer.
 		 */
-		virtual void BindGraphicsPipeline(const std::shared_ptr<GraphicsPipeline>& pGraphicsPipeline) = 0;
+		virtual void BindGraphicsPipeline(const SafeSharedPtr<GraphicsPipeline>& pGraphicsPipeline) = 0;
 
 		/**
 		 * Bind a vertex buffer to the current command buffer.
@@ -102,7 +109,7 @@ namespace Flint
 		 * @param pPipeline: The pipeline pointer.
 		 * @param pResourceMap: The resource map to bind.
 		 */
-		virtual void BindDrawResources(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::shared_ptr<ResourceMap>& pResourceMap) = 0;
+		virtual void BindDrawResources(const SafeSharedPtr<GraphicsPipeline>& pPipeline, const std::shared_ptr<ResourceMap>& pResourceMap) = 0;
 
 		/**
 		 * Bind dynamic states to the current command buffer.
@@ -120,6 +127,11 @@ namespace Flint
 		 * @param indexCount: The number of indexes to draw.
 		 */
 		virtual void IssueDrawCall(UI64 vertexOffset, UI64 vertexCount, UI64 indexOffset, UI64 indexCount) = 0;
+
+		/**
+		 * Execute all the secondary commands.
+		 */
+		virtual void ExecuteSecondaryCommands() = 0;
 
 		/**
 		 * Unbind the render target from the current buffer.
@@ -151,8 +163,17 @@ namespace Flint
 		 */
 		UI32 GetCurrentBufferIndex() const { return mCurrentBufferIndex; }
 
+		/**
+		 * Check if the command buffer is recording.
+		 * 
+		 * @return The boolean value.
+		 */
+		const bool IsRecording() const { return bIsRecording; }
+
 	protected:
 		UI32 mBufferCount = 0;
 		UI32 mCurrentBufferIndex = 0;
+
+		bool bIsRecording = false;
 	};
 }

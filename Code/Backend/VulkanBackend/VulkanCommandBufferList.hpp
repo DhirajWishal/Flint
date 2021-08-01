@@ -22,16 +22,18 @@ namespace Flint
 			virtual void BeginNextBufferRecording(const std::shared_ptr<CommandBufferList> pParent) override final;
 
 			virtual void BindRenderTarget(const std::shared_ptr<ScreenBoundRenderTarget>& pRenderTarget) override final;
+			virtual void BindRenderTargetSecondary(const std::shared_ptr<ScreenBoundRenderTarget>& pRenderTarget) override final;
 			virtual void UnbindRenderTarget() override final;
-			virtual void BindGraphicsPipeline(const std::shared_ptr<GraphicsPipeline>& pGraphicsPipeline) override final;
+			virtual void BindGraphicsPipeline(const SafeSharedPtr<GraphicsPipeline>& pGraphicsPipeline) override final;
 
 			virtual void BindVertexBuffer(const std::shared_ptr<Buffer>& pVertexBuffer) override final;
 			virtual void BindIndexBuffer(const std::shared_ptr<Buffer>& pIndexBuffer, UI64 indexSize) override final;
 
-			virtual void BindDrawResources(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::shared_ptr<ResourceMap>& pResourceMap) override final;
+			virtual void BindDrawResources(const SafeSharedPtr<GraphicsPipeline>& pPipeline, const std::shared_ptr<ResourceMap>& pResourceMap) override final;
 			virtual void BindDynamicStates(const std::shared_ptr<DynamicStateContainer>& pDynamicStates) override final;
 
 			virtual void IssueDrawCall(UI64 vertexOffset, UI64 vertexCount, UI64 indexOffset, UI64 indexCount) override final;
+			virtual void ExecuteSecondaryCommands() override final;
 
 			virtual void EndBufferRecording() override final;
 			virtual void Terminate() override final;
@@ -43,10 +45,15 @@ namespace Flint
 			std::vector<VkCommandBuffer> GetCommandBuffers() const { return vCommandBuffers; }
 
 			VkCommandBufferInheritanceInfo GetInheritanceInfo() const;
+			void AddSecondaryCommandBuffer(const VkCommandBuffer vCommandBuffer);
+
+		public:
+			void VulkanBeginSecondaryCommandBuffer(UI32 bufferIndex, const VkCommandBufferInheritanceInfo* pInheritanceInfo);
 
 		private:
 			VkCommandPool vCommandPool = VK_NULL_HANDLE;
 			std::vector<VkCommandBuffer> vCommandBuffers = {};
+			std::vector<VkCommandBuffer> vSecondaryCommandBuffers = {};
 
 			VkCommandBuffer vCurrentBuffer = VK_NULL_HANDLE;
 		};
