@@ -23,6 +23,7 @@ project "SimpleScene"
 	files {
 		"**.txt",
 		"**.cpp",
+		"**.hpp",
 		"**.h",
 		"**.lua",
 		"**.wfc",
@@ -32,9 +33,15 @@ project "SimpleScene"
 		"$(SolutionDir)Code",
 		"$(SolutionDir)Demos/ThirdParty/glm",
 		"$(SolutionDir)Demos/SimpleScene",
+		"%{IncludeDir.Assimp}",
+	}
+
+	libdirs {
+		"%{IncludeLib.Assimp}",
 	}
 
 	links {
+		"assimp-vc142-mt",
 		"Flint",
 	}
 

@@ -22,7 +22,8 @@ namespace Flint
 
 	std::pair<UI64, UI64> GeometryStore::AddGeometry(UI64 vertexCount, const void* pVertexData, UI64 indexCount, const void* pIndexData)
 	{
-		const std::pair<UI64, UI64> oldExtent = std::pair<UI64, UI64>(mVertexCount, mIndexCount);
+		std::shared_ptr<Buffer> pVertexStaggingBuffer = nullptr;
+		std::shared_ptr<Buffer> pIndexStaggingBuffer = nullptr;
 
 		// Extend the buffer and add vertex data.
 		if (vertexCount)
@@ -31,21 +32,10 @@ namespace Flint
 			UI64 newSize = vertexCount * mVertexSize;
 
 			// Create new stagging buffer and copy content to it.
-			std::shared_ptr<Buffer> pStaggingBuffer = pDevice->CreateBuffer(BufferType::STAGGING, newSize);
-			BYTE* pBytes = static_cast<BYTE*>(pStaggingBuffer->MapMemory(newSize));
+			pVertexStaggingBuffer = pDevice->CreateBuffer(BufferType::STAGGING, newSize);
+			BYTE* pBytes = static_cast<BYTE*>(pVertexStaggingBuffer->MapMemory(newSize));
 			std::copy(static_cast<const BYTE*>(pVertexData), static_cast<const BYTE*>(pVertexData) + newSize, pBytes);
-			pStaggingBuffer->UnmapMemory();
-
-			// Extend and copy data from the stagging buffer.
-			if (!pVertexBuffer)
-				pVertexBuffer = pDevice->CreateBuffer(BufferType::VERTEX, newSize);
-			else
-				pVertexBuffer->Extend(newSize, BufferResizeMode::COPY);
-
-			pVertexBuffer->CopyFromBuffer(pStaggingBuffer, newSize, 0, srcSize);
-			pDevice->DestroyBuffer(pStaggingBuffer);
-
-			mVertexCount += vertexCount;
+			pVertexStaggingBuffer->UnmapMemory();
 		}
 
 		// Extend the buffer and add index data. 
@@ -55,10 +45,48 @@ namespace Flint
 			UI64 newSize = mIndexSize * indexCount;
 
 			// Create new stagging buffer and copy content to it.
-			std::shared_ptr<Buffer> pStaggingBuffer = pDevice->CreateBuffer(BufferType::STAGGING, newSize);
-			BYTE* pBytes = static_cast<BYTE*>(pStaggingBuffer->MapMemory(newSize));
+			pIndexStaggingBuffer = pDevice->CreateBuffer(BufferType::STAGGING, newSize);
+			BYTE* pBytes = static_cast<BYTE*>(pIndexStaggingBuffer->MapMemory(newSize));
 			std::copy(static_cast<const BYTE*>(pIndexData), static_cast<const BYTE*>(pIndexData) + newSize, pBytes);
-			pStaggingBuffer->UnmapMemory();
+			pIndexStaggingBuffer->UnmapMemory();
+		}
+
+		const std::pair<UI64, UI64> oldExtent = AddGeometry(pVertexStaggingBuffer, pIndexStaggingBuffer);
+
+		if (pVertexStaggingBuffer)
+			pDevice->DestroyBuffer(pVertexStaggingBuffer);
+
+		if (pIndexStaggingBuffer)
+			pDevice->DestroyBuffer(pIndexStaggingBuffer);
+
+		return oldExtent;
+	}
+
+	std::pair<UI64, UI64> GeometryStore::AddGeometry(const std::shared_ptr<Buffer>& pVertexStaggingBuffer, const std::shared_ptr<Buffer>& pIndexStaggingBuffer)
+	{
+		const std::pair<UI64, UI64> oldExtent = std::pair<UI64, UI64>(mVertexCount, mIndexCount);
+
+		// Extend the buffer and add vertex data.
+		if (pVertexStaggingBuffer)
+		{
+			UI64 srcSize = mVertexCount * mVertexSize;
+			UI64 newSize = pVertexStaggingBuffer->GetSize();
+
+			// Extend and copy data from the stagging buffer.
+			if (!pVertexBuffer)
+				pVertexBuffer = pDevice->CreateBuffer(BufferType::VERTEX, newSize);
+			else
+				pVertexBuffer->Extend(newSize, BufferResizeMode::COPY);
+
+			pVertexBuffer->CopyFromBuffer(pVertexStaggingBuffer, newSize, 0, srcSize);
+			mVertexCount += newSize / mVertexSize;
+		}
+
+		// Extend the buffer and add index data. 
+		if (pIndexStaggingBuffer)
+		{
+			UI64 srcSize = mIndexCount * mIndexSize;
+			UI64 newSize = pIndexStaggingBuffer->GetSize();
 
 			// Extend and copy data from the stagging buffer.
 			if (!pIndexBuffer)
@@ -66,10 +94,8 @@ namespace Flint
 			else
 				pIndexBuffer->Extend(newSize, BufferResizeMode::COPY);
 
-			pIndexBuffer->CopyFromBuffer(pStaggingBuffer, newSize, 0, srcSize);
-			pDevice->DestroyBuffer(pStaggingBuffer);
-
-			mIndexCount += indexCount;
+			pIndexBuffer->CopyFromBuffer(pIndexStaggingBuffer, newSize, 0, srcSize);
+			mIndexCount += newSize / mIndexSize;
 		}
 
 		return oldExtent;

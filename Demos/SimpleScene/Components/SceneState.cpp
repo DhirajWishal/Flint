@@ -15,7 +15,7 @@ SceneState::SceneState()
 
 #endif // !FLINT_RELEASE
 
-	pDisplay = pInstance->CreateDisplay(mDisplayExtent, "Flint: Sample Scene");
+	pDisplay = pInstance->CreateDisplay(Flint::FBox2D(1280, 720), "Flint: Sample Scene");
 	pDevice = pInstance->CreateDevice(Flint::DeviceFlags::GRAPHICS_COMPATIBLE | Flint::DeviceFlags::EXTERNAL | Flint::DeviceFlags::COMPUTE_COMPATIBLE);
 
 	CreateDefaultRenderTarget();
@@ -90,7 +90,7 @@ void SceneState::UpdateCamera()
 
 void SceneState::CreateDefaultRenderTarget()
 {
-	pScreenBoundRenderTargets["Default"] = pDevice->CreateScreenBoundRenderTarget(pDisplay, mDisplayExtent, pDisplay->FindBestBufferCount(pDevice));
+	pScreenBoundRenderTargets["Default"] = pDevice->CreateScreenBoundRenderTarget(pDisplay, pDisplay->GetExtent(), pDisplay->FindBestBufferCount(pDevice));
 }
 
 void SceneState::CreateDefaultPipeline()

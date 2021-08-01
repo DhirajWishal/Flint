@@ -16,9 +16,6 @@ SkyBox::SkyBox(SceneState* pSceneState) : GameObject(pSceneState)
 	if (pSceneState->pGeometryStores.find("Default") == pSceneState->pGeometryStores.end())
 		pSceneState->pGeometryStores["Default"] = pSceneState->pDevice->CreateGeometryStore(pVertexShader->GetInputAttributes(), sizeof(UI32));
 
-	auto [vertices, indices] = LoadAsset("E:\\Dynamik\\Game Repository\\assets\\assets\\Skybox\\SkySphere.obj");
-	auto [vertexOffset, indexOffset] = pSceneState->pGeometryStores["Default"]->AddGeometry(vertices.size(), vertices.data(), indices.size(), indices.data());
-
 	auto image = LoadSkyboxImages();
 	pTexture = pSceneState->pDevice->CreateImage(Flint::ImageType::CUBEMAP, Flint::ImageUsage::GRAPHICS, image.mExtent, Flint::PixelFormat::R8G8B8A8_SRGB, 6, 1, image.pImageData);
 	delete[] image.pImageData;
@@ -37,9 +34,17 @@ SkyBox::SkyBox(SceneState* pSceneState) : GameObject(pSceneState)
 	pResourceMap->SetResource("Camera", pCameraBuffer);
 	pResourceMap->SetResource("skybox", pTextureSampler, pTexture);
 
-	pDynamicStates->SetViewPort(Flint::FExtent2D<float>{static_cast<float>(pSceneState->mDisplayExtent.mWidth), static_cast<float>(pSceneState->mDisplayExtent.mHeight)}, Flint::FExtent2D<float>(0.0f, 1.0f), { 0.0f, 0.0f });
-	pDynamicStates->SetScissor(pSceneState->mDisplayExtent, { 0, 0 });
-	pPipeline->AddDrawData(pResourceMap, pDynamicStates, vertexOffset, vertices.size(), indexOffset, indices.size());
+	Flint::FBox2D windowExtent = pSceneState->pDisplay->GetExtent();
+	pDynamicStates->SetViewPort(Flint::FExtent2D<float>{static_cast<float>(windowExtent.mWidth), static_cast<float>(windowExtent.mHeight)}, Flint::FExtent2D<float>(0.0f, 1.0f), { 0.0f, 0.0f });
+	pDynamicStates->SetScissor(windowExtent, { 0, 0 });
+
+	auto asset = ImportAsset(pSceneState->pDevice, "E:\\Dynamik\\Game Repository\\assets\\assets\\Skybox\\SkySphere.obj");
+	auto [vertexOffset, indexOffset] = pSceneState->pGeometryStores["Default"]->AddGeometry(asset.pVertexBuffer, asset.pIndexBuffer);
+	for (auto instance : asset.mDrawInstances)
+		pPipeline->AddDrawData(pResourceMap, pDynamicStates, vertexOffset + instance.mVertexOffset, instance.mVertexCount, indexOffset + instance.mIndexOffset, instance.mIndexCount);
+
+	pSceneState->pDevice->DestroyBuffer(asset.pVertexBuffer);
+	pSceneState->pDevice->DestroyBuffer(asset.pIndexBuffer);
 }
 
 SkyBox::~SkyBox()

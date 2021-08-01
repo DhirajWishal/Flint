@@ -3,72 +3,214 @@
 
 #include "AssetLoader.hpp"
 
-#define TINYOBJLOADER_IMPLEMENTATION
-#include "../ThirdParty/tiny_obj_loader.h"
+#include "Backend/Device.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "../ThirdParty/stb_image.h"
 
-#include <unordered_map>
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 
-namespace std
+std::vector<VertexAttribute> GetDefaultVertexAttributes()
 {
-	template<>
-	struct hash<Vertex>
-	{
-		size_t operator()(Vertex const& vertex) const
-		{
-			return ((hash<glm::vec3>::_Do_hash(vertex.pos) ^ (hash<glm::vec3>::_Do_hash(vertex.color) << 1)) >> 1) ^ (hash<glm::vec2>::_Do_hash(vertex.texCoord) << 1);
-		}
-	};
+	std::vector<VertexAttribute> attributes(3);
+	attributes[0] = VertexAttribute(sizeof(glm::vec3), VertexAttributeType::POSITION);
+	attributes[1] = VertexAttribute(sizeof(glm::vec3), VertexAttributeType::COLOR_0);
+	attributes[2] = VertexAttribute(sizeof(glm::vec2), VertexAttributeType::TEXTURE_COORDINATES_0);
+
+	return attributes;
 }
 
-std::pair<std::vector<Vertex>, std::vector<UI32>> LoadAsset(const std::filesystem::path& path)
+Asset ImportAsset(const std::shared_ptr<Flint::Device>& pDevice, const std::filesystem::path& path, const std::vector<VertexAttribute>& attributes)
 {
-	std::vector<Vertex> vertexes;
-	std::vector<UI32> indexes;
+	Assimp::Importer importer = {};
+	const aiScene* pScene = importer.ReadFile(path.string(),
+		aiProcess_CalcTangentSpace |
+		aiProcess_Triangulate |
+		aiProcess_JoinIdenticalVertices |
+		aiProcess_SortByPType |
+		aiProcess_GenUVCoords |
+		aiProcess_FlipUVs);
 
-	tinyobj::attrib_t attrib;
-	std::vector<tinyobj::shape_t> shapes;
-	std::vector<tinyobj::material_t> materials;
-	std::string warn, err;
+	// Check if the scene could be loaded.
+	if (!pScene)
+		throw std::runtime_error("Could not open asset file!");
 
-	if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.string().c_str()))
-		throw std::runtime_error(warn + err);
+	UI64 vertexSize = 0;
+	for (auto& attribute : attributes)
+		vertexSize += attribute.mAttributeSize;
 
-	std::unordered_map<Vertex, uint32_t> uniqueVertices{};
+	UI64 vertexCount = 0;
+	for (UI32 i = 0; i < pScene->mNumMeshes; i++)
+		vertexCount += pScene->mMeshes[i]->mNumVertices;
 
-	for (const auto& shape : shapes) {
-		for (const auto& index : shape.mesh.indices) {
-			Vertex vertex{};
+	Asset asset = {};
+	asset.pVertexBuffer = pDevice->CreateBuffer(Flint::BufferType::STAGGING, vertexCount * vertexSize);
+	float* pDataStore = static_cast<float*>(asset.pVertexBuffer->MapMemory(vertexCount * vertexSize));
 
-			vertex.pos = {
-				attrib.vertices[3 * index.vertex_index + 0],
-				attrib.vertices[3 * index.vertex_index + 1],
-				attrib.vertices[3 * index.vertex_index + 2]
-			};
+	UI64 indexCount = 0;
+	std::vector<std::vector<UI32>> indexArrays;
 
-			if (attrib.texcoords.size())
+	Asset::DrawInstance drawData = {};
+	for (UI32 i = 0; i < pScene->mNumMeshes; i++)
+	{
+		drawData.mVertexOffset += drawData.mVertexCount;
+		drawData.mIndexOffset += drawData.mIndexCount;
+
+		auto pMesh = pScene->mMeshes[i];
+		drawData.mName = pMesh->mName.C_Str();
+		drawData.mVertexCount = pMesh->mNumVertices;
+
+		for (UI32 j = 0; j < pMesh->mNumVertices; j++)
+		{
+			for (auto& attribute : attributes)
 			{
-				vertex.texCoord = {
-					attrib.texcoords[2 * index.texcoord_index + 0],
-					1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
-				};
+				UI64 copyAmount = attribute.mAttributeSize;
+
+				switch (attribute.mType)
+				{
+				case VertexAttributeType::POSITION:
+					if (pMesh->HasPositions())
+						std::copy(&pMesh->mVertices[j].x, (&pMesh->mVertices[j].x) + copyAmount, pDataStore);
+					break;
+
+				case VertexAttributeType::NORMAL:
+					if (pMesh->HasNormals())
+						std::copy(&pMesh->mNormals[j].x, (&pMesh->mNormals[j].x) + copyAmount, pDataStore);
+					break;
+
+				case VertexAttributeType::COLOR_0:
+					if (pMesh->HasVertexColors(0))
+						std::copy(&pMesh->mColors[0][j].r, (&pMesh->mColors[0][j].r) + copyAmount, pDataStore);
+					else
+						std::fill(pDataStore, pDataStore + (attribute.mAttributeSize / sizeof(float)), 1.0f);
+					break;
+
+				case VertexAttributeType::COLOR_1:
+					if (pMesh->HasVertexColors(1))
+						std::copy(&pMesh->mColors[1][j].r, (&pMesh->mColors[1][j].r) + copyAmount, pDataStore);
+					break;
+
+				case VertexAttributeType::COLOR_2:
+					if (pMesh->HasVertexColors(2))
+						std::copy(&pMesh->mColors[2][j].r, (&pMesh->mColors[1][j].r) + copyAmount, pDataStore);
+					break;
+
+				case VertexAttributeType::COLOR_3:
+					if (pMesh->HasVertexColors(3))
+						std::copy(&pMesh->mColors[3][j].r, (&pMesh->mColors[2][j].r) + copyAmount, pDataStore);
+					break;
+
+				case VertexAttributeType::TEXTURE_COORDINATES_0:
+					if (pMesh->HasTextureCoords(0))
+						std::copy(&pMesh->mTextureCoords[0][j].x, (&pMesh->mTextureCoords[0][j].x) + copyAmount, pDataStore);
+					break;
+
+				case VertexAttributeType::TEXTURE_COORDINATES_1:
+					if (pMesh->HasTextureCoords(1))
+						std::copy(&pMesh->mTextureCoords[1][j].x, (&pMesh->mTextureCoords[1][j].x) + copyAmount, pDataStore);
+					break;
+
+				case VertexAttributeType::TEXTURE_COORDINATES_2:
+					if (pMesh->HasTextureCoords(2))
+						std::copy(&pMesh->mTextureCoords[2][j].x, (&pMesh->mTextureCoords[2][j].x) + copyAmount, pDataStore);
+					break;
+
+				case VertexAttributeType::TEXTURE_COORDINATES_3:
+					if (pMesh->HasTextureCoords(3))
+						std::copy(&pMesh->mTextureCoords[3][j].x, (&pMesh->mTextureCoords[3][j].x) + copyAmount, pDataStore);
+					break;
+
+				case VertexAttributeType::TEXTURE_COORDINATES_4:
+					if (pMesh->HasTextureCoords(4))
+						std::copy(&pMesh->mTextureCoords[4][j].x, (&pMesh->mTextureCoords[4][j].x) + copyAmount, pDataStore);
+					break;
+
+				case VertexAttributeType::TEXTURE_COORDINATES_5:
+					if (pMesh->HasTextureCoords(5))
+						std::copy(&pMesh->mTextureCoords[5][j].x, (&pMesh->mTextureCoords[5][j].x) + copyAmount, pDataStore);
+					break;
+
+				case VertexAttributeType::TEXTURE_COORDINATES_6:
+					if (pMesh->HasTextureCoords(6))
+						std::copy(&pMesh->mTextureCoords[6][j].x, (&pMesh->mTextureCoords[6][j].x) + copyAmount, pDataStore);
+					break;
+
+				case VertexAttributeType::TEXTURE_COORDINATES_7:
+					if (pMesh->HasTextureCoords(7))
+						std::copy(&pMesh->mTextureCoords[7][j].x, (&pMesh->mTextureCoords[7][j].x) + copyAmount, pDataStore);
+					break;
+
+				case VertexAttributeType::UV_COORDINATES:
+					//if (pMesh->HasPositions())
+					//	std::copy(&pMesh->mVertices[j].x, (&pMesh->mVertices[j].x) + copyAmount, pDataStore);
+					//break;
+
+				case VertexAttributeType::TANGENT:
+					if (pMesh->HasTangentsAndBitangents())
+						std::copy(&pMesh->mTangents[j].x, (&pMesh->mTangents[j].x) + copyAmount, pDataStore);
+					break;
+
+				case VertexAttributeType::BITANGENT:
+					if (pMesh->HasTangentsAndBitangents())
+						std::copy(&pMesh->mBitangents[j].x, (&pMesh->mBitangents[j].x) + copyAmount, pDataStore);
+					break;
+
+				case VertexAttributeType::BONE_ID:
+					//if (pMesh->HasPositions())
+					//	std::copy(&pMesh->mVertices[j].x, (&pMesh->mVertices[j].x) + copyAmount, pDataStore);
+					//break;
+
+				case VertexAttributeType::BONE_WEIGHT:
+					//if (pMesh->HasPositions())
+					//	std::copy(&pMesh->mVertices[j].x, (&pMesh->mVertices[j].x) + copyAmount, pDataStore);
+					//break;
+
+				case VertexAttributeType::CUSTOM:
+					break;
+
+				default:
+					throw std::runtime_error("Invalid or Undefined vertex attribute type!");
+				}
+
+				pDataStore = pDataStore + (attribute.mAttributeSize / sizeof(float));
 			}
-
-			vertex.color = { 1.0f, 1.0f, 1.0f };
-
-			if (uniqueVertices.count(vertex) == 0) {
-				uniqueVertices[vertex] = static_cast<uint32_t>(vertexes.size());
-
-				vertexes.push_back(vertex);
-			}
-
-			indexes.push_back(uniqueVertices[vertex]);
 		}
+
+		aiFace face = {};
+		std::vector<UI32> indexes;
+		for (UI32 j = 0; j < pMesh->mNumFaces; j++)
+		{
+			face = pMesh->mFaces[j];
+			for (UI32 k = 0; k < face.mNumIndices; k++)
+				indexes.push_back(face.mIndices[k]);
+		}
+		drawData.mIndexCount = indexes.size();
+		indexCount += drawData.mIndexCount;
+
+		INSERT_INTO_VECTOR(indexArrays, std::move(indexes));
+		INSERT_INTO_VECTOR(asset.mDrawInstances, drawData);
 	}
 
-	return std::pair<std::vector<Vertex>, std::vector<UI32>>{ vertexes, indexes };
+	asset.pVertexBuffer->UnmapMemory();
+
+	// Create the index buffer.
+	asset.pIndexBuffer = pDevice->CreateBuffer(Flint::BufferType::STAGGING, indexCount * sizeof(UI32));
+	UI32* pIndexDataPointer = static_cast<UI32*>(asset.pIndexBuffer->MapMemory(indexCount * sizeof(UI32)));
+
+	// Copy data to the stagging buffer.
+	UI64 offset = 0;
+	for (auto itr = indexArrays.begin(); itr != indexArrays.end(); itr++)
+	{
+		std::copy(itr->begin(), itr->end(), pIndexDataPointer + offset);
+		offset += itr->size();
+	}
+	indexArrays.clear();
+
+	asset.pIndexBuffer->UnmapMemory();
+
+	return asset;
 }
 
 ImageData LoadImage(const std::filesystem::path& path)

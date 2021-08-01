@@ -9,9 +9,6 @@ namespace Flint
 	{
 		if (!pInstance)
 			FLINT_THROW_INVALID_ARGUMENT("Instance pointer should not be null!");
-
-		if (extent.mWidth == 0 || extent.mHeight == 0)
-			FLINT_THROW_INVALID_ARGUMENT("Display width and height should be greater than 0!");
 	}
 
 	const std::vector<std::filesystem::path> Display::GetDragAndDropValues()

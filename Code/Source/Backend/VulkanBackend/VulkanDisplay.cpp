@@ -98,7 +98,22 @@ namespace Flint
 		{
 			FLINT_SETUP_PROFILER();
 
-			pWindow = glfwCreateWindow(extent.mWidth, extent.mHeight, title.c_str(), nullptr, nullptr);
+			if (extent.mWidth > 0 && extent.mHeight > 0)
+				pWindow = glfwCreateWindow(extent.mWidth, extent.mHeight, title.c_str(), nullptr, nullptr);
+			else
+			{
+				GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+				const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+				glfwWindowHint(GLFW_RED_BITS, mode->redBits);
+				glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+				glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+				glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+
+				pWindow = glfwCreateWindow(mode->width, mode->height, title.c_str(), monitor, NULL);
+				mExtent.mWidth = mode->width;
+				mExtent.mHeight = mode->height;
+			}
 
 			if (!pWindow)
 				FLINT_THROW_RUNTIME_ERROR("Failed to create display!");

@@ -43,6 +43,16 @@ namespace Flint
 		 */
 		std::pair<UI64, UI64> AddGeometry(UI64 vertexCount, const void* pVertexData, UI64 indexCount, const void* pIndexData);
 
+		/**
+		 * Add geometry to the store using buffers.
+		 * This method is preferred over the other adding method.
+		 * 
+		 * @param pVertexStaggingBuffer: The vertex data stored stagging buffer.
+		 * @param pIndexStaggingBuffer: The index data stored stagging buffer.
+		 * @return The pair of offsets (vertex offset, index offset) in which the geometry is stored.
+		 */
+		std::pair<UI64, UI64> AddGeometry(const std::shared_ptr<Buffer>& pVertexStaggingBuffer, const std::shared_ptr<Buffer>& pIndexStaggingBuffer);
+
 	private:
 		/**
 		 * Terminate the geometry store.

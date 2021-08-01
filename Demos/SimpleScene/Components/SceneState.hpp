@@ -32,8 +32,6 @@ public:
 	std::shared_ptr<Flint::Display> pDisplay = nullptr;
 	std::shared_ptr<Flint::Device> pDevice = nullptr;
 
-	static constexpr Flint::FBox2D mDisplayExtent = Flint::FBox2D(1280, 720);
-
 private:
 	void CreateDefaultRenderTarget();
 	void CreateDefaultPipeline();
