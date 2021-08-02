@@ -53,6 +53,16 @@ namespace Flint
 		 */
 		std::pair<UI64, UI64> AddGeometry(const std::shared_ptr<Buffer>& pVertexStaggingBuffer, const std::shared_ptr<Buffer>& pIndexStaggingBuffer);
 
+		/**
+		 * Remove a geometry from the store.
+		 * 
+		 * @param vertexOffset: The vertex offset in the buffer.
+		 * @param vertexCount: The number of vertexes to remove.
+		 * @param indexOffset: The index offset in the buffer.
+		 * @param indexCount: The number of indexes to remove.
+		 */
+		void RemoveGeometry(UI64 vertexOffset, UI64 vertexCount, UI64 indexOffset, UI64 indexCount);
+
 	private:
 		/**
 		 * Terminate the geometry store.

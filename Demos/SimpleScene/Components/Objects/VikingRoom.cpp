@@ -22,7 +22,8 @@ VikingRoom::VikingRoom(SceneState* pSceneState) : GameObject(pSceneState)
 
 	pTextureSampler = pSceneState->pDevice->CreateImageSampler(Flint::ImageSamplerSpecification());
 
-	SetupPipeline();
+	if (pSceneState->pGraphicsPipelines.find("Default") == pSceneState->pGraphicsPipelines.end())
+		SetupPipeline();
 
 	auto pPipeline = pSceneState->pGraphicsPipelines["Default"];
 	pResourceMap = pPipeline->CreateResourceMap();
@@ -38,7 +39,14 @@ VikingRoom::VikingRoom(SceneState* pSceneState) : GameObject(pSceneState)
 	auto asset = ImportAsset(pSceneState->pDevice, "E:\\Dynamik\\Game Repository\\assets\\assets\\VikingRoom\\vikingroom.fbx");
 	auto [vertexOffset, indexOffset] = pSceneState->pGeometryStores["Default"]->AddGeometry(asset.pVertexBuffer, asset.pIndexBuffer);
 	for (auto instance : asset.mDrawInstances)
-		pPipeline->AddDrawData(pResourceMap, pDynamicStates, vertexOffset + instance.mVertexOffset, instance.mVertexCount, indexOffset + instance.mIndexOffset, instance.mIndexCount);
+	{
+		mDrawIndex = pPipeline->AddDrawData(pResourceMap, pDynamicStates, vertexOffset + instance.mVertexOffset, instance.mVertexCount, indexOffset + instance.mIndexOffset, instance.mIndexCount);
+		mVertexCount += instance.mVertexCount;
+		mIndexCount += instance.mIndexCount;
+	}
+
+	mVertexOffset = vertexOffset;
+	mIndexOffset = indexOffset;
 
 	pSceneState->pDevice->DestroyBuffer(asset.pVertexBuffer);
 	pSceneState->pDevice->DestroyBuffer(asset.pIndexBuffer);
@@ -46,6 +54,10 @@ VikingRoom::VikingRoom(SceneState* pSceneState) : GameObject(pSceneState)
 
 VikingRoom::~VikingRoom()
 {
+	//pSceneState->pScreenBoundRenderTargets["Default"]->RemovePipeline(pSceneState->pGeometryStores["Default"], pSceneState->pGraphicsPipelines["Default"]);
+	pSceneState->pGeometryStores["Default"]->RemoveGeometry(mVertexOffset, mVertexCount, mIndexOffset, mIndexCount);
+	pSceneState->pGraphicsPipelines["Default"]->RemoveDrawData(mDrawIndex);
+
 	pSceneState->pDevice->DestroyShader(pVertexShader);
 	pSceneState->pDevice->DestroyShader(pFragmentShader);
 	pSceneState->pDevice->DestroyBuffer(pCameraBuffer);

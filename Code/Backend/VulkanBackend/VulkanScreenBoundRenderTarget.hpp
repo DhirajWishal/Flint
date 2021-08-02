@@ -11,7 +11,7 @@
 #include "VulkanColorBuffer.hpp"
 #include "VulkanDepthBuffer.hpp"
 
-#include <semaphore>
+#include "Core/BinarySemaphore.hpp"
 
 namespace Flint
 {
@@ -59,8 +59,10 @@ namespace Flint
 			VulkanRenderTarget vRenderTarget;
 
 			std::atomic<VkCommandBufferInheritanceInfo> vInheritanceInfo = {};
-			std::atomic<bool> bShouldRun = true;
+			std::atomic<bool> bShouldRun = true, bTaskCompleted = false;
+			std::vector<VkCommandBuffer> vSecondaryCommandBuffers = {};
 
+			std::mutex mResourceMutex = {};
 			std::thread mWorkerThread;
 
 			VulkanSwapChain* pSwapChain = nullptr;
@@ -71,7 +73,7 @@ namespace Flint
 
 			VkClearValue pClearValues[2] = {};
 			std::shared_ptr<ScreenBoundRenderTarget> pThisRenderTarget = nullptr;
-			std::binary_semaphore mRenderTargetToThreadSemaphore{ 0 }, mThreadToRenderTargetSemaphore{ 0 };
+			BinarySemaphore mRenderTargetToThreadSemaphore = {}, mThreadToRenderTargetSemaphore = {};
 		};
 	}
 }

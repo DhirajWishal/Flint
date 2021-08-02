@@ -472,15 +472,18 @@ namespace Flint
 		void VulkanGraphicsPipeline::PrepareResourcesToDraw()
 		{
 			FLINT_SETUP_PROFILER();
+			UI32 descriptorSetCount = static_cast<UI32>(mDrawDataList.size());
 
 			// Check if should prepare resources, and return if not.
-			if (!bShouldPrepareResources)
+			if (!bShouldPrepareResources || mDrawDataList.empty())
 				return;
+
+			if(vDescriptorSetPool)
+				vkDestroyDescriptorPool(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), vDescriptorSetPool, nullptr);
 
 			std::vector<VkDescriptorPoolSize> vPoolSizes;
 			std::unordered_map<std::string, ShaderResource> resources;
 
-			UI32 descriptorSetCount = static_cast<UI32>(mDrawDataList.size());
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 
 			// Resolve vertex shader data.
@@ -561,18 +564,20 @@ namespace Flint
 			vWrite.descriptorCount = 1;
 			vWrite.dstArrayElement = 0;
 
-			for (UI64 index = 0; index < mDrawDataList.size(); index++)
+			UI64 descriptorIndex = 0;
+			for (const auto drawData : mDrawDataList)
 			{
-				const auto drawData = mDrawDataList[index];
+				if (!drawData.second.pResourceMap)
+					continue;
 
-				vWrite.dstSet = vDescriptorSets[index];
-				vDescriptorSetMap[drawData.pResourceMap] = vWrite.dstSet;
+				vWrite.dstSet = vDescriptorSets[descriptorIndex++];
+				vDescriptorSetMap[drawData.second.pResourceMap] = vWrite.dstSet;
 
 				vWrite.pImageInfo = VK_NULL_HANDLE;
 
 				// Get buffer resources.
 				{
-					const auto bufferResources = drawData.pResourceMap->GetBufferResourceMap();
+					const auto bufferResources = drawData.second.pResourceMap->GetBufferResourceMap();
 					for (const auto resource : bufferResources)
 					{
 						const ShaderResource sResource = resources[resource.first];
@@ -593,7 +598,7 @@ namespace Flint
 
 				// Get image resources.
 				{
-					const auto imageResources = drawData.pResourceMap->GetImageResourceMap();
+					const auto imageResources = drawData.second.pResourceMap->GetImageResourceMap();
 					for (const auto resource : imageResources)
 					{
 						const ShaderResource sResource = resources[resource.first];

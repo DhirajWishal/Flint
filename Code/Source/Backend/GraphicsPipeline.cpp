@@ -73,10 +73,22 @@ namespace Flint
 		return std::make_shared<ResourceMap>(GetBufferResourceNames(), GetImageResourceNames());
 	}
 
-	void GraphicsPipeline::AddDrawData(const std::shared_ptr<ResourceMap>& pResourceMap, const std::shared_ptr<DynamicStateContainer>& pDynamicStates, UI64 vertexOffset, UI64 vertexCount, UI64 indexOffset, UI64 indexCount)
+	UI64 GraphicsPipeline::AddDrawData(const std::shared_ptr<ResourceMap>& pResourceMap, const std::shared_ptr<DynamicStateContainer>& pDynamicStates, UI64 vertexOffset, UI64 vertexCount, UI64 indexOffset, UI64 indexCount)
 	{
+		mDrawDataList[mDrawDataIndex] = DrawData(pResourceMap, pDynamicStates, vertexOffset, vertexCount, indexOffset, indexCount);
+
 		bShouldPrepareResources = true;
-		INSERT_INTO_VECTOR(mDrawDataList, DrawData(pResourceMap, pDynamicStates, vertexOffset, vertexCount, indexOffset, indexCount));
+		pRenderTarget->FlagAltered();
+
+		return mDrawDataIndex++;
+	}
+
+	void GraphicsPipeline::RemoveDrawData(const UI64 drawID)
+	{
+		mDrawDataList.erase(drawID);
+
+		bShouldPrepareResources = true;
+		pRenderTarget->FlagAltered();
 	}
 
 	const std::vector<std::string> GraphicsPipeline::GetBufferResourceNames() const

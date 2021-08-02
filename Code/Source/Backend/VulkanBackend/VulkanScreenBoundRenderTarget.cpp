@@ -38,7 +38,7 @@ namespace Flint
 
 			// Issue the worker thread.
 			mWorkerThread = std::thread([this] { SecondaryCommandWorker(); });
-			mThreadToRenderTargetSemaphore.acquire();
+			mThreadToRenderTargetSemaphore.Acquire();
 		}
 
 		void VulkanScreenBoundRenderTarget::PrepareStaticResources()
@@ -47,14 +47,9 @@ namespace Flint
 			pThisRenderTarget = shared_from_this();
 			BindSecondaryCommands();
 
-			mThreadToRenderTargetSemaphore.acquire();
-			pCommandBufferList.load()->ExecuteSecondaryCommands();
-			pCommandBufferList.load()->UnbindRenderTarget();
-			pCommandBufferList.load()->EndBufferRecording();
-
 			return;	// TODO
 
-			VulkanCommandBufferList& vCommandBufferList = pCommandBufferList.load()->StaticCast<VulkanCommandBufferList>();
+			VulkanCommandBufferList& vCommandBufferList = pCommandBufferList->StaticCast<VulkanCommandBufferList>();
 			pThisRenderTarget = shared_from_this();
 
 			for (UI32 iter = 0; iter < vCommandBufferList.GetBufferCount(); iter++)
@@ -81,9 +76,9 @@ namespace Flint
 						// Bind draw data.
 						for (const auto draw : drawData)
 						{
-							vCommandBufferList.BindDrawResources(pipeline, draw.pResourceMap);
-							vCommandBufferList.BindDynamicStates(draw.pDynamicStates);
-							vCommandBufferList.IssueDrawCall(draw.mVertexOffset, draw.mVertexCount, draw.mIndexOffset, draw.mIndexCount);
+							vCommandBufferList.BindDrawResources(pipeline, draw.second.pResourceMap);
+							vCommandBufferList.BindDynamicStates(draw.second.pDynamicStates);
+							vCommandBufferList.IssueDrawCall(draw.second.mVertexOffset, draw.second.mVertexCount, draw.second.mIndexOffset, draw.second.mIndexCount);
 						}
 					}
 				}
@@ -97,13 +92,12 @@ namespace Flint
 		{
 			FLINT_SETUP_PROFILER();
 
-			if (pCommandBufferList.load()->IsRecording())
-			{
-				mThreadToRenderTargetSemaphore.acquire();
-				pCommandBufferList.load()->ExecuteSecondaryCommands();
-				pCommandBufferList.load()->UnbindRenderTarget();
-				pCommandBufferList.load()->EndBufferRecording();
-			}
+			mThreadToRenderTargetSemaphore.Acquire();
+
+			pCommandBufferList->StaticCast<VulkanCommandBufferList>().SetSecondaryCommandBuffers(std::move(vSecondaryCommandBuffers));
+			pCommandBufferList->ExecuteSecondaryCommands();
+			pCommandBufferList->UnbindRenderTarget();
+			pCommandBufferList->EndBufferRecording();
 
 			// Skip if the screen is reported to be 0 in width or height.
 			if (bShouldSkip)
@@ -137,8 +131,21 @@ namespace Flint
 				return;
 			}
 
+			if (bIsAltered)
+			{
+				BindSecondaryCommands();
+				mThreadToRenderTargetSemaphore.Acquire();
+
+				pCommandBufferList->StaticCast<VulkanCommandBufferList>().SetSecondaryCommandBuffers(std::move(vSecondaryCommandBuffers));
+				pCommandBufferList->ExecuteSecondaryCommands();
+				pCommandBufferList->UnbindRenderTarget();
+				pCommandBufferList->EndBufferRecording();
+
+				bIsAltered = false;
+			}
+
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
-			auto& vCommandBufferList = pCommandBufferList.load()->StaticCast<VulkanCommandBufferList>();
+			auto& vCommandBufferList = pCommandBufferList->StaticCast<VulkanCommandBufferList>();
 
 			if (vRenderTarget.vImagesInFlightFences[mImageIndex] != VK_NULL_HANDLE)
 				FLINT_VK_ASSERT(vkWaitForFences(vDevice.GetLogicalDevice(), 1, &vRenderTarget.vImagesInFlightFences[mImageIndex], VK_TRUE, std::numeric_limits<uint64_t>::max()));
@@ -225,7 +232,7 @@ namespace Flint
 			bShouldSkip = false;
 
 			pDevice->WaitIdle();
-			pCommandBufferList.load()->ClearBuffers();
+			pCommandBufferList->ClearBuffers();
 
 			vRenderTarget.DestroyRenderPass();
 			vRenderTarget.DestroyFrameBuffers();
@@ -265,8 +272,8 @@ namespace Flint
 		{
 			FLINT_SETUP_PROFILER();
 
-			pCommandBufferList.load()->BeginBufferRecording(mFrameIndex);
-			pCommandBufferList.load()->BindRenderTargetSecondary(pThisRenderTarget);
+			pCommandBufferList->BeginBufferRecording(mFrameIndex);
+			pCommandBufferList->BindRenderTargetSecondary(pThisRenderTarget);
 
 			VkCommandBufferInheritanceInfo vInheritInfo = {};
 			vInheritInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
@@ -274,17 +281,17 @@ namespace Flint
 			vInheritInfo.framebuffer = GetFrameBuffer(mFrameIndex);
 
 			vInheritanceInfo.store(vInheritInfo);
-			mRenderTargetToThreadSemaphore.release();
+			mRenderTargetToThreadSemaphore.Release();
 		}
 
 		void VulkanScreenBoundRenderTarget::SecondaryCommandWorker()
 		{
-			VulkanCommandBufferList vCommandBufferList{ pCommandBufferList.load()->GetDevice(), 1, pCommandBufferList.load() };
-			mThreadToRenderTargetSemaphore.release();
+			VulkanCommandBufferList vCommandBufferList{ pCommandBufferList->GetDevice(), 1, pCommandBufferList };
+			mThreadToRenderTargetSemaphore.Release();
 
-			while (bShouldRun) 
+			while (bShouldRun)
 			{
-				if (mRenderTargetToThreadSemaphore.try_acquire())
+				if (mRenderTargetToThreadSemaphore.TryAcquire())
 				{
 					// Begin the command buffer.
 					VkCommandBufferInheritanceInfo vInheritInfo = vInheritanceInfo.load();
@@ -311,18 +318,17 @@ namespace Flint
 							// Bind draw data.
 							for (const auto draw : drawData)
 							{
-								vCommandBufferList.BindDrawResources(pipeline, draw.pResourceMap);
-								vCommandBufferList.BindDynamicStates(draw.pDynamicStates);
-								vCommandBufferList.IssueDrawCall(draw.mVertexOffset, draw.mVertexCount, draw.mIndexOffset, draw.mIndexCount);
+								vCommandBufferList.BindDrawResources(pipeline, draw.second.pResourceMap);
+								vCommandBufferList.BindDynamicStates(draw.second.pDynamicStates);
+								vCommandBufferList.IssueDrawCall(draw.second.mVertexOffset, draw.second.mVertexCount, draw.second.mIndexOffset, draw.second.mIndexCount);
 							}
 						}
 					}
 
 					// End buffer recording and submit it to execute.
 					vCommandBufferList.EndBufferRecording();
-					pCommandBufferList.load()->StaticCast<VulkanCommandBufferList>().AddSecondaryCommandBuffer(vCommandBufferList.GetCurrentCommandBuffer());
-
-					mThreadToRenderTargetSemaphore.release();
+					vSecondaryCommandBuffers.push_back(vCommandBufferList.GetCurrentCommandBuffer());
+					mThreadToRenderTargetSemaphore.Release();
 				}
 			}
 

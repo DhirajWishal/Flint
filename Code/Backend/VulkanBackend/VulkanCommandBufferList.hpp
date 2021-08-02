@@ -45,7 +45,7 @@ namespace Flint
 			std::vector<VkCommandBuffer> GetCommandBuffers() const { return vCommandBuffers; }
 
 			VkCommandBufferInheritanceInfo GetInheritanceInfo() const;
-			void AddSecondaryCommandBuffer(const VkCommandBuffer vCommandBuffer);
+			void SetSecondaryCommandBuffers(std::vector<VkCommandBuffer>&& vSecondaryCommandBuffers);
 
 		public:
 			void VulkanBeginSecondaryCommandBuffer(UI32 bufferIndex, const VkCommandBufferInheritanceInfo* pInheritanceInfo);

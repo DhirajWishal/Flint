@@ -271,8 +271,8 @@ namespace Flint
 		{
 			FLINT_SETUP_PROFILER();
 
-			vkCmdExecuteCommands(GetCurrentCommandBuffer(), static_cast<UI32>(vSecondaryCommandBuffers.size()), vSecondaryCommandBuffers.data());
-			vSecondaryCommandBuffers.clear();
+			if (!vSecondaryCommandBuffers.empty())
+				vkCmdExecuteCommands(GetCurrentCommandBuffer(), static_cast<UI32>(vSecondaryCommandBuffers.size()), vSecondaryCommandBuffers.data());
 		}
 
 		void VulkanCommandBufferList::EndBufferRecording()
@@ -301,9 +301,9 @@ namespace Flint
 			return VkCommandBufferInheritanceInfo();
 		}
 
-		void VulkanCommandBufferList::AddSecondaryCommandBuffer(const VkCommandBuffer vCommandBuffer)
+		void VulkanCommandBufferList::SetSecondaryCommandBuffers(std::vector<VkCommandBuffer>&& vSecondaryCommandBuffers)
 		{
-			INSERT_INTO_VECTOR(vSecondaryCommandBuffers, vCommandBuffer);
+			this->vSecondaryCommandBuffers = std::move(vSecondaryCommandBuffers);
 		}
 
 		void VulkanCommandBufferList::VulkanBeginSecondaryCommandBuffer(UI32 bufferIndex, const VkCommandBufferInheritanceInfo* pInheritanceInfo)

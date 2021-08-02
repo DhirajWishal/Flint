@@ -58,11 +58,19 @@ namespace Flint
 	public:
 		/**
 		 * Submit a pipeline to the render target to be drawn.
-		 * 
+		 *
 		 * @param pGeometryStore: The geometry store to bind to.
 		 * @param pPipeline: The pipeline to submit.
 		 */
 		void SubmitPipeline(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::shared_ptr<GraphicsPipeline>& pPipeline);
+
+		/**
+		 * Remove a pipeline from the render target.
+		 *
+		 * @param pGeometryStore: The geometry store which the pipeline is bound to.
+		 * @param pPipeline: The pipeline to remove.
+		 */
+		void RemovePipeline(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::shared_ptr<GraphicsPipeline>& pPipeline);
 
 	public:
 		/**
@@ -79,11 +87,25 @@ namespace Flint
 		 */
 		UI32 GetBufferCount() const { return mBufferCount; }
 
+		/**
+		 * Check if the render target is altered.
+		 *
+		 * @return Boolean value.
+		 */
+		const bool IsAltered() const { return bIsAltered; }
+
+		/**
+		 * Flag the render target that an alteration is made.
+		 */
+		void FlagAltered() { bIsAltered = true; }
+
 	protected:
-		std::atomic<std::shared_ptr<CommandBufferList>> pCommandBufferList;
+		std::shared_ptr<CommandBufferList> pCommandBufferList;
 		std::unordered_map<std::shared_ptr<GeometryStore>, std::vector<std::shared_ptr<GraphicsPipeline>>> mDrawInstances;
 
 		FBox2D mExtent = {};
 		UI32 mBufferCount = 0;
+
+		bool bIsAltered = false;
 	};
 }

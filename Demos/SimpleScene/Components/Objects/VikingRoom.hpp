@@ -25,4 +25,8 @@ private:
 	std::shared_ptr<Flint::Shader> pFragmentShader = nullptr;
 
 	std::shared_ptr<Flint::DynamicStateContainer> pDynamicStates = nullptr;
+
+	UI64 mVertexOffset = 0, mVertexCount = 0;
+	UI64 mIndexOffset = 0, mIndexCount = 0;
+	UI64 mDrawIndex = 0;
 };

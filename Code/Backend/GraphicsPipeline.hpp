@@ -159,6 +159,7 @@ namespace Flint
 	protected:
 		struct DrawData
 		{
+			DrawData() = default;
 			DrawData(
 				const std::shared_ptr<ResourceMap>& pResourceMap,
 				const std::shared_ptr<DynamicStateContainer>& pDynamicStates,
@@ -226,7 +227,7 @@ namespace Flint
 		 *
 		 * @return The draw data array.
 		 */
-		const std::vector<DrawData> GetDrawData() const { return mDrawDataList; }
+		const std::unordered_map<UI64, DrawData> GetDrawData() const { return mDrawDataList; }
 
 		/**
 		 * Add draw data to draw.
@@ -237,8 +238,16 @@ namespace Flint
 		 * @param vertexCount: The number of vertexes to draw.
 		 * @param indexOffset: The index offset to begin.
 		 * @param indexCount: The number of index to draw.
+		 * @return The draw ID.
 		 */
-		void AddDrawData(const std::shared_ptr<ResourceMap>& pResourceMap, const std::shared_ptr<DynamicStateContainer>& pDynamicStates, UI64 vertexOffset, UI64 vertexCount, UI64 indexOffset, UI64 indexCount);
+		UI64 AddDrawData(const std::shared_ptr<ResourceMap>& pResourceMap, const std::shared_ptr<DynamicStateContainer>& pDynamicStates, UI64 vertexOffset, UI64 vertexCount, UI64 indexOffset, UI64 indexCount);
+
+		/**
+		 * Remove a draw data from the pipeline.
+		 * 
+		 * @param drawID: The draw ID of the draw data.
+		 */
+		void RemoveDrawData(const UI64 drawID);
 
 	protected:
 		/**
@@ -258,7 +267,8 @@ namespace Flint
 	protected:
 		GraphicsPipelineSpecification mSpecification = {};
 
-		std::vector<DrawData> mDrawDataList = {};
+		std::unordered_map<UI64, DrawData> mDrawDataList = {};
+		UI64 mDrawDataIndex = 0;
 
 		std::shared_ptr<RenderTarget> pRenderTarget = nullptr;
 
