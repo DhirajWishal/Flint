@@ -242,9 +242,15 @@ namespace Flint
 			vRenderTarget.CreateFrameBuffer({ pColorBuffer, pDepthBuffer, pSwapChain }, mExtent, mBufferCount);
 
 			for (auto& instance : mDrawInstanceMaps)
+			{
 				for (auto& drawData : instance)
+				{
 					for (auto& pipeline : drawData.second)
+					{
 						pipeline->Recreate(pThisRenderTarget);
+					}
+				}
+			}
 
 			vRenderTarget.vInFlightFences.resize(vRenderTarget.vInFlightFences.size(), VK_NULL_HANDLE);
 			mImageIndex = 0, mFrameIndex = 0;

@@ -91,7 +91,7 @@ void SceneState::UpdateCamera()
 
 void SceneState::CreateDefaultRenderTarget()
 {
-	pScreenBoundRenderTargets["Default"] = pDevice->CreateScreenBoundRenderTarget(pDisplay, pDisplay->GetExtent(), pDisplay->FindBestBufferCount(pDevice), 2);
+	pScreenBoundRenderTargets["Default"] = pDevice->CreateScreenBoundRenderTarget(pDisplay, pDisplay->GetExtent(), pDisplay->FindBestBufferCount(pDevice), 1);
 }
 
 void SceneState::CreateDefaultPipeline()

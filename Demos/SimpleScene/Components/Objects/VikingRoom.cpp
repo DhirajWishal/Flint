@@ -54,15 +54,17 @@ VikingRoom::VikingRoom(SceneState* pSceneState) : GameObject(pSceneState)
 
 VikingRoom::~VikingRoom()
 {
-	//pSceneState->pScreenBoundRenderTargets["Default"]->RemovePipeline(pSceneState->pGeometryStores["Default"], pSceneState->pGraphicsPipelines["Default"]);
 	pSceneState->pGeometryStores["Default"]->RemoveGeometry(mVertexOffset, mVertexCount, mIndexOffset, mIndexCount);
-	pSceneState->pGraphicsPipelines["Default"]->RemoveDrawData(mDrawIndex);
+	pSceneState->pScreenBoundRenderTargets["Default"]->RemovePipeline(pSceneState->pGeometryStores["Default"], pSceneState->pGraphicsPipelines["Default"]);
 
 	pSceneState->pDevice->DestroyShader(pVertexShader);
 	pSceneState->pDevice->DestroyShader(pFragmentShader);
 	pSceneState->pDevice->DestroyBuffer(pCameraBuffer);
 	pSceneState->pDevice->DestroyImage(pTexture);
 	pSceneState->pDevice->DestroyImageSampler(pTextureSampler);
+	pSceneState->pDevice->DestroyPipeline(pSceneState->pGraphicsPipelines["Default"]);
+
+	pSceneState->pGraphicsPipelines.erase("Default");
 }
 
 void VikingRoom::OnUpdate()
