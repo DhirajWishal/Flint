@@ -23,8 +23,9 @@ namespace Flint
 		 * @param extent: The screen bound render target extent.
 		 * @param bufferCount: The frame buffer count.
 		 * @param pCommandBufferList: The command buffer list pointer.
+		 * @param threadCount: The number of threads to use. Default is 0.
 		 */
-		ScreenBoundRenderTarget(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const std::shared_ptr<CommandBufferList>& pCommandBufferList);
+		ScreenBoundRenderTarget(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const std::shared_ptr<CommandBufferList>& pCommandBufferList, UI32 threadCount = 0);
 
 	public:
 		/**

@@ -12,8 +12,8 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanScreenBoundRenderTarget::VulkanScreenBoundRenderTarget(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount)
-			: ScreenBoundRenderTarget(pDevice, pDisplay, extent, bufferCount, pDevice->CreatePrimaryCommandBufferList(bufferCount)), vRenderTarget(pDevice->StaticCast<VulkanDevice>())
+		VulkanScreenBoundRenderTarget::VulkanScreenBoundRenderTarget(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, UI32 threadCount)
+			: ScreenBoundRenderTarget(pDevice, pDisplay, extent, bufferCount, pDevice->CreatePrimaryCommandBufferList(bufferCount), threadCount), vRenderTarget(pDevice->StaticCast<VulkanDevice>())
 		{
 			FLINT_SETUP_PROFILER();
 
@@ -37,8 +37,7 @@ namespace Flint
 			pClearValues[1].depthStencil.stencil = 0;
 
 			// Issue the worker thread.
-			mWorkerThread = std::thread([this] { SecondaryCommandWorker(); });
-			mThreadToRenderTargetSemaphore.Acquire();
+			AcquireAllThreads();
 		}
 
 		void VulkanScreenBoundRenderTarget::PrepareStaticResources()
@@ -49,59 +48,60 @@ namespace Flint
 
 			return;	// TODO
 
-			VulkanCommandBufferList& vCommandBufferList = pCommandBufferList->StaticCast<VulkanCommandBufferList>();
-			pThisRenderTarget = shared_from_this();
-
-			for (UI32 iter = 0; iter < vCommandBufferList.GetBufferCount(); iter++)
-			{
-				vCommandBufferList.BeginNextBufferRecording();
-				vCommandBufferList.BindRenderTarget(pThisRenderTarget);
-
-				// Iterate through the draw instances.
-				for (auto& instance : mDrawInstances)
-				{
-					const auto geometryStore = instance.first;
-					vCommandBufferList.BindVertexBuffer(geometryStore->GetVertexBuffer());
-					vCommandBufferList.BindIndexBuffer(geometryStore->GetIndexBuffer(), geometryStore->GetIndexSize());
-
-					// Iterate through the pipelines.
-					for (auto& pipeline : instance.second)
-					{
-						pipeline->PrepareResourcesToDraw();
-						vCommandBufferList.BindGraphicsPipeline(pipeline);
-
-						const VulkanGraphicsPipeline& vPipeline = pipeline->StaticCast<VulkanGraphicsPipeline>();
-						const auto drawData = vPipeline.GetDrawData();
-
-						// Bind draw data.
-						for (const auto draw : drawData)
-						{
-							vCommandBufferList.BindDrawResources(pipeline, draw.second.pResourceMap);
-							vCommandBufferList.BindDynamicStates(draw.second.pDynamicStates);
-							vCommandBufferList.IssueDrawCall(draw.second.mVertexOffset, draw.second.mVertexCount, draw.second.mIndexOffset, draw.second.mIndexCount);
-						}
-					}
-				}
-
-				vCommandBufferList.UnbindRenderTarget();
-				vCommandBufferList.EndBufferRecording();
-			}
+			//VulkanCommandBufferList& vCommandBufferList = pCommandBufferList->StaticCast<VulkanCommandBufferList>();
+			//pThisRenderTarget = shared_from_this();
+			//
+			//for (UI32 iter = 0; iter < vCommandBufferList.GetBufferCount(); iter++)
+			//{
+			//	vCommandBufferList.BeginNextBufferRecording();
+			//	vCommandBufferList.BindRenderTarget(pThisRenderTarget);
+			//
+			//	// Iterate through the draw instances.
+			//	for (auto& instance : mDrawInstances)
+			//	{
+			//		const auto geometryStore = instance.first;
+			//		vCommandBufferList.BindVertexBuffer(geometryStore->GetVertexBuffer());
+			//		vCommandBufferList.BindIndexBuffer(geometryStore->GetIndexBuffer(), geometryStore->GetIndexSize());
+			//
+			//		// Iterate through the pipelines.
+			//		for (auto& pipeline : instance.second)
+			//		{
+			//			pipeline->PrepareResourcesToDraw();
+			//			vCommandBufferList.BindGraphicsPipeline(pipeline);
+			//
+			//			const VulkanGraphicsPipeline& vPipeline = pipeline->StaticCast<VulkanGraphicsPipeline>();
+			//			const auto drawData = vPipeline.GetDrawData();
+			//
+			//			// Bind draw data.
+			//			for (const auto draw : drawData)
+			//			{
+			//				vCommandBufferList.BindDrawResources(pipeline, draw.second.pResourceMap);
+			//				vCommandBufferList.BindDynamicStates(draw.second.pDynamicStates);
+			//				vCommandBufferList.IssueDrawCall(draw.second.mVertexOffset, draw.second.mVertexCount, draw.second.mIndexOffset, draw.second.mIndexCount);
+			//			}
+			//		}
+			//	}
+			//
+			//	vCommandBufferList.UnbindRenderTarget();
+			//	vCommandBufferList.EndBufferRecording();
+			//}
 		}
 
 		void VulkanScreenBoundRenderTarget::BeginFrame()
 		{
 			FLINT_SETUP_PROFILER();
 
-			mThreadToRenderTargetSemaphore.Acquire();
-
-			pCommandBufferList->StaticCast<VulkanCommandBufferList>().SetSecondaryCommandBuffers(std::move(vSecondaryCommandBuffers));
-			pCommandBufferList->ExecuteSecondaryCommands();
-			pCommandBufferList->UnbindRenderTarget();
-			pCommandBufferList->EndBufferRecording();
-
-			// Skip if the screen is reported to be 0 in width or height.
+			// Wait while the window contains the right width and height. 
+			// Until the window contains a valid size, it will skip draw calls.
 			if (bShouldSkip)
-				return;
+			{
+				Recreate();
+
+				if (bShouldSkip)
+					return;
+			}
+			else
+				ExecuteSecondaryCommandBuffers();
 
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 			FLINT_VK_ASSERT(vkWaitForFences(vDevice.GetLogicalDevice(), 1, &vRenderTarget.vInFlightFences[mFrameIndex], VK_TRUE, std::numeric_limits<uint64_t>::max()));
@@ -134,12 +134,7 @@ namespace Flint
 			if (bIsAltered)
 			{
 				BindSecondaryCommands();
-				mThreadToRenderTargetSemaphore.Acquire();
-
-				pCommandBufferList->StaticCast<VulkanCommandBufferList>().SetSecondaryCommandBuffers(std::move(vSecondaryCommandBuffers));
-				pCommandBufferList->ExecuteSecondaryCommands();
-				pCommandBufferList->UnbindRenderTarget();
-				pCommandBufferList->EndBufferRecording();
+				ExecuteSecondaryCommandBuffers();
 
 				bIsAltered = false;
 			}
@@ -210,8 +205,7 @@ namespace Flint
 
 			pDevice->DestroyCommandBufferList(pCommandBufferList);
 
-			bShouldRun = false;
-			mWorkerThread.join();
+			TerminateThreads();
 		}
 
 		void VulkanScreenBoundRenderTarget::Recreate()
@@ -219,13 +213,16 @@ namespace Flint
 			FLINT_SETUP_PROFILER();
 
 			FBox2D newExtent = pDisplay->GetExtent();
-
-			// Wait while the window contains the right width and height. 
-			// Until the window contains a valid size, it will skip draw calls.
-			if (newExtent.mWidth == 0 || newExtent.mHeight == 0)
+			if (newExtent.mWidth == 0 && newExtent.mHeight == 0)
 			{
 				bShouldSkip = true;
 				return;
+			}
+
+			{
+				std::lock_guard<std::mutex> guard(mResourceMutex);
+				if (pCommandBufferList->IsRecording())
+					ExecuteSecondaryCommandBuffers();
 			}
 
 			mExtent = newExtent;
@@ -244,15 +241,17 @@ namespace Flint
 			vRenderTarget.CreateRenderPass({ pColorBuffer, pDepthBuffer, pSwapChain }, VK_PIPELINE_BIND_POINT_GRAPHICS);
 			vRenderTarget.CreateFrameBuffer({ pColorBuffer, pDepthBuffer, pSwapChain }, mExtent, mBufferCount);
 
-			std::shared_ptr<ScreenBoundRenderTarget> pThisRenderTarget = this->shared_from_this();
-			for (auto& instance : mDrawInstances)
-				for (auto& pipeline : instance.second)
-					pipeline->Recreate(pThisRenderTarget);
+			for (auto& instance : mDrawInstanceMaps)
+				for (auto& drawData : instance)
+					for (auto& pipeline : drawData.second)
+						pipeline->Recreate(pThisRenderTarget);
 
 			vRenderTarget.vInFlightFences.resize(vRenderTarget.vInFlightFences.size(), VK_NULL_HANDLE);
 			mImageIndex = 0, mFrameIndex = 0;
 
-			PrepareStaticResources();
+			// Bake secondary commands.
+			BindSecondaryCommands();
+			ExecuteSecondaryCommandBuffers();
 		}
 
 		FColor4D VulkanScreenBoundRenderTarget::GetClearColor() const
@@ -281,24 +280,27 @@ namespace Flint
 			vInheritInfo.framebuffer = GetFrameBuffer(mFrameIndex);
 
 			vInheritanceInfo.store(vInheritInfo);
-			mRenderTargetToThreadSemaphore.Release();
+			ReleaseAllThreads();
 		}
 
-		void VulkanScreenBoundRenderTarget::SecondaryCommandWorker()
+		void VulkanScreenBoundRenderTarget::SecondaryCommandsWorker(DrawInstanceMap& drawInstanceMap, BinarySemaphore& binarySemaphore, CountingSemaphore& countingSemaphore, std::atomic<bool>& shouldRun)
 		{
+			mResourceMutex.lock();
 			VulkanCommandBufferList vCommandBufferList{ pCommandBufferList->GetDevice(), 1, pCommandBufferList };
-			mThreadToRenderTargetSemaphore.Release();
+			mResourceMutex.unlock();
 
-			while (bShouldRun)
+			countingSemaphore.Release();
+
+			while (shouldRun)
 			{
-				if (mRenderTargetToThreadSemaphore.TryAcquire())
+				if (binarySemaphore.TryAcquire())
 				{
 					// Begin the command buffer.
 					VkCommandBufferInheritanceInfo vInheritInfo = vInheritanceInfo.load();
 					vCommandBufferList.VulkanBeginSecondaryCommandBuffer(0, &vInheritInfo);
 
 					// Bind the draw instances.
-					for (auto& instance : mDrawInstances)
+					for (auto& instance : drawInstanceMap)
 					{
 						FLINT_SETUP_PROFILER();
 
@@ -312,8 +314,7 @@ namespace Flint
 							pipeline->PrepareResourcesToDraw();
 							vCommandBufferList.BindGraphicsPipeline(pipeline);
 
-							const VulkanGraphicsPipeline& vPipeline = pipeline->StaticCast<VulkanGraphicsPipeline>();
-							const auto drawData = vPipeline.GetDrawData();
+							const auto drawData = pipeline->GetDrawData();
 
 							// Bind draw data.
 							for (const auto draw : drawData)
@@ -327,12 +328,27 @@ namespace Flint
 
 					// End buffer recording and submit it to execute.
 					vCommandBufferList.EndBufferRecording();
-					vSecondaryCommandBuffers.push_back(vCommandBufferList.GetCurrentCommandBuffer());
-					mThreadToRenderTargetSemaphore.Release();
+
+					{
+						std::lock_guard<std::mutex> guard(mResourceMutex);
+						vSecondaryCommandBuffers.push_back(vCommandBufferList.GetCurrentCommandBuffer());
+					}
+
+					countingSemaphore.Release();
 				}
 			}
 
 			vCommandBufferList.Terminate();
+		}
+
+		void VulkanScreenBoundRenderTarget::ExecuteSecondaryCommandBuffers()
+		{
+			AcquireAllThreads();
+
+			pCommandBufferList->StaticCast<VulkanCommandBufferList>().SetSecondaryCommandBuffers(std::move(vSecondaryCommandBuffers));
+			pCommandBufferList->ExecuteSecondaryCommands();
+			pCommandBufferList->UnbindRenderTarget();
+			pCommandBufferList->EndBufferRecording();
 		}
 	}
 }

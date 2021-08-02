@@ -17,22 +17,10 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		struct RecordCommandBuffer final : public Thread::CommandBase
-		{
-			RecordCommandBuffer(VkCommandBufferInheritanceInfo* pInheritanceInfo) : CommandBase(0), pInheritanceInfo(pInheritanceInfo) {}
-
-			VkCommandBufferInheritanceInfo* pInheritanceInfo = nullptr;
-		};
-
-		struct TerminateWorker final : public Thread::CommandBase
-		{
-			TerminateWorker() : CommandBase(1) {}
-		};
-
 		class VulkanScreenBoundRenderTarget final : public ScreenBoundRenderTarget, public std::enable_shared_from_this<VulkanScreenBoundRenderTarget>
 		{
 		public:
-			VulkanScreenBoundRenderTarget(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount);
+			VulkanScreenBoundRenderTarget(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, UI32 threadCount = 0);
 
 			virtual void PrepareStaticResources() override final;
 			virtual void BeginFrame() override final;
@@ -53,17 +41,16 @@ namespace Flint
 
 		private:
 			void BindSecondaryCommands();
-			void SecondaryCommandWorker();
+			virtual void SecondaryCommandsWorker(DrawInstanceMap& drawInstanceMap, BinarySemaphore& binarySemaphore, CountingSemaphore& countingSemaphore, std::atomic<bool>& shouldRun) override final;
+			void ExecuteSecondaryCommandBuffers();
 
 		private:
 			VulkanRenderTarget vRenderTarget;
 
 			std::atomic<VkCommandBufferInheritanceInfo> vInheritanceInfo = {};
-			std::atomic<bool> bShouldRun = true, bTaskCompleted = false;
 			std::vector<VkCommandBuffer> vSecondaryCommandBuffers = {};
 
 			std::mutex mResourceMutex = {};
-			std::thread mWorkerThread;
 
 			VulkanSwapChain* pSwapChain = nullptr;
 			VulkanColorBuffer* pColorBuffer = nullptr;
@@ -73,7 +60,6 @@ namespace Flint
 
 			VkClearValue pClearValues[2] = {};
 			std::shared_ptr<ScreenBoundRenderTarget> pThisRenderTarget = nullptr;
-			BinarySemaphore mRenderTargetToThreadSemaphore = {}, mThreadToRenderTargetSemaphore = {};
 		};
 	}
 }

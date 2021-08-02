@@ -4,19 +4,27 @@
 #pragma once
 
 #include "CommandBufferList.hpp"
+#include "Core/CountingSemaphore.hpp"
+
 #include <unordered_map>
-#include <atomic>
 
 namespace Flint
 {
 	class GraphicsPipeline;
 	class GeometryStore;
 
+	using DrawInstanceMap = std::unordered_map<std::shared_ptr<GeometryStore>, std::vector<std::shared_ptr<GraphicsPipeline>>>;
+
 	/**
 	 * Flint render target object.
 	 * This object is the base class for all the supported render targets.
 	 *
 	 * Render target objects are used to submit data to the device to be rendered or for compute purposes.
+	 *
+	 * Render targets can use secondary threads to speed up rendering. By default, the number of threads used per render target is 0, though it can be set to a specified value.
+	 * Load balancing is done automatically by the render target using the following equation.
+	 *		Load Per Thread = Draw Instances / Thread Count
+	 * Each thread contains its own pair of GeometryStore and pipelines. So we recommend having one thread per geometry store in use IF the pipeline count or draw data count is high.
 	 */
 	class RenderTarget : public DeviceBoundObject
 	{
@@ -28,8 +36,9 @@ namespace Flint
 		 * @param extent: The render target extent.
 		 * @param bufferCount: The frame buffer count.
 		 * @param pCommandBufferList: The command buffer list used by the render target.
+		 * @param threadCount: The number of threads used for secondary commands
 		 */
-		RenderTarget(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, const std::shared_ptr<CommandBufferList>& pCommandBufferList);
+		RenderTarget(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, const std::shared_ptr<CommandBufferList>& pCommandBufferList, UI32 threadCount = 0);
 
 		/**
 		 * Prepare the static resources to draw.
@@ -78,14 +87,21 @@ namespace Flint
 		 *
 		 * @return The extent.
 		 */
-		FBox2D GetExtent() const { return mExtent; }
+		const FBox2D GetExtent() const { return mExtent; }
 
 		/**
 		 * Get the render target buffer count.
 		 *
 		 * @return The buffer count.
 		 */
-		UI32 GetBufferCount() const { return mBufferCount; }
+		const UI32 GetBufferCount() const { return mBufferCount; }
+
+		/**
+		 * Get the number of threads used by this thread.
+		 *
+		 * @return The thread count.
+		 */
+		const UI32 GetNumberOfThreads() const { return mNumberOfThreads; }
 
 		/**
 		 * Check if the render target is altered.
@@ -100,12 +116,61 @@ namespace Flint
 		void FlagAltered() { bIsAltered = true; }
 
 	protected:
-		std::shared_ptr<CommandBufferList> pCommandBufferList;
-		std::unordered_map<std::shared_ptr<GeometryStore>, std::vector<std::shared_ptr<GraphicsPipeline>>> mDrawInstances;
+		/**
+		 * Secondary commands worker function.
+		 * This function will be executed as a worker thread.
+		 *
+		 * @param drawInstanceMap: The draw instance map.
+		 * @param binarySemaphore: The binary semaphore used to control the secondary thread.
+		 * @param countingSemaphore: The counting semaphore used to control the parent thread.
+		 * @param shouldRun: The boolean stating whether or not to run.
+		 */
+		virtual void SecondaryCommandsWorker(DrawInstanceMap& drawInstanceMap, BinarySemaphore& binarySemaphore, CountingSemaphore& countingSemaphore, std::atomic<bool>& shouldRun) = 0;
+
+		/**
+		 * Initiate all the worker threads.
+		 */
+		void InitiateThreads();
+
+		/**
+		 * Terminate all the threads.
+		 */
+		void TerminateThreads();
+
+		/**
+		 * Acquire all the threads.
+		 * This waits until all the threads are acquired.
+		 */
+		void AcquireAllThreads();
+
+		/**
+		 * Release all the threads.
+		 */
+		void ReleaseAllThreads();
+
+	private:
+		/**
+		 * Increment the next map to place the next geometry data to.
+		 */
+		void IncrementNextMap();
+
+	protected:
+		std::shared_ptr<CommandBufferList> pCommandBufferList = nullptr;
+		std::vector<DrawInstanceMap> mDrawInstanceMaps;
+
+		std::vector<std::thread> mWorkerThreads;
+		std::vector<BinarySemaphore> mBinarySemaphores;
+		std::atomic<bool> bThreadShouldRun;
+		CountingSemaphore mCountingSemaphore = {};
 
 		FBox2D mExtent = {};
 		UI32 mBufferCount = 0;
 
+		UI32 mNumberOfThreads = 0;
+
 		bool bIsAltered = false;
+
+	private:
+		UI32 mNextMap = 0;
 	};
 }

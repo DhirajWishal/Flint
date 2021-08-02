@@ -17,6 +17,13 @@ namespace Flint
 		BinarySemaphore() = default;
 
 		/**
+		 * Copy constructor.
+		 * 
+		 * @param other: The other semaphore.
+		 */
+		BinarySemaphore(const BinarySemaphore& other);
+
+		/**
 		 * Release the semaphore.
 		 */
 		void Release();

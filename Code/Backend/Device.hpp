@@ -116,9 +116,10 @@ namespace Flint
 		 * @param display: The display object.
 		 * @param extent: The extent of the render target.
 		 * @param bufferCount: The buffer count of the frame buffer.
+		 * @param threadCount: The number of worker threads used. Default is 0.
 		 * @return The screen bound render target object.
 		 */
-		virtual std::shared_ptr<ScreenBoundRenderTarget> CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount) = 0;
+		virtual std::shared_ptr<ScreenBoundRenderTarget> CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, UI32 threadCount = 0) = 0;
 
 		/**
 		 * Destroy a created render target.
