@@ -17,6 +17,8 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
+		class VulkanCommandBufferList;
+
 		class VulkanScreenBoundRenderTarget final : public ScreenBoundRenderTarget, public std::enable_shared_from_this<VulkanScreenBoundRenderTarget>
 		{
 		public:
@@ -48,18 +50,26 @@ namespace Flint
 			VulkanRenderTarget vRenderTarget;
 
 			std::atomic<VkCommandBufferInheritanceInfo> vInheritanceInfo = {};
+			VkCommandBufferInheritanceInfo vInheritInfo = {};
 			std::vector<VkCommandBuffer> vSecondaryCommandBuffers = {};
+
+			VkSubmitInfo vSI = {};
+			VkPresentInfoKHR vPI = {};
 
 			std::mutex mResourceMutex = {};
 
-			VulkanSwapChain* pSwapChain = nullptr;
-			VulkanColorBuffer* pColorBuffer = nullptr;
-			VulkanDepthBuffer* pDepthBuffer = nullptr;
+			std::unique_ptr<VulkanSwapChain> pSwapChain = nullptr;
+			std::unique_ptr<VulkanColorBuffer> pColorBuffer = nullptr;
+			std::unique_ptr<VulkanDepthBuffer> pDepthBuffer = nullptr;
+			std::unique_ptr<VulkanCommandBufferList> pDefaultSecondaryCommandBuffer = nullptr;
 
 			bool bShouldSkip = false;
 
 			VkClearValue pClearValues[2] = {};
 			std::shared_ptr<ScreenBoundRenderTarget> pThisRenderTarget = nullptr;
+
+			VkCommandBuffer vCommandBuffer[1] = {};
+			VkSemaphoreWaitFlags vWaitStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 		};
 	}
 }

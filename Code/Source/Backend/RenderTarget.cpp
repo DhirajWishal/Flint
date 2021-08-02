@@ -26,7 +26,7 @@ namespace Flint
 		//INSERT_INTO_VECTOR(mDrawInstances[pGeometryStore], pPipeline);
 
 		bool inserted = false;
-		for (UI32 i = 0; i < mNumberOfThreads; i++)
+		for (UI32 i = 0; i < mDrawInstanceMaps.size(); i++)
 		{
 			DrawInstanceMap& instanceMap = mDrawInstanceMaps[i];
 			if (instanceMap.find(pGeometryStore) != instanceMap.end())
@@ -48,7 +48,7 @@ namespace Flint
 
 	void RenderTarget::RemovePipeline(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::shared_ptr<GraphicsPipeline>& pPipeline)
 	{
-		for (UI32 i = 0; i < mNumberOfThreads; i++)
+		for (UI32 i = 0; i < mDrawInstanceMaps.size(); i++)
 		{
 			DrawInstanceMap& instanceMap = mDrawInstanceMaps[i];
 			if (instanceMap.find(pGeometryStore) != instanceMap.end())
@@ -70,7 +70,11 @@ namespace Flint
 
 	void RenderTarget::InitiateThreads()
 	{
-		mDrawInstanceMaps.resize(mNumberOfThreads);
+		if (mNumberOfThreads)
+			mDrawInstanceMaps.resize(mNumberOfThreads);
+		else
+			mDrawInstanceMaps.resize(1);
+
 		mWorkerThreads.resize(mNumberOfThreads);
 		mBinarySemaphores.resize(mNumberOfThreads);
 

@@ -17,15 +17,18 @@ namespace Flint
 		{
 			FLINT_SETUP_PROFILER();
 
+			if (!mNumberOfThreads)
+				pDefaultSecondaryCommandBuffer = std::make_unique<VulkanCommandBufferList>(pCommandBufferList->GetDevice(), 1, pCommandBufferList);
+
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 			auto& vDisplay = pDisplay->StaticCast<VulkanDisplay>();
 
-			pSwapChain = new VulkanSwapChain(vDevice, vDisplay, extent, bufferCount);
-			pColorBuffer = new VulkanColorBuffer(vDevice, extent, bufferCount, pSwapChain->GetFormat());
-			pDepthBuffer = new VulkanDepthBuffer(vDevice, extent, bufferCount);
+			pSwapChain = std::make_unique<VulkanSwapChain>(vDevice, vDisplay, extent, bufferCount);
+			pColorBuffer = std::make_unique<VulkanColorBuffer>(vDevice, extent, bufferCount, pSwapChain->GetFormat());
+			pDepthBuffer = std::make_unique<VulkanDepthBuffer>(vDevice, extent, bufferCount);
 
-			vRenderTarget.CreateRenderPass({ pColorBuffer, pDepthBuffer, pSwapChain }, VK_PIPELINE_BIND_POINT_GRAPHICS);
-			vRenderTarget.CreateFrameBuffer({ pColorBuffer, pDepthBuffer, pSwapChain }, extent, bufferCount);
+			vRenderTarget.CreateRenderPass({ pColorBuffer.get(), pDepthBuffer.get(), pSwapChain.get() }, VK_PIPELINE_BIND_POINT_GRAPHICS);
+			vRenderTarget.CreateFrameBuffer({ pColorBuffer.get(), pDepthBuffer.get(), pSwapChain.get() }, extent, bufferCount);
 			vRenderTarget.CreateSyncObjects(bufferCount);
 
 			// Setup default clear color values.
@@ -38,6 +41,19 @@ namespace Flint
 
 			// Issue the worker thread.
 			AcquireAllThreads();
+
+			vInheritInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
+
+			vSI.sType = VkStructureType::VK_STRUCTURE_TYPE_SUBMIT_INFO;
+			vSI.pNext = VK_NULL_HANDLE;
+			vSI.commandBufferCount = 1;
+			vSI.waitSemaphoreCount = 1;
+			vSI.signalSemaphoreCount = 1;
+
+			vPI.sType = VkStructureType::VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+			vPI.pNext = VK_NULL_HANDLE;
+			vPI.waitSemaphoreCount = 1;
+			vPI.swapchainCount = 1;
 		}
 
 		void VulkanScreenBoundRenderTarget::PrepareStaticResources()
@@ -45,46 +61,6 @@ namespace Flint
 			FLINT_SETUP_PROFILER();
 			pThisRenderTarget = shared_from_this();
 			BindSecondaryCommands();
-
-			return;	// TODO
-
-			//VulkanCommandBufferList& vCommandBufferList = pCommandBufferList->StaticCast<VulkanCommandBufferList>();
-			//pThisRenderTarget = shared_from_this();
-			//
-			//for (UI32 iter = 0; iter < vCommandBufferList.GetBufferCount(); iter++)
-			//{
-			//	vCommandBufferList.BeginNextBufferRecording();
-			//	vCommandBufferList.BindRenderTarget(pThisRenderTarget);
-			//
-			//	// Iterate through the draw instances.
-			//	for (auto& instance : mDrawInstances)
-			//	{
-			//		const auto geometryStore = instance.first;
-			//		vCommandBufferList.BindVertexBuffer(geometryStore->GetVertexBuffer());
-			//		vCommandBufferList.BindIndexBuffer(geometryStore->GetIndexBuffer(), geometryStore->GetIndexSize());
-			//
-			//		// Iterate through the pipelines.
-			//		for (auto& pipeline : instance.second)
-			//		{
-			//			pipeline->PrepareResourcesToDraw();
-			//			vCommandBufferList.BindGraphicsPipeline(pipeline);
-			//
-			//			const VulkanGraphicsPipeline& vPipeline = pipeline->StaticCast<VulkanGraphicsPipeline>();
-			//			const auto drawData = vPipeline.GetDrawData();
-			//
-			//			// Bind draw data.
-			//			for (const auto draw : drawData)
-			//			{
-			//				vCommandBufferList.BindDrawResources(pipeline, draw.second.pResourceMap);
-			//				vCommandBufferList.BindDynamicStates(draw.second.pDynamicStates);
-			//				vCommandBufferList.IssueDrawCall(draw.second.mVertexOffset, draw.second.mVertexCount, draw.second.mIndexOffset, draw.second.mIndexCount);
-			//			}
-			//		}
-			//	}
-			//
-			//	vCommandBufferList.UnbindRenderTarget();
-			//	vCommandBufferList.EndBufferRecording();
-			//}
 		}
 
 		void VulkanScreenBoundRenderTarget::BeginFrame()
@@ -147,29 +123,17 @@ namespace Flint
 
 			vRenderTarget.vImagesInFlightFences[mImageIndex] = vRenderTarget.vInFlightFences[mFrameIndex];
 
-			VkSemaphoreWaitFlags vWaitStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-			VkCommandBuffer vCommandBuffer[1] = { vCommandBufferList.GetCommandBuffer(mFrameIndex) };
+			vCommandBuffer[0] = vCommandBufferList.GetCommandBuffer(mFrameIndex);
 
-			VkSubmitInfo vSI = {};
-			vSI.sType = VkStructureType::VK_STRUCTURE_TYPE_SUBMIT_INFO;
-			vSI.pNext = VK_NULL_HANDLE;
-			vSI.commandBufferCount = 1;
 			vSI.pCommandBuffers = vCommandBuffer;
-			vSI.waitSemaphoreCount = 1;
 			vSI.pWaitSemaphores = &vRenderTarget.vImageAvailables[mFrameIndex];
-			vSI.signalSemaphoreCount = 1;
 			vSI.pSignalSemaphores = &vRenderTarget.vRenderFinishes[mFrameIndex];
 			vSI.pWaitDstStageMask = &vWaitStage;
 
 			FLINT_VK_ASSERT(vkResetFences(vDevice.GetLogicalDevice(), 1, &vRenderTarget.vInFlightFences[mFrameIndex]));
 			FLINT_VK_ASSERT(vkQueueSubmit(vDevice.GetQueue().vGraphicsQueue, 1, &vSI, vRenderTarget.vInFlightFences[mFrameIndex]));
 
-			VkPresentInfoKHR vPI = {};
-			vPI.sType = VkStructureType::VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-			vPI.pNext = VK_NULL_HANDLE;
-			vPI.waitSemaphoreCount = 1;
 			vPI.pWaitSemaphores = &vRenderTarget.vRenderFinishes[mFrameIndex];
-			vPI.swapchainCount = 1;
 
 			VkSwapchainKHR vSwapChain = pSwapChain->GetSwapChain();
 			vPI.pSwapchains = &vSwapChain;
@@ -195,17 +159,15 @@ namespace Flint
 			vRenderTarget.Terminate();
 
 			pSwapChain->Terminate();
-			delete pSwapChain;
-
 			pColorBuffer->Terminate();
-			delete pColorBuffer;
-
 			pDepthBuffer->Terminate();
-			delete pDepthBuffer;
 
 			pDevice->DestroyCommandBufferList(pCommandBufferList);
 
 			TerminateThreads();
+
+			if (pDefaultSecondaryCommandBuffer)
+				pDevice->DestroyCommandBufferList(std::move(pDefaultSecondaryCommandBuffer));
 		}
 
 		void VulkanScreenBoundRenderTarget::Recreate()
@@ -238,8 +200,8 @@ namespace Flint
 			pColorBuffer->Recreate(mExtent);
 			pDepthBuffer->Recreate(mExtent);
 
-			vRenderTarget.CreateRenderPass({ pColorBuffer, pDepthBuffer, pSwapChain }, VK_PIPELINE_BIND_POINT_GRAPHICS);
-			vRenderTarget.CreateFrameBuffer({ pColorBuffer, pDepthBuffer, pSwapChain }, mExtent, mBufferCount);
+			vRenderTarget.CreateRenderPass({ pColorBuffer.get(), pDepthBuffer.get(), pSwapChain.get() }, VK_PIPELINE_BIND_POINT_GRAPHICS);
+			vRenderTarget.CreateFrameBuffer({ pColorBuffer.get(), pDepthBuffer.get(), pSwapChain.get() }, mExtent, mBufferCount);
 
 			for (auto& instance : mDrawInstanceMaps)
 			{
@@ -280,13 +242,53 @@ namespace Flint
 			pCommandBufferList->BeginBufferRecording(mFrameIndex);
 			pCommandBufferList->BindRenderTargetSecondary(pThisRenderTarget);
 
-			VkCommandBufferInheritanceInfo vInheritInfo = {};
-			vInheritInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
 			vInheritInfo.renderPass = vRenderTarget.vRenderPass;
 			vInheritInfo.framebuffer = GetFrameBuffer(mFrameIndex);
 
-			vInheritanceInfo.store(vInheritInfo);
-			ReleaseAllThreads();
+			if (mNumberOfThreads)
+			{
+				vInheritanceInfo.store(vInheritInfo);
+				ReleaseAllThreads();
+			}
+			else
+			{
+				// Begin the command buffer.
+				pDefaultSecondaryCommandBuffer->VulkanBeginSecondaryCommandBuffer(0, &vInheritInfo);
+
+				// Bind the draw instances.
+				for (auto& drawInstanceMap : mDrawInstanceMaps)
+				{
+					for (auto& instance : drawInstanceMap)
+					{
+						FLINT_SETUP_PROFILER();
+
+						const auto geometryStore = instance.first;
+						pDefaultSecondaryCommandBuffer->BindVertexBuffer(geometryStore->GetVertexBuffer());
+						pDefaultSecondaryCommandBuffer->BindIndexBuffer(geometryStore->GetIndexBuffer(), geometryStore->GetIndexSize());
+
+						// Iterate through the pipelines.
+						for (auto& pipeline : instance.second)
+						{
+							pipeline->PrepareResourcesToDraw();
+							pDefaultSecondaryCommandBuffer->BindGraphicsPipeline(pipeline);
+
+							const auto drawData = pipeline->GetDrawData();
+
+							// Bind draw data.
+							for (const auto draw : drawData)
+							{
+								pDefaultSecondaryCommandBuffer->BindDrawResources(pipeline, draw.second.pResourceMap);
+								pDefaultSecondaryCommandBuffer->BindDynamicStates(draw.second.pDynamicStates);
+								pDefaultSecondaryCommandBuffer->IssueDrawCall(draw.second.mVertexOffset, draw.second.mVertexCount, draw.second.mIndexOffset, draw.second.mIndexCount);
+							}
+						}
+					}
+				}
+
+				// End buffer recording and submit it to execute.
+				pDefaultSecondaryCommandBuffer->EndBufferRecording();
+				vSecondaryCommandBuffers.push_back(pDefaultSecondaryCommandBuffer->GetCurrentCommandBuffer());
+			}
 		}
 
 		void VulkanScreenBoundRenderTarget::SecondaryCommandsWorker(DrawInstanceMap& drawInstanceMap, BinarySemaphore& binarySemaphore, CountingSemaphore& countingSemaphore, std::atomic<bool>& shouldRun)
@@ -297,7 +299,7 @@ namespace Flint
 
 			countingSemaphore.Release();
 
-			while (shouldRun)
+			do
 			{
 				if (binarySemaphore.TryAcquire())
 				{
@@ -342,7 +344,7 @@ namespace Flint
 
 					countingSemaphore.Release();
 				}
-			}
+			} while (shouldRun);
 
 			vCommandBufferList.Terminate();
 		}

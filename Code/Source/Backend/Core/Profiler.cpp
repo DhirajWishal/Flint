@@ -51,8 +51,8 @@ namespace Flint
 
 	void ProfileLogger::WriteContent(const Profiler& profiler)
 	{
-		UI64 start = std::chrono::time_point_cast<std::chrono::microseconds>(profiler.mStart).time_since_epoch().count();
 		pControlBlock->Lock();
+		UI64 start = std::chrono::time_point_cast<std::chrono::microseconds>(profiler.mStart).time_since_epoch().count();
 		std::ofstream& file = pControlBlock->mProfileFile;
 
 		if (GetInstance().bIsFirst)
