@@ -30,14 +30,15 @@ int main()
 				{
 					if (!pVikingRoom)
 						pVikingRoom = std::make_unique<VikingRoom>(&mState);
-					else if (pVikingRoom)
+				}
+
+				if (mState.pDisplay->GetKeyEvent(Flint::KeyCode::KEY_U).IsPressed())
+				{
+					if (pVikingRoom)
 					{
 						auto pPointer = pVikingRoom.release();
 						delete pPointer;
 					}
-
-					using namespace std::literals;
-					std::this_thread::sleep_for(100ms);
 				}
 
 				if (pVikingRoom)

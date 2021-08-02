@@ -61,7 +61,7 @@ void SkyBox::OnUpdate()
 	if (pSceneState->pDisplay->IsDisplayResized())
 	{
 		auto extent = pSceneState->pDisplay->GetExtent();
-		if (extent.mWidth > 0 && extent.mHeight > 0)
+		if (!extent.IsZero())
 		{
 			pDynamicStates->SetViewPort(Flint::FExtent2D<float>{static_cast<float>(extent.mWidth), static_cast<float>(extent.mHeight)}, Flint::FExtent2D<float>(0.0f, 1.0f), { 0.0f, 0.0f });
 			pDynamicStates->SetScissor(extent, { 0, 0 });

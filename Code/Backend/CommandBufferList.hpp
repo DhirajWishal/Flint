@@ -154,14 +154,14 @@ namespace Flint
 		 *
 		 * @return The buffer count.
 		 */
-		UI32 GetBufferCount() const { return mBufferCount; }
+		const UI32 GetBufferCount() const { return mBufferCount; }
 
 		/**
 		 * Get the current buffer index.
 		 *
 		 * @return The index of the currently selected buffer.
 		 */
-		UI32 GetCurrentBufferIndex() const { return mCurrentBufferIndex; }
+		const UI32 GetCurrentBufferIndex() const { return mCurrentBufferIndex; }
 
 		/**
 		 * Check if the command buffer is recording.

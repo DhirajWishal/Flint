@@ -15,8 +15,8 @@ SceneState::SceneState()
 
 #endif // !FLINT_RELEASE
 
-	//pDisplay = pInstance->CreateDisplay(Flint::FBox2D(), "Flint: Sample Scene");
-	pDisplay = pInstance->CreateDisplay(Flint::FBox2D(1280, 720), "Flint: Sample Scene");
+	pDisplay = pInstance->CreateDisplay(Flint::FBox2D(), "Flint: Sample Scene");
+	//pDisplay = pInstance->CreateDisplay(Flint::FBox2D(1280, 720), "Flint: Sample Scene");
 	pDevice = pInstance->CreateDevice(Flint::DeviceFlags::GRAPHICS_COMPATIBLE | Flint::DeviceFlags::EXTERNAL | Flint::DeviceFlags::COMPUTE_COMPATIBLE);
 
 	CreateDefaultRenderTarget();
@@ -55,7 +55,7 @@ void SceneState::PrepareNewFrame()
 	if (pDisplay->IsDisplayResized())
 	{
 		auto extent = pDisplay->GetExtent();
-		if (extent.mWidth > 0 && extent.mHeight > 0)
+		if (!extent.IsZero())
 			mCamera.SetAspectRatio(extent);
 	}
 }

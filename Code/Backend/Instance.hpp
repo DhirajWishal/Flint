@@ -62,7 +62,7 @@ namespace Flint
 		 *
 		 * @return Boolean value stating true or false.
 		 */
-		bool IsValidationEnabled() const noexcept { return mEnableValidation; }
+		const bool IsValidationEnabled() const noexcept { return mEnableValidation; }
 
 	protected:
 		/**

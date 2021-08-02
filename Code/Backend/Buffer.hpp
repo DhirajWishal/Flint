@@ -87,14 +87,14 @@ namespace Flint
 		 *
 		 * @return The size in bytes.
 		 */
-		UI64 GetSize() const { return mSize; }
+		const UI64 GetSize() const { return mSize; }
 
 		/**
 		 * Get the buffer type.
 		 *
 		 * @return The buffer type.
 		 */
-		BufferType GetType() const { return mType; }
+		const BufferType GetType() const { return mType; }
 
 	protected:
 		UI64 mSize = 0;

@@ -9,7 +9,7 @@ namespace Flint
 	RenderTarget::RenderTarget(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, const std::shared_ptr<CommandBufferList>& pCommandBufferList, UI32 threadCount)
 		: DeviceBoundObject(pDevice), mExtent(extent), mBufferCount(bufferCount), pCommandBufferList(pCommandBufferList), mNumberOfThreads(threadCount), bThreadShouldRun(true)
 	{
-		if (extent.mWidth == 0 || extent.mHeight == 0)
+		if (extent.IsZero())
 			FLINT_THROW_INVALID_ARGUMENT("Render target width and height should be greater than 0!");
 
 		if (bufferCount == 0)

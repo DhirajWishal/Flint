@@ -98,7 +98,7 @@ namespace Flint
 		{
 			FLINT_SETUP_PROFILER();
 
-			if (extent.mWidth > 0 && extent.mHeight > 0)
+			if (!extent.IsZero())
 				pWindow = glfwCreateWindow(extent.mWidth, extent.mHeight, title.c_str(), nullptr, nullptr);
 			else
 			{
@@ -172,7 +172,7 @@ namespace Flint
 
 		void VulkanDisplay::SetExtent(FBox2D newExtent)
 		{
-			if (newExtent.mWidth == 0 || newExtent.mHeight == 0)
+			if (newExtent.IsZero())
 				FLINT_THROW_RUNTIME_ERROR("Window extent should be grater than 0!");
 
 			glfwSetWindowSize(pWindow, static_cast<int>(newExtent.mWidth), static_cast<int>(newExtent.mHeight));

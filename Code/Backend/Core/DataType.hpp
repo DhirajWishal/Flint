@@ -33,6 +33,8 @@ namespace Flint
 		constexpr FExtent2D() = default;
 		constexpr FExtent2D(Type width, Type height) : mWidth(width), mHeight(height) {}
 
+		constexpr bool IsZero() const { return mWidth == Type() || mHeight == Type(); }
+
 	public:
 		union
 		{
@@ -60,6 +62,8 @@ namespace Flint
 	{
 		constexpr FExtent3D() = default;
 		constexpr FExtent3D(Type width, Type height, Type depth) : mWidth(width), mHeight(height), mDepth(depth) {}
+
+		constexpr bool IsZero() const { return mWidth == Type() || mHeight == Type() || mDepth == Type(); }
 
 	public:
 		union

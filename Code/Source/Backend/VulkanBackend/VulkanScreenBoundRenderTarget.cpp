@@ -175,7 +175,7 @@ namespace Flint
 			FLINT_SETUP_PROFILER();
 
 			FBox2D newExtent = pDisplay->GetExtent();
-			if (newExtent.mWidth == 0 && newExtent.mHeight == 0)
+			if (newExtent.IsZero())
 			{
 				bShouldSkip = true;
 				return;

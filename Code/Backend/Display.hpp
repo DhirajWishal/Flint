@@ -250,7 +250,7 @@ namespace Flint
 		 *
 		 * @return The title string.
 		 */
-		std::string GetTitle() const { return mTitle; }
+		const std::string GetTitle() const { return mTitle; }
 
 		/**
 		 * Set a new window title.
@@ -271,7 +271,7 @@ namespace Flint
 		 *
 		 * @return The extent.
 		 */
-		FBox2D GetExtent() const { return mExtent; }
+		const FBox2D GetExtent() const { return mExtent; }
 
 		/**
 		 * Get a key event from the event store.
@@ -308,21 +308,21 @@ namespace Flint
 		 *
 		 * @return Boolean value.
 		 */
-		bool IsOpen() const { return mIsDisplayOpen; }
+		const bool IsOpen() const { return mIsDisplayOpen; }
 
 		/**
 		 * Check if the display is resized.
 		 *
 		 * @return Boolean value.
 		 */
-		bool IsDisplayResized() const { return mIsDislayResized; }
+		const bool IsDisplayResized() const { return mIsDislayResized; }
 
 		/**
 		 * Check if the cursor is within the display.
 		 *
 		 * @return Boolean value.
 		 */
-		bool IsCursorWithinDisplay() const { return mIsCursorWithinDisplay; }
+		const bool IsCursorWithinDisplay() const { return mIsCursorWithinDisplay; }
 
 	protected:
 		std::vector<std::filesystem::path> mDragAndDropPaths;

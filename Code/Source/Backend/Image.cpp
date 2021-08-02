@@ -8,7 +8,7 @@ namespace Flint
 	Image::Image(const std::shared_ptr<Device>& pDevice, ImageType type, ImageUsage usage, const FBox3D& extent, PixelFormat format, UI8 layers, UI32 mipLevels, const void* pImageData)
 		: DeviceBoundObject(pDevice), mType(type), mUsage(usage), mExtent(extent), mFormat(format), mLayerCount(layers), mMipLevels(mipLevels)
 	{
-		if (mExtent.mWidth == 0 || mExtent.mHeight == 0 || mExtent.mDepth == 0)
+		if (mExtent.IsZero())
 			FLINT_THROW_INVALID_ARGUMENT("Image extent should not be 0!");
 
 		if (mFormat == PixelFormat::UNDEFINED)

@@ -33,14 +33,14 @@ namespace Flint
 		 *
 		 * @return The frame index.
 		 */
-		UI32 GetFrameIndex() const { return mFrameIndex; }
+		const UI32 GetFrameIndex() const { return mFrameIndex; }
 
 		/**
 		 * Get the current image index.
 		 *
 		 * @return The image index.
 		 */
-		UI32 GetImageIndex() const { return mImageIndex; }
+		const UI32 GetImageIndex() const { return mImageIndex; }
 
 		/**
 		 * Get the render targets clear screen color.
