@@ -3,7 +3,7 @@
 
 #include "SceneState.hpp"
 
-#include "Backend/Instance.hpp"
+#include "Flint/Instance.hpp"
 
 SceneState::SceneState()
 {

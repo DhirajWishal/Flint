@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include "Backend/ScreenBoundRenderTarget.hpp"
-#include "Backend/GraphicsPipeline.hpp"
-#include "Backend/GeometryStore.hpp"
+#include "Flint/ScreenBoundRenderTarget.hpp"
+#include "Flint/GraphicsPipeline.hpp"
+#include "Flint/GeometryStore.hpp"
 
 #include "Camera.hpp"
 

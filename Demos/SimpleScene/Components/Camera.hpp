@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Backend/Core/DataType.hpp"
+#include "Flint/Core/DataType.hpp"
 #include <glm/glm.hpp>
 
 struct CameraMatrix

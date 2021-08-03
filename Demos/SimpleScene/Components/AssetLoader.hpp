@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "Backend/Shader.hpp"
-#include "Backend/Buffer.hpp"
+#include "Flint/Shader.hpp"
+#include "Flint/Buffer.hpp"
 #include <glm/glm.hpp>
 
 struct Asset

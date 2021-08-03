@@ -23,20 +23,16 @@ project "Flint"
 	}
 
 	includedirs {
-		"$(SolutionDir)Code/Engine",
-		"$(SolutionDir)Code/Backend",
+		"$(SolutionDir)Code/",
+		"$(SolutionDir)Code/Flint",
 		"$(SolutionDir)Dependencies/ThirdParty/SPIRV-Cross/",
 		"%{IncludeDir.Vulkan}",
 		"%{IncludeDir.GLFW}",
-		"%{IncludeDir.Assimp}",
-		"%{IncludeDir.FreeImage}",
 		"%{IncludeDir.glslang}",
 		"%{IncludeDir.shaderc}",
 	}
 
 	libdirs {
-		"%{IncludeLib.Assimp}",
-		"%{IncludeLib.FreeImage}",
 		"%{IncludeLib.GLFW}",
 		"%{IncludeLib.Vulkan}",
 		"%{IncludeLib.glslang}",
@@ -44,8 +40,6 @@ project "Flint"
 	}
 
 	links { 
-		"assimp-vc142-mt",
-
 		"glfw3dll",
 		"vulkan-1",
 

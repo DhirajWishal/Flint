@@ -3,7 +3,7 @@
 
 #include "AssetLoader.hpp"
 
-#include "Backend/Device.hpp"
+#include "Flint/Device.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "../ThirdParty/stb_image.h"
