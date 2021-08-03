@@ -277,7 +277,7 @@ namespace Flint
 							for (const auto draw : drawData)
 							{
 								pDefaultSecondaryCommandBuffer->BindDrawResources(pipeline, draw.second.pResourceMap);
-								pDefaultSecondaryCommandBuffer->BindDynamicStates(draw.second.pDynamicStates);
+								pDefaultSecondaryCommandBuffer->BindDynamicStates(pipeline, draw.second.pDynamicStates);
 								pDefaultSecondaryCommandBuffer->IssueDrawCall(draw.second.mVertexOffset, draw.second.mVertexCount, draw.second.mIndexOffset, draw.second.mIndexCount);
 							}
 						}
@@ -327,7 +327,7 @@ namespace Flint
 							for (const auto draw : drawData)
 							{
 								vCommandBufferList.BindDrawResources(pipeline, draw.second.pResourceMap);
-								vCommandBufferList.BindDynamicStates(draw.second.pDynamicStates);
+								vCommandBufferList.BindDynamicStates(pipeline, draw.second.pDynamicStates);
 								vCommandBufferList.IssueDrawCall(draw.second.mVertexOffset, draw.second.mVertexCount, draw.second.mIndexOffset, draw.second.mIndexCount);
 							}
 						}

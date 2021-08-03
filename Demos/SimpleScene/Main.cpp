@@ -5,6 +5,8 @@
 #include "Components/Objects/VikingRoom.hpp"
 #include "Components/Objects/SkyBox.hpp"
 #include "Components/Objects/TreeScene.hpp"
+#include "Components/Objects/LaraCroft.hpp"
+#include "Components/Objects/Preview.hpp"
 
 #include <iostream>
 
@@ -16,9 +18,13 @@ int main()
 
 		{
 			SkyBox skyBox{ glm::vec3(0.0f), &mState };
-			//VikingRoom vikingRoom{ glm::vec3(2.0f), &mState };
+			VikingRoom vikingRoom{ glm::vec3(2.0f), &mState };
 			//TreeScene treeScene{ glm::vec3(0.0f), &mState };
 			std::unique_ptr<TreeScene> pTreeScene = nullptr;
+
+			//Preview preview{ glm::vec3(0.0f), &mState,
+			//	"E:\\Dynamik\\Game Repository\\assets\\assets\\Animation\\Model\\characterMedium.fbx",
+			//	"E:\\Dynamik\\Game Repository\\assets\\assets\\Animation\\Skins\\criminalMaleA.png" };
 
 			mState.PrepareRenderTargetsToDraw();
 			while (mState.pDisplay->IsOpen())
@@ -43,8 +49,9 @@ int main()
 
 				mState.UpdateCamera();
 				skyBox.OnUpdate();
-				//vikingRoom.OnUpdate();
+				vikingRoom.OnUpdate();
 				//treeScene.OnUpdate();
+				//preview.OnUpdate();
 
 				if (pTreeScene)
 					pTreeScene->OnUpdate();

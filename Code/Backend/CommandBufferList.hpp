@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "DeviceBoundObject.hpp"
 #include "DynamicStateContainer.hpp"
 #include "Buffer.hpp"
 
@@ -114,9 +113,10 @@ namespace Flint
 		/**
 		 * Bind dynamic states to the current command buffer.
 		 *
+		 * @param pPipeline: The pipeline to which the dynamic states are bound to.
 		 * @param pDynamicStates: The dynamic states to bind.
 		 */
-		virtual void BindDynamicStates(const std::shared_ptr<DynamicStateContainer>& pDynamicStates) = 0;
+		virtual void BindDynamicStates(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::shared_ptr<DynamicStateContainer>& pDynamicStates) = 0;
 
 		/**
 		 * Issue a draw call to the current command buffer.

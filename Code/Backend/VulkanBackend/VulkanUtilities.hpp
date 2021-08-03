@@ -22,6 +22,7 @@ namespace Flint
 			bool HasStencilComponent(VkFormat vFormat);
 			VkFormat FindDepthFormat(VkPhysicalDevice vPhysicalDevice);
 			VkDescriptorType GetDescriptorType(ShaderResourceType type);
+			VkShaderStageFlags GetShaderStage(ShaderType type);
 		}
 	}
 }

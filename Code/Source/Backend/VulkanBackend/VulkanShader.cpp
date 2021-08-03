@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "VulkanBackend/VulkanShader.hpp"
+#include "VulkanBackend/VulkanUtilities.hpp"
 
 #define SHADERC_SHAREDLIB
 #include <shaderc/shaderc.hpp>
@@ -245,56 +246,23 @@ namespace Flint
 						compiler.get_decoration(resource.id, spv::DecorationLocation),
 						static_cast<ShaderAttributeDataType>((static_cast<UI64>(Ty.width) / 8) * Ty.vecsize)));
 			}
+
+			VkPushConstantRange vPushConstantRange = {};
+			vPushConstantRange.stageFlags = vStageFlags;
+			vPushConstantRange.offset = 0;
+			for (auto& resource : resources.push_constant_buffers)
+			{
+				auto& Ty = compiler.get_type(resource.base_type_id);
+				vPushConstantRange.size = (static_cast<UI64>(Ty.width) / 8) * Ty.vecsize;
+				INSERT_INTO_VECTOR(mConstantRanges, vPushConstantRange);
+
+				vPushConstantRange.offset += vPushConstantRange.size;
+			}
 		}
 
 		void VulkanShader::ResolveShaderStage()
 		{
-			switch (mType)
-			{
-			case Flint::ShaderType::VERTEX:
-				vStageFlags = VkShaderStageFlagBits::VK_SHADER_STAGE_VERTEX_BIT;
-				break;
-
-			case Flint::ShaderType::TESSELLATION_CONTROL:
-				vStageFlags = VkShaderStageFlagBits::VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
-				break;
-
-			case Flint::ShaderType::TESSELLATION_EVALUATION:
-				vStageFlags = VkShaderStageFlagBits::VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
-				break;
-
-			case Flint::ShaderType::GEOMETRY:
-				vStageFlags = VkShaderStageFlagBits::VK_SHADER_STAGE_GEOMETRY_BIT;
-				break;
-
-			case Flint::ShaderType::FRAGMENT:
-				vStageFlags = VkShaderStageFlagBits::VK_SHADER_STAGE_FRAGMENT_BIT;
-				break;
-
-			case Flint::ShaderType::COMPUTE:
-				vStageFlags = VkShaderStageFlagBits::VK_SHADER_STAGE_COMPUTE_BIT;
-				break;
-
-			case Flint::ShaderType::RAY_GEN:
-				vStageFlags = VkShaderStageFlagBits::VK_SHADER_STAGE_RAYGEN_BIT_KHR;
-				break;
-
-			case Flint::ShaderType::ANY_HIT:
-				vStageFlags = VkShaderStageFlagBits::VK_SHADER_STAGE_ANY_HIT_BIT_KHR;
-				break;
-
-			case Flint::ShaderType::CLOSEST_HIT:
-				vStageFlags = VkShaderStageFlagBits::VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
-				break;
-
-			case Flint::ShaderType::RAY_MISS:
-				vStageFlags = VkShaderStageFlagBits::VK_SHADER_STAGE_MISS_BIT_KHR;
-				break;
-
-			default:
-				FLINT_THROW_RUNTIME_ERROR("Invalid or Undefined shader type!");
-				break;
-			}
+			vStageFlags = Utilities::GetShaderStage(mType);
 		}
 
 		void VulkanShader::CreateShaderModule()

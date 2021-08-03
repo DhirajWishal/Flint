@@ -40,4 +40,53 @@ namespace Flint
 		mDepthBounds = DepthBounds(bounds);
 		mFlags = mFlags | DynamicStateFlags::DEPTH_BOUNDS;
 	}
+	
+	void DynamicStateContainer::SetConstantData(ShaderType shaderType, void* pData, UI64 size, UI64 offset)
+	{
+		switch (shaderType)
+		{
+		case Flint::ShaderType::VERTEX:
+			mConstantBlocks[0] = ConstantData(pData, size, offset);
+			break;
+
+		case Flint::ShaderType::TESSELLATION_CONTROL:
+			mConstantBlocks[1] = ConstantData(pData, size, offset);
+			break;
+
+		case Flint::ShaderType::TESSELLATION_EVALUATION:
+			mConstantBlocks[2] = ConstantData(pData, size, offset);
+			break;
+
+		case Flint::ShaderType::GEOMETRY:
+			mConstantBlocks[3] = ConstantData(pData, size, offset);
+			break;
+
+		case Flint::ShaderType::FRAGMENT:
+			mConstantBlocks[4] = ConstantData(pData, size, offset);
+			break;
+
+		case Flint::ShaderType::COMPUTE:
+			mConstantBlocks[5] = ConstantData(pData, size, offset);
+			break;
+
+		case Flint::ShaderType::RAY_GEN:
+			mConstantBlocks[6] = ConstantData(pData, size, offset);
+			break;
+
+		case Flint::ShaderType::ANY_HIT:
+			mConstantBlocks[7] = ConstantData(pData, size, offset);
+			break;
+
+		case Flint::ShaderType::CLOSEST_HIT:
+			mConstantBlocks[8] = ConstantData(pData, size, offset);
+			break;
+
+		case Flint::ShaderType::RAY_MISS:
+			mConstantBlocks[9] = ConstantData(pData, size, offset);
+			break;
+
+		default:
+			FLINT_THROW_INVALID_ARGUMENT("Invalid shader type passed to set constant data!");
+		}
+	}
 }

@@ -1,25 +1,28 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#include "VikingRoom.hpp"
+#include "Preview.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 
-VikingRoom::VikingRoom(glm::vec3 position, SceneState* pSceneState) : GameObject(position, pSceneState)
+Preview::Preview(glm::vec3 position, SceneState* pSceneState, std::filesystem::path model, std::filesystem::path texture)
+	: GameObject(position, pSceneState)
 {
 	pCameraBuffer = pSceneState->pDevice->CreateBuffer(Flint::BufferType::UNIFORM, sizeof(CameraMatrix));
 	pDynamicStates = std::make_shared<Flint::DynamicStateContainer>();
 
-	auto image = LoadImage("E:\\Dynamik\\Game Repository\\assets\\assets\\VikingRoom\\texture.png");
+	mModelMatrix = glm::rotate(mModelMatrix, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+	auto image = LoadImage(texture);
 	pTexture = pSceneState->pDevice->CreateImage(Flint::ImageType::DIMENSIONS_2, Flint::ImageUsage::GRAPHICS, image.mExtent, Flint::PixelFormat::R8G8B8A8_SRGB, 1, 1, image.pImageData);
 	DestroyImage(image);
 
 	pTextureSampler = pSceneState->pDevice->CreateImageSampler(Flint::ImageSamplerSpecification());
 
-	if (pSceneState->pGraphicsPipelines.find("DefaultWireframe") == pSceneState->pGraphicsPipelines.end())
-		SetupPipeline();
+	if (pSceneState->pGraphicsPipelines.find("Default") == pSceneState->pGraphicsPipelines.end())
+		pSceneState->CreateDefaultPipeline();
 
-	auto pPipeline = pSceneState->pGraphicsPipelines["DefaultWireframe"];
+	auto pPipeline = pSceneState->pGraphicsPipelines["Default"];
 	pResourceMap = pPipeline->CreateResourceMap();
 
 	pResourceMap->SetResource("Ubo", pModelUniform);
@@ -30,11 +33,11 @@ VikingRoom::VikingRoom(glm::vec3 position, SceneState* pSceneState) : GameObject
 	pDynamicStates->SetViewPort(Flint::FExtent2D<float>{static_cast<float>(windowExtent.mWidth), static_cast<float>(windowExtent.mHeight)}, Flint::FExtent2D<float>(0.0f, 1.0f), { 0.0f, 0.0f });
 	pDynamicStates->SetScissor(windowExtent, { 0, 0 });
 
-	auto asset = ImportAsset(pSceneState->pDevice, "E:\\Dynamik\\Game Repository\\assets\\assets\\VikingRoom\\vikingroom.fbx");
+	auto asset = ImportAsset(pSceneState->pDevice, model);
 	auto [vertexOffset, indexOffset] = pSceneState->pGeometryStores["Default"]->AddGeometry(asset.pVertexBuffer, asset.pIndexBuffer);
 	for (auto instance : asset.mDrawInstances)
 	{
-		mDrawIndex = pPipeline->AddDrawData(pResourceMap, pDynamicStates, vertexOffset + instance.mVertexOffset, instance.mVertexCount, indexOffset + instance.mIndexOffset, instance.mIndexCount);
+		mDrawIDs.push_back(pPipeline->AddDrawData(pResourceMap, pDynamicStates, vertexOffset + instance.mVertexOffset, instance.mVertexCount, indexOffset + instance.mIndexOffset, instance.mIndexCount));
 		mVertexCount += instance.mVertexCount;
 		mIndexCount += instance.mIndexCount;
 	}
@@ -46,17 +49,20 @@ VikingRoom::VikingRoom(glm::vec3 position, SceneState* pSceneState) : GameObject
 	pSceneState->pDevice->DestroyBuffer(asset.pIndexBuffer);
 }
 
-VikingRoom::~VikingRoom()
+Preview::~Preview()
 {
 	pSceneState->pGeometryStores["Default"]->RemoveGeometry(mVertexOffset, mVertexCount, mIndexOffset, mIndexCount);
-	pSceneState->pGraphicsPipelines["DefaultWireframe"]->RemoveDrawData(mDrawIndex);
+
+	for (const UI64 drawID : mDrawIDs)
+		pSceneState->pGraphicsPipelines["Default"]->RemoveDrawData(drawID);
+	mDrawIDs.clear();
 
 	pSceneState->pDevice->DestroyBuffer(pCameraBuffer);
 	pSceneState->pDevice->DestroyImage(pTexture);
 	pSceneState->pDevice->DestroyImageSampler(pTextureSampler);
 }
 
-void VikingRoom::OnUpdate()
+void Preview::OnUpdate()
 {
 	if (pSceneState->pDisplay->IsDisplayResized())
 	{
@@ -98,21 +104,4 @@ void VikingRoom::OnUpdate()
 	// Submit data to uniforms.
 	SubmitToUniformBuffer(pModelUniform, mModelMatrix);
 	SubmitToUniformBuffer(pCameraBuffer, pSceneState->mCamera.GetMatrix());
-}
-
-void VikingRoom::SetupPipeline()
-{
-	Flint::GraphicsPipelineSpecification specification = {};
-	specification.mDynamicStateFlags = Flint::DynamicStateFlags::VIEWPORT | Flint::DynamicStateFlags::SCISSOR;
-	specification.bEnableDepthTest = true;
-	specification.bEnableDepthWrite = true;
-	specification.mColorBlendConstants[0] = 0.0f;
-	specification.mColorBlendConstants[1] = 0.0f;
-	specification.mColorBlendConstants[2] = 0.0f;
-	specification.mColorBlendConstants[3] = 0.0f;
-	//specification.mPrimitiveTopology = Flint::PrimitiveTopology::TRIANGLE_LIST;
-	specification.mPolygonMode = Flint::PolygonMode::LINE;
-
-	pSceneState->pGraphicsPipelines["DefaultWireframe"] = pSceneState->pDevice->CreateGraphicsPipeline("DefaultWireframe", pSceneState->pScreenBoundRenderTargets["Default"], pSceneState->pVertexShader, nullptr, nullptr, nullptr, pSceneState->pFragmentShader, specification);
-	pSceneState->pScreenBoundRenderTargets["Default"]->SubmitPipeline(pSceneState->pGeometryStores["Default"], pSceneState->pGraphicsPipelines["DefaultWireframe"]);
 }

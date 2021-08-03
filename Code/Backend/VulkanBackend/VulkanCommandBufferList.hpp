@@ -30,7 +30,7 @@ namespace Flint
 			virtual void BindIndexBuffer(const std::shared_ptr<Buffer>& pIndexBuffer, UI64 indexSize) override final;
 
 			virtual void BindDrawResources(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::shared_ptr<ResourceMap>& pResourceMap) override final;
-			virtual void BindDynamicStates(const std::shared_ptr<DynamicStateContainer>& pDynamicStates) override final;
+			virtual void BindDynamicStates(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::shared_ptr<DynamicStateContainer>& pDynamicStates) override final;
 
 			virtual void IssueDrawCall(UI64 vertexOffset, UI64 vertexCount, UI64 indexOffset, UI64 indexCount) override final;
 			virtual void ExecuteSecondaryCommands() override final;

@@ -137,6 +137,47 @@ namespace Flint
 
 				return VkDescriptorType();
 			}
+
+			VkShaderStageFlags GetShaderStage(ShaderType type)
+			{
+				switch (type)
+				{
+				case Flint::ShaderType::VERTEX:
+					return VkShaderStageFlagBits::VK_SHADER_STAGE_VERTEX_BIT;
+
+				case Flint::ShaderType::TESSELLATION_CONTROL:
+					return VkShaderStageFlagBits::VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
+
+				case Flint::ShaderType::TESSELLATION_EVALUATION:
+					return VkShaderStageFlagBits::VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
+
+				case Flint::ShaderType::GEOMETRY:
+					return VkShaderStageFlagBits::VK_SHADER_STAGE_GEOMETRY_BIT;
+
+				case Flint::ShaderType::FRAGMENT:
+					return VkShaderStageFlagBits::VK_SHADER_STAGE_FRAGMENT_BIT;
+
+				case Flint::ShaderType::COMPUTE:
+					return VkShaderStageFlagBits::VK_SHADER_STAGE_COMPUTE_BIT;
+
+				case Flint::ShaderType::RAY_GEN:
+					return VkShaderStageFlagBits::VK_SHADER_STAGE_RAYGEN_BIT_KHR;
+
+				case Flint::ShaderType::ANY_HIT:
+					return VkShaderStageFlagBits::VK_SHADER_STAGE_ANY_HIT_BIT_KHR;
+
+				case Flint::ShaderType::CLOSEST_HIT:
+					return VkShaderStageFlagBits::VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
+
+				case Flint::ShaderType::RAY_MISS:
+					return VkShaderStageFlagBits::VK_SHADER_STAGE_MISS_BIT_KHR;
+
+				default:
+					FLINT_THROW_RUNTIME_ERROR("Invalid or Undefined shader type!");
+				}
+
+				return VkShaderStageFlagBits::VK_SHADER_STAGE_ALL;
+			}
 		}
 	}
 }

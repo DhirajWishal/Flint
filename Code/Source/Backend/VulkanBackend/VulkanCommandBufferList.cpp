@@ -5,6 +5,7 @@
 #include "VulkanBackend/VulkanScreenBoundRenderTarget.hpp"
 #include "VulkanBackend/VulkanGraphicsPipeline.hpp"
 #include "VulkanBackend/VulkanBuffer.hpp"
+#include "VulkanBackend/VulkanUtilities.hpp"
 
 namespace Flint
 {
@@ -201,7 +202,7 @@ namespace Flint
 				vkCmdBindDescriptorSets(GetCurrentCommandBuffer(), VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_GRAPHICS, vPipeline.GetPipelineLayout(), 0, 1, pDescriptorSet, 0, nullptr);
 		}
 
-		void VulkanCommandBufferList::BindDynamicStates(const std::shared_ptr<DynamicStateContainer>& pDynamicStates)
+		void VulkanCommandBufferList::BindDynamicStates(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::shared_ptr<DynamicStateContainer>& pDynamicStates)
 		{
 			FLINT_SETUP_PROFILER();
 
@@ -257,6 +258,15 @@ namespace Flint
 			{
 				DynamicStateContainer::DepthBounds& bounds = pDynamicStates->mDepthBounds;
 				vkCmdSetDepthBounds(GetCurrentCommandBuffer(), bounds.mBounds.mWidth, bounds.mBounds.mHeight);
+			}
+
+			for (UI8 i = 0; i < 10; i++)
+			{
+				if (!pDynamicStates->mConstantBlocks[i].IsNull())
+				{
+					DynamicStateContainer::ConstantData& data = pDynamicStates->mConstantBlocks[i];
+					vkCmdPushConstants(GetCurrentCommandBuffer(), pPipeline->StaticCast<VulkanGraphicsPipeline>().GetPipelineLayout(), Utilities::GetShaderStage(ShaderType(i + 1)), static_cast<UI32>(data.mOffset), static_cast<UI32>(data.mSize), data.pData);
+				}
 			}
 		}
 
@@ -321,7 +331,7 @@ namespace Flint
 
 			FLINT_VK_ASSERT(vkBeginCommandBuffer(vCurrentBuffer, &vBeginInfo));
 		}
-		
+
 		void VulkanCommandBufferList::VulkanBeginNextSecondaryCommandBuffer(const VkCommandBufferInheritanceInfo* pInheritanceInfo)
 		{
 			mCurrentBufferIndex++;

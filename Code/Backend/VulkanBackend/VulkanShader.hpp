@@ -23,8 +23,9 @@ namespace Flint
 			void PerformReflection();
 
 			VkShaderModule GetModule() const { return vModule; }
-			std::vector<VkDescriptorSetLayoutBinding> GetResourceBindings() const { return mBindings; }
-			std::vector<VkDescriptorPoolSize> GetPoolSizes() const { return mSizes; }
+			const std::vector<VkDescriptorSetLayoutBinding> GetResourceBindings() const { return mBindings; }
+			const std::vector<VkDescriptorPoolSize> GetPoolSizes() const { return mSizes; }
+			const std::vector<VkPushConstantRange> GetPushConstantRanges() const { return mConstantRanges; }
 
 		private:
 			void ResolveShaderStage();
@@ -34,6 +35,7 @@ namespace Flint
 			std::vector<UI32> mShaderCode;
 			std::vector<VkDescriptorSetLayoutBinding> mBindings;
 			std::vector<VkDescriptorPoolSize> mSizes;
+			std::vector<VkPushConstantRange> mConstantRanges;
 
 			VkShaderModule vModule = VK_NULL_HANDLE;
 

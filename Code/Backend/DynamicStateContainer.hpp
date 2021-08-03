@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Core/DataType.hpp"
+#include "DeviceBoundObject.hpp"
 
 #include <memory>
 
@@ -51,12 +51,14 @@ namespace Flint
 	 * Flint dynamic state container.
 	 * This object contains the dynamic states which are to be passed to the pipeline at draw time.
 	 */
-	struct DynamicStateContainer {
+	struct DynamicStateContainer
+	{
 		/**
 		 * Dynamic sate object.
 		 * This is the base class for all the dynamic states supported.
 		 */
-		struct DynamicStateObject {
+		struct DynamicStateObject
+		{
 			DynamicStateObject(DynamicStateFlags flag) : mFlag(flag) {}
 			virtual ~DynamicStateObject() {}
 
@@ -74,7 +76,8 @@ namespace Flint
 		 * Viewport structure.
 		 * Viewport is the area that is being rendered to the screen. Think of it as a window and the content within the boundary will be displayed.
 		 */
-		struct ViewPort : public DynamicStateObject {
+		struct ViewPort final : public DynamicStateObject
+		{
 			ViewPort() : DynamicStateObject(DynamicStateFlags::VIEWPORT) {}
 			ViewPort(const FExtent2D<float>& extent, const FExtent2D<float>& offset, const FExtent2D<float>& depth)
 				: DynamicStateObject(DynamicStateFlags::VIEWPORT), mExtent(extent), mOffset(offset), mDepth(depth) {}
@@ -87,7 +90,8 @@ namespace Flint
 		/**
 		 * Scissor structure.
 		 */
-		struct Scissor : public DynamicStateObject {
+		struct Scissor final : public DynamicStateObject
+		{
 			Scissor() : DynamicStateObject(DynamicStateFlags::SCISSOR) {}
 			Scissor(const FBox2D& extent, const FBox2D& offset) : DynamicStateObject(DynamicStateFlags::SCISSOR), mExtent(extent), mOffset(offset) {}
 
@@ -99,7 +103,8 @@ namespace Flint
 		 * Line width structure.
 		 * This defines the rendering line width.
 		 */
-		struct LineWidth : public DynamicStateObject {
+		struct LineWidth final : public DynamicStateObject
+		{
 			LineWidth() : DynamicStateObject(DynamicStateFlags::LINE_WIDTH) {}
 			LineWidth(const float width) : DynamicStateObject(DynamicStateFlags::LINE_WIDTH), mLineWidth(width) {}
 
@@ -110,7 +115,8 @@ namespace Flint
 		 * Depth bias structure.
 		 * Set the depth bias.
 		 */
-		struct DepthBias : public DynamicStateObject {
+		struct DepthBias final : public DynamicStateObject
+		{
 			DepthBias() : DynamicStateObject(DynamicStateFlags::DEPTH_BIAS) {}
 			DepthBias(const float biasFactor, const float clampFactor, const float slopeFactor)
 				: DynamicStateObject(DynamicStateFlags::DEPTH_BIAS), mDepthBiasFactor(biasFactor),
@@ -125,7 +131,8 @@ namespace Flint
 		 * Blend constants structure.
 		 * Set the pipeline blend constants.
 		 */
-		struct BlendConstants : public DynamicStateObject {
+		struct BlendConstants final : public DynamicStateObject
+		{
 			BlendConstants() : DynamicStateObject(DynamicStateFlags::BLEND_CONSTANTS) {}
 			BlendConstants(const float(&constants)[4]) : DynamicStateObject(DynamicStateFlags::BLEND_CONSTANTS) { std::copy(constants, constants + 4, mConstants); }
 
@@ -136,11 +143,33 @@ namespace Flint
 		 * Depth bounds struct.
 		 * Set pipeline depth bounds.
 		 */
-		struct DepthBounds : public DynamicStateObject {
+		struct DepthBounds final : public DynamicStateObject
+		{
 			DepthBounds() : DynamicStateObject(DynamicStateFlags::DEPTH_BOUNDS) {}
 			DepthBounds(const FExtent2D<float>& bounds) : DynamicStateObject(DynamicStateFlags::DEPTH_BOUNDS), mBounds(bounds) {}
 
 			FExtent2D<float> mBounds = {};	// { Min, Max }
+		};
+
+		/**
+		 * Constant data struct.
+		 * This struct is used to pass data to constant blocks.
+		 */
+		struct ConstantData
+		{
+			ConstantData() = default;
+			ConstantData(const void* pData, UI64 size, UI64 offset) : pData(pData), mSize(size), mOffset(offset) {}
+
+			/**
+			 * Check if the constant block is null.
+			 * 
+			 * @return The boolean value.
+			 */
+			constexpr bool IsNull() const { return pData == nullptr; }
+
+			const void* pData = nullptr;
+			UI64 mSize = 0;
+			UI64 mOffset = 0;
 		};
 
 	public:
@@ -193,6 +222,16 @@ namespace Flint
 		 */
 		void SetDepthBounds(const FExtent2D<float>& bounds);
 
+		/**
+		 * Set constant data which is to be submitted to shaders.
+		 * 
+		 * @param shaderType: The shader type to which the data is submitted to.
+		 * @param pData: The data pointer.
+		 * @param size: The size to be passed.
+		 * @param offset: The offset of the data. Default is 0.
+		 */
+		void SetConstantData(ShaderType shaderType, void* pData, UI64 size, UI64 offset = 0);
+
 	public:
 		ViewPort mViewPort = {};
 		Scissor mScissor = {};
@@ -202,5 +241,7 @@ namespace Flint
 		DepthBounds mDepthBounds = {};
 
 		DynamicStateFlags mFlags = DynamicStateFlags::UNDEFINED;
+
+		ConstantData mConstantBlocks[10] = {};
 	};
 }

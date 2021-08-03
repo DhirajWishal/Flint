@@ -265,6 +265,12 @@ namespace Flint
 				bindings.insert(bindings.end(), tempBindings.begin(), tempBindings.end());
 			}
 
+			void AddPushConstantRangesToVector(std::vector<VkPushConstantRange>& ranges, const VulkanShader& shader)
+			{
+				std::vector<VkPushConstantRange> tempRanges = shader.GetPushConstantRanges();
+				ranges.insert(ranges.end(), tempRanges.begin(), tempRanges.end());
+			}
+
 			void AddPoolSizesToVector(std::vector<VkDescriptorPoolSize>& poolSizes, const VulkanShader& shader)
 			{
 				std::vector<VkDescriptorPoolSize> tempPoolSizes = shader.GetPoolSizes();
@@ -478,7 +484,7 @@ namespace Flint
 			if (!bShouldPrepareResources || mDrawDataList.empty())
 				return;
 
-			if(vDescriptorSetPool)
+			if (vDescriptorSetPool)
 				vkDestroyDescriptorPool(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), vDescriptorSetPool, nullptr);
 
 			std::vector<VkDescriptorPoolSize> vPoolSizes;
@@ -550,7 +556,7 @@ namespace Flint
 				vAllocateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
 				vAllocateInfo.pNext = VK_NULL_HANDLE;
 				vAllocateInfo.descriptorPool = vDescriptorSetPool;
-				vAllocateInfo.descriptorSetCount = descriptorSetCount; 
+				vAllocateInfo.descriptorSetCount = descriptorSetCount;
 				vAllocateInfo.pSetLayouts = vDescriptorSetLayouts.data();
 
 				FLINT_VK_ASSERT(vkAllocateDescriptorSets(vDevice.GetLogicalDevice(), &vAllocateInfo, vDescriptorSets.data()));
@@ -672,24 +678,36 @@ namespace Flint
 			FLINT_SETUP_PROFILER();
 
 			std::vector<VkDescriptorSetLayoutBinding> vBindings;
+			std::vector<VkPushConstantRange> vConstantRanges;
 
 			// Resolve vertex shader data.
 			_Helpers::AddResourceBindingsToVector(vBindings, pVertexShader->StaticCast<VulkanShader>());
+			_Helpers::AddPushConstantRangesToVector(vConstantRanges, pVertexShader->StaticCast<VulkanShader>());
 
 			// Resolve fragment shader data.
 			_Helpers::AddResourceBindingsToVector(vBindings, pFragmentShader->StaticCast<VulkanShader>());
+			_Helpers::AddPushConstantRangesToVector(vConstantRanges, pFragmentShader->StaticCast<VulkanShader>());
 
 			// Check and resolve tessellation control shader data.
 			if (pTessellationControlShader)
+			{
 				_Helpers::AddResourceBindingsToVector(vBindings, pTessellationControlShader->StaticCast<VulkanShader>());
+				_Helpers::AddPushConstantRangesToVector(vConstantRanges, pFragmentShader->StaticCast<VulkanShader>());
+			}
 
 			// Check and resolve tessellation evaluation shader data.
 			if (pTessellationEvaluationShader)
+			{
 				_Helpers::AddResourceBindingsToVector(vBindings, pTessellationEvaluationShader->StaticCast<VulkanShader>());
+				_Helpers::AddPushConstantRangesToVector(vConstantRanges, pTessellationEvaluationShader->StaticCast<VulkanShader>());
+			}
 
 			// Check and resolve geometry shader data.
 			if (pGeometryShader)
+			{
 				_Helpers::AddResourceBindingsToVector(vBindings, pGeometryShader->StaticCast<VulkanShader>());
+				_Helpers::AddPushConstantRangesToVector(vConstantRanges, pGeometryShader->StaticCast<VulkanShader>());
+			}
 
 			// Create descriptor set layout.
 			{
@@ -708,8 +726,8 @@ namespace Flint
 			vCI.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 			vCI.pNext = VK_NULL_HANDLE;
 			vCI.flags = 0;
-			vCI.pushConstantRangeCount = 0;
-			vCI.pPushConstantRanges = nullptr;
+			vCI.pushConstantRangeCount = static_cast<UI32>(vConstantRanges.size());
+			vCI.pPushConstantRanges = vConstantRanges.data();
 			vCI.setLayoutCount = 1;
 			vCI.pSetLayouts = &vDescriptorSetLayout;
 
