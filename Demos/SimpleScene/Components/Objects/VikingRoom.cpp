@@ -7,7 +7,6 @@
 
 VikingRoom::VikingRoom(glm::vec3 position, SceneState* pSceneState) : GameObject(position, pSceneState)
 {
-	pCameraBuffer = pSceneState->pDevice->CreateBuffer(Flint::BufferType::UNIFORM, sizeof(CameraMatrix));
 	pDynamicStates = std::make_shared<Flint::DynamicStateContainer>();
 
 	auto image = LoadImage("E:\\Dynamik\\Game Repository\\assets\\assets\\VikingRoom\\texture.png");
@@ -23,7 +22,7 @@ VikingRoom::VikingRoom(glm::vec3 position, SceneState* pSceneState) : GameObject
 	pResourceMap = pPipeline->CreateResourceMap();
 
 	pResourceMap->SetResource("Ubo", pModelUniform);
-	pResourceMap->SetResource("Camera", pCameraBuffer);
+	pResourceMap->SetResource("Camera", pSceneState->mCamera.GetCameraBuffer());
 	pResourceMap->SetResource("texSampler", pTextureSampler, pTexture);
 
 	Flint::FBox2D windowExtent = pSceneState->pDisplay->GetExtent();
@@ -44,6 +43,7 @@ VikingRoom::VikingRoom(glm::vec3 position, SceneState* pSceneState) : GameObject
 
 	pSceneState->pDevice->DestroyBuffer(asset.pVertexBuffer);
 	pSceneState->pDevice->DestroyBuffer(asset.pIndexBuffer);
+	SetupBoundingBox();
 }
 
 VikingRoom::~VikingRoom()
@@ -51,12 +51,11 @@ VikingRoom::~VikingRoom()
 	pSceneState->pGeometryStores["Default"]->RemoveGeometry(mVertexOffset, mVertexCount, mIndexOffset, mIndexCount);
 	pSceneState->pGraphicsPipelines["DefaultWireframe"]->RemoveDrawData(mDrawIndex);
 
-	pSceneState->pDevice->DestroyBuffer(pCameraBuffer);
 	pSceneState->pDevice->DestroyImage(pTexture);
 	pSceneState->pDevice->DestroyImageSampler(pTextureSampler);
 }
 
-void VikingRoom::OnUpdate()
+void VikingRoom::OnUpdate(UI64 delta)
 {
 	if (pSceneState->pDisplay->IsDisplayResized())
 	{
@@ -97,7 +96,7 @@ void VikingRoom::OnUpdate()
 
 	// Submit data to uniforms.
 	SubmitToUniformBuffer(pModelUniform, mModelMatrix);
-	SubmitToUniformBuffer(pCameraBuffer, pSceneState->mCamera.GetMatrix());
+	UpdateBoundingBox();
 }
 
 void VikingRoom::SetupPipeline()
@@ -111,7 +110,7 @@ void VikingRoom::SetupPipeline()
 	specification.mColorBlendConstants[2] = 0.0f;
 	specification.mColorBlendConstants[3] = 0.0f;
 	//specification.mPrimitiveTopology = Flint::PrimitiveTopology::TRIANGLE_LIST;
-	specification.mPolygonMode = Flint::PolygonMode::LINE;
+	//specification.mPolygonMode = Flint::PolygonMode::LINE;
 
 	pSceneState->pGraphicsPipelines["DefaultWireframe"] = pSceneState->pDevice->CreateGraphicsPipeline("DefaultWireframe", pSceneState->pScreenBoundRenderTargets["Default"], pSceneState->pVertexShader, nullptr, nullptr, nullptr, pSceneState->pFragmentShader, specification);
 	pSceneState->pScreenBoundRenderTargets["Default"]->SubmitPipeline(pSceneState->pGeometryStores["Default"], pSceneState->pGraphicsPipelines["DefaultWireframe"]);

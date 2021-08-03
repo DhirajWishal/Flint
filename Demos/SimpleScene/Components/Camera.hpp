@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Flint/Core/DataType.hpp"
+#include "Flint/Buffer.hpp"
 #include <glm/glm.hpp>
 
 struct CameraMatrix
@@ -22,38 +22,41 @@ class Camera
 public:
 	Camera() = default;
 
+	void Initialize(std::shared_ptr<Flint::Device> pDevice);
+	void Terminate();
+
 	/**
 	 * Walk the camera up.
 	 */
-	void WalkUp();
+	void WalkUp(UI64 delta);
 
 	/**
 	 * Walk the camera down.
 	 */
-	void WalkDown();
+	void WalkDown(UI64 delta);
 
 	/**
 	 * Walk the camera left.
 	 */
-	void WalkLeft();
+	void WalkLeft(UI64 delta);
 
 	/**
 	 * Walk the camera right.
 	 */
-	void WalkRight();
+	void WalkRight(UI64 delta);
 
 	/**
 	 * Handle mouse position.
 	 *
 	 * @param _pos: The mouse position.
 	 */
-	void MousePosition(Flint::FExtent2D<float> _pos);
+	void MousePosition(Flint::FExtent2D<float> _pos, UI64 delta);
 
 	/**
 	 * Update the camera.
 	 * This updates all the vectors and matrices.
 	 */
-	void Update();
+	void Update(UI64 delta);
 
 	/**
 	 * Get the default view projection matrices.
@@ -63,13 +66,20 @@ public:
 	CameraMatrix GetMatrix() const { return CameraMatrix(viewMatrix, projectionMatrix); }
 
 	/**
+	 * Get the camera buffer of the camera.
+	 *
+	 * @return The buffer pointer.
+	 */
+	std::shared_ptr<Flint::Buffer> GetCameraBuffer() { return pCameraBuffer; }
+
+	/**
 	 * Reset the first mouse boolean value to its default (true).
 	 */
 	void ResetFirstMouse();
 
 	/**
 	 * Set the camera aspect ratio.
-	 * 
+	 *
 	 * @param extent: The display extent.
 	 */
 	void SetAspectRatio(Flint::FBox2D extent);
@@ -77,6 +87,9 @@ public:
 private:
 	glm::mat4 viewMatrix = glm::mat4(1);
 	glm::mat4 projectionMatrix = glm::mat4(1);
+
+	std::shared_ptr<Flint::Buffer> pCameraBuffer = nullptr;
+	std::shared_ptr<Flint::Device> pDevice = nullptr;
 
 	glm::vec3 cameraPosition = { 0.0f, 1.0f, 0.0f };
 	glm::vec3 cameraUp = { 0.0f, 1.0f, 0.0f };

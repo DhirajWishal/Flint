@@ -9,7 +9,6 @@ SkyBox::SkyBox(glm::vec3 position, SceneState* pSceneState) : GameObject(positio
 {
 	mModelMatrix = glm::scale(mModelMatrix, glm::vec3(2.0f, 2.0f, 2.0f));
 
-	pCameraBuffer = pSceneState->pDevice->CreateBuffer(Flint::BufferType::UNIFORM, sizeof(CameraMatrix));
 	pDynamicStates = std::make_shared<Flint::DynamicStateContainer>();
 
 	pVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("E:\\Flint\\Assets\\Shaders\\SkyBox\\skybox.vert.spv"), Flint::ShaderCodeType::SPIR_V);
@@ -30,7 +29,7 @@ SkyBox::SkyBox(glm::vec3 position, SceneState* pSceneState) : GameObject(positio
 	pResourceMap = pPipeline->CreateResourceMap();
 
 	pResourceMap->SetResource("Ubo", pModelUniform);
-	pResourceMap->SetResource("Camera", pCameraBuffer);
+	pResourceMap->SetResource("Camera", pSceneState->mCamera.GetCameraBuffer());
 	pResourceMap->SetResource("skybox", pTextureSampler, pTexture);
 
 	Flint::FBox2D windowExtent = pSceneState->pDisplay->GetExtent();
@@ -50,12 +49,11 @@ SkyBox::~SkyBox()
 {
 	pSceneState->pDevice->DestroyShader(pVertexShader);
 	pSceneState->pDevice->DestroyShader(pFragmentShader);
-	pSceneState->pDevice->DestroyBuffer(pCameraBuffer);
 	pSceneState->pDevice->DestroyImage(pTexture);
 	pSceneState->pDevice->DestroyImageSampler(pTextureSampler);
 }
 
-void SkyBox::OnUpdate()
+void SkyBox::OnUpdate(UI64 delta)
 {
 	if (pSceneState->pDisplay->IsDisplayResized())
 	{
@@ -96,7 +94,6 @@ void SkyBox::OnUpdate()
 
 	// Submit data to uniforms.
 	SubmitToUniformBuffer(pModelUniform, mModelMatrix);
-	SubmitToUniformBuffer(pCameraBuffer, pSceneState->mCamera.GetMatrix());
 }
 
 void SkyBox::CreateNewPipeline()

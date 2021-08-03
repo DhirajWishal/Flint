@@ -16,6 +16,6 @@ Reflection::~Reflection()
 {
 }
 
-void Reflection::OnUpdate()
+void Reflection::OnUpdate(UI64 delta)
 {
 }

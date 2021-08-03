@@ -12,14 +12,12 @@ public:
 	TreeScene(glm::vec3 position, SceneState* pSceneState);
 	~TreeScene();
 
-	virtual void OnUpdate() override final;
+	virtual void OnUpdate(UI64 delta) override final;
 
 private:
 	void LoadTreeImages();
 
 private:
-	std::shared_ptr<Flint::Buffer> pCameraBuffer = nullptr;
-
 	std::shared_ptr<Flint::Image> pTextures[ImageCount] = {};
 	std::shared_ptr<Flint::ImageSampler> pTextureSampler = nullptr;
 

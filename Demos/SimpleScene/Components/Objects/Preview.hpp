@@ -11,10 +11,9 @@ public:
 	Preview(glm::vec3 position, SceneState* pSceneState, std::filesystem::path model, std::filesystem::path texture);
 	~Preview();
 
-	virtual void OnUpdate() override final;
+	virtual void OnUpdate(UI64 delta) override final;
 
 private:
-	std::shared_ptr<Flint::Buffer> pCameraBuffer = nullptr;
 	std::shared_ptr<Flint::Image> pTexture = nullptr;
 	std::shared_ptr<Flint::ImageSampler> pTextureSampler = nullptr;
 

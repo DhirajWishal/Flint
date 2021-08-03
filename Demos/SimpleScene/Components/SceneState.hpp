@@ -18,7 +18,7 @@ struct SceneState
 	void PrepareNewFrame();
 	void SubmitFrames();
 
-	void UpdateCamera();
+	void UpdateCamera(UI64 delta);
 
 public:
 
@@ -35,8 +35,12 @@ public:
 	std::shared_ptr<Flint::Shader> pVertexShader = nullptr;
 	std::shared_ptr<Flint::Shader> pFragmentShader = nullptr;
 
+	std::shared_ptr<Flint::Shader> pVertexShaderBB = nullptr;
+	std::shared_ptr<Flint::Shader> pFragmentShaderBB = nullptr;
+
 	void CreateDefaultPipeline();
 
 private:
 	void CreateDefaultRenderTarget();
+	void CreateBoundingBoxPipeline();
 };

@@ -8,7 +8,6 @@
 TreeScene::TreeScene(glm::vec3 position, SceneState* pSceneState)
 	: GameObject(position, pSceneState)
 {
-	pCameraBuffer = pSceneState->pDevice->CreateBuffer(Flint::BufferType::UNIFORM, sizeof(CameraMatrix));
 	pDynamicStates = std::make_shared<Flint::DynamicStateContainer>();
 
 	pTextureSampler = pSceneState->pDevice->CreateImageSampler(Flint::ImageSamplerSpecification());
@@ -32,7 +31,7 @@ TreeScene::TreeScene(glm::vec3 position, SceneState* pSceneState)
 
 		auto pMap = pPipeline->CreateResourceMap();
 		pMap->SetResource("Ubo", pModelUniform);
-		pMap->SetResource("Camera", pCameraBuffer);
+		pMap->SetResource("Camera", pSceneState->mCamera.GetCameraBuffer());
 		pMap->SetResource("texSampler", pTextureSampler, pTextures[i]);
 
 		mDrawIndexes[i] = pPipeline->AddDrawData(pMap, pDynamicStates, vertexOffset + instance.mVertexOffset, instance.mVertexCount, indexOffset + instance.mIndexOffset, instance.mIndexCount);
@@ -55,14 +54,13 @@ TreeScene::~TreeScene()
 	for (UI8 i = 0; i < ImageCount; i++)
 		pSceneState->pGraphicsPipelines["Default"]->RemoveDrawData(mDrawIndexes[i]);
 
-	pSceneState->pDevice->DestroyBuffer(pCameraBuffer);
 	pSceneState->pDevice->DestroyImageSampler(pTextureSampler);
 
 	for (UI8 i = 0; i < ImageCount; i++)
 		pSceneState->pDevice->DestroyImage(pTextures[i]);
 }
 
-void TreeScene::OnUpdate()
+void TreeScene::OnUpdate(UI64 delta)
 {
 	if (pSceneState->pDisplay->IsDisplayResized())
 	{
@@ -103,7 +101,6 @@ void TreeScene::OnUpdate()
 
 	// Submit data to uniforms.
 	SubmitToUniformBuffer(pModelUniform, mModelMatrix);
-	SubmitToUniformBuffer(pCameraBuffer, pSceneState->mCamera.GetMatrix());
 }
 
 void TreeScene::LoadTreeImages()

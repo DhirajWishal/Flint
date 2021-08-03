@@ -252,6 +252,7 @@ namespace Flint
 			vPushConstantRange.offset = 0;
 			for (auto& resource : resources.push_constant_buffers)
 			{
+				auto name = compiler.get_name(resource.id);
 				auto& Ty = compiler.get_type(resource.base_type_id);
 				vPushConstantRange.size = (static_cast<UI64>(Ty.width) / 8) * Ty.vecsize;
 				INSERT_INTO_VECTOR(mConstantRanges, vPushConstantRange);

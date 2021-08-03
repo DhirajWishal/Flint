@@ -24,8 +24,12 @@ SceneState::SceneState()
 	pGeometryStores["Default"] = pDevice->CreateGeometryStore(pVertexShader->GetInputAttributes(), sizeof(UI32));
 
 	CreateDefaultRenderTarget();
+	CreateBoundingBoxPipeline();
+	//CreateDefaultPipeline();
 
 	mCamera.SetAspectRatio(pDisplay->GetExtent());
+
+	mCamera.Initialize(pDevice);
 }
 
 SceneState::~SceneState()
@@ -41,6 +45,11 @@ SceneState::~SceneState()
 
 	pDevice->DestroyShader(pVertexShader);
 	pDevice->DestroyShader(pFragmentShader);
+
+	pDevice->DestroyShader(pVertexShaderBB);
+	pDevice->DestroyShader(pFragmentShaderBB);
+
+	mCamera.Terminate();
 
 	pInstance->DestroyDisplay(pDisplay);
 	pInstance->DestroyDevice(pDevice);
@@ -75,32 +84,44 @@ void SceneState::SubmitFrames()
 		pRenderTarget.second->SubmitFrame();
 }
 
-void SceneState::UpdateCamera()
+void SceneState::UpdateCamera(UI64 delta)
 {
 	if (pDisplay->GetKeyEvent(Flint::KeyCode::KEY_W).IsPressed() || pDisplay->GetKeyEvent(Flint::KeyCode::KEY_W).IsOnRepeat())
-		mCamera.WalkUp();
+		mCamera.WalkUp(delta);
 
 	if (pDisplay->GetKeyEvent(Flint::KeyCode::KEY_A).IsPressed() || pDisplay->GetKeyEvent(Flint::KeyCode::KEY_A).IsOnRepeat())
-		mCamera.WalkLeft();
+		mCamera.WalkLeft(delta);
 
 	if (pDisplay->GetKeyEvent(Flint::KeyCode::KEY_S).IsPressed() || pDisplay->GetKeyEvent(Flint::KeyCode::KEY_S).IsOnRepeat())
-		mCamera.WalkDown();
+		mCamera.WalkDown(delta);
 
 	if (pDisplay->GetKeyEvent(Flint::KeyCode::KEY_D).IsPressed() || pDisplay->GetKeyEvent(Flint::KeyCode::KEY_D).IsOnRepeat())
-		mCamera.WalkRight();
+		mCamera.WalkRight(delta);
 
 	if (pDisplay->GetMouseButtonEvent(Flint::MouseButton::LEFT).IsPressed())
-		mCamera.MousePosition(pDisplay->GetMousePosition());
+		mCamera.MousePosition(pDisplay->GetMousePosition(), delta);
 
 	if (pDisplay->GetMouseButtonEvent(Flint::MouseButton::LEFT).IsReleased())
 		mCamera.ResetFirstMouse();
 
-	mCamera.Update();
+	mCamera.Update(delta);
 }
 
 void SceneState::CreateDefaultRenderTarget()
 {
 	pScreenBoundRenderTargets["Default"] = pDevice->CreateScreenBoundRenderTarget(pDisplay, pDisplay->GetExtent(), pDisplay->FindBestBufferCount(pDevice), 1);
+}
+
+void SceneState::CreateBoundingBoxPipeline()
+{
+	pVertexShaderBB = pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("E:\\Flint\\Assets\\Shaders\\BoundingBox\\shader.vert.spv"), Flint::ShaderCodeType::SPIR_V);
+	pFragmentShaderBB = pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("E:\\Flint\\Assets\\Shaders\\BoundingBox\\shader.frag.spv"), Flint::ShaderCodeType::SPIR_V);
+
+	Flint::GraphicsPipelineSpecification specification = {};
+	specification.mPrimitiveTopology = Flint::PrimitiveTopology::LINE_LIST;
+	specification.mPolygonMode = Flint::PolygonMode::LINE;
+
+	pGraphicsPipelines["BoundingBox"] = pDevice->CreateGraphicsPipeline("BoundingBox", pScreenBoundRenderTargets["Default"], pVertexShaderBB, nullptr, nullptr, nullptr, pFragmentShaderBB, specification);
 }
 
 void SceneState::CreateDefaultPipeline()

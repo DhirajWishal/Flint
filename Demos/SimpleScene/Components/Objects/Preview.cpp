@@ -8,7 +8,6 @@
 Preview::Preview(glm::vec3 position, SceneState* pSceneState, std::filesystem::path model, std::filesystem::path texture)
 	: GameObject(position, pSceneState)
 {
-	pCameraBuffer = pSceneState->pDevice->CreateBuffer(Flint::BufferType::UNIFORM, sizeof(CameraMatrix));
 	pDynamicStates = std::make_shared<Flint::DynamicStateContainer>();
 
 	mModelMatrix = glm::rotate(mModelMatrix, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -26,7 +25,7 @@ Preview::Preview(glm::vec3 position, SceneState* pSceneState, std::filesystem::p
 	pResourceMap = pPipeline->CreateResourceMap();
 
 	pResourceMap->SetResource("Ubo", pModelUniform);
-	pResourceMap->SetResource("Camera", pCameraBuffer);
+	pResourceMap->SetResource("Camera", pSceneState->mCamera.GetCameraBuffer());
 	pResourceMap->SetResource("texSampler", pTextureSampler, pTexture);
 
 	Flint::FBox2D windowExtent = pSceneState->pDisplay->GetExtent();
@@ -57,12 +56,11 @@ Preview::~Preview()
 		pSceneState->pGraphicsPipelines["Default"]->RemoveDrawData(drawID);
 	mDrawIDs.clear();
 
-	pSceneState->pDevice->DestroyBuffer(pCameraBuffer);
 	pSceneState->pDevice->DestroyImage(pTexture);
 	pSceneState->pDevice->DestroyImageSampler(pTextureSampler);
 }
 
-void Preview::OnUpdate()
+void Preview::OnUpdate(UI64 delta)
 {
 	if (pSceneState->pDisplay->IsDisplayResized())
 	{
@@ -103,5 +101,4 @@ void Preview::OnUpdate()
 
 	// Submit data to uniforms.
 	SubmitToUniformBuffer(pModelUniform, mModelMatrix);
-	SubmitToUniformBuffer(pCameraBuffer, pSceneState->mCamera.GetMatrix());
 }

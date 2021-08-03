@@ -11,13 +11,12 @@ public:
 	VikingRoom(glm::vec3 position, SceneState* pSceneState);
 	~VikingRoom();
 
-	virtual void OnUpdate() override final;
+	virtual void OnUpdate(UI64 delta) override final;
 
 private:
 	void SetupPipeline();
 
 private:
-	std::shared_ptr<Flint::Buffer> pCameraBuffer = nullptr;
 	std::shared_ptr<Flint::Image> pTexture = nullptr;
 	std::shared_ptr<Flint::ImageSampler> pTextureSampler = nullptr;
 

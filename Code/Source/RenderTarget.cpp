@@ -40,6 +40,7 @@ namespace Flint
 		if (!inserted)
 		{
 			INSERT_INTO_VECTOR(mDrawInstanceMaps[mNextMap][pGeometryStore], pPipeline);
+			INSERT_INTO_VECTOR(mDrawInstanceOrder[mNextMap], pGeometryStore);
 			IncrementNextMap();
 		}
 
@@ -60,6 +61,13 @@ namespace Flint
 					{
 						pPipelines.erase(pPipelines.begin() + j);
 
+						// Remove the geometry store if no pipeline is bound.
+						if (pPipelines.empty())
+						{
+							instanceMap.erase(pGeometryStore);
+							mDrawInstanceOrder[i].remove(pGeometryStore);
+						}
+
 						bIsAltered = true;
 						return;
 					}
@@ -71,15 +79,21 @@ namespace Flint
 	void RenderTarget::InitiateThreads()
 	{
 		if (mNumberOfThreads)
+		{
 			mDrawInstanceMaps.resize(mNumberOfThreads);
+			mDrawInstanceOrder.resize(mNumberOfThreads);
+		}
 		else
+		{
 			mDrawInstanceMaps.resize(1);
+			mDrawInstanceOrder.resize(1);
+		}
 
 		mWorkerThreads.resize(mNumberOfThreads);
 		mBinarySemaphores.resize(mNumberOfThreads);
 
 		for (UI32 i = 0; i < mNumberOfThreads; i++)
-			mWorkerThreads[i] = std::thread([this, i] { SecondaryCommandsWorker(mDrawInstanceMaps[i], mBinarySemaphores[i], mCountingSemaphore, bThreadShouldRun); });
+			mWorkerThreads[i] = std::thread([this, i] { SecondaryCommandsWorker(mDrawInstanceMaps[i], mDrawInstanceOrder[i], mBinarySemaphores[i], mCountingSemaphore, bThreadShouldRun); });
 	}
 
 	void RenderTarget::TerminateThreads()

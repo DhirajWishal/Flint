@@ -121,11 +121,12 @@ namespace Flint
 		 * This function will be executed as a worker thread.
 		 *
 		 * @param drawInstanceMap: The draw instance map.
+		 * @param drawOrder: The order in which resources are drawn.
 		 * @param binarySemaphore: The binary semaphore used to control the secondary thread.
 		 * @param countingSemaphore: The counting semaphore used to control the parent thread.
 		 * @param shouldRun: The boolean stating whether or not to run.
 		 */
-		virtual void SecondaryCommandsWorker(DrawInstanceMap& drawInstanceMap, BinarySemaphore& binarySemaphore, CountingSemaphore& countingSemaphore, std::atomic<bool>& shouldRun) = 0;
+		virtual void SecondaryCommandsWorker(DrawInstanceMap& drawInstanceMap, std::list<std::shared_ptr<GeometryStore>>& drawOrder, BinarySemaphore& binarySemaphore, CountingSemaphore& countingSemaphore, std::atomic<bool>& shouldRun) = 0;
 
 		/**
 		 * Initiate all the worker threads.
@@ -157,6 +158,7 @@ namespace Flint
 	protected:
 		std::shared_ptr<CommandBufferList> pCommandBufferList = nullptr;
 		std::vector<DrawInstanceMap> mDrawInstanceMaps;
+		std::vector<std::list<std::shared_ptr<GeometryStore>>> mDrawInstanceOrder;
 
 		std::vector<std::thread> mWorkerThreads;
 		std::vector<BinarySemaphore> mBinarySemaphores;

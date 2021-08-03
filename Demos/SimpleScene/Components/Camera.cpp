@@ -2,30 +2,42 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "Camera.hpp"
+#include "Flint/Device.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 
-void Camera::WalkUp()
+void Camera::Initialize(std::shared_ptr<Flint::Device> pDevice)
 {
-	cameraPosition += cameraFront * movementBias;
+	pCameraBuffer = pDevice->CreateBuffer(Flint::BufferType::UNIFORM, sizeof(CameraMatrix));
+	this->pDevice = pDevice;
 }
 
-void Camera::WalkDown()
+void Camera::Terminate()
 {
-	cameraPosition -= cameraFront * movementBias;
+	pDevice->DestroyBuffer(pCameraBuffer);
 }
 
-void Camera::WalkLeft()
+void Camera::WalkUp(UI64 delta)
 {
-	cameraPosition -= cameraRight * movementBias;
+	cameraPosition += cameraFront * (static_cast<float>(delta) / 100000000);
 }
 
-void Camera::WalkRight()
+void Camera::WalkDown(UI64 delta)
 {
-	cameraPosition += cameraRight * movementBias;
+	cameraPosition -= cameraFront * (static_cast<float>(delta) / 100000000);
 }
 
-void Camera::MousePosition(Flint::FExtent2D<float> _pos)
+void Camera::WalkLeft(UI64 delta)
+{
+	cameraPosition -= cameraRight * (static_cast<float>(delta) / 100000000);
+}
+
+void Camera::WalkRight(UI64 delta)
+{
+	cameraPosition += cameraRight * (static_cast<float>(delta) / 100000000);
+}
+
+void Camera::MousePosition(Flint::FExtent2D<float> _pos, UI64 delta)
 {
 	_pos.X *= -1.0f;
 	_pos.Y *= -1.0f;
@@ -54,10 +66,10 @@ void Camera::MousePosition(Flint::FExtent2D<float> _pos)
 	if (Pitch < -89.0f)
 		Pitch = -89.0f;
 
-	Update();
+	Update(delta);
 }
 
-void Camera::Update()
+void Camera::Update(UI64 delta)
 {
 	glm::vec3 front;
 	front.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));
@@ -70,6 +82,10 @@ void Camera::Update()
 	viewMatrix = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
 	projectionMatrix = glm::perspective(glm::radians(fieldOfView), aspectRatio, cameraNear, cameraFar);
 	projectionMatrix[1][1] *= -1.0f;
+
+	CameraMatrix* pMatrix = static_cast<CameraMatrix*>(pCameraBuffer->MapMemory(sizeof(CameraMatrix)));
+	*pMatrix = GetMatrix();
+	pCameraBuffer->UnmapMemory();
 }
 
 void Camera::ResetFirstMouse()

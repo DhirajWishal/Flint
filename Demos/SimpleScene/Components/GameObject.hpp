@@ -19,10 +19,14 @@ public:
 	/**
 	 * This method is called once every new frame.
 	 *
-	 * @param pCamera: The camera pointer.
-	 * @param pDisplay: The display pointer.
+	 * @param delta: The time difference.
 	 */
-	virtual void OnUpdate() = 0;
+	virtual void OnUpdate(UI64 delta) = 0;
+
+public:
+	void EnableBoundingBox();
+	void UpdateBoundingBox();
+	void DisableBoundingBox();
 
 protected:
 	template<class Type>
@@ -34,6 +38,8 @@ protected:
 		pBuffer->UnmapMemory();
 	}
 
+	void SetupBoundingBox();
+
 protected:
 	glm::mat4 mModelMatrix = glm::mat4(1.0f);
 	std::shared_ptr<Flint::Buffer> pModelUniform = nullptr;
@@ -42,4 +48,12 @@ protected:
 	SceneState* pSceneState = nullptr;
 
 	const float mRotationBias = 0.005f;
+
+	glm::vec4 mBoundingBoxColor = {};
+
+private:
+	std::shared_ptr<Flint::DynamicStateContainer> pDynamicStates = nullptr;
+	std::shared_ptr<Flint::ResourceMap> pResourceMapBB = nullptr;
+	UI64 mBoundingBoxIndex = 0;
+	bool bIsBoundingBoxEnabled = false;
 };

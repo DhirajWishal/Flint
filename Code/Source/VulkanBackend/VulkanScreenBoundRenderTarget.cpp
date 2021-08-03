@@ -255,18 +255,22 @@ namespace Flint
 				pDefaultSecondaryCommandBuffer->VulkanBeginSecondaryCommandBuffer(0, &vInheritInfo);
 
 				// Bind the draw instances.
-				for (auto& drawInstanceMap : mDrawInstanceMaps)
+				for (UI64 itr = 0; itr < mDrawInstanceOrder.size(); itr++)
 				{
-					for (auto& instance : drawInstanceMap)
+					const auto drawOrder = mDrawInstanceOrder[itr];
+					const auto drawInstanceMap = mDrawInstanceMaps[itr];
+
+					for (const auto store : drawOrder)
 					{
 						FLINT_SETUP_PROFILER();
 
-						const auto geometryStore = instance.first;
-						pDefaultSecondaryCommandBuffer->BindVertexBuffer(geometryStore->GetVertexBuffer());
-						pDefaultSecondaryCommandBuffer->BindIndexBuffer(geometryStore->GetIndexBuffer(), geometryStore->GetIndexSize());
+						pDefaultSecondaryCommandBuffer->BindVertexBuffer(store->GetVertexBuffer());
+						pDefaultSecondaryCommandBuffer->BindIndexBuffer(store->GetIndexBuffer(), store->GetIndexSize());
+
+						auto& pipelines = drawInstanceMap.at(store);
 
 						// Iterate through the pipelines.
-						for (auto& pipeline : instance.second)
+						for (auto& pipeline : pipelines)
 						{
 							pipeline->PrepareResourcesToDraw();
 							pDefaultSecondaryCommandBuffer->BindGraphicsPipeline(pipeline);
@@ -290,7 +294,7 @@ namespace Flint
 			}
 		}
 
-		void VulkanScreenBoundRenderTarget::SecondaryCommandsWorker(DrawInstanceMap& drawInstanceMap, BinarySemaphore& binarySemaphore, CountingSemaphore& countingSemaphore, std::atomic<bool>& shouldRun)
+		void VulkanScreenBoundRenderTarget::SecondaryCommandsWorker(DrawInstanceMap& drawInstanceMap, std::list<std::shared_ptr<GeometryStore>>& drawOrder, BinarySemaphore& binarySemaphore, CountingSemaphore& countingSemaphore, std::atomic<bool>& shouldRun)
 		{
 			mResourceMutex.lock();
 			VulkanCommandBufferList vCommandBufferList{ pCommandBufferList->GetDevice(), pCommandBufferList->GetBufferCount(), pCommandBufferList };
@@ -307,16 +311,17 @@ namespace Flint
 					vCommandBufferList.VulkanBeginNextSecondaryCommandBuffer(&vInheritInfo);
 
 					// Bind the draw instances.
-					for (auto& instance : drawInstanceMap)
+					for (const auto store : drawOrder)
 					{
 						FLINT_SETUP_PROFILER();
 
-						const auto geometryStore = instance.first;
-						vCommandBufferList.BindVertexBuffer(geometryStore->GetVertexBuffer());
-						vCommandBufferList.BindIndexBuffer(geometryStore->GetIndexBuffer(), geometryStore->GetIndexSize());
+						vCommandBufferList.BindVertexBuffer(store->GetVertexBuffer());
+						vCommandBufferList.BindIndexBuffer(store->GetIndexBuffer(), store->GetIndexSize());
+
+						auto& pipelines = drawInstanceMap[store];
 
 						// Iterate through the pipelines.
-						for (auto& pipeline : instance.second)
+						for (auto& pipeline : pipelines)
 						{
 							pipeline->PrepareResourcesToDraw();
 							vCommandBufferList.BindGraphicsPipeline(pipeline);

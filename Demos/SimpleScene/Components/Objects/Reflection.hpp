@@ -11,7 +11,7 @@ public:
 	Reflection(glm::vec3 position, SceneState* pSceneState, SkyBox* pSkyBox);
 	~Reflection();
 
-	virtual void OnUpdate() override final;
+	virtual void OnUpdate(UI64 delta) override final;
 
 private:
 	std::shared_ptr<Flint::Buffer> pCameraBuffer = nullptr;

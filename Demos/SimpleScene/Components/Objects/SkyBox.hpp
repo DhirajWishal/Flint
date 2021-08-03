@@ -11,14 +11,13 @@ public:
 	SkyBox(glm::vec3 position, SceneState* pSceneState);
 	~SkyBox();
 
-	virtual void OnUpdate() override final;
+	virtual void OnUpdate(UI64 delta) override final;
 
 private:
 	void CreateNewPipeline();
 	ImageData LoadSkyboxImages();
 
 private:
-	std::shared_ptr<Flint::Buffer> pCameraBuffer = nullptr;
 	std::shared_ptr<Flint::Image> pTexture = nullptr;
 	std::shared_ptr<Flint::ImageSampler> pTextureSampler = nullptr;
 

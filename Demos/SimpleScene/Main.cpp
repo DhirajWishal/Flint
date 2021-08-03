@@ -18,18 +18,24 @@ int main()
 
 		{
 			SkyBox skyBox{ glm::vec3(0.0f), &mState };
-			VikingRoom vikingRoom{ glm::vec3(2.0f), &mState };
-			//TreeScene treeScene{ glm::vec3(0.0f), &mState };
+			//VikingRoom vikingRoom{ glm::vec3(2.0f), &mState };
+			//vikingRoom.EnableBoundingBox();
+			TreeScene treeScene{ glm::vec3(0.0f), &mState };
 			std::unique_ptr<TreeScene> pTreeScene = nullptr;
 
 			//Preview preview{ glm::vec3(0.0f), &mState,
 			//	"E:\\Dynamik\\Game Repository\\assets\\assets\\Animation\\Model\\characterMedium.fbx",
 			//	"E:\\Dynamik\\Game Repository\\assets\\assets\\Animation\\Skins\\criminalMaleA.png" };
 
+			std::chrono::time_point<std::chrono::high_resolution_clock> oldTimePoint = std::chrono::high_resolution_clock::now();
+
 			mState.PrepareRenderTargetsToDraw();
 			while (mState.pDisplay->IsOpen())
 			{
 				FLINT_SETUP_PROFILER();
+				std::chrono::time_point<std::chrono::high_resolution_clock> now = std::chrono::high_resolution_clock::now();
+				UI64 delta = now.time_since_epoch().count() - oldTimePoint.time_since_epoch().count();
+
 				mState.PrepareNewFrame();
 
 				if (mState.pDisplay->GetKeyEvent(Flint::KeyCode::KEY_L).IsPressed())
@@ -47,15 +53,16 @@ int main()
 					}
 				}
 
-				mState.UpdateCamera();
-				skyBox.OnUpdate();
-				vikingRoom.OnUpdate();
-				//treeScene.OnUpdate();
-				//preview.OnUpdate();
+				mState.UpdateCamera(delta);
+				skyBox.OnUpdate(delta);
+				//vikingRoom.OnUpdate(delta);
+				treeScene.OnUpdate(delta);
+				//preview.OnUpdate(delta);
 
 				if (pTreeScene)
-					pTreeScene->OnUpdate();
+					pTreeScene->OnUpdate(delta);
 
+				oldTimePoint = now;
 				mState.SubmitFrames();
 				mState.pDisplay->Update();
 			}

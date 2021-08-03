@@ -16,6 +16,6 @@ LaraCroft::~LaraCroft()
 {
 }
 
-void LaraCroft::OnUpdate()
+void LaraCroft::OnUpdate(UI64 delta)
 {
 }
