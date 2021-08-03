@@ -321,5 +321,13 @@ namespace Flint
 
 			FLINT_VK_ASSERT(vkBeginCommandBuffer(vCurrentBuffer, &vBeginInfo));
 		}
+		
+		void VulkanCommandBufferList::VulkanBeginNextSecondaryCommandBuffer(const VkCommandBufferInheritanceInfo* pInheritanceInfo)
+		{
+			mCurrentBufferIndex++;
+			if (mCurrentBufferIndex >= mBufferCount) mCurrentBufferIndex = 0;
+
+			VulkanBeginSecondaryCommandBuffer(mCurrentBufferIndex, pInheritanceInfo);
+		}
 	}
 }

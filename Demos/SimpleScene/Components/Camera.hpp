@@ -84,7 +84,7 @@ private:
 	glm::vec3 cameraRight = { 1.0f, 0.0f, 0.0f };
 	glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
-	float movementBias = 0.01f;
+	float movementBias = 0.05f;
 
 	float fieldOfView = 60.0f;
 	float aspectRatio = 0.5f;

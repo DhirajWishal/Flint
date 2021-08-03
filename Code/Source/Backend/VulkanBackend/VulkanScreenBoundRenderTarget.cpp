@@ -83,7 +83,7 @@ namespace Flint
 			FLINT_VK_ASSERT(vkWaitForFences(vDevice.GetLogicalDevice(), 1, &vRenderTarget.vInFlightFences[mFrameIndex], VK_TRUE, std::numeric_limits<uint64_t>::max()));
 			//FLINT_VK_ASSERT(pvDevice->ResetFences({ vInFlightFences[mFrameIndex] }), "Failed to reset fence!")
 
-			VkResult result = vkAcquireNextImageKHR(vDevice.GetLogicalDevice(), pSwapChain->GetSwapChain(), std::numeric_limits<UI32>::max(), vRenderTarget.vImageAvailables[mFrameIndex], VK_NULL_HANDLE, &mImageIndex);
+			VkResult result = vkAcquireNextImageKHR(vDevice.GetLogicalDevice(), pSwapChain->GetSwapChain(), UI64_MAX, vRenderTarget.vImageAvailables[mFrameIndex], VK_NULL_HANDLE, &mImageIndex);
 			if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
 				Recreate();
 			else FLINT_VK_ASSERT(result);
@@ -115,15 +115,13 @@ namespace Flint
 				bIsAltered = false;
 			}
 
-			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
-			auto& vCommandBufferList = pCommandBufferList->StaticCast<VulkanCommandBufferList>();
+			vCommandBuffer[0] = pCommandBufferList->StaticCast<VulkanCommandBufferList>().GetCommandBuffer(mFrameIndex);
 
+			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 			if (vRenderTarget.vImagesInFlightFences[mImageIndex] != VK_NULL_HANDLE)
-				FLINT_VK_ASSERT(vkWaitForFences(vDevice.GetLogicalDevice(), 1, &vRenderTarget.vImagesInFlightFences[mImageIndex], VK_TRUE, std::numeric_limits<uint64_t>::max()));
+				FLINT_VK_ASSERT(vkWaitForFences(vDevice.GetLogicalDevice(), 1, &vRenderTarget.vImagesInFlightFences[mImageIndex], VK_TRUE, UI64_MAX));
 
 			vRenderTarget.vImagesInFlightFences[mImageIndex] = vRenderTarget.vInFlightFences[mFrameIndex];
-
-			vCommandBuffer[0] = vCommandBufferList.GetCommandBuffer(mFrameIndex);
 
 			vSI.pCommandBuffers = vCommandBuffer;
 			vSI.pWaitSemaphores = &vRenderTarget.vImageAvailables[mFrameIndex];
@@ -146,12 +144,13 @@ namespace Flint
 				vDisplay.ToggleResize();
 				Recreate();
 			}
-			else FLINT_VK_ASSERT(result);
-
-			FLINT_VK_ASSERT(vkQueueWaitIdle(vDevice.GetQueue().vTransferQueue));
+			else
+				FLINT_VK_ASSERT(result);
 
 			// Bind all the secondary commands.
 			BindSecondaryCommands();
+
+			FLINT_VK_ASSERT(vkQueueWaitIdle(vDevice.GetQueue().vTransferQueue));
 		}
 
 		void VulkanScreenBoundRenderTarget::Terminate()
@@ -294,7 +293,7 @@ namespace Flint
 		void VulkanScreenBoundRenderTarget::SecondaryCommandsWorker(DrawInstanceMap& drawInstanceMap, BinarySemaphore& binarySemaphore, CountingSemaphore& countingSemaphore, std::atomic<bool>& shouldRun)
 		{
 			mResourceMutex.lock();
-			VulkanCommandBufferList vCommandBufferList{ pCommandBufferList->GetDevice(), 1, pCommandBufferList };
+			VulkanCommandBufferList vCommandBufferList{ pCommandBufferList->GetDevice(), pCommandBufferList->GetBufferCount(), pCommandBufferList };
 			mResourceMutex.unlock();
 
 			countingSemaphore.Release();
@@ -305,7 +304,7 @@ namespace Flint
 				{
 					// Begin the command buffer.
 					VkCommandBufferInheritanceInfo vInheritInfo = vInheritanceInfo.load();
-					vCommandBufferList.VulkanBeginSecondaryCommandBuffer(0, &vInheritInfo);
+					vCommandBufferList.VulkanBeginNextSecondaryCommandBuffer(&vInheritInfo);
 
 					// Bind the draw instances.
 					for (auto& instance : drawInstanceMap)

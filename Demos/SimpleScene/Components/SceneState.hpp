@@ -32,7 +32,11 @@ public:
 	std::shared_ptr<Flint::Display> pDisplay = nullptr;
 	std::shared_ptr<Flint::Device> pDevice = nullptr;
 
+	std::shared_ptr<Flint::Shader> pVertexShader = nullptr;
+	std::shared_ptr<Flint::Shader> pFragmentShader = nullptr;
+
+	void CreateDefaultPipeline();
+
 private:
 	void CreateDefaultRenderTarget();
-	void CreateDefaultPipeline();
 };

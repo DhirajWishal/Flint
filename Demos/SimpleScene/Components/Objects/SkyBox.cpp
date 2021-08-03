@@ -5,16 +5,15 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-SkyBox::SkyBox(SceneState* pSceneState) : GameObject(pSceneState)
+SkyBox::SkyBox(glm::vec3 position, SceneState* pSceneState) : GameObject(position, pSceneState)
 {
+	mModelMatrix = glm::scale(mModelMatrix, glm::vec3(2.0f, 2.0f, 2.0f));
+
 	pCameraBuffer = pSceneState->pDevice->CreateBuffer(Flint::BufferType::UNIFORM, sizeof(CameraMatrix));
 	pDynamicStates = std::make_shared<Flint::DynamicStateContainer>();
 
 	pVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("E:\\Flint\\Assets\\Shaders\\SkyBox\\skybox.vert.spv"), Flint::ShaderCodeType::SPIR_V);
-	pFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("E:\\Flint\\Assets\\Shaders\\SkyBox\\skybox.frag.spv"), Flint::ShaderCodeType::SPIR_V);
-
-	if (pSceneState->pGeometryStores.find("Default") == pSceneState->pGeometryStores.end())
-		pSceneState->pGeometryStores["Default"] = pSceneState->pDevice->CreateGeometryStore(pVertexShader->GetInputAttributes(), sizeof(UI32));
+	pFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("E:\\Flint\\Assets\\Shaders\\SkyBox\\skybox.frag.spv"), Flint::ShaderCodeType::SPIR_V);		
 
 	auto image = LoadSkyboxImages();
 	pTexture = pSceneState->pDevice->CreateImage(Flint::ImageType::CUBEMAP, Flint::ImageUsage::GRAPHICS, image.mExtent, Flint::PixelFormat::R8G8B8A8_SRGB, 6, 1, image.pImageData);

@@ -8,7 +8,7 @@
 class SkyBox final : public GameObject
 {
 public:
-	SkyBox(SceneState* pSceneState);
+	SkyBox(glm::vec3 position, SceneState* pSceneState);
 	~SkyBox();
 
 	virtual void OnUpdate() override final;

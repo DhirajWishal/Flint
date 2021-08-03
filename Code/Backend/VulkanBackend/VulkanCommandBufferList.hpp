@@ -49,6 +49,7 @@ namespace Flint
 
 		public:
 			void VulkanBeginSecondaryCommandBuffer(UI32 bufferIndex, const VkCommandBufferInheritanceInfo* pInheritanceInfo);
+			void VulkanBeginNextSecondaryCommandBuffer(const VkCommandBufferInheritanceInfo* pInheritanceInfo);
 
 		private:
 			VkCommandPool vCommandPool = VK_NULL_HANDLE;

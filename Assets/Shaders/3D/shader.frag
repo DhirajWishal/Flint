@@ -11,5 +11,8 @@ layout(location = 0) out vec4 outColor;
 
 void main() {
     outColor = texture(texSampler, fragTexCoord);
+    if(outColor.w < 1.0) discard;
+
+
     //outColor.rgb *= clamp(dot(vec3(-0.5f, 0.5f, -0.5f), position), 0.1f, 1.0f);
 }

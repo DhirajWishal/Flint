@@ -3,9 +3,12 @@
 
 #include "GameObject.hpp"
 
-GameObject::GameObject(SceneState* pSceneState) : pSceneState(pSceneState)
+#include <glm/gtc/matrix_transform.hpp>
+
+GameObject::GameObject(glm::vec3 position, SceneState* pSceneState) : pSceneState(pSceneState)
 {
 	pModelUniform = pSceneState->pDevice->CreateBuffer(Flint::BufferType::UNIFORM, sizeof(glm::mat4));
+	mModelMatrix = glm::translate(glm::mat4(1.0f), position);
 }
 
 GameObject::~GameObject()

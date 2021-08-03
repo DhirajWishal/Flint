@@ -1,40 +1,42 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#include "VikingRoom.hpp"
+#include "TreeScene.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 
-VikingRoom::VikingRoom(glm::vec3 position, SceneState* pSceneState) : GameObject(position, pSceneState)
+TreeScene::TreeScene(glm::vec3 position, SceneState* pSceneState)
+	: GameObject(position, pSceneState)
 {
 	pCameraBuffer = pSceneState->pDevice->CreateBuffer(Flint::BufferType::UNIFORM, sizeof(CameraMatrix));
 	pDynamicStates = std::make_shared<Flint::DynamicStateContainer>();
 
-	auto image = LoadImage("E:\\Dynamik\\Game Repository\\assets\\assets\\VikingRoom\\texture.png");
-	pTexture = pSceneState->pDevice->CreateImage(Flint::ImageType::DIMENSIONS_2, Flint::ImageUsage::GRAPHICS, image.mExtent, Flint::PixelFormat::R8G8B8A8_SRGB, 1, 1, image.pImageData);
-	DestroyImage(image);
-
 	pTextureSampler = pSceneState->pDevice->CreateImageSampler(Flint::ImageSamplerSpecification());
-
-	if (pSceneState->pGraphicsPipelines.find("Default") == pSceneState->pGraphicsPipelines.end())
-		pSceneState->CreateDefaultPipeline();
-
-	auto pPipeline = pSceneState->pGraphicsPipelines["Default"];
-	pResourceMap = pPipeline->CreateResourceMap();
-
-	pResourceMap->SetResource("Ubo", pModelUniform);
-	pResourceMap->SetResource("Camera", pCameraBuffer);
-	pResourceMap->SetResource("texSampler", pTextureSampler, pTexture);
 
 	Flint::FBox2D windowExtent = pSceneState->pDisplay->GetExtent();
 	pDynamicStates->SetViewPort(Flint::FExtent2D<float>{static_cast<float>(windowExtent.mWidth), static_cast<float>(windowExtent.mHeight)}, Flint::FExtent2D<float>(0.0f, 1.0f), { 0.0f, 0.0f });
 	pDynamicStates->SetScissor(windowExtent, { 0, 0 });
 
-	auto asset = ImportAsset(pSceneState->pDevice, "E:\\Dynamik\\Game Repository\\assets\\assets\\VikingRoom\\vikingroom.fbx");
+	if (pSceneState->pGraphicsPipelines.find("Default") == pSceneState->pGraphicsPipelines.end())
+		pSceneState->CreateDefaultPipeline();
+
+	auto asset = ImportAsset(pSceneState->pDevice, "E:\\Dynamik\\Game Repository\\assets\\assets\\Tree01\\Tree1\\Tree1.obj");
 	auto [vertexOffset, indexOffset] = pSceneState->pGeometryStores["Default"]->AddGeometry(asset.pVertexBuffer, asset.pIndexBuffer);
-	for (auto instance : asset.mDrawInstances)
+
+	LoadTreeImages();
+
+	auto pPipeline = pSceneState->pGraphicsPipelines["Default"];
+	for (UI8 i = 0; i < ImageCount; i++)
 	{
-		mDrawIndex = pPipeline->AddDrawData(pResourceMap, pDynamicStates, vertexOffset + instance.mVertexOffset, instance.mVertexCount, indexOffset + instance.mIndexOffset, instance.mIndexCount);
+		const auto instance = asset.mDrawInstances[i];
+
+		auto pMap = pPipeline->CreateResourceMap();
+		pMap->SetResource("Ubo", pModelUniform);
+		pMap->SetResource("Camera", pCameraBuffer);
+		pMap->SetResource("texSampler", pTextureSampler, pTextures[i]);
+
+		mDrawIndexes[i] = pPipeline->AddDrawData(pMap, pDynamicStates, vertexOffset + instance.mVertexOffset, instance.mVertexCount, indexOffset + instance.mIndexOffset, instance.mIndexCount);
+		
 		mVertexCount += instance.mVertexCount;
 		mIndexCount += instance.mIndexCount;
 	}
@@ -46,20 +48,21 @@ VikingRoom::VikingRoom(glm::vec3 position, SceneState* pSceneState) : GameObject
 	pSceneState->pDevice->DestroyBuffer(asset.pIndexBuffer);
 }
 
-VikingRoom::~VikingRoom()
+TreeScene::~TreeScene()
 {
 	pSceneState->pGeometryStores["Default"]->RemoveGeometry(mVertexOffset, mVertexCount, mIndexOffset, mIndexCount);
-	pSceneState->pScreenBoundRenderTargets["Default"]->RemovePipeline(pSceneState->pGeometryStores["Default"], pSceneState->pGraphicsPipelines["Default"]);
+
+	for (UI8 i = 0; i < ImageCount; i++)
+		pSceneState->pGraphicsPipelines["Default"]->RemoveDrawData(mDrawIndexes[i]);
 
 	pSceneState->pDevice->DestroyBuffer(pCameraBuffer);
-	pSceneState->pDevice->DestroyImage(pTexture);
 	pSceneState->pDevice->DestroyImageSampler(pTextureSampler);
-	pSceneState->pDevice->DestroyPipeline(pSceneState->pGraphicsPipelines["Default"]);
 
-	pSceneState->pGraphicsPipelines.erase("Default");
+	for (UI8 i = 0; i < ImageCount; i++)
+		pSceneState->pDevice->DestroyImage(pTextures[i]);
 }
 
-void VikingRoom::OnUpdate()
+void TreeScene::OnUpdate()
 {
 	if (pSceneState->pDisplay->IsDisplayResized())
 	{
@@ -103,6 +106,22 @@ void VikingRoom::OnUpdate()
 	SubmitToUniformBuffer(pCameraBuffer, pSceneState->mCamera.GetMatrix());
 }
 
-void VikingRoom::SetupPipeline()
+void TreeScene::LoadTreeImages()
 {
+	std::filesystem::path paths[ImageCount] = {
+		"E:\\Dynamik\\Game Repository\\assets\\assets\\Tree01\\Tree1\\BarkDecidious0143_5_S.jpg",
+		"E:\\Dynamik\\Game Repository\\assets\\assets\\Tree01\\Tree1\\Leaves0120_35_S.png",
+		"E:\\Dynamik\\Game Repository\\assets\\assets\\Tree01\\Tree1\\BarkDecidious0194_7_S.jpg",
+		"E:\\Dynamik\\Game Repository\\assets\\assets\\Tree01\\Tree1\\Leaves0142_4_S.png",
+		"E:\\Dynamik\\Game Repository\\assets\\assets\\Tree01\\Tree1\\BarkDecidious0194_7_S.jpg",
+		"E:\\Dynamik\\Game Repository\\assets\\assets\\Tree01\\Tree1\\Leaves0156_1_S.png",
+		//"E:\\Dynamik\\Game Repository\\assets\\Images\\spring-forrest-i101995.jpg"
+	};
+
+	for (UI8 i = 0; i < ImageCount; i++)
+	{
+		auto image = LoadImage(paths[i]);
+		pTextures[i] = pSceneState->pDevice->CreateImage(Flint::ImageType::DIMENSIONS_2, Flint::ImageUsage::GRAPHICS, image.mExtent, Flint::PixelFormat::R8G8B8A8_SRGB, 1, 1, image.pImageData);
+		delete[] image.pImageData;
+	}
 }

@@ -13,7 +13,7 @@
 class GameObject
 {
 public:
-	GameObject(SceneState* pSceneState);
+	GameObject(glm::vec3 position, SceneState* pSceneState);
 	virtual ~GameObject();
 
 	/**

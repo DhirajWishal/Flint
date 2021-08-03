@@ -544,14 +544,15 @@ namespace Flint
 			// Allocate descriptor sets.
 			std::vector<VkDescriptorSet> vDescriptorSets(descriptorSetCount);
 			{
+				std::vector<VkDescriptorSetLayout> vDescriptorSetLayouts(descriptorSetCount, vDescriptorSetLayout);
+
 				VkDescriptorSetAllocateInfo vAllocateInfo = {};
 				vAllocateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
 				vAllocateInfo.pNext = VK_NULL_HANDLE;
 				vAllocateInfo.descriptorPool = vDescriptorSetPool;
-				vAllocateInfo.pSetLayouts = &vDescriptorSetLayout;
-				vAllocateInfo.descriptorSetCount = descriptorSetCount;
+				vAllocateInfo.descriptorSetCount = descriptorSetCount; 
+				vAllocateInfo.pSetLayouts = vDescriptorSetLayouts.data();
 
-				vDescriptorSets.resize(descriptorSetCount);
 				FLINT_VK_ASSERT(vkAllocateDescriptorSets(vDevice.GetLogicalDevice(), &vAllocateInfo, vDescriptorSets.data()));
 			}
 

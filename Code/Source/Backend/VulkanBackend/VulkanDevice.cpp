@@ -434,7 +434,7 @@ namespace Flint
 
 			vQueue.Initialize(vPhysicalDevice, mFlags);
 
-			std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+			std::vector<VkDeviceQueueCreateInfo> vQueueCreateInfos;
 			std::set<UI32> uniqueQueueFamilies = {
 				vQueue.mGraphicsFamily.value(),
 				vQueue.mComputeFamily.value(),
@@ -444,39 +444,40 @@ namespace Flint
 			float queuePriority = 1.0f;
 			for (UI32 queueFamily : uniqueQueueFamilies)
 			{
-				VkDeviceQueueCreateInfo queueCreateInfo = {};
-				queueCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-				queueCreateInfo.queueFamilyIndex = queueFamily;
-				queueCreateInfo.queueCount = 1;
-				queueCreateInfo.pQueuePriorities = &queuePriority;
-				queueCreateInfos.push_back(queueCreateInfo);
+				VkDeviceQueueCreateInfo vQueueCreateInfo = {};
+				vQueueCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+				vQueueCreateInfo.queueFamilyIndex = queueFamily;
+				vQueueCreateInfo.queueCount = 1;
+				vQueueCreateInfo.pQueuePriorities = &queuePriority;
+				vQueueCreateInfos.push_back(vQueueCreateInfo);
 			}
 
 			// Physical device features.
-			VkPhysicalDeviceFeatures deviceFeatures = {};
-			deviceFeatures.samplerAnisotropy = VK_TRUE;
-			deviceFeatures.sampleRateShading = VK_TRUE; // Enable sample shading feature for the device
+			VkPhysicalDeviceFeatures vFeatures = {};
+			vFeatures.samplerAnisotropy = VK_TRUE;
+			vFeatures.sampleRateShading = VK_TRUE; // Enable sample shading feature for the device
+			vFeatures.fillModeNonSolid = VK_TRUE;
 
 			// Device create info.
-			VkDeviceCreateInfo createInfo = {};
-			createInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-			createInfo.queueCreateInfoCount = static_cast<UI32>(queueCreateInfos.size());
-			createInfo.pQueueCreateInfos = queueCreateInfos.data();
-			createInfo.pEnabledFeatures = &deviceFeatures;
-			createInfo.enabledExtensionCount = static_cast<UI32>(mDeviceExtensions.size());
-			createInfo.ppEnabledExtensionNames = mDeviceExtensions.data();
+			VkDeviceCreateInfo vDeviceCreateInfo = {};
+			vDeviceCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+			vDeviceCreateInfo.queueCreateInfoCount = static_cast<UI32>(vQueueCreateInfos.size());
+			vDeviceCreateInfo.pQueueCreateInfos = vQueueCreateInfos.data();
+			vDeviceCreateInfo.pEnabledFeatures = &vFeatures;
+			vDeviceCreateInfo.enabledExtensionCount = static_cast<UI32>(mDeviceExtensions.size());
+			vDeviceCreateInfo.ppEnabledExtensionNames = mDeviceExtensions.data();
 
 			std::vector<const char*> validationLayers = instance.GetValidationLayers();
 			if (instance.IsValidationEnabled())
 			{
-				createInfo.enabledLayerCount = static_cast<UI32>(validationLayers.size());
-				createInfo.ppEnabledLayerNames = validationLayers.data();
+				vDeviceCreateInfo.enabledLayerCount = static_cast<UI32>(validationLayers.size());
+				vDeviceCreateInfo.ppEnabledLayerNames = validationLayers.data();
 			}
 			else
-				createInfo.enabledLayerCount = 0;
+				vDeviceCreateInfo.enabledLayerCount = 0;
 
 			// Create the logical device.
-			FLINT_VK_ASSERT(vkCreateDevice(vPhysicalDevice, &createInfo, nullptr, &vLogicalDevice));
+			FLINT_VK_ASSERT(vkCreateDevice(vPhysicalDevice, &vDeviceCreateInfo, nullptr, &vLogicalDevice));
 
 			if ((mFlags & DeviceFlags::GRAPHICS_COMPATIBLE) == DeviceFlags::GRAPHICS_COMPATIBLE)
 				vkGetDeviceQueue(GetLogicalDevice(), vQueue.mGraphicsFamily.value(), 0, &vQueue.vGraphicsQueue);
