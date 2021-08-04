@@ -33,26 +33,22 @@ workspace "Flint"
 	IncludeLib["Vulkan"] = "$(SolutionDir)ThirdParty/Vulkan/lib"
 	IncludeLib["SPIRV_Cross"] = "$(SolutionDir)ThirdParty/SPIRV-Cross/Release"
 
+	IncludeLib["Assimp"] = "$(SolutionDir)Demos/ThirdParty/Assimp/lib/Release"
+
 	filter "configurations:Debug"
 		defines { "FLINT_DEBUG" }
 		symbols "On"
 		runtime "Debug"
-
-		IncludeLib["Assimp"] = "$(SolutionDir)Demos/ThirdParty/Assimp/lib/Debug"
 
 	filter "configurations:PreRelease"
 		defines { "FLINT_PRE_RELEASE" }
 		optimize "On"
 		runtime "Release"
 
-		IncludeLib["Assimp"] = "$(SolutionDir)Demos/ThirdParty/Assimp/lib/Release"
-
 	filter "configurations:Release"
 		defines { "FLINT_RELEASE" }
 		optimize "On"
 		runtime "Release"
-
-		IncludeLib["Assimp"] = "$(SolutionDir)Demos/ThirdParty/Assimp/lib/Release"
 
 	filter "platforms:Windows"
 		system "windows"

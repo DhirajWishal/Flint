@@ -16,7 +16,7 @@ project "SimpleScene"
 	postbuildcommands {
 		"{COPY} \"$(SolutionDir)ThirdParty/glfw/src/Release/glfw3.dll\" \"%{cfg.targetdir}\"",
 		"{COPY} \"$(SolutionDir)ThirdParty/Runtime/vulkan-1.dll\" \"%{cfg.targetdir}\"",
-		"{COPY} \"$(SolutionDir)Demos/ThirdParty/Assimp/bin/Release/assimp.exe\" \"%{cfg.targetdir}\"",
+		"{COPY} \"$(SolutionDir)Demos/ThirdParty/Assimp/bin/Release/assimp-vc142-mt.dll\" \"%{cfg.targetdir}\"",
 	}
 
 	files {
@@ -40,7 +40,7 @@ project "SimpleScene"
 	}
 
 	links {
-		"assimp",
+		"assimp-vc142-mt",
 		"Flint",
 	}
 

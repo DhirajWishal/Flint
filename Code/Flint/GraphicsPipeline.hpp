@@ -250,21 +250,6 @@ namespace Flint
 		void RemoveDrawData(const UI64 drawID);
 
 	protected:
-		/**
-		 * Get all the buffer resource names bound to this pipeline.
-		 *
-		 * @return The resource name array.
-		 */
-		const std::vector<std::string> GetBufferResourceNames() const;
-
-		/**
-		 * Get all the image resource names bound to this pipeline.
-		 *
-		 * @return The resource name array.
-		 */
-		const std::vector<std::string> GetImageResourceNames() const;
-
-	protected:
 		GraphicsPipelineSpecification mSpecification = {};
 
 		std::unordered_map<UI64, DrawData> mDrawDataList = {};

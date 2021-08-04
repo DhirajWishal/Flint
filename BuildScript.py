@@ -34,4 +34,4 @@ os.system("cd \"ThirdParty/SPIRV-Cross\" && cmake CMakeLists.txt && cmake --buil
 
 # Build Assimp
 print("\nBuilding Assimp ...")
-os.system("cd \"Demos/ThirdParty/Assimp\" && cmake CMakeLists.txt -D BUILD_SHARED_LIBS=OFF && cmake --build . --config Debug && cmake --build . --config Release")
+os.system("cd \"Demos/ThirdParty/Assimp\" && cmake CMakeLists.txt -DBUILD_SHARED_LIBS=ON -DASSIMP_BUILD_TESTS=OFF && cmake --build . --config Release")
