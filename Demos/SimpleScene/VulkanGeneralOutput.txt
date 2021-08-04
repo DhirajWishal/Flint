@@ -1,4 +1,4 @@
-Vulkan Validation Layer (General): loaderGetDeviceRegistryFiles: GUID for 10 is not SoftwareComponent skipping
+Vulkan Validation Layer (General): loaderGetDeviceRegistryFiles: GUID for 3 is not SoftwareComponent skipping
 Vulkan Validation Layer (General): Searching for ICD drivers named .\nvoglv64.dll
 Vulkan Validation Layer (General): Build ICD instance extension list
 Vulkan Validation Layer (General): Instance Extension: VK_KHR_device_group_creation (C:\Windows\System32\DriverStore\FileRepository\nv_dispsi.inf_amd64_31ac943c2ff31cd4\.\nvoglv64.dll) version 0.0.1

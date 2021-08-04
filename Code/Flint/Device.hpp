@@ -186,10 +186,9 @@ namespace Flint
 		 *
 		 * @param type: The type of the shader.
 		 * @param path: The shade code path.
-		 * @param codeType: The shader code type.
 		 * @return The vertex shader object.
 		 */
-		virtual std::shared_ptr<Shader> CreateShader(ShaderType type, const std::filesystem::path& path, ShaderCodeType codeType) = 0;
+		virtual std::shared_ptr<Shader> CreateShader(ShaderType type, const std::filesystem::path& path) = 0;
 
 		/**
 		 * Create a new shader.
@@ -197,10 +196,9 @@ namespace Flint
 		 *
 		 * @param type: The type of the shader.
 		 * @param code: The shade code.
-		 * @param codeType: The shader code type. Default is SPIR_V.
 		 * @return The vertex shader object.
 		 */
-		virtual std::shared_ptr<Shader> CreateShader(ShaderType type, const std::vector<UI32>& code, ShaderCodeType codeType = ShaderCodeType::SPIR_V) = 0;
+		virtual std::shared_ptr<Shader> CreateShader(ShaderType type, const std::vector<UI32>& code) = 0;
 
 		/**
 		 * Create a new shader.
@@ -208,10 +206,9 @@ namespace Flint
 		 *
 		 * @param type: The type of the shader.
 		 * @param code: The shade code.
-		 * @param codeType: The shader code type. Default is GLSL.
 		 * @return The vertex shader object.
 		 */
-		virtual std::shared_ptr<Shader> CreateShader(ShaderType type, const std::string& code, ShaderCodeType codeType = ShaderCodeType::GLSL) = 0;
+		virtual std::shared_ptr<Shader> CreateShader(ShaderType type, const std::string& code) = 0;
 
 		/**
 		 * Destroy a created shader.

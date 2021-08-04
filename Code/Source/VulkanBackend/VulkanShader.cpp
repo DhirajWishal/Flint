@@ -4,9 +4,7 @@
 #include "VulkanBackend/VulkanShader.hpp"
 #include "VulkanBackend/VulkanUtilities.hpp"
 
-#define SHADERC_SHAREDLIB
-#include <shaderc/shaderc.hpp>
-#include <spirv_cross.hpp>
+#include "spirv_reflect.h"
 #include <fstream>
 
 namespace Flint
@@ -15,60 +13,6 @@ namespace Flint
 	{
 		namespace _Helpers
 		{
-			shaderc_shader_kind GLSLShaderStageToShadercKind(VkShaderStageFlagBits flag)
-			{
-				switch (flag)
-				{
-				case VK_SHADER_STAGE_VERTEX_BIT:
-					return shaderc_shader_kind::shaderc_glsl_vertex_shader;
-
-				case VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT:
-					return shaderc_shader_kind::shaderc_glsl_tess_control_shader;
-
-				case VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT:
-					return shaderc_shader_kind::shaderc_glsl_tess_evaluation_shader;
-
-				case VK_SHADER_STAGE_GEOMETRY_BIT:
-					return shaderc_shader_kind::shaderc_glsl_geometry_shader;
-
-				case VK_SHADER_STAGE_FRAGMENT_BIT:
-					return shaderc_shader_kind::shaderc_glsl_fragment_shader;
-
-				case VK_SHADER_STAGE_COMPUTE_BIT:
-					return shaderc_shader_kind::shaderc_glsl_compute_shader;
-
-				case VK_SHADER_STAGE_RAYGEN_BIT_KHR:
-					return shaderc_shader_kind::shaderc_glsl_raygen_shader;
-
-				case VK_SHADER_STAGE_ANY_HIT_BIT_KHR:
-					return shaderc_shader_kind::shaderc_glsl_anyhit_shader;
-
-				case VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR:
-					return shaderc_shader_kind::shaderc_glsl_closesthit_shader;
-
-				case VK_SHADER_STAGE_MISS_BIT_KHR:
-					return shaderc_shader_kind::shaderc_glsl_miss_shader;
-
-				case VK_SHADER_STAGE_INTERSECTION_BIT_KHR:
-					return shaderc_shader_kind::shaderc_glsl_intersection_shader;
-
-				case VK_SHADER_STAGE_CALLABLE_BIT_KHR:
-					return shaderc_shader_kind::shaderc_glsl_callable_shader;
-
-				case VK_SHADER_STAGE_TASK_BIT_NV:
-					return shaderc_shader_kind::shaderc_glsl_task_shader;
-
-				case VK_SHADER_STAGE_MESH_BIT_NV:
-					return shaderc_shader_kind::shaderc_glsl_mesh_shader;
-
-				default:
-					FLINT_THROW_RUNTIME_ERROR("Unsupported shader stage!");
-					break;
-				}
-
-				return shaderc_shader_kind::shaderc_glsl_vertex_shader;
-			}
-
 			std::vector<UI32> ResolvePadding(const std::vector<UI32>& code)
 			{
 				const UI64 finalCodeSize = code.size() / 4;
@@ -77,10 +21,167 @@ namespace Flint
 
 				return resolvedCode;
 			}
+
+			void ValidateReflection(SpvReflectResult result)
+			{
+				switch (result)
+				{
+				case SPV_REFLECT_RESULT_ERROR_PARSE_FAILED:
+					FLINT_THROW_BACKEND_ERROR("Shader parse failed!");
+
+				case SPV_REFLECT_RESULT_ERROR_ALLOC_FAILED:
+					FLINT_THROW_BACKEND_ERROR("Shader allocation failed!");
+
+				case SPV_REFLECT_RESULT_ERROR_RANGE_EXCEEDED:
+					FLINT_THROW_BACKEND_ERROR("Shader range exceeded!");
+
+				case SPV_REFLECT_RESULT_ERROR_NULL_POINTER:
+					FLINT_THROW_BACKEND_ERROR("Shader null pointer!");
+
+				case SPV_REFLECT_RESULT_ERROR_INTERNAL_ERROR:
+					FLINT_THROW_BACKEND_ERROR("Shader internal reflection error!");
+
+				case SPV_REFLECT_RESULT_ERROR_COUNT_MISMATCH:
+					FLINT_THROW_BACKEND_ERROR("Shader count mismatch!");
+
+				case SPV_REFLECT_RESULT_ERROR_ELEMENT_NOT_FOUND:
+					FLINT_THROW_BACKEND_ERROR("Shader element not found!");
+
+				case SPV_REFLECT_RESULT_ERROR_SPIRV_INVALID_CODE_SIZE:
+					FLINT_THROW_BACKEND_ERROR("Shader invalid SPIRV code size!");
+
+				case SPV_REFLECT_RESULT_ERROR_SPIRV_INVALID_MAGIC_NUMBER:
+					FLINT_THROW_BACKEND_ERROR("Shader invalid SPIRV magic number!");
+
+				case SPV_REFLECT_RESULT_ERROR_SPIRV_UNEXPECTED_EOF:
+					FLINT_THROW_BACKEND_ERROR("Shader SPIRV unexpected end of file (EOF)!");
+
+				case SPV_REFLECT_RESULT_ERROR_SPIRV_INVALID_ID_REFERENCE:
+					FLINT_THROW_BACKEND_ERROR("Shader invalid SPIRV ID reference!");
+
+				case SPV_REFLECT_RESULT_ERROR_SPIRV_SET_NUMBER_OVERFLOW:
+					FLINT_THROW_BACKEND_ERROR("Shader invalid SPIRV descriptor set number overflow!");
+
+				case SPV_REFLECT_RESULT_ERROR_SPIRV_INVALID_STORAGE_CLASS:
+					FLINT_THROW_BACKEND_ERROR("Shader invalid SPIRV storage class!");
+
+				case SPV_REFLECT_RESULT_ERROR_SPIRV_RECURSION:
+					FLINT_THROW_BACKEND_ERROR("Shader invalid SPIRV recursion!");
+
+				case SPV_REFLECT_RESULT_ERROR_SPIRV_INVALID_INSTRUCTION:
+					FLINT_THROW_BACKEND_ERROR("Shader invalid SPIRV instruction!");
+
+				case SPV_REFLECT_RESULT_ERROR_SPIRV_UNEXPECTED_BLOCK_DATA:
+					FLINT_THROW_BACKEND_ERROR("Shader invalid SPIRV block data!");
+
+				case SPV_REFLECT_RESULT_ERROR_SPIRV_INVALID_BLOCK_MEMBER_REFERENCE:
+					FLINT_THROW_BACKEND_ERROR("Shader invalid SPIRV block member reference!");
+
+				case SPV_REFLECT_RESULT_ERROR_SPIRV_INVALID_ENTRY_POINT:
+					FLINT_THROW_BACKEND_ERROR("Shader invalid SPIRV entry point!");
+
+				case SPV_REFLECT_RESULT_ERROR_SPIRV_INVALID_EXECUTION_MODE:
+					FLINT_THROW_BACKEND_ERROR("Shader invalid SPIRV execution mode!");
+				}
+			}
+
+			ShaderResourceType GetShaderResourceType(SpvReflectDescriptorType type)
+			{
+				switch (type)
+				{
+				case SPV_REFLECT_DESCRIPTOR_TYPE_SAMPLER:
+					return ShaderResourceType::SAMPLER;
+
+				case SPV_REFLECT_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER:
+					return ShaderResourceType::COMBINED_IMAGE_SAMPLER;
+
+				case SPV_REFLECT_DESCRIPTOR_TYPE_SAMPLED_IMAGE:
+					return ShaderResourceType::SAMPLED_IMAGE;
+
+				case SPV_REFLECT_DESCRIPTOR_TYPE_STORAGE_IMAGE:
+					return ShaderResourceType::STORAGE_IMAGE;
+
+				case SPV_REFLECT_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER:
+					return ShaderResourceType::UNIFORM_TEXEL_BUFFER;
+
+				case SPV_REFLECT_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER:
+					return ShaderResourceType::STORAGE_TEXEL_BUFFER;
+
+				case SPV_REFLECT_DESCRIPTOR_TYPE_UNIFORM_BUFFER:
+					return ShaderResourceType::UNIFORM_BUFFER;
+
+				case SPV_REFLECT_DESCRIPTOR_TYPE_STORAGE_BUFFER:
+					return ShaderResourceType::STORAGE_BUFFER;
+
+				case SPV_REFLECT_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC:
+					return ShaderResourceType::UNIFORM_BUFFER_DYNAMIC;
+
+				case SPV_REFLECT_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC:
+					return ShaderResourceType::STORAGE_BUFFER_DYNAMIC;
+
+				case SPV_REFLECT_DESCRIPTOR_TYPE_INPUT_ATTACHMENT:
+					return ShaderResourceType::INPUT_ATTACHMENT;
+
+				case SPV_REFLECT_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR:
+					return ShaderResourceType::ACCELERATION_STRUCTURE;
+
+				default:
+					FLINT_THROW_BACKEND_ERROR("Invalid shader descriptor type!");
+				}
+
+				return ShaderResourceType::UNIFORM_BUFFER;
+			}
+
+			VkDescriptorType GetVkDescriptorType(SpvReflectDescriptorType type)
+			{
+				switch (type)
+				{
+				case SPV_REFLECT_DESCRIPTOR_TYPE_SAMPLER:
+					return VkDescriptorType::VK_DESCRIPTOR_TYPE_SAMPLER;
+
+				case SPV_REFLECT_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER:
+					return VkDescriptorType::VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+
+				case SPV_REFLECT_DESCRIPTOR_TYPE_SAMPLED_IMAGE:
+					return VkDescriptorType::VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+
+				case SPV_REFLECT_DESCRIPTOR_TYPE_STORAGE_IMAGE:
+					return VkDescriptorType::VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+
+				case SPV_REFLECT_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER:
+					return VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER;
+
+				case SPV_REFLECT_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER:
+					return VkDescriptorType::VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER;
+
+				case SPV_REFLECT_DESCRIPTOR_TYPE_UNIFORM_BUFFER:
+					return VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+
+				case SPV_REFLECT_DESCRIPTOR_TYPE_STORAGE_BUFFER:
+					return VkDescriptorType::VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+
+				case SPV_REFLECT_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC:
+					return VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+
+				case SPV_REFLECT_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC:
+					return VkDescriptorType::VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC;
+
+				case SPV_REFLECT_DESCRIPTOR_TYPE_INPUT_ATTACHMENT:
+					return VkDescriptorType::VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
+
+				case SPV_REFLECT_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR:
+					return VkDescriptorType::VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR;
+
+				default:
+					FLINT_THROW_BACKEND_ERROR("Invalid shader descriptor type!");
+				}
+
+				return VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			}
 		}
 
-		VulkanShader::VulkanShader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::filesystem::path& path, ShaderCodeType codeType)
-			: Shader(pDevice, type, path, codeType)
+		VulkanShader::VulkanShader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::filesystem::path& path)
+			: Shader(pDevice, type, path)
 		{
 			FLINT_SETUP_PROFILER();
 
@@ -93,52 +194,32 @@ namespace Flint
 			UI64 codeSize = shaderFile.tellg();
 			shaderFile.seekg(0);
 
-			if (codeType == ShaderCodeType::SPIR_V)
-			{
-				mShaderCode.resize(codeSize);
-				shaderFile.read(reinterpret_cast<char*>(mShaderCode.data()), codeSize);
-			}
-			else if (codeType == ShaderCodeType::GLSL)
-			{
-				std::string codeString;
-				codeString.resize(codeSize);
-				shaderFile.read(codeString.data(), codeSize);
-
-				shaderc::Compiler compiler = {};
-				auto result = compiler.CompileGlslToSpv(codeString, _Helpers::GLSLShaderStageToShadercKind(static_cast<VkShaderStageFlagBits>(vStageFlags)), "InputFile.txt");
-
-				if (result.GetNumErrors())
-					FLINT_THROW_RUNTIME_ERROR("Errors while compiling GLSL to SPIRV!");
-			}
+			mShaderCode.resize(codeSize);
+			shaderFile.read(reinterpret_cast<char*>(mShaderCode.data()), codeSize);
 
 			shaderFile.close();
 			CreateShaderModule();
 			PerformReflection();
 		}
 
-		VulkanShader::VulkanShader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::vector<UI32>& code, ShaderCodeType codeType)
-			: Shader(pDevice, type, code, codeType)
+		VulkanShader::VulkanShader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::vector<UI32>& code)
+			: Shader(pDevice, type, code)
 		{
 			FLINT_SETUP_PROFILER();
 
 			ResolveShaderStage();
-
-			if (codeType != ShaderCodeType::SPIR_V) // TODO
-				FLINT_THROW_RUNTIME_ERROR("Invalid shader code type!");
 
 			mShaderCode = code;
 			CreateShaderModule();
 			PerformReflection();
 		}
 
-		VulkanShader::VulkanShader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::string& code, ShaderCodeType codeType)
-			: Shader(pDevice, type, code, codeType)
+		VulkanShader::VulkanShader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::string& code)
+			: Shader(pDevice, type, code)
 		{
 			FLINT_SETUP_PROFILER();
 
 			ResolveShaderStage();
-			if (codeType != ShaderCodeType::SPIR_V) // TODO
-				FLINT_THROW_RUNTIME_ERROR("Invalid shader code type!");
 
 			mShaderCode.resize(code.size());
 			std::copy(code.begin(), code.end(), reinterpret_cast<char*>(mShaderCode.data()));
@@ -171,93 +252,97 @@ namespace Flint
 		{
 			FLINT_SETUP_PROFILER();
 
-			spirv_cross::Compiler compiler(_Helpers::ResolvePadding(mShaderCode));
-			spirv_cross::ShaderResources resources = compiler.get_shader_resources();
-			spirv_cross::SPIRType type = {};
-			UI64 shaderOffset = 0;
+			SpvReflectShaderModule sShaderModule = {};
+			UI32 variableCount = 0;
 
-			VkDescriptorSetLayoutBinding vBinding = {};
-			vBinding.stageFlags = vStageFlags;
-			vBinding.pImmutableSamplers = VK_NULL_HANDLE;
-			vBinding.descriptorCount = 1;	// TODO
-
-			VkDescriptorPoolSize vSize = {};
-			vSize.descriptorCount = 1;
-
-			// Resolve uniform buffers.
-			vBinding.descriptorType = VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-			vSize.type = vBinding.descriptorType;
-			for (auto& resource : resources.uniform_buffers)
-			{
-				vBinding.binding = compiler.get_decoration(resource.id, spv::DecorationBinding);
-				INSERT_INTO_VECTOR(mBindings, vBinding);
-				INSERT_INTO_VECTOR(mSizes, vSize);
-
-				const std::string name = compiler.get_name(resource.id);
-				mResources[name] = ShaderResource(vBinding.binding, compiler.get_decoration(resource.id, spv::DecorationDescriptorSet), ShaderResourceType::UNIFORM_BUFFER);
-			}
-
-			// Resolve storage buffers.
-			vBinding.descriptorType = VkDescriptorType::VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-			vSize.type = vBinding.descriptorType;
-			for (auto& resource : resources.storage_buffers)
-			{
-				vBinding.binding = compiler.get_decoration(resource.id, spv::DecorationBinding);
-				INSERT_INTO_VECTOR(mBindings, vBinding);
-				INSERT_INTO_VECTOR(mSizes, vSize);
-
-				const std::string name = compiler.get_name(resource.id);
-				mResources[name] = ShaderResource(vBinding.binding, compiler.get_decoration(resource.id, spv::DecorationDescriptorSet), ShaderResourceType::STORAGE_BUFFER);
-			}
-
-			// Resolve samplers.
-			vBinding.descriptorType = VkDescriptorType::VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-			vSize.type = vBinding.descriptorType;
-			for (auto& resource : resources.sampled_images)
-			{
-				vBinding.binding = compiler.get_decoration(resource.id, spv::DecorationBinding);
-				INSERT_INTO_VECTOR(mBindings, vBinding);
-				INSERT_INTO_VECTOR(mSizes, vSize);
-
-				const std::string name = compiler.get_name(resource.id);
-				mResources[name] = ShaderResource(vBinding.binding, compiler.get_decoration(resource.id, spv::DecorationDescriptorSet), ShaderResourceType::SAMPLER);
-			}
+			std::vector<UI32> shaderCode = std::move(_Helpers::ResolvePadding(mShaderCode));
+			_Helpers::ValidateReflection(spvReflectCreateShaderModule(shaderCode.size()* sizeof(UI32), shaderCode.data(), &sShaderModule));
 
 			// Resolve shader inputs.
-			for (auto& resource : resources.stage_inputs)
 			{
-				auto& Ty = compiler.get_type(resource.base_type_id);
-				INSERT_INTO_VECTOR(
-					mInputAttributes[compiler.get_decoration(resource.id, spv::DecorationBinding)],
-					ShaderAttribute(
-						compiler.get_name(resource.id),
-						compiler.get_decoration(resource.id, spv::DecorationLocation),
-						static_cast<ShaderAttributeDataType>((static_cast<UI64>(Ty.width) / 8) * Ty.vecsize)));
+				_Helpers::ValidateReflection(spvReflectEnumerateInputVariables(&sShaderModule, &variableCount, nullptr));
+
+				std::vector<SpvReflectInterfaceVariable*> pInputs(variableCount);
+				_Helpers::ValidateReflection(spvReflectEnumerateInputVariables(&sShaderModule, &variableCount, pInputs.data()));
+
+				for (auto& resource : pInputs)
+				{
+					if (resource->format == SpvReflectFormat::SPV_REFLECT_FORMAT_UNDEFINED)
+						continue;
+
+					mInputAttributes[0].push_back(ShaderAttribute(
+						resource->name,
+						resource->location,
+						static_cast<ShaderAttributeDataType>(
+							(resource->type_description->traits.numeric.scalar.width / 8) *
+							resource->type_description->traits.numeric.vector.component_count)));
+				}
 			}
 
 			// Resolve shader outputs.
-			for (auto& resource : resources.stage_outputs)
 			{
-				auto& Ty = compiler.get_type(resource.base_type_id);
-				INSERT_INTO_VECTOR(
-					mOutputAttributes[compiler.get_decoration(resource.id, spv::DecorationBinding)],
-					ShaderAttribute(
-						compiler.get_name(resource.id),
-						compiler.get_decoration(resource.id, spv::DecorationLocation),
-						static_cast<ShaderAttributeDataType>((static_cast<UI64>(Ty.width) / 8) * Ty.vecsize)));
+				_Helpers::ValidateReflection(spvReflectEnumerateOutputVariables(&sShaderModule, &variableCount, nullptr));
+
+				std::vector<SpvReflectInterfaceVariable*> pOutputs(variableCount);
+				_Helpers::ValidateReflection(spvReflectEnumerateOutputVariables(&sShaderModule, &variableCount, pOutputs.data()));
+				for (auto& resource : pOutputs)
+				{
+					if (resource->format == SpvReflectFormat::SPV_REFLECT_FORMAT_UNDEFINED)
+						continue;
+
+					mOutputAttributes[0].push_back(ShaderAttribute(
+						resource->name,
+						resource->location,
+						static_cast<ShaderAttributeDataType>(
+							(resource->type_description->traits.numeric.scalar.width / 8) *
+							resource->type_description->traits.numeric.vector.component_count)));
+				}
 			}
 
-			VkPushConstantRange vPushConstantRange = {};
-			vPushConstantRange.stageFlags = vStageFlags;
-			vPushConstantRange.offset = 0;
-			for (auto& resource : resources.push_constant_buffers)
-			{
-				auto name = compiler.get_name(resource.id);
-				auto& Ty = compiler.get_type(resource.base_type_id);
-				vPushConstantRange.size = (static_cast<UI64>(Ty.width) / 8) * Ty.vecsize;
-				INSERT_INTO_VECTOR(mConstantRanges, vPushConstantRange);
 
-				vPushConstantRange.offset += vPushConstantRange.size;
+			// Resolve uniforms.
+			{
+				_Helpers::ValidateReflection(spvReflectEnumerateDescriptorBindings(&sShaderModule, &variableCount, nullptr));
+
+				std::vector<SpvReflectDescriptorBinding*> pBindings(variableCount);
+				_Helpers::ValidateReflection(spvReflectEnumerateDescriptorBindings(&sShaderModule, &variableCount, pBindings.data()));
+
+				VkDescriptorSetLayoutBinding vBinding = {};
+				vBinding.stageFlags = vStageFlags;
+				vBinding.pImmutableSamplers = VK_NULL_HANDLE;
+
+				VkDescriptorPoolSize vSize = {};
+				for (auto& resource : pBindings)
+				{
+					vBinding.descriptorType = _Helpers::GetVkDescriptorType(resource->descriptor_type);
+					vBinding.descriptorCount = resource->count;
+					vBinding.binding = resource->binding;
+					INSERT_INTO_VECTOR(mBindings, vBinding);
+
+					vSize.type = vBinding.descriptorType;
+					vSize.descriptorCount = resource->count;
+					INSERT_INTO_VECTOR(mSizes, vSize);
+
+					mResources[resource->name] = ShaderResource(vBinding.binding, resource->set, _Helpers::GetShaderResourceType(resource->descriptor_type));
+				}
+			}
+
+			// Resolve push constants.
+			{
+				_Helpers::ValidateReflection(spvReflectEnumeratePushConstantBlocks(&sShaderModule, &variableCount, nullptr));
+
+				std::vector<SpvReflectBlockVariable*> pPushConstants(variableCount);
+				_Helpers::ValidateReflection(spvReflectEnumeratePushConstantBlocks(&sShaderModule, &variableCount, pPushConstants.data()));
+
+				VkPushConstantRange vPushConstantRange = {};
+				vPushConstantRange.stageFlags = vStageFlags;
+				vPushConstantRange.offset = 0;
+				for (auto& resource : pPushConstants)
+				{
+					vPushConstantRange.size = resource->size;
+					vPushConstantRange.offset = resource->offset;
+					INSERT_INTO_VECTOR(mConstantRanges, vPushConstantRange);
+				}
 			}
 		}
 

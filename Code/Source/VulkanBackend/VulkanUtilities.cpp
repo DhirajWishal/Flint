@@ -122,14 +122,41 @@ namespace Flint
 			{
 				switch (type)
 				{
+				case Flint::ShaderResourceType::SAMPLER:
+					return VkDescriptorType::VK_DESCRIPTOR_TYPE_SAMPLER;
+
+				case Flint::ShaderResourceType::COMBINED_IMAGE_SAMPLER:
+					return VkDescriptorType::VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+
+				case Flint::ShaderResourceType::SAMPLED_IMAGE:
+					return VkDescriptorType::VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+
+				case Flint::ShaderResourceType::STORAGE_IMAGE:
+					return VkDescriptorType::VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+
+				case Flint::ShaderResourceType::UNIFORM_TEXEL_BUFFER:
+					return VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER;
+
+				case Flint::ShaderResourceType::STORAGE_TEXEL_BUFFER:
+					return VkDescriptorType::VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER;
+
 				case Flint::ShaderResourceType::UNIFORM_BUFFER:
 					return VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 
 				case Flint::ShaderResourceType::STORAGE_BUFFER:
 					return VkDescriptorType::VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 
-				case Flint::ShaderResourceType::SAMPLER:
-					return VkDescriptorType::VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+				case Flint::ShaderResourceType::UNIFORM_BUFFER_DYNAMIC:
+					return VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+
+				case Flint::ShaderResourceType::STORAGE_BUFFER_DYNAMIC:
+					return VkDescriptorType::VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC;
+
+				case Flint::ShaderResourceType::INPUT_ATTACHMENT:
+					return VkDescriptorType::VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
+
+				case Flint::ShaderResourceType::ACCELERATION_STRUCTURE:
+					return VkDescriptorType::VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR;
 
 				default:
 					FLINT_THROW_BACKEND_ERROR("Invalid or undefined shader resource type!");

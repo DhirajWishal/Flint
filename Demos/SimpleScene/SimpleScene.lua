@@ -8,16 +8,15 @@ project "SimpleScene"
 	cppdialect "C++17"
 	language "C++"
 	staticruntime "On"
+	systemversion "latest"
 
 	targetdir "$(SolutionDir)Builds/Demos/Binaries/$(ProjectName)/$(Configuration)"
 	objdir "$(SolutionDir)Builds/Demos/Intermediate/$(ProjectName)/$(Configuration)"
 
 	postbuildcommands {
-		"{COPY} \"$(SolutionDir)Dependencies/Runtime/assimp-vc142-mt.dll\" \"%{cfg.targetdir}\"",
-		"{COPY} \"$(SolutionDir)Dependencies/Runtime/glfw3.dll\" \"%{cfg.targetdir}\"",
-		"{COPY} \"$(SolutionDir)Dependencies/Runtime/shaderc_shared.dll\" \"%{cfg.targetdir}\"",
-		"{COPY} \"$(SolutionDir)Dependencies/Runtime/vulkan-1.dll\" \"%{cfg.targetdir}\"",
-		"{COPY} \"$(SolutionDir)Dependencies/Runtime/xxhash.dll\" \"%{cfg.targetdir}\"",
+		"{COPY} \"$(SolutionDir)ThirdParty/glfw/src/Release/glfw3.dll\" \"%{cfg.targetdir}\"",
+		"{COPY} \"$(SolutionDir)ThirdParty/Runtime/vulkan-1.dll\" \"%{cfg.targetdir}\"",
+		"{COPY} \"$(SolutionDir)Demos/ThirdParty/Assimp/bin/Release/assimp-vc142-mt.dll\" \"%{cfg.targetdir}\"",
 	}
 
 	files {
@@ -31,8 +30,8 @@ project "SimpleScene"
 
 	includedirs {
 		"$(SolutionDir)Code",
-		"$(SolutionDir)Demos/ThirdParty/glm",
 		"$(SolutionDir)Demos/SimpleScene",
+		"%{IncludeDir.glm}",
 		"%{IncludeDir.Assimp}",
 	}
 

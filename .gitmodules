@@ -1,0 +1,15 @@
+[submodule "Demos/ThirdParty/Assimp"]
+	path = Demos/ThirdParty/Assimp
+	url = https://github.com/DhirajWishal/assimp
+[submodule "ThirdParty/glfw"]
+	path = ThirdParty/glfw
+	url = https://github.com/DhirajWishal/glfw
+[submodule "Demos/ThirdParty/glm"]
+	path = Demos/ThirdParty/glm
+	url = https://github.com/DhirajWishal/glm
+[submodule "ThirdParty/SPIRV-Reflect"]
+	path = ThirdParty/SPIRV-Reflect
+	url = https://github.com/DhirajWishal/SPIRV-Reflect
+[submodule "ThirdParty/gdown"]
+	path = ThirdParty/gdown
+	url = https://github.com/DhirajWishal/gdown
