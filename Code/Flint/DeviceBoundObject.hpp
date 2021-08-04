@@ -79,15 +79,6 @@ namespace Flint
 	};
 
 	/**
-	 * Shader code type enum.
-	 */
-	enum class ShaderCodeType : UI8 {
-		SPIR_V,
-		GLSL,
-		HLSL
-	};
-
-	/**
 	 * Vertex attribute structure.
 	 * This structure contains information about a single vertex attribute.
 	 */

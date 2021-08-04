@@ -180,8 +180,8 @@ namespace Flint
 			}
 		}
 
-		VulkanShader::VulkanShader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::filesystem::path& path, ShaderCodeType codeType)
-			: Shader(pDevice, type, path, codeType)
+		VulkanShader::VulkanShader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::filesystem::path& path)
+			: Shader(pDevice, type, path)
 		{
 			FLINT_SETUP_PROFILER();
 
@@ -194,46 +194,32 @@ namespace Flint
 			UI64 codeSize = shaderFile.tellg();
 			shaderFile.seekg(0);
 
-			if (codeType == ShaderCodeType::SPIR_V)
-			{
-				mShaderCode.resize(codeSize);
-				shaderFile.read(reinterpret_cast<char*>(mShaderCode.data()), codeSize);
-			}
-			else if (codeType == ShaderCodeType::GLSL)
-			{
-				std::string codeString;
-				codeString.resize(codeSize);
-				shaderFile.read(codeString.data(), codeSize);
-			}
+			mShaderCode.resize(codeSize);
+			shaderFile.read(reinterpret_cast<char*>(mShaderCode.data()), codeSize);
 
 			shaderFile.close();
 			CreateShaderModule();
 			PerformReflection();
 		}
 
-		VulkanShader::VulkanShader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::vector<UI32>& code, ShaderCodeType codeType)
-			: Shader(pDevice, type, code, codeType)
+		VulkanShader::VulkanShader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::vector<UI32>& code)
+			: Shader(pDevice, type, code)
 		{
 			FLINT_SETUP_PROFILER();
 
 			ResolveShaderStage();
-
-			if (codeType != ShaderCodeType::SPIR_V) // TODO
-				FLINT_THROW_RUNTIME_ERROR("Invalid shader code type!");
 
 			mShaderCode = code;
 			CreateShaderModule();
 			PerformReflection();
 		}
 
-		VulkanShader::VulkanShader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::string& code, ShaderCodeType codeType)
-			: Shader(pDevice, type, code, codeType)
+		VulkanShader::VulkanShader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::string& code)
+			: Shader(pDevice, type, code)
 		{
 			FLINT_SETUP_PROFILER();
 
 			ResolveShaderStage();
-			if (codeType != ShaderCodeType::SPIR_V) // TODO
-				FLINT_THROW_RUNTIME_ERROR("Invalid shader code type!");
 
 			mShaderCode.resize(code.size());
 			std::copy(code.begin(), code.end(), reinterpret_cast<char*>(mShaderCode.data()));
@@ -269,8 +255,8 @@ namespace Flint
 			SpvReflectShaderModule sShaderModule = {};
 			UI32 variableCount = 0;
 
-			mShaderCode = _Helpers::ResolvePadding(mShaderCode);
-			_Helpers::ValidateReflection(spvReflectCreateShaderModule(mShaderCode.size() * sizeof(UI32), mShaderCode.data(), &sShaderModule));
+			std::vector<UI32> shaderCode = std::move(_Helpers::ResolvePadding(mShaderCode));
+			_Helpers::ValidateReflection(spvReflectCreateShaderModule(shaderCode.size()* sizeof(UI32), shaderCode.data(), &sShaderModule));
 
 			// Resolve shader inputs.
 			{

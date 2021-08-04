@@ -58,7 +58,7 @@ namespace Flint
 	 * This object is the base class for all the shader objects.
 	 * Shader is a program which is run on the device and performs different tasks depending on its stage/ location.
 	 *
-	 * Internally, we use SPIRV to store shaders.
+	 * We require shaders to be in the SPIR-V format.
 	 */
 	class Shader : public DeviceBoundObject
 	{
@@ -70,9 +70,8 @@ namespace Flint
 		 * @param pDevice: The device pointer.
 		 * @param type: The shader type.
 		 * @param path: The file path to the asset file.
-		 * @param codeType: The shader code type.
 		 */
-		Shader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::filesystem::path& path, ShaderCodeType codeType);
+		Shader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::filesystem::path& path);
 
 		/**
 		 * Construct the shader using a shader code.
@@ -81,9 +80,8 @@ namespace Flint
 		 * @param pDevice: The device pointer.
 		 * @param type: The shader type.
 		 * @param code: The shader code as a vector of UI32.
-		 * @param codeType: The shader code type.
 		 */
-		Shader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::vector<UI32>& code, ShaderCodeType codeType = ShaderCodeType::SPIR_V);
+		Shader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::vector<UI32>& code);
 
 		/**
 		 * Construct the shader using a shader code.
@@ -92,9 +90,8 @@ namespace Flint
 		 * @param pDevice: The device pointer.
 		 * @param type: The shader type.
 		 * @param code: The shader code as a string.
-		 * @param codeType: The shader code type.
 		 */
-		Shader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::string& code, ShaderCodeType codeType = ShaderCodeType::GLSL);
+		Shader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::string& code);
 
 		/**
 		 * Get the shader resources of the shader.

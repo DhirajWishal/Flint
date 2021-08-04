@@ -144,19 +144,19 @@ namespace Flint
 			TerminateDeviceBoundObject(*pSampler);
 		}
 
-		std::shared_ptr<Shader> VulkanDevice::CreateShader(ShaderType type, const std::filesystem::path& path, ShaderCodeType codeType)
+		std::shared_ptr<Shader> VulkanDevice::CreateShader(ShaderType type, const std::filesystem::path& path)
 		{
-			return std::make_shared<VulkanShader>(shared_from_this(), type, path, codeType);
+			return std::make_shared<VulkanShader>(shared_from_this(), type, path);
 		}
 
-		std::shared_ptr<Shader> VulkanDevice::CreateShader(ShaderType type, const std::vector<UI32>& code, ShaderCodeType codeType)
+		std::shared_ptr<Shader> VulkanDevice::CreateShader(ShaderType type, const std::vector<UI32>& code)
 		{
-			return std::make_shared<VulkanShader>(shared_from_this(), type, code, codeType);
+			return std::make_shared<VulkanShader>(shared_from_this(), type, code);
 		}
 
-		std::shared_ptr<Shader> VulkanDevice::CreateShader(ShaderType type, const std::string& code, ShaderCodeType codeType)
+		std::shared_ptr<Shader> VulkanDevice::CreateShader(ShaderType type, const std::string& code)
 		{
-			return std::make_shared<VulkanShader>(shared_from_this(), type, code, codeType);
+			return std::make_shared<VulkanShader>(shared_from_this(), type, code);
 		}
 
 		void VulkanDevice::DestroyShader(const std::shared_ptr<Shader>& pShader)

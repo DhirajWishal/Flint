@@ -13,9 +13,9 @@ namespace Flint
 		class VulkanShader final : public Shader, public std::enable_shared_from_this<VulkanShader>
 		{
 		public:
-			VulkanShader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::filesystem::path& path, ShaderCodeType codeType);
-			VulkanShader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::vector<UI32>& code, ShaderCodeType codeType);
-			VulkanShader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::string& code, ShaderCodeType codeType);
+			VulkanShader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::filesystem::path& path);
+			VulkanShader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::vector<UI32>& code);
+			VulkanShader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::string& code);
 
 			virtual void Terminate() override final;
 
