@@ -35,3 +35,14 @@ os.system("cd \"ThirdParty/SPIRV-Cross\" && cmake CMakeLists.txt && cmake --buil
 # Build Assimp
 print("\nBuilding Assimp ...")
 os.system("cd \"Demos/ThirdParty/Assimp\" && cmake CMakeLists.txt -DBUILD_SHARED_LIBS=ON -DASSIMP_BUILD_TESTS=OFF && cmake --build . --config Release")
+
+# Setup gdown
+print("\nSetting up gdown ...")
+os.system("cd \"ThirdParty/gdown\" && python setup.py install")
+
+if input("\nDownload assets from the remote data store? (y/n) ").lower() == "y":
+    os.system("cd Script && python DownloadAssets.py")
+else:
+    print("Skipping asset download stage. You can always download the zip file from: \
+    https://drive.google.com/file/d/1AYOpwipLlZyBuxZoi3QsVWPhBoYuzbCF/view?usp=sharing\
+     and place it under Assets/Store")

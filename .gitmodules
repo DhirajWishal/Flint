@@ -10,3 +10,6 @@
 [submodule "ThirdParty/SPIRV-Reflect"]
 	path = ThirdParty/SPIRV-Reflect
 	url = https://github.com/DhirajWishal/SPIRV-Reflect
+[submodule "ThirdParty/gdown"]
+	path = ThirdParty/gdown
+	url = https://github.com/DhirajWishal/gdown
