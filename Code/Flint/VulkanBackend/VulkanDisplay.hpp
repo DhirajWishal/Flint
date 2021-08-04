@@ -6,9 +6,11 @@
 #include "Display.hpp"
 
 #include "VulkanInstance.hpp"
-#include <GLFW/glfw3.h>
 
 #include <unordered_map>
+
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
 
 namespace Flint
 {

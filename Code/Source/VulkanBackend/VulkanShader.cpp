@@ -4,9 +4,7 @@
 #include "VulkanBackend/VulkanShader.hpp"
 #include "VulkanBackend/VulkanUtilities.hpp"
 
-#define SHADERC_SHAREDLIB
-#include <shaderc/shaderc.hpp>
-#include <spirv_cross.hpp>
+#include "spirv_reflect.h"
 #include <fstream>
 
 namespace Flint
@@ -14,7 +12,7 @@ namespace Flint
 	namespace VulkanBackend
 	{
 		namespace _Helpers
-		{
+		{/*
 			shaderc_shader_kind GLSLShaderStageToShadercKind(VkShaderStageFlagBits flag)
 			{
 				switch (flag)
@@ -67,7 +65,7 @@ namespace Flint
 				}
 
 				return shaderc_shader_kind::shaderc_glsl_vertex_shader;
-			}
+			}*/
 
 			std::vector<UI32> ResolvePadding(const std::vector<UI32>& code)
 			{
@@ -76,6 +74,57 @@ namespace Flint
 				std::copy(code.begin(), code.begin() + finalCodeSize, resolvedCode.data());
 
 				return resolvedCode;
+			}
+
+			void ValidateReflection(SpvReflectResult result)
+			{
+				switch (result)
+				{
+				case SPV_REFLECT_RESULT_SUCCESS:
+					break;
+				case SPV_REFLECT_RESULT_NOT_READY:
+					break;
+				case SPV_REFLECT_RESULT_ERROR_PARSE_FAILED:
+					break;
+				case SPV_REFLECT_RESULT_ERROR_ALLOC_FAILED:
+					break;
+				case SPV_REFLECT_RESULT_ERROR_RANGE_EXCEEDED:
+					break;
+				case SPV_REFLECT_RESULT_ERROR_NULL_POINTER:
+					break;
+				case SPV_REFLECT_RESULT_ERROR_INTERNAL_ERROR:
+					break;
+				case SPV_REFLECT_RESULT_ERROR_COUNT_MISMATCH:
+					break;
+				case SPV_REFLECT_RESULT_ERROR_ELEMENT_NOT_FOUND:
+					break;
+				case SPV_REFLECT_RESULT_ERROR_SPIRV_INVALID_CODE_SIZE:
+					break;
+				case SPV_REFLECT_RESULT_ERROR_SPIRV_INVALID_MAGIC_NUMBER:
+					break;
+				case SPV_REFLECT_RESULT_ERROR_SPIRV_UNEXPECTED_EOF:
+					break;
+				case SPV_REFLECT_RESULT_ERROR_SPIRV_INVALID_ID_REFERENCE:
+					break;
+				case SPV_REFLECT_RESULT_ERROR_SPIRV_SET_NUMBER_OVERFLOW:
+					break;
+				case SPV_REFLECT_RESULT_ERROR_SPIRV_INVALID_STORAGE_CLASS:
+					break;
+				case SPV_REFLECT_RESULT_ERROR_SPIRV_RECURSION:
+					break;
+				case SPV_REFLECT_RESULT_ERROR_SPIRV_INVALID_INSTRUCTION:
+					break;
+				case SPV_REFLECT_RESULT_ERROR_SPIRV_UNEXPECTED_BLOCK_DATA:
+					break;
+				case SPV_REFLECT_RESULT_ERROR_SPIRV_INVALID_BLOCK_MEMBER_REFERENCE:
+					break;
+				case SPV_REFLECT_RESULT_ERROR_SPIRV_INVALID_ENTRY_POINT:
+					break;
+				case SPV_REFLECT_RESULT_ERROR_SPIRV_INVALID_EXECUTION_MODE:
+					break;
+				default:
+					break;
+				}
 			}
 		}
 
@@ -103,12 +152,6 @@ namespace Flint
 				std::string codeString;
 				codeString.resize(codeSize);
 				shaderFile.read(codeString.data(), codeSize);
-
-				shaderc::Compiler compiler = {};
-				auto result = compiler.CompileGlslToSpv(codeString, _Helpers::GLSLShaderStageToShadercKind(static_cast<VkShaderStageFlagBits>(vStageFlags)), "InputFile.txt");
-
-				if (result.GetNumErrors())
-					FLINT_THROW_RUNTIME_ERROR("Errors while compiling GLSL to SPIRV!");
 			}
 
 			shaderFile.close();
@@ -171,6 +214,50 @@ namespace Flint
 		{
 			FLINT_SETUP_PROFILER();
 
+			SpvReflectShaderModule sShaderModule = {};
+			mShaderCode = _Helpers::ResolvePadding(mShaderCode);
+			SpvReflectResult result = spvReflectCreateShaderModule(mShaderCode.size() * sizeof(UI32), mShaderCode.data(), &sShaderModule);
+
+			if (result != SpvReflectResult::SPV_REFLECT_RESULT_SUCCESS)
+				return;
+
+			UI32 variableCount = 0;
+
+			uint32_t var_count = 0;
+			result = spvReflectEnumerateInputVariables(&sShaderModule, &var_count, NULL);
+
+			SpvReflectInterfaceVariable** input_vars =
+				(SpvReflectInterfaceVariable**)malloc(var_count * sizeof(SpvReflectInterfaceVariable*));
+			result = spvReflectEnumerateInputVariables(&sShaderModule, &var_count, input_vars);
+
+			free(input_vars);
+
+			spvReflectEnumerateDescriptorBindings(&sShaderModule, &var_count, nullptr);
+			std::vector<SpvReflectDescriptorBinding*> pBindings(var_count);
+			spvReflectEnumerateDescriptorBindings(&sShaderModule, &var_count, pBindings.data());
+
+			VkDescriptorSetLayoutBinding vBinding = {};
+			vBinding.stageFlags = vStageFlags;
+			vBinding.pImmutableSamplers = VK_NULL_HANDLE;
+			vBinding.descriptorCount = 1;	// TODO
+
+			VkDescriptorPoolSize vSize = {};
+			vSize.descriptorCount = 1;
+
+			// Resolve uniform buffers.
+			vBinding.descriptorType = VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			vSize.type = vBinding.descriptorType;
+			for (auto& resource : pBindings)
+			{
+				vBinding.binding = resource->binding;
+				INSERT_INTO_VECTOR(mBindings, vBinding);
+				INSERT_INTO_VECTOR(mSizes, vSize);
+
+				const std::string name = resource->name;
+				mResources[name] = ShaderResource(vBinding.binding, resource->set, ShaderResourceType::UNIFORM_BUFFER);
+			}
+
+			/*
 			spirv_cross::Compiler compiler(_Helpers::ResolvePadding(mShaderCode));
 			spirv_cross::ShaderResources resources = compiler.get_shader_resources();
 			spirv_cross::SPIRType type = {};
@@ -258,7 +345,7 @@ namespace Flint
 				INSERT_INTO_VECTOR(mConstantRanges, vPushConstantRange);
 
 				vPushConstantRange.offset += vPushConstantRange.size;
-			}
+			}*/
 		}
 
 		void VulkanShader::ResolveShaderStage()

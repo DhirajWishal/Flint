@@ -1,4 +1,4 @@
-Vulkan Validation Layer (General): loaderGetDeviceRegistryFiles: GUID for 10 is not SoftwareComponent skipping
+Vulkan Validation Layer (General): loaderGetDeviceRegistryFiles: GUID for 3 is not SoftwareComponent skipping
 Vulkan Validation Layer (General): Searching for ICD drivers named .\nvoglv64.dll
 Vulkan Validation Layer (General): Build ICD instance extension list
 Vulkan Validation Layer (General): Instance Extension: VK_KHR_device_group_creation (C:\Windows\System32\DriverStore\FileRepository\nv_dispsi.inf_amd64_31ac943c2ff31cd4\.\nvoglv64.dll) version 0.0.1
@@ -1164,7 +1164,3 @@ Vulkan Validation Layer (General): Device Extension: VK_NV_win32_keyed_mutex (C:
 Vulkan Validation Layer (General): Device Extension: VK_NVX_binary_import (C:\Windows\System32\DriverStore\FileRepository\nv_dispsi.inf_amd64_31ac943c2ff31cd4\.\nvoglv64.dll) version 0.0.1
 Vulkan Validation Layer (General): Device Extension: VK_NVX_image_view_handle (C:\Windows\System32\DriverStore\FileRepository\nv_dispsi.inf_amd64_31ac943c2ff31cd4\.\nvoglv64.dll) version 0.0.2
 Vulkan Validation Layer (General): Device Extension: VK_NVX_multiview_per_view_attributes (C:\Windows\System32\DriverStore\FileRepository\nv_dispsi.inf_amd64_31ac943c2ff31cd4\.\nvoglv64.dll) version 0.0.1
-Vulkan Validation Layer (General): Unloading layer library C:\Windows\System32\DriverStore\FileRepository\nv_dispsi.inf_amd64_31ac943c2ff31cd4\.\nvoglv64.dll
-Vulkan Validation Layer (General): Unloading layer library E:\SDKs\Vulkan\1.2.162.1\Bin\.\VkLayer_khronos_validation.dll
-Vulkan Validation Layer (General): Unloading layer library C:\Windows\System32\DriverStore\FileRepository\nv_dispsi.inf_amd64_31ac943c2ff31cd4\.\nvoglv64.dll
-Vulkan Validation Layer (General): Unloading layer library E:\SDKs\Vulkan\1.2.162.1\Bin\.\VkLayer_khronos_validation.dll

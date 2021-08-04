@@ -20,54 +20,38 @@ project "Flint"
 		"**.lua",
 		"**.txt",
 		"**.md",
+
+		"$(SolutionDir)ThirdParty/SPIRV-Reflect/spirv_reflect.c",
+		"$(SolutionDir)ThirdParty/SPIRV-Reflect/spirv_reflect.h",
 	}
 
 	includedirs {
 		"$(SolutionDir)Code/",
 		"$(SolutionDir)Code/Flint",
-		"$(SolutionDir)Dependencies/ThirdParty/SPIRV-Cross/",
+		"$(SolutionDir)ThirdParty/SPIRV-Reflect",
 		"%{IncludeDir.Vulkan}",
 		"%{IncludeDir.GLFW}",
-		"%{IncludeDir.glslang}",
-		"%{IncludeDir.shaderc}",
 	}
 
 	libdirs {
 		"%{IncludeLib.GLFW}",
 		"%{IncludeLib.Vulkan}",
-		"%{IncludeLib.glslang}",
-		"%{IncludeLib.shaderc}",
 	}
 
 	links { 
 		"glfw3dll",
 		"vulkan-1",
 
-		"glslang",
-		"HLSL",
-		"OGLCompiler",
-		"OSDependent",
-
-		"SPIRV",
-		"SPIRV-Cross",
-		"SPIRV-Tools",
-		"SPIRV-Tools-opt",
-		"SPVRemapper",
-
-		"shaderc",
-		"shaderc_combined",
-		"shaderc_shared",
-		"shaderc_util",
+		"opengl32",
 	}
 
 	filter "configurations:Debug"
-		links { 
-			--"FreeImageLibd"
-		}
+	    buildoptions "/MTd"
+
+	filter "configurations:PreRelease"
+	    buildoptions "/MT"
 
 	filter "configurations:Release"
-		links { 
-			--"FreeImageLib"
-		}
+	    buildoptions "/MT"
 
 	filter ""
