@@ -244,10 +244,15 @@ namespace Flint
 
 		/**
 		 * Remove a draw data from the pipeline.
-		 * 
+		 *
 		 * @param drawID: The draw ID of the draw data.
 		 */
 		void RemoveDrawData(const UI64 drawID);
+
+		/**
+		 * Clear all the draw data.
+		 */
+		void ClearDrawData();
 
 	protected:
 		GraphicsPipelineSpecification mSpecification = {};

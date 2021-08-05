@@ -1,0 +1,1233 @@
+{
+    "warp_scrubber_view": {
+        "flat_queue_rows": false,
+        "grid_layout": {
+            "children": [
+                {
+                    "cells": [
+                        {
+                            "key": "Viewport Relative",
+                            "width": 265,
+                            "x": 1
+                        },
+                        {
+                            "width": 1062,
+                            "x": 266
+                        }
+                    ],
+                    "flags": 296,
+                    "height": 26,
+                    "visible": true,
+                    "y": 1
+                },
+                {
+                    "cells": [
+                        {
+                            "key": "Frames",
+                            "width": 265,
+                            "x": 1
+                        },
+                        {
+                            "width": 1062,
+                            "x": 266
+                        }
+                    ],
+                    "flags": 273,
+                    "height": 25,
+                    "visible": true,
+                    "y": 27
+                },
+                {
+                    "cells": [
+                        {
+                            "key": "Q:0",
+                            "width": 265,
+                            "x": 1
+                        },
+                        {
+                            "width": 1062,
+                            "x": 266
+                        }
+                    ],
+                    "children": [
+                        {
+                            "cells": [
+                                {
+                                    "key": "Synchronization",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 25,
+                            "visible": false,
+                            "y": 0
+                        },
+                        {
+                            "cells": [
+                                {
+                                    "key": "Actions",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 94,
+                            "visible": false,
+                            "y": 0
+                        },
+                        {
+                            "cells": [
+                                {
+                                    "key": "Markers",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 23,
+                            "visible": false,
+                            "y": 0
+                        }
+                    ],
+                    "flags": 401,
+                    "height": 25,
+                    "visible": true,
+                    "y": 52
+                },
+                {
+                    "cells": [
+                        {
+                            "key": "Unit Throughputs",
+                            "width": 265,
+                            "x": 1
+                        },
+                        {
+                            "width": 1062,
+                            "x": 266
+                        }
+                    ],
+                    "children": [
+                        {
+                            "cells": [
+                                {
+                                    "key": "SM Throughput",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 25,
+                            "visible": false,
+                            "y": 0
+                        },
+                        {
+                            "cells": [
+                                {
+                                    "key": "L1TEX Throughput",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 25,
+                            "visible": false,
+                            "y": 0
+                        },
+                        {
+                            "cells": [
+                                {
+                                    "key": "L2 Throughput",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 25,
+                            "visible": false,
+                            "y": 0
+                        },
+                        {
+                            "cells": [
+                                {
+                                    "key": "VRAM Throughput",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 25,
+                            "visible": false,
+                            "y": 0
+                        },
+                        {
+                            "cells": [
+                                {
+                                    "key": "PCI Throughput",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 25,
+                            "visible": false,
+                            "y": 0
+                        },
+                        {
+                            "cells": [
+                                {
+                                    "key": "PD Throughput",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 25,
+                            "visible": false,
+                            "y": 0
+                        },
+                        {
+                            "cells": [
+                                {
+                                    "key": "VAF Throughput",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 25,
+                            "visible": false,
+                            "y": 0
+                        },
+                        {
+                            "cells": [
+                                {
+                                    "key": "PES+VPC Throughput",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 25,
+                            "visible": false,
+                            "y": 0
+                        },
+                        {
+                            "cells": [
+                                {
+                                    "key": "RASTER Throughput",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 25,
+                            "visible": false,
+                            "y": 0
+                        },
+                        {
+                            "cells": [
+                                {
+                                    "key": "PROP Throughput",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 25,
+                            "visible": false,
+                            "y": 0
+                        },
+                        {
+                            "cells": [
+                                {
+                                    "key": "ZROP Throughput",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 25,
+                            "visible": false,
+                            "y": 0
+                        },
+                        {
+                            "cells": [
+                                {
+                                    "key": "CROP Throughput",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 25,
+                            "visible": false,
+                            "y": 0
+                        }
+                    ],
+                    "flags": 401,
+                    "height": 92,
+                    "visible": true,
+                    "y": 77
+                },
+                {
+                    "cells": [
+                        {
+                            "key": "GPU Active",
+                            "width": 265,
+                            "x": 1
+                        },
+                        {
+                            "width": 1062,
+                            "x": 266
+                        }
+                    ],
+                    "children": [
+                        {
+                            "cells": [
+                                {
+                                    "key": "GPU Active",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 25,
+                            "visible": false,
+                            "y": 0
+                        },
+                        {
+                            "cells": [
+                                {
+                                    "key": "Async Copy Engine Active",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 25,
+                            "visible": false,
+                            "y": 0
+                        },
+                        {
+                            "cells": [
+                                {
+                                    "key": "Sync Copy Engine Active",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 25,
+                            "visible": false,
+                            "y": 0
+                        },
+                        {
+                            "cells": [
+                                {
+                                    "key": "GR Active",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 25,
+                            "visible": false,
+                            "y": 0
+                        }
+                    ],
+                    "flags": 401,
+                    "height": 25,
+                    "visible": true,
+                    "y": 169
+                },
+                {
+                    "cells": [
+                        {
+                            "key": "Compute In Flight",
+                            "width": 265,
+                            "x": 1
+                        },
+                        {
+                            "width": 1062,
+                            "x": 266
+                        }
+                    ],
+                    "children": [
+                        {
+                            "cells": [
+                                {
+                                    "key": "Sync Compute In Flight",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 23,
+                            "visible": false,
+                            "y": 0
+                        },
+                        {
+                            "cells": [
+                                {
+                                    "key": "Async Compute In Flight",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 23,
+                            "visible": false,
+                            "y": 0
+                        }
+                    ],
+                    "flags": 401,
+                    "height": 25,
+                    "visible": true,
+                    "y": 194
+                },
+                {
+                    "cells": [
+                        {
+                            "key": "Draw/Dispatch Start",
+                            "width": 265,
+                            "x": 1
+                        },
+                        {
+                            "width": 1062,
+                            "x": 266
+                        }
+                    ],
+                    "children": [
+                        {
+                            "cells": [
+                                {
+                                    "key": "Draw Started",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 25,
+                            "visible": false,
+                            "y": 0
+                        },
+                        {
+                            "cells": [
+                                {
+                                    "key": "Dispatch Started",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 25,
+                            "visible": false,
+                            "y": 0
+                        }
+                    ],
+                    "flags": 401,
+                    "height": 25,
+                    "visible": true,
+                    "y": 219
+                },
+                {
+                    "cells": [
+                        {
+                            "key": "SM Occupancy (TPC View)",
+                            "width": 265,
+                            "x": 1
+                        },
+                        {
+                            "width": 1062,
+                            "x": 266
+                        }
+                    ],
+                    "children": [
+                        {
+                            "cells": [
+                                {
+                                    "key": "Vertex/Tess/Geometry Warps",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 25,
+                            "visible": false,
+                            "y": 0
+                        },
+                        {
+                            "cells": [
+                                {
+                                    "key": "Pixel Warps",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 25,
+                            "visible": false,
+                            "y": 0
+                        },
+                        {
+                            "cells": [
+                                {
+                                    "key": "Compute Warps",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 25,
+                            "visible": false,
+                            "y": 0
+                        },
+                        {
+                            "cells": [
+                                {
+                                    "key": "Active SM Unused Warp Slots",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 25,
+                            "visible": false,
+                            "y": 0
+                        },
+                        {
+                            "cells": [
+                                {
+                                    "key": "Idle SM Unused Warp Slots",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 25,
+                            "visible": false,
+                            "y": 0
+                        }
+                    ],
+                    "flags": 401,
+                    "height": 69,
+                    "visible": true,
+                    "y": 244
+                },
+                {
+                    "cells": [
+                        {
+                            "key": "SM Instructions",
+                            "width": 265,
+                            "x": 1
+                        },
+                        {
+                            "width": 1062,
+                            "x": 266
+                        }
+                    ],
+                    "children": [
+                        {
+                            "cells": [
+                                {
+                                    "key": "SM Issue Active",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 23,
+                            "visible": false,
+                            "y": 0
+                        },
+                        {
+                            "cells": [
+                                {
+                                    "key": "SM ALU Pipe Throughput",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 23,
+                            "visible": false,
+                            "y": 0
+                        },
+                        {
+                            "cells": [
+                                {
+                                    "key": "SM FMA Pipe Throughput",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 23,
+                            "visible": false,
+                            "y": 0
+                        },
+                        {
+                            "cells": [
+                                {
+                                    "key": "SM FP16+Tensor Pipe Throughput",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 23,
+                            "visible": false,
+                            "y": 0
+                        },
+                        {
+                            "cells": [
+                                {
+                                    "key": "SM SFU Pipe Throughput",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 23,
+                            "visible": false,
+                            "y": 0
+                        }
+                    ],
+                    "flags": 401,
+                    "height": 25,
+                    "visible": true,
+                    "y": 313
+                },
+                {
+                    "cells": [
+                        {
+                            "key": "SM Warp Can't Launch",
+                            "width": 265,
+                            "x": 1
+                        },
+                        {
+                            "width": 1062,
+                            "x": 266
+                        }
+                    ],
+                    "children": [
+                        {
+                            "cells": [
+                                {
+                                    "key": "SM Pixel Warp Can't Launch",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 23,
+                            "visible": false,
+                            "y": 0
+                        },
+                        {
+                            "cells": [
+                                {
+                                    "key": "SM Pixel Warp Can't Launch- Register Limited",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 23,
+                            "visible": false,
+                            "y": 0
+                        },
+                        {
+                            "cells": [
+                                {
+                                    "key": "SM Compute Warp Can't Launch- Register Limited",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 23,
+                            "visible": false,
+                            "y": 0
+                        }
+                    ],
+                    "flags": 401,
+                    "height": 25,
+                    "visible": true,
+                    "y": 338
+                },
+                {
+                    "cells": [
+                        {
+                            "key": "L1TEX Throughput",
+                            "width": 265,
+                            "x": 1
+                        },
+                        {
+                            "width": 1062,
+                            "x": 266
+                        }
+                    ],
+                    "children": [
+                        {
+                            "cells": [
+                                {
+                                    "key": "L1TEX LSU Data Throughput",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 23,
+                            "visible": false,
+                            "y": 0
+                        },
+                        {
+                            "cells": [
+                                {
+                                    "key": "L1TEX LSU Writeback Throughput",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 23,
+                            "visible": false,
+                            "y": 0
+                        },
+                        {
+                            "cells": [
+                                {
+                                    "key": "L1TEX Texture Data Throughput",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 23,
+                            "visible": false,
+                            "y": 0
+                        },
+                        {
+                            "cells": [
+                                {
+                                    "key": "L1TEX Texture Filter Stage Throughput",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 23,
+                            "visible": false,
+                            "y": 0
+                        }
+                    ],
+                    "flags": 401,
+                    "height": 25,
+                    "visible": true,
+                    "y": 363
+                },
+                {
+                    "cells": [
+                        {
+                            "key": "L1TEX LSU Traffic",
+                            "width": 265,
+                            "x": 1
+                        },
+                        {
+                            "width": 1062,
+                            "x": 266
+                        }
+                    ],
+                    "children": [
+                        {
+                            "cells": [
+                                {
+                                    "key": "L1TEX Local+Global Data Throughput",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 23,
+                            "visible": false,
+                            "y": 0
+                        },
+                        {
+                            "cells": [
+                                {
+                                    "key": "L1TEX Shared+Attribute Data Throughput",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 23,
+                            "visible": false,
+                            "y": 0
+                        }
+                    ],
+                    "flags": 401,
+                    "height": 25,
+                    "visible": true,
+                    "y": 388
+                },
+                {
+                    "cells": [
+                        {
+                            "key": "L2 Traffic",
+                            "width": 265,
+                            "x": 1
+                        },
+                        {
+                            "width": 1062,
+                            "x": 266
+                        }
+                    ],
+                    "children": [
+                        {
+                            "cells": [
+                                {
+                                    "key": "L2 Bandwidth from CROP",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 23,
+                            "visible": false,
+                            "y": 0
+                        },
+                        {
+                            "cells": [
+                                {
+                                    "key": "L2 Bandwidth from L1TEX",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 23,
+                            "visible": false,
+                            "y": 0
+                        },
+                        {
+                            "cells": [
+                                {
+                                    "key": "L2 Bandwidth from ZROP",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 23,
+                            "visible": false,
+                            "y": 0
+                        }
+                    ],
+                    "flags": 401,
+                    "height": 25,
+                    "visible": true,
+                    "y": 413
+                },
+                {
+                    "cells": [
+                        {
+                            "key": "L2 Read Hit Rates",
+                            "width": 265,
+                            "x": 1
+                        },
+                        {
+                            "width": 1062,
+                            "x": 266
+                        }
+                    ],
+                    "children": [
+                        {
+                            "cells": [
+                                {
+                                    "key": "L2 Read Hit Rate",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 23,
+                            "visible": false,
+                            "y": 0
+                        },
+                        {
+                            "cells": [
+                                {
+                                    "key": "L2 Read Hit Rate from L1TEX",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 23,
+                            "visible": false,
+                            "y": 0
+                        }
+                    ],
+                    "flags": 401,
+                    "height": 25,
+                    "visible": true,
+                    "y": 438
+                },
+                {
+                    "cells": [
+                        {
+                            "key": "VRAM Bandwidth",
+                            "width": 265,
+                            "x": 1
+                        },
+                        {
+                            "width": 1062,
+                            "x": 266
+                        }
+                    ],
+                    "children": [
+                        {
+                            "cells": [
+                                {
+                                    "key": "VRAM Read Throughput",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 25,
+                            "visible": false,
+                            "y": 0
+                        },
+                        {
+                            "cells": [
+                                {
+                                    "key": "VRAM Write Throughput",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 25,
+                            "visible": false,
+                            "y": 0
+                        }
+                    ],
+                    "flags": 401,
+                    "height": 25,
+                    "visible": true,
+                    "y": 463
+                },
+                {
+                    "cells": [
+                        {
+                            "key": "PCI Bandwidth",
+                            "width": 265,
+                            "x": 1
+                        },
+                        {
+                            "width": 1062,
+                            "x": 266
+                        }
+                    ],
+                    "children": [
+                        {
+                            "cells": [
+                                {
+                                    "key": "PCI Read Throughput",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 25,
+                            "visible": false,
+                            "y": 0
+                        },
+                        {
+                            "cells": [
+                                {
+                                    "key": "PCI Write Throughput",
+                                    "width": 265,
+                                    "x": 0
+                                },
+                                {
+                                    "width": 20,
+                                    "x": 0
+                                }
+                            ],
+                            "flags": 273,
+                            "height": 25,
+                            "visible": false,
+                            "y": 0
+                        }
+                    ],
+                    "flags": 403,
+                    "height": 25,
+                    "visible": true,
+                    "y": 488
+                },
+                {
+                    "cells": [
+                        {
+                            "key": "User Ranges",
+                            "width": 265,
+                            "x": 1
+                        },
+                        {
+                            "width": 1062,
+                            "x": 266
+                        }
+                    ],
+                    "flags": 2833,
+                    "height": 25,
+                    "visible": true,
+                    "y": 513
+                },
+                {
+                    "cells": [
+                        {
+                            "key": "NVTX Ranges",
+                            "width": 265,
+                            "x": 0
+                        },
+                        {
+                            "width": 20,
+                            "x": 0
+                        }
+                    ],
+                    "flags": 273,
+                    "height": 23,
+                    "visible": false,
+                    "y": 0
+                },
+                {
+                    "cells": [
+                        {
+                            "width": 265,
+                            "x": 1
+                        },
+                        {
+                            "width": 1062,
+                            "x": 266
+                        }
+                    ],
+                    "flags": 328,
+                    "height": 76,
+                    "visible": true,
+                    "y": 538
+                }
+            ]
+        },
+        "visible_range_end": 78312287.99999951,
+        "visible_range_start": 0
+    },
+    "warp_selection_model": {
+        "selection_type_action": [
+            0
+        ]
+    }
+}

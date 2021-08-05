@@ -86,4 +86,10 @@ namespace Flint
 		bShouldPrepareResources = true;
 		pRenderTarget->FlagAltered();
 	}
+	
+	void GraphicsPipeline::ClearDrawData()
+	{
+		mDrawDataList.clear();
+		mDrawDataIndex = 0;
+	}
 }

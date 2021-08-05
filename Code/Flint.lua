@@ -41,8 +41,6 @@ project "Flint"
 	links { 
 		"glfw3dll",
 		"vulkan-1",
-
-		"opengl32",
 	}
 
 	filter "configurations:Debug"

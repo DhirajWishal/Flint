@@ -26,11 +26,18 @@ project "SimpleScene"
 		"**.h",
 		"**.lua",
 		"**.wfc",
+
+		"$(SolutionDir)Demos/ThirdParty/imgui/imgui.cpp",
+		"$(SolutionDir)Demos/ThirdParty/imgui/imgui_demo.cpp",
+		"$(SolutionDir)Demos/ThirdParty/imgui/imgui_draw.cpp",
+		"$(SolutionDir)Demos/ThirdParty/imgui/imgui_tables.cpp",
+		"$(SolutionDir)Demos/ThirdParty/imgui/imgui_widgets.cpp",
 	}
 
 	includedirs {
 		"$(SolutionDir)Code",
 		"$(SolutionDir)Demos/SimpleScene",
+		"%{IncludeDir.imgui}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.Assimp}",
 	}

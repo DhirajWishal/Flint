@@ -36,6 +36,10 @@ os.system("cd \"ThirdParty/SPIRV-Cross\" && cmake CMakeLists.txt && cmake --buil
 print("\nBuilding Assimp ...")
 os.system("cd \"Demos/ThirdParty/Assimp\" && cmake CMakeLists.txt -DBUILD_SHARED_LIBS=ON -DASSIMP_BUILD_TESTS=OFF && cmake --build . --config Release")
 
+# Setup imgui
+print("\nSetting up imgui ...")
+os.system("cd \"Demos/ThirdParty/imgui\" && git checkout docking")
+
 # Setup gdown
 print("\nSetting up gdown ...")
 os.system("cd \"ThirdParty/gdown\" && python setup.py install")

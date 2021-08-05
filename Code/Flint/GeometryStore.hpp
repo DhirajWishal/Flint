@@ -33,6 +33,14 @@ namespace Flint
 		GeometryStore& operator=(const GeometryStore&) = delete;
 
 		/**
+		 * Set data to the geometry store.
+		 *
+		 * @param pVertexStaggingBuffer: The stagging buffer containing all the vertex information.
+		 * @param pIndexStaggingBuffer: The stagging buffer containing all the index information.
+		 */
+		void SetData(const std::shared_ptr<Buffer>& pVertexStaggingBuffer, const std::shared_ptr<Buffer>& pIndexStaggingBuffer);
+
+		/**
 		 * Add a geometry to the store.
 		 *
 		 * @param vertexCount: The number of vertexes to add.
@@ -46,7 +54,7 @@ namespace Flint
 		/**
 		 * Add geometry to the store using buffers.
 		 * This method is preferred over the other adding method.
-		 * 
+		 *
 		 * @param pVertexStaggingBuffer: The vertex data stored stagging buffer.
 		 * @param pIndexStaggingBuffer: The index data stored stagging buffer.
 		 * @return The pair of offsets (vertex offset, index offset) in which the geometry is stored.
@@ -55,7 +63,7 @@ namespace Flint
 
 		/**
 		 * Remove a geometry from the store.
-		 * 
+		 *
 		 * @param vertexOffset: The vertex offset in the buffer.
 		 * @param vertexCount: The number of vertexes to remove.
 		 * @param indexOffset: The index offset in the buffer.

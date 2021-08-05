@@ -20,6 +20,35 @@ namespace Flint
 				mVertexSize += static_cast<UI8>(attribute.mDataType);
 	}
 
+	void GeometryStore::SetData(const std::shared_ptr<Buffer>& pVertexStaggingBuffer, const std::shared_ptr<Buffer>& pIndexStaggingBuffer)
+	{
+		// Set vertex information.
+		if (pVertexStaggingBuffer)
+		{
+			mVertexCount = pVertexStaggingBuffer->GetSize() / mVertexSize;
+
+			if (pVertexBuffer)
+				pVertexBuffer->Resize(pVertexStaggingBuffer->GetSize(), BufferResizeMode::CLEAR);
+			else
+				pVertexBuffer = pDevice->CreateBuffer(BufferType::VERTEX, mVertexCount * mVertexSize);
+
+			pVertexBuffer->CopyFromBuffer(pVertexStaggingBuffer, pVertexStaggingBuffer->GetSize(), 0, 0);
+		}
+
+		// Set index information.
+		if (pIndexStaggingBuffer)
+		{
+			mIndexCount = pIndexStaggingBuffer->GetSize() / mIndexSize;
+
+			if (pIndexBuffer)
+				pIndexBuffer->Resize(pIndexStaggingBuffer->GetSize(), BufferResizeMode::CLEAR);
+			else
+				pIndexBuffer = pDevice->CreateBuffer(BufferType::INDEX, mIndexCount * mIndexSize);
+
+			pIndexBuffer->CopyFromBuffer(pIndexStaggingBuffer, pIndexStaggingBuffer->GetSize(), 0, 0);
+		}
+	}
+
 	std::pair<UI64, UI64> GeometryStore::AddGeometry(UI64 vertexCount, const void* pVertexData, UI64 indexCount, const void* pIndexData)
 	{
 		std::shared_ptr<Buffer> pVertexStaggingBuffer = nullptr;

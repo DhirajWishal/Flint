@@ -13,3 +13,6 @@
 [submodule "ThirdParty/gdown"]
 	path = ThirdParty/gdown
 	url = https://github.com/DhirajWishal/gdown
+[submodule "Demos/ThirdParty/imgui"]
+	path = Demos/ThirdParty/imgui
+	url = https://github.com/DhirajWishal/imgui

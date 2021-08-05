@@ -23,8 +23,6 @@ namespace Flint
 
 	void RenderTarget::SubmitPipeline(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::shared_ptr<GraphicsPipeline>& pPipeline)
 	{
-		//INSERT_INTO_VECTOR(mDrawInstances[pGeometryStore], pPipeline);
-
 		bool inserted = false;
 		for (UI32 i = 0; i < mDrawInstanceMaps.size(); i++)
 		{
