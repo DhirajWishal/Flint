@@ -67,8 +67,6 @@ namespace Flint
 		{
 			FLINT_SETUP_PROFILER();
 
-			// Wait while the window contains the right width and height. 
-			// Until the window contains a valid size, it will skip draw calls.
 			if (bShouldSkip)
 			{
 				Recreate();
@@ -102,29 +100,30 @@ namespace Flint
 
 			// Skip if the screen is reported to be 0 in width or height.
 			if (bShouldSkip)
-			{
-				Recreate();
-
-				if (bShouldSkip)
-					return;
-			}
-
-			if (bIsAltered)
+				return;
+			else if (bIsAltered)
 			{
 				//AcquireAllThreads();
+				//BindVolatileInstances();
 				ExecuteSecondaryCommandBuffers();
 
 				BindSecondaryCommands();
-				//ExecuteSecondaryCommandBuffers();
+				AcquireAllThreads();
+
+				// Bind all the volatile instances.
+				BindVolatileInstances();
+				ExecuteSecondaryCommandBuffers();
 
 				bIsAltered = false;
 			}
+			else
+			{
+				AcquireAllThreads();
 
-			AcquireAllThreads();
-
-			// Bind all the volatile instances.
-			BindVolatileInstances();
-			ExecuteSecondaryCommandBuffers();
+				// Bind all the volatile instances.
+				BindVolatileInstances();
+				ExecuteSecondaryCommandBuffers();
+			}
 
 			vCommandBuffer[0] = pCommandBufferList->StaticCast<VulkanCommandBufferList>().GetCommandBuffer(mFrameIndex);
 
@@ -154,11 +153,8 @@ namespace Flint
 			{
 				vDisplay.ToggleResize();
 				Recreate();
-
-				ExecuteSecondaryCommandBuffers();
 			}
-			else
-				FLINT_VK_ASSERT(result);
+			else FLINT_VK_ASSERT(result);
 
 			// Bind all the secondary commands.
 			BindSecondaryCommands();
@@ -235,8 +231,10 @@ namespace Flint
 
 			// Bake secondary commands.
 			BindSecondaryCommands();
-			//ExecuteSecondaryCommandBuffers();
 			AcquireAllThreads();
+
+			BindVolatileInstances();
+			ExecuteSecondaryCommandBuffers();
 		}
 
 		FColor4D VulkanScreenBoundRenderTarget::GetClearColor() const
@@ -420,7 +418,8 @@ namespace Flint
 
 		void VulkanScreenBoundRenderTarget::ExecuteSecondaryCommandBuffers()
 		{
-			//AcquireAllThreads();
+			if (!pCommandBufferList->IsRecording())
+				return;
 
 			pCommandBufferList->StaticCast<VulkanCommandBufferList>().SetSecondaryCommandBuffers(std::move(vSecondaryCommandBuffers));
 			pCommandBufferList->ExecuteSecondaryCommands();

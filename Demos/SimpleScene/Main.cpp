@@ -41,12 +41,15 @@ int main()
 				mState.PrepareNewFrame();
 
 				ImGui::NewFrame();
-				ImGuiIO& io = ImGui::GetIO();
 				ImGui::ShowDemoWindow();
+				ImGuiIO& io = ImGui::GetIO();
 
 				{
 					io.DeltaTime = delta / (1000.0f * 1000.0f * 1000.0f);
-					io.DisplaySize = ImVec2(static_cast<float>(mState.pDisplay->GetExtent().mWidth), static_cast<float>(mState.pDisplay->GetExtent().mHeight));
+
+					auto extent = mState.pDisplay->GetExtent();
+					if (!extent.IsZero())
+						io.DisplaySize = ImVec2(static_cast<float>(extent.mWidth), static_cast<float>(extent.mHeight));
 
 					auto position = mState.pDisplay->GetMousePosition();
 					io.MousePos = ImVec2(position.X, position.Y);
