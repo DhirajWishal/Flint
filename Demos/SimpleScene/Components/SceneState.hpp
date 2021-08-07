@@ -20,6 +20,9 @@ struct SceneState
 
 	void UpdateCamera(UI64 delta);
 
+	const std::filesystem::path GetSolutionPath() const { return mSolutionPath; }
+	const std::filesystem::path GetAssetPath() const { return mAssetPath; }
+
 public:
 
 	Camera mCamera = {};
@@ -27,6 +30,9 @@ public:
 	std::unordered_map<std::string, std::shared_ptr<Flint::ScreenBoundRenderTarget>> pScreenBoundRenderTargets;
 	std::unordered_map<std::string, std::shared_ptr<Flint::GraphicsPipeline>> pGraphicsPipelines;
 	std::unordered_map<std::string, std::shared_ptr<Flint::GeometryStore>> pGeometryStores;
+
+	std::filesystem::path mSolutionPath = "";
+	std::filesystem::path mAssetPath = "";
 
 	std::shared_ptr<Flint::Instance> pInstance = nullptr;
 	std::shared_ptr<Flint::Display> pDisplay = nullptr;

@@ -7,6 +7,9 @@
 
 SceneState::SceneState()
 {
+	mSolutionPath = std::filesystem::path(__FILE__).parent_path().parent_path().parent_path().parent_path();
+	mAssetPath = mSolutionPath.string() + "\\Assets";
+
 #ifndef FLINT_RELEASE
 	pInstance = Flint::CreateInstance(true);
 
@@ -19,8 +22,8 @@ SceneState::SceneState()
 	pDisplay = pInstance->CreateDisplay(Flint::FBox2D(1280, 720), "Flint: Sample Scene");
 	pDevice = pInstance->CreateDevice(Flint::DeviceFlags::GRAPHICS_COMPATIBLE | Flint::DeviceFlags::EXTERNAL | Flint::DeviceFlags::COMPUTE_COMPATIBLE);
 
-	pVertexShader = pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("E:\\Flint\\Assets\\Shaders\\3D\\shader.vert.spv"));
-	pFragmentShader = pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("E:\\Flint\\Assets\\Shaders\\3D\\shader.frag.spv"));
+	pVertexShader = pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path(mAssetPath.string() + "\\Shaders\\3D\\shader.vert.spv"));
+	pFragmentShader = pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path(mAssetPath.string() + "\\Shaders\\3D\\shader.frag.spv"));
 	pGeometryStores["Default"] = pDevice->CreateGeometryStore(pVertexShader->GetInputAttributes(), sizeof(UI32));
 
 	CreateDefaultRenderTarget();
@@ -30,6 +33,7 @@ SceneState::SceneState()
 	mCamera.SetAspectRatio(pDisplay->GetExtent());
 
 	mCamera.Initialize(pDevice);
+
 }
 
 SceneState::~SceneState()
@@ -114,8 +118,8 @@ void SceneState::CreateDefaultRenderTarget()
 
 void SceneState::CreateBoundingBoxPipeline()
 {
-	pVertexShaderBB = pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("E:\\Flint\\Assets\\Shaders\\BoundingBox\\shader.vert.spv"));
-	pFragmentShaderBB = pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("E:\\Flint\\Assets\\Shaders\\BoundingBox\\shader.frag.spv"));
+	pVertexShaderBB = pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path(GetAssetPath().string() + "\\Shaders\\BoundingBox\\shader.vert.spv"));
+	pFragmentShaderBB = pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path(GetAssetPath().string() + "\\Shaders\\BoundingBox\\shader.frag.spv"));
 
 	Flint::GraphicsPipelineSpecification specification = {};
 	specification.mPrimitiveTopology = Flint::PrimitiveTopology::LINE_LIST;
@@ -134,7 +138,7 @@ void SceneState::CreateDefaultPipeline()
 	specification.mColorBlendConstants[1] = 0.0f;
 	specification.mColorBlendConstants[2] = 0.0f;
 	specification.mColorBlendConstants[3] = 0.0f;
-	//specification.mPrimitiveTopology = Flint::PrimitiveTopology::TRIANGLE_LIST;
+	//specification.mPrimitiveTopology = Flint::PrimitiveTopology::POINT_LIST;
 	//specification.mPolygonMode = Flint::PolygonMode::LINE;
 
 	pGraphicsPipelines["Default"] = pDevice->CreateGraphicsPipeline("Default", pScreenBoundRenderTargets["Default"], pVertexShader, nullptr, nullptr, nullptr, pFragmentShader, specification);

@@ -19,7 +19,7 @@ TreeScene::TreeScene(glm::vec3 position, SceneState* pSceneState)
 	if (pSceneState->pGraphicsPipelines.find("Default") == pSceneState->pGraphicsPipelines.end())
 		pSceneState->CreateDefaultPipeline();
 
-	auto asset = ImportAsset(pSceneState->pDevice, "E:\\Dynamik\\Game Repository\\assets\\assets\\Tree01\\Tree1\\Tree1.obj");
+	auto asset = ImportAsset(pSceneState->pDevice, pSceneState->GetAssetPath().string() + "\\Packages\\Tree001\\Tree01\\Tree1\\Tree1.obj");
 	auto [vertexOffset, indexOffset] = pSceneState->pGeometryStores["Default"]->AddGeometry(asset.pVertexBuffer, asset.pIndexBuffer);
 
 	LoadTreeImages();
@@ -106,12 +106,12 @@ void TreeScene::OnUpdate(UI64 delta)
 void TreeScene::LoadTreeImages()
 {
 	std::filesystem::path paths[ImageCount] = {
-		"E:\\Dynamik\\Game Repository\\assets\\assets\\Tree01\\Tree1\\BarkDecidious0143_5_S.jpg",
-		"E:\\Dynamik\\Game Repository\\assets\\assets\\Tree01\\Tree1\\Leaves0120_35_S.png",
-		"E:\\Dynamik\\Game Repository\\assets\\assets\\Tree01\\Tree1\\BarkDecidious0194_7_S.jpg",
-		"E:\\Dynamik\\Game Repository\\assets\\assets\\Tree01\\Tree1\\Leaves0142_4_S.png",
-		"E:\\Dynamik\\Game Repository\\assets\\assets\\Tree01\\Tree1\\BarkDecidious0194_7_S.jpg",
-		"E:\\Dynamik\\Game Repository\\assets\\assets\\Tree01\\Tree1\\Leaves0156_1_S.png",
+		pSceneState->GetAssetPath().string() + "\\Packages\\Tree001\\Tree01\\Tree1\\BarkDecidious0143_5_S.jpg",
+		pSceneState->GetAssetPath().string() + "\\Packages\\Tree001\\Tree01\\Tree1\\Leaves0120_35_S.png",
+		pSceneState->GetAssetPath().string() + "\\Packages\\Tree001\\Tree01\\Tree1\\BarkDecidious0194_7_S.jpg",
+		pSceneState->GetAssetPath().string() + "\\Packages\\Tree001\\Tree01\\Tree1\\Leaves0142_4_S.png",
+		pSceneState->GetAssetPath().string() + "\\Packages\\Tree001\\Tree01\\Tree1\\BarkDecidious0194_7_S.jpg",
+		pSceneState->GetAssetPath().string() + "\\Packages\\Tree001\\Tree01\\Tree1\\Leaves0156_1_S.png",
 		//"E:\\Dynamik\\Game Repository\\assets\\Images\\spring-forrest-i101995.jpg"
 	};
 

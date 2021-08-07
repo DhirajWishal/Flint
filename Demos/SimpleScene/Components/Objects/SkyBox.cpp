@@ -11,8 +11,8 @@ SkyBox::SkyBox(glm::vec3 position, SceneState* pSceneState) : GameObject(positio
 
 	pDynamicStates = std::make_shared<Flint::DynamicStateContainer>();
 
-	pVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("E:\\Flint\\Assets\\Shaders\\SkyBox\\skybox.vert.spv"));
-	pFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("E:\\Flint\\Assets\\Shaders\\SkyBox\\skybox.frag.spv"));		
+	pVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path(pSceneState->GetAssetPath().string() + "\\Shaders\\SkyBox\\skybox.vert.spv"));
+	pFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path(pSceneState->GetAssetPath().string() + "\\Shaders\\SkyBox\\skybox.frag.spv"));
 
 	auto image = LoadSkyboxImages();
 	pTexture = pSceneState->pDevice->CreateImage(Flint::ImageType::CUBEMAP, Flint::ImageUsage::GRAPHICS, image.mExtent, Flint::PixelFormat::R8G8B8A8_SRGB, 6, 1, image.pImageData);
@@ -36,7 +36,7 @@ SkyBox::SkyBox(glm::vec3 position, SceneState* pSceneState) : GameObject(positio
 	pDynamicStates->SetViewPort(Flint::FExtent2D<float>{static_cast<float>(windowExtent.mWidth), static_cast<float>(windowExtent.mHeight)}, Flint::FExtent2D<float>(0.0f, 1.0f), { 0.0f, 0.0f });
 	pDynamicStates->SetScissor(windowExtent, { 0, 0 });
 
-	auto asset = ImportAsset(pSceneState->pDevice, "E:\\Dynamik\\Game Repository\\assets\\assets\\Skybox\\SkySphere.obj");
+	auto asset = ImportAsset(pSceneState->pDevice, pSceneState->GetAssetPath().string() + "\\Models\\Skybox\\SkySphere.obj");
 	auto [vertexOffset, indexOffset] = pSceneState->pGeometryStores["Default"]->AddGeometry(asset.pVertexBuffer, asset.pIndexBuffer);
 	for (auto instance : asset.mDrawInstances)
 		pPipeline->AddDrawData(pResourceMap, pDynamicStates, vertexOffset + instance.mVertexOffset, instance.mVertexCount, indexOffset + instance.mIndexOffset, instance.mIndexCount);
@@ -110,12 +110,12 @@ ImageData SkyBox::LoadSkyboxImages()
 {
 	ImageData images[6] = {};
 
-	images[0] = LoadImage("E:\\Flint\\Assets\\Textures\\SkyBox\\right.jpg");
-	images[1] = LoadImage("E:\\Flint\\Assets\\Textures\\SkyBox\\left.jpg");
-	images[2] = LoadImage("E:\\Flint\\Assets\\Textures\\SkyBox\\top.jpg");
-	images[3] = LoadImage("E:\\Flint\\Assets\\Textures\\SkyBox\\bottom.jpg");
-	images[4] = LoadImage("E:\\Flint\\Assets\\Textures\\SkyBox\\front.jpg");
-	images[5] = LoadImage("E:\\Flint\\Assets\\Textures\\SkyBox\\back.jpg");
+	images[0] = LoadImage(pSceneState->GetAssetPath().string() + "\\Textures\\SkyBox\\right.jpg");
+	images[1] = LoadImage(pSceneState->GetAssetPath().string() + "\\Textures\\SkyBox\\left.jpg");
+	images[2] = LoadImage(pSceneState->GetAssetPath().string() + "\\Textures\\SkyBox\\top.jpg");
+	images[3] = LoadImage(pSceneState->GetAssetPath().string() + "\\Textures\\SkyBox\\bottom.jpg");
+	images[4] = LoadImage(pSceneState->GetAssetPath().string() + "\\Textures\\SkyBox\\front.jpg");
+	images[5] = LoadImage(pSceneState->GetAssetPath().string() + "\\Textures\\SkyBox\\back.jpg");
 
 	UI64 imageSize = static_cast<UI64>(images[0].mExtent.mWidth) * images[0].mExtent.mHeight * 4;
 	UI64 size = imageSize * 6;

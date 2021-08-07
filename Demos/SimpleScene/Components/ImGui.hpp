@@ -25,4 +25,6 @@ private:
 	std::shared_ptr<Flint::Shader> pFragmentShader = nullptr;
 
 	std::shared_ptr<Flint::Image> pTextImage = nullptr;
+
+	std::shared_ptr<Flint::GraphicsPipeline> pPipeline = nullptr;
 };

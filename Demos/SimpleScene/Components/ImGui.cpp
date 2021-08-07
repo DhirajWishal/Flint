@@ -29,8 +29,9 @@ void ImGUI::PreparePipeline()
 {
 	Flint::GraphicsPipelineSpecification specification = {};
 
-	pSceneState->pGraphicsPipelines["ImGUI"] = pSceneState->pDevice->CreateGraphicsPipeline("ImGUI", pSceneState->pScreenBoundRenderTargets["Default"], pVertexShader, nullptr, nullptr, nullptr, pFragmentShader, specification);
-	pSceneState->pScreenBoundRenderTargets["Default"]->SubmitPipeline(pSceneState->pGeometryStores["ImGUI"], pSceneState->pGraphicsPipelines["ImGUI"]);
+	pPipeline = pSceneState->pDevice->CreateGraphicsPipeline("ImGUI", pSceneState->pScreenBoundRenderTargets["Default"], pVertexShader, nullptr, nullptr, nullptr, pFragmentShader, specification);
+	pSceneState->pScreenBoundRenderTargets["Default"]->SubmitPipeline(pSceneState->pGeometryStores["ImGUI"], pPipeline);
+	pSceneState->pGraphicsPipelines["ImGUI"] = pPipeline;
 }
 
 void ImGUI::PrepareImage()
@@ -70,7 +71,7 @@ void ImGUI::UpdateBuffers()
 	if (pIndexBuffer)
 		pIndexData = static_cast<ImDrawIdx*>(pIndexBuffer->MapMemory(indexSize));
 
-	for (UI32 i = 0; i < pDrawData->CmdListsCount; i++) {
+	for (I32 i = 0; i < pDrawData->CmdListsCount; i++) {
 		const ImDrawList* cmd_list = pDrawData->CmdLists[i];
 
 		if (pVertexData)
