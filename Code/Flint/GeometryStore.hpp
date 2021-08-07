@@ -26,8 +26,9 @@ namespace Flint
 		 * @param pDevice: The device pointer.
 		 * @param vertexAttributes: The vertex attributes of the geometry.
 		 * @param indexSize: The size of a single index in bytes.
+		 * @param profile: The memory profile of the buffer. Default is BufferMemoryProfile::AUTOMATIC.
 		 */
-		GeometryStore(const std::shared_ptr<Device>& pDevice, const std::unordered_map<UI32, std::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize);
+		GeometryStore(const std::shared_ptr<Device>& pDevice, const std::unordered_map<UI32, std::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize, BufferMemoryProfile profile = BufferMemoryProfile::AUTOMATIC);
 
 		GeometryStore(const GeometryStore&) = delete;
 		GeometryStore& operator=(const GeometryStore&) = delete;
@@ -127,6 +128,32 @@ namespace Flint
 		 */
 		const UI64 GetIndexCount() const { return mIndexCount; }
 
+		/**
+		 * Map the vertex buffer to the local address space.
+		 * Before mapping, make sure that the buffer memory profile is BufferMemoryProfile::TRANSFER_FRIENDLY.
+		 * 
+		 * @return The memory address.
+		 */
+		void* MapVertexBuffer() const;
+
+		/**
+		 * Map the index buffer to the local address space.
+		 * Before mapping, make sure that the buffer memory profile is BufferMemoryProfile::TRANSFER_FRIENDLY.
+		 *
+		 * @return The memory address.
+		 */
+		void* MapIndexBuffer() const;
+
+		/**
+		 * Unmap the vertex buffer.
+		 */
+		void UnmapVertexBuffer();
+
+		/**
+		 * Unmap the index buffer.
+		 */
+		void UnmapIndexBuffer();
+
 	private:
 		std::unordered_map<UI32, std::vector<ShaderAttribute>> mVertexAttribtues = {};
 
@@ -138,5 +165,7 @@ namespace Flint
 
 		UI64 mVertexCount = 0;
 		UI64 mIndexCount = 0;
+
+		BufferMemoryProfile mMemoryProfile = BufferMemoryProfile::AUTOMATIC;
 	};
 }

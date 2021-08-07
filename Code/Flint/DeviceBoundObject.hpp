@@ -121,6 +121,22 @@ namespace Flint
 	};
 
 	/**
+	 * Buffer memory profile enum.
+	 * This enum defines the buffer's memory behavior.
+	 *
+	 * AUTOMATIC will set the default memory profile for a given buffer type.
+	 * CPU_ONLY will set the content to the CPU bound memory (RAM).
+	 * DEVICE_ONLY will set data in the device and stagging buffers are required to access them.
+	 * TRANSFER_FRIENDLY will enable it to be mapped to the local address space.
+	 */
+	enum class BufferMemoryProfile : UI8 {
+		AUTOMATIC,
+		CPU_ONLY,
+		DEVICE_ONLY,
+		TRANSFER_FRIENDLY
+	};
+
+	/**
 	 * Image type enum.
 	 */
 	enum class ImageType : UI8 {
@@ -271,7 +287,7 @@ namespace Flint
 
 		/**
 		 * Get the device of this object.
-		 * 
+		 *
 		 * @return The device pointer.
 		 */
 		std::shared_ptr<Device> GetDevice() const { return pDevice; }

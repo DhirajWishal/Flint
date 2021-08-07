@@ -5,7 +5,8 @@
 
 namespace Flint
 {
-	Buffer::Buffer(const std::shared_ptr<Device>& pDevice, BufferType type, const UI64 size) : DeviceBoundObject(pDevice), mType(type), mSize(size)
+	Buffer::Buffer(const std::shared_ptr<Device>& pDevice, BufferType type, const UI64 size, BufferMemoryProfile profile)
+		: DeviceBoundObject(pDevice), mType(type), mSize(size), mMemoryProfile(profile)
 	{
 		if (type == BufferType::UNDEFINED)
 			FLINT_THROW_INVALID_ARGUMENT("Buffer type should not be UNDEFINED!");

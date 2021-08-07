@@ -256,7 +256,7 @@ namespace Flint
 			UI32 variableCount = 0;
 
 			std::vector<UI32> shaderCode = std::move(_Helpers::ResolvePadding(mShaderCode));
-			_Helpers::ValidateReflection(spvReflectCreateShaderModule(shaderCode.size()* sizeof(UI32), shaderCode.data(), &sShaderModule));
+			_Helpers::ValidateReflection(spvReflectCreateShaderModule(shaderCode.size() * sizeof(UI32), shaderCode.data(), &sShaderModule));
 
 			// Resolve shader inputs.
 			{
@@ -265,17 +265,18 @@ namespace Flint
 				std::vector<SpvReflectInterfaceVariable*> pInputs(variableCount);
 				_Helpers::ValidateReflection(spvReflectEnumerateInputVariables(&sShaderModule, &variableCount, pInputs.data()));
 
+				mInputAttributes[0].resize(pInputs.size());
 				for (auto& resource : pInputs)
 				{
 					if (resource->format == SpvReflectFormat::SPV_REFLECT_FORMAT_UNDEFINED)
 						continue;
 
-					mInputAttributes[0].push_back(ShaderAttribute(
+					mInputAttributes[0][resource->location] = ShaderAttribute(
 						resource->name,
 						resource->location,
 						static_cast<ShaderAttributeDataType>(
 							(resource->type_description->traits.numeric.scalar.width / 8) *
-							resource->type_description->traits.numeric.vector.component_count)));
+							std::max(resource->type_description->traits.numeric.vector.component_count, UI32(1))));
 				}
 			}
 
@@ -285,6 +286,7 @@ namespace Flint
 
 				std::vector<SpvReflectInterfaceVariable*> pOutputs(variableCount);
 				_Helpers::ValidateReflection(spvReflectEnumerateOutputVariables(&sShaderModule, &variableCount, pOutputs.data()));
+
 				for (auto& resource : pOutputs)
 				{
 					if (resource->format == SpvReflectFormat::SPV_REFLECT_FORMAT_UNDEFINED)
@@ -295,7 +297,7 @@ namespace Flint
 						resource->location,
 						static_cast<ShaderAttributeDataType>(
 							(resource->type_description->traits.numeric.scalar.width / 8) *
-							resource->type_description->traits.numeric.vector.component_count)));
+							std::max(resource->type_description->traits.numeric.vector.component_count, UI32(1)))));
 				}
 			}
 

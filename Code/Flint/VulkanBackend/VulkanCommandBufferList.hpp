@@ -16,6 +16,8 @@ namespace Flint
 			VulkanCommandBufferList(const std::shared_ptr<Device>& pDevice, const UI32 bufferCount);
 			VulkanCommandBufferList(const std::shared_ptr<Device>& pDevice, const UI32 bufferCount, const std::shared_ptr<CommandBufferList>& pParent);
 
+			virtual std::shared_ptr<CommandBufferList> CreateChild() override final;
+
 			virtual void BeginBufferRecording(UI32 index) override final;
 			virtual void BeginBufferRecording(UI32 index, const std::shared_ptr<CommandBufferList> pParent) override final;
 			virtual void BeginNextBufferRecording() override final;

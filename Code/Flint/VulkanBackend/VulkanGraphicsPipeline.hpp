@@ -43,13 +43,13 @@ namespace Flint
 			VkPipelineVertexInputStateCreateInfo vVertexInputStateCreateInfo = {};
 			VkPipelineInputAssemblyStateCreateInfo vInputAssemblyStateCreateInfo = {};
 			VkPipelineTessellationStateCreateInfo vTessellationStateCreateInfo = {};
-			VkPipelineColorBlendAttachmentState vCBAS = {};
 			VkPipelineColorBlendStateCreateInfo vColorBlendStateCreateInfo = {};
 			VkPipelineRasterizationStateCreateInfo vRasterizationStateCreateInfo = {};
 			VkPipelineMultisampleStateCreateInfo vMultisampleStateCreateInfo = {};
 			VkPipelineDepthStencilStateCreateInfo vDepthStencilStateCreateInfo = {};
 			VkPipelineDynamicStateCreateInfo vDynamicStateCreateInfo = {};
 
+			std::vector<VkPipelineColorBlendAttachmentState> vCBASS = {};
 			std::vector<VkPipelineShaderStageCreateInfo> vShaderStageCreateInfo = {};
 			std::vector<VkVertexInputAttributeDescription> vVertexAttributes = {};
 			std::vector<VkVertexInputBindingDescription> vVertexBindings = {};

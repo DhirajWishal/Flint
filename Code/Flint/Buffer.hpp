@@ -29,8 +29,9 @@ namespace Flint
 		 * @param pDevice: The device pointer.
 		 * @param type: The buffer type.
 		 * @param size: The size of the buffer.
+		 * @param profile: The memory profile of the buffer. Default is BufferMemoryProfile::AUTOMATIC.
 		 */
-		Buffer(const std::shared_ptr<Device>& pDevice, BufferType type, const UI64 size);
+		Buffer(const std::shared_ptr<Device>& pDevice, BufferType type, const UI64 size, BufferMemoryProfile profile = BufferMemoryProfile::AUTOMATIC);
 
 		/**
 		 * Resize the buffer.
@@ -96,8 +97,16 @@ namespace Flint
 		 */
 		const BufferType GetType() const { return mType; }
 
+		/**
+		 * Get the memory profile of the buffer.
+		 * 
+		 * @return The memory profile.
+		 */
+		const BufferMemoryProfile GetMemoryProfile() const { return mMemoryProfile; }
+
 	protected:
 		UI64 mSize = 0;
 		BufferType mType = BufferType::UNDEFINED;
+		BufferMemoryProfile mMemoryProfile = BufferMemoryProfile::AUTOMATIC;
 	};
 }

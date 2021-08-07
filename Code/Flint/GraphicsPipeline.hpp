@@ -104,11 +104,138 @@ namespace Flint
 	};
 
 	/**
+	 * Color blend factor enum.
+	 */
+	enum class ColorBlendFactor : UI8 {
+		ZERO,
+		ONE,
+		SRC_COLOR,
+		ONE_MINUS_SRC_COLOR,
+		DST_COLOR,
+		ONE_MINUS_DST_COLOR,
+		SRC_ALPHA,
+		ONE_MINUS_SRC_ALPHA,
+		DST_ALPHA,
+		ONE_MINUS_DST_ALPHA,
+		CONSTANT_COLOR,
+		ONE_MINUS_CONSTANT_COLOR,
+		CONSTANT_ALPHA,
+		ONE_MINUS_CONSTANT_ALPHA,
+		SRC_ALPHA_SATURATE,
+		SRC1_COLOR,
+		ONE_MINUS_SRC1_COLOR,
+		SRC1_ALPHA,
+		ONE_MINUS_SRC1_ALPHA,
+	};
+
+	/**
+	 * Color blend operator enum.
+	 */
+	enum class ColorBlendOperator : UI8 {
+		ADD,
+		SUBTRACT,
+		REVERSE_SUBTRACT,
+		MIN,
+		MAX,
+		ZERO,
+		SRC,
+		DST,
+		SRC_OVER,
+		DST_OVER,
+		SRC_IN,
+		DST_IN,
+		SRC_OUT,
+		DST_OUT,
+		SRC_ATOP,
+		DST_ATOP,
+		XOR,
+		MULTIPLY,
+		SCREEN,
+		OVERLAY,
+		DARKEN,
+		LIGHTEN,
+		COLORDODGE,
+		COLORBURN,
+		HARDLIGHT,
+		SOFTLIGHT,
+		DIFFERENCE,
+		EXCLUSION,
+		INVERT,
+		INVERT_RGB,
+		LINEARDODGE,
+		LINEARBURN,
+		VIVIDLIGHT,
+		LINEARLIGHT,
+		PINLIGHT,
+		HARDMIX,
+		HSL_HUE,
+		HSL_SATURATION,
+		HSL_COLOR,
+		HSL_LUMINOSITY,
+		PLUS,
+		PLUS_CLAMPED,
+		PLUS_CLAMPED_ALPHA,
+		PLUS_DARKER,
+		MINUS,
+		MINUS_CLAMPED,
+		CONTRAST,
+		INVERT_OVG,
+		RED,
+		GREEN,
+		BLUE,
+	};
+
+	/**
+	 * Color write mask enum.
+	 */
+	enum class ColorWriteMask : UI8 {
+		R = BIT_SHIFT(0),
+		G = BIT_SHIFT(1),
+		B = BIT_SHIFT(2),
+		A = BIT_SHIFT(3),
+	};
+
+	/**
+	 * Color write mask bitwise OR operator.
+	 *
+	 * @param lhs: The left hand side argument.
+	 * @param rhs: The right hand side argument.
+	 * @return The OR performed color write mask.
+	 */
+	constexpr ColorWriteMask operator|(const ColorWriteMask& lhs, const ColorWriteMask& rhs) { return static_cast<ColorWriteMask>(static_cast<UI8>(lhs) | static_cast<UI8>(rhs)); }
+
+	/**
+	 * Color write mask bitwise AND operator.
+	 *
+	 * @param lhs: The left hand side argument.
+	 * @param rhs: The right hand side argument.
+	 * @return The AND performed color write mask.
+	 */
+	constexpr ColorWriteMask operator&(const ColorWriteMask& lhs, const ColorWriteMask& rhs) { return static_cast<ColorWriteMask>(static_cast<UI8>(lhs) & static_cast<UI8>(rhs)); }
+
+	/**
+	 * Color blend attachment structure.
+	 */
+	struct ColorBlendAttachment
+	{
+		bool mEnableBlend = false;
+		ColorBlendFactor mSrcBlendFactor = ColorBlendFactor::ZERO;
+		ColorBlendFactor mDstBlendFactor = ColorBlendFactor::ZERO;
+		ColorBlendFactor mSrcAlphaBlendFactor = ColorBlendFactor::ZERO;
+		ColorBlendFactor mDstAlphaBlendFactor = ColorBlendFactor::ZERO;
+		ColorBlendOperator mBlendOperator = ColorBlendOperator::ADD;
+		ColorBlendOperator mAlphaBlendOperator = ColorBlendOperator::ADD;
+		ColorWriteMask mColorWriteMask = ColorWriteMask::R | ColorWriteMask::G | ColorWriteMask::B | ColorWriteMask::A;
+	};
+
+	/**
 	 * Graphics pipeline specification.
 	 * This structure describes how the pipeline should handle certain aspects of it.
 	 */
 	struct GraphicsPipelineSpecification {
 		GraphicsPipelineSpecification() = default;
+
+		std::vector<ColorBlendAttachment> mColorBlendAttachments = { ColorBlendAttachment() };
 
 		float mColorBlendConstants[4] = {
 			CREATE_COLOR_256(255), CREATE_COLOR_256(255),
@@ -138,7 +265,6 @@ namespace Flint
 		bool bEnableAlphaToOne = false;
 		bool bEnableSampleShading = true;
 		bool bEnableColorBlendLogic = false;
-		bool bEnableColorBlend = false;
 		bool bEnableDepthTest = false;
 		bool bEnableDepthWrite = false;
 	};
@@ -228,6 +354,13 @@ namespace Flint
 		 * @return The draw data array.
 		 */
 		const std::unordered_map<UI64, DrawData> GetDrawData() const { return mDrawDataList; }
+
+		/**
+		 * Get the current draw data index.
+		 *
+		 * @return The index.
+		 */
+		const UI64 GetCurrentDrawIndex() const { return mDrawDataIndex; }
 
 		/**
 		 * Add draw data to draw.

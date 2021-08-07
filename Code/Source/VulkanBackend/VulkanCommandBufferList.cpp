@@ -62,6 +62,11 @@ namespace Flint
 			FLINT_VK_ASSERT(vkAllocateCommandBuffers(vDevice.GetLogicalDevice(), &vAI, vCommandBuffers.data()));
 		}
 
+		std::shared_ptr<CommandBufferList> VulkanCommandBufferList::CreateChild()
+		{
+			return pDevice->CreateSecondaryCommandBufferList(mBufferCount, shared_from_this());
+		}
+
 		void VulkanCommandBufferList::BeginBufferRecording(UI32 index)
 		{
 			FLINT_SETUP_PROFILER();

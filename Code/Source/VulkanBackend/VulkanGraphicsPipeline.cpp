@@ -19,7 +19,7 @@ namespace Flint
 				switch (type)
 				{
 				case Flint::ShaderAttributeDataType::VEC1:
-					return VkFormat::VK_FORMAT_R32_SFLOAT;
+					return VkFormat::VK_FORMAT_R32_UINT;
 
 				case Flint::ShaderAttributeDataType::VEC2:
 					return VkFormat::VK_FORMAT_R32G32_SFLOAT;
@@ -259,6 +259,257 @@ namespace Flint
 				return states;
 			}
 
+			VkBlendFactor GetBlendFactor(ColorBlendFactor factor)
+			{
+				switch (factor)
+				{
+				case Flint::ColorBlendFactor::ZERO:
+					return VkBlendFactor::VK_BLEND_FACTOR_ZERO;
+
+				case Flint::ColorBlendFactor::ONE:
+					return VkBlendFactor::VK_BLEND_FACTOR_ONE;
+
+				case Flint::ColorBlendFactor::SRC_COLOR:
+					return VkBlendFactor::VK_BLEND_FACTOR_SRC_COLOR;
+
+				case Flint::ColorBlendFactor::ONE_MINUS_SRC_COLOR:
+					return VkBlendFactor::VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR;
+
+				case Flint::ColorBlendFactor::DST_COLOR:
+					return VkBlendFactor::VK_BLEND_FACTOR_DST_COLOR;
+
+				case Flint::ColorBlendFactor::ONE_MINUS_DST_COLOR:
+					return VkBlendFactor::VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR;
+
+				case Flint::ColorBlendFactor::SRC_ALPHA:
+					return VkBlendFactor::VK_BLEND_FACTOR_SRC_ALPHA;
+
+				case Flint::ColorBlendFactor::ONE_MINUS_SRC_ALPHA:
+					return VkBlendFactor::VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+
+				case Flint::ColorBlendFactor::DST_ALPHA:
+					return VkBlendFactor::VK_BLEND_FACTOR_DST_ALPHA;
+
+				case Flint::ColorBlendFactor::ONE_MINUS_DST_ALPHA:
+					return VkBlendFactor::VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA;
+
+				case Flint::ColorBlendFactor::CONSTANT_COLOR:
+					return VkBlendFactor::VK_BLEND_FACTOR_CONSTANT_COLOR;
+
+				case Flint::ColorBlendFactor::ONE_MINUS_CONSTANT_COLOR:
+					return VkBlendFactor::VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_COLOR;
+
+				case Flint::ColorBlendFactor::CONSTANT_ALPHA:
+					return VkBlendFactor::VK_BLEND_FACTOR_CONSTANT_ALPHA;
+
+				case Flint::ColorBlendFactor::ONE_MINUS_CONSTANT_ALPHA:
+					return VkBlendFactor::VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_ALPHA;
+
+				case Flint::ColorBlendFactor::SRC_ALPHA_SATURATE:
+					return VkBlendFactor::VK_BLEND_FACTOR_SRC_ALPHA_SATURATE;
+
+				case Flint::ColorBlendFactor::SRC1_COLOR:
+					return VkBlendFactor::VK_BLEND_FACTOR_SRC1_COLOR;
+
+				case Flint::ColorBlendFactor::ONE_MINUS_SRC1_COLOR:
+					return VkBlendFactor::VK_BLEND_FACTOR_ONE_MINUS_SRC1_COLOR;
+
+				case Flint::ColorBlendFactor::SRC1_ALPHA:
+					return VkBlendFactor::VK_BLEND_FACTOR_SRC1_ALPHA;
+
+				case Flint::ColorBlendFactor::ONE_MINUS_SRC1_ALPHA:
+					return VkBlendFactor::VK_BLEND_FACTOR_ONE_MINUS_SRC1_ALPHA;
+
+				default:
+					FLINT_THROW_BACKEND_ERROR("Invalid color blend factor!");
+				}
+
+				return VkBlendFactor::VK_BLEND_FACTOR_ZERO;
+			}
+
+			VkBlendOp GetBlendOp(ColorBlendOperator oprtr)
+			{
+				switch (oprtr)
+				{
+				case Flint::ColorBlendOperator::ADD:
+					return VkBlendOp::VK_BLEND_OP_ADD;
+
+				case Flint::ColorBlendOperator::SUBTRACT:
+					return VkBlendOp::VK_BLEND_OP_SUBTRACT;
+
+				case Flint::ColorBlendOperator::REVERSE_SUBTRACT:
+					return VkBlendOp::VK_BLEND_OP_REVERSE_SUBTRACT;
+
+				case Flint::ColorBlendOperator::MIN:
+					return VkBlendOp::VK_BLEND_OP_MIN;
+
+				case Flint::ColorBlendOperator::MAX:
+					return VkBlendOp::VK_BLEND_OP_MAX;
+
+				case Flint::ColorBlendOperator::ZERO:
+					return VkBlendOp::VK_BLEND_OP_ZERO_EXT;
+
+				case Flint::ColorBlendOperator::SRC:
+					return VkBlendOp::VK_BLEND_OP_SRC_EXT;
+
+				case Flint::ColorBlendOperator::DST:
+					return VkBlendOp::VK_BLEND_OP_DST_EXT;
+
+				case Flint::ColorBlendOperator::SRC_OVER:
+					return VkBlendOp::VK_BLEND_OP_SRC_OVER_EXT;
+
+				case Flint::ColorBlendOperator::DST_OVER:
+					return VkBlendOp::VK_BLEND_OP_DST_OVER_EXT;
+
+				case Flint::ColorBlendOperator::SRC_IN:
+					return VkBlendOp::VK_BLEND_OP_SRC_IN_EXT;
+
+				case Flint::ColorBlendOperator::DST_IN:
+					return VkBlendOp::VK_BLEND_OP_DST_IN_EXT;
+
+				case Flint::ColorBlendOperator::SRC_OUT:
+					return VkBlendOp::VK_BLEND_OP_SRC_OUT_EXT;
+
+				case Flint::ColorBlendOperator::DST_OUT:
+					return VkBlendOp::VK_BLEND_OP_DST_OUT_EXT;
+
+				case Flint::ColorBlendOperator::SRC_ATOP:
+					return VkBlendOp::VK_BLEND_OP_SRC_ATOP_EXT;
+
+				case Flint::ColorBlendOperator::DST_ATOP:
+					return VkBlendOp::VK_BLEND_OP_DST_ATOP_EXT;
+
+				case Flint::ColorBlendOperator::XOR:
+					return VkBlendOp::VK_BLEND_OP_XOR_EXT;
+
+				case Flint::ColorBlendOperator::MULTIPLY:
+					return VkBlendOp::VK_BLEND_OP_MULTIPLY_EXT;
+
+				case Flint::ColorBlendOperator::SCREEN:
+					return VkBlendOp::VK_BLEND_OP_SCREEN_EXT;
+
+				case Flint::ColorBlendOperator::OVERLAY:
+					return VkBlendOp::VK_BLEND_OP_OVERLAY_EXT;
+
+				case Flint::ColorBlendOperator::DARKEN:
+					return VkBlendOp::VK_BLEND_OP_DARKEN_EXT;
+
+				case Flint::ColorBlendOperator::LIGHTEN:
+					return VkBlendOp::VK_BLEND_OP_LIGHTEN_EXT;
+
+				case Flint::ColorBlendOperator::COLORDODGE:
+					return VkBlendOp::VK_BLEND_OP_COLORDODGE_EXT;
+
+				case Flint::ColorBlendOperator::COLORBURN:
+					return VkBlendOp::VK_BLEND_OP_COLORBURN_EXT;
+
+				case Flint::ColorBlendOperator::HARDLIGHT:
+					return VkBlendOp::VK_BLEND_OP_HARDLIGHT_EXT;
+
+				case Flint::ColorBlendOperator::SOFTLIGHT:
+					return VkBlendOp::VK_BLEND_OP_SOFTLIGHT_EXT;
+
+				case Flint::ColorBlendOperator::DIFFERENCE:
+					return VkBlendOp::VK_BLEND_OP_DIFFERENCE_EXT;
+
+				case Flint::ColorBlendOperator::EXCLUSION:
+					return VkBlendOp::VK_BLEND_OP_EXCLUSION_EXT;
+
+				case Flint::ColorBlendOperator::INVERT:
+					return VkBlendOp::VK_BLEND_OP_INVERT_EXT;
+
+				case Flint::ColorBlendOperator::INVERT_RGB:
+					return VkBlendOp::VK_BLEND_OP_INVERT_RGB_EXT;
+
+				case Flint::ColorBlendOperator::LINEARDODGE:
+					return VkBlendOp::VK_BLEND_OP_LINEARDODGE_EXT;
+
+				case Flint::ColorBlendOperator::LINEARBURN:
+					return VkBlendOp::VK_BLEND_OP_LINEARBURN_EXT;
+
+				case Flint::ColorBlendOperator::VIVIDLIGHT:
+					return VkBlendOp::VK_BLEND_OP_VIVIDLIGHT_EXT;
+
+				case Flint::ColorBlendOperator::LINEARLIGHT:
+					return VkBlendOp::VK_BLEND_OP_LINEARLIGHT_EXT;
+
+				case Flint::ColorBlendOperator::PINLIGHT:
+					return VkBlendOp::VK_BLEND_OP_PINLIGHT_EXT;
+
+				case Flint::ColorBlendOperator::HARDMIX:
+					return VkBlendOp::VK_BLEND_OP_HARDMIX_EXT;
+
+				case Flint::ColorBlendOperator::HSL_HUE:
+					return VkBlendOp::VK_BLEND_OP_HSL_HUE_EXT;
+
+				case Flint::ColorBlendOperator::HSL_SATURATION:
+					return VkBlendOp::VK_BLEND_OP_HSL_SATURATION_EXT;
+
+				case Flint::ColorBlendOperator::HSL_COLOR:
+					return VkBlendOp::VK_BLEND_OP_HSL_COLOR_EXT;
+
+				case Flint::ColorBlendOperator::HSL_LUMINOSITY:
+					return VkBlendOp::VK_BLEND_OP_HSL_LUMINOSITY_EXT;
+
+				case Flint::ColorBlendOperator::PLUS:
+					return VkBlendOp::VK_BLEND_OP_PLUS_EXT;
+
+				case Flint::ColorBlendOperator::PLUS_CLAMPED:
+					return VkBlendOp::VK_BLEND_OP_PLUS_CLAMPED_EXT;
+
+				case Flint::ColorBlendOperator::PLUS_CLAMPED_ALPHA:
+					return VkBlendOp::VK_BLEND_OP_PLUS_CLAMPED_ALPHA_EXT;
+
+				case Flint::ColorBlendOperator::PLUS_DARKER:
+					return VkBlendOp::VK_BLEND_OP_PLUS_DARKER_EXT;
+
+				case Flint::ColorBlendOperator::MINUS:
+					return VkBlendOp::VK_BLEND_OP_MINUS_EXT;
+
+				case Flint::ColorBlendOperator::MINUS_CLAMPED:
+					return VkBlendOp::VK_BLEND_OP_MINUS_CLAMPED_EXT;
+
+				case Flint::ColorBlendOperator::CONTRAST:
+					return VkBlendOp::VK_BLEND_OP_CONTRAST_EXT;
+
+				case Flint::ColorBlendOperator::INVERT_OVG:
+					return VkBlendOp::VK_BLEND_OP_INVERT_OVG_EXT;
+
+				case Flint::ColorBlendOperator::RED:
+					return VkBlendOp::VK_BLEND_OP_RED_EXT;
+
+				case Flint::ColorBlendOperator::GREEN:
+					return VkBlendOp::VK_BLEND_OP_GREEN_EXT;
+
+				case Flint::ColorBlendOperator::BLUE:
+					return VkBlendOp::VK_BLEND_OP_BLUE_EXT;
+
+				default:
+					FLINT_THROW_BACKEND_ERROR("Invalid color blend operator!");
+				}
+
+				return VkBlendOp::VK_BLEND_OP_ADD;
+			}
+
+			VkColorComponentFlags GetComponentFlags(ColorWriteMask mask)
+			{
+				VkColorComponentFlags flags = 0;
+
+				if ((mask & ColorWriteMask::R) == ColorWriteMask::R)
+					flags |= VkColorComponentFlagBits::VK_COLOR_COMPONENT_R_BIT;
+
+				if ((mask & ColorWriteMask::G) == ColorWriteMask::G)
+					flags |= VkColorComponentFlagBits::VK_COLOR_COMPONENT_G_BIT;
+
+				if ((mask & ColorWriteMask::B) == ColorWriteMask::B)
+					flags |= VkColorComponentFlagBits::VK_COLOR_COMPONENT_B_BIT;
+
+				if ((mask & ColorWriteMask::A) == ColorWriteMask::A)
+					flags |= VkColorComponentFlagBits::VK_COLOR_COMPONENT_A_BIT;
+
+				return flags;
+			}
+
 			void AddResourceBindingsToVector(std::vector<VkDescriptorSetLayoutBinding>& bindings, const VulkanShader& shader)
 			{
 				std::vector<VkDescriptorSetLayoutBinding> tempBindings = shader.GetResourceBindings();
@@ -370,8 +621,20 @@ namespace Flint
 			vTessellationStateCreateInfo.patchControlPoints = mSpecification.mTessellationPatchControlPoints;
 
 			// Color blend state.
-			vCBAS.colorWriteMask = 0xf;
-			vCBAS.blendEnable = GET_VK_BOOL(mSpecification.bEnableColorBlend);
+			for (const auto attachment : mSpecification.mColorBlendAttachments)
+			{
+				VkPipelineColorBlendAttachmentState vAttachmentState = {};
+				vAttachmentState.blendEnable = GET_VK_BOOL(attachment.mEnableBlend);
+				vAttachmentState.alphaBlendOp = _Helpers::GetBlendOp(attachment.mAlphaBlendOperator);
+				vAttachmentState.colorBlendOp = _Helpers::GetBlendOp(attachment.mBlendOperator);
+				vAttachmentState.colorWriteMask = _Helpers::GetComponentFlags(attachment.mColorWriteMask);
+				vAttachmentState.srcColorBlendFactor = _Helpers::GetBlendFactor(attachment.mSrcBlendFactor);
+				vAttachmentState.srcAlphaBlendFactor = _Helpers::GetBlendFactor(attachment.mSrcAlphaBlendFactor);
+				vAttachmentState.dstAlphaBlendFactor = _Helpers::GetBlendFactor(attachment.mDstAlphaBlendFactor);
+				vAttachmentState.dstColorBlendFactor = _Helpers::GetBlendFactor(attachment.mDstBlendFactor);
+
+				INSERT_INTO_VECTOR(vCBASS, vAttachmentState);
+			}
 
 			vColorBlendStateCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
 			vColorBlendStateCreateInfo.pNext = VK_NULL_HANDLE;
@@ -379,8 +642,9 @@ namespace Flint
 			vColorBlendStateCreateInfo.logicOp = _Helpers::GetLogicOp(mSpecification.mColorBlendLogic);
 			vColorBlendStateCreateInfo.logicOpEnable = GET_VK_BOOL(mSpecification.bEnableColorBlendLogic);
 			std::copy(mSpecification.mColorBlendConstants, mSpecification.mColorBlendConstants + 4, vColorBlendStateCreateInfo.blendConstants);
-			vColorBlendStateCreateInfo.pAttachments = &vCBAS;
-			vColorBlendStateCreateInfo.attachmentCount = 1;
+
+			vColorBlendStateCreateInfo.attachmentCount = static_cast<UI32>(vCBASS.size());
+			vColorBlendStateCreateInfo.pAttachments = vCBASS.data();
 
 			// Rasterization state.
 			vRasterizationStateCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;

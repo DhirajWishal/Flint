@@ -43,6 +43,8 @@ namespace Flint
 
 		private:
 			void BindSecondaryCommands();
+
+			virtual void BindVolatileInstances() override final;
 			virtual void SecondaryCommandsWorker(DrawInstanceMap& drawInstanceMap, std::list<std::shared_ptr<GeometryStore>>& drawOrder, BinarySemaphore& binarySemaphore, CountingSemaphore& countingSemaphore, std::atomic<bool>& shouldRun) override final;
 			void ExecuteSecondaryCommandBuffers();
 

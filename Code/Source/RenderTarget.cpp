@@ -7,7 +7,7 @@
 namespace Flint
 {
 	RenderTarget::RenderTarget(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, const std::shared_ptr<CommandBufferList>& pCommandBufferList, UI32 threadCount)
-		: DeviceBoundObject(pDevice), mExtent(extent), mBufferCount(bufferCount), pCommandBufferList(pCommandBufferList), mNumberOfThreads(threadCount), bThreadShouldRun(true)
+		: DeviceBoundObject(pDevice), mExtent(extent), mBufferCount(bufferCount), pCommandBufferList(pCommandBufferList), pVolatileCommandBufferList(pCommandBufferList->CreateChild()), mNumberOfThreads(threadCount), bThreadShouldRun(true)
 	{
 		if (extent.IsZero())
 			FLINT_THROW_INVALID_ARGUMENT("Render target width and height should be greater than 0!");
@@ -70,6 +70,44 @@ namespace Flint
 						return;
 					}
 				}
+			}
+		}
+	}
+
+	void RenderTarget::SubmitVolatilePipeline(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::shared_ptr<GraphicsPipeline>& pPipeline)
+	{
+		if (mVolatileDrawInstanceMap.find(pGeometryStore) != mVolatileDrawInstanceMap.end())
+			INSERT_INTO_VECTOR(mVolatileDrawInstanceMap[pGeometryStore], pPipeline);
+		else
+		{
+			mVolatileDrawInstanceMap[pGeometryStore] = { pPipeline };
+			mVolatileDrawInstanceOrder.push_back(pGeometryStore);
+		}
+
+		bIsAltered = true;
+	}
+
+	void RenderTarget::RemoveVolatilePipeline(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::shared_ptr<GraphicsPipeline>& pPipeline)
+	{
+		if (mVolatileDrawInstanceMap.find(pGeometryStore) == mVolatileDrawInstanceMap.end())
+			return;
+
+		std::vector<std::shared_ptr<GraphicsPipeline>>& pPipelines = mVolatileDrawInstanceMap[pGeometryStore];
+		for (UI64 j = 0; j < pPipelines.size(); j++)
+		{
+			if (pPipelines[j] == pPipeline)
+			{
+				pPipelines.erase(pPipelines.begin() + j);
+
+				// Remove the geometry store if no pipeline is bound.
+				if (pPipelines.empty())
+				{
+					mVolatileDrawInstanceMap.erase(pGeometryStore);
+					mVolatileDrawInstanceOrder.remove(pGeometryStore);
+				}
+
+				bIsAltered = true;
+				return;
 			}
 		}
 	}

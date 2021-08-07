@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "Components/GameObject.hpp"
+#include "Components/ImGui.hpp"
 #include "Components/Objects/VikingRoom.hpp"
 #include "Components/Objects/SkyBox.hpp"
 #include "Components/Objects/TreeScene.hpp"
@@ -17,6 +18,7 @@ int main()
 		SceneState mState{};
 
 		{
+			ImGUI mImGui{ glm::vec3(0.0f), &mState };
 			SkyBox skyBox{ glm::vec3(0.0f), &mState };
 			//VikingRoom vikingRoom{ glm::vec3(2.0f), &mState };
 			//vikingRoom.EnableBoundingBox();
@@ -38,29 +40,59 @@ int main()
 
 				mState.PrepareNewFrame();
 
-				if (mState.pDisplay->GetKeyEvent(Flint::KeyCode::KEY_L).IsPressed())
+				ImGui::NewFrame();
+				ImGuiIO& io = ImGui::GetIO();
+				ImGui::ShowDemoWindow();
+
 				{
-					if (!pTreeScene)
-						pTreeScene = std::make_unique<TreeScene>(glm::vec3(0.0f), &mState);
+					io.DeltaTime = delta / (1000.0f * 1000.0f * 1000.0f);
+					io.DisplaySize = ImVec2(static_cast<float>(mState.pDisplay->GetExtent().mWidth), static_cast<float>(mState.pDisplay->GetExtent().mHeight));
+
+					auto position = mState.pDisplay->GetMousePosition();
+					io.MousePos = ImVec2(position.X, position.Y);
+
+					if (mState.pDisplay->GetMouseButtonEvent(Flint::MouseButton::LEFT).IsPressed() || mState.pDisplay->GetMouseButtonEvent(Flint::MouseButton::LEFT).IsOnRepeat())
+						io.MouseDown[0] = true;
+					else if (mState.pDisplay->GetMouseButtonEvent(Flint::MouseButton::LEFT).IsReleased())
+						io.MouseDown[0] = false;
+
+					if (mState.pDisplay->GetMouseButtonEvent(Flint::MouseButton::RIGHT).IsPressed() || mState.pDisplay->GetMouseButtonEvent(Flint::MouseButton::RIGHT).IsOnRepeat())
+						io.MouseDown[1] = true;
+					else if (mState.pDisplay->GetMouseButtonEvent(Flint::MouseButton::RIGHT).IsReleased())
+						io.MouseDown[1] = false;
 				}
 
-				if (mState.pDisplay->GetKeyEvent(Flint::KeyCode::KEY_U).IsPressed())
+
+				if (!io.WantCaptureMouse)
 				{
-					if (pTreeScene)
+					mState.UpdateCamera(delta);
+
+					if (mState.pDisplay->GetKeyEvent(Flint::KeyCode::KEY_L).IsPressed())
 					{
-						auto pTree = pTreeScene.release();
-						delete pTree;
+						if (!pTreeScene)
+							pTreeScene = std::make_unique<TreeScene>(glm::vec3(0.0f), &mState);
 					}
+
+					if (mState.pDisplay->GetKeyEvent(Flint::KeyCode::KEY_U).IsPressed())
+					{
+						if (pTreeScene)
+						{
+							auto pTree = pTreeScene.release();
+							delete pTree;
+						}
+					}
+
+					skyBox.OnUpdate(delta);
+					//vikingRoom.OnUpdate(delta);
+					treeScene.OnUpdate(delta);
+					//preview.OnUpdate(delta);
+
+					if (pTreeScene)
+						pTreeScene->OnUpdate(delta);
 				}
 
-				mState.UpdateCamera(delta);
-				skyBox.OnUpdate(delta);
-				//vikingRoom.OnUpdate(delta);
-				treeScene.OnUpdate(delta);
-				//preview.OnUpdate(delta);
-
-				if (pTreeScene)
-					pTreeScene->OnUpdate(delta);
+				ImGui::Render();
+				mImGui.OnUpdate(0);
 
 				oldTimePoint = now;
 				mState.SubmitFrames();

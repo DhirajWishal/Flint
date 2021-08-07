@@ -6,8 +6,8 @@
 
 namespace Flint
 {
-	GeometryStore::GeometryStore(const std::shared_ptr<Device>& pDevice, const std::unordered_map<UI32, std::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize)
-		: DeviceBoundObject(pDevice), mVertexAttribtues(vertexAttributes), mIndexSize(indexSize)
+	GeometryStore::GeometryStore(const std::shared_ptr<Device>& pDevice, const std::unordered_map<UI32, std::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize, BufferMemoryProfile profile)
+		: DeviceBoundObject(pDevice), mVertexAttribtues(vertexAttributes), mIndexSize(indexSize), mMemoryProfile(profile)
 	{
 		if (mVertexAttribtues.empty())
 			FLINT_THROW_INVALID_ARGUMENT("Vertex attributes should not be empty!");
@@ -30,7 +30,7 @@ namespace Flint
 			if (pVertexBuffer)
 				pVertexBuffer->Resize(pVertexStaggingBuffer->GetSize(), BufferResizeMode::CLEAR);
 			else
-				pVertexBuffer = pDevice->CreateBuffer(BufferType::VERTEX, mVertexCount * mVertexSize);
+				pVertexBuffer = pDevice->CreateBuffer(BufferType::VERTEX, mVertexCount * mVertexSize, mMemoryProfile);
 
 			pVertexBuffer->CopyFromBuffer(pVertexStaggingBuffer, pVertexStaggingBuffer->GetSize(), 0, 0);
 		}
@@ -43,7 +43,7 @@ namespace Flint
 			if (pIndexBuffer)
 				pIndexBuffer->Resize(pIndexStaggingBuffer->GetSize(), BufferResizeMode::CLEAR);
 			else
-				pIndexBuffer = pDevice->CreateBuffer(BufferType::INDEX, mIndexCount * mIndexSize);
+				pIndexBuffer = pDevice->CreateBuffer(BufferType::INDEX, mIndexCount * mIndexSize, mMemoryProfile);
 
 			pIndexBuffer->CopyFromBuffer(pIndexStaggingBuffer, pIndexStaggingBuffer->GetSize(), 0, 0);
 		}
@@ -103,7 +103,7 @@ namespace Flint
 
 			// Extend and copy data from the stagging buffer.
 			if (!pVertexBuffer)
-				pVertexBuffer = pDevice->CreateBuffer(BufferType::VERTEX, newSize);
+				pVertexBuffer = pDevice->CreateBuffer(BufferType::VERTEX, newSize, mMemoryProfile);
 			else
 				pVertexBuffer->Extend(newSize, BufferResizeMode::COPY);
 
@@ -119,7 +119,7 @@ namespace Flint
 
 			// Extend and copy data from the stagging buffer.
 			if (!pIndexBuffer)
-				pIndexBuffer = pDevice->CreateBuffer(BufferType::INDEX, newSize);
+				pIndexBuffer = pDevice->CreateBuffer(BufferType::INDEX, newSize, mMemoryProfile);
 			else
 				pIndexBuffer->Extend(newSize, BufferResizeMode::COPY);
 
@@ -154,7 +154,7 @@ namespace Flint
 			mVertexCount -= vertexCount;
 
 			pDevice->DestroyBuffer(pVertexBuffer);
-			pVertexBuffer = pDevice->CreateBuffer(Flint::BufferType::VERTEX, mVertexCount * mVertexSize);
+			pVertexBuffer = pDevice->CreateBuffer(Flint::BufferType::VERTEX, mVertexCount * mVertexSize, mMemoryProfile);
 
 			UI64 offset = 0;
 			if (pStaggingBuffer1)
@@ -193,7 +193,7 @@ namespace Flint
 			mIndexCount -= indexCount;
 
 			pDevice->DestroyBuffer(pIndexBuffer);
-			pIndexBuffer = pDevice->CreateBuffer(Flint::BufferType::INDEX, mIndexCount * mIndexSize);
+			pIndexBuffer = pDevice->CreateBuffer(Flint::BufferType::INDEX, mIndexCount * mIndexSize, mMemoryProfile);
 
 			UI64 offset = 0;
 			if (pStaggingBuffer1)
@@ -218,5 +218,25 @@ namespace Flint
 
 		if (pIndexBuffer)
 			pDevice->DestroyBuffer(pIndexBuffer);
+	}
+
+	void* GeometryStore::MapVertexBuffer() const
+	{
+		return pVertexBuffer->MapMemory(pVertexBuffer->GetSize());
+	}
+
+	void* GeometryStore::MapIndexBuffer() const
+	{
+		return pIndexBuffer->MapMemory(pIndexBuffer->GetSize());
+	}
+
+	void GeometryStore::UnmapVertexBuffer()
+	{
+		pVertexBuffer->UnmapMemory();
+	}
+
+	void GeometryStore::UnmapIndexBuffer()
+	{
+		pIndexBuffer->UnmapMemory();
 	}
 }

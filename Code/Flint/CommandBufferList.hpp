@@ -38,6 +38,13 @@ namespace Flint
 		CommandBufferList(const std::shared_ptr<Device>& pDevice, const UI32 bufferCount, const std::shared_ptr<CommandBufferList>& pParent) : DeviceBoundObject(pDevice), mBufferCount(bufferCount) {}
 
 		/**
+		 * Create a child command buffer.
+		 * 
+		 * @return The child command buffer pointer.
+		 */
+		virtual std::shared_ptr<CommandBufferList> CreateChild() = 0;
+
+		/**
 		 * Begin command buffer recording.
 		 * Before binding objects to a command buffer, it must first start recording.
 		 *

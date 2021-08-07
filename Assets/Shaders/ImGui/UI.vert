@@ -2,7 +2,7 @@
 
 layout (location = 0) in vec2 inPos;
 layout (location = 1) in vec2 inUV;
-layout (location = 2) in vec4 inColor;
+layout (location = 2) in uint inColor;
 
 layout (push_constant) uniform PushConstants {
 	vec2 scale;
@@ -20,6 +20,12 @@ out gl_PerVertex
 void main() 
 {
 	outUV = inUV;
-	outColor = inColor;
 	gl_Position = vec4(inPos * pushConstants.scale + pushConstants.translate, 0.0, 1.0);
+
+	outColor.r = (inColor & 0x000000ff) >> 0;
+	outColor.g = (inColor & 0x0000ff00) >> 8;
+	outColor.b = (inColor & 0x00ff0000) >> 16;
+	outColor.a = (inColor & 0xff000000) >> 24;
+
+	outColor /= 256.0;
 }

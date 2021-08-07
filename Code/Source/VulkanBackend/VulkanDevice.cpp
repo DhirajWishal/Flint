@@ -114,9 +114,9 @@ namespace Flint
 			TerminateDeviceBoundObject(*pRenderTarget);
 		}
 
-		std::shared_ptr<Buffer> VulkanDevice::CreateBuffer(BufferType type, UI64 size)
+		std::shared_ptr<Buffer> VulkanDevice::CreateBuffer(BufferType type, UI64 size, BufferMemoryProfile profile)
 		{
-			return std::make_shared<VulkanBuffer>(shared_from_this(), type, size);
+			return std::make_shared<VulkanBuffer>(shared_from_this(), type, size, profile);
 		}
 
 		void VulkanDevice::DestroyBuffer(const std::shared_ptr<Buffer>& pBuffer)
@@ -174,9 +174,9 @@ namespace Flint
 			TerminateDeviceBoundObject(*pPipeline);
 		}
 
-		std::shared_ptr<GeometryStore> VulkanDevice::CreateGeometryStore(const std::unordered_map<UI32, std::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize)
+		std::shared_ptr<GeometryStore> VulkanDevice::CreateGeometryStore(const std::unordered_map<UI32, std::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize, BufferMemoryProfile profile)
 		{
-			return std::make_shared<GeometryStore>(shared_from_this(), vertexAttributes, indexSize);
+			return std::make_shared<GeometryStore>(shared_from_this(), vertexAttributes, indexSize, profile);
 		}
 
 		void VulkanDevice::DestroyGeometryStore(const std::shared_ptr<GeometryStore>& pGeometryStore)

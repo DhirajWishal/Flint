@@ -3,9 +3,6 @@
 
 #include "Core/BinarySemaphore.hpp"
 
-#include <chrono>
-#include <thread>
-
 namespace Flint
 {
 	BinarySemaphore::BinarySemaphore(const BinarySemaphore& other)
@@ -20,8 +17,6 @@ namespace Flint
 
 	void BinarySemaphore::Acquire()
 	{
-		using namespace std::literals;
-
 		while (mAtomicBool != true);
 		mAtomicBool = false;
 	}

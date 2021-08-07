@@ -5,6 +5,7 @@
 #include "Flint/Device.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <imgui.h>
 
 void Camera::Initialize(std::shared_ptr<Flint::Device> pDevice)
 {
@@ -65,8 +66,6 @@ void Camera::MousePosition(Flint::FExtent2D<float> _pos, UI64 delta)
 		Pitch = 89.0f;
 	if (Pitch < -89.0f)
 		Pitch = -89.0f;
-
-	Update(delta);
 }
 
 void Camera::Update(UI64 delta)
@@ -86,6 +85,10 @@ void Camera::Update(UI64 delta)
 	CameraMatrix* pMatrix = static_cast<CameraMatrix*>(pCameraBuffer->MapMemory(sizeof(CameraMatrix)));
 	*pMatrix = GetMatrix();
 	pCameraBuffer->UnmapMemory();
+
+	//ImGui::Text("Camera");
+	//ImGui::InputFloat3("front", &cameraFront.x);
+	//ImGui::InputFloat3("right", &cameraRight.x);
 }
 
 void Camera::ResetFirstMouse()

@@ -8,8 +8,8 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanBuffer::VulkanBuffer(const std::shared_ptr<Device>& pDevice, BufferType type, const UI64 size)
-			: Buffer(pDevice, type, size)
+		VulkanBuffer::VulkanBuffer(const std::shared_ptr<Device>& pDevice, BufferType type, const UI64 size, BufferMemoryProfile profile)
+			: Buffer(pDevice, type, size, profile)
 		{
 			FLINT_SETUP_PROFILER();
 
@@ -45,6 +45,24 @@ namespace Flint
 				break;
 			}
 
+			switch (profile)
+			{
+			case Flint::BufferMemoryProfile::AUTOMATIC:
+				break;
+
+			case Flint::BufferMemoryProfile::CPU_ONLY:
+			case Flint::BufferMemoryProfile::TRANSFER_FRIENDLY:
+				vMemoryProperties = VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
+				break;
+
+			case Flint::BufferMemoryProfile::DEVICE_ONLY:
+				vMemoryProperties = VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+				break;
+
+			default:
+				FLINT_THROW_BACKEND_ERROR("Invalid buffer memory profile type!");
+			}
+
 			CreateBuffer();
 			CreateBufferMemory();
 		}
@@ -52,7 +70,7 @@ namespace Flint
 		void VulkanBuffer::Resize(UI64 size, BufferResizeMode mode)	// TODO
 		{
 			/*
-			* pRegions[0].srcOffset (114048) is greater than pRegions[0].size (14112). 
+			* pRegions[0].srcOffset (114048) is greater than pRegions[0].size (14112).
 			*/
 
 			FLINT_SETUP_PROFILER();

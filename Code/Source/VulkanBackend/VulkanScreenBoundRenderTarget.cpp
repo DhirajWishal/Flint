@@ -77,7 +77,8 @@ namespace Flint
 					return;
 			}
 			else
-				ExecuteSecondaryCommandBuffers();
+				AcquireAllThreads();
+			//ExecuteSecondaryCommandBuffers();
 
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 			FLINT_VK_ASSERT(vkWaitForFences(vDevice.GetLogicalDevice(), 1, &vRenderTarget.vInFlightFences[mFrameIndex], VK_TRUE, UI64_MAX));
@@ -103,16 +104,27 @@ namespace Flint
 			if (bShouldSkip)
 			{
 				Recreate();
-				return;
+
+				if (bShouldSkip)
+					return;
 			}
 
 			if (bIsAltered)
 			{
-				BindSecondaryCommands();
+				//AcquireAllThreads();
 				ExecuteSecondaryCommandBuffers();
+
+				BindSecondaryCommands();
+				//ExecuteSecondaryCommandBuffers();
 
 				bIsAltered = false;
 			}
+
+			AcquireAllThreads();
+
+			// Bind all the volatile instances.
+			BindVolatileInstances();
+			ExecuteSecondaryCommandBuffers();
 
 			vCommandBuffer[0] = pCommandBufferList->StaticCast<VulkanCommandBufferList>().GetCommandBuffer(mFrameIndex);
 
@@ -142,6 +154,8 @@ namespace Flint
 			{
 				vDisplay.ToggleResize();
 				Recreate();
+
+				ExecuteSecondaryCommandBuffers();
 			}
 			else
 				FLINT_VK_ASSERT(result);
@@ -161,6 +175,7 @@ namespace Flint
 			pDepthBuffer->Terminate();
 
 			pDevice->DestroyCommandBufferList(pCommandBufferList);
+			pDevice->DestroyCommandBufferList(pVolatileCommandBufferList);
 
 			TerminateThreads();
 
@@ -182,7 +197,10 @@ namespace Flint
 			{
 				std::lock_guard<std::mutex> guard(mResourceMutex);
 				if (pCommandBufferList->IsRecording())
+				{
+					AcquireAllThreads();
 					ExecuteSecondaryCommandBuffers();
+				}
 			}
 
 			mExtent = newExtent;
@@ -217,7 +235,8 @@ namespace Flint
 
 			// Bake secondary commands.
 			BindSecondaryCommands();
-			ExecuteSecondaryCommandBuffers();
+			//ExecuteSecondaryCommandBuffers();
+			AcquireAllThreads();
 		}
 
 		FColor4D VulkanScreenBoundRenderTarget::GetClearColor() const
@@ -231,6 +250,53 @@ namespace Flint
 			pClearValues[0].color.float32[1] = newColor.mGreen;
 			pClearValues[0].color.float32[2] = newColor.mBlue;
 			pClearValues[0].color.float32[3] = newColor.mAlpha;
+		}
+
+		void VulkanScreenBoundRenderTarget::BindVolatileInstances()
+		{
+			// Begin the command buffer.
+			auto& vCommandBufferList = pVolatileCommandBufferList->StaticCast<VulkanCommandBufferList>();
+			vCommandBufferList.VulkanBeginSecondaryCommandBuffer(0, &vInheritInfo);
+
+			// Bind the draw instances.
+			for (const auto store : mVolatileDrawInstanceOrder)
+			{
+				FLINT_SETUP_PROFILER();
+
+				if (!store->GetVertexBuffer() || !store->GetIndexBuffer())
+					continue;
+
+				vCommandBufferList.BindVertexBuffer(store->GetVertexBuffer());
+				vCommandBufferList.BindIndexBuffer(store->GetIndexBuffer(), store->GetIndexSize());
+
+				auto& pipelines = mVolatileDrawInstanceMap.at(store);
+
+				// Iterate through the pipelines.
+				for (auto& pipeline : pipelines)
+				{
+					pipeline->PrepareResourcesToDraw();
+					vCommandBufferList.BindGraphicsPipeline(pipeline);
+
+					const auto drawData = pipeline->GetDrawData();
+					const auto drawDataIndex = pipeline->GetCurrentDrawIndex();
+
+					// Bind draw data.
+					for (UI64 i = 0; i < drawDataIndex; i++)
+					{
+						if (drawData.find(i) == drawData.end())
+							continue;
+
+						const auto draw = drawData.at(i);
+						vCommandBufferList.BindDrawResources(pipeline, draw.pResourceMap);
+						vCommandBufferList.BindDynamicStates(pipeline, draw.pDynamicStates);
+						vCommandBufferList.IssueDrawCall(draw.mVertexOffset, draw.mVertexCount, draw.mIndexOffset, draw.mIndexCount);
+					}
+				}
+			}
+
+			// End buffer recording and submit it to execute.
+			vCommandBufferList.EndBufferRecording();
+			vSecondaryCommandBuffers.push_back(vCommandBufferList.GetCurrentCommandBuffer());
 		}
 
 		void VulkanScreenBoundRenderTarget::BindSecondaryCommands()
@@ -354,7 +420,7 @@ namespace Flint
 
 		void VulkanScreenBoundRenderTarget::ExecuteSecondaryCommandBuffers()
 		{
-			AcquireAllThreads();
+			//AcquireAllThreads();
 
 			pCommandBufferList->StaticCast<VulkanCommandBufferList>().SetSecondaryCommandBuffers(std::move(vSecondaryCommandBuffers));
 			pCommandBufferList->ExecuteSecondaryCommands();

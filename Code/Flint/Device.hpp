@@ -133,9 +133,10 @@ namespace Flint
 		 *
 		 * @param type: The buffer type.
 		 * @param size: The buffer size.
+		 * @param profile: The memory profile of the buffer. Default is BufferMemoryProfile::AUTOMATIC.
 		 * @return The buffer object.
 		 */
-		virtual std::shared_ptr<Buffer> CreateBuffer(BufferType type, UI64 size) = 0;
+		virtual std::shared_ptr<Buffer> CreateBuffer(BufferType type, UI64 size, BufferMemoryProfile profile = BufferMemoryProfile::AUTOMATIC) = 0;
 
 		/**
 		 * Destroy a created buffer.
@@ -251,9 +252,10 @@ namespace Flint
 		 *
 		 * @param vertexAttributes: The vertex attributes of the store.
 		 * @param indexSize: The size of a single index.
+		 * @param profile: The memory profile of the geometry store. Default is BufferMemoryProfile::AUTOMATIC.
 		 * @return The newly created geometry store pointer.
 		 */
-		virtual std::shared_ptr<GeometryStore> CreateGeometryStore(const std::unordered_map<UI32, std::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize) = 0;
+		virtual std::shared_ptr<GeometryStore> CreateGeometryStore(const std::unordered_map<UI32, std::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize, BufferMemoryProfile profile = BufferMemoryProfile::AUTOMATIC) = 0;
 
 		/**
 		 * Destroy a created geometry store.

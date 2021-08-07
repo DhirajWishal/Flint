@@ -25,7 +25,7 @@ namespace Flint
 			virtual std::shared_ptr<ScreenBoundRenderTarget> CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, UI32 threadCount = 0) override final;
 			virtual void DestroyRenderTarget(const std::shared_ptr<RenderTarget>& pRenderTarget) override final;
 
-			virtual std::shared_ptr<Buffer> CreateBuffer(BufferType type, UI64 size) override final;
+			virtual std::shared_ptr<Buffer> CreateBuffer(BufferType type, UI64 size, BufferMemoryProfile profile = BufferMemoryProfile::AUTOMATIC) override final;
 			virtual void DestroyBuffer(const std::shared_ptr<Buffer>& pBuffer) override final;
 
 			virtual std::shared_ptr<Image> CreateImage(const ImageType type, ImageUsage usage, const FBox3D& extent, PixelFormat format, UI8 layers, UI32 mipLevels, const void* pImageData) override final;
@@ -50,7 +50,7 @@ namespace Flint
 				const GraphicsPipelineSpecification& specification) override final;
 			virtual void DestroyPipeline(const std::shared_ptr<Pipeline>& pPipeline) override final;
 
-			virtual std::shared_ptr<GeometryStore> CreateGeometryStore(const std::unordered_map<UI32, std::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize) override final;
+			virtual std::shared_ptr<GeometryStore> CreateGeometryStore(const std::unordered_map<UI32, std::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize, BufferMemoryProfile profile = BufferMemoryProfile::AUTOMATIC) override final;
 			virtual void DestroyGeometryStore(const std::shared_ptr<GeometryStore>& pGeometryStore) override final;
 
 			virtual void WaitIdle() override final;
