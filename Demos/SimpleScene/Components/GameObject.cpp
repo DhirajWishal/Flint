@@ -71,5 +71,4 @@ void GameObject::SetupBoundingBox()
 	pResourceMapBB = pSceneState->pGraphicsPipelines["BoundingBox"]->CreateResourceMap();
 	pResourceMapBB->SetResource("camera", pSceneState->mCamera.GetCameraBuffer());
 	pResourceMapBB->SetResource("Ubo", pModelUniform);
-
 }

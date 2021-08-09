@@ -27,7 +27,25 @@ namespace Flint
 			pColorBuffer = std::make_unique<VulkanColorBuffer>(vDevice, extent, bufferCount, pSwapChain->GetFormat());
 			pDepthBuffer = std::make_unique<VulkanDepthBuffer>(vDevice, extent, bufferCount);
 
-			vRenderTarget.CreateRenderPass({ pColorBuffer.get(), pDepthBuffer.get(), pSwapChain.get() }, VK_PIPELINE_BIND_POINT_GRAPHICS);
+			std::vector<VkSubpassDependency> vDependencies{ 2 };
+
+			vDependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
+			vDependencies[0].dstSubpass = 0;
+			vDependencies[0].srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+			vDependencies[0].dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+			vDependencies[0].srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+			vDependencies[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+			vDependencies[0].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+
+			vDependencies[1].srcSubpass = 0;
+			vDependencies[1].dstSubpass = VK_SUBPASS_EXTERNAL;
+			vDependencies[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+			vDependencies[1].dstStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+			vDependencies[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+			vDependencies[1].dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+			vDependencies[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+
+			vRenderTarget.CreateRenderPass({ pColorBuffer.get(), pDepthBuffer.get(), pSwapChain.get() }, VK_PIPELINE_BIND_POINT_GRAPHICS, vDependencies);
 			vRenderTarget.CreateFrameBuffer({ pColorBuffer.get(), pDepthBuffer.get(), pSwapChain.get() }, extent, bufferCount);
 			vRenderTarget.CreateSyncObjects(bufferCount);
 
@@ -212,7 +230,25 @@ namespace Flint
 			pColorBuffer->Recreate(mExtent);
 			pDepthBuffer->Recreate(mExtent);
 
-			vRenderTarget.CreateRenderPass({ pColorBuffer.get(), pDepthBuffer.get(), pSwapChain.get() }, VK_PIPELINE_BIND_POINT_GRAPHICS);
+			std::vector<VkSubpassDependency> vDependencies{ 2 };
+
+			vDependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
+			vDependencies[0].dstSubpass = 0;
+			vDependencies[0].srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+			vDependencies[0].dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+			vDependencies[0].srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+			vDependencies[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+			vDependencies[0].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+
+			vDependencies[1].srcSubpass = 0;
+			vDependencies[1].dstSubpass = VK_SUBPASS_EXTERNAL;
+			vDependencies[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+			vDependencies[1].dstStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+			vDependencies[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+			vDependencies[1].dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+			vDependencies[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+
+			vRenderTarget.CreateRenderPass({ pColorBuffer.get(), pDepthBuffer.get(), pSwapChain.get() }, VK_PIPELINE_BIND_POINT_GRAPHICS, vDependencies);
 			vRenderTarget.CreateFrameBuffer({ pColorBuffer.get(), pDepthBuffer.get(), pSwapChain.get() }, mExtent, mBufferCount);
 
 			for (auto& instance : mDrawInstanceMaps)

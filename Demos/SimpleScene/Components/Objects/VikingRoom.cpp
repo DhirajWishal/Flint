@@ -9,7 +9,7 @@ VikingRoom::VikingRoom(glm::vec3 position, SceneState* pSceneState) : GameObject
 {
 	pDynamicStates = std::make_shared<Flint::DynamicStateContainer>();
 
-	auto image = LoadImage(pSceneState->GetAssetPath().string() + "\\Packages\\VikingRoom\\texture.png");
+	auto image = LoadImage(pSceneState->GetAssetPath().string() + "\\Packages\\VikingRoom\\VikingRoom\\texture.png");
 	pTexture = pSceneState->pDevice->CreateImage(Flint::ImageType::DIMENSIONS_2, Flint::ImageUsage::GRAPHICS, image.mExtent, Flint::PixelFormat::R8G8B8A8_SRGB, 1, 1, image.pImageData);
 	DestroyImage(image);
 
@@ -29,7 +29,7 @@ VikingRoom::VikingRoom(glm::vec3 position, SceneState* pSceneState) : GameObject
 	pDynamicStates->SetViewPort(Flint::FExtent2D<float>{static_cast<float>(windowExtent.mWidth), static_cast<float>(windowExtent.mHeight)}, Flint::FExtent2D<float>(0.0f, 1.0f), { 0.0f, 0.0f });
 	pDynamicStates->SetScissor(windowExtent, { 0, 0 });
 
-	auto asset = ImportAsset(pSceneState->pDevice, pSceneState->GetAssetPath().string() + "\\Packages\\VikingRoom\\vikingroom.fbx");
+	auto asset = ImportAsset(pSceneState->pDevice, pSceneState->GetAssetPath().string() + "\\Packages\\VikingRoom\\VikingRoom\\vikingroom.fbx");
 	auto [vertexOffset, indexOffset] = pSceneState->pGeometryStores["Default"]->AddGeometry(asset.pVertexBuffer, asset.pIndexBuffer);
 	for (auto instance : asset.mDrawInstances)
 	{

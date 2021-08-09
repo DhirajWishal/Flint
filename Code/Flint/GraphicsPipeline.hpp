@@ -302,6 +302,8 @@ namespace Flint
 			std::shared_ptr<DynamicStateContainer> pDynamicStates = nullptr;
 		};
 
+		typedef void(*FDrawBinder)(const DrawData&, const std::shared_ptr<CommandBufferList>&);
+
 	public:
 		/**
 		 * Default constructor.

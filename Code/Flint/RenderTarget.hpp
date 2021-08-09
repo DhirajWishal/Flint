@@ -40,30 +40,6 @@ namespace Flint
 		 */
 		RenderTarget(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, const std::shared_ptr<CommandBufferList>& pCommandBufferList, UI32 threadCount = 0);
 
-		/**
-		 * Prepare the static resources to draw.
-		 * This will bind all of the current content to the command buffer to be drawn.
-		 */
-		virtual void PrepareStaticResources() = 0;
-
-		/**
-		 * Begin a new frame.
-		 * This call prepares resources for a new draw call and must be called prior to updating resources.
-		 */
-		virtual void BeginFrame() = 0;
-
-		/**
-		 * Update the resources.
-		 * This call updates draw resources.
-		 */
-		virtual void Update() = 0;
-
-		/**
-		 * Submit the frame to the device.
-		 * This call draws data to the screen by submitting the draw call to the device.
-		 */
-		virtual void SubmitFrame() = 0;
-
 	public:
 		/**
 		 * Submit a pipeline to the render target to be drawn.

@@ -11,11 +11,15 @@
 
 #include <iostream>
 
-int main()
+int main(int argc, char** argv)
 {
 	try
 	{
 		SceneState mState{};
+
+		float floatArray[100] = {};
+		float minFrameTime = std::numeric_limits<float>::max();
+		float maxFrameTime = 0.0f;
 
 		{
 			ImGUI mImGui{ glm::vec3(0.0f), &mState };
@@ -41,7 +45,19 @@ int main()
 				mState.PrepareNewFrame();
 
 				ImGui::NewFrame();
-				ImGui::ShowDemoWindow();
+
+				std::rotate(floatArray, floatArray + 1, floatArray + 100);
+				float frameTime =  delta / (1000.0f * 1000.0f * 1000.0f);
+				floatArray[99] = frameTime;
+
+				if (frameTime < minFrameTime)
+					minFrameTime = frameTime;
+
+				if (frameTime > maxFrameTime)
+					maxFrameTime = frameTime;
+
+				ImGui::PlotLines("Frame Times", &floatArray[0], 50, 0, "", minFrameTime, maxFrameTime, ImVec2(0, 80));
+
 				ImGuiIO& io = ImGui::GetIO();
 
 				{

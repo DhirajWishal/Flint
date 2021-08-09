@@ -59,6 +59,12 @@ namespace Flint
 				case Flint::PixelFormat::B8G8R8A8_SRGB:
 					return VkFormat::VK_FORMAT_B8G8R8A8_SRGB;
 
+				case Flint::PixelFormat::D16_SINT:
+					return VkFormat::VK_FORMAT_D16_UNORM;
+
+				case Flint::PixelFormat::D32_SFLOAT:
+					return VkFormat::VK_FORMAT_D32_SFLOAT;
+
 				default:
 					FLINT_THROW_BACKEND_ERROR("Invalid or undefined pixel format!");
 				}
@@ -103,6 +109,12 @@ namespace Flint
 					return 3;
 
 				case Flint::PixelFormat::B8G8R8A8_SRGB:
+					return 4;
+
+				case Flint::PixelFormat::D16_SINT:
+					return 2;
+
+				case Flint::PixelFormat::D32_SFLOAT:
 					return 4;
 				}
 
@@ -201,6 +213,21 @@ namespace Flint
 			vkDestroyImage(vDevice.GetLogicalDevice(), vImage, nullptr);
 			vkDestroyImageView(vDevice.GetLogicalDevice(), vImageView, nullptr);
 			vkFreeMemory(vDevice.GetLogicalDevice(), vImageMemory, nullptr);
+		}
+
+		void VulkanImage::CopyFromImage(VkImage vSrcImage, VkImageLayout vSrcLayout, VkOffset3D srcOffset, VkOffset3D dstOffset, VkImageSubresourceLayers subresourceLayers)
+		{
+			VulkanOneTimeCommandBuffer vCommandBuffer{ pDevice->StaticCast<VulkanDevice>() };
+
+			VkImageCopy vImageCopy = {};
+			vImageCopy.extent.width = mExtent.mWidth;
+			vImageCopy.extent.height = mExtent.mHeight;
+			vImageCopy.extent.depth = mExtent.mDepth;
+			vImageCopy.srcOffset = srcOffset;
+			vImageCopy.dstOffset = dstOffset;
+			vImageCopy.srcSubresource = subresourceLayers;
+
+			vkCmdCopyImage(vCommandBuffer, vSrcImage, vSrcLayout, vImage, vCurrentLayout, 1, &vImageCopy);
 		}
 
 		void VulkanImage::CreateImage()

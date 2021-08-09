@@ -172,6 +172,9 @@ namespace Flint
 
 		B8G8R8_SRGB,
 		B8G8R8A8_SRGB,
+
+		D16_SINT,
+		D32_SFLOAT,
 	};
 
 	/**

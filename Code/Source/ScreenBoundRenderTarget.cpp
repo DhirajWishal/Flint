@@ -11,4 +11,14 @@ namespace Flint
 		if (!pDisplay)
 			FLINT_THROW_INVALID_ARGUMENT("Screen bound render target device pointer should not be null!");
 	}
+
+	void ScreenBoundRenderTarget::AttachOffScreenRenderTarget(const std::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget)
+	{
+		pOffScreenRenderTargets.push_back(pOffScreenRenderTarget);
+	}
+
+	void ScreenBoundRenderTarget::DetachOffScreenRenderTarget(const std::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget)
+	{
+		pOffScreenRenderTargets.erase(std::find(pOffScreenRenderTargets.begin(), pOffScreenRenderTargets.end(), pOffScreenRenderTarget));
+	}
 }

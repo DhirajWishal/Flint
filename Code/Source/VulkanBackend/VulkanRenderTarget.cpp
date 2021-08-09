@@ -19,7 +19,7 @@ namespace Flint
 			DestroySyncObjects();
 		}
 
-		void VulkanRenderTarget::CreateRenderPass(std::vector<VulkanRenderTargetAttachment*> pAttachments, VkPipelineBindPoint vBindPoint)
+		void VulkanRenderTarget::CreateRenderPass(std::vector<VulkanRenderTargetAttachment*> pAttachments, VkPipelineBindPoint vBindPoint, const std::vector<VkSubpassDependency>& vSubpassDependencies)
 		{
 			FLINT_SETUP_PROFILER();
 
@@ -41,6 +41,9 @@ namespace Flint
 
 			for (auto itr = pAttachments.begin(); itr != pAttachments.end(); itr++)
 			{
+				if (!(*itr))
+					continue;
+
 				INSERT_INTO_VECTOR(vDescriptions, (*itr)->GetAttachmentDescription());
 
 				vAR.layout = (*itr)->GetAttachmentLayout();
@@ -71,24 +74,6 @@ namespace Flint
 			vSD.pDepthStencilAttachment = vDepthAttachmentRef.data();
 			vSD.pResolveAttachments = vResolveAttachmentRef.data();
 
-			VkSubpassDependency vDependencies[2] = {};
-
-			vDependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
-			vDependencies[0].dstSubpass = 0;
-			vDependencies[0].srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
-			vDependencies[0].dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-			vDependencies[0].srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-			vDependencies[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-			vDependencies[0].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-
-			vDependencies[1].srcSubpass = 0;
-			vDependencies[1].dstSubpass = VK_SUBPASS_EXTERNAL;
-			vDependencies[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-			vDependencies[1].dstStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
-			vDependencies[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-			vDependencies[1].dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-			vDependencies[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-
 			VkRenderPassCreateInfo vCI = {};
 			vCI.sType = VkStructureType::VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 			vCI.flags = 0;
@@ -97,8 +82,8 @@ namespace Flint
 			vCI.pAttachments = vDescriptions.data();
 			vCI.subpassCount = 1;
 			vCI.pSubpasses = &vSD;
-			vCI.dependencyCount = 2;
-			vCI.pDependencies = vDependencies;
+			vCI.dependencyCount = static_cast<UI32>(vSubpassDependencies.size());
+			vCI.pDependencies = vSubpassDependencies.data();
 
 			FLINT_VK_ASSERT(vkCreateRenderPass(vDevice.GetLogicalDevice(), &vCI, nullptr, &vRenderPass));
 		}

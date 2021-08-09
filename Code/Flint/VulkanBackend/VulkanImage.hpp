@@ -18,6 +18,8 @@ namespace Flint
 
 			virtual void Terminate() override final;
 
+			void CopyFromImage(VkImage vSrcImage, VkImageLayout vSrcLayout, VkOffset3D srcOffset, VkOffset3D dstOffset, VkImageSubresourceLayers subresourceLayers);
+
 			const VkImageView GetImageView() const { return vImageView; }
 			const VkImageLayout GetImageLayout() const { return vCurrentLayout; }
 
