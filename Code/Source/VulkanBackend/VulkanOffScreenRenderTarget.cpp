@@ -3,6 +3,11 @@
 
 #include "VulkanBackend/VulkanOffScreenRenderTarget.hpp"
 #include "VulkanBackend/VulkanScreenBoundRenderTarget.hpp"
+#include "VulkanBackend/VulkanCommandBufferList.hpp"
+#include "VulkanBackend/VulkanGraphicsPipeline.hpp"
+#include "VulkanBackend/VulkanImage.hpp"
+
+#include "GeometryStore.hpp"
 
 namespace Flint
 {
@@ -49,25 +54,23 @@ namespace Flint
 			}
 		}
 
-		VulkanOffScreenRenderTarget::VulkanOffScreenRenderTarget(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, const std::shared_ptr<CommandBufferList>& pCommandBufferList, OffScreenRenderTargetAttachment attachments, UI32 threadCount)
+		VulkanOffScreenRenderTarget::VulkanOffScreenRenderTarget(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, OffScreenRenderTargetAttachment attachments, UI32 threadCount)
 			: OffScreenRenderTarget(pDevice, extent, bufferCount, pDevice->CreatePrimaryCommandBufferList(bufferCount), attachments, threadCount), vRenderTarget(pDevice->StaticCast<VulkanDevice>())
 		{
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 
-			std::vector<VulkanRenderTargetAttachment*> pAttachments;
+			std::vector<VulkanRenderTargetAttachmentInterface*> pAttachments;
 			if ((mAttachments & OffScreenRenderTargetAttachment::COLOR_BUFFER) == OffScreenRenderTargetAttachment::COLOR_BUFFER)
 			{
 				// TODO
 				//pColorBuffer = std::make_unique<VulkanColorBuffer>(vDevice, extent, bufferCount, pSwapChain->GetFormat());
-				//pResults.push_back(pDevice->CreateImage(ImageType::DIMENSIONS_2, ImageUsage::GRAPHICS, FBox3D(mExtent.mWidth, mExtent.mHeight, 1), _Helpers::GetPixelFormat(pColorBuffer->GetFormat()), 1, 1, nullptr));
+				//pAttachments.push_back(&pResults.back()->StaticCast<VulkanImage>());
 			}
 
 			if ((mAttachments & OffScreenRenderTargetAttachment::DEPTH_BUFFER) == OffScreenRenderTargetAttachment::DEPTH_BUFFER)
 			{
-				pDepthBuffer = std::make_unique<VulkanDepthBuffer>(vDevice, extent, bufferCount);
-				pAttachments.push_back(pDepthBuffer.get());
-
-				pResults.push_back(pDevice->CreateImage(ImageType::DIMENSIONS_2, ImageUsage::GRAPHICS, FBox3D(mExtent.mWidth, mExtent.mHeight, 1), _Helpers::GetPixelFormat(pDepthBuffer->GetFormat()), 1, 1, nullptr));
+				pResults.push_back(pDevice->CreateImage(ImageType::DIMENSIONS_2, ImageUsage::DEPTH, FBox3D(mExtent.mWidth, mExtent.mHeight, 1), _Helpers::GetPixelFormat(Utilities::FindDepthFormat(vDevice.GetPhysicalDevice())), 1, 1, nullptr));
+				pAttachments.push_back(&pResults.back()->StaticCast<VulkanImage>());
 			}
 
 			std::vector<VkSubpassDependency> vDependencies{ 2 };
@@ -95,20 +98,111 @@ namespace Flint
 
 		void VulkanOffScreenRenderTarget::Execute(const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget)
 		{
+			if (pScreenBoundRenderTarget)
+			{
+				VulkanScreenBoundRenderTarget& vScreenBoundRenderTarget = pScreenBoundRenderTarget->StaticCast<VulkanScreenBoundRenderTarget>();
 
+				// Begin the command buffer.
+				auto& vCommandBufferList = pVolatileCommandBufferList->StaticCast<VulkanCommandBufferList>();
+				vCommandBufferList.VulkanBeginSecondaryCommandBuffer(0, vScreenBoundRenderTarget.GetVulkanInheritanceInfo());
+
+				// Bind the volatile draw instances.
+				for (const auto store : mVolatileDrawInstanceOrder)
+				{
+					FLINT_SETUP_PROFILER();
+
+					if (!store->GetVertexBuffer() || !store->GetIndexBuffer())
+						continue;
+
+					vCommandBufferList.BindVertexBuffer(store->GetVertexBuffer());
+					vCommandBufferList.BindIndexBuffer(store->GetIndexBuffer(), store->GetIndexSize());
+
+					auto& pipelines = mVolatileDrawInstanceMap.at(store);
+
+					// Iterate through the pipelines.
+					for (auto& pipeline : pipelines)
+					{
+						pipeline->PrepareResourcesToDraw();
+						vCommandBufferList.BindGraphicsPipeline(pipeline);
+
+						const auto drawData = pipeline->GetDrawData();
+						const auto drawDataIndex = pipeline->GetCurrentDrawIndex();
+
+						// Bind draw data.
+						for (UI64 i = 0; i < drawDataIndex; i++)
+						{
+							if (drawData.find(i) == drawData.end())
+								continue;
+
+							const auto draw = drawData.at(i);
+							vCommandBufferList.BindDrawResources(pipeline, draw.pResourceMap);
+							vCommandBufferList.BindDynamicStates(pipeline, draw.pDynamicStates);
+							vCommandBufferList.IssueDrawCall(draw.mVertexOffset, draw.mVertexCount, draw.mIndexOffset, draw.mIndexCount);
+						}
+					}
+				}
+
+				// Bind the draw instances.
+				for (UI64 itr = 0; itr < mDrawInstanceOrder.size(); itr++)
+				{
+					const auto drawOrder = mDrawInstanceOrder[itr];
+					const auto drawInstanceMap = mDrawInstanceMaps[itr];
+
+					for (const auto store : drawOrder)
+					{
+						FLINT_SETUP_PROFILER();
+
+						vCommandBufferList.BindVertexBuffer(store->GetVertexBuffer());
+						vCommandBufferList.BindIndexBuffer(store->GetIndexBuffer(), store->GetIndexSize());
+
+						auto& pipelines = drawInstanceMap.at(store);
+
+						// Iterate through the pipelines.
+						for (auto& pipeline : pipelines)
+						{
+							pipeline->PrepareResourcesToDraw();
+							vCommandBufferList.BindGraphicsPipeline(pipeline);
+
+							const auto drawData = pipeline->GetDrawData();
+
+							// Bind draw data.
+							for (const auto draw : drawData)
+							{
+								vCommandBufferList.BindDrawResources(pipeline, draw.second.pResourceMap);
+								vCommandBufferList.BindDynamicStates(pipeline, draw.second.pDynamicStates);
+								vCommandBufferList.IssueDrawCall(draw.second.mVertexOffset, draw.second.mVertexCount, draw.second.mIndexOffset, draw.second.mIndexCount);
+							}
+						}
+					}
+				}
+
+				// End buffer recording and submit it to execute.
+				vCommandBufferList.EndBufferRecording();
+				vScreenBoundRenderTarget.AddVulkanCommandBuffer(vCommandBufferList.GetCurrentCommandBuffer());
+			}
+			else
+			{
+				// TODO
+			}
 		}
 
 		void VulkanOffScreenRenderTarget::Terminate()
 		{
 			vRenderTarget.Terminate();
 
-			if (pColorBuffer)
-				pColorBuffer->Terminate();
-
-			if (pDepthBuffer)
-				pDepthBuffer->Terminate();
-
 			pDevice->DestroyCommandBufferList(pCommandBufferList);
+			pDevice->DestroyCommandBufferList(pVolatileCommandBufferList);
+
+			for (auto pResult : pResults)
+				pDevice->DestroyImage(pResult);
+		}
+
+		void VulkanOffScreenRenderTarget::BindVolatileInstances()
+		{
+		}
+
+		void VulkanOffScreenRenderTarget::SecondaryCommandsWorker(DrawInstanceMap& drawInstanceMap, std::list<std::shared_ptr<GeometryStore>>& drawOrder, BinarySemaphore& binarySemaphore, CountingSemaphore& countingSemaphore, std::atomic<bool>& shouldRun)
+		{
 		}
 	}
 }

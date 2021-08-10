@@ -34,11 +34,15 @@ SceneState::SceneState()
 
 	mCamera.Initialize(pDevice);
 
+	pOffScreenRenderTargets["ShadowMap"] = pDevice->CreateOffScreenRenderTarget(Flint::FBox2D(2048), 1, Flint::OffScreenRenderTargetAttachment::DEPTH_BUFFER);
 }
 
 SceneState::~SceneState()
 {
 	for (auto pRenderTarget : pScreenBoundRenderTargets)
+		pDevice->DestroyRenderTarget(pRenderTarget.second);
+
+	for (auto pRenderTarget : pOffScreenRenderTargets)
 		pDevice->DestroyRenderTarget(pRenderTarget.second);
 
 	for (auto pPipeline : pGraphicsPipelines)

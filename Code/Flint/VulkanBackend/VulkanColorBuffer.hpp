@@ -15,7 +15,7 @@ namespace Flint
 			VulkanColorBuffer(VulkanDevice& device, const FBox2D& extent, const UI32 bufferCount, VkFormat format);
 
 			virtual void Recreate(const FBox2D& extent) override final;
-			virtual void Terminate() override final;
+			void Terminate();
 
 			virtual VkAttachmentDescription GetAttachmentDescription() const override final;
 			virtual VkImageLayout GetAttachmentLayout() const override final;

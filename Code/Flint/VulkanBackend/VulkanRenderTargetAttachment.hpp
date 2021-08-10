@@ -16,7 +16,21 @@ namespace Flint
 			DEPTH_BUFFER,
 		};
 
-		class VulkanRenderTargetAttachment
+		class VulkanRenderTargetAttachmentInterface
+		{
+		public:
+			VulkanRenderTargetAttachmentInterface() = default;
+
+			virtual void Recreate(const FBox2D& extent) = 0;
+
+			virtual VkAttachmentDescription GetAttachmentDescription() const = 0;
+			virtual VkImageLayout GetAttachmentLayout() const = 0;
+			virtual VkImageView GetImageView(UI32 index) const = 0;
+			virtual RenderTargetAttachmenType GetAttachmentType() const = 0;
+			virtual VkFormat GetImageFormat() const = 0;
+		};
+
+		class VulkanRenderTargetAttachment : public VulkanRenderTargetAttachmentInterface
 		{
 		public:
 			VulkanRenderTargetAttachment(RenderTargetAttachmenType type, VulkanDevice& device, const FBox2D& extent, const UI32 bufferCount, VkFormat format)
@@ -25,17 +39,11 @@ namespace Flint
 			VulkanRenderTargetAttachment(RenderTargetAttachmenType type, VulkanDevice& device, const FBox2D& extent, const UI32 bufferCount)
 				: mType(type), vDevice(device), mExtent(extent), mBufferCount(bufferCount) {}
 
-			virtual void Recreate(const FBox2D& extent) = 0;
-			virtual void Terminate() = 0;
-
-			virtual VkAttachmentDescription GetAttachmentDescription() const = 0;
-			virtual VkImageLayout GetAttachmentLayout() const = 0;
-
-			VkImageView GetImageView(UI32 index) const { return vImageViews[index]; }
+			virtual VkImageView GetImageView(UI32 index) const override final { return vImageViews[index]; }
 
 		public:
-			RenderTargetAttachmenType GetType() const { return mType; }
-			VkFormat GetFormat() const { return vFormat; }
+			virtual RenderTargetAttachmenType GetAttachmentType() const override final { return mType; }
+			virtual VkFormat GetImageFormat() const override final { return vFormat; }
 
 		protected:
 			std::vector<VkImage> vImages;

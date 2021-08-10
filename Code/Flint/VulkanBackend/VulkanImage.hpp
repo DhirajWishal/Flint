@@ -4,14 +4,13 @@
 #pragma once
 
 #include "Image.hpp"
-
-#include "VulkanDevice.hpp"
+#include "VulkanRenderTargetAttachment.hpp"
 
 namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanImage final : public Image, public std::enable_shared_from_this<VulkanImage>
+		class VulkanImage final : public Image, public VulkanRenderTargetAttachmentInterface, public std::enable_shared_from_this<VulkanImage>
 		{
 		public:
 			VulkanImage(const std::shared_ptr<Device>& pDevice, ImageType type, ImageUsage usage, const FBox3D& extent, PixelFormat format, UI8 layers, UI32 mipLevels, const void* pImageData);
@@ -20,8 +19,14 @@ namespace Flint
 
 			void CopyFromImage(VkImage vSrcImage, VkImageLayout vSrcLayout, VkOffset3D srcOffset, VkOffset3D dstOffset, VkImageSubresourceLayers subresourceLayers);
 
-			const VkImageView GetImageView() const { return vImageView; }
-			const VkImageLayout GetImageLayout() const { return vCurrentLayout; }
+		public:
+			virtual void Recreate(const FBox2D& extent) override final;
+
+			virtual VkAttachmentDescription GetAttachmentDescription() const override final;
+			virtual VkImageLayout GetAttachmentLayout() const override final;
+			virtual VkImageView GetImageView(UI32 index) const override final;
+			virtual RenderTargetAttachmenType GetAttachmentType() const override final;
+			virtual VkFormat GetImageFormat() const override final;
 
 		private:
 			void CreateImage();

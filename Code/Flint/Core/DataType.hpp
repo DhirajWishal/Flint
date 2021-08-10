@@ -31,6 +31,7 @@ namespace Flint
 	struct FExtent2D
 	{
 		constexpr FExtent2D() = default;
+		constexpr FExtent2D(Type value) : mWidth(value), mHeight(value) {}
 		constexpr FExtent2D(Type width, Type height) : mWidth(width), mHeight(height) {}
 
 		constexpr bool IsZero() const { return mWidth == Type() || mHeight == Type(); }
@@ -61,6 +62,7 @@ namespace Flint
 	struct FExtent3D
 	{
 		constexpr FExtent3D() = default;
+		constexpr FExtent3D(Type value) : mWidth(value), mHeight(value), mDepth(value) {}
 		constexpr FExtent3D(Type width, Type height, Type depth) : mWidth(width), mHeight(height), mDepth(depth) {}
 
 		constexpr bool IsZero() const { return mWidth == Type() || mHeight == Type() || mDepth == Type(); }

@@ -41,6 +41,9 @@ namespace Flint
 			UI32 GetClearScreenValueCount() const { return  2; }
 			const VkClearValue* GetClearScreenValues() const { return pClearValues; }
 
+			const VkCommandBufferInheritanceInfo* GetVulkanInheritanceInfo() const { return &vInheritInfo; }
+			void AddVulkanCommandBuffer(VkCommandBuffer vCommandBuffer) { vSecondaryCommandBuffers.push_back(vCommandBuffer); }
+
 		private:
 			void BindSecondaryCommands();
 

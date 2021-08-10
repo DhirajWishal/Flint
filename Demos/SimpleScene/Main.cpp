@@ -86,6 +86,14 @@ int main(int argc, char** argv)
 				{
 					mState.UpdateCamera(delta);
 
+					const auto paths = mState.pDisplay->GetDragAndDropValues();
+
+					if (paths.size())
+					{
+						for (auto path : paths)
+							std::cout << path << std::endl;
+					}
+
 					if (mState.pDisplay->GetKeyEvent(Flint::KeyCode::KEY_L).IsPressed())
 					{
 						if (!pTreeScene)

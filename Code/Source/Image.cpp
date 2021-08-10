@@ -19,8 +19,5 @@ namespace Flint
 
 		if (!mMipLevels)
 			FLINT_THROW_INVALID_ARGUMENT("Image mip levels must be grater than 0!");
-
-		if (!pImageData)
-			FLINT_THROW_INVALID_ARGUMENT("Provided image data pointer should not be null!");
 	}
 }

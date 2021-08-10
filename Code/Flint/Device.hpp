@@ -15,6 +15,7 @@ namespace Flint
 	class CommandBufferList;
 	class RenderTarget;
 	class ScreenBoundRenderTarget;
+	class OffScreenRenderTarget;
 
 	class Buffer;
 	class Image;
@@ -120,6 +121,17 @@ namespace Flint
 		 * @return The screen bound render target object.
 		 */
 		virtual std::shared_ptr<ScreenBoundRenderTarget> CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, UI32 threadCount = 0) = 0;
+
+		/**
+		 * Create a new off screen render target.
+		 * Off screen render targets does not render images to the display. Instead they are rendered to image objects and can be accessed after execution.
+		 * 
+		 * @param extent: The extent of the frame buffer.
+		 * @param bufferCount: The number of frame buffers to use.
+		 * @param attachments: The frame buffer attachments to use. Default is OffScreenRenderTargetAttachment::COLOR_BUFFER | OffScreenRenderTargetAttachment::DEPTH_BUFFER.
+		 * @param threadCount: The number of threads to use. Default is 0.
+		 */
+		virtual std::shared_ptr<OffScreenRenderTarget> CreateOffScreenRenderTarget(const FBox2D& extent, const UI32 bufferCount, OffScreenRenderTargetAttachment attachments = OffScreenRenderTargetAttachment::COLOR_BUFFER | OffScreenRenderTargetAttachment::DEPTH_BUFFER, UI32 threadCount = 0) = 0;
 
 		/**
 		 * Destroy a created render target.

@@ -24,7 +24,7 @@ namespace Flint
 			auto& vDisplay = pDisplay->StaticCast<VulkanDisplay>();
 
 			pSwapChain = std::make_unique<VulkanSwapChain>(vDevice, vDisplay, extent, bufferCount);
-			pColorBuffer = std::make_unique<VulkanColorBuffer>(vDevice, extent, bufferCount, pSwapChain->GetFormat());
+			pColorBuffer = std::make_unique<VulkanColorBuffer>(vDevice, extent, bufferCount, pSwapChain->GetImageFormat());
 			pDepthBuffer = std::make_unique<VulkanDepthBuffer>(vDevice, extent, bufferCount);
 
 			std::vector<VkSubpassDependency> vDependencies{ 2 };
@@ -342,6 +342,10 @@ namespace Flint
 
 			vInheritInfo.renderPass = vRenderTarget.vRenderPass;
 			vInheritInfo.framebuffer = GetFrameBuffer(mFrameIndex);
+
+			// Execute the render targets. TODO
+			for (auto pOffScreenRenderTarget : pOffScreenRenderTargets)
+				pOffScreenRenderTarget->Execute(pThisRenderTarget);
 
 			if (mNumberOfThreads)
 			{

@@ -6,6 +6,7 @@
 #include "VulkanBackend/VulkanOneTimeCommandBuffer.hpp"
 #include "VulkanBackend/VulkanCommandBufferList.hpp"
 #include "VulkanBackend/VulkanScreenBoundRenderTarget.hpp"
+#include "VulkanBackend/VulkanOffScreenRenderTarget.hpp"
 #include "VulkanBackend/VulkanBuffer.hpp"
 #include "VulkanBackend/VulkanImage.hpp"
 #include "VulkanBackend/VulkanImageSampler.hpp"
@@ -107,6 +108,11 @@ namespace Flint
 		std::shared_ptr<ScreenBoundRenderTarget> VulkanDevice::CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, UI32 threadCount)
 		{
 			return std::make_shared<VulkanScreenBoundRenderTarget>(shared_from_this(), pDisplay, extent, bufferCount, threadCount);
+		}
+
+		std::shared_ptr<OffScreenRenderTarget> VulkanDevice::CreateOffScreenRenderTarget(const FBox2D& extent, const UI32 bufferCount, OffScreenRenderTargetAttachment attachments, UI32 threadCount)
+		{
+			return std::make_shared<VulkanOffScreenRenderTarget>(shared_from_this(), extent, bufferCount, attachments, threadCount);
 		}
 
 		void VulkanDevice::DestroyRenderTarget(const std::shared_ptr<RenderTarget>& pRenderTarget)

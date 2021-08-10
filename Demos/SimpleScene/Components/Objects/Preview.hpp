@@ -8,7 +8,7 @@
 class Preview final : public GameObject
 {
 public:
-	Preview(glm::vec3 position, SceneState* pSceneState, std::filesystem::path model, std::filesystem::path texture);
+	Preview(glm::vec3 position, SceneState* pSceneState, std::filesystem::path model, std::vector<std::filesystem::path> textures);
 	~Preview();
 
 	virtual void OnUpdate(UI64 delta) override final;

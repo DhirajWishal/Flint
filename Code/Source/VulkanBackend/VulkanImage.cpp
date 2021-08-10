@@ -22,6 +22,8 @@ namespace Flint
 
 				case Flint::ImageType::DIMENSIONS_2:
 				case Flint::ImageType::DIMENSIONS_2_ARRAY:
+					return VkImageType::VK_IMAGE_TYPE_2D;
+
 				case Flint::ImageType::CUBEMAP:
 				case Flint::ImageType::CUBEMAP_ARRAY:
 					return VkImageType::VK_IMAGE_TYPE_2D;
@@ -80,7 +82,10 @@ namespace Flint
 					return VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_DST_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_SAMPLED_BIT;
 
 				case Flint::ImageUsage::STORAGE:
-					return VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_DST_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_STORAGE_BIT;
+					return VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_DST_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_STORAGE_BIT;
+
+				case Flint::ImageUsage::DEPTH:
+					return VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_DST_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_SAMPLED_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 
 				default:
 					FLINT_THROW_BACKEND_ERROR("Invalid image usage type!");
@@ -139,9 +144,9 @@ namespace Flint
 
 				case Flint::ImageType::CUBEMAP:
 					return VkImageViewType::VK_IMAGE_VIEW_TYPE_CUBE;
+
 				case Flint::ImageType::CUBEMAP_ARRAY:
 					return VkImageViewType::VK_IMAGE_VIEW_TYPE_CUBE_ARRAY;
-
 
 				case Flint::ImageType::DIMENSIONS_3:
 					return VkImageViewType::VK_IMAGE_VIEW_TYPE_2D;
@@ -155,56 +160,77 @@ namespace Flint
 
 				return VkImageViewType::VK_IMAGE_VIEW_TYPE_2D;
 			}
+
+			VkImageAspectFlags GetImageAspectFlags(ImageUsage usage)
+			{
+				switch (usage)
+				{
+				case Flint::ImageUsage::GRAPHICS:
+					return VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
+
+				case Flint::ImageUsage::STORAGE:
+					return VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
+
+				case Flint::ImageUsage::DEPTH:
+					return VkImageAspectFlagBits::VK_IMAGE_ASPECT_DEPTH_BIT;
+				}
+
+				return VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
+			}
 		}
 
 		VulkanImage::VulkanImage(const std::shared_ptr<Device>& pDevice, ImageType type, ImageUsage usage, const FBox3D& extent, PixelFormat format, UI8 layers, UI32 mipLevels, const void* pImageData)
 			: Image(pDevice, type, usage, extent, format, layers, mipLevels, pImageData)
 		{
 			FLINT_SETUP_PROFILER();
+			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 
 			CreateImage();
 			CreateImageMemory();
 			CreateImageView();
 
 			// Copy date to the device.
-			UI64 size = static_cast<UI64>(mExtent.mWidth) * mExtent.mHeight * mExtent.mDepth * _Helpers::GetByteDepth(mFormat) * mLayerCount;
-			VulkanBuffer vStaggingBuffer(pDevice, BufferType::STAGGING, size);
-
-			BYTE* pBytes = static_cast<BYTE*>(vStaggingBuffer.MapMemory(size));
-			std::copy(static_cast<const BYTE*>(pImageData), static_cast<const BYTE*>(pImageData) + size, pBytes);
-			vStaggingBuffer.UnmapMemory();
-
-			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-			vDevice.SetImageLayout(vImage, vCurrentLayout, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, _Helpers::GetImageFormat(mFormat), mLayerCount, 0, mMipLevels);
-			vCurrentLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-
-			// Copy from buffer. TODO
+			if (pImageData)
 			{
-				VkBufferImageCopy vCopy = {};
-				vCopy.bufferImageHeight = 0;
-				vCopy.bufferRowLength = 0;
-				vCopy.bufferOffset = 0;
-				vCopy.imageOffset = { 0, 0, 0 };
-				vCopy.imageExtent.width = mExtent.mWidth;
-				vCopy.imageExtent.height = mExtent.mHeight;
-				vCopy.imageExtent.depth = mExtent.mDepth;
-				vCopy.imageSubresource.aspectMask = VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
-				vCopy.imageSubresource.baseArrayLayer = 0;
-				vCopy.imageSubresource.layerCount = mLayerCount;
-				vCopy.imageSubresource.mipLevel = 0;
+				UI64 size = static_cast<UI64>(mExtent.mWidth) * mExtent.mHeight * mExtent.mDepth * _Helpers::GetByteDepth(mFormat) * mLayerCount;
+				VulkanBuffer vStaggingBuffer(pDevice, BufferType::STAGGING, size);
 
-				VulkanOneTimeCommandBuffer vCommandBuffer(vDevice);
-				vkCmdCopyBufferToImage(vCommandBuffer, vStaggingBuffer.GetBuffer(), vImage, vCurrentLayout, 1, &vCopy);
+				BYTE* pBytes = static_cast<BYTE*>(vStaggingBuffer.MapMemory(size));
+				std::copy(static_cast<const BYTE*>(pImageData), static_cast<const BYTE*>(pImageData) + size, pBytes);
+				vStaggingBuffer.UnmapMemory();
+
+				vDevice.SetImageLayout(vImage, vCurrentLayout, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, _Helpers::GetImageFormat(mFormat), mLayerCount, 0, mMipLevels);
+				vCurrentLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+
+				// Copy from buffer. TODO
+				{
+					VkBufferImageCopy vCopy = {};
+					vCopy.bufferImageHeight = 0;
+					vCopy.bufferRowLength = 0;
+					vCopy.bufferOffset = 0;
+					vCopy.imageOffset = { 0, 0, 0 };
+					vCopy.imageExtent.width = mExtent.mWidth;
+					vCopy.imageExtent.height = mExtent.mHeight;
+					vCopy.imageExtent.depth = mExtent.mDepth;
+					vCopy.imageSubresource.aspectMask = _Helpers::GetImageAspectFlags(mUsage);
+					vCopy.imageSubresource.baseArrayLayer = 0;
+					vCopy.imageSubresource.layerCount = mLayerCount;
+					vCopy.imageSubresource.mipLevel = 0;
+
+					VulkanOneTimeCommandBuffer vCommandBuffer(vDevice);
+					vkCmdCopyBufferToImage(vCommandBuffer, vStaggingBuffer.GetBuffer(), vImage, vCurrentLayout, 1, &vCopy);
+				}
+
+				vStaggingBuffer.Terminate();
 			}
 
-			vStaggingBuffer.Terminate();
-
-			if (mType != ImageType::CUBEMAP && mType != ImageType::CUBEMAP_ARRAY)
+			if (mType != ImageType::CUBEMAP && mType != ImageType::CUBEMAP_ARRAY && mUsage != ImageUsage::DEPTH)
 				GenerateMipMaps();
-			else
+			else if (mUsage != ImageUsage::DEPTH)
+			{
 				vDevice.SetImageLayout(vImage, vCurrentLayout, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, _Helpers::GetImageFormat(mFormat), mLayerCount, 0, mMipLevels);
-
-			vCurrentLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+				vCurrentLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			}
 		}
 
 		void VulkanImage::Terminate()
@@ -228,6 +254,46 @@ namespace Flint
 			vImageCopy.srcSubresource = subresourceLayers;
 
 			vkCmdCopyImage(vCommandBuffer, vSrcImage, vSrcLayout, vImage, vCurrentLayout, 1, &vImageCopy);
+		}
+
+		void VulkanImage::Recreate(const FBox2D& extent)
+		{
+		}
+
+		VkAttachmentDescription VulkanImage::GetAttachmentDescription() const
+		{
+			VkAttachmentDescription vDesc = {};
+			vDesc.flags = 0;
+			vDesc.format = GetImageFormat();
+			vDesc.samples = VK_SAMPLE_COUNT_1_BIT;
+			vDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+			vDesc.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+			vDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+			vDesc.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+			vDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+			vDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+
+			return vDesc;
+		}
+
+		VkImageLayout VulkanImage::GetAttachmentLayout() const
+		{
+			return vCurrentLayout;
+		}
+
+		VkImageView VulkanImage::GetImageView(UI32 index) const
+		{
+			return vImageView;
+		}
+
+		RenderTargetAttachmenType VulkanImage::GetAttachmentType() const
+		{
+			return RenderTargetAttachmenType::COLOR_BUFFER;
+		}
+
+		VkFormat VulkanImage::GetImageFormat() const
+		{
+			return _Helpers::GetImageFormat(mFormat);
 		}
 
 		void VulkanImage::CreateImage()
@@ -271,9 +337,9 @@ namespace Flint
 			FLINT_SETUP_PROFILER();
 
 			if (mType == ImageType::CUBEMAP || mType == ImageType::CUBEMAP_ARRAY)
-				vImageView = Utilities::CreateImageViews({ vImage }, _Helpers::GetImageFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT, _Helpers::GetImageViewType(mType), mLayerCount, { VK_COMPONENT_SWIZZLE_R, VK_COMPONENT_SWIZZLE_G, VK_COMPONENT_SWIZZLE_B, VK_COMPONENT_SWIZZLE_A })[0];
+				vImageView = Utilities::CreateImageViews({ vImage }, _Helpers::GetImageFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), _Helpers::GetImageAspectFlags(mUsage), _Helpers::GetImageViewType(mType), mLayerCount, { VK_COMPONENT_SWIZZLE_R, VK_COMPONENT_SWIZZLE_G, VK_COMPONENT_SWIZZLE_B, VK_COMPONENT_SWIZZLE_A })[0];
 			else
-				vImageView = Utilities::CreateImageViews({ vImage }, _Helpers::GetImageFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT, _Helpers::GetImageViewType(mType), mLayerCount)[0];
+				vImageView = Utilities::CreateImageViews({ vImage }, _Helpers::GetImageFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), _Helpers::GetImageAspectFlags(mUsage), _Helpers::GetImageViewType(mType), mLayerCount)[0];
 		}
 
 		void VulkanImage::GenerateMipMaps()
@@ -296,7 +362,7 @@ namespace Flint
 				barrier.image = vImage;
 				barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
 				barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-				barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+				barrier.subresourceRange.aspectMask = _Helpers::GetImageAspectFlags(mUsage);
 				barrier.subresourceRange.layerCount = mLayerCount - i;
 				barrier.subresourceRange.levelCount = 1;
 				barrier.subresourceRange.baseArrayLayer = i;
@@ -322,13 +388,13 @@ namespace Flint
 					VkImageBlit blit{};
 					blit.srcOffsets[0] = { 0, 0, 0 };
 					blit.srcOffsets[1] = { mipWidth, mipHeight, mipDepth };
-					blit.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+					blit.srcSubresource.aspectMask = barrier.subresourceRange.aspectMask;
 					blit.srcSubresource.mipLevel = j - 1;
 					blit.srcSubresource.baseArrayLayer = i;
 					blit.srcSubresource.layerCount = mLayerCount;
 					blit.dstOffsets[0] = { 0, 0, 0 };
 					blit.dstOffsets[1] = { mipWidth > 1 ? mipWidth / 2 : 1, mipHeight > 1 ? mipHeight / 2 : 1, mipDepth > 1 ? mipDepth / 2 : 1 };
-					blit.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+					blit.dstSubresource.aspectMask = barrier.subresourceRange.aspectMask;
 					blit.dstSubresource.mipLevel = j;
 					blit.dstSubresource.baseArrayLayer = i;
 					blit.dstSubresource.layerCount = mLayerCount - i;
@@ -367,6 +433,8 @@ namespace Flint
 					0, nullptr,
 					1, &barrier);
 			}
+
+			vCurrentLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		}
 	}
 }

@@ -16,7 +16,7 @@ namespace Flint
 			VulkanSwapChain(VulkanDevice& device, VulkanDisplay& display, const FBox2D& extent, const UI32 bufferCount);
 
 			virtual void Recreate(const FBox2D& extent) override final;
-			virtual void Terminate() override final;
+			void Terminate();
 
 			virtual VkAttachmentDescription GetAttachmentDescription() const override final;
 			virtual VkImageLayout GetAttachmentLayout() const override final;

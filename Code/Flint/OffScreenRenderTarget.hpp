@@ -11,38 +11,6 @@ namespace Flint
 	class ScreenBoundRenderTarget;
 
 	/**
-	 * Off screen render target attachment enum.
-	 */
-	enum class OffScreenRenderTargetAttachment : UI8 {
-		COLOR_BUFFER = BIT_SHIFT(0),
-		DEPTH_BUFFER = BIT_SHIFT(1)
-	};
-
-	/**
-	 * Bitwise OR operator for OffScreenRenderTargetAttachment.
-	 *
-	 * @param lhs: The left hand side argument.
-	 * @param rhs: The right hand side argument.
-	 * @return The OR-ed result.
-	 */
-	constexpr OffScreenRenderTargetAttachment operator|(const OffScreenRenderTargetAttachment& lhs, const OffScreenRenderTargetAttachment& rhs)
-	{
-		return static_cast<OffScreenRenderTargetAttachment>(static_cast<UI8>(lhs) | static_cast<UI8>(rhs));
-	}
-
-	/**
-	 * Bitwise AND operator for OffScreenRenderTargetAttachment.
-	 *
-	 * @param lhs: The left hand side argument.
-	 * @param rhs: The right hand side argument.
-	 * @return The AND-ed result.
-	 */
-	constexpr OffScreenRenderTargetAttachment operator&(const OffScreenRenderTargetAttachment& lhs, const OffScreenRenderTargetAttachment& rhs)
-	{
-		return static_cast<OffScreenRenderTargetAttachment>(static_cast<UI8>(lhs) & static_cast<UI8>(rhs));
-	}
-
-	/**
 	 * Flint off screen render target.
 	 * Off screen render targets are used for computational and general off screen processes like shadow mapping.
 	 */

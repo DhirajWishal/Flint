@@ -157,6 +157,7 @@ namespace Flint
 	enum class ImageUsage : UI8 {
 		GRAPHICS,
 		STORAGE,
+		DEPTH
 	};
 
 	/**
@@ -271,6 +272,38 @@ namespace Flint
 		COMPUTE,
 		RAY_GEN, ANY_HIT, CLOSEST_HIT, RAY_MISS
 	};
+
+	/**
+	 * Off screen render target attachment enum.
+	 */
+	enum class OffScreenRenderTargetAttachment : UI8 {
+		COLOR_BUFFER = BIT_SHIFT(0),
+		DEPTH_BUFFER = BIT_SHIFT(1)
+	};
+
+	/**
+	 * Bitwise OR operator for OffScreenRenderTargetAttachment.
+	 *
+	 * @param lhs: The left hand side argument.
+	 * @param rhs: The right hand side argument.
+	 * @return The OR-ed result.
+	 */
+	constexpr OffScreenRenderTargetAttachment operator|(const OffScreenRenderTargetAttachment& lhs, const OffScreenRenderTargetAttachment& rhs)
+	{
+		return static_cast<OffScreenRenderTargetAttachment>(static_cast<UI8>(lhs) | static_cast<UI8>(rhs));
+	}
+
+	/**
+	 * Bitwise AND operator for OffScreenRenderTargetAttachment.
+	 *
+	 * @param lhs: The left hand side argument.
+	 * @param rhs: The right hand side argument.
+	 * @return The AND-ed result.
+	 */
+	constexpr OffScreenRenderTargetAttachment operator&(const OffScreenRenderTargetAttachment& lhs, const OffScreenRenderTargetAttachment& rhs)
+	{
+		return static_cast<OffScreenRenderTargetAttachment>(static_cast<UI8>(lhs) & static_cast<UI8>(rhs));
+	}
 
 	/**
 	 * Flint device bound object.

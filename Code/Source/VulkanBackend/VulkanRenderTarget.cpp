@@ -19,7 +19,7 @@ namespace Flint
 			DestroySyncObjects();
 		}
 
-		void VulkanRenderTarget::CreateRenderPass(std::vector<VulkanRenderTargetAttachment*> pAttachments, VkPipelineBindPoint vBindPoint, const std::vector<VkSubpassDependency>& vSubpassDependencies)
+		void VulkanRenderTarget::CreateRenderPass(std::vector<VulkanRenderTargetAttachmentInterface*> pAttachments, VkPipelineBindPoint vBindPoint, const std::vector<VkSubpassDependency>& vSubpassDependencies)
 		{
 			FLINT_SETUP_PROFILER();
 
@@ -48,7 +48,7 @@ namespace Flint
 
 				vAR.layout = (*itr)->GetAttachmentLayout();
 
-				switch ((*itr)->GetType())
+				switch ((*itr)->GetAttachmentType())
 				{
 				case Flint::VulkanBackend::RenderTargetAttachmenType::SWAP_CHAIN:
 					INSERT_INTO_VECTOR(vResolveAttachmentRef, vAR);
@@ -93,7 +93,7 @@ namespace Flint
 			vkDestroyRenderPass(vDevice.GetLogicalDevice(), vRenderPass, nullptr);
 		}
 
-		void VulkanRenderTarget::CreateFrameBuffer(std::vector<VulkanRenderTargetAttachment*> pAttachments, const FBox2D& extent, UI32 bufferCount)
+		void VulkanRenderTarget::CreateFrameBuffer(std::vector<VulkanRenderTargetAttachmentInterface*> pAttachments, const FBox2D& extent, UI32 bufferCount)
 		{
 			FLINT_SETUP_PROFILER();
 

@@ -727,16 +727,7 @@ namespace Flint
 			vkDestroyPipelineCache(vDevice.GetLogicalDevice(), vPipelineCache, nullptr);
 
 			if (vDescriptorSetPool)
-			{
-				//std::vector<VkDescriptorSet> vDescriptorSets;
-				//vDescriptorSets.reserve(vDescriptorSetMap.size());
-				//
-				//for (const auto pair : vDescriptorSetMap)
-				//	vDescriptorSets.push_back(pair.second);
-				//
-				//vkFreeDescriptorSets(vDevice.GetLogicalDevice(), vDescriptorSetPool, static_cast<UI32>(vDescriptorSets.size()), vDescriptorSets.data());
 				vkDestroyDescriptorPool(vDevice.GetLogicalDevice(), vDescriptorSetPool, nullptr);
-			}
 		}
 
 		void VulkanGraphicsPipeline::PrepareResourcesToDraw()
@@ -878,8 +869,8 @@ namespace Flint
 
 						VulkanImage& vImage = resource.second.second->StaticCast<VulkanImage>();
 						VkDescriptorImageInfo* pImageInfo = new VkDescriptorImageInfo;
-						pImageInfo->imageLayout = vImage.GetImageLayout();
-						pImageInfo->imageView = vImage.GetImageView();
+						pImageInfo->imageLayout = vImage.GetAttachmentLayout();
+						pImageInfo->imageView = vImage.GetImageView(0);
 						pImageInfo->sampler = resource.second.first->StaticCast<VulkanImageSampler>().GetSampler();
 
 						vWrite.pImageInfo = pImageInfo;

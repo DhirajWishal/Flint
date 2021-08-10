@@ -5,14 +5,14 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-Preview::Preview(glm::vec3 position, SceneState* pSceneState, std::filesystem::path model, std::filesystem::path texture)
+Preview::Preview(glm::vec3 position, SceneState* pSceneState, std::filesystem::path model, std::vector<std::filesystem::path> texture)
 	: GameObject(position, pSceneState)
 {
 	pDynamicStates = std::make_shared<Flint::DynamicStateContainer>();
 
 	mModelMatrix = glm::rotate(mModelMatrix, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
-	auto image = LoadImage(texture);
+	auto image = LoadImage(texture[0]);
 	pTexture = pSceneState->pDevice->CreateImage(Flint::ImageType::DIMENSIONS_2, Flint::ImageUsage::GRAPHICS, image.mExtent, Flint::PixelFormat::R8G8B8A8_SRGB, 1, 1, image.pImageData);
 	DestroyImage(image);
 
