@@ -34,7 +34,8 @@ SceneState::SceneState()
 
 	mCamera.Initialize(pDevice);
 
-	pOffScreenRenderTargets["ShadowMap"] = pDevice->CreateOffScreenRenderTarget(Flint::FBox2D(2048), 1, Flint::OffScreenRenderTargetAttachment::DEPTH_BUFFER);
+	pOffScreenRenderTargets["ShadowMap"] = pDevice->CreateOffScreenRenderTarget(Flint::FBox2D(2048), pScreenBoundRenderTargets["Default"]->GetBufferCount(), Flint::OffScreenRenderTargetAttachment::DEPTH_BUFFER);
+	pScreenBoundRenderTargets["Default"]->AttachOffScreenRenderTarget(pOffScreenRenderTargets["ShadowMap"]);
 }
 
 SceneState::~SceneState()

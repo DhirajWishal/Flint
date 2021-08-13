@@ -3,6 +3,7 @@
 
 #include "VulkanBackend/VulkanCommandBufferList.hpp"
 #include "VulkanBackend/VulkanScreenBoundRenderTarget.hpp"
+#include "VulkanBackend/VulkanOffScreenRenderTarget.hpp"
 #include "VulkanBackend/VulkanGraphicsPipeline.hpp"
 #include "VulkanBackend/VulkanBuffer.hpp"
 #include "VulkanBackend/VulkanUtilities.hpp"
@@ -115,7 +116,6 @@ namespace Flint
 			FLINT_SETUP_PROFILER();
 
 			VulkanScreenBoundRenderTarget& vRenderTarget = pRenderTarget->StaticCast<VulkanScreenBoundRenderTarget>();
-			FColor4D clearColors = vRenderTarget.GetClearColor();
 
 			VkRenderPassBeginInfo vBeginInfo = {};
 			vBeginInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -135,7 +135,44 @@ namespace Flint
 			FLINT_SETUP_PROFILER();
 
 			VulkanScreenBoundRenderTarget& vRenderTarget = pRenderTarget->StaticCast<VulkanScreenBoundRenderTarget>();
-			FColor4D clearColors = vRenderTarget.GetClearColor();
+
+			VkRenderPassBeginInfo vBeginInfo = {};
+			vBeginInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+			vBeginInfo.pNext = VK_NULL_HANDLE;
+			vBeginInfo.renderPass = vRenderTarget.GetRenderPass();
+			vBeginInfo.framebuffer = vRenderTarget.GetFrameBuffer(GetCurrentBufferIndex());
+			vBeginInfo.clearValueCount = vRenderTarget.GetClearScreenValueCount();
+			vBeginInfo.pClearValues = vRenderTarget.GetClearScreenValues();
+			vBeginInfo.renderArea.extent.width = vRenderTarget.GetExtent().mWidth;
+			vBeginInfo.renderArea.extent.height = vRenderTarget.GetExtent().mHeight;
+
+			vkCmdBeginRenderPass(GetCurrentCommandBuffer(), &vBeginInfo, VkSubpassContents::VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+		}
+
+		void VulkanCommandBufferList::BindRenderTarget(const std::shared_ptr<OffScreenRenderTarget>& pRenderTarget)
+		{
+			FLINT_SETUP_PROFILER();
+
+			VulkanOffScreenRenderTarget& vRenderTarget = pRenderTarget->StaticCast<VulkanOffScreenRenderTarget>();
+
+			VkRenderPassBeginInfo vBeginInfo = {};
+			vBeginInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+			vBeginInfo.pNext = VK_NULL_HANDLE;
+			vBeginInfo.renderPass = vRenderTarget.GetRenderPass();
+			vBeginInfo.framebuffer = vRenderTarget.GetFrameBuffer(GetCurrentBufferIndex());
+			vBeginInfo.clearValueCount = vRenderTarget.GetClearScreenValueCount();
+			vBeginInfo.pClearValues = vRenderTarget.GetClearScreenValues();
+			vBeginInfo.renderArea.extent.width = vRenderTarget.GetExtent().mWidth;
+			vBeginInfo.renderArea.extent.height = vRenderTarget.GetExtent().mHeight;
+
+			vkCmdBeginRenderPass(GetCurrentCommandBuffer(), &vBeginInfo, VkSubpassContents::VK_SUBPASS_CONTENTS_INLINE);
+		}
+
+		void VulkanCommandBufferList::BindRenderTargetSecondary(const std::shared_ptr<OffScreenRenderTarget>& pRenderTarget)
+		{
+			FLINT_SETUP_PROFILER();
+
+			VulkanOffScreenRenderTarget& vRenderTarget = pRenderTarget->StaticCast<VulkanOffScreenRenderTarget>();
 
 			VkRenderPassBeginInfo vBeginInfo = {};
 			vBeginInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -288,6 +325,8 @@ namespace Flint
 
 			if (!vSecondaryCommandBuffers.empty())
 				vkCmdExecuteCommands(GetCurrentCommandBuffer(), static_cast<UI32>(vSecondaryCommandBuffers.size()), vSecondaryCommandBuffers.data());
+
+			vSecondaryCommandBuffers.clear();
 		}
 
 		void VulkanCommandBufferList::EndBufferRecording()

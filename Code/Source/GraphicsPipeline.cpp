@@ -63,6 +63,35 @@ namespace Flint
 			FLINT_THROW_INVALID_ARGUMENT("Fragment shader pointer should not be null!");
 	}
 
+	GraphicsPipeline::GraphicsPipeline(
+		const std::shared_ptr<Device>& pDevice,
+		const std::string& pipelineName,
+		const std::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget,
+		const std::shared_ptr<Shader>& pVertexShader,
+		const std::shared_ptr<Shader>& pTessellationControlShader,
+		const std::shared_ptr<Shader>& pTessellationEvaluationShader,
+		const std::shared_ptr<Shader>& pGeometryShader,
+		const std::shared_ptr<Shader>& pFragmentShader,
+		const GraphicsPipelineSpecification& specification)
+		: Pipeline(pDevice, pipelineName),
+		pRenderTarget(pOffScreenRenderTarget),
+		pVertexShader(pVertexShader),
+		pTessellationControlShader(pTessellationControlShader),
+		pTessellationEvaluationShader(pTessellationEvaluationShader),
+		pGeometryShader(pGeometryShader),
+		pFragmentShader(pFragmentShader),
+		mSpecification(specification)
+	{
+		if (!pOffScreenRenderTarget)
+			FLINT_THROW_INVALID_ARGUMENT("Render target pointer should not be null!");
+
+		if (pVertexShader == nullptr)
+			FLINT_THROW_INVALID_ARGUMENT("Vertex shader pointer should not be null!");
+
+		if (pFragmentShader == nullptr)
+			FLINT_THROW_INVALID_ARGUMENT("Fragment shader pointer should not be null!");
+	}
+
 	std::shared_ptr<ResourceMap> GraphicsPipeline::CreateResourceMap() const
 	{
 		auto [buffers, images] = _Helpers::GetResourceNames({ pVertexShader, pTessellationControlShader, pTessellationEvaluationShader, pGeometryShader, pFragmentShader });

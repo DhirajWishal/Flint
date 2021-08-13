@@ -338,14 +338,19 @@ namespace Flint
 			FLINT_SETUP_PROFILER();
 
 			pCommandBufferList->BeginBufferRecording(mFrameIndex);
-			pCommandBufferList->BindRenderTargetSecondary(pThisRenderTarget);
-
-			vInheritInfo.renderPass = vRenderTarget.vRenderPass;
-			vInheritInfo.framebuffer = GetFrameBuffer(mFrameIndex);
 
 			// Execute the render targets. TODO
 			for (auto pOffScreenRenderTarget : pOffScreenRenderTargets)
 				pOffScreenRenderTarget->Execute(pThisRenderTarget);
+
+			// Execute the off screen render target content.
+			//pCommandBufferList->ExecuteSecondaryCommands();
+
+			// Bind this render target for the secondary command buffers.
+			pCommandBufferList->BindRenderTargetSecondary(pThisRenderTarget);
+
+			vInheritInfo.renderPass = vRenderTarget.vRenderPass;
+			vInheritInfo.framebuffer = GetFrameBuffer(mFrameIndex);
 
 			if (mNumberOfThreads)
 			{

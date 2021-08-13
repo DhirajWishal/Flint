@@ -25,6 +25,8 @@ namespace Flint
 
 			virtual void BindRenderTarget(const std::shared_ptr<ScreenBoundRenderTarget>& pRenderTarget) override final;
 			virtual void BindRenderTargetSecondary(const std::shared_ptr<ScreenBoundRenderTarget>& pRenderTarget) override final;
+			virtual void BindRenderTarget(const std::shared_ptr<OffScreenRenderTarget>& pRenderTarget) override final;
+			virtual void BindRenderTargetSecondary(const std::shared_ptr<OffScreenRenderTarget>& pRenderTarget) override final;
 			virtual void UnbindRenderTarget() override final;
 			virtual void BindGraphicsPipeline(const std::shared_ptr<GraphicsPipeline>& pGraphicsPipeline) override final;
 
@@ -47,6 +49,7 @@ namespace Flint
 			std::vector<VkCommandBuffer> GetCommandBuffers() const { return vCommandBuffers; }
 
 			VkCommandBufferInheritanceInfo GetInheritanceInfo() const;
+			void AddSecondaryCommandBuffer(const VkCommandBuffer& vCommandBuffer) { vSecondaryCommandBuffers.push_back(vCommandBuffer); }
 			void SetSecondaryCommandBuffers(std::vector<VkCommandBuffer>&& vSecondaryCommandBuffers);
 
 		public:

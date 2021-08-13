@@ -36,6 +36,9 @@ VikingRoom::VikingRoom(glm::vec3 position, SceneState* pSceneState) : GameObject
 		mDrawIndex = pPipeline->AddDrawData(pResourceMap, pDynamicStates, vertexOffset + instance.mVertexOffset, instance.mVertexCount, indexOffset + instance.mIndexOffset, instance.mIndexCount);
 		mVertexCount += instance.mVertexCount;
 		mIndexCount += instance.mIndexCount;
+
+		// Add to the off screen.
+		pSceneState->pGraphicsPipelines["DefaultOffScreenWireFrame"]->AddDrawData(pResourceMap, pDynamicStates, vertexOffset + instance.mVertexOffset, instance.mVertexCount, indexOffset + instance.mIndexOffset, instance.mIndexCount);
 	}
 
 	mVertexOffset = vertexOffset;
@@ -114,4 +117,7 @@ void VikingRoom::SetupPipeline()
 
 	pSceneState->pGraphicsPipelines["DefaultWireframe"] = pSceneState->pDevice->CreateGraphicsPipeline("DefaultWireframe", pSceneState->pScreenBoundRenderTargets["Default"], pSceneState->pVertexShader, nullptr, nullptr, nullptr, pSceneState->pFragmentShader, specification);
 	pSceneState->pScreenBoundRenderTargets["Default"]->SubmitPipeline(pSceneState->pGeometryStores["Default"], pSceneState->pGraphicsPipelines["DefaultWireframe"]);
+
+	pSceneState->pGraphicsPipelines["DefaultOffScreenWireFrame"] = pSceneState->pDevice->CreateGraphicsPipeline("DefaultOffScreenWireFrame", pSceneState->pOffScreenRenderTargets["ShadowMap"], pSceneState->pVertexShader, nullptr, nullptr, nullptr, pSceneState->pFragmentShader, specification);
+	pSceneState->pOffScreenRenderTargets["ShadowMap"]->SubmitPipeline(pSceneState->pGeometryStores["Default"], pSceneState->pGraphicsPipelines["DefaultOffScreenWireFrame"]);
 }

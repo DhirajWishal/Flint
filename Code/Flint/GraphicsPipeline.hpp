@@ -306,7 +306,7 @@ namespace Flint
 
 	public:
 		/**
-		 * Default constructor.
+		 * Construct the pipeline using a screen bound render target.
 		 *
 		 * @param pDevice: The device pointer.
 		 * @param pipelineName: The name of the pipeline.
@@ -316,11 +316,36 @@ namespace Flint
 		 * @param pTessellationEvaluationShader: The tessellation evaluation shader (optional).
 		 * @param pGeometryShader: The geometry shader (optional).
 		 * @param pFragmentShader: The fragment shader.
+		 * @param specification: The pipeline specification.
 		 */
 		GraphicsPipeline(
 			const std::shared_ptr<Device>& pDevice,
 			const std::string& pipelineName,
 			const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget,
+			const std::shared_ptr<Shader>& pVertexShader,
+			const std::shared_ptr<Shader>& pTessellationControlShader,
+			const std::shared_ptr<Shader>& pTessellationEvaluationShader,
+			const std::shared_ptr<Shader>& pGeometryShader,
+			const std::shared_ptr<Shader>& pFragmentShader,
+			const GraphicsPipelineSpecification& specification);
+
+		/**
+		 * Construct the pipeline using an off screen render target.
+		 *
+		 * @param pDevice: The device pointer.
+		 * @param pipelineName: The name of the pipeline.
+		 * @param pOffScreenRenderTarget: The off screen render target pointer.
+		 * @param pVertexShader: The vertex shader pointer.
+		 * @param pTessellationControlShader: The tessellation control shader (optional).
+		 * @param pTessellationEvaluationShader: The tessellation evaluation shader (optional).
+		 * @param pGeometryShader: The geometry shader (optional).
+		 * @param pFragmentShader: The fragment shader.
+		 * @param specification: The pipeline specification.
+		 */
+		GraphicsPipeline(
+			const std::shared_ptr<Device>& pDevice,
+			const std::string& pipelineName,
+			const std::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget,
 			const std::shared_ptr<Shader>& pVertexShader,
 			const std::shared_ptr<Shader>& pTessellationControlShader,
 			const std::shared_ptr<Shader>& pTessellationEvaluationShader,

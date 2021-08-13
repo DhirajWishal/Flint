@@ -58,6 +58,7 @@ namespace Flint
 			: OffScreenRenderTarget(pDevice, extent, bufferCount, pDevice->CreatePrimaryCommandBufferList(bufferCount), attachments, threadCount), vRenderTarget(pDevice->StaticCast<VulkanDevice>())
 		{
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
+			pSecondaryCommandBuffer = std::make_unique<VulkanCommandBufferList>(pDevice, bufferCount, pCommandBufferList);
 
 			std::vector<VulkanRenderTargetAttachmentInterface*> pAttachments;
 			if ((mAttachments & OffScreenRenderTargetAttachment::COLOR_BUFFER) == OffScreenRenderTargetAttachment::COLOR_BUFFER)
@@ -94,17 +95,38 @@ namespace Flint
 			vRenderTarget.CreateRenderPass(pAttachments, VK_PIPELINE_BIND_POINT_GRAPHICS, vDependencies);
 			vRenderTarget.CreateFrameBuffer(pAttachments, extent, bufferCount);
 			vRenderTarget.CreateSyncObjects(bufferCount);
+
+			vInheritInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
+
+			// Setup default clear color values.
+			pClearValues[1].color.float32[0] = CREATE_COLOR_256(32.0f);
+			pClearValues[1].color.float32[1] = CREATE_COLOR_256(32.0f);
+			pClearValues[1].color.float32[2] = CREATE_COLOR_256(32.0f);
+			pClearValues[1].color.float32[3] = 1.0f;
+			pClearValues[0].depthStencil.depth = 1.0f;
+			pClearValues[0].depthStencil.stencil = 0;
 		}
 
 		void VulkanOffScreenRenderTarget::Execute(const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget)
 		{
+			if (!pThisRenderTarget)
+				pThisRenderTarget = shared_from_this();
+
 			if (pScreenBoundRenderTarget)
 			{
 				VulkanScreenBoundRenderTarget& vScreenBoundRenderTarget = pScreenBoundRenderTarget->StaticCast<VulkanScreenBoundRenderTarget>();
+				mFrameIndex = vScreenBoundRenderTarget.GetFrameIndex();
 
 				// Begin the command buffer.
-				auto& vCommandBufferList = pVolatileCommandBufferList->StaticCast<VulkanCommandBufferList>();
-				vCommandBufferList.VulkanBeginSecondaryCommandBuffer(0, vScreenBoundRenderTarget.GetVulkanInheritanceInfo());
+				auto& vScreenBoundCommandBuffer = pScreenBoundRenderTarget->GetCommandBufferList()->StaticCast<VulkanCommandBufferList>();
+				vScreenBoundCommandBuffer.BindRenderTargetSecondary(pThisRenderTarget);
+
+				vInheritInfo.renderPass = vRenderTarget.vRenderPass;
+				vInheritInfo.framebuffer = vRenderTarget.vFrameBuffers[mFrameIndex];	// TODO
+
+				// Begin secondary command buffers.
+				auto& vCommandBufferList = *pSecondaryCommandBuffer;
+				vCommandBufferList.VulkanBeginSecondaryCommandBuffer(mFrameIndex, &vInheritInfo);
 
 				// Bind the volatile draw instances.
 				for (const auto store : mVolatileDrawInstanceOrder)
@@ -178,11 +200,15 @@ namespace Flint
 
 				// End buffer recording and submit it to execute.
 				vCommandBufferList.EndBufferRecording();
-				vScreenBoundRenderTarget.AddVulkanCommandBuffer(vCommandBufferList.GetCurrentCommandBuffer());
+
+				vScreenBoundCommandBuffer.AddSecondaryCommandBuffer(vCommandBufferList.GetCurrentCommandBuffer());
+				vScreenBoundCommandBuffer.ExecuteSecondaryCommands();
+				vScreenBoundCommandBuffer.UnbindRenderTarget();
 			}
 			else
 			{
 				// TODO
+				IncrementFrameIndex();
 			}
 		}
 
@@ -192,6 +218,7 @@ namespace Flint
 
 			pDevice->DestroyCommandBufferList(pCommandBufferList);
 			pDevice->DestroyCommandBufferList(pVolatileCommandBufferList);
+			pDevice->DestroyCommandBufferList(std::move(pSecondaryCommandBuffer));
 
 			for (auto pResult : pResults)
 				pDevice->DestroyImage(pResult);
@@ -204,5 +231,27 @@ namespace Flint
 		void VulkanOffScreenRenderTarget::SecondaryCommandsWorker(DrawInstanceMap& drawInstanceMap, std::list<std::shared_ptr<GeometryStore>>& drawOrder, BinarySemaphore& binarySemaphore, CountingSemaphore& countingSemaphore, std::atomic<bool>& shouldRun)
 		{
 		}
+
+		FColor4D VulkanOffScreenRenderTarget::GetClearColor() const
+		{
+			return FColor4D(pClearValues[0].color.float32[0], pClearValues[0].color.float32[1], pClearValues[0].color.float32[2], pClearValues[0].color.float32[3]);
+		}
+
+		void VulkanOffScreenRenderTarget::SetClearColor(const FColor4D& newColor)
+		{
+			pClearValues[0].color.float32[0] = newColor.mRed;
+			pClearValues[0].color.float32[1] = newColor.mGreen;
+			pClearValues[0].color.float32[2] = newColor.mBlue;
+			pClearValues[0].color.float32[3] = newColor.mAlpha;
+		}
+
+		VkFramebuffer VulkanOffScreenRenderTarget::GetFrameBuffer(UI32 index) const
+		{
+			return vRenderTarget.vFrameBuffers[index];
+		}
 	}
 }
+
+/*
+Vulkan Validation Layer (Validation): Validation Error: [ VUID-vkBeginCommandBuffer-commandBuffer-00049 ] Object 0: handle = 0x203853101b8, type = VK_OBJECT_TYPE_COMMAND_BUFFER; | MessageID = 0x84029a9f | Calling vkBeginCommandBuffer() on active VkCommandBuffer 0x203853101b8[] before it has completed. You must check command buffer fence before this call. The Vulkan spec states: commandBuffer must not be in the recording or pending state (https://vulkan.lunarg.com/doc/view/1.2.162.1/windows/1.2-extensions/vkspec.html#VUID-vkBeginCommandBuffer-commandBuffer-00049)
+*/

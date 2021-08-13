@@ -9,6 +9,7 @@
 namespace Flint
 {
 	class ScreenBoundRenderTarget;
+	class OffScreenRenderTarget;
 	class GraphicsPipeline;
 	class ResourceMap;
 
@@ -86,6 +87,20 @@ namespace Flint
 		 * @param pRenderTarget: The render target pointer.
 		 */
 		virtual void BindRenderTargetSecondary(const std::shared_ptr<ScreenBoundRenderTarget>& pRenderTarget) = 0;
+
+		/**
+		 * Bind a render target to the current command buffer.
+		 *
+		 * @param pRenderTarget: The render target pointer.
+		 */
+		virtual void BindRenderTarget(const std::shared_ptr<OffScreenRenderTarget>& pRenderTarget) = 0;
+
+		/**
+		 * Bind a render target to the current command buffer as secondary.
+		 *
+		 * @param pRenderTarget: The render target pointer.
+		 */
+		virtual void BindRenderTargetSecondary(const std::shared_ptr<OffScreenRenderTarget>& pRenderTarget) = 0;
 
 		/**
 		 * Bind a graphics pipeline to the current command buffer.

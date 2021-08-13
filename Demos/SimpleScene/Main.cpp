@@ -24,9 +24,9 @@ int main(int argc, char** argv)
 		{
 			ImGUI mImGui{ glm::vec3(0.0f), &mState };
 			SkyBox skyBox{ glm::vec3(0.0f), &mState };
-			//VikingRoom vikingRoom{ glm::vec3(2.0f), &mState };
+			VikingRoom vikingRoom{ glm::vec3(2.0f), &mState };
 			//vikingRoom.EnableBoundingBox();
-			TreeScene treeScene{ glm::vec3(0.0f), &mState };
+			//TreeScene treeScene{ glm::vec3(0.0f), &mState };
 			std::unique_ptr<TreeScene> pTreeScene = nullptr;
 
 			//Preview preview{ glm::vec3(0.0f), &mState,
@@ -110,8 +110,8 @@ int main(int argc, char** argv)
 					}
 
 					skyBox.OnUpdate(delta);
-					//vikingRoom.OnUpdate(delta);
-					treeScene.OnUpdate(delta);
+					vikingRoom.OnUpdate(delta);
+					//treeScene.OnUpdate(delta);
 					//preview.OnUpdate(delta);
 
 					if (pTreeScene)

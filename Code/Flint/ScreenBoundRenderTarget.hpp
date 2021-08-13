@@ -66,20 +66,6 @@ namespace Flint
 		 */
 		const UI32 GetImageIndex() const { return mImageIndex; }
 
-		/**
-		 * Get the render targets clear screen color.
-		 *
-		 * @return The color container.
-		 */
-		virtual FColor4D GetClearColor() const = 0;
-
-		/**
-		 * Set the clear color values.
-		 *
-		 * @param newColor: The new color to set.
-		 */
-		virtual void SetClearColor(const FColor4D& newColor) = 0;
-
 	public:
 		/**
 		 * Attach an off screen render target to the screen bound render target.
@@ -98,12 +84,6 @@ namespace Flint
 
 	protected:
 		/**
-		 * Increment the frame index.
-		 * If the frame index is bigger than or equal to the buffer count, it is rolled back to 0.
-		 */
-		void IncrementFrameIndex() { mFrameIndex++; if (mFrameIndex >= mBufferCount) mFrameIndex = 0; }
-
-		/**
 		 * Recreate the render target.
 		 * Recreating is essential when the frame buffer should be resized or if the swap chain is out of date.
 		 */
@@ -113,7 +93,6 @@ namespace Flint
 		std::shared_ptr<Display> pDisplay = nullptr;
 		std::vector<std::shared_ptr<OffScreenRenderTarget>> pOffScreenRenderTargets;
 
-		UI32 mFrameIndex = 0;
 		UI32 mImageIndex = 0;
 	};
 }

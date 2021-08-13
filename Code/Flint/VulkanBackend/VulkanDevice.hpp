@@ -49,6 +49,15 @@ namespace Flint
 				const std::shared_ptr<Shader>& pGeometryShader,
 				const std::shared_ptr<Shader>& pFragmentShader,
 				const GraphicsPipelineSpecification& specification) override final;
+			virtual std::shared_ptr<GraphicsPipeline> CreateGraphicsPipeline(
+				const std::string& pipelineName,
+				const std::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget,
+				const std::shared_ptr<Shader>& pVertexShader,
+				const std::shared_ptr<Shader>& pTessellationControlShader,
+				const std::shared_ptr<Shader>& pTessellationEvaluationShader,
+				const std::shared_ptr<Shader>& pGeometryShader,
+				const std::shared_ptr<Shader>& pFragmentShader,
+				const GraphicsPipelineSpecification& specification) override final;
 			virtual void DestroyPipeline(const std::shared_ptr<Pipeline>& pPipeline) override final;
 
 			virtual std::shared_ptr<GeometryStore> CreateGeometryStore(const std::unordered_map<UI32, std::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize, BufferMemoryProfile profile = BufferMemoryProfile::AUTOMATIC) override final;

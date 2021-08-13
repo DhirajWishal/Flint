@@ -13,6 +13,8 @@ namespace Flint
 	/**
 	 * Flint off screen render target.
 	 * Off screen render targets are used for computational and general off screen processes like shadow mapping.
+	 *
+	 * Note: If the render target is intended to be attached to a screen bound render target, make sure to have the same number of buffers as in the screen bound render target.
 	 */
 	class OffScreenRenderTarget : public RenderTarget
 	{

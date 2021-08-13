@@ -40,6 +40,20 @@ namespace Flint
 		 */
 		RenderTarget(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, const std::shared_ptr<CommandBufferList>& pCommandBufferList, UI32 threadCount = 0);
 
+		/**
+		 * Get the render targets clear screen color.
+		 *
+		 * @return The color container.
+		 */
+		virtual FColor4D GetClearColor() const = 0;
+
+		/**
+		 * Set the clear color values.
+		 *
+		 * @param newColor: The new color to set.
+		 */
+		virtual void SetClearColor(const FColor4D& newColor) = 0;
+
 	public:
 		/**
 		 * Submit a pipeline to the render target to be drawn.
@@ -76,6 +90,13 @@ namespace Flint
 
 	public:
 		/**
+		 * Get the command buffer list of the render target.
+		 *
+		 * @return The command buffer list pointer.
+		 */
+		const std::shared_ptr<CommandBufferList> GetCommandBufferList() const { return pCommandBufferList; }
+
+		/**
 		 * Get the render target extent.
 		 *
 		 * @return The extent.
@@ -109,6 +130,12 @@ namespace Flint
 		void FlagAltered() { bIsAltered = true; }
 
 	protected:
+		/**
+		 * Increment the frame index.
+		 * If the frame index is bigger than or equal to the buffer count, it is rolled back to 0.
+		 */
+		void IncrementFrameIndex() { mFrameIndex++; if (mFrameIndex >= mBufferCount) mFrameIndex = 0; }
+
 		/**
 		 * Bind the volatile instances.
 		 */
@@ -170,6 +197,7 @@ namespace Flint
 
 		FBox2D mExtent = {};
 		UI32 mBufferCount = 0;
+		UI32 mFrameIndex = 0;
 
 		UI32 mNumberOfThreads = 0;
 

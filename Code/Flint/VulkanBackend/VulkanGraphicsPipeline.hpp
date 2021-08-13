@@ -24,6 +24,17 @@ namespace Flint
 				const std::shared_ptr<Shader>& pFragmentShader,
 				const GraphicsPipelineSpecification& specification);
 
+			VulkanGraphicsPipeline(
+				const std::shared_ptr<Device>& pDevice,
+				const std::string& pipelineName,
+				const std::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget,
+				const std::shared_ptr<Shader>& pVertexShader,
+				const std::shared_ptr<Shader>& pTessellationControlShader,
+				const std::shared_ptr<Shader>& pTessellationEvaluationShader,
+				const std::shared_ptr<Shader>& pGeometryShader,
+				const std::shared_ptr<Shader>& pFragmentShader,
+				const GraphicsPipelineSpecification& specification);
+
 			virtual void Recreate(const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget) override final;
 			virtual void Terminate() override final;
 
@@ -35,6 +46,7 @@ namespace Flint
 			const VkDescriptorSet* GetDescriptorSetAddress(const std::shared_ptr<ResourceMap>& pResourceMap) const;
 
 		private:
+			void SetupDefaults();
 			void CreatePipelineCache();
 			void CreatePipelineLayout();
 			void CreatePipeline();

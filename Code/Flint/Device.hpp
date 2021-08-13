@@ -231,20 +231,44 @@ namespace Flint
 		virtual void DestroyShader(const std::shared_ptr<Shader>& pShader) = 0;
 
 		/**
-		 * Create a new graphics pipeline bound to this render target.
+		 * Create a new graphics pipeline bound to a screen bound render target.
 		 *
 		 * @param pipelineName: The unique name of the pipeline.
-		 * @param pRenderTarget: The screen bound render target pointer.
+		 * @param pScreenBoundRenderTarget: The screen bound render target pointer.
 		 * @param pVertexShader: The vertex shader pointer.
 		 * @param pTessellationControlShader: The tessellation control shader pointer.
 		 * @param pTessellationEvaluationShader: The tessellation evaluation shader pointer.
 		 * @param pGeometryShader: The geometry shader pointer.
 		 * @param pFragmentShader: The fragment shader pointer.
+		 * @param specification: The pipeline specification.
 		 * @return The pipeline pointer.
 		 */
 		virtual std::shared_ptr<GraphicsPipeline> CreateGraphicsPipeline(
 			const std::string& pipelineName,
 			const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget,
+			const std::shared_ptr<Shader>& pVertexShader,
+			const std::shared_ptr<Shader>& pTessellationControlShader,
+			const std::shared_ptr<Shader>& pTessellationEvaluationShader,
+			const std::shared_ptr<Shader>& pGeometryShader,
+			const std::shared_ptr<Shader>& pFragmentShader,
+			const GraphicsPipelineSpecification& specification) = 0;
+
+		/**
+		 * Create a new graphics pipeline bound to a off screen render target.
+		 *
+		 * @param pipelineName: The unique name of the pipeline.
+		 * @param pOffScreenRenderTarget: The off screen render target pointer.
+		 * @param pVertexShader: The vertex shader pointer.
+		 * @param pTessellationControlShader: The tessellation control shader pointer.
+		 * @param pTessellationEvaluationShader: The tessellation evaluation shader pointer.
+		 * @param pGeometryShader: The geometry shader pointer.
+		 * @param pFragmentShader: The fragment shader pointer.
+		 * @param specification: The pipeline specification.
+		 * @return The pipeline pointer.
+		 */
+		virtual std::shared_ptr<GraphicsPipeline> CreateGraphicsPipeline(
+			const std::string& pipelineName,
+			const std::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget,
 			const std::shared_ptr<Shader>& pVertexShader,
 			const std::shared_ptr<Shader>& pTessellationControlShader,
 			const std::shared_ptr<Shader>& pTessellationEvaluationShader,
