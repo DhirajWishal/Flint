@@ -226,7 +226,11 @@ namespace Flint
 
 			if (mType != ImageType::CUBEMAP && mType != ImageType::CUBEMAP_ARRAY && mUsage != ImageUsage::DEPTH)
 				GenerateMipMaps();
-			else if (mUsage != ImageUsage::DEPTH)
+			else if (mUsage == ImageUsage::DEPTH)
+			{
+				vCurrentLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;	// TODO
+			}
+			else
 			{
 				vDevice.SetImageLayout(vImage, vCurrentLayout, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, _Helpers::GetImageFormat(mFormat), mLayerCount, 0, mMipLevels);
 				vCurrentLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -267,7 +271,7 @@ namespace Flint
 			vDesc.format = GetImageFormat();
 			vDesc.samples = VK_SAMPLE_COUNT_1_BIT;
 			vDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-			vDesc.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+			vDesc.finalLayout = mUsage == ImageUsage::DEPTH ? VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL : vCurrentLayout;
 			vDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 			vDesc.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
 			vDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
@@ -278,7 +282,7 @@ namespace Flint
 
 		VkImageLayout VulkanImage::GetAttachmentLayout() const
 		{
-			return vCurrentLayout;
+			return mUsage == ImageUsage::DEPTH ? VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL : vCurrentLayout;
 		}
 
 		VkImageView VulkanImage::GetImageView(UI32 index) const
@@ -288,7 +292,7 @@ namespace Flint
 
 		RenderTargetAttachmenType VulkanImage::GetAttachmentType() const
 		{
-			return RenderTargetAttachmenType::COLOR_BUFFER;
+			return mUsage == ImageUsage::DEPTH ? RenderTargetAttachmenType::DEPTH_BUFFER : RenderTargetAttachmenType::COLOR_BUFFER;
 		}
 
 		VkFormat VulkanImage::GetImageFormat() const
@@ -299,6 +303,8 @@ namespace Flint
 		void VulkanImage::CreateImage()
 		{
 			FLINT_SETUP_PROFILER();
+
+			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 
 			VkImageCreateInfo vCreateInfo = {};
 			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -322,7 +328,7 @@ namespace Flint
 			if (mType == ImageType::CUBEMAP || mType == ImageType::CUBEMAP_ARRAY)
 				vCreateInfo.flags = VkImageCreateFlagBits::VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
 
-			FLINT_VK_ASSERT(vkCreateImage(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), &vCreateInfo, nullptr, &vImage));
+			FLINT_VK_ASSERT(vkCreateImage(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vImage));
 		}
 
 		void VulkanImage::CreateImageMemory()

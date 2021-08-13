@@ -14,24 +14,22 @@ namespace Flint
 			pImageMap[name] = {};
 	}
 
-	bool ResourceMap::SetResource(const std::string& name, const std::shared_ptr<Buffer>& pBuffer)
+	void ResourceMap::SetResource(const std::string& name, const std::shared_ptr<Buffer>& pBuffer)
 	{
 		// If the resource name does not exist, return false.
 		if (pBufferMap.find(name) == pBufferMap.end())
-			return false;
+			FLINT_THROW_INVALID_ARGUMENT("Buffer with the given name \"" + name + "\" is not present within the resource map!");
 
 		pBufferMap[name] = pBuffer;
-		return true;
 	}
 
-	bool ResourceMap::SetResource(const std::string& name, const std::shared_ptr<ImageSampler>& pSampler, const std::shared_ptr<Image>& pImage)
+	void ResourceMap::SetResource(const std::string& name, const std::shared_ptr<ImageSampler>& pSampler, const std::shared_ptr<Image>& pImage)
 	{
 		// If the resource name does not exist, return false.
 		if (pImageMap.find(name) == pImageMap.end())
-			return false;
+			FLINT_THROW_INVALID_ARGUMENT("Image with the given name \"" + name + "\" is not present within the resource map!");
 
 		pImageMap[name] = std::pair(pSampler, pImage);
-		return false;
 	}
 	
 	bool ResourceMap::operator==(const ResourceMap& other) const

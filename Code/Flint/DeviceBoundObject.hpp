@@ -306,6 +306,37 @@ namespace Flint
 	}
 
 	/**
+	 * Rasterization samples enum.
+	 */
+	enum class RasterizationSamples : UI8 {
+		BITS_1 = BIT_SHIFT(0),
+		BITS_2 = BIT_SHIFT(1),
+		BITS_4 = BIT_SHIFT(2),
+		BITS_8 = BIT_SHIFT(3),
+		BITS_16 = BIT_SHIFT(4),
+		BITS_32 = BIT_SHIFT(5),
+		BITS_64 = BIT_SHIFT(6),
+	};
+
+	/**
+	 * Rasterization samples bitwise OR operator.
+	 *
+	 * @param lhs: The left hand side argument.
+	 * @param rhs: The right hand side argument.
+	 * @return The OR performed samples.
+	 */
+	constexpr RasterizationSamples operator|(const RasterizationSamples& lhs, const RasterizationSamples& rhs) { return static_cast<RasterizationSamples>(static_cast<UI8>(lhs) | static_cast<UI8>(rhs)); }
+
+	/**
+	 * Rasterization samples bitwise AND operator.
+	 *
+	 * @param lhs: The left hand side argument.
+	 * @param rhs: The right hand side argument.
+	 * @return The AND performed samples.
+	 */
+	constexpr RasterizationSamples operator&(const RasterizationSamples& lhs, const RasterizationSamples& rhs) { return static_cast<RasterizationSamples>(static_cast<UI8>(lhs) & static_cast<UI8>(rhs)); }
+
+	/**
 	 * Flint device bound object.
 	 * This object is the base class for all the resources in Flint which are based on a device.
 	 */

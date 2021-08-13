@@ -7,7 +7,8 @@
 
 SkyBox::SkyBox(glm::vec3 position, SceneState* pSceneState) : GameObject(position, pSceneState)
 {
-	mModelMatrix = glm::scale(mModelMatrix, glm::vec3(2.0f, 2.0f, 2.0f));
+	const float scale = 50.0f;
+	mModelMatrix = glm::scale(mModelMatrix, glm::vec3(scale, scale, scale));
 
 	pDynamicStates = std::make_shared<Flint::DynamicStateContainer>();
 
@@ -43,6 +44,8 @@ SkyBox::SkyBox(glm::vec3 position, SceneState* pSceneState) : GameObject(positio
 
 	pSceneState->pDevice->DestroyBuffer(asset.pVertexBuffer);
 	pSceneState->pDevice->DestroyBuffer(asset.pIndexBuffer);
+
+	//SubmitToUniformBuffer(pModelUniform, mModelMatrix);
 }
 
 SkyBox::~SkyBox()
@@ -65,33 +68,6 @@ void SkyBox::OnUpdate(UI64 delta)
 		}
 	}
 
-	// Rotate x
-	if (pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_X).IsPressed() || pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_X).IsOnRepeat())
-	{
-		if ((pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_X).GetSpecialCharacter() & Flint::SpecialCharacter::SHIFT) == Flint::SpecialCharacter::SHIFT)
-			mModelMatrix *= glm::rotate(glm::mat4(1.0f), mRotationBias, glm::vec3(1.0f, 0.0f, 0.0f));
-		else
-			mModelMatrix *= glm::rotate(glm::mat4(1.0f), -mRotationBias, glm::vec3(1.0f, 0.0f, 0.0f));
-	}
-
-	// Rotate y
-	if (pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Y).IsPressed() || pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Y).IsOnRepeat())
-	{
-		if ((pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Y).GetSpecialCharacter() & Flint::SpecialCharacter::SHIFT) == Flint::SpecialCharacter::SHIFT)
-			mModelMatrix *= glm::rotate(glm::mat4(1.0f), mRotationBias, glm::vec3(0.0f, 1.0f, 0.0f));
-		else
-			mModelMatrix *= glm::rotate(glm::mat4(1.0f), -mRotationBias, glm::vec3(0.0f, 1.0f, 0.0f));
-	}
-
-	// Rotate z
-	if (pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Z).IsPressed() || pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Z).IsOnRepeat())
-	{
-		if ((pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Z).GetSpecialCharacter() & Flint::SpecialCharacter::SHIFT) == Flint::SpecialCharacter::SHIFT)
-			mModelMatrix *= glm::rotate(glm::mat4(1.0f), mRotationBias, glm::vec3(0.0f, 0.0f, 1.0f));
-		else
-			mModelMatrix *= glm::rotate(glm::mat4(1.0f), -mRotationBias, glm::vec3(0.0f, 0.0f, 1.0f));
-	}
-
 	// Submit data to uniforms.
 	SubmitToUniformBuffer(pModelUniform, mModelMatrix);
 }
@@ -99,6 +75,7 @@ void SkyBox::OnUpdate(UI64 delta)
 void SkyBox::CreateNewPipeline()
 {
 	Flint::GraphicsPipelineSpecification specification = {};
+	specification.mRasterizationSamples = pSceneState->pDevice->GetSupportedRasterizationSamples();
 	specification.mFrontFace = Flint::FrontFace::CLOCKWISE;
 	specification.mDynamicStateFlags = Flint::DynamicStateFlags::VIEWPORT | Flint::DynamicStateFlags::SCISSOR;
 

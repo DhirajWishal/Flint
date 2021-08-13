@@ -238,8 +238,8 @@ namespace Flint
 		std::vector<ColorBlendAttachment> mColorBlendAttachments = { ColorBlendAttachment() };
 
 		float mColorBlendConstants[4] = {
-			CREATE_COLOR_256(255), CREATE_COLOR_256(255),
-			CREATE_COLOR_256(255), CREATE_COLOR_256(255)
+			CREATE_COLOR_256(0), CREATE_COLOR_256(0),
+			CREATE_COLOR_256(0), CREATE_COLOR_256(0)
 		};
 		float mDepthBiasFactor = 0.0f;
 		float mDepthConstantFactor = 0.0f;
@@ -256,6 +256,7 @@ namespace Flint
 		ColorBlendLogic mColorBlendLogic = ColorBlendLogic::CLEAR;
 		DepthCompareLogic mDepthCompareLogic = DepthCompareLogic::LESS_OR_EQUAL;
 		DynamicStateFlags mDynamicStateFlags = DynamicStateFlags(0);
+		RasterizationSamples mRasterizationSamples = RasterizationSamples::BITS_1;
 
 		bool bEnablePrimitiveRestart = false;
 		bool bEnableDepthBias = false;
@@ -265,8 +266,8 @@ namespace Flint
 		bool bEnableAlphaToOne = false;
 		bool bEnableSampleShading = true;
 		bool bEnableColorBlendLogic = false;
-		bool bEnableDepthTest = false;
-		bool bEnableDepthWrite = false;
+		bool bEnableDepthTest = true;
+		bool bEnableDepthWrite = true;
 	};
 
 	/**
@@ -278,7 +279,7 @@ namespace Flint
 	 * 2. Tessellation control (optional).
 	 * 3. Tessellation evaluation (optional).
 	 * 4. Geometry (optional).
-	 * 5. Fragment.
+	 * 5. Fragment (optional).
 	 */
 	class GraphicsPipeline : public Pipeline
 	{
@@ -315,7 +316,7 @@ namespace Flint
 		 * @param pTessellationControlShader: The tessellation control shader (optional).
 		 * @param pTessellationEvaluationShader: The tessellation evaluation shader (optional).
 		 * @param pGeometryShader: The geometry shader (optional).
-		 * @param pFragmentShader: The fragment shader.
+		 * @param pFragmentShader: The fragment shader (optional).
 		 * @param specification: The pipeline specification.
 		 */
 		GraphicsPipeline(
@@ -339,7 +340,7 @@ namespace Flint
 		 * @param pTessellationControlShader: The tessellation control shader (optional).
 		 * @param pTessellationEvaluationShader: The tessellation evaluation shader (optional).
 		 * @param pGeometryShader: The geometry shader (optional).
-		 * @param pFragmentShader: The fragment shader.
+		 * @param pFragmentShader: The fragment shader (optional).
 		 * @param specification: The pipeline specification.
 		 */
 		GraphicsPipeline(

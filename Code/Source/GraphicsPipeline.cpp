@@ -87,9 +87,6 @@ namespace Flint
 
 		if (pVertexShader == nullptr)
 			FLINT_THROW_INVALID_ARGUMENT("Vertex shader pointer should not be null!");
-
-		if (pFragmentShader == nullptr)
-			FLINT_THROW_INVALID_ARGUMENT("Fragment shader pointer should not be null!");
 	}
 
 	std::shared_ptr<ResourceMap> GraphicsPipeline::CreateResourceMap() const

@@ -15,6 +15,8 @@ struct Asset
 		DrawInstance(UI64 vertexOffset, UI64 vertexCount, UI64 indexOffset, UI64 indexCount)
 			: mVertexOffset(vertexOffset), mVertexCount(vertexCount), mIndexOffset(indexOffset), mIndexCount(indexCount) {}
 
+		glm::mat4 mTransform = glm::mat4(1.0f);
+
 		std::string mName = "";
 
 		UI64 mVertexOffset = 0;

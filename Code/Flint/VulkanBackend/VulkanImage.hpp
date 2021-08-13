@@ -22,6 +22,7 @@ namespace Flint
 		public:
 			virtual void Recreate(const FBox2D& extent) override final;
 
+			virtual VkImageLayout GetImageLayout() const { return vCurrentLayout; }
 			virtual VkAttachmentDescription GetAttachmentDescription() const override final;
 			virtual VkImageLayout GetAttachmentLayout() const override final;
 			virtual VkImageView GetImageView(UI32 index) const override final;

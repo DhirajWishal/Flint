@@ -423,7 +423,11 @@ namespace Flint
 					{
 						FLINT_SETUP_PROFILER();
 
-						vCommandBufferList.BindVertexBuffer(store->GetVertexBuffer());
+						const auto pVertexBuffer = store->GetVertexBuffer();
+						if (!pVertexBuffer)
+							continue;
+
+						vCommandBufferList.BindVertexBuffer(pVertexBuffer);
 						vCommandBufferList.BindIndexBuffer(store->GetIndexBuffer(), store->GetIndexSize());
 
 						auto& pipelines = drawInstanceMap[store];

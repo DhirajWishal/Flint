@@ -22,16 +22,13 @@ int main(int argc, char** argv)
 		float maxFrameTime = 0.0f;
 
 		{
-			ImGUI mImGui{ glm::vec3(0.0f), &mState };
-			SkyBox skyBox{ glm::vec3(0.0f), &mState };
-			VikingRoom vikingRoom{ glm::vec3(2.0f), &mState };
-			//vikingRoom.EnableBoundingBox();
-			//TreeScene treeScene{ glm::vec3(0.0f), &mState };
-			std::unique_ptr<TreeScene> pTreeScene = nullptr;
-
-			//Preview preview{ glm::vec3(0.0f), &mState,
-			//	"E:\\Dynamik\\Game Repository\\assets\\assets\\Animation\\Model\\characterMedium.fbx",
-			//	"E:\\Dynamik\\Game Repository\\assets\\assets\\Animation\\Skins\\criminalMaleA.png" };
+			ImGUI mImGui(glm::vec3(0.0f), &mState);
+			std::vector<std::unique_ptr<GameObject>> pGameObjects;
+			pGameObjects.push_back(std::make_unique<SkyBox>(glm::vec3(0.0f), &mState));
+			//pGameObjects.push_back(std::make_unique<VikingRoom>(glm::vec3(2.0f), &mState));
+			//pGameObjects.push_back(std::make_unique<TreeScene>(glm::vec3(0.0f), &mState));
+			//pGameObjects.push_back(std::make_unique<Preview>(glm::vec3(0.0f), &mState, std::filesystem::path(mState.GetAssetPath().string() + "\\Packages\\Tree001\\Tree01\\Tree1\\Tree1.obj"), std::vector<std::filesystem::path>{}));
+			pGameObjects.push_back(std::make_unique<Preview>(glm::vec3(0.0f), &mState, std::filesystem::path("E:\\Dynamik\\Game Repository\\InHouse\\DemoScene.obj"), std::vector<std::filesystem::path>{}));
 
 			std::chrono::time_point<std::chrono::high_resolution_clock> oldTimePoint = std::chrono::high_resolution_clock::now();
 
@@ -94,28 +91,8 @@ int main(int argc, char** argv)
 							std::cout << path << std::endl;
 					}
 
-					if (mState.pDisplay->GetKeyEvent(Flint::KeyCode::KEY_L).IsPressed())
-					{
-						if (!pTreeScene)
-							pTreeScene = std::make_unique<TreeScene>(glm::vec3(0.0f), &mState);
-					}
-
-					if (mState.pDisplay->GetKeyEvent(Flint::KeyCode::KEY_U).IsPressed())
-					{
-						if (pTreeScene)
-						{
-							auto pTree = pTreeScene.release();
-							delete pTree;
-						}
-					}
-
-					skyBox.OnUpdate(delta);
-					vikingRoom.OnUpdate(delta);
-					//treeScene.OnUpdate(delta);
-					//preview.OnUpdate(delta);
-
-					if (pTreeScene)
-						pTreeScene->OnUpdate(delta);
+					for (auto& pGameObject : pGameObjects)
+						pGameObject->OnUpdate(delta);
 				}
 
 				ImGui::Render();
@@ -125,6 +102,8 @@ int main(int argc, char** argv)
 				mState.SubmitFrames();
 				mState.pDisplay->Update();
 			}
+
+			int finish = true;
 		}
 	}
 	catch (std::exception& e)

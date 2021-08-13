@@ -90,6 +90,11 @@ namespace Flint
 			return isSupported == VK_TRUE;
 		}
 
+		RasterizationSamples VulkanDevice::GetSupportedRasterizationSamples() const
+		{
+			return RasterizationSamples(vSampleCount);
+		}
+
 		std::shared_ptr<CommandBufferList> VulkanDevice::CreatePrimaryCommandBufferList(UI32 bufferCount)
 		{
 			return std::make_shared<VulkanCommandBufferList>(shared_from_this(), bufferCount);

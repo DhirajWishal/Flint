@@ -511,6 +511,34 @@ namespace Flint
 				return flags;
 			}
 
+			VkSampleCountFlags GetSampleCount(RasterizationSamples samples)
+			{
+				VkSampleCountFlags flags = 0;
+
+				if ((samples & RasterizationSamples::BITS_1) == RasterizationSamples::BITS_1)
+					flags |= VkSampleCountFlagBits::VK_SAMPLE_COUNT_1_BIT;
+
+				if ((samples & RasterizationSamples::BITS_2) == RasterizationSamples::BITS_2)
+					flags |= VkSampleCountFlagBits::VK_SAMPLE_COUNT_2_BIT;
+
+				if ((samples & RasterizationSamples::BITS_4) == RasterizationSamples::BITS_4)
+					flags |= VkSampleCountFlagBits::VK_SAMPLE_COUNT_4_BIT;
+
+				if ((samples & RasterizationSamples::BITS_8) == RasterizationSamples::BITS_8)
+					flags |= VkSampleCountFlagBits::VK_SAMPLE_COUNT_8_BIT;
+
+				if ((samples & RasterizationSamples::BITS_16) == RasterizationSamples::BITS_16)
+					flags |= VkSampleCountFlagBits::VK_SAMPLE_COUNT_16_BIT;
+
+				if ((samples & RasterizationSamples::BITS_32) == RasterizationSamples::BITS_32)
+					flags |= VkSampleCountFlagBits::VK_SAMPLE_COUNT_32_BIT;
+
+				if ((samples & RasterizationSamples::BITS_64) == RasterizationSamples::BITS_64)
+					flags |= VkSampleCountFlagBits::VK_SAMPLE_COUNT_64_BIT;
+
+				return flags;
+			}
+
 			void AddResourceBindingsToVector(std::vector<VkDescriptorSetLayoutBinding>& bindings, const VulkanShader& shader)
 			{
 				std::vector<VkDescriptorSetLayoutBinding> tempBindings = shader.GetResourceBindings();
@@ -656,7 +684,8 @@ namespace Flint
 				_Helpers::AddResourcesToMap(resources, vVertexShader);
 			}
 
-			// Resolve fragment shader data.
+			// Check and resolve fragment shader data.
+			if (pFragmentShader)
 			{
 				VulkanShader& vFragmentShader = pFragmentShader->StaticCast<VulkanShader>();
 				_Helpers::AddPoolSizesToVector(vPoolSizes, vFragmentShader);
@@ -771,7 +800,7 @@ namespace Flint
 
 						VulkanImage& vImage = resource.second.second->StaticCast<VulkanImage>();
 						VkDescriptorImageInfo* pImageInfo = new VkDescriptorImageInfo;
-						pImageInfo->imageLayout = vImage.GetAttachmentLayout();
+						pImageInfo->imageLayout = vImage.GetImageLayout();
 						pImageInfo->imageView = vImage.GetImageView(0);
 						pImageInfo->sampler = resource.second.first->StaticCast<VulkanImageSampler>().GetSampler();
 
@@ -816,7 +845,9 @@ namespace Flint
 		{
 			// Resolve shader stages.
 			INSERT_INTO_VECTOR(vShaderStageCreateInfo, pVertexShader->StaticCast<VulkanShader>().GetShaderStageCreateInfo());
-			INSERT_INTO_VECTOR(vShaderStageCreateInfo, pFragmentShader->StaticCast<VulkanShader>().GetShaderStageCreateInfo());
+
+			if (pFragmentShader)
+				INSERT_INTO_VECTOR(vShaderStageCreateInfo, pFragmentShader->StaticCast<VulkanShader>().GetShaderStageCreateInfo());
 
 			if (pTessellationControlShader)
 				INSERT_INTO_VECTOR(vShaderStageCreateInfo, pTessellationControlShader->StaticCast<VulkanShader>().GetShaderStageCreateInfo());
@@ -924,7 +955,8 @@ namespace Flint
 			vMultisampleStateCreateInfo.minSampleShading = mSpecification.mMinSampleShading;
 			vMultisampleStateCreateInfo.pSampleMask;	// TODO
 			//vMultisampleStateCreateInfo.rasterizationSamples = VkSampleCountFlagBits::VK_SAMPLE_COUNT_1_BIT;
-			vMultisampleStateCreateInfo.rasterizationSamples = static_cast<VkSampleCountFlagBits>(pDevice->StaticCast<VulkanDevice>().GetSampleCount());
+			vMultisampleStateCreateInfo.rasterizationSamples = static_cast<VkSampleCountFlagBits>(_Helpers::GetSampleCount(mSpecification.mRasterizationSamples));
+			//vMultisampleStateCreateInfo.rasterizationSamples = static_cast<VkSampleCountFlagBits>(pDevice->StaticCast<VulkanDevice>().GetSampleCount());
 			vMultisampleStateCreateInfo.sampleShadingEnable = GET_VK_BOOL(mSpecification.bEnableSampleShading);
 
 			// Depth stencil state.
@@ -975,15 +1007,18 @@ namespace Flint
 			_Helpers::AddResourceBindingsToVector(vBindings, pVertexShader->StaticCast<VulkanShader>());
 			_Helpers::AddPushConstantRangesToVector(vConstantRanges, pVertexShader->StaticCast<VulkanShader>());
 
-			// Resolve fragment shader data.
-			_Helpers::AddResourceBindingsToVector(vBindings, pFragmentShader->StaticCast<VulkanShader>());
-			_Helpers::AddPushConstantRangesToVector(vConstantRanges, pFragmentShader->StaticCast<VulkanShader>());
+			// Check and resolve fragment shader data.
+			if (pFragmentShader)
+			{
+				_Helpers::AddResourceBindingsToVector(vBindings, pFragmentShader->StaticCast<VulkanShader>());
+				_Helpers::AddPushConstantRangesToVector(vConstantRanges, pFragmentShader->StaticCast<VulkanShader>());
+			}
 
 			// Check and resolve tessellation control shader data.
 			if (pTessellationControlShader)
 			{
 				_Helpers::AddResourceBindingsToVector(vBindings, pTessellationControlShader->StaticCast<VulkanShader>());
-				_Helpers::AddPushConstantRangesToVector(vConstantRanges, pFragmentShader->StaticCast<VulkanShader>());
+				_Helpers::AddPushConstantRangesToVector(vConstantRanges, pTessellationControlShader->StaticCast<VulkanShader>());
 			}
 
 			// Check and resolve tessellation evaluation shader data.

@@ -39,6 +39,21 @@ namespace Flint
 
 		virtual void Execute(const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget = nullptr) = 0;
 
+	public:
+		/**
+		 * Get the result images from the render target.
+		 * 
+		 * @return The result image pointers.
+		 */
+		const std::vector<std::shared_ptr<Image>> GetResults() const { return pResults; }
+
+		/**
+		 * Get a single result image from the render target.
+		 * 
+		 * @return The result image pointer.
+		 */
+		const std::shared_ptr<Image> GetResult(const UI64 index) const { return pResults[index]; }
+
 	protected:
 		std::vector<std::shared_ptr<Image>> pResults = {};
 

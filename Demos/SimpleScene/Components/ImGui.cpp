@@ -110,6 +110,7 @@ void ImGUI::PrepareGeometryStore()
 void ImGUI::PreparePipeline()
 {
 	Flint::GraphicsPipelineSpecification specification = {};
+	specification.mRasterizationSamples = pSceneState->pDevice->GetSupportedRasterizationSamples();
 	specification.mDynamicStateFlags = Flint::DynamicStateFlags::VIEWPORT | Flint::DynamicStateFlags::SCISSOR;
 	specification.mCullMode = Flint::CullMode::NONE;
 	specification.mColorBlendAttachments[0].mEnableBlend = true;

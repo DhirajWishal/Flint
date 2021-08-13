@@ -22,6 +22,45 @@ std::vector<VertexAttribute> GetDefaultVertexAttributes()
 	return attributes;
 }
 
+void ProcessNode(const aiNode* pNode, std::vector<Asset::DrawInstance>& drawInstances)
+{
+	if (!pNode)
+		return;
+
+	for (UI32 i = 0; i < pNode->mNumMeshes; i++)
+	{
+		auto worldPos = pNode->mParent->mTransformation *  pNode->mTransformation;
+
+		UI64 index = pNode->mMeshes[i];
+		auto& instance = drawInstances[index];
+
+		instance.mTransform[0][0] = worldPos.a1;
+		instance.mTransform[0][1] = worldPos.a2;
+		instance.mTransform[0][2] = worldPos.a3;
+		instance.mTransform[0][3] = worldPos.a4;
+
+		instance.mTransform[1][0] = worldPos.b1;
+		instance.mTransform[1][1] = worldPos.b2;
+		instance.mTransform[1][2] = worldPos.b3;
+		instance.mTransform[1][3] = worldPos.b4;
+
+		instance.mTransform[2][0] = worldPos.c1;
+		instance.mTransform[2][1] = worldPos.c2;
+		instance.mTransform[2][2] = worldPos.c3;
+		instance.mTransform[2][3] = worldPos.c4;
+
+		instance.mTransform[3][0] = worldPos.d1;
+		instance.mTransform[3][1] = worldPos.d2;
+		instance.mTransform[3][2] = worldPos.d3;
+		instance.mTransform[3][3] = worldPos.d4;
+		
+		//glm::normalize(drawInstances[index].mTransform);
+	}
+
+	for (UI32 i = 0; i < pNode->mNumChildren; i++)
+		ProcessNode(pNode->mChildren[i], drawInstances);
+}
+
 Asset ImportAsset(const std::shared_ptr<Flint::Device>& pDevice, const std::filesystem::path& path, const std::vector<VertexAttribute>& attributes)
 {
 	Assimp::Importer importer = {};
@@ -59,6 +98,11 @@ Asset ImportAsset(const std::shared_ptr<Flint::Device>& pDevice, const std::file
 		drawData.mIndexOffset += drawData.mIndexCount;
 
 		auto pMesh = pScene->mMeshes[i];
+		auto pMaterial = pScene->mMaterials[pMesh->mMaterialIndex];
+
+		std::vector<aiMaterialProperty*> pProperties(pMaterial->mNumProperties);
+		std::copy(pMaterial->mProperties, pMaterial->mProperties + pMaterial->mNumProperties, pProperties.begin());
+
 		drawData.mName = pMesh->mName.C_Str();
 		drawData.mVertexCount = pMesh->mNumVertices;
 
@@ -66,7 +110,7 @@ Asset ImportAsset(const std::shared_ptr<Flint::Device>& pDevice, const std::file
 		{
 			for (auto& attribute : attributes)
 			{
-				UI64 copyAmount = attribute.mAttributeSize;
+				UI64 copyAmount = attribute.mAttributeSize / sizeof(float);
 
 				switch (attribute.mType)
 				{
@@ -143,9 +187,9 @@ Asset ImportAsset(const std::shared_ptr<Flint::Device>& pDevice, const std::file
 					break;
 
 				case VertexAttributeType::UV_COORDINATES:
-					//if (pMesh->HasPositions())
-					//	std::copy(&pMesh->mVertices[j].x, (&pMesh->mVertices[j].x) + copyAmount, pDataStore);
-					//break;
+					if (pMesh->HasTextureCoords(0))
+						std::copy(&pMesh->mTextureCoords[0][j].x, (&pMesh->mTextureCoords[0][j].x) + copyAmount, pDataStore);
+					break;
 
 				case VertexAttributeType::TANGENT:
 					if (pMesh->HasTangentsAndBitangents())
@@ -209,6 +253,9 @@ Asset ImportAsset(const std::shared_ptr<Flint::Device>& pDevice, const std::file
 	indexArrays.clear();
 
 	asset.pIndexBuffer->UnmapMemory();
+
+	// Process the nodes.
+	//ProcessNode(pScene->mRootNode, asset.mDrawInstances);
 
 	return asset;
 }

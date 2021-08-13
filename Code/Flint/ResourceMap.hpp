@@ -34,9 +34,8 @@ namespace Flint
 		 *
 		 * @param name: The name of the resource to bind to.
 		 * @param pBuffer: The buffer pointer.
-		 * @return Boolean value stating if it was successfully bound or not.
 		 */
-		bool SetResource(const std::string& name, const std::shared_ptr<Buffer>& pBuffer);
+		void SetResource(const std::string& name, const std::shared_ptr<Buffer>& pBuffer);
 
 		/**
 		 * Get a buffer resource from the map.
@@ -59,9 +58,8 @@ namespace Flint
 		 * @param name: THe name of the resource to bind to.
 		 * @param pSampler: The image sampler pointer.
 		 * @param pImage: The image pointer.
-		 * @return Boolean value stating if it was successfully bound or not.
 		 */
-		bool SetResource(const std::string& name, const std::shared_ptr<ImageSampler>& pSampler, const std::shared_ptr<Image>& pImage);
+		void SetResource(const std::string& name, const std::shared_ptr<ImageSampler>& pSampler, const std::shared_ptr<Image>& pImage);
 
 		/**
 		 * Get an image resource from the map.

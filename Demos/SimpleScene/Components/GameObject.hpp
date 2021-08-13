@@ -47,7 +47,7 @@ protected:
 
 	SceneState* pSceneState = nullptr;
 
-	const float mRotationBias = 0.005f;
+	const float mRotationBias = 0.05f;
 
 	glm::vec4 mBoundingBoxColor = {};
 

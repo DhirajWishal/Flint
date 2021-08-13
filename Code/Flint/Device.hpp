@@ -125,7 +125,7 @@ namespace Flint
 		/**
 		 * Create a new off screen render target.
 		 * Off screen render targets does not render images to the display. Instead they are rendered to image objects and can be accessed after execution.
-		 * 
+		 *
 		 * @param extent: The extent of the frame buffer.
 		 * @param bufferCount: The number of frame buffers to use.
 		 * @param attachments: The frame buffer attachments to use. Default is OffScreenRenderTargetAttachment::COLOR_BUFFER | OffScreenRenderTargetAttachment::DEPTH_BUFFER.
@@ -310,6 +310,14 @@ namespace Flint
 		 * Wait for a queue finish its commands.
 		 */
 		virtual void WaitForQueue() = 0;
+
+	public:
+		/**
+		 * Get the supported rasterization samples.
+		 * 
+		 * @return The samples.
+		 */
+		virtual RasterizationSamples GetSupportedRasterizationSamples() const = 0;
 
 	protected:
 		/**
