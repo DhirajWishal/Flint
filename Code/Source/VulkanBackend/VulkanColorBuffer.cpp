@@ -65,26 +65,26 @@ namespace Flint
 		{
 			FLINT_SETUP_PROFILER();
 
-			VkImageCreateInfo vCI = {};
-			vCI.sType = VkStructureType::VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-			vCI.flags = 0;
-			vCI.pNext = VK_NULL_HANDLE;
-			vCI.imageType = VK_IMAGE_TYPE_2D;
-			vCI.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-			vCI.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-			vCI.tiling = VK_IMAGE_TILING_OPTIMAL;
-			vCI.usage = VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-			vCI.extent = { static_cast<UI32>(mExtent.mWidth), static_cast<UI32>(mExtent.mHeight), 1 };
-			vCI.samples = static_cast<VkSampleCountFlagBits>(vSampleCount);
-			vCI.format = vFormat;
-			vCI.arrayLayers = 1;
-			vCI.mipLevels = 1;
-			vCI.queueFamilyIndexCount = 0;
-			vCI.pQueueFamilyIndices = VK_NULL_HANDLE;
+			VkImageCreateInfo vCreateInfo = {};
+			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+			vCreateInfo.flags = 0;
+			vCreateInfo.pNext = VK_NULL_HANDLE;
+			vCreateInfo.imageType = VK_IMAGE_TYPE_2D;
+			vCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+			vCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+			vCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+			vCreateInfo.usage = VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+			vCreateInfo.extent = { static_cast<UI32>(mExtent.mWidth), static_cast<UI32>(mExtent.mHeight), 1 };
+			vCreateInfo.samples = static_cast<VkSampleCountFlagBits>(vSampleCount);
+			vCreateInfo.format = vFormat;
+			vCreateInfo.arrayLayers = 1;
+			vCreateInfo.mipLevels = 1;
+			vCreateInfo.queueFamilyIndexCount = 0;
+			vCreateInfo.pQueueFamilyIndices = VK_NULL_HANDLE;
 
 			vImages.resize(mBufferCount);
 			for (UI32 i = 0; i < mBufferCount; i++)
-				FLINT_VK_ASSERT(vkCreateImage(vDevice.GetLogicalDevice(), &vCI, nullptr, vImages.data() + i));
+				FLINT_VK_ASSERT(vkCreateImage(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, vImages.data() + i));
 
 			FLINT_VK_ASSERT(vDevice.CreateImageMemory(vImages, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &vBufferMemory));
 			vImageViews = std::move(Utilities::CreateImageViews(vImages, vFormat, vDevice, VK_IMAGE_ASPECT_COLOR_BIT));

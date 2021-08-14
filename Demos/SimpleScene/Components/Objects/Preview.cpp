@@ -11,6 +11,8 @@ Preview::Preview(glm::vec3 position, SceneState* pSceneState, std::filesystem::p
 	pDynamicStates = std::make_shared<Flint::DynamicStateContainer>();
 	pShadowDynamicStates = std::make_shared<Flint::DynamicStateContainer>();
 
+	pSceneState->mCamera.SetCameraRange(1.0f, 100.0f);
+
 	mModelMatrix = glm::rotate(mModelMatrix, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	pLightUniform = pSceneState->pDevice->CreateBuffer(Flint::BufferType::UNIFORM, sizeof(Light));
 	pShadowMapUniform = pSceneState->pDevice->CreateBuffer(Flint::BufferType::UNIFORM, sizeof(glm::mat4));
@@ -37,28 +39,38 @@ Preview::Preview(glm::vec3 position, SceneState* pSceneState, std::filesystem::p
 	std::shared_ptr<Flint::GraphicsPipeline> pPipeline = pSceneState->pGraphicsPipelines["ShadowMap"];
 
 	Flint::ImageSamplerSpecification samplerSpecification = {};
+	pTextureSampler = pSceneState->pDevice->CreateImageSampler(samplerSpecification);
+
 	samplerSpecification.mAddressModeU = Flint::AddressMode::CLAMP_TO_EDGE;
 	samplerSpecification.mAddressModeV = Flint::AddressMode::CLAMP_TO_EDGE;
 	samplerSpecification.mAddressModeW = Flint::AddressMode::CLAMP_TO_EDGE;
 	samplerSpecification.mBorderColor = Flint::BorderColor::FLOAT_OPAQUE_WHITE;
-	pTextureSampler = pSceneState->pDevice->CreateImageSampler(samplerSpecification);
+	pShadowSampler = pSceneState->pDevice->CreateImageSampler(samplerSpecification);
 
 	auto [vertexOffset, indexOffset] = pSceneState->pGeometryStores["ShadowMap"]->AddGeometry(asset.pVertexBuffer, asset.pIndexBuffer);
+	UI32 imageIndex = 0;
 	for (auto instance : asset.mDrawInstances)
 	{
 		if (instance.mName == "Plane")
 			continue;
 
+		//auto image = LoadImage(texture[imageIndex++]);
+		//auto pTexture = pSceneState->pDevice->CreateImage(Flint::ImageType::DIMENSIONS_2, Flint::ImageUsage::GRAPHICS, image.mExtent, Flint::PixelFormat::R8G8B8A8_SRGB, 1, 1, image.pImageData);
+		//pTextures.push_back(pTexture);
+		//DestroyImage(image);
+
 		pModelMatrixes.push_back(pSceneState->pDevice->CreateBuffer(Flint::BufferType::UNIFORM, sizeof(glm::mat4)));
 		std::shared_ptr<Flint::Buffer> pModelMatrix = pModelMatrixes.back();
-		SubmitToUniformBuffer(pModelMatrix, instance.mTransform);
+		//SubmitToUniformBuffer(pModelMatrix, instance.mTransform);
 		//SubmitToUniformBuffer(pModelMatrix, glm::mat4(1.0f));
+		SubmitToUniformBuffer(pModelMatrix, glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 0.5f)));
 
 		auto pResourceMap = pPipeline->CreateResourceMap();
 		pResourceMap->SetResource("ubo", pModelMatrix);
 		pResourceMap->SetResource("cam", pSceneState->mCamera.GetCameraBuffer());
 		pResourceMap->SetResource("light", pLightUniform);
-		pResourceMap->SetResource("shadowMap", pTextureSampler, pSceneState->pOffScreenRenderTargets["ShadowMap"]->GetResult(0));
+		pResourceMap->SetResource("shadowMap", pShadowSampler, pSceneState->pOffScreenRenderTargets["ShadowMap"]->GetResult(0));
+		//pResourceMap->SetResource("texSampler", pTextureSampler, pTexture);
 
 		mDrawIDs.push_back(pPipeline->AddDrawData(pResourceMap, pDynamicStates, vertexOffset + instance.mVertexOffset, instance.mVertexCount, indexOffset + instance.mIndexOffset, instance.mIndexCount));
 		mVertexCount += instance.mVertexCount;
@@ -66,6 +78,8 @@ Preview::Preview(glm::vec3 position, SceneState* pSceneState, std::filesystem::p
 
 		auto shadowResoutceMap = pSceneState->pGraphicsPipelines["DefaultOffScreenWireFrame"]->CreateResourceMap();
 		shadowResoutceMap->SetResource("light", pShadowMapUniform);
+		shadowResoutceMap->SetResource("ubo", pModelMatrix);
+		//shadowResoutceMap->SetResource("texSampler", pTextureSampler, pTexture);
 		pSceneState->pGraphicsPipelines["DefaultOffScreenWireFrame"]->AddDrawData(shadowResoutceMap, pShadowDynamicStates, vertexOffset + instance.mVertexOffset, instance.mVertexCount, indexOffset + instance.mIndexOffset, instance.mIndexCount);
 	}
 
@@ -108,7 +122,9 @@ Preview::~Preview()
 		pSceneState->pGraphicsPipelines["Default"]->RemoveDrawData(drawID);
 	mDrawIDs.clear();
 
+	pSceneState->pDevice->DestroyImageSampler(pShadowSampler);
 	pSceneState->pDevice->DestroyImageSampler(pTextureSampler);
+
 	if (pTexture)
 	{
 		pSceneState->pDevice->DestroyImage(pTexture);
@@ -119,11 +135,14 @@ Preview::~Preview()
 		pSceneState->pDevice->DestroyShader(pFragmentShader);
 
 		pSceneState->pDevice->DestroyShader(pShadowVertexShader);
-		//pSceneState->pDevice->DestroyShader(pShadowFragmentShader);
+		pSceneState->pDevice->DestroyShader(pShadowFragmentShader);
 	}
 
 	for (auto pModelMatrix : pModelMatrixes)
 		pSceneState->pDevice->DestroyBuffer(pModelMatrix);
+
+	for (auto pTexture : pTextures)
+		pSceneState->pDevice->DestroyImage(pTexture);
 
 	pSceneState->pDevice->DestroyBuffer(pLightUniform);
 	pSceneState->pDevice->DestroyBuffer(pShadowMapUniform);
@@ -168,10 +187,12 @@ void Preview::OnUpdate(UI64 delta)
 			mLight.mLightPosition += -mRotationBias * glm::vec3(0.0f, 0.0f, 1.0f);
 	}
 
-	glm::mat4 depthProjectionMatrix = glm::perspective(glm::radians(45.0f), 1.0f, 1.0f, 256.0f);
+	glm::mat4 depthProjectionMatrix = glm::perspective(glm::radians(45.0f), 1.0f, 1.0f, 96.0f);
 	glm::mat4 depthViewMatrix = glm::lookAt(mLight.mLightPosition, glm::vec3(0.0f), glm::vec3(0, 1, 0));
 	glm::mat4 depthModelMatrix = glm::mat4(1.0f);
 
+	//mLight.mLightPosition = pSceneState->mCamera.GetPosition();
+	//mLight.mLightSpace = pSceneState->mCamera.GetMatrix().mProjectionMatrix * pSceneState->mCamera.GetMatrix().mViewMatrix * glm::mat4(1.0f);
 	mLight.mLightSpace = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
 
 	// Submit data to uniforms.
@@ -217,7 +238,7 @@ void Preview::PrepareShadowMapPipeline()
 	if (!pSceneState->pGraphicsPipelines["DefaultOffScreenWireFrame"])
 	{
 		pShadowVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path(pSceneState->GetAssetPath().string() + "\\Shaders\\ShadowMapping\\shader.vert.spv"));
-		//pShadowFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path(pSceneState->GetAssetPath().string() + "\\Shaders\\ShadowMapping\\shader.frag.spv"));
+		pShadowFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path(pSceneState->GetAssetPath().string() + "\\Shaders\\ShadowMapping\\shader.frag.spv"));
 
 		specification.mRasterizationSamples = Flint::RasterizationSamples::BITS_1;
 		specification.mColorBlendAttachments.clear();

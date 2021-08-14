@@ -55,6 +55,7 @@ namespace Flint
 		public:
 			void VulkanBeginSecondaryCommandBuffer(UI32 bufferIndex, const VkCommandBufferInheritanceInfo* pInheritanceInfo);
 			void VulkanBeginNextSecondaryCommandBuffer(const VkCommandBufferInheritanceInfo* pInheritanceInfo);
+			void VulkanBindRenderTargetSecondary(const std::shared_ptr<OffScreenRenderTarget>& pRenderTarget, const VkFramebuffer vFrameBuffer);
 
 		private:
 			VkCommandPool vCommandPool = VK_NULL_HANDLE;

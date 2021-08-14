@@ -29,6 +29,9 @@ namespace Flint
 			virtual RenderTargetAttachmenType GetAttachmentType() const override final;
 			virtual VkFormat GetImageFormat() const override final;
 
+		public:
+			VkImageView CreateLayerBasedImageView(UI32 layerNumber) const;
+
 		private:
 			void CreateImage();
 			void CreateImageMemory();

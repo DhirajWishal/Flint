@@ -55,31 +55,31 @@ namespace Flint
 				}
 			}
 
-			std::vector<VkImageView> CreateImageViews(const std::vector<VkImage>& vImages, VkFormat imageFormat, VulkanDevice& device, VkImageAspectFlags aspectFlags, VkImageViewType viewType, UI32 layerCount, VkComponentMapping mapping)
+			std::vector<VkImageView> CreateImageViews(const std::vector<VkImage>& vImages, VkFormat imageFormat, VulkanDevice& device, VkImageAspectFlags aspectFlags, VkImageViewType viewType, UI32 layerCount, UI32 baseLayerIndex, VkComponentMapping mapping)
 			{
-				VkImageViewCreateInfo vCI = {};
-				vCI.sType = VkStructureType::VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-				vCI.flags = 0;
-				vCI.pNext = VK_NULL_HANDLE;
-				vCI.viewType = viewType;
-				vCI.format = imageFormat;
-				vCI.components = mapping;
+				VkImageViewCreateInfo vCreateInfo = {};
+				vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+				vCreateInfo.flags = 0;
+				vCreateInfo.pNext = VK_NULL_HANDLE;
+				vCreateInfo.viewType = viewType;
+				vCreateInfo.format = imageFormat;
+				vCreateInfo.components = mapping;
 
 				VkImageSubresourceRange vSR = {};
 				vSR.layerCount = layerCount;
-				vSR.baseArrayLayer = 0;
+				vSR.baseArrayLayer = baseLayerIndex;
 				vSR.levelCount = 1;
 				vSR.baseMipLevel = 0;
 				vSR.aspectMask = aspectFlags;
 
-				vCI.subresourceRange = vSR;
+				vCreateInfo.subresourceRange = vSR;
 
 				std::vector<VkImageView> vImageViews(vImages.size());
 				VkImageView* pArray = vImageViews.data();
 				for (auto itr = vImages.begin(); itr != vImages.end(); itr++)
 				{
-					vCI.image = *itr;
-					FLINT_VK_ASSERT(vkCreateImageView(device.GetLogicalDevice(), &vCI, nullptr, pArray));
+					vCreateInfo.image = *itr;
+					FLINT_VK_ASSERT(vkCreateImageView(device.GetLogicalDevice(), &vCreateInfo, nullptr, pArray));
 					pArray++;
 				}
 

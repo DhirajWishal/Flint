@@ -74,18 +74,18 @@ namespace Flint
 			vSD.pDepthStencilAttachment = vDepthAttachmentRef.data();
 			vSD.pResolveAttachments = vResolveAttachmentRef.data();
 
-			VkRenderPassCreateInfo vCI = {};
-			vCI.sType = VkStructureType::VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-			vCI.flags = 0;
-			vCI.pNext = VK_NULL_HANDLE;
-			vCI.attachmentCount = static_cast<UI32>(vDescriptions.size());
-			vCI.pAttachments = vDescriptions.data();
-			vCI.subpassCount = 1;
-			vCI.pSubpasses = &vSD;
-			vCI.dependencyCount = static_cast<UI32>(vSubpassDependencies.size());
-			vCI.pDependencies = vSubpassDependencies.data();
+			VkRenderPassCreateInfo vCreateInfo = {};
+			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+			vCreateInfo.flags = 0;
+			vCreateInfo.pNext = VK_NULL_HANDLE;
+			vCreateInfo.attachmentCount = static_cast<UI32>(vDescriptions.size());
+			vCreateInfo.pAttachments = vDescriptions.data();
+			vCreateInfo.subpassCount = 1;
+			vCreateInfo.pSubpasses = &vSD;
+			vCreateInfo.dependencyCount = static_cast<UI32>(vSubpassDependencies.size());
+			vCreateInfo.pDependencies = vSubpassDependencies.data();
 
-			FLINT_VK_ASSERT(vkCreateRenderPass(vDevice.GetLogicalDevice(), &vCI, nullptr, &vRenderPass));
+			FLINT_VK_ASSERT(vkCreateRenderPass(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vRenderPass));
 		}
 
 		void VulkanRenderTarget::DestroyRenderPass()
@@ -97,15 +97,15 @@ namespace Flint
 		{
 			FLINT_SETUP_PROFILER();
 
-			VkFramebufferCreateInfo vCI = {};
-			vCI.sType = VkStructureType::VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-			vCI.flags = 0;
-			vCI.pNext = VK_NULL_HANDLE;
-			vCI.layers = 1;
-			vCI.renderPass = vRenderPass;
-			vCI.width = static_cast<UI32>(extent.mWidth);
-			vCI.height = static_cast<UI32>(extent.mHeight);
-			vCI.attachmentCount = static_cast<UI32>(pAttachments.size());
+			VkFramebufferCreateInfo vCreateInfo = {};
+			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+			vCreateInfo.flags = 0;
+			vCreateInfo.pNext = VK_NULL_HANDLE;
+			vCreateInfo.layers = 1;
+			vCreateInfo.renderPass = vRenderPass;
+			vCreateInfo.width = static_cast<UI32>(extent.mWidth);
+			vCreateInfo.height = static_cast<UI32>(extent.mHeight);
+			vCreateInfo.attachmentCount = static_cast<UI32>(pAttachments.size());
 
 			vFrameBuffers.resize(bufferCount);
 			for (UI32 i = 0; i < bufferCount; i++)
@@ -115,8 +115,8 @@ namespace Flint
 				for (auto itr = pAttachments.begin(); itr != pAttachments.end(); itr++)
 					INSERT_INTO_VECTOR(vAttachments, (*itr)->GetImageView(i));
 
-				vCI.pAttachments = vAttachments.data();
-				FLINT_VK_ASSERT(vkCreateFramebuffer(vDevice.GetLogicalDevice(), &vCI, nullptr, &vFrameBuffers[i]));
+				vCreateInfo.pAttachments = vAttachments.data();
+				FLINT_VK_ASSERT(vkCreateFramebuffer(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vFrameBuffers[i]));
 			}
 		}
 
@@ -164,6 +164,25 @@ namespace Flint
 
 			for (auto& itr : vInFlightFences)
 				vkDestroyFence(vDevice.GetLogicalDevice(), itr, nullptr);
+		}
+		
+		VkFramebuffer VulkanRenderTarget::CreateVulkanFrameBuffer(const FBox2D& extent, const std::vector<VkImageView>& vImageViews)
+		{
+			VkFramebufferCreateInfo vCreateInfo = {};
+			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+			vCreateInfo.flags = 0;
+			vCreateInfo.pNext = VK_NULL_HANDLE;
+			vCreateInfo.layers = 1;
+			vCreateInfo.renderPass = vRenderPass;
+			vCreateInfo.width = static_cast<UI32>(extent.mWidth);
+			vCreateInfo.height = static_cast<UI32>(extent.mHeight);
+			vCreateInfo.attachmentCount = static_cast<UI32>(vImageViews.size());
+			vCreateInfo.pAttachments = vImageViews.data();
+
+			VkFramebuffer vFrameBuffer = VK_NULL_HANDLE;
+			FLINT_VK_ASSERT(vkCreateFramebuffer(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vFrameBuffer));
+
+			return vFrameBuffer;
 		}
 	}
 }

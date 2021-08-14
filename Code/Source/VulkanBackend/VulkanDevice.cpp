@@ -115,9 +115,9 @@ namespace Flint
 			return std::make_shared<VulkanScreenBoundRenderTarget>(shared_from_this(), pDisplay, extent, bufferCount, threadCount);
 		}
 
-		std::shared_ptr<OffScreenRenderTarget> VulkanDevice::CreateOffScreenRenderTarget(const FBox2D& extent, const UI32 bufferCount, OffScreenRenderTargetAttachment attachments, UI32 threadCount)
+		std::shared_ptr<OffScreenRenderTarget> VulkanDevice::CreateOffScreenRenderTarget(const FBox2D& extent, const UI32 bufferCount, const std::vector<OffScreenResultSpecification>& specifications, UI32 threadCount)
 		{
-			return std::make_shared<VulkanOffScreenRenderTarget>(shared_from_this(), extent, bufferCount, attachments, threadCount);
+			return std::make_shared<VulkanOffScreenRenderTarget>(shared_from_this(), extent, bufferCount, specifications, threadCount);
 		}
 
 		void VulkanDevice::DestroyRenderTarget(const std::shared_ptr<RenderTarget>& pRenderTarget)

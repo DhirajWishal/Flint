@@ -154,17 +154,17 @@ namespace Flint
 		{
 			FLINT_SETUP_PROFILER();
 
-			VkBufferCreateInfo vCI = {};
-			vCI.sType = VkStructureType::VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-			vCI.flags = 0;
-			vCI.pNext = VK_NULL_HANDLE;
-			vCI.queueFamilyIndexCount = 0;
-			vCI.pQueueFamilyIndices = VK_NULL_HANDLE;
-			vCI.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-			vCI.size = static_cast<UI32>(mSize);
-			vCI.usage = vBufferUsage;
+			VkBufferCreateInfo vCreateInfo = {};
+			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+			vCreateInfo.flags = 0;
+			vCreateInfo.pNext = VK_NULL_HANDLE;
+			vCreateInfo.queueFamilyIndexCount = 0;
+			vCreateInfo.pQueueFamilyIndices = VK_NULL_HANDLE;
+			vCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+			vCreateInfo.size = static_cast<UI32>(mSize);
+			vCreateInfo.usage = vBufferUsage;
 
-			FLINT_VK_ASSERT(vkCreateBuffer(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), &vCI, nullptr, &vBuffer));
+			FLINT_VK_ASSERT(vkCreateBuffer(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), &vCreateInfo, nullptr, &vBuffer));
 		}
 
 		void VulkanBuffer::CreateBufferMemory()

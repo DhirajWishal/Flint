@@ -27,6 +27,9 @@ namespace Flint
 			void DestroySyncObjects();
 
 		public:
+			VkFramebuffer CreateVulkanFrameBuffer(const FBox2D& extent, const std::vector<VkImageView>& vImageViews);
+
+		public:
 			std::vector<VkSemaphore> vImageAvailables;
 			std::vector<VkSemaphore> vRenderFinishes;
 			std::vector<VkFence> vInFlightFences;

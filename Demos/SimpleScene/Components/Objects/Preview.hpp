@@ -24,8 +24,12 @@ private:
 	void PrepareShadowMapPipeline();
 
 private:
-	std::shared_ptr<Flint::Image> pTexture = nullptr;
+	std::shared_ptr<Flint::ImageSampler> pShadowSampler = nullptr;
 	std::shared_ptr<Flint::ImageSampler> pTextureSampler = nullptr;
+	std::shared_ptr<Flint::Image> pTexture = nullptr;
+
+	std::vector<std::shared_ptr<Flint::ImageSampler>> pTextureSamplers;
+	std::vector<std::shared_ptr<Flint::Image>> pTextures;
 
 	std::shared_ptr<Flint::DynamicStateContainer> pDynamicStates = nullptr;
 	std::shared_ptr<Flint::DynamicStateContainer> pShadowDynamicStates = nullptr;

@@ -383,5 +383,24 @@ namespace Flint
 
 			VulkanBeginSecondaryCommandBuffer(mCurrentBufferIndex, pInheritanceInfo);
 		}
+		
+		void VulkanCommandBufferList::VulkanBindRenderTargetSecondary(const std::shared_ptr<OffScreenRenderTarget>& pRenderTarget, const VkFramebuffer vFrameBuffer)
+		{
+			FLINT_SETUP_PROFILER();
+
+			VulkanOffScreenRenderTarget& vRenderTarget = pRenderTarget->StaticCast<VulkanOffScreenRenderTarget>();
+
+			VkRenderPassBeginInfo vBeginInfo = {};
+			vBeginInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+			vBeginInfo.pNext = VK_NULL_HANDLE;
+			vBeginInfo.renderPass = vRenderTarget.GetRenderPass();
+			vBeginInfo.framebuffer = vFrameBuffer;
+			vBeginInfo.clearValueCount = vRenderTarget.GetClearScreenValueCount();
+			vBeginInfo.pClearValues = vRenderTarget.GetClearScreenValues();
+			vBeginInfo.renderArea.extent.width = vRenderTarget.GetExtent().mWidth;
+			vBeginInfo.renderArea.extent.height = vRenderTarget.GetExtent().mHeight;
+
+			vkCmdBeginRenderPass(GetCurrentCommandBuffer(), &vBeginInfo, VkSubpassContents::VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+		}
 	}
 }

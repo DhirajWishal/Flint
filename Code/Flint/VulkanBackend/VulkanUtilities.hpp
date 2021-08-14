@@ -17,7 +17,7 @@ namespace Flint
 		namespace Utilities
 		{
 			void CheckResult(VkResult result);
-			std::vector<VkImageView> CreateImageViews(const std::vector<VkImage>& vImages, VkFormat imageFormat, VulkanDevice& device, VkImageAspectFlags aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT, VkImageViewType viewType = VkImageViewType::VK_IMAGE_VIEW_TYPE_2D, UI32 layerCount = 1, VkComponentMapping mapping = VkComponentMapping());
+			std::vector<VkImageView> CreateImageViews(const std::vector<VkImage>& vImages, VkFormat imageFormat, VulkanDevice& device, VkImageAspectFlags aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT, VkImageViewType viewType = VkImageViewType::VK_IMAGE_VIEW_TYPE_2D, UI32 layerCount = 1, UI32 baseLayerIndex = 0, VkComponentMapping mapping = VkComponentMapping());
 			VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features, VkPhysicalDevice vPhysicalDevice);
 			bool HasStencilComponent(VkFormat vFormat);
 			VkFormat FindDepthFormat(VkPhysicalDevice vPhysicalDevice);

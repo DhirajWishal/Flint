@@ -81,17 +81,17 @@ namespace Flint
 
 			vFormat = surfaceFormat.format;
 
-			VkSwapchainCreateInfoKHR vCI = {};
-			vCI.sType = VkStructureType::VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-			vCI.flags = 0;
-			vCI.pNext = VK_NULL_HANDLE;
-			vCI.surface = vDisplay.GetSurface();
-			vCI.minImageCount = mBufferCount;
-			vCI.imageFormat = vFormat;
-			vCI.imageColorSpace = surfaceFormat.colorSpace;
-			vCI.imageExtent = { static_cast<UI32>(mExtent.mWidth), static_cast<UI32>(mExtent.mHeight) };
-			vCI.imageArrayLayers = 1;
-			vCI.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+			VkSwapchainCreateInfoKHR vCreateInfo = {};
+			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+			vCreateInfo.flags = 0;
+			vCreateInfo.pNext = VK_NULL_HANDLE;
+			vCreateInfo.surface = vDisplay.GetSurface();
+			vCreateInfo.minImageCount = mBufferCount;
+			vCreateInfo.imageFormat = vFormat;
+			vCreateInfo.imageColorSpace = surfaceFormat.colorSpace;
+			vCreateInfo.imageExtent = { static_cast<UI32>(mExtent.mWidth), static_cast<UI32>(mExtent.mHeight) };
+			vCreateInfo.imageArrayLayers = 1;
+			vCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
 			UI32 queueFamilyindices[2] = {
 				vDevice.GetQueue().mGraphicsFamily.value(),
@@ -100,38 +100,38 @@ namespace Flint
 
 			if (vDevice.GetQueue().mGraphicsFamily != vDevice.GetQueue().mTransferFamily)
 			{
-				vCI.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
-				vCI.queueFamilyIndexCount = 2;
-				vCI.pQueueFamilyIndices = queueFamilyindices;
+				vCreateInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
+				vCreateInfo.queueFamilyIndexCount = 2;
+				vCreateInfo.pQueueFamilyIndices = queueFamilyindices;
 			}
 			else
 			{
-				vCI.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-				vCI.queueFamilyIndexCount = 0;
-				vCI.pQueueFamilyIndices = nullptr;
+				vCreateInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+				vCreateInfo.queueFamilyIndexCount = 0;
+				vCreateInfo.pQueueFamilyIndices = nullptr;
 			}
 
-			vCI.preTransform = vSupport.mCapabilities.currentTransform;
-			vCI.compositeAlpha = surfaceComposite;
-			vCI.presentMode = presentMode;
-			vCI.clipped = VK_TRUE;
-			vCI.oldSwapchain = vSwapChain;
+			vCreateInfo.preTransform = vSupport.mCapabilities.currentTransform;
+			vCreateInfo.compositeAlpha = surfaceComposite;
+			vCreateInfo.presentMode = presentMode;
+			vCreateInfo.clipped = VK_TRUE;
+			vCreateInfo.oldSwapchain = vSwapChain;
 
 			if (!vDevice.IsDisplayCompatible(vDisplay.shared_from_this()))
 				FLINT_THROW_RUNTIME_ERROR("Submitted device and display are incompatible!");
 
 			VkSwapchainKHR vNewSwapChain = VK_NULL_HANDLE;
-			FLINT_VK_ASSERT(vkCreateSwapchainKHR(vDevice.GetLogicalDevice(), &vCI, nullptr, &vNewSwapChain));
+			FLINT_VK_ASSERT(vkCreateSwapchainKHR(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vNewSwapChain));
 
 			if (vSwapChain != VK_NULL_HANDLE) Terminate();
 			vSwapChain = vNewSwapChain;
 
-			vCI.minImageCount = 0;
-			FLINT_VK_ASSERT(vkGetSwapchainImagesKHR(vDevice.GetLogicalDevice(), vSwapChain, &vCI.minImageCount, nullptr));
-			vImages.resize(vCI.minImageCount);
-			FLINT_VK_ASSERT(vkGetSwapchainImagesKHR(vDevice.GetLogicalDevice(), vSwapChain, &vCI.minImageCount, vImages.data()));
+			vCreateInfo.minImageCount = 0;
+			FLINT_VK_ASSERT(vkGetSwapchainImagesKHR(vDevice.GetLogicalDevice(), vSwapChain, &vCreateInfo.minImageCount, nullptr));
+			vImages.resize(vCreateInfo.minImageCount);
+			FLINT_VK_ASSERT(vkGetSwapchainImagesKHR(vDevice.GetLogicalDevice(), vSwapChain, &vCreateInfo.minImageCount, vImages.data()));
 
-			vImageViews = std::move(Utilities::CreateImageViews(vImages, vCI.imageFormat, vDevice));
+			vImageViews = std::move(Utilities::CreateImageViews(vImages, vCreateInfo.imageFormat, vDevice));
 		}
 	}
 }

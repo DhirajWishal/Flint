@@ -24,7 +24,7 @@ namespace Flint
 			virtual void DestroyCommandBufferList(const std::shared_ptr<CommandBufferList>& pCommandBufferList) override final;
 
 			virtual std::shared_ptr<ScreenBoundRenderTarget> CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, UI32 threadCount = 0) override final;
-			virtual std::shared_ptr<OffScreenRenderTarget> CreateOffScreenRenderTarget(const FBox2D& extent, const UI32 bufferCount, OffScreenRenderTargetAttachment attachments = OffScreenRenderTargetAttachment::COLOR_BUFFER | OffScreenRenderTargetAttachment::DEPTH_BUFFER, UI32 threadCount = 0) override final;
+			virtual std::shared_ptr<OffScreenRenderTarget> CreateOffScreenRenderTarget(const FBox2D& extent, const UI32 bufferCount, const std::vector<OffScreenResultSpecification>& specifications = { OffScreenResultSpecification(OffScreenRenderTargetAttachment::COLOR_BUFFER), OffScreenResultSpecification(OffScreenRenderTargetAttachment::DEPTH_BUFFER) }, UI32 threadCount = 0) override final;
 			virtual void DestroyRenderTarget(const std::shared_ptr<RenderTarget>& pRenderTarget) override final;
 
 			virtual std::shared_ptr<Buffer> CreateBuffer(BufferType type, UI64 size, BufferMemoryProfile profile = BufferMemoryProfile::AUTOMATIC) override final;

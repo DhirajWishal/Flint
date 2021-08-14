@@ -300,6 +300,18 @@ namespace Flint
 			return _Helpers::GetImageFormat(mFormat);
 		}
 
+		VkImageView VulkanImage::CreateLayerBasedImageView(UI32 layerNumber) const
+		{
+			VkImageView vImageView = VK_NULL_HANDLE;
+
+			if (mType == ImageType::CUBEMAP || mType == ImageType::CUBEMAP_ARRAY)
+				vImageView = Utilities::CreateImageViews({ vImage }, _Helpers::GetImageFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), _Helpers::GetImageAspectFlags(mUsage), _Helpers::GetImageViewType(mType), 1, layerNumber, { VK_COMPONENT_SWIZZLE_R, VK_COMPONENT_SWIZZLE_G, VK_COMPONENT_SWIZZLE_B, VK_COMPONENT_SWIZZLE_A })[0];
+			else
+				vImageView = Utilities::CreateImageViews({ vImage }, _Helpers::GetImageFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), _Helpers::GetImageAspectFlags(mUsage), _Helpers::GetImageViewType(mType), 1, layerNumber)[0];
+			
+			return vImageView;
+		}
+
 		void VulkanImage::CreateImage()
 		{
 			FLINT_SETUP_PROFILER();
@@ -343,7 +355,7 @@ namespace Flint
 			FLINT_SETUP_PROFILER();
 
 			if (mType == ImageType::CUBEMAP || mType == ImageType::CUBEMAP_ARRAY)
-				vImageView = Utilities::CreateImageViews({ vImage }, _Helpers::GetImageFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), _Helpers::GetImageAspectFlags(mUsage), _Helpers::GetImageViewType(mType), mLayerCount, { VK_COMPONENT_SWIZZLE_R, VK_COMPONENT_SWIZZLE_G, VK_COMPONENT_SWIZZLE_B, VK_COMPONENT_SWIZZLE_A })[0];
+				vImageView = Utilities::CreateImageViews({ vImage }, _Helpers::GetImageFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), _Helpers::GetImageAspectFlags(mUsage), _Helpers::GetImageViewType(mType), mLayerCount, 0, { VK_COMPONENT_SWIZZLE_R, VK_COMPONENT_SWIZZLE_G, VK_COMPONENT_SWIZZLE_B, VK_COMPONENT_SWIZZLE_A })[0];
 			else
 				vImageView = Utilities::CreateImageViews({ vImage }, _Helpers::GetImageFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), _Helpers::GetImageAspectFlags(mUsage), _Helpers::GetImageViewType(mType), mLayerCount)[0];
 		}

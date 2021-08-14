@@ -103,6 +103,15 @@ Asset ImportAsset(const std::shared_ptr<Flint::Device>& pDevice, const std::file
 		std::vector<aiMaterialProperty*> pProperties(pMaterial->mNumProperties);
 		std::copy(pMaterial->mProperties, pMaterial->mProperties + pMaterial->mNumProperties, pProperties.begin());
 
+		UI32 countDiff = pMaterial->GetTextureCount(aiTextureType_DIFFUSE);
+		UI32 countAmb = pMaterial->GetTextureCount(aiTextureType_AMBIENT);
+		UI32 countSpec = pMaterial->GetTextureCount(aiTextureType_SPECULAR);
+		UI32 countEmi = pMaterial->GetTextureCount(aiTextureType_EMISSIVE);
+		UI32 countTrans = pMaterial->GetTextureCount(aiTextureType_TRANSMISSION);
+
+		aiString string;
+		pMaterial->Get(pProperties[0]->mKey.data, pProperties[0]->mType, pProperties[0]->mIndex, string);
+
 		drawData.mName = pMesh->mName.C_Str();
 		drawData.mVertexCount = pMesh->mNumVertices;
 
@@ -255,7 +264,7 @@ Asset ImportAsset(const std::shared_ptr<Flint::Device>& pDevice, const std::file
 	asset.pIndexBuffer->UnmapMemory();
 
 	// Process the nodes.
-	//ProcessNode(pScene->mRootNode, asset.mDrawInstances);
+	ProcessNode(pScene->mRootNode, asset.mDrawInstances);
 
 	return asset;
 }

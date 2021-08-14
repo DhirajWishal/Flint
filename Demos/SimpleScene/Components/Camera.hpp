@@ -84,6 +84,11 @@ public:
 	 */
 	void SetAspectRatio(Flint::FBox2D extent);
 
+public:
+	const glm::vec3 GetPosition() const { return cameraPosition; }
+
+	void SetCameraRange(float near, float far) { cameraNear = near, cameraFar = far; }
+
 private:
 	glm::mat4 viewMatrix = glm::mat4(1);
 	glm::mat4 projectionMatrix = glm::mat4(1);

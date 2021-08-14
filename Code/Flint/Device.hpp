@@ -128,10 +128,10 @@ namespace Flint
 		 *
 		 * @param extent: The extent of the frame buffer.
 		 * @param bufferCount: The number of frame buffers to use.
-		 * @param attachments: The frame buffer attachments to use. Default is OffScreenRenderTargetAttachment::COLOR_BUFFER | OffScreenRenderTargetAttachment::DEPTH_BUFFER.
+		 * @param specifications: The frame buffer attachments to use. Default is color and depth buffers.
 		 * @param threadCount: The number of threads to use. Default is 0.
 		 */
-		virtual std::shared_ptr<OffScreenRenderTarget> CreateOffScreenRenderTarget(const FBox2D& extent, const UI32 bufferCount, OffScreenRenderTargetAttachment attachments = OffScreenRenderTargetAttachment::COLOR_BUFFER | OffScreenRenderTargetAttachment::DEPTH_BUFFER, UI32 threadCount = 0) = 0;
+		virtual std::shared_ptr<OffScreenRenderTarget> CreateOffScreenRenderTarget(const FBox2D& extent, const UI32 bufferCount, const std::vector<OffScreenResultSpecification>& specifications = { OffScreenResultSpecification(OffScreenRenderTargetAttachment::COLOR_BUFFER), OffScreenResultSpecification(OffScreenRenderTargetAttachment::DEPTH_BUFFER) }, UI32 threadCount = 0) = 0;
 
 		/**
 		 * Destroy a created render target.

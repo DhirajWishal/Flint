@@ -54,25 +54,60 @@ namespace Flint
 			}
 		}
 
-		VulkanOffScreenRenderTarget::VulkanOffScreenRenderTarget(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, OffScreenRenderTargetAttachment attachments, UI32 threadCount)
-			: OffScreenRenderTarget(pDevice, extent, bufferCount, pDevice->CreatePrimaryCommandBufferList(bufferCount), attachments, threadCount), vRenderTarget(pDevice->StaticCast<VulkanDevice>())
+		VulkanOffScreenRenderTarget::VulkanOffScreenRenderTarget(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, const std::vector<OffScreenResultSpecification>& specifications, UI32 threadCount)
+			: OffScreenRenderTarget(pDevice, extent, bufferCount, pDevice->CreatePrimaryCommandBufferList(bufferCount), specifications, threadCount), vRenderTarget(pDevice->StaticCast<VulkanDevice>())
 		{
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 			pSecondaryCommandBuffer = std::make_unique<VulkanCommandBufferList>(pDevice, bufferCount, pCommandBufferList);
+			vFrameClusters.resize(bufferCount);
+
+			UI32 imagesPerCluster = 0;
+			std::vector<std::vector<VkImageView>> vImageViewClusters;
 
 			std::vector<VulkanRenderTargetAttachmentInterface*> pAttachments;
-			if ((mAttachments & OffScreenRenderTargetAttachment::COLOR_BUFFER) == OffScreenRenderTargetAttachment::COLOR_BUFFER)
+			for (const auto specification : mResultSpecification)
 			{
-				// TODO
-				//pColorBuffer = std::make_unique<VulkanColorBuffer>(vDevice, extent, bufferCount, pSwapChain->GetFormat());
-				//pAttachments.push_back(&pResults.back()->StaticCast<VulkanImage>());
-			}
+				if (specification.mAttachment == OffScreenRenderTargetAttachment::COLOR_BUFFER)
+				{
+					// TODO
+					//pColorBuffer = std::make_unique<VulkanColorBuffer>(vDevice, extent, bufferCount, pSwapChain->GetFormat());
+					//pAttachments.push_back(&pResults.back()->StaticCast<VulkanImage>());
+					//
+					//if (specification.mLayerMode == OffScreenResultLayerMode::PER_FRAME)
+					//{
+					//	std::vector<VkImageView> vImageViews;
+					//
+					//	if (specification.mLayerCount > 1)
+					//		for (UI32 i = 0; i < specification.mLayerCount; i++)
+					//			vImageViews.push_back(pDepthImage->StaticCast<VulkanImage>().CreateLayerBasedImageView(imagesPerCluster));
+					//
+					//	vImageViewsToDestroy.insert(vImageViewsToDestroy.end(), vImageViews.begin(), vImageViews.end());
+					//}
+				}
+				else if (specification.mAttachment == OffScreenRenderTargetAttachment::DEPTH_BUFFER)
+				{
+					std::shared_ptr<Image> pDepthImage = nullptr;
 
-			if ((mAttachments & OffScreenRenderTargetAttachment::DEPTH_BUFFER) == OffScreenRenderTargetAttachment::DEPTH_BUFFER)
-			{
-				pResults.push_back(pDevice->CreateImage(ImageType::DIMENSIONS_2, ImageUsage::DEPTH, FBox3D(mExtent.mWidth, mExtent.mHeight, 1), PixelFormat::D16_SINT, 1, 1, nullptr));
-				//pResults.push_back(pDevice->CreateImage(ImageType::DIMENSIONS_2, ImageUsage::DEPTH, FBox3D(mExtent.mWidth, mExtent.mHeight, 1), _Helpers::GetPixelFormat(Utilities::FindDepthFormat(vDevice.GetPhysicalDevice())), 1, 1, nullptr));
-				pAttachments.push_back(&pResults.back()->StaticCast<VulkanImage>());
+					if (specification.mPixelFormat == PixelFormat::UNDEFINED || (specification.mPixelFormat != PixelFormat::D16_SINT && specification.mPixelFormat != PixelFormat::D32_SFLOAT))
+						pDepthImage = pDevice->CreateImage(ImageType::DIMENSIONS_2, ImageUsage::DEPTH, FBox3D(mExtent.mWidth, mExtent.mHeight, 1), _Helpers::GetPixelFormat(Utilities::FindDepthFormat(vDevice.GetPhysicalDevice())), 1, 1, nullptr);
+					else
+						pDepthImage = pDevice->CreateImage(ImageType::DIMENSIONS_2, ImageUsage::DEPTH, FBox3D(mExtent.mWidth, mExtent.mHeight, 1), specification.mPixelFormat, specification.mLayerCount, 1, nullptr);
+
+					pResults.push_back(pDepthImage);
+					pAttachments.push_back(&pDepthImage->StaticCast<VulkanImage>());
+
+					if (specification.mLayerMode == OffScreenResultLayerMode::PER_FRAME)
+					{
+						std::vector<VkImageView> vImageViews;
+
+						if (specification.mLayerCount > 1)
+							for (UI32 i = 0; i < specification.mLayerCount; i++)
+								vImageViews.push_back(pDepthImage->StaticCast<VulkanImage>().CreateLayerBasedImageView(i));
+
+						vImageViewClusters.push_back(std::move(vImageViews));
+						imagesPerCluster = specification.mLayerCount;
+					}
+				}
 			}
 
 			std::vector<VkSubpassDependency> vDependencies{ 2 };
@@ -94,6 +129,38 @@ namespace Flint
 			vDependencies[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
 
 			vRenderTarget.CreateRenderPass(pAttachments, VK_PIPELINE_BIND_POINT_GRAPHICS, vDependencies);
+
+			if (vImageViewClusters.empty())
+			{
+				vRenderTarget.CreateFrameBuffer(pAttachments, extent, bufferCount);
+
+				for (UI64 index = 0; index < vRenderTarget.vFrameBuffers.size(); index++)
+					vFrameClusters[index].push_back(vRenderTarget.vFrameBuffers[index]);
+
+				vRenderTarget.vFrameBuffers.clear();
+			}
+			else
+			{
+				for (UI64 frameIndex = 0; frameIndex < bufferCount; frameIndex++)
+				{
+					std::vector<VkFramebuffer> vFrameBuffers = {};
+					for (UI64 imageIndex = 0; imageIndex < imagesPerCluster; imageIndex++)
+					{
+						std::vector<VkImageView> vImageViews;
+						for (const auto cluster : vImageViewClusters)
+							vImageViews.push_back(cluster[imageIndex]);
+
+						vFrameBuffers.push_back(vRenderTarget.CreateVulkanFrameBuffer(extent, std::move(vImageViews)));
+					}
+
+					vFrameClusters.push_back(vFrameBuffers);
+				}
+
+				for (auto& cluster : vImageViewClusters)
+					vImageViewsToDestroy.insert(vImageViewsToDestroy.end(), cluster.begin(), cluster.end());
+				vImageViewClusters.clear();
+			}
+
 			vRenderTarget.CreateFrameBuffer(pAttachments, extent, bufferCount);
 			vRenderTarget.CreateSyncObjects(bufferCount);
 
@@ -116,69 +183,35 @@ namespace Flint
 			if (pScreenBoundRenderTarget)
 			{
 				VulkanScreenBoundRenderTarget& vScreenBoundRenderTarget = pScreenBoundRenderTarget->StaticCast<VulkanScreenBoundRenderTarget>();
-				mFrameIndex = vScreenBoundRenderTarget.GetFrameIndex();
 
 				// Begin the command buffer.
 				auto& vScreenBoundCommandBuffer = pScreenBoundRenderTarget->GetCommandBufferList()->StaticCast<VulkanCommandBufferList>();
-				vScreenBoundCommandBuffer.BindRenderTargetSecondary(pThisRenderTarget);
+				mFrameIndex = vScreenBoundRenderTarget.GetFrameIndex();
 
-				vInheritInfo.renderPass = vRenderTarget.vRenderPass;
-				vInheritInfo.framebuffer = vRenderTarget.vFrameBuffers[mFrameIndex];	// TODO
-
-				// Begin secondary command buffers.
-				auto& vCommandBufferList = *pSecondaryCommandBuffer;
-				vCommandBufferList.VulkanBeginSecondaryCommandBuffer(mFrameIndex, &vInheritInfo);
-
-				// Bind the volatile draw instances.
-				for (const auto store : mVolatileDrawInstanceOrder)
+				// Iterate through frame buffers in a cluster.
+				for (UI32 index = 0; index < vFrameClusters[mFrameIndex].size(); index++)
 				{
-					FLINT_SETUP_PROFILER();
+					vInheritInfo.renderPass = vRenderTarget.vRenderPass;
+					vInheritInfo.framebuffer = GetFrameBuffer(index);
 
-					if (!store->GetVertexBuffer() || !store->GetIndexBuffer())
-						continue;
+					vScreenBoundCommandBuffer.VulkanBindRenderTargetSecondary(pThisRenderTarget, vInheritInfo.framebuffer);
 
-					vCommandBufferList.BindVertexBuffer(store->GetVertexBuffer());
-					vCommandBufferList.BindIndexBuffer(store->GetIndexBuffer(), store->GetIndexSize());
+					// Begin secondary command buffers.
+					auto& vCommandBufferList = *pSecondaryCommandBuffer;
+					vCommandBufferList.VulkanBeginSecondaryCommandBuffer(mFrameIndex, &vInheritInfo);
 
-					auto& pipelines = mVolatileDrawInstanceMap.at(store);
-
-					// Iterate through the pipelines.
-					for (auto& pipeline : pipelines)
-					{
-						pipeline->PrepareResourcesToDraw();
-						vCommandBufferList.BindGraphicsPipeline(pipeline);
-
-						const auto drawData = pipeline->GetDrawData();
-						const auto drawDataIndex = pipeline->GetCurrentDrawIndex();
-
-						// Bind draw data.
-						for (UI64 i = 0; i < drawDataIndex; i++)
-						{
-							if (drawData.find(i) == drawData.end())
-								continue;
-
-							const auto draw = drawData.at(i);
-							vCommandBufferList.BindDrawResources(pipeline, draw.pResourceMap);
-							vCommandBufferList.BindDynamicStates(pipeline, draw.pDynamicStates);
-							vCommandBufferList.IssueDrawCall(draw.mVertexOffset, draw.mVertexCount, draw.mIndexOffset, draw.mIndexCount);
-						}
-					}
-				}
-
-				// Bind the draw instances.
-				for (UI64 itr = 0; itr < mDrawInstanceOrder.size(); itr++)
-				{
-					const auto drawOrder = mDrawInstanceOrder[itr];
-					const auto drawInstanceMap = mDrawInstanceMaps[itr];
-
-					for (const auto store : drawOrder)
+					// Bind the volatile draw instances.
+					for (const auto store : mVolatileDrawInstanceOrder)
 					{
 						FLINT_SETUP_PROFILER();
+
+						if (!store->GetVertexBuffer() || !store->GetIndexBuffer())
+							continue;
 
 						vCommandBufferList.BindVertexBuffer(store->GetVertexBuffer());
 						vCommandBufferList.BindIndexBuffer(store->GetIndexBuffer(), store->GetIndexSize());
 
-						auto& pipelines = drawInstanceMap.at(store);
+						auto& pipelines = mVolatileDrawInstanceMap.at(store);
 
 						// Iterate through the pipelines.
 						for (auto& pipeline : pipelines)
@@ -187,24 +220,63 @@ namespace Flint
 							vCommandBufferList.BindGraphicsPipeline(pipeline);
 
 							const auto drawData = pipeline->GetDrawData();
+							const auto drawDataIndex = pipeline->GetCurrentDrawIndex();
 
 							// Bind draw data.
-							for (const auto draw : drawData)
+							for (UI64 i = 0; i < drawDataIndex; i++)
 							{
-								vCommandBufferList.BindDrawResources(pipeline, draw.second.pResourceMap);
-								vCommandBufferList.BindDynamicStates(pipeline, draw.second.pDynamicStates);
-								vCommandBufferList.IssueDrawCall(draw.second.mVertexOffset, draw.second.mVertexCount, draw.second.mIndexOffset, draw.second.mIndexCount);
+								if (drawData.find(i) == drawData.end())
+									continue;
+
+								const auto draw = drawData.at(i);
+								vCommandBufferList.BindDrawResources(pipeline, draw.pResourceMap);
+								vCommandBufferList.BindDynamicStates(pipeline, draw.pDynamicStates);
+								vCommandBufferList.IssueDrawCall(draw.mVertexOffset, draw.mVertexCount, draw.mIndexOffset, draw.mIndexCount);
 							}
 						}
 					}
+
+					// Bind the draw instances.
+					for (UI64 itr = 0; itr < mDrawInstanceOrder.size(); itr++)
+					{
+						const auto drawOrder = mDrawInstanceOrder[itr];
+						const auto drawInstanceMap = mDrawInstanceMaps[itr];
+
+						for (const auto store : drawOrder)
+						{
+							FLINT_SETUP_PROFILER();
+
+							vCommandBufferList.BindVertexBuffer(store->GetVertexBuffer());
+							vCommandBufferList.BindIndexBuffer(store->GetIndexBuffer(), store->GetIndexSize());
+
+							auto& pipelines = drawInstanceMap.at(store);
+
+							// Iterate through the pipelines.
+							for (auto& pipeline : pipelines)
+							{
+								pipeline->PrepareResourcesToDraw();
+								vCommandBufferList.BindGraphicsPipeline(pipeline);
+
+								const auto drawData = pipeline->GetDrawData();
+
+								// Bind draw data.
+								for (const auto draw : drawData)
+								{
+									vCommandBufferList.BindDrawResources(pipeline, draw.second.pResourceMap);
+									vCommandBufferList.BindDynamicStates(pipeline, draw.second.pDynamicStates);
+									vCommandBufferList.IssueDrawCall(draw.second.mVertexOffset, draw.second.mVertexCount, draw.second.mIndexOffset, draw.second.mIndexCount);
+								}
+							}
+						}
+					}
+
+					// End buffer recording and submit it to execute.
+					vCommandBufferList.EndBufferRecording();
+
+					vScreenBoundCommandBuffer.AddSecondaryCommandBuffer(vCommandBufferList.GetCurrentCommandBuffer());
+					vScreenBoundCommandBuffer.ExecuteSecondaryCommands();
+					vScreenBoundCommandBuffer.UnbindRenderTarget();
 				}
-
-				// End buffer recording and submit it to execute.
-				vCommandBufferList.EndBufferRecording();
-
-				vScreenBoundCommandBuffer.AddSecondaryCommandBuffer(vCommandBufferList.GetCurrentCommandBuffer());
-				vScreenBoundCommandBuffer.ExecuteSecondaryCommands();
-				vScreenBoundCommandBuffer.UnbindRenderTarget();
 			}
 			else
 			{
@@ -217,12 +289,25 @@ namespace Flint
 		{
 			vRenderTarget.Terminate();
 
-			pDevice->DestroyCommandBufferList(pCommandBufferList);
-			pDevice->DestroyCommandBufferList(pVolatileCommandBufferList);
-			pDevice->DestroyCommandBufferList(std::move(pSecondaryCommandBuffer));
+			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
+
+			vDevice.DestroyCommandBufferList(pCommandBufferList);
+			vDevice.DestroyCommandBufferList(pVolatileCommandBufferList);
+			vDevice.DestroyCommandBufferList(std::move(pSecondaryCommandBuffer));
 
 			for (auto pResult : pResults)
-				pDevice->DestroyImage(pResult);
+				vDevice.DestroyImage(pResult);
+
+			for (const auto vImageViewCluster : vFrameClusters)
+				for (const auto vImageView : vImageViewCluster)
+					vkDestroyFramebuffer(vDevice.GetLogicalDevice(), vImageView, nullptr);
+
+			vFrameClusters.clear();
+
+			for (const auto vImageView : vImageViewsToDestroy)
+				vkDestroyImageView(vDevice.GetLogicalDevice(), vImageView, nullptr);
+
+			vImageViewsToDestroy.clear();
 		}
 
 		void VulkanOffScreenRenderTarget::BindVolatileInstances()
@@ -248,11 +333,21 @@ namespace Flint
 
 		VkFramebuffer VulkanOffScreenRenderTarget::GetFrameBuffer(UI32 index) const
 		{
-			return vRenderTarget.vFrameBuffers[index];
+			return vFrameClusters[mFrameIndex][index];
 		}
 	}
 }
 
 /*
-Executed secondary command buffer using VkImage 0xb09e9c0000000039[] (subresource: aspectMask 0x2 array layer 0, mip level 0) which expects layout VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL--instead, image current layout is VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL.
+vkCmdExecuteCommands() called w/ invalid secondary VkCommandBuffer 0x1fac70410b8[] which has a VkFramebuffer 0xf37618000000003d[] that is not the same as the primary command buffer's current active VkFramebuffer 0xc1547b000000003e[]. The Vulkan spec states: If vkCmdExecuteCommands is being called within a render pass instance, and any element of pCommandBuffers was recorded with VkCommandBufferInheritanceInfo::framebuffer not equal to VK_NULL_HANDLE, that VkFramebuffer must match the VkFramebuffer used in the current render pass instance (https://vulkan.lunarg.com/doc/view/1.2.162.1/windows/1.2-extensions/vkspec.html#VUID-vkCmdExecuteCommands-pCommandBuffers-00099)
+Calling vkBeginCommandBuffer() on active VkCommandBuffer 0x1fac70410b8[] before it has completed. You must check command buffer fence before this call. The Vulkan spec states: commandBuffer must not be in the recording or pending state (https://vulkan.lunarg.com/doc/view/1.2.162.1/windows/1.2-extensions/vkspec.html#VUID-vkBeginCommandBuffer-commandBuffer-00049)
+
+vkCmdExecuteCommands() called w/ invalid secondary VkCommandBuffer 0x1fac70410b8[] which has a VkFramebuffer 0xf37618000000003d[] that is not the same as the primary command buffer's current active VkFramebuffer 0xc1547b000000003e[]. The Vulkan spec states: If vkCmdExecuteCommands is being called within a render pass instance, and any element of pCommandBuffers was recorded with VkCommandBufferInheritanceInfo::framebuffer not equal to VK_NULL_HANDLE, that VkFramebuffer must match the VkFramebuffer used in the current render pass instance (https://vulkan.lunarg.com/doc/view/1.2.162.1/windows/1.2-extensions/vkspec.html#VUID-vkCmdExecuteCommands-pCommandBuffers-00099)
+Calling vkBeginCommandBuffer() on active VkCommandBuffer 0x1fac70410b8[] before it has completed. You must check command buffer fence before this call. The Vulkan spec states: commandBuffer must not be in the recording or pending state (https://vulkan.lunarg.com/doc/view/1.2.162.1/windows/1.2-extensions/vkspec.html#VUID-vkBeginCommandBuffer-commandBuffer-00049)
+
+vkCmdExecuteCommands() called w/ invalid secondary VkCommandBuffer 0x1fac70410b8[] which has a VkFramebuffer 0xf37618000000003d[] that is not the same as the primary command buffer's current active VkFramebuffer 0xd20a5a000000003f[]. The Vulkan spec states: If vkCmdExecuteCommands is being called within a render pass instance, and any element of pCommandBuffers was recorded with VkCommandBufferInheritanceInfo::framebuffer not equal to VK_NULL_HANDLE, that VkFramebuffer must match the VkFramebuffer used in the current render pass instance (https://vulkan.lunarg.com/doc/view/1.2.162.1/windows/1.2-extensions/vkspec.html#VUID-vkCmdExecuteCommands-pCommandBuffers-00099)
+Calling vkBeginCommandBuffer() on active VkCommandBuffer 0x1fac70410b8[] before it has completed. You must check command buffer fence before this call. The Vulkan spec states: commandBuffer must not be in the recording or pending state (https://vulkan.lunarg.com/doc/view/1.2.162.1/windows/1.2-extensions/vkspec.html#VUID-vkBeginCommandBuffer-commandBuffer-00049)
+
+vkCmdExecuteCommands() called w/ invalid secondary VkCommandBuffer 0x1fac70410b8[] which has a VkFramebuffer 0xf37618000000003d[] that is not the same as the primary command buffer's current active VkFramebuffer 0xd20a5a000000003f[]. The Vulkan spec states: If vkCmdExecuteCommands is being called within a render pass instance, and any element of pCommandBuffers was recorded with VkCommandBufferInheritanceInfo::framebuffer not equal to VK_NULL_HANDLE, that VkFramebuffer must match the VkFramebuffer used in the current render pass instance (https://vulkan.lunarg.com/doc/view/1.2.162.1/windows/1.2-extensions/vkspec.html#VUID-vkCmdExecuteCommands-pCommandBuffers-00099)
+Calling vkBeginCommandBuffer() on active VkCommandBuffer 0x1fac70410b8[] before it has completed. You must check command buffer fence before this call. The Vulkan spec states: commandBuffer must not be in the recording or pending state (https://vulkan.lunarg.com/doc/view/1.2.162.1/windows/1.2-extensions/vkspec.html#VUID-vkBeginCommandBuffer-commandBuffer-00049)
 */

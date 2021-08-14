@@ -14,7 +14,7 @@ namespace Flint
 		class VulkanOffScreenRenderTarget final : public OffScreenRenderTarget, public std::enable_shared_from_this<VulkanOffScreenRenderTarget>
 		{
 		public:
-			VulkanOffScreenRenderTarget(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, OffScreenRenderTargetAttachment attachments = OffScreenRenderTargetAttachment::COLOR_BUFFER | OffScreenRenderTargetAttachment::DEPTH_BUFFER, UI32 threadCount = 0);
+			VulkanOffScreenRenderTarget(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, const std::vector<OffScreenResultSpecification>& specifications = { OffScreenResultSpecification(OffScreenRenderTargetAttachment::COLOR_BUFFER), OffScreenResultSpecification(OffScreenRenderTargetAttachment::DEPTH_BUFFER) }, UI32 threadCount = 0);
 		
 			virtual void Execute(const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget = nullptr) override final;
 			virtual void Terminate() override final;
@@ -33,6 +33,8 @@ namespace Flint
 
 		private:
 			VulkanRenderTarget vRenderTarget;
+			std::vector<std::vector<VkFramebuffer>> vFrameClusters;
+			std::vector<VkImageView> vImageViewsToDestroy = {};
 
 			std::unique_ptr<VulkanCommandBufferList> pSecondaryCommandBuffer = nullptr;
 			std::shared_ptr<OffScreenRenderTarget> pThisRenderTarget = nullptr;

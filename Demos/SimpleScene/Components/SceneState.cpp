@@ -11,8 +11,8 @@ SceneState::SceneState()
 	mAssetPath = mSolutionPath.string() + "\\Assets";
 
 #ifndef FLINT_RELEASE
-	pInstance = Flint::CreateInstance(false);
-	//pInstance = Flint::CreateInstance(true);
+	//pInstance = Flint::CreateInstance(false);
+	pInstance = Flint::CreateInstance(true);
 
 #else
 	pInstance = Flint::CreateInstance(false);
@@ -35,7 +35,7 @@ SceneState::SceneState()
 
 	mCamera.Initialize(pDevice);
 
-	pOffScreenRenderTargets["ShadowMap"] = pDevice->CreateOffScreenRenderTarget(Flint::FBox2D(2048), pScreenBoundRenderTargets["Default"]->GetBufferCount(), Flint::OffScreenRenderTargetAttachment::DEPTH_BUFFER);
+	pOffScreenRenderTargets["ShadowMap"] = pDevice->CreateOffScreenRenderTarget(Flint::FBox2D(2048), pScreenBoundRenderTargets["Default"]->GetBufferCount(), { Flint::OffScreenResultSpecification(Flint::OffScreenRenderTargetAttachment::DEPTH_BUFFER, 1, Flint::PixelFormat::D32_SFLOAT) });
 	pScreenBoundRenderTargets["Default"]->AttachOffScreenRenderTarget(pOffScreenRenderTargets["ShadowMap"]);
 }
 

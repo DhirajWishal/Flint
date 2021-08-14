@@ -773,6 +773,9 @@ namespace Flint
 					const auto bufferResources = drawData.second.pResourceMap->GetBufferResourceMap();
 					for (const auto resource : bufferResources)
 					{
+						if (!resource.second)
+							FLINT_THROW_BACKEND_ERROR("No uniform attached to the resource slot \"" + resource.first + "\"!");
+
 						const ShaderResource sResource = resources[resource.first];
 						vWrite.descriptorType = Utilities::GetDescriptorType(sResource.mType);
 						vWrite.dstBinding = sResource.mBinding;
@@ -794,6 +797,9 @@ namespace Flint
 					const auto imageResources = drawData.second.pResourceMap->GetImageResourceMap();
 					for (const auto resource : imageResources)
 					{
+						if (!resource.second.second)
+							FLINT_THROW_BACKEND_ERROR("No uniform attached to the resource slot \"" + resource.first + "\"!");
+
 						const ShaderResource sResource = resources[resource.first];
 						vWrite.descriptorType = Utilities::GetDescriptorType(sResource.mType);
 						vWrite.dstBinding = sResource.mBinding;
@@ -1048,16 +1054,16 @@ namespace Flint
 			}
 
 			// Create pipeline layout.
-			VkPipelineLayoutCreateInfo vCI = {};
-			vCI.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-			vCI.pNext = VK_NULL_HANDLE;
-			vCI.flags = 0;
-			vCI.pushConstantRangeCount = static_cast<UI32>(vConstantRanges.size());
-			vCI.pPushConstantRanges = vConstantRanges.data();
-			vCI.setLayoutCount = 1;
-			vCI.pSetLayouts = &vDescriptorSetLayout;
+			VkPipelineLayoutCreateInfo vCreateInfo = {};
+			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+			vCreateInfo.pNext = VK_NULL_HANDLE;
+			vCreateInfo.flags = 0;
+			vCreateInfo.pushConstantRangeCount = static_cast<UI32>(vConstantRanges.size());
+			vCreateInfo.pPushConstantRanges = vConstantRanges.data();
+			vCreateInfo.setLayoutCount = 1;
+			vCreateInfo.pSetLayouts = &vDescriptorSetLayout;
 
-			FLINT_VK_ASSERT(vkCreatePipelineLayout(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), &vCI, nullptr, &vPipelineLayout));
+			FLINT_VK_ASSERT(vkCreatePipelineLayout(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), &vCreateInfo, nullptr, &vPipelineLayout));
 		}
 
 		void VulkanGraphicsPipeline::CreatePipeline()
