@@ -11,7 +11,7 @@
 
 struct SceneState
 {
-	SceneState();
+	SceneState(const std::string& displayTitle);
 	~SceneState();
 
 	void PrepareRenderTargetsToDraw();

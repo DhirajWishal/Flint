@@ -65,6 +65,9 @@ workspace "Flint"
 		include "Code/Flint.lua"
 
 	group "Demos"
+		include "Demos/DemoBase/DemoBase.lua"
 		include "Demos/SimpleScene/SimpleScene.lua"
+		include "Demos/Skybox/Skybox.lua"
+		include "Demos/ShadowMap/ShadowMap.lua"
 		
 	group ""

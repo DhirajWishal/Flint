@@ -5,9 +5,6 @@
 #include "Components/ImGui.hpp"
 #include "Objects/VikingRoom.hpp"
 #include "Objects/SkyBox.hpp"
-#include "Objects/TreeScene.hpp"
-#include "Objects/LaraCroft.hpp"
-#include "Objects/Preview.hpp"
 
 #include <iostream>
 
@@ -15,7 +12,7 @@ int main(int argc, char** argv)
 {
 	try
 	{
-		SceneState mState{ "Flint: Sample Scene" };
+		SceneState mState{ "Flint: Skybox" };
 
 		float floatArray[100] = {};
 		float minFrameTime = std::numeric_limits<float>::max();
@@ -24,21 +21,8 @@ int main(int argc, char** argv)
 		{
 			ImGUI mImGui(glm::vec3(0.0f), &mState);
 			std::vector<std::unique_ptr<GameObject>> pGameObjects;
-			//pGameObjects.push_back(std::make_unique<SkyBox>(glm::vec3(0.0f), &mState));
-			//pGameObjects.push_back(std::make_unique<VikingRoom>(glm::vec3(2.0f), &mState));
-			//pGameObjects.push_back(std::make_unique<TreeScene>(glm::vec3(0.0f), &mState));
-			//pGameObjects.push_back(std::make_unique<Preview>(glm::vec3(0.0f), &mState,
-			//	std::filesystem::path(mState.GetAssetPath().string() + "\\Packages\\Tree001\\Tree01\\Tree1\\Tree1.obj"),
-			//	std::vector<std::filesystem::path>{
-			//	mState.GetAssetPath().string() + "\\Packages\\Tree001\\Tree01\\Tree1\\BarkDecidious0143_5_S.jpg",
-			//		mState.GetAssetPath().string() + "\\Packages\\Tree001\\Tree01\\Tree1\\Leaves0120_35_S.png",
-			//		mState.GetAssetPath().string() + "\\Packages\\Tree001\\Tree01\\Tree1\\BarkDecidious0194_7_S.jpg",
-			//		mState.GetAssetPath().string() + "\\Packages\\Tree001\\Tree01\\Tree1\\Leaves0142_4_S.png",
-			//		mState.GetAssetPath().string() + "\\Packages\\Tree001\\Tree01\\Tree1\\BarkDecidious0194_7_S.jpg",
-			//		mState.GetAssetPath().string() + "\\Packages\\Tree001\\Tree01\\Tree1\\Leaves0156_1_S.png"
-			//}));
-			//pGameObjects.push_back(std::make_unique<Preview>(glm::vec3(0.0f), &mState, std::filesystem::path("E:\\Dynamik\\Game Repository\\InHouse\\DemoScene.obj"), std::vector<std::filesystem::path>{}));
-			pGameObjects.push_back(std::make_unique<Preview>(glm::vec3(0.0f), &mState, std::filesystem::path("E:\\Projects\\Personal\\Game Dev\\Vulkan Examples\\data\\models\\sponza.gltf"), std::vector<std::filesystem::path>{}));
+			pGameObjects.push_back(std::make_unique<SkyBox>(glm::vec3(0.0f), &mState));
+			pGameObjects.push_back(std::make_unique<VikingRoom>(glm::vec3(2.0f), &mState));
 
 			std::chrono::time_point<std::chrono::high_resolution_clock> oldTimePoint = std::chrono::high_resolution_clock::now();
 
@@ -92,14 +76,6 @@ int main(int argc, char** argv)
 				if (!io.WantCaptureMouse)
 				{
 					mState.UpdateCamera(delta);
-
-					const auto paths = mState.pDisplay->GetDragAndDropValues();
-
-					if (paths.size())
-					{
-						for (auto path : paths)
-							std::cout << path << std::endl;
-					}
 
 					for (auto& pGameObject : pGameObjects)
 						pGameObject->OnUpdate(delta);

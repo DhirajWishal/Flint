@@ -3,27 +3,26 @@
 
 #pragma once
 
-#include "../GameObject.hpp"
+#include "Components/GameObject.hpp"
 
-constexpr UI8 ImageCount = 6;
-class TreeScene final : public GameObject
+class VikingRoom final : public GameObject
 {
 public:
-	TreeScene(glm::vec3 position, SceneState* pSceneState);
-	~TreeScene();
+	VikingRoom(glm::vec3 position, SceneState* pSceneState);
+	~VikingRoom();
 
 	virtual void OnUpdate(UI64 delta) override final;
 
 private:
-	void LoadTreeImages();
+	void SetupPipeline();
 
 private:
-	std::shared_ptr<Flint::Image> pTextures[ImageCount] = {};
+	std::shared_ptr<Flint::Image> pTexture = nullptr;
 	std::shared_ptr<Flint::ImageSampler> pTextureSampler = nullptr;
 
 	std::shared_ptr<Flint::DynamicStateContainer> pDynamicStates = nullptr;
 
 	UI64 mVertexOffset = 0, mVertexCount = 0;
 	UI64 mIndexOffset = 0, mIndexCount = 0;
-	UI64 mDrawIndexes[ImageCount] = {};
+	UI64 mDrawIndex = 0;
 };

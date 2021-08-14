@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "../GameObject.hpp"
+#include "Components/GameObject.hpp"
 
 class SkyBox final : public GameObject
 {

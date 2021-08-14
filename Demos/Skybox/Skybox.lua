@@ -1,9 +1,9 @@
 -- Copyright 2020 Dhiraj Wishal
 -- SPDX-License-Identifier: Apache-2.0
 
----------- Demo: SimpleScene project description ----------
+---------- Demo: Skybox project description ----------
 
-project "SimpleScene"
+project "Skybox"
 	kind "ConsoleApp"
 	cppdialect "C++17"
 	language "C++"
@@ -32,7 +32,7 @@ project "SimpleScene"
 
 	includedirs {
 		"$(SolutionDir)Code",
-		"$(SolutionDir)Demos/SimpleScene",
+		"$(SolutionDir)Demos/Skybox",
 		"$(SolutionDir)Demos/DemoBase",
 		"%{IncludeDir.imgui}",
 		"%{IncludeDir.glm}",

@@ -1,9 +1,9 @@
 -- Copyright 2020 Dhiraj Wishal
 -- SPDX-License-Identifier: Apache-2.0
 
----------- Demo: SimpleScene project description ----------
+---------- Demo: ShadowMap project description ----------
 
-project "SimpleScene"
+project "ShadowMap"
 	kind "ConsoleApp"
 	cppdialect "C++17"
 	language "C++"
@@ -32,7 +32,7 @@ project "SimpleScene"
 
 	includedirs {
 		"$(SolutionDir)Code",
-		"$(SolutionDir)Demos/SimpleScene",
+		"$(SolutionDir)Demos/ShadowMap",
 		"$(SolutionDir)Demos/DemoBase",
 		"%{IncludeDir.imgui}",
 		"%{IncludeDir.glm}",

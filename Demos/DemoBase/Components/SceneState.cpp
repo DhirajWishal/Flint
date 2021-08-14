@@ -5,7 +5,7 @@
 
 #include "Flint/Instance.hpp"
 
-SceneState::SceneState()
+SceneState::SceneState(const std::string& displayTitle)
 {
 	mSolutionPath = std::filesystem::path(__FILE__).parent_path().parent_path().parent_path().parent_path();
 	mAssetPath = mSolutionPath.string() + "\\Assets";
@@ -20,7 +20,7 @@ SceneState::SceneState()
 #endif // !FLINT_RELEASE
 
 	//pDisplay = pInstance->CreateDisplay(Flint::FBox2D(), "Flint: Sample Scene");
-	pDisplay = pInstance->CreateDisplay(Flint::FBox2D(1280, 720), "Flint: Sample Scene");
+	pDisplay = pInstance->CreateDisplay(Flint::FBox2D(1280, 720), displayTitle);
 	pDevice = pInstance->CreateDevice(Flint::DeviceFlags::GRAPHICS_COMPATIBLE | Flint::DeviceFlags::EXTERNAL | Flint::DeviceFlags::COMPUTE_COMPATIBLE);
 
 	pVertexShader = pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path(mAssetPath.string() + "\\Shaders\\3D\\shader.vert.spv"));
@@ -34,9 +34,6 @@ SceneState::SceneState()
 	mCamera.SetAspectRatio(pDisplay->GetExtent());
 
 	mCamera.Initialize(pDevice);
-
-	pOffScreenRenderTargets["ShadowMap"] = pDevice->CreateOffScreenRenderTarget(Flint::FBox2D(2048), pScreenBoundRenderTargets["Default"]->GetBufferCount(), { Flint::OffScreenResultSpecification(Flint::OffScreenRenderTargetAttachment::DEPTH_BUFFER, 1, Flint::PixelFormat::D32_SFLOAT) });
-	pScreenBoundRenderTargets["Default"]->AttachOffScreenRenderTarget(pOffScreenRenderTargets["ShadowMap"]);
 }
 
 SceneState::~SceneState()
