@@ -11,8 +11,8 @@ SceneState::SceneState(const std::string& displayTitle)
 	mAssetPath = mSolutionPath.string() + "\\Assets";
 
 #ifndef FLINT_RELEASE
-	//pInstance = Flint::CreateInstance(false);
-	pInstance = Flint::CreateInstance(true);
+	pInstance = Flint::CreateInstance(false);
+	//pInstance = Flint::CreateInstance(true);
 
 #else
 	pInstance = Flint::CreateInstance(false);

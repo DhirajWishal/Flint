@@ -23,6 +23,7 @@ namespace Flint
 			VkFormat FindDepthFormat(VkPhysicalDevice vPhysicalDevice);
 			VkDescriptorType GetDescriptorType(ShaderResourceType type);
 			VkShaderStageFlags GetShaderStage(ShaderType type);
+			PixelFormat GetPixelFormat(VkFormat format);
 		}
 	}
 }

@@ -191,9 +191,9 @@ void Preview::OnUpdate(UI64 delta)
 	glm::mat4 depthViewMatrix = glm::lookAt(mLight.mLightPosition, glm::vec3(0.0f), glm::vec3(0, 1, 0));
 	glm::mat4 depthModelMatrix = glm::mat4(1.0f);
 
-	//mLight.mLightPosition = pSceneState->mCamera.GetPosition();
-	//mLight.mLightSpace = pSceneState->mCamera.GetMatrix().mProjectionMatrix * pSceneState->mCamera.GetMatrix().mViewMatrix * glm::mat4(1.0f);
-	mLight.mLightSpace = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
+	mLight.mLightPosition = pSceneState->mCamera.GetPosition();
+	mLight.mLightSpace = pSceneState->mCamera.GetMatrix().mProjectionMatrix * pSceneState->mCamera.GetMatrix().mViewMatrix;
+	//mLight.mLightSpace = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
 
 	// Submit data to uniforms.
 	SubmitToUniformBuffer(pShadowMapUniform, mLight.mLightSpace);
@@ -222,6 +222,9 @@ void Preview::PrepareShadowMapPipeline()
 {
 	if (pSceneState->pGraphicsPipelines["ShadowMap"])
 		return;
+
+	pSceneState->pOffScreenRenderTargets["ShadowMap"] = pSceneState->pDevice->CreateOffScreenRenderTarget(Flint::FBox2D(2048), pSceneState->pScreenBoundRenderTargets["Default"]->GetBufferCount(), { Flint::OffScreenResultSpecification(Flint::OffScreenRenderTargetAttachment::DEPTH_BUFFER, 1, Flint::PixelFormat::D32_SFLOAT) });
+	pSceneState->pScreenBoundRenderTargets["Default"]->AttachOffScreenRenderTarget(pSceneState->pOffScreenRenderTargets["ShadowMap"]);
 
 	pVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path(pSceneState->GetAssetPath().string() + "\\Shaders\\ShadowMapping\\mesh.vert.spv"));
 	pFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path(pSceneState->GetAssetPath().string() + "\\Shaders\\ShadowMapping\\mesh.frag.spv"));

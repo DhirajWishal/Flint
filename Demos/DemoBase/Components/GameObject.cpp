@@ -24,7 +24,7 @@ static std::vector<UI32> mBoundingIndexes = {
 	6, 1, 6, 7, 7, 0, 7, 4
 };
 
-GameObject::GameObject(glm::vec3 position, SceneState* pSceneState) : pSceneState(pSceneState)
+GameObject::GameObject(glm::vec3 position, SceneState* pSceneState) : mPosition(position), pSceneState(pSceneState)
 {
 	pModelUniform = pSceneState->pDevice->CreateBuffer(Flint::BufferType::UNIFORM, sizeof(glm::mat4));
 	mModelMatrix = glm::translate(glm::mat4(1.0f), position);

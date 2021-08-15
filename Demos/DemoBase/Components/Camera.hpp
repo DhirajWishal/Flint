@@ -86,8 +86,10 @@ public:
 
 public:
 	const glm::vec3 GetPosition() const { return cameraPosition; }
-
+	const glm::vec3 GetCameraUp() const { return cameraUp; }
+	const glm::vec3 GetCameraFront() const { return cameraFront; }
 	void SetCameraRange(float near, float far) { cameraNear = near, cameraFar = far; }
+	std::pair<float, float> GetPitchYaw() const { return { Pitch, Yaw }; }
 
 private:
 	glm::mat4 viewMatrix = glm::mat4(1);

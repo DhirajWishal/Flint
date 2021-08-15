@@ -4,6 +4,7 @@
 #include "Components/GameObject.hpp"
 #include "Components/ImGui.hpp"
 #include "Objects/Preview.hpp"
+#include "Objects/Light.hpp"
 
 #include <iostream>
 
@@ -18,9 +19,16 @@ int main(int argc, char** argv)
 		float maxFrameTime = 0.0f;
 
 		{
+			Light* pLight = nullptr;
+			Preview* pPreview = nullptr;
+
 			ImGUI mImGui(glm::vec3(0.0f), &mState);
 			std::vector<std::unique_ptr<GameObject>> pGameObjects;
-			pGameObjects.push_back(std::make_unique<Preview>(glm::vec3(0.0f), &mState, std::filesystem::path("E:\\Dynamik\\Game Repository\\InHouse\\DemoScene.obj"), std::vector<std::filesystem::path>{}));
+			pGameObjects.push_back(std::make_unique<Light>(glm::vec3(0.0f), &mState));
+			pGameObjects.push_back(std::make_unique<Preview>(glm::vec3(0.0f), &mState, std::filesystem::path("E:\\Flint\\Assets\\Packages\\Tree001\\Tree01\\Tree1\\Tree1.obj"), std::vector<std::filesystem::path>{}));
+			
+			pLight = static_cast<Light*>(pGameObjects[0].get());
+			pPreview = static_cast<Preview*>(pGameObjects[1].get());
 
 			std::chrono::time_point<std::chrono::high_resolution_clock> oldTimePoint = std::chrono::high_resolution_clock::now();
 
@@ -75,16 +83,13 @@ int main(int argc, char** argv)
 				{
 					mState.UpdateCamera(delta);
 
-					const auto paths = mState.pDisplay->GetDragAndDropValues();
+					//for (auto& pGameObject : pGameObjects)
+					//	pGameObject->OnUpdate(delta);
 
-					if (paths.size())
-					{
-						for (auto path : paths)
-							std::cout << path << std::endl;
-					}
+					pPreview->OnUpdate(delta);
 
-					for (auto& pGameObject : pGameObjects)
-						pGameObject->OnUpdate(delta);
+					pLight->SetPosition(pPreview->GetLightPosition());
+					pLight->OnUpdate(delta);
 				}
 
 				ImGui::Render();

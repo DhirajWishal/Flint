@@ -14,7 +14,7 @@ layout (constant_id = 0) const int enablePCF = 0;
 
 layout (location = 0) out vec4 outFragColor;
 
-#define ambient 0.1
+#define ambient 0.5
 
 float textureProj(vec4 shadowCoord, vec2 off)
 {

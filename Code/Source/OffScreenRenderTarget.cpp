@@ -5,10 +5,8 @@
 
 namespace Flint
 {
-	OffScreenRenderTarget::OffScreenRenderTarget(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, const std::shared_ptr<CommandBufferList>& pCommandBufferList, const std::vector<OffScreenResultSpecification>& specifications, UI32 threadCount)
-		: RenderTarget(pDevice, extent, bufferCount, pCommandBufferList, threadCount), mResultSpecification(specifications)
+	OffScreenRenderTarget::OffScreenRenderTarget(const std::shared_ptr<Device>& pDevice, OffScreenRenderTargetType type, const FBox2D& extent, const UI32 bufferCount, const std::shared_ptr<CommandBufferList>& pCommandBufferList, UI32 threadCount)
+		: RenderTarget(pDevice, extent, bufferCount, pCommandBufferList, threadCount), mType(type)
 	{
-		if (specifications.empty())
-			FLINT_THROW_INVALID_ARGUMENT("Off screen render target result specification should not be empty!");
 	}
 }

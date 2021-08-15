@@ -41,6 +41,7 @@ protected:
 	void SetupBoundingBox();
 
 protected:
+	glm::vec3 mPosition = {};
 	glm::mat4 mModelMatrix = glm::mat4(1.0f);
 	std::shared_ptr<Flint::Buffer> pModelUniform = nullptr;
 	std::shared_ptr<Flint::ResourceMap> pResourceMap = nullptr;

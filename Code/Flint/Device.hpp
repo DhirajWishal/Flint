@@ -16,6 +16,7 @@ namespace Flint
 	class RenderTarget;
 	class ScreenBoundRenderTarget;
 	class OffScreenRenderTarget;
+	class OffScreenRenderTargetFactory;
 
 	class Buffer;
 	class Image;
@@ -123,15 +124,12 @@ namespace Flint
 		virtual std::shared_ptr<ScreenBoundRenderTarget> CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, UI32 threadCount = 0) = 0;
 
 		/**
-		 * Create a new off screen render target.
-		 * Off screen render targets does not render images to the display. Instead they are rendered to image objects and can be accessed after execution.
-		 *
-		 * @param extent: The extent of the frame buffer.
-		 * @param bufferCount: The number of frame buffers to use.
-		 * @param specifications: The frame buffer attachments to use. Default is color and depth buffers.
-		 * @param threadCount: The number of threads to use. Default is 0.
+		 * Create a new off screen render target factory.
+		 * These factories are used to create different types of render targets, like Shadow maps.
+		 * 
+		 * @return The factory pointer.
 		 */
-		virtual std::shared_ptr<OffScreenRenderTarget> CreateOffScreenRenderTarget(const FBox2D& extent, const UI32 bufferCount, const std::vector<OffScreenResultSpecification>& specifications = { OffScreenResultSpecification(OffScreenRenderTargetAttachment::COLOR_BUFFER), OffScreenResultSpecification(OffScreenRenderTargetAttachment::DEPTH_BUFFER) }, UI32 threadCount = 0) = 0;
+		virtual std::shared_ptr<OffScreenRenderTargetFactory> CreateOffScreenRenderTargetFactory() = 0;
 
 		/**
 		 * Destroy a created render target.

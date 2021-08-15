@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "Preview.hpp"
+#include "Flint/OffScreenRenderTargetFactory.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -51,8 +52,8 @@ Preview::Preview(glm::vec3 position, SceneState* pSceneState, std::filesystem::p
 	UI32 imageIndex = 0;
 	for (auto instance : asset.mDrawInstances)
 	{
-		if (instance.mName == "Plane")
-			continue;
+		//if (instance.mName == "Plane")
+		//	continue;
 
 		//auto image = LoadImage(texture[imageIndex++]);
 		//auto pTexture = pSceneState->pDevice->CreateImage(Flint::ImageType::DIMENSIONS_2, Flint::ImageUsage::GRAPHICS, image.mExtent, Flint::PixelFormat::R8G8B8A8_SRGB, 1, 1, image.pImageData);
@@ -223,7 +224,9 @@ void Preview::PrepareShadowMapPipeline()
 	if (pSceneState->pGraphicsPipelines["ShadowMap"])
 		return;
 
-	pSceneState->pOffScreenRenderTargets["ShadowMap"] = pSceneState->pDevice->CreateOffScreenRenderTarget(Flint::FBox2D(2048), pSceneState->pScreenBoundRenderTargets["Default"]->GetBufferCount(), { Flint::OffScreenResultSpecification(Flint::OffScreenRenderTargetAttachment::DEPTH_BUFFER, 1, Flint::PixelFormat::D32_SFLOAT) });
+	auto pFactory = pSceneState->pDevice->CreateOffScreenRenderTargetFactory();
+
+	pSceneState->pOffScreenRenderTargets["ShadowMap"] = pFactory->Create(Flint::OffScreenRenderTargetType::SHADOW_MAP, Flint::FBox2D(2048), pSceneState->pScreenBoundRenderTargets["Default"]->GetBufferCount());;
 	pSceneState->pScreenBoundRenderTargets["Default"]->AttachOffScreenRenderTarget(pSceneState->pOffScreenRenderTargets["ShadowMap"]);
 
 	pVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path(pSceneState->GetAssetPath().string() + "\\Shaders\\ShadowMapping\\mesh.vert.spv"));
