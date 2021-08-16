@@ -13,8 +13,6 @@ public:
 
 	virtual void OnUpdate(UI64 delta) override;
 
-	void SetPosition(glm::vec3 position);
-
 private:
 	std::shared_ptr<Flint::Shader> pVertexShader = nullptr;
 	std::shared_ptr<Flint::Shader> pFragmentShader = nullptr;

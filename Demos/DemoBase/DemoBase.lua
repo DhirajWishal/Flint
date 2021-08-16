@@ -26,11 +26,18 @@ project "DemoBase"
 		"$(SolutionDir)Demos/ThirdParty/imgui/imgui_draw.cpp",
 		"$(SolutionDir)Demos/ThirdParty/imgui/imgui_tables.cpp",
 		"$(SolutionDir)Demos/ThirdParty/imgui/imgui_widgets.cpp",
+
+		"$(SolutionDir)Demos/ThirdParty/ImGuizmo/GraphEditor.cpp",
+		"$(SolutionDir)Demos/ThirdParty/ImGuizmo/ImCurveEdit.cpp",
+		"$(SolutionDir)Demos/ThirdParty/ImGuizmo/ImGradient.cpp",
+		"$(SolutionDir)Demos/ThirdParty/ImGuizmo/ImGuizmo.cpp",
+		"$(SolutionDir)Demos/ThirdParty/ImGuizmo/ImSequencer.cpp",
 	}
 
 	includedirs {
 		"$(SolutionDir)Code",
 		"$(SolutionDir)Demos/DemoBase",
+		"%{IncludeDir.ImGuizmo}",
 		"%{IncludeDir.imgui}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.Assimp}",

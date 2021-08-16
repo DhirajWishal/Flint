@@ -26,6 +26,7 @@ workspace "Flint"
 	IncludeDir["SPIRV_Cross"] = "$(SolutionDir)ThirdParty/SPIRV-Cross/include"
 
 	IncludeDir["imgui"] = "$(SolutionDir)Demos/ThirdParty/imgui/"
+	IncludeDir["ImGuizmo"] = "$(SolutionDir)Demos/ThirdParty/ImGuizmo/"
 	IncludeDir["glm"] = "$(SolutionDir)Demos/ThirdParty/glm/"
 	IncludeDir["Assimp"] = "$(SolutionDir)Demos/ThirdParty/Assimp/include"
 

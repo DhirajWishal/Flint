@@ -9,6 +9,7 @@ SceneState::SceneState(const std::string& displayTitle)
 {
 	mSolutionPath = std::filesystem::path(__FILE__).parent_path().parent_path().parent_path().parent_path();
 	mAssetPath = mSolutionPath.string() + "\\Assets";
+	mCamera.SetPosition(glm::vec3(1.0f, 1.0f, 1.0f));
 
 #ifndef FLINT_RELEASE
 	pInstance = Flint::CreateInstance(false);

@@ -6,6 +6,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "Flint/ImageSampler.hpp"
 
+#include <imgui.h>
+#include <ImGuizmo.h>
+
 struct Vertex
 {
 	Vertex() = default;
@@ -94,28 +97,38 @@ void Light::OnUpdate(UI64 delta)
 		}
 	}
 
-	//auto [pitch, yaw] = pSceneState->mCamera.GetPitchYaw();
-	//mModelMatrix *= glm::rotate(glm::mat4(1.0f), glm::radians(-pitch), glm::vec3(1.0f, 0.0f, 0.0f));
-	//mModelMatrix *= glm::rotate(glm::mat4(1.0f), glm::radians(yaw), glm::vec3(0.0f, 1.0f, 0.0f));
-	//mModelMatrix *= glm::lookAt(mPosition, -pSceneState->mCamera.GetPosition(), pSceneState->mCamera.GetCameraUp());
-	//auto xx = mModelMatrix[0][0];
-	//auto yx = mModelMatrix[1][0];
-	//auto zx = mModelMatrix[2][0];
-	//
-	//xx = std::sqrt((xx * xx) + (yx * yx) + (zx * zx));
-	//mModelMatrix = glm::mat4(xx);
-	//mModelMatrix[0][3] = mPosition.x;
-	//mModelMatrix[1][3] = mPosition.y;
-	//mModelMatrix[2][3] = mPosition.z;
-	//mModelMatrix[3][3] = 1.0f;
-	//
-	//mModelMatrix *= glm::ortho()
+	auto mat = pSceneState->mCamera.GetMatrix();
+
+	{
+		static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::LOCAL);
+		static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
+
+		float* matrix = &mModelMatrix[0].x;
+		float matrixTranslation[3], matrixRotation[3], matrixScale[3];
+		ImGuizmo::DecomposeMatrixToComponents(matrix, matrixTranslation, matrixRotation, matrixScale);
+		ImGui::InputFloat3("Transform", matrixTranslation);
+		ImGui::InputFloat3("Rotation", matrixRotation);
+		ImGui::InputFloat3("Scale", matrixScale);
+		ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, matrix);
+		mPosition = glm::vec3(matrixTranslation[0], matrixTranslation[1], matrixTranslation[2]);
+
+		//mat.mViewMatrix = mModelMatrix;
+
+		// To fix inverted y axis.
+		mat.mViewMatrix[0][1] = -mat.mViewMatrix[0][1];
+		mat.mViewMatrix[1][1] = -mat.mViewMatrix[1][1];
+		mat.mViewMatrix[2][1] = -mat.mViewMatrix[2][1];
+		//mat.mViewMatrix *= -1.0f;
+		float* cameraView = &mat.mViewMatrix[0].x;
+		float* cameraProjection = &mat.mProjectionMatrix[0].x;
+
+		ImGuiIO& io = ImGui::GetIO();
+		float viewManipulateRight = io.DisplaySize.x;
+		float viewManipulateTop = io.DisplaySize.y;
+
+		ImGuizmo::SetRect(0, 0, viewManipulateRight, viewManipulateTop);
+		ImGuizmo::Manipulate(cameraView, cameraProjection, mCurrentGizmoOperation, mCurrentGizmoMode, matrix, NULL, NULL, NULL, NULL);
+	}
 
 	SubmitToUniformBuffer(pModelUniform, mModelMatrix);
-}
-
-void Light::SetPosition(glm::vec3 position)
-{
-	mPosition = position;
-	mModelMatrix = glm::translate(glm::mat4(1.0f), mPosition);
 }

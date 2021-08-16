@@ -5,6 +5,7 @@
 #include "Components/ImGui.hpp"
 #include "Objects/Preview.hpp"
 #include "Objects/Light.hpp"
+#include "ImGuizmo.h"
 
 #include <iostream>
 
@@ -24,7 +25,7 @@ int main(int argc, char** argv)
 
 			ImGUI mImGui(glm::vec3(0.0f), &mState);
 			std::vector<std::unique_ptr<GameObject>> pGameObjects;
-			pGameObjects.push_back(std::make_unique<Light>(glm::vec3(0.0f), &mState));
+			pGameObjects.push_back(std::make_unique<Light>(glm::vec3(1.0f), &mState));
 			pGameObjects.push_back(std::make_unique<Preview>(glm::vec3(0.0f), &mState, std::filesystem::path("E:\\Flint\\Assets\\Packages\\Tree001\\Tree01\\Tree1\\Tree1.obj"), std::vector<std::filesystem::path>{}));
 			
 			pLight = static_cast<Light*>(pGameObjects[0].get());
@@ -42,6 +43,8 @@ int main(int argc, char** argv)
 				mState.PrepareNewFrame();
 
 				ImGui::NewFrame();
+				ImGuizmo::SetOrthographic(false);
+				ImGuizmo::BeginFrame();
 
 				std::rotate(floatArray, floatArray + 1, floatArray + 100);
 				float frameTime = delta / (1000.0f * 1000.0f * 1000.0f);
@@ -82,15 +85,16 @@ int main(int argc, char** argv)
 				if (!io.WantCaptureMouse)
 				{
 					mState.UpdateCamera(delta);
+				}
 
 					//for (auto& pGameObject : pGameObjects)
 					//	pGameObject->OnUpdate(delta);
 
-					pPreview->OnUpdate(delta);
-
-					pLight->SetPosition(pPreview->GetLightPosition());
 					pLight->OnUpdate(delta);
-				}
+
+					pPreview->OnUpdate(delta);
+					pPreview->SetLightPosition(pLight->GetPosition());
+					//pLight->SetPosition(pPreview->GetLightPosition());
 
 				ImGui::Render();
 				mImGui.OnUpdate(0);

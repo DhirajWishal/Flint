@@ -28,6 +28,8 @@ public:
 	void UpdateBoundingBox();
 	void DisableBoundingBox();
 
+	const glm::vec3 GetPosition() const { return mPosition; }
+
 protected:
 	template<class Type>
 	void SubmitToUniformBuffer(std::shared_ptr<Flint::Buffer> pBuffer, const Type& data)

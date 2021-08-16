@@ -35,6 +35,7 @@ project "ShadowMap"
 		"$(SolutionDir)Demos/ShadowMap",
 		"$(SolutionDir)Demos/DemoBase",
 		"%{IncludeDir.imgui}",
+		"%{IncludeDir.ImGuizmo}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.Assimp}",
 	}

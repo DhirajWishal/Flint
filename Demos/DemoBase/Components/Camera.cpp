@@ -11,6 +11,9 @@ void Camera::Initialize(std::shared_ptr<Flint::Device> pDevice)
 {
 	pCameraBuffer = pDevice->CreateBuffer(Flint::BufferType::UNIFORM, sizeof(CameraMatrix));
 	this->pDevice = pDevice;
+
+	projectionMatrix = glm::perspective(glm::radians(fieldOfView), aspectRatio, cameraNear, cameraFar);
+	projectionMatrix[1][1] *= -1.0f;
 }
 
 void Camera::Terminate()
@@ -77,10 +80,8 @@ void Camera::Update(UI64 delta)
 	cameraFront = glm::normalize(front);
 	cameraRight = glm::normalize(glm::cross(cameraFront, worldUp));
 	cameraUp = glm::normalize(glm::cross(cameraRight, cameraFront));
-
+	
 	viewMatrix = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
-	projectionMatrix = glm::perspective(glm::radians(fieldOfView), aspectRatio, cameraNear, cameraFar);
-	projectionMatrix[1][1] *= -1.0f;
 
 	CameraMatrix* pMatrix = static_cast<CameraMatrix*>(pCameraBuffer->MapMemory(sizeof(CameraMatrix)));
 	*pMatrix = GetMatrix();

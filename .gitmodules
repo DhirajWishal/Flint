@@ -16,3 +16,6 @@
 [submodule "Demos/ThirdParty/imgui"]
 	path = Demos/ThirdParty/imgui
 	url = https://github.com/DhirajWishal/imgui
+[submodule "Demos/ThirdParty/ImGuizmo"]
+	path = Demos/ThirdParty/ImGuizmo
+	url = https://github.com/DhirajWishal/ImGuizmo

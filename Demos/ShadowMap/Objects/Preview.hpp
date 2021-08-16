@@ -19,6 +19,7 @@ public:
 
 	virtual void OnUpdate(UI64 delta) override final;
 	const glm::vec3 GetLightPosition() const { return mLight.mLightPosition; }
+	void SetLightPosition(glm::vec3 pos) { mLight.mLightPosition = pos; }
 
 private:
 	void PrepareNoTexturePipeline();
