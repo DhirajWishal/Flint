@@ -1,7 +1,7 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#include "VulkanBackend/OffScreenRenderTargets/VulkanShadowMap.hpp"
+#include "VulkanBackend/OffScreenRenderTargets/VulkanMousePicker.hpp"
 #include "VulkanBackend/VulkanScreenBoundRenderTarget.hpp"
 #include "VulkanBackend/VulkanGraphicsPipeline.hpp"
 #include "VulkanBackend/VulkanImage.hpp"
@@ -11,45 +11,42 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanShadowMap::VulkanShadowMap(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, UI32 threadCount)
+		VulkanMousePicker::VulkanMousePicker(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, UI32 threadCount)
 			: VulkanOffScreenRenderTarget(pDevice, OffScreenRenderTargetType::SHADOW_MAP, extent, bufferCount, threadCount)
 		{
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 			pSecondaryCommandBuffer = std::make_unique<VulkanCommandBufferList>(pDevice, bufferCount, pCommandBufferList);
-			pResults.push_back(pDevice->CreateImage(ImageType::DIMENSIONS_2, ImageUsage::DEPTH, FBox3D(mExtent.mWidth, mExtent.mHeight, 1), PixelFormat::D16_SINT, 1, 1, nullptr));
+			pResults.push_back(pDevice->CreateImage(ImageType::DIMENSIONS_2, ImageUsage::COLOR, FBox3D(mExtent.mWidth, mExtent.mHeight, 1), PixelFormat::R32_SFLOAT, 1, 1, nullptr));
 
 			std::vector<VkSubpassDependency> vDependencies{ 2 };
 
 			vDependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
 			vDependencies[0].dstSubpass = 0;
-			vDependencies[0].srcStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-			vDependencies[0].dstStageMask = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-			vDependencies[0].srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
-			vDependencies[0].dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+			vDependencies[0].srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+			vDependencies[0].dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+			vDependencies[0].srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+			vDependencies[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 			vDependencies[0].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
 
 			vDependencies[1].srcSubpass = 0;
 			vDependencies[1].dstSubpass = VK_SUBPASS_EXTERNAL;
-			vDependencies[1].srcStageMask = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
-			vDependencies[1].dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-			vDependencies[1].srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-			vDependencies[1].dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+			vDependencies[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+			vDependencies[1].dstStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+			vDependencies[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+			vDependencies[1].dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
 			vDependencies[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
 
 			vRenderTarget.CreateRenderPass({ &pResults.back()->StaticCast<VulkanImage>() }, VK_PIPELINE_BIND_POINT_GRAPHICS, vDependencies);
 			vRenderTarget.CreateFrameBuffer({ &pResults.back()->StaticCast<VulkanImage>() }, extent, bufferCount);
 			vRenderTarget.CreateSyncObjects(bufferCount);
 
-			// Setup default clear color values.
-			pClearValues[1].color.float32[0] = CREATE_COLOR_256(32.0f);
-			pClearValues[1].color.float32[1] = CREATE_COLOR_256(32.0f);
-			pClearValues[1].color.float32[2] = CREATE_COLOR_256(32.0f);
-			pClearValues[1].color.float32[3] = 1.0f;
-			pClearValues[0].depthStencil.depth = 1.0f;
-			pClearValues[0].depthStencil.stencil = 0;
+			vClearValue.color.float32[0] = 0.0f;
+			vClearValue.color.float32[1] = 0.0f;
+			vClearValue.color.float32[2] = 0.0f;
+			vClearValue.color.float32[3] = 0.0f;
 		}
 
-		void VulkanShadowMap::Execute(const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget)
+		void VulkanMousePicker::Execute(const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget)
 		{
 			if (!pThisRenderTarget)
 				pThisRenderTarget = shared_from_this();
@@ -156,7 +153,7 @@ namespace Flint
 			}
 		}
 
-		void VulkanShadowMap::Terminate()
+		void VulkanMousePicker::Terminate()
 		{
 			vRenderTarget.Terminate();
 
@@ -172,22 +169,22 @@ namespace Flint
 			pResults.clear();
 		}
 
-		VkFramebuffer VulkanShadowMap::GetFrameBuffer(UI32 index) const
+		VkFramebuffer VulkanMousePicker::GetFrameBuffer(UI32 index) const
 		{
 			return vRenderTarget.vFrameBuffers[index];
 		}
 
-		FColor4D VulkanShadowMap::GetClearColor() const
+		FColor4D VulkanMousePicker::GetClearColor() const
 		{
-			return FColor4D(pClearValues[0].color.float32[0], pClearValues[0].color.float32[1], pClearValues[0].color.float32[2], pClearValues[0].color.float32[3]);
+			return FColor4D(vClearValue.color.float32[0], vClearValue.color.float32[1], vClearValue.color.float32[2], vClearValue.color.float32[3]);
 		}
 
-		void VulkanShadowMap::SetClearColor(const FColor4D& newColor)
+		void VulkanMousePicker::SetClearColor(const FColor4D& newColor)
 		{
-			pClearValues[0].color.float32[0] = newColor.mRed;
-			pClearValues[0].color.float32[1] = newColor.mGreen;
-			pClearValues[0].color.float32[2] = newColor.mBlue;
-			pClearValues[0].color.float32[3] = newColor.mAlpha;
+			vClearValue.color.float32[0] = newColor.mRed;
+			vClearValue.color.float32[1] = newColor.mGreen;
+			vClearValue.color.float32[2] = newColor.mBlue;
+			vClearValue.color.float32[3] = newColor.mAlpha;
 		}
 	}
 }

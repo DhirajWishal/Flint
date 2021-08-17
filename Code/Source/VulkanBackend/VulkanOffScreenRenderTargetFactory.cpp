@@ -3,6 +3,7 @@
 
 #include "VulkanBackend/VulkanOffScreenRenderTargetFactory.hpp"
 #include "VulkanBackend/OffScreenRenderTargets/VulkanShadowMap.hpp"
+#include "VulkanBackend/OffScreenRenderTargets/VulkanMousePicker.hpp"
 
 namespace Flint
 {
@@ -17,6 +18,9 @@ namespace Flint
 
 			case Flint::OffScreenRenderTargetType::POINT_SHADOW_MAP:
 				break;
+
+			case Flint::OffScreenRenderTargetType::MOUSE_PICKER:
+				return std::make_shared<VulkanMousePicker>(pDevice, extent, bufferCount, threadCount);
 
 			default:
 				FLINT_THROW_INVALID_ARGUMENT("Invalid off screen render target type!");

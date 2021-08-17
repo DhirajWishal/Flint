@@ -12,8 +12,8 @@ SceneState::SceneState(const std::string& displayTitle)
 	mCamera.SetPosition(glm::vec3(1.0f, 1.0f, 1.0f));
 
 #ifndef FLINT_RELEASE
-	pInstance = Flint::CreateInstance(false);
-	//pInstance = Flint::CreateInstance(true);
+	//pInstance = Flint::CreateInstance(false);
+	pInstance = Flint::CreateInstance(true);
 
 #else
 	pInstance = Flint::CreateInstance(false);

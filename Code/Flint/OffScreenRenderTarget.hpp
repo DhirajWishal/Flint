@@ -16,6 +16,7 @@ namespace Flint
 	enum class OffScreenRenderTargetType : UI8 {
 		SHADOW_MAP,
 		POINT_SHADOW_MAP,
+		MOUSE_PICKER,
 	};
 
 	/**

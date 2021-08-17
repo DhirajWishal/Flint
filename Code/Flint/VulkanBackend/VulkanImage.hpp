@@ -15,6 +15,7 @@ namespace Flint
 		public:
 			VulkanImage(const std::shared_ptr<Device>& pDevice, ImageType type, ImageUsage usage, const FBox3D& extent, PixelFormat format, UI8 layers, UI32 mipLevels, const void* pImageData);
 
+			virtual std::shared_ptr<Buffer> CopyToBuffer() override final;
 			virtual void Terminate() override final;
 
 			void CopyFromImage(VkImage vSrcImage, VkImageLayout vSrcLayout, VkOffset3D srcOffset, VkOffset3D dstOffset, VkImageSubresourceLayers subresourceLayers);

@@ -67,6 +67,9 @@ namespace Flint
 				case Flint::PixelFormat::D32_SFLOAT:
 					return VkFormat::VK_FORMAT_D32_SFLOAT;
 
+				case Flint::PixelFormat::R32_SFLOAT:
+					return VkFormat::VK_FORMAT_R32_SFLOAT;
+
 				default:
 					FLINT_THROW_BACKEND_ERROR("Invalid or undefined pixel format!");
 				}
@@ -83,6 +86,9 @@ namespace Flint
 
 				case Flint::ImageUsage::STORAGE:
 					return VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_DST_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_STORAGE_BIT;
+				case Flint::ImageUsage::COLOR:
+
+					return VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_DST_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_STORAGE_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
 				case Flint::ImageUsage::DEPTH:
 					return VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_DST_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_SAMPLED_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
@@ -102,24 +108,17 @@ namespace Flint
 					return 1;
 
 				case Flint::PixelFormat::R8G8_SRGB:
-					return 2;
-
-				case Flint::PixelFormat::R8G8B8_SRGB:
-					return 3;
-
-				case Flint::PixelFormat::R8G8B8A8_SRGB:
-					return 4;
-
-				case Flint::PixelFormat::B8G8R8_SRGB:
-					return 3;
-
-				case Flint::PixelFormat::B8G8R8A8_SRGB:
-					return 4;
-
 				case Flint::PixelFormat::D16_SINT:
 					return 2;
 
+				case Flint::PixelFormat::R8G8B8_SRGB:
+				case Flint::PixelFormat::B8G8R8_SRGB:
+					return 3;
+
+				case Flint::PixelFormat::R8G8B8A8_SRGB:
+				case Flint::PixelFormat::B8G8R8A8_SRGB:
 				case Flint::PixelFormat::D32_SFLOAT:
+				case Flint::PixelFormat::R32_SFLOAT:
 					return 4;
 				}
 
@@ -166,9 +165,8 @@ namespace Flint
 				switch (usage)
 				{
 				case Flint::ImageUsage::GRAPHICS:
-					return VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
-
 				case Flint::ImageUsage::STORAGE:
+				case Flint::ImageUsage::COLOR:
 					return VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
 
 				case Flint::ImageUsage::DEPTH:
@@ -193,11 +191,11 @@ namespace Flint
 			if (pImageData)
 			{
 				UI64 size = static_cast<UI64>(mExtent.mWidth) * mExtent.mHeight * mExtent.mDepth * _Helpers::GetByteDepth(mFormat) * mLayerCount;
-				VulkanBuffer vStaggingBuffer(pDevice, BufferType::STAGGING, size);
+				VulkanBuffer vStagingBuffer(pDevice, BufferType::STAGING, size);
 
-				BYTE* pBytes = static_cast<BYTE*>(vStaggingBuffer.MapMemory(size));
+				BYTE* pBytes = static_cast<BYTE*>(vStagingBuffer.MapMemory(size));
 				std::copy(static_cast<const BYTE*>(pImageData), static_cast<const BYTE*>(pImageData) + size, pBytes);
-				vStaggingBuffer.UnmapMemory();
+				vStagingBuffer.UnmapMemory();
 
 				vDevice.SetImageLayout(vImage, vCurrentLayout, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, _Helpers::GetImageFormat(mFormat), mLayerCount, 0, mMipLevels);
 				vCurrentLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
@@ -218,23 +216,62 @@ namespace Flint
 					vCopy.imageSubresource.mipLevel = 0;
 
 					VulkanOneTimeCommandBuffer vCommandBuffer(vDevice);
-					vkCmdCopyBufferToImage(vCommandBuffer, vStaggingBuffer.GetBuffer(), vImage, vCurrentLayout, 1, &vCopy);
+					vkCmdCopyBufferToImage(vCommandBuffer, vStagingBuffer.GetBuffer(), vImage, vCurrentLayout, 1, &vCopy);
 				}
 
-				vStaggingBuffer.Terminate();
+				vStagingBuffer.Terminate();
 			}
 
-			if (mType != ImageType::CUBEMAP && mType != ImageType::CUBEMAP_ARRAY && mUsage != ImageUsage::DEPTH)
+			if (mType != ImageType::CUBEMAP && mType != ImageType::CUBEMAP_ARRAY && mUsage != ImageUsage::DEPTH && mUsage != ImageUsage::COLOR)
 				GenerateMipMaps();
 			else if (mUsage == ImageUsage::DEPTH)
 			{
 				vCurrentLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;	// TODO
+			}
+			else if (mUsage == ImageUsage::COLOR)
+			{
+				vDevice.SetImageLayout(vImage, vCurrentLayout, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, _Helpers::GetImageFormat(mFormat), mLayerCount, 0, mMipLevels);
+				vCurrentLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 			}
 			else
 			{
 				vDevice.SetImageLayout(vImage, vCurrentLayout, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, _Helpers::GetImageFormat(mFormat), mLayerCount, 0, mMipLevels);
 				vCurrentLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 			}
+		}
+
+		std::shared_ptr<Buffer> VulkanImage::CopyToBuffer()
+		{
+			std::shared_ptr<VulkanBuffer> pBuffer = std::make_shared<VulkanBuffer>(pDevice, BufferType::STAGING, static_cast<UI64>(mExtent.mWidth) * mExtent.mHeight * mExtent.mDepth * _Helpers::GetByteDepth(mFormat) * mLayerCount);
+
+
+			VkBufferImageCopy vCopy = {};
+			vCopy.bufferOffset = 0;
+			vCopy.bufferImageHeight = mExtent.mHeight;
+			vCopy.bufferRowLength = mExtent.mWidth;
+			vCopy.imageOffset = { 0, 0, 0 };
+			vCopy.imageExtent.width = mExtent.mWidth;
+			vCopy.imageExtent.height = mExtent.mHeight;
+			vCopy.imageExtent.depth = mExtent.mDepth;
+			vCopy.imageSubresource.aspectMask = _Helpers::GetImageAspectFlags(mUsage);
+			vCopy.imageSubresource.baseArrayLayer = 0;
+			vCopy.imageSubresource.layerCount = mLayerCount;
+			vCopy.imageSubresource.mipLevel = 0;	// TODO
+
+			{
+				VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
+				VulkanOneTimeCommandBuffer vCommandBuffer(vDevice);
+
+				vDevice.SetImageLayout(vCommandBuffer, vImage, vCurrentLayout, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, _Helpers::GetImageFormat(mFormat), mLayerCount, 0, mMipLevels);
+				vCurrentLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+
+				vkCmdCopyImageToBuffer(vCommandBuffer, vImage, vCurrentLayout, pBuffer->GetBuffer(), 1, &vCopy);
+
+				vDevice.SetImageLayout(vCommandBuffer, vImage, vCurrentLayout, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, _Helpers::GetImageFormat(mFormat), mLayerCount, 0, mMipLevels);
+				vCurrentLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+			}
+
+			return pBuffer;
 		}
 
 		void VulkanImage::Terminate()
@@ -271,18 +308,30 @@ namespace Flint
 			vDesc.format = GetImageFormat();
 			vDesc.samples = VK_SAMPLE_COUNT_1_BIT;
 			vDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-			vDesc.finalLayout = mUsage == ImageUsage::DEPTH ? VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL : vCurrentLayout;
 			vDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 			vDesc.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
 			vDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 			vDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+
+			if (mUsage == ImageUsage::DEPTH)
+				vDesc.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
+			else if (mUsage == ImageUsage::COLOR)
+				vDesc.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+			else
+				vDesc.finalLayout = vCurrentLayout;
 
 			return vDesc;
 		}
 
 		VkImageLayout VulkanImage::GetAttachmentLayout() const
 		{
-			return mUsage == ImageUsage::DEPTH ? VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL : vCurrentLayout;
+			if (mUsage == ImageUsage::DEPTH)
+				return VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+			if (mUsage == ImageUsage::COLOR)
+				return VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+			return vCurrentLayout;
 		}
 
 		VkImageView VulkanImage::GetImageView(UI32 index) const
@@ -308,7 +357,7 @@ namespace Flint
 				vImageView = Utilities::CreateImageViews({ vImage }, _Helpers::GetImageFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), _Helpers::GetImageAspectFlags(mUsage), _Helpers::GetImageViewType(mType), 1, layerNumber, { VK_COMPONENT_SWIZZLE_R, VK_COMPONENT_SWIZZLE_G, VK_COMPONENT_SWIZZLE_B, VK_COMPONENT_SWIZZLE_A })[0];
 			else
 				vImageView = Utilities::CreateImageViews({ vImage }, _Helpers::GetImageFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), _Helpers::GetImageAspectFlags(mUsage), _Helpers::GetImageViewType(mType), 1, layerNumber)[0];
-			
+
 			return vImageView;
 		}
 

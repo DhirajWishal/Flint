@@ -52,7 +52,6 @@ namespace Flint
 				{
 				case Flint::VulkanBackend::RenderTargetAttachmenType::SWAP_CHAIN:
 					INSERT_INTO_VECTOR(vResolveAttachmentRef, vAR);
-					vSD.colorAttachmentCount++;
 					break;
 
 				case Flint::VulkanBackend::RenderTargetAttachmenType::COLOR_BUFFER:
@@ -64,12 +63,13 @@ namespace Flint
 					break;
 
 				default:
-					FLINT_THROW_RUNTIME_ERROR("Invalid or Undefined render target attachment type!");
+					FLINT_THROW_BACKEND_ERROR("Invalid or Undefined render target attachment type!");
 				}
 
 				vAR.attachment++;
 			}
 
+			vSD.colorAttachmentCount = static_cast<UI32>(vColorAttachmentRef.size());
 			vSD.pColorAttachments = vColorAttachmentRef.data();
 			vSD.pDepthStencilAttachment = vDepthAttachmentRef.data();
 			vSD.pResolveAttachments = vResolveAttachmentRef.data();

@@ -15,7 +15,7 @@ namespace Flint
 
 			switch (type)
 			{
-			case Flint::BufferType::STAGGING:
+			case Flint::BufferType::STAGING:
 				vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 				vMemoryProperties = VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
 				break;
@@ -79,8 +79,8 @@ namespace Flint
 			if (mode == BufferResizeMode::COPY)
 			{
 				// Create a stagging buffer to copy data to.
-				std::shared_ptr<Buffer> pStaggingBuffer = pDevice->CreateBuffer(BufferType::STAGGING, oldSize);
-				pStaggingBuffer->CopyFromBuffer(this->shared_from_this(), oldSize, 0, 0);
+				std::shared_ptr<Buffer> pStagingBuffer = pDevice->CreateBuffer(BufferType::STAGING, oldSize);
+				pStagingBuffer->CopyFromBuffer(this->shared_from_this(), oldSize, 0, 0);
 
 				// Terminate the existing buffer and get the new size.
 				Terminate();
@@ -91,8 +91,8 @@ namespace Flint
 				CreateBufferMemory();
 
 				// Copy buffer content.
-				CopyFromBuffer(pStaggingBuffer, oldSize, 0, 0);
-				pDevice->DestroyBuffer(pStaggingBuffer);
+				CopyFromBuffer(pStagingBuffer, oldSize, 0, 0);
+				pDevice->DestroyBuffer(pStagingBuffer);
 			}
 			else if (mode == BufferResizeMode::CLEAR)
 			{

@@ -19,14 +19,11 @@ namespace Flint
 			virtual void BindVolatileInstances() override final;
 			virtual void SecondaryCommandsWorker(DrawInstanceMap& drawInstanceMap, std::list<std::shared_ptr<GeometryStore>>& drawOrder, BinarySemaphore& binarySemaphore, CountingSemaphore& countingSemaphore, std::atomic<bool>& shouldRun) override final;
 
-			virtual FColor4D GetClearColor() const override final;
-			virtual void SetClearColor(const FColor4D& newColor) override final;
-
 			VkRenderPass GetRenderPass() const { return vRenderTarget.vRenderPass; }
 			virtual VkFramebuffer GetFrameBuffer(UI32 index) const = 0;
 
-			const UI32 GetClearScreenValueCount() const { return static_cast<UI32>(pResults.size()); }
-			const VkClearValue* GetClearScreenValues() const { return pClearValues; }
+			virtual const UI32 GetClearScreenValueCount() const = 0;
+			virtual const VkClearValue* GetClearScreenValues() const = 0;
 
 		protected:
 			VulkanRenderTarget vRenderTarget;
@@ -34,8 +31,6 @@ namespace Flint
 			std::unique_ptr<VulkanCommandBufferList> pSecondaryCommandBuffer = nullptr;
 			std::shared_ptr<OffScreenRenderTarget> pThisRenderTarget = nullptr;
 			VkCommandBufferInheritanceInfo vInheritInfo = {};
-
-			VkClearValue pClearValues[2] = {};
 		};
 	}
 }

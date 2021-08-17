@@ -85,7 +85,7 @@ Asset ImportAsset(const std::shared_ptr<Flint::Device>& pDevice, const std::file
 		vertexCount += pScene->mMeshes[i]->mNumVertices;
 
 	Asset asset = {};
-	asset.pVertexBuffer = pDevice->CreateBuffer(Flint::BufferType::STAGGING, vertexCount * vertexSize);
+	asset.pVertexBuffer = pDevice->CreateBuffer(Flint::BufferType::STAGING, vertexCount * vertexSize);
 	float* pDataStore = static_cast<float*>(asset.pVertexBuffer->MapMemory(vertexCount * vertexSize));
 
 	UI64 indexCount = 0;
@@ -249,7 +249,7 @@ Asset ImportAsset(const std::shared_ptr<Flint::Device>& pDevice, const std::file
 	asset.pVertexBuffer->UnmapMemory();
 
 	// Create the index buffer.
-	asset.pIndexBuffer = pDevice->CreateBuffer(Flint::BufferType::STAGGING, indexCount * sizeof(UI32));
+	asset.pIndexBuffer = pDevice->CreateBuffer(Flint::BufferType::STAGING, indexCount * sizeof(UI32));
 	UI32* pIndexDataPointer = static_cast<UI32*>(asset.pIndexBuffer->MapMemory(indexCount * sizeof(UI32)));
 
 	// Copy data to the stagging buffer.

@@ -271,6 +271,9 @@ namespace Flint
 					if (resource->format == SpvReflectFormat::SPV_REFLECT_FORMAT_UNDEFINED)
 						continue;
 
+					if (resource->location >= mInputAttributes[0].size())
+						FLINT_THROW_BACKEND_ERROR("Invalid shader input location! Make sure that they are numbered and in order.");
+
 					mInputAttributes[0][resource->location] = ShaderAttribute(
 						resource->name,
 						resource->location,

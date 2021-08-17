@@ -58,14 +58,6 @@ namespace Flint
 			: OffScreenRenderTarget(pDevice, type, extent, bufferCount, pDevice->CreatePrimaryCommandBufferList(bufferCount), threadCount), vRenderTarget(pDevice->StaticCast<VulkanDevice>())
 		{
 			vInheritInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
-
-			// Setup default clear color values.
-			pClearValues[1].color.float32[0] = CREATE_COLOR_256(32.0f);
-			pClearValues[1].color.float32[1] = CREATE_COLOR_256(32.0f);
-			pClearValues[1].color.float32[2] = CREATE_COLOR_256(32.0f);
-			pClearValues[1].color.float32[3] = 1.0f;
-			pClearValues[0].depthStencil.depth = 1.0f;
-			pClearValues[0].depthStencil.stencil = 0;
 		}
 
 		void VulkanOffScreenRenderTarget::BindVolatileInstances()
@@ -74,19 +66,6 @@ namespace Flint
 
 		void VulkanOffScreenRenderTarget::SecondaryCommandsWorker(DrawInstanceMap& drawInstanceMap, std::list<std::shared_ptr<GeometryStore>>& drawOrder, BinarySemaphore& binarySemaphore, CountingSemaphore& countingSemaphore, std::atomic<bool>& shouldRun)
 		{
-		}
-
-		FColor4D VulkanOffScreenRenderTarget::GetClearColor() const
-		{
-			return FColor4D(pClearValues[0].color.float32[0], pClearValues[0].color.float32[1], pClearValues[0].color.float32[2], pClearValues[0].color.float32[3]);
-		}
-
-		void VulkanOffScreenRenderTarget::SetClearColor(const FColor4D& newColor)
-		{
-			pClearValues[0].color.float32[0] = newColor.mRed;
-			pClearValues[0].color.float32[1] = newColor.mGreen;
-			pClearValues[0].color.float32[2] = newColor.mBlue;
-			pClearValues[0].color.float32[3] = newColor.mAlpha;
 		}
 	}
 }

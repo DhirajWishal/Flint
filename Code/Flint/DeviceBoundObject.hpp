@@ -115,7 +115,7 @@ namespace Flint
 	 */
 	enum class BufferType : UI8 {
 		UNDEFINED,
-		STAGGING,
+		STAGING,
 		VERTEX, INDEX,
 		UNIFORM, STORAGE
 	};
@@ -157,7 +157,8 @@ namespace Flint
 	enum class ImageUsage : UI8 {
 		GRAPHICS,
 		STORAGE,
-		DEPTH
+		DEPTH,
+		COLOR
 	};
 
 	/**
@@ -173,6 +174,8 @@ namespace Flint
 
 		B8G8R8_SRGB,
 		B8G8R8A8_SRGB,
+
+		R32_SFLOAT,
 
 		D16_SINT,
 		D32_SFLOAT,

@@ -128,6 +128,7 @@ void Light::OnUpdate(UI64 delta)
 
 		ImGuizmo::SetRect(0, 0, viewManipulateRight, viewManipulateTop);
 		ImGuizmo::Manipulate(cameraView, cameraProjection, mCurrentGizmoOperation, mCurrentGizmoMode, matrix, NULL, NULL, NULL, NULL);
+		//ImGuizmo::SetGizmoSizeClipSpace(10);
 	}
 
 	SubmitToUniformBuffer(pModelUniform, mModelMatrix);

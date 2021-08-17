@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "DeviceBoundObject.hpp"
+#include "Buffer.hpp"
 
 namespace Flint
 {
@@ -27,6 +27,36 @@ namespace Flint
 		 * @param pImageData: The image data pointer to load data from.
 		 */
 		Image(const std::shared_ptr<Device>& pDevice, ImageType type, ImageUsage usage, const FBox3D& extent, PixelFormat format, UI8 layers, UI32 mipLevels, const void* pImageData);
+
+		/**
+		 * Copy the image content to a buffer.
+		 * 
+		 * @return The stagging buffer.
+		 */
+		virtual std::shared_ptr<Buffer> CopyToBuffer() = 0;
+
+		/**
+		 * Get the value of a single pixel.
+		 * 
+		 * @tparam Type: The type of the pixel.
+		 * @param position: The position of the pixel.
+		 * @return The pixel data.
+		 */
+		template<class Type>
+		Type GetPixelValue(const FBox3D position)
+		{
+			std::shared_ptr<Buffer> pStagingBuffer = CopyToBuffer();
+			Type* pPixels = static_cast<Type*>(pStagingBuffer->MapMemory(pStagingBuffer->GetSize()));
+
+			UI64 row = static_cast<UI64>(position.mHeight) * mExtent.mWidth;
+			UI64 index = row + position.mWidth;
+			Type pixel = pPixels[index];
+
+			pStagingBuffer->UnmapMemory();
+			pDevice->DestroyBuffer(pStagingBuffer);
+
+			return pixel;
+		}
 
 	public:
 		/**

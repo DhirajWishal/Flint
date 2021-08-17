@@ -173,7 +173,7 @@ void ImGUI::UpdateBuffers()
 
 	if (pGeometryStore->GetVertexCount() != pDrawData->TotalVtxCount)
 	{
-		pVertexBuffer = pSceneState->pDevice->CreateBuffer(Flint::BufferType::STAGGING, vertexSize);
+		pVertexBuffer = pSceneState->pDevice->CreateBuffer(Flint::BufferType::STAGING, vertexSize);
 		pVertexData = static_cast<ImDrawVert*>(pVertexBuffer->MapMemory(vertexSize));
 	}
 	else
@@ -181,7 +181,7 @@ void ImGUI::UpdateBuffers()
 
 	if (pGeometryStore->GetIndexCount() < pDrawData->TotalIdxCount)
 	{
-		pIndexBuffer = pSceneState->pDevice->CreateBuffer(Flint::BufferType::STAGGING, indexSize);
+		pIndexBuffer = pSceneState->pDevice->CreateBuffer(Flint::BufferType::STAGING, indexSize);
 		pIndexData = static_cast<ImDrawIdx*>(pIndexBuffer->MapMemory(indexSize));
 	}
 	else
