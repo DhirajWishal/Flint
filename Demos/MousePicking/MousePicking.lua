@@ -35,6 +35,7 @@ project "MousePicking"
 		"$(SolutionDir)Demos/Skybox",
 		"$(SolutionDir)Demos/MousePicking",
 		"$(SolutionDir)Demos/DemoBase",
+		"%{IncludeDir.ImGuizmo}",
 		"%{IncludeDir.imgui}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.Assimp}",

@@ -97,11 +97,10 @@ void Light::OnUpdate(UI64 delta)
 		}
 	}
 
-	auto mat = pSceneState->mCamera.GetMatrix();
-
 	{
+		auto mat = pSceneState->mCamera.GetMatrix();
 		static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::LOCAL);
-		static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
+		static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::UNIVERSAL);
 
 		float* matrix = &mModelMatrix[0].x;
 		float matrixTranslation[3], matrixRotation[3], matrixScale[3];
@@ -112,13 +111,12 @@ void Light::OnUpdate(UI64 delta)
 		ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, matrix);
 		mPosition = glm::vec3(matrixTranslation[0], matrixTranslation[1], matrixTranslation[2]);
 
-		//mat.mViewMatrix = mModelMatrix;
-
 		// To fix inverted y axis.
 		mat.mViewMatrix[0][1] = -mat.mViewMatrix[0][1];
 		mat.mViewMatrix[1][1] = -mat.mViewMatrix[1][1];
 		mat.mViewMatrix[2][1] = -mat.mViewMatrix[2][1];
-		//mat.mViewMatrix *= -1.0f;
+		mat.mViewMatrix[3][1] = -mat.mViewMatrix[3][1];
+
 		float* cameraView = &mat.mViewMatrix[0].x;
 		float* cameraProjection = &mat.mProjectionMatrix[0].x;
 
@@ -128,7 +126,6 @@ void Light::OnUpdate(UI64 delta)
 
 		ImGuizmo::SetRect(0, 0, viewManipulateRight, viewManipulateTop);
 		ImGuizmo::Manipulate(cameraView, cameraProjection, mCurrentGizmoOperation, mCurrentGizmoMode, matrix, NULL, NULL, NULL, NULL);
-		//ImGuizmo::SetGizmoSizeClipSpace(10);
 	}
 
 	SubmitToUniformBuffer(pModelUniform, mModelMatrix);

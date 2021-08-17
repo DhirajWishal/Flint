@@ -7,6 +7,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 
+#include <imgui.h>
+#include <ImGuizmo.h>
+
 VikingRoom::VikingRoom(glm::vec3 position, SceneState* pSceneState) : GameObject(position, pSceneState)
 {
 	pDynamicStates = std::make_shared<Flint::DynamicStateContainer>();
@@ -108,11 +111,55 @@ void VikingRoom::OnUpdate(UI64 delta)
 			mModelMatrix *= glm::rotate(glm::mat4(1.0f), -mRotationBias, glm::vec3(0.0f, 0.0f, 1.0f));
 	}
 
+	auto pos = pSceneState->pDisplay->GetMousePosition();
+	if ((pSceneState->pOffScreenRenderTargets["MousePicker"]->GetResult(0)->GetPixelValue<float>(Flint::FBox3D(static_cast<UI32>(pos.mWidth), static_cast<UI32>(pos.mHeight), 0)) == mUniformBufferObject.mIndex) && pSceneState->pDisplay->GetMouseButtonEvent(Flint::MouseButton::LEFT).IsPressed())
+		EnableBoundingBox();
+
+	if (pSceneState->pDisplay->GetMouseButtonEvent(Flint::MouseButton::RIGHT).IsPressed())
+		DisableBoundingBox();
+
+
+	if (bIsBoundingBoxEnabled)
 	{
-		auto pos = pSceneState->pDisplay->GetMousePosition();
-		if ((pSceneState->pOffScreenRenderTargets["MousePicker"]->GetResult(0)->GetPixelValue<float>(Flint::FBox3D(static_cast<UI32>(pos.mWidth), static_cast<UI32>(pos.mHeight), 0)) == mUniformBufferObject.mIndex) && pSceneState->pDisplay->GetMouseButtonEvent(Flint::MouseButton::LEFT).IsPressed())
-			std::cout << "Clicked! @" << pos.mWidth << " - " << pos.mHeight << std::endl;
+		auto mat = pSceneState->mCamera.GetMatrix();
+		static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::LOCAL);
+		static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::UNIVERSAL);
+
+		auto pDisplay = pSceneState->pDisplay;
+		if (pDisplay->GetKeyEvent(Flint::KeyCode::KEY_1).IsPressed())
+			mCurrentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
+		else if (pDisplay->GetKeyEvent(Flint::KeyCode::KEY_2).IsPressed())
+			mCurrentGizmoOperation = ImGuizmo::OPERATION::ROTATE;
+		else if (pDisplay->GetKeyEvent(Flint::KeyCode::KEY_3).IsPressed())
+			mCurrentGizmoOperation = ImGuizmo::OPERATION::SCALE;
+
+		float* matrix = &mModelMatrix[0].x;
+		float matrixTranslation[3], matrixRotation[3], matrixScale[3];
+		ImGuizmo::DecomposeMatrixToComponents(matrix, matrixTranslation, matrixRotation, matrixScale);
+		ImGui::InputFloat3("Transform", matrixTranslation);
+		ImGui::InputFloat3("Rotation", matrixRotation);
+		ImGui::InputFloat3("Scale", matrixScale);
+		ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, matrix);
+		mPosition = glm::vec3(matrixTranslation[0], matrixTranslation[1], matrixTranslation[2]);
+
+		// To fix inverted y axis.
+		mat.mViewMatrix[0][1] = -mat.mViewMatrix[0][1];
+		mat.mViewMatrix[1][1] = -mat.mViewMatrix[1][1];
+		mat.mViewMatrix[2][1] = -mat.mViewMatrix[2][1];
+		mat.mViewMatrix[3][1] = -mat.mViewMatrix[3][1];
+
+		float* cameraView = &mat.mViewMatrix[0].x;
+		float* cameraProjection = &mat.mProjectionMatrix[0].x;
+
+		ImGuiIO& io = ImGui::GetIO();
+		float viewManipulateRight = io.DisplaySize.x;
+		float viewManipulateTop = io.DisplaySize.y;
+
+		ImGuizmo::SetRect(0, 0, viewManipulateRight, viewManipulateTop);
+		ImGuizmo::Manipulate(cameraView, cameraProjection, mCurrentGizmoOperation, mCurrentGizmoMode, matrix, NULL, NULL, NULL, NULL);
 	}
+	else
+		ImGuizmo::SetRect(0, 0, 0, 0);
 
 	// Submit data to uniforms.
 	mUniformBufferObject.mModel = mModelMatrix;

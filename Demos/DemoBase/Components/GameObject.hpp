@@ -53,10 +53,10 @@ protected:
 	const float mRotationBias = 0.05f;
 
 	glm::vec4 mBoundingBoxColor = {};
+	bool bIsBoundingBoxEnabled = false;
 
 private:
 	std::shared_ptr<Flint::DynamicStateContainer> pDynamicStates = nullptr;
 	std::shared_ptr<Flint::ResourceMap> pResourceMapBB = nullptr;
 	UI64 mBoundingBoxIndex = 0;
-	bool bIsBoundingBoxEnabled = false;
 };

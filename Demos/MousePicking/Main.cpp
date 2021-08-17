@@ -7,16 +7,13 @@
 #include "Objects/SkyBox.hpp"
 
 #include <iostream>
+#include <ImGuizmo.h>
 
 int main(int argc, char** argv)
 {
 	try
 	{
 		SceneState mState{ "Flint: Mouse Picking" };
-
-		float floatArray[100] = {};
-		float minFrameTime = std::numeric_limits<float>::max();
-		float maxFrameTime = 0.0f;
 
 		{
 			ImGUI mImGui(glm::vec3(0.0f), &mState);
@@ -36,18 +33,11 @@ int main(int argc, char** argv)
 				mState.PrepareNewFrame();
 
 				ImGui::NewFrame();
+				ImGuizmo::BeginFrame();
+				ImGuizmo::SetOrthographic(false);
 
-				std::rotate(floatArray, floatArray + 1, floatArray + 100);
-				float frameTime = delta / (1000.0f * 1000.0f * 1000.0f);
-				floatArray[99] = frameTime;
-
-				if (frameTime < minFrameTime)
-					minFrameTime = frameTime;
-
-				if (frameTime > maxFrameTime)
-					maxFrameTime = frameTime;
-
-				ImGui::PlotLines("Frame Times", &floatArray[0], 50, 0, "", minFrameTime, maxFrameTime, ImVec2(0, 80));
+				float frameTime = delta / (1000.0f * 1000.0f);
+				ImGui::Text("Frame Time: %f ms", frameTime);
 
 				ImGuiIO& io = ImGui::GetIO();
 
@@ -76,10 +66,10 @@ int main(int argc, char** argv)
 				if (!io.WantCaptureMouse)
 				{
 					mState.UpdateCamera(delta);
-
-					for (auto& pGameObject : pGameObjects)
-						pGameObject->OnUpdate(delta);
 				}
+
+				for (auto& pGameObject : pGameObjects)
+					pGameObject->OnUpdate(delta);
 
 				ImGui::Render();
 				mImGui.OnUpdate(0);
