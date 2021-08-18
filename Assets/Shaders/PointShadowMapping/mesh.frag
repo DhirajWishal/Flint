@@ -1,14 +1,6 @@
 #version 450
 
-layout (binding = 3) uniform samplerCube shadowMap;
-//layout (binding = 4) uniform sampler2D texSampler;
-
-//layout (location = 0) in vec3 inNormal;
-//layout (location = 1) in vec3 inColor;
-//layout (location = 2) in vec3 inViewVec;
-//layout (location = 3) in vec3 inLightVec;
-//layout (location = 4) in vec4 inShadowCoord;
-//layout (location = 5) in vec2 inUV;
+layout (binding = 3) uniform samplerCube shadowCubeMap;
 
 layout (location = 0) in vec3 inNormal;
 layout (location = 1) in vec3 inColor;
@@ -23,7 +15,7 @@ layout (location = 0) out vec4 outFragColor;
 #define SHADOW_OPACITY 0.5
 
 void main() 
-{	
+{
 	// Lighting
 	vec3 N = normalize(inNormal);
 	vec3 L = normalize(vec3(1.0));	
@@ -38,7 +30,7 @@ void main()
 		
 	// Shadow
 	vec3 lightVec = inWorldPos - inLightPos;
-    float sampledDist = texture(shadowMap, lightVec).r;
+    float sampledDist = texture(shadowCubeMap, lightVec).r;
     float dist = length(lightVec);
 
 	// Check if fragment is in shadow

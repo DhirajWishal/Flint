@@ -9,16 +9,22 @@ class Preview final : public GameObject
 {
 	struct Light
 	{
-		glm::mat4 mProjection = glm::mat4(1.0f);
 		glm::mat4 mModel = glm::mat4(1.0f);
 		glm::vec3 mLightPosition = glm::vec3(1.0f);
 	} mLight;
+
+	struct Camera
+	{
+		glm::mat4 mProjection = glm::mat4(1.0f);
+		glm::mat4 mView = glm::mat4(1.0f);
+	} mCamera;
 
 public:
 	Preview(glm::vec3 position, SceneState* pSceneState, std::filesystem::path model, std::vector<std::filesystem::path> textures);
 	~Preview();
 
 	virtual void OnUpdate(UI64 delta) override final;
+	void SetLightPosition(glm::vec3 pos) { mLight.mLightPosition = pos; }
 
 private:
 	void PrepareNoTexturePipeline();
@@ -47,5 +53,6 @@ private:
 	std::vector<std::shared_ptr<Flint::Buffer>> pModelMatrixes;
 	std::shared_ptr<Flint::Buffer> pLightUniform;
 	std::shared_ptr<Flint::Buffer> pShadowMapUniform;
+	std::shared_ptr<Flint::Buffer> pShadowMapCamera;
 	std::shared_ptr<Flint::Buffer> pLightObject;
 };

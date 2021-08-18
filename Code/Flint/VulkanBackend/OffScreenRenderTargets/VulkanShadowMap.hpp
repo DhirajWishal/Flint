@@ -24,11 +24,11 @@ namespace Flint
 			virtual FColor4D GetClearColor() const override final;
 			virtual void SetClearColor(const FColor4D& newColor) override final;
 
-			virtual const UI32 GetClearScreenValueCount() const override final { return static_cast<UI32>(pResults.size()); }
-			virtual const VkClearValue* GetClearScreenValues() const override final { return pClearValues; }
+			virtual const UI32 GetClearScreenValueCount() const override final { return 1; }
+			virtual const VkClearValue* GetClearScreenValues() const override final { return &vClearValue; }
 
 		private:
-			VkClearValue pClearValues[2] = {};
+			VkClearValue vClearValue = {};
 		};
 	}
 }

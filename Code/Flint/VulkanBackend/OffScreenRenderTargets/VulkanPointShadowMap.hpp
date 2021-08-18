@@ -4,17 +4,18 @@
 #pragma once
 
 #include "VulkanBackend/VulkanOffScreenRenderTarget.hpp"
-#include "VulkanBackend/VulkanRenderTarget.hpp"
-#include "VulkanBackend/VulkanCommandBufferList.hpp"
+#include "VulkanBackend/VulkanImage.hpp"
+
+#include <array>
 
 namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanMousePicker final : public VulkanOffScreenRenderTarget
+		class VulkanPointShadowMap final : public VulkanOffScreenRenderTarget
 		{
 		public:
-			VulkanMousePicker(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, UI32 threadCount = 0);
+			VulkanPointShadowMap(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, UI32 threadCount = 0);
 
 			virtual void Execute(const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget = nullptr) override final;
 			virtual void Terminate() override final;
@@ -24,11 +25,14 @@ namespace Flint
 			virtual FColor4D GetClearColor() const override final;
 			virtual void SetClearColor(const FColor4D& newColor) override final;
 
-			virtual const UI32 GetClearScreenValueCount() const override final { return 1; }
-			virtual const VkClearValue* GetClearScreenValues() const override final { return &vClearValue; }
+			virtual const UI32 GetClearScreenValueCount() const override final { return 2; }
+			virtual const VkClearValue* GetClearScreenValues() const override final { return pClearValues; }
 
 		private:
-			VkClearValue vClearValue = {};
+			std::unique_ptr<VulkanImage> pColorImage = nullptr;
+			std::unique_ptr<VulkanImage> pDepthImage = nullptr;
+
+			VkClearValue pClearValues[2] = {};
 		};
 	}
 }

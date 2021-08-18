@@ -32,6 +32,10 @@ namespace Flint
 
 		public:
 			VkImageView CreateLayerBasedImageView(UI32 layerNumber) const;
+			void SetImageLayout(VkCommandBuffer vCommandBuffer, VkImageLayout vNewLayout, UI32 layerCount = 1, UI32 layerIndex = 0, UI32 mipLevels = 1);
+			void SetImageLayout(VkImageLayout vNewLayout);
+
+			const VkImage GetImage() const { return vImage; }
 
 		private:
 			void CreateImage();

@@ -4,23 +4,28 @@
 #include "Components/GameObject.hpp"
 #include "Components/ImGui.hpp"
 #include "Objects/Preview.hpp"
+#include "Objects/Light.hpp"
 
 #include <iostream>
+#include <ImGuizmo.h>
 
 int main(int argc, char** argv)
 {
 	try
 	{
-		SceneState mState{ "Flint: ShadowMap" };
-
-		float floatArray[100] = {};
-		float minFrameTime = std::numeric_limits<float>::max();
-		float maxFrameTime = 0.0f;
+		SceneState mState{ "Flint: Point Shadow Map" };
 
 		{
+			Light* pLight = nullptr;
+			Preview* pPreview = nullptr;
+
 			ImGUI mImGui(glm::vec3(0.0f), &mState);
 			std::vector<std::unique_ptr<GameObject>> pGameObjects;
+			pGameObjects.push_back(std::make_unique<Light>(glm::vec3(1.0f), &mState));
 			pGameObjects.push_back(std::make_unique<Preview>(glm::vec3(0.0f), &mState, std::filesystem::path("E:\\Dynamik\\Game Repository\\InHouse\\DemoScene.obj"), std::vector<std::filesystem::path>{}));
+
+			pLight = static_cast<Light*>(pGameObjects[0].get());
+			pPreview = static_cast<Preview*>(pGameObjects[1].get());
 
 			std::chrono::time_point<std::chrono::high_resolution_clock> oldTimePoint = std::chrono::high_resolution_clock::now();
 
@@ -34,23 +39,16 @@ int main(int argc, char** argv)
 				mState.PrepareNewFrame();
 
 				ImGui::NewFrame();
+				ImGuizmo::SetOrthographic(false);
+				ImGuizmo::BeginFrame();
 
-				std::rotate(floatArray, floatArray + 1, floatArray + 100);
-				float frameTime = delta / (1000.0f * 1000.0f * 1000.0f);
-				floatArray[99] = frameTime;
-
-				if (frameTime < minFrameTime)
-					minFrameTime = frameTime;
-
-				if (frameTime > maxFrameTime)
-					maxFrameTime = frameTime;
-
-				ImGui::PlotLines("Frame Times", &floatArray[0], 50, 0, "", minFrameTime, maxFrameTime, ImVec2(0, 80));
+				float frameTime = delta / (1000.0f * 1000.0f);
+				ImGui::Text("Frame Time: %f ms", frameTime);
 
 				ImGuiIO& io = ImGui::GetIO();
 
 				{
-					io.DeltaTime = delta / (1000.0f * 1000.0f * 1000.0f);
+					io.DeltaTime = frameTime / 1000.0f;
 
 					auto extent = mState.pDisplay->GetExtent();
 					if (!extent.IsZero())
@@ -70,14 +68,17 @@ int main(int argc, char** argv)
 						io.MouseDown[1] = false;
 				}
 
-
 				if (!io.WantCaptureMouse)
-				{
 					mState.UpdateCamera(delta);
 
-					for (auto& pGameObject : pGameObjects)
-						pGameObject->OnUpdate(delta);
-				}
+				//for (auto& pGameObject : pGameObjects)
+				//	pGameObject->OnUpdate(delta);
+
+				pLight->OnUpdate(delta);
+
+				pPreview->OnUpdate(delta);
+				pPreview->SetLightPosition(pLight->GetPosition());
+				//pLight->SetPosition(pPreview->GetLightPosition());
 
 				ImGui::Render();
 				mImGui.OnUpdate(0);

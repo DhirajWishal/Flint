@@ -10,10 +10,15 @@ layout (location = 1) out vec3 outLightPos;
 
 layout (binding = 0) uniform UBO 
 {
-	mat4 projection;
 	mat4 model;
-	vec4 lightPos;
+	vec3 lightPos;
 } ubo;
+
+layout (binding = 1) uniform Camera
+{
+	mat4 projection;
+	mat4 view;
+} cam;
 
 layout(push_constant) uniform PushConsts 
 {
@@ -27,7 +32,7 @@ out gl_PerVertex
 
 void main()
 {
-	gl_Position = ubo.projection * pushConsts.view * ubo.model * vec4(inPos, 1.0);
+	gl_Position = cam.projection * pushConsts.view * ubo.model * vec4(inPos, 1.0);
 
 	outPos = vec4(inPos, 1.0f);
 	outLightPos = ubo.lightPos.xyz; 

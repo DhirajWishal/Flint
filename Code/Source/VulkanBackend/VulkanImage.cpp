@@ -86,8 +86,8 @@ namespace Flint
 
 				case Flint::ImageUsage::STORAGE:
 					return VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_DST_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_STORAGE_BIT;
-				case Flint::ImageUsage::COLOR:
 
+				case Flint::ImageUsage::COLOR:
 					return VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_DST_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_STORAGE_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
 				case Flint::ImageUsage::DEPTH:
@@ -174,6 +174,67 @@ namespace Flint
 				}
 
 				return VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
+			}
+
+			VkComponentMapping GetComponentMapping(PixelFormat format)
+			{
+				VkComponentMapping vComponentMapping = {};
+				switch (format)
+				{
+				case Flint::PixelFormat::UNDEFINED:
+				case Flint::PixelFormat::D16_SINT:
+				case Flint::PixelFormat::D32_SFLOAT:
+					vComponentMapping.r = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_IDENTITY;
+					vComponentMapping.g = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_IDENTITY;
+					vComponentMapping.b = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_IDENTITY;
+					vComponentMapping.a = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_IDENTITY;
+					break;
+
+				case Flint::PixelFormat::R32_SFLOAT:
+				case Flint::PixelFormat::R8_SRGB:
+					vComponentMapping.r = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_R;
+					vComponentMapping.g = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_R;
+					vComponentMapping.b = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_R;
+					vComponentMapping.a = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_R;
+					break;
+
+				case Flint::PixelFormat::R8G8_SRGB:
+					vComponentMapping.r = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_R;
+					vComponentMapping.g = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_G;
+					vComponentMapping.b = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_ZERO;
+					vComponentMapping.a = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_ZERO;
+					break;
+
+				case Flint::PixelFormat::R8G8B8_SRGB:
+					vComponentMapping.r = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_R;
+					vComponentMapping.g = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_G;
+					vComponentMapping.b = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_B;
+					vComponentMapping.a = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_ZERO;
+					break;
+
+				case Flint::PixelFormat::R8G8B8A8_SRGB:
+					vComponentMapping.r = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_R;
+					vComponentMapping.g = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_G;
+					vComponentMapping.b = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_B;
+					vComponentMapping.a = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_A;
+					break;
+
+				case Flint::PixelFormat::B8G8R8_SRGB:
+					vComponentMapping.b = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_R;
+					vComponentMapping.g = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_G;
+					vComponentMapping.r = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_B;
+					vComponentMapping.a = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_ZERO;
+					break;
+
+				case Flint::PixelFormat::B8G8R8A8_SRGB:
+					vComponentMapping.b = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_R;
+					vComponentMapping.g = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_G;
+					vComponentMapping.r = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_B;
+					vComponentMapping.a = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_A;
+					break;
+				}
+
+				return vComponentMapping;
 			}
 		}
 
@@ -361,6 +422,18 @@ namespace Flint
 			return vImageView;
 		}
 
+		void VulkanImage::SetImageLayout(VkCommandBuffer vCommandBuffer, VkImageLayout vNewLayout, UI32 layerCount, UI32 layerIndex, UI32 mipLevels)
+		{
+			pDevice->StaticCast<VulkanDevice>().SetImageLayout(vCommandBuffer, vImage, vCurrentLayout, vNewLayout, _Helpers::GetImageFormat(mFormat), layerCount, layerIndex, mipLevels);
+			vCurrentLayout = vNewLayout;
+		}
+
+		void VulkanImage::SetImageLayout(VkImageLayout vNewLayout)
+		{
+			VulkanOneTimeCommandBuffer vCommandBuffer(pDevice->StaticCast<VulkanDevice>());
+			SetImageLayout(vCommandBuffer, vNewLayout, mLayerCount, 0, mMipLevels);
+		}
+
 		void VulkanImage::CreateImage()
 		{
 			FLINT_SETUP_PROFILER();
@@ -404,7 +477,7 @@ namespace Flint
 			FLINT_SETUP_PROFILER();
 
 			if (mType == ImageType::CUBEMAP || mType == ImageType::CUBEMAP_ARRAY)
-				vImageView = Utilities::CreateImageViews({ vImage }, _Helpers::GetImageFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), _Helpers::GetImageAspectFlags(mUsage), _Helpers::GetImageViewType(mType), mLayerCount, 0, { VK_COMPONENT_SWIZZLE_R, VK_COMPONENT_SWIZZLE_G, VK_COMPONENT_SWIZZLE_B, VK_COMPONENT_SWIZZLE_A })[0];
+				vImageView = Utilities::CreateImageViews({ vImage }, _Helpers::GetImageFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), _Helpers::GetImageAspectFlags(mUsage), _Helpers::GetImageViewType(mType), mLayerCount, 0, _Helpers::GetComponentMapping(mFormat))[0];
 			else
 				vImageView = Utilities::CreateImageViews({ vImage }, _Helpers::GetImageFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), _Helpers::GetImageAspectFlags(mUsage), _Helpers::GetImageViewType(mType), mLayerCount)[0];
 		}

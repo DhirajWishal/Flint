@@ -22,7 +22,7 @@ int main(int argc, char** argv)
 			ImGUI mImGui(glm::vec3(0.0f), &mState);
 			std::vector<std::unique_ptr<GameObject>> pGameObjects;
 			pGameObjects.push_back(std::make_unique<Light>(glm::vec3(1.0f), &mState));
-			pGameObjects.push_back(std::make_unique<Preview>(glm::vec3(0.0f), &mState, std::filesystem::path("E:\\Flint\\Assets\\Packages\\Tree001\\Tree01\\Tree1\\Tree1.obj"), std::vector<std::filesystem::path>{}));
+			pGameObjects.push_back(std::make_unique<Preview>(glm::vec3(0.0f), &mState, std::filesystem::path("E:\\Dynamik\\Game Repository\\InHouse\\DemoScene.obj"), std::vector<std::filesystem::path>{}));
 
 			pLight = static_cast<Light*>(pGameObjects[0].get());
 			pPreview = static_cast<Preview*>(pGameObjects[1].get());

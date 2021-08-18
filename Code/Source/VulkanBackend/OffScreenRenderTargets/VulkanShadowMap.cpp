@@ -41,12 +41,8 @@ namespace Flint
 			vRenderTarget.CreateSyncObjects(bufferCount);
 
 			// Setup default clear color values.
-			pClearValues[1].color.float32[0] = CREATE_COLOR_256(32.0f);
-			pClearValues[1].color.float32[1] = CREATE_COLOR_256(32.0f);
-			pClearValues[1].color.float32[2] = CREATE_COLOR_256(32.0f);
-			pClearValues[1].color.float32[3] = 1.0f;
-			pClearValues[0].depthStencil.depth = 1.0f;
-			pClearValues[0].depthStencil.stencil = 0;
+			vClearValue.depthStencil.depth = 1.0f;
+			vClearValue.depthStencil.stencil = 0;
 		}
 
 		void VulkanShadowMap::Execute(const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget)
@@ -179,15 +175,15 @@ namespace Flint
 
 		FColor4D VulkanShadowMap::GetClearColor() const
 		{
-			return FColor4D(pClearValues[0].color.float32[0], pClearValues[0].color.float32[1], pClearValues[0].color.float32[2], pClearValues[0].color.float32[3]);
+			return FColor4D(vClearValue.color.float32[0], vClearValue.color.float32[1], vClearValue.color.float32[2], vClearValue.color.float32[3]);
 		}
 
 		void VulkanShadowMap::SetClearColor(const FColor4D& newColor)
 		{
-			pClearValues[0].color.float32[0] = newColor.mRed;
-			pClearValues[0].color.float32[1] = newColor.mGreen;
-			pClearValues[0].color.float32[2] = newColor.mBlue;
-			pClearValues[0].color.float32[3] = newColor.mAlpha;
+			vClearValue.color.float32[0] = newColor.mRed;
+			vClearValue.color.float32[1] = newColor.mGreen;
+			vClearValue.color.float32[2] = newColor.mBlue;
+			vClearValue.color.float32[3] = newColor.mAlpha;
 		}
 	}
 }

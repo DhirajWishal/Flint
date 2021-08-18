@@ -9,17 +9,22 @@
 #include <math.h>
 #include <glm/gtc/matrix_transform.hpp>
 
+std::vector<glm::mat4> views;
+
 Preview::Preview(glm::vec3 position, SceneState* pSceneState, std::filesystem::path model, std::vector<std::filesystem::path> texture)
 	: GameObject(position, pSceneState)
 {
 	pDynamicStates = std::make_shared<Flint::DynamicStateContainer>();
 	pShadowDynamicStates = std::make_shared<Flint::DynamicStateContainer>();
 
-	pSceneState->mCamera.SetCameraRange(1.0f, 100.0f);
+	pSceneState->mCamera.SetCameraRange(0.1f, 1024.0f);
 
-	mModelMatrix = glm::rotate(mModelMatrix, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	pLightUniform = pSceneState->pDevice->CreateBuffer(Flint::BufferType::UNIFORM, sizeof(glm::vec2));
+	mModelMatrix = glm::rotate(mModelMatrix, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	//SubmitToUniformBuffer(pModelMatrix, glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
+
+	pLightUniform = pSceneState->pDevice->CreateBuffer(Flint::BufferType::UNIFORM, sizeof(glm::vec3));
 	pShadowMapUniform = pSceneState->pDevice->CreateBuffer(Flint::BufferType::UNIFORM, sizeof(Light));
+	pShadowMapCamera = pSceneState->pDevice->CreateBuffer(Flint::BufferType::UNIFORM, sizeof(Camera));
 
 	std::vector<VertexAttribute> attributes(4);
 	attributes[0] = VertexAttribute(sizeof(glm::vec3), VertexAttributeType::POSITION);
@@ -28,6 +33,7 @@ Preview::Preview(glm::vec3 position, SceneState* pSceneState, std::filesystem::p
 	attributes[3] = VertexAttribute(sizeof(glm::vec3), VertexAttributeType::NORMAL);
 
 	auto asset = ImportAsset(pSceneState->pDevice, model, attributes);
+	views.resize(asset.mDrawInstances.size() * 6);
 
 	if (pSceneState->pGraphicsPipelines.find("Default") == pSceneState->pGraphicsPipelines.end())
 		pSceneState->CreateDefaultPipeline();
@@ -53,8 +59,9 @@ Preview::Preview(glm::vec3 position, SceneState* pSceneState, std::filesystem::p
 
 	auto [vertexOffset, indexOffset] = pSceneState->pGeometryStores["ShadowMap"]->AddGeometry(asset.pVertexBuffer, asset.pIndexBuffer);
 	UI32 imageIndex = 0;
-	for (auto instance : asset.mDrawInstances)
+	for (UI32 i = 0; i < asset.mDrawInstances.size(); i++)
 	{
+		auto instance = asset.mDrawInstances[i];
 		if (instance.mName == "Plane")
 			continue;
 
@@ -67,13 +74,13 @@ Preview::Preview(glm::vec3 position, SceneState* pSceneState, std::filesystem::p
 		std::shared_ptr<Flint::Buffer> pModelMatrix = pModelMatrixes.back();
 		//SubmitToUniformBuffer(pModelMatrix, instance.mTransform);
 		SubmitToUniformBuffer(pModelMatrix, glm::mat4(1.0f));
-		//SubmitToUniformBuffer(pModelMatrix, glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 0.5f)));
+		//SubmitToUniformBuffer(pModelMatrix, mModelMatrix);
 
 		auto pResourceMap = pPipeline->CreateResourceMap();
 		pResourceMap->SetResource("ubo", pModelMatrix);
 		pResourceMap->SetResource("cam", pSceneState->mCamera.GetCameraBuffer());
 		pResourceMap->SetResource("light", pLightUniform);
-		pResourceMap->SetResource("shadowMap", pShadowSampler, pSceneState->pOffScreenRenderTargets["ShadowMap"]->GetResult(0));
+		pResourceMap->SetResource("shadowCubeMap", pShadowSampler, pSceneState->pOffScreenRenderTargets["ShadowMap"]->GetResult(0));
 		//pResourceMap->SetResource("texSampler", pTextureSampler, pTexture);
 
 		mDrawIDs.push_back(pPipeline->AddDrawData(pResourceMap, pDynamicStates, vertexOffset + instance.mVertexOffset, instance.mVertexCount, indexOffset + instance.mIndexOffset, instance.mIndexCount));
@@ -81,14 +88,14 @@ Preview::Preview(glm::vec3 position, SceneState* pSceneState, std::filesystem::p
 		mIndexCount += instance.mIndexCount;
 
 		auto shadowResoutceMap = pSceneState->pGraphicsPipelines["DefaultOffScreenWireFrame"]->CreateResourceMap();
-		//shadowResoutceMap->SetResource("light", pShadowMapUniform);
+		shadowResoutceMap->SetResource("cam", pShadowMapCamera);
 		shadowResoutceMap->SetResource("ubo", pShadowMapUniform);
 		//shadowResoutceMap->SetResource("texSampler", pTextureSampler, pTexture);
 
 		for (UI32 faceIndex = 0; faceIndex < 6; faceIndex++)
 		{
 			glm::mat4 viewMatrix = glm::mat4(1.0f);
-			switch (faceIndex++)
+			switch (faceIndex)
 			{
 			case 0: // POSITIVE_X
 				viewMatrix = glm::rotate(viewMatrix, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -112,10 +119,12 @@ Preview::Preview(glm::vec3 position, SceneState* pSceneState, std::filesystem::p
 				break;
 			}
 
+			views[(i * 6) + faceIndex] = viewMatrix;
+
 			auto pDynamicStates = std::make_shared<Flint::DynamicStateContainer>();
-			pDynamicStates->SetViewPort(Flint::FExtent2D<float>{1048}, Flint::FExtent2D<float>(0.0f, 1.0f), { 0.0f, 0.0f });
-			pDynamicStates->SetScissor(Flint::FBox2D(1048), { 0, 0 });
-			pDynamicStates->SetConstantData(Flint::ShaderType::VERTEX, &viewMatrix, sizeof(viewMatrix));
+			pDynamicStates->SetViewPort(Flint::FExtent2D<float>{1024}, Flint::FExtent2D<float>(0.0f, 1.0f), { 0.0f, 0.0f });
+			pDynamicStates->SetScissor(Flint::FBox2D(1024), { 0, 0 });
+			pDynamicStates->SetConstantData(Flint::ShaderType::VERTEX, &views[(i * 6) + faceIndex], sizeof(viewMatrix));
 
 			pSceneState->pGraphicsPipelines["DefaultOffScreenWireFrame"]->AddDrawData(shadowResoutceMap, pDynamicStates, vertexOffset + instance.mVertexOffset, instance.mVertexCount, indexOffset + instance.mIndexOffset, instance.mIndexCount);
 		}
@@ -124,32 +133,8 @@ Preview::Preview(glm::vec3 position, SceneState* pSceneState, std::filesystem::p
 	pSceneState->pDevice->DestroyBuffer(asset.pVertexBuffer);
 	pSceneState->pDevice->DestroyBuffer(asset.pIndexBuffer);
 
-	//// Load the cube.
-	//asset = ImportAsset(pSceneState->pDevice, pSceneState->GetAssetPath().string() + "\\Models\\Cube\\Cube.obj", attributes);
-	//for (auto instance : asset.mDrawInstances)
-	//{
-	//	pLightObject = pSceneState->pDevice->CreateBuffer(Flint::BufferType::UNIFORM, sizeof(glm::mat4));
-	//
-	//	auto pResourceMap = pPipeline->CreateResourceMap();
-	//	pResourceMap->SetResource("ubo", pLightObject);
-	//	pResourceMap->SetResource("cam", pSceneState->mCamera.GetCameraBuffer());
-	//	pResourceMap->SetResource("light", pLightUniform);
-	//	pResourceMap->SetResource("shadowMap", pTextureSampler, pSceneState->pOffScreenRenderTargets["ShadowMap"]->GetResult(0));
-	//
-	//	mDrawIDs.push_back(pPipeline->AddDrawData(pResourceMap, pDynamicStates, vertexOffset + instance.mVertexOffset, instance.mVertexCount, indexOffset + instance.mIndexOffset, instance.mIndexCount));
-	//	mVertexCount += instance.mVertexCount;
-	//	mIndexCount += instance.mIndexCount;
-	//
-	//	auto shadowResoutceMap = pSceneState->pGraphicsPipelines["DefaultOffScreenWireFrame"]->CreateResourceMap();
-	//	shadowResoutceMap->SetResource("light", pShadowMapUniform);
-	//	pSceneState->pGraphicsPipelines["DefaultOffScreenWireFrame"]->AddDrawData(shadowResoutceMap, pDynamicStates, vertexOffset + instance.mVertexOffset, instance.mVertexCount, indexOffset + instance.mIndexOffset, instance.mIndexCount);
-	//}
-
 	mVertexOffset = vertexOffset;
 	mIndexOffset = indexOffset;
-
-	//pSceneState->pDevice->DestroyBuffer(asset.pVertexBuffer);
-	//pSceneState->pDevice->DestroyBuffer(asset.pIndexBuffer);
 }
 
 Preview::~Preview()
@@ -184,6 +169,7 @@ Preview::~Preview()
 
 	pSceneState->pDevice->DestroyBuffer(pLightUniform);
 	pSceneState->pDevice->DestroyBuffer(pShadowMapUniform);
+	pSceneState->pDevice->DestroyBuffer(pShadowMapCamera);
 }
 
 void Preview::OnUpdate(UI64 delta)
@@ -225,18 +211,23 @@ void Preview::OnUpdate(UI64 delta)
 			mLight.mLightPosition += -mRotationBias * glm::vec3(0.0f, 0.0f, 1.0f);
 	}
 
-	glm::mat4 depthProjectionMatrix = glm::perspective((float)(M_PI / 2.0), 1.0f, 1.0f, 96.0f);
-	glm::mat4 depthViewMatrix = glm::lookAt(mLight.mLightPosition, glm::vec3(0.0f), glm::vec3(0, 1, 0));
-	glm::mat4 depthModelMatrix = glm::mat4(1.0f);
 
-	//mLight.mLightPosition = pSceneState->mCamera.GetPosition();
-	//mLight.mLightSpace = pSceneState->mCamera.GetMatrix().mProjectionMatrix * pSceneState->mCamera.GetMatrix().mViewMatrix * glm::mat4(1.0f);
-	//mLight.mLightSpace = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
+#define SCALE		glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 0.5f))
+#define ROTATE		glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f))
+#define TRANSLATE	glm::translate(glm::mat4(1.0f), glm::vec3(-mLight.mLightPosition.x, -mLight.mLightPosition.y, -mLight.mLightPosition.z))
+
+	mCamera.mProjection = glm::perspective((float)(M_PI / 2.0), 1.0f, 0.1f, 1024.0f);
+	//mLight.mModel = mModelMatrix * TRANSLATE;
+	mLight.mModel = TRANSLATE;
+	//mLight.mModel = glm::mat4(1.0f);
+
+	//mLight.mLightPosition = glm::vec3(mModelMatrix * glm::vec4(mLight.mLightPosition, 1.0f));
 
 	// Submit data to uniforms.
 	SubmitToUniformBuffer(pShadowMapUniform, mLight);
+	SubmitToUniformBuffer(pShadowMapCamera, mCamera);
 	SubmitToUniformBuffer(pLightUniform, mLight.mLightPosition);
-	SubmitToUniformBuffer(pModelUniform, mModelMatrix);
+	//SubmitToUniformBuffer(pModelUniform, mModelMatrix);
 	//SubmitToUniformBuffer(pLightObject, glm::translate(glm::mat4(1.0f), mLight.mLightPosition - glm::vec3(1.0f)));
 }
 
@@ -262,12 +253,12 @@ void Preview::PrepareShadowMapPipeline()
 		return;
 
 	auto pFactory = pSceneState->pDevice->CreateOffScreenRenderTargetFactory();
-	
-	pSceneState->pOffScreenRenderTargets["ShadowMap"] = pFactory->Create(Flint::OffScreenRenderTargetType::SHADOW_MAP, Flint::FBox2D(1024), pSceneState->pScreenBoundRenderTargets["Default"]->GetBufferCount());;
+
+	pSceneState->pOffScreenRenderTargets["ShadowMap"] = pFactory->Create(Flint::OffScreenRenderTargetType::POINT_SHADOW_MAP, Flint::FBox2D(1024), pSceneState->pScreenBoundRenderTargets["Default"]->GetBufferCount());;
 	pSceneState->pScreenBoundRenderTargets["Default"]->AttachOffScreenRenderTarget(pSceneState->pOffScreenRenderTargets["ShadowMap"]);
 
-	pVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path(pSceneState->GetAssetPath().string() + "\\Shaders\\ShadowMapping\\mesh.vert.spv"));
-	pFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path(pSceneState->GetAssetPath().string() + "\\Shaders\\ShadowMapping\\mesh.frag.spv"));
+	pVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path(pSceneState->GetAssetPath().string() + "\\Shaders\\PointShadowMapping\\mesh.vert.spv"));
+	pFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path(pSceneState->GetAssetPath().string() + "\\Shaders\\PointShadowMapping\\mesh.frag.spv"));
 
 	Flint::GraphicsPipelineSpecification specification = {};
 	specification.mRasterizationSamples = pSceneState->pDevice->GetSupportedRasterizationSamples();
@@ -284,12 +275,13 @@ void Preview::PrepareShadowMapPipeline()
 		pShadowFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path(pSceneState->GetAssetPath().string() + "\\Shaders\\PointShadowMapping\\shader.frag.spv"));
 
 		specification.mRasterizationSamples = Flint::RasterizationSamples::BITS_1;
-		specification.mColorBlendAttachments.clear();
+		//specification.mColorBlendAttachments.clear();
 		specification.bEnableDepthBias = true;
+		specification.bEnableDepthTest = true;
 		specification.bEnableSampleShading = false;
 		specification.mMinSampleShading = 0.0f;
-		specification.mDepthSlopeFactor = 1.75f;
-		specification.mDepthConstantFactor = 1.25f;
+		//specification.mDepthSlopeFactor = 1.75f;
+		//specification.mDepthConstantFactor = 1.25f;
 		//specification.mCullMode = Flint::CullMode::FRONT;
 
 		pSceneState->pGraphicsPipelines["DefaultOffScreenWireFrame"] = pSceneState->pDevice->CreateGraphicsPipeline("DefaultOffScreenWireFrame", pSceneState->pOffScreenRenderTargets["ShadowMap"], pShadowVertexShader, nullptr, nullptr, nullptr, pShadowFragmentShader, specification);

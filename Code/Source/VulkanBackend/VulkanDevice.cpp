@@ -285,7 +285,7 @@ namespace Flint
 			switch (vOldLayout)
 			{
 			case VK_IMAGE_LAYOUT_UNDEFINED:
-				sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+				sourceStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
 				vMB.srcAccessMask = 0;
 				break;
 
@@ -341,10 +341,14 @@ namespace Flint
 
 			case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
 				if (vMB.srcAccessMask == 0)
+				{
 					vMB.srcAccessMask = VK_ACCESS_HOST_WRITE_BIT | VK_ACCESS_TRANSFER_WRITE_BIT;
+					destinationStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
+				}
+				else
+					destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
 
 				vMB.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-				destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
 				break;
 
 			case VK_IMAGE_LAYOUT_GENERAL:

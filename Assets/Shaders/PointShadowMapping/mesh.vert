@@ -37,15 +37,12 @@ void main()
 {
 	outColor = inColor;
 	outNormal = inNormal;
-
-	gl_Position = cam.projection * cam.view * ubo.model * vec4(inPos.xyz, 1.0);
 	
-    vec4 pos = ubo.model * vec4(inPos, 1.0);
-    outNormal = mat3(ubo.model) * inNormal;
-    outLightVec = normalize(light.lightPos - inPos);
-    outEyePos = pos.xyz;	
+	gl_Position = cam.projection * cam.view * ubo.model * vec4(inPos, 1.0);
+	outEyePos = vec3(ubo.model * vec4(inPos, 1.0f));
+	outLightVec = normalize(light.lightPos - inPos);	
 	outWorldPos = inPos;
-
-	outLightPos = light.lightPos.xyz;	
+	
+	outLightPos = light.lightPos;	
 }
 

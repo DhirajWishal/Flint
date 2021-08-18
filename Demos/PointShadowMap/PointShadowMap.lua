@@ -35,6 +35,7 @@ project "PointShadowMap"
 		"$(SolutionDir)Demos/PointShadowMap",
 		"$(SolutionDir)Demos/DemoBase",
 		"%{IncludeDir.imgui}",
+		"%{IncludeDir.ImGuizmo}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.Assimp}",
 	}
