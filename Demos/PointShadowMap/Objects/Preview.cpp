@@ -62,13 +62,13 @@ Preview::Preview(glm::vec3 position, SceneState* pSceneState, std::filesystem::p
 	for (UI32 i = 0; i < asset.mDrawInstances.size(); i++)
 	{
 		auto instance = asset.mDrawInstances[i];
-		if (instance.mName == "Plane")
-			continue;
+		//if (instance.mName == "Plane")
+		//	continue;
 
-		//auto image = LoadImage(texture[imageIndex++]);
-		//auto pTexture = pSceneState->pDevice->CreateImage(Flint::ImageType::DIMENSIONS_2, Flint::ImageUsage::GRAPHICS, image.mExtent, Flint::PixelFormat::R8G8B8A8_SRGB, 1, 1, image.pImageData);
-		//pTextures.push_back(pTexture);
-		//DestroyImage(image);
+		auto image = LoadImage(texture[imageIndex++]);
+		auto pTexture = pSceneState->pDevice->CreateImage(Flint::ImageType::DIMENSIONS_2, Flint::ImageUsage::GRAPHICS, image.mExtent, Flint::PixelFormat::R8G8B8A8_SRGB, 1, 1, image.pImageData);
+		pTextures.push_back(pTexture);
+		DestroyImage(image);
 
 		pModelMatrixes.push_back(pSceneState->pDevice->CreateBuffer(Flint::BufferType::UNIFORM, sizeof(glm::mat4)));
 		std::shared_ptr<Flint::Buffer> pModelMatrix = pModelMatrixes.back();
@@ -81,6 +81,7 @@ Preview::Preview(glm::vec3 position, SceneState* pSceneState, std::filesystem::p
 		pResourceMap->SetResource("cam", pSceneState->mCamera.GetCameraBuffer());
 		pResourceMap->SetResource("light", pLightUniform);
 		pResourceMap->SetResource("shadowCubeMap", pShadowSampler, pSceneState->pOffScreenRenderTargets["ShadowMap"]->GetResult(0));
+		pResourceMap->SetResource("texSampler", pTextureSampler, pTexture);
 		//pResourceMap->SetResource("texSampler", pTextureSampler, pTexture);
 
 		mDrawIDs.push_back(pPipeline->AddDrawData(pResourceMap, pDynamicStates, vertexOffset + instance.mVertexOffset, instance.mVertexCount, indexOffset + instance.mIndexOffset, instance.mIndexCount));
@@ -90,7 +91,7 @@ Preview::Preview(glm::vec3 position, SceneState* pSceneState, std::filesystem::p
 		auto shadowResoutceMap = pSceneState->pGraphicsPipelines["DefaultOffScreenWireFrame"]->CreateResourceMap();
 		shadowResoutceMap->SetResource("cam", pShadowMapCamera);
 		shadowResoutceMap->SetResource("ubo", pShadowMapUniform);
-		//shadowResoutceMap->SetResource("texSampler", pTextureSampler, pTexture);
+		shadowResoutceMap->SetResource("texSampler", pTextureSampler, pTexture);
 
 		for (UI32 faceIndex = 0; faceIndex < 6; faceIndex++)
 		{

@@ -22,7 +22,7 @@ layout (binding = 2) uniform Lights
 } light;
 
 layout (location = 0) out vec3 outNormal;
-layout (location = 1) out vec3 outColor;
+layout (location = 1) out vec2 outUV;
 layout (location = 2) out vec3 outEyePos;
 layout (location = 3) out vec3 outLightVec;
 layout (location = 4) out vec3 outWorldPos;
@@ -35,7 +35,7 @@ out gl_PerVertex
 
 void main() 
 {
-	outColor = inColor;
+	outUV = inUV;
 	outNormal = inNormal;
 	
 	gl_Position = cam.projection * cam.view * ubo.model * vec4(inPos, 1.0);

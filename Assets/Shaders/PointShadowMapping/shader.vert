@@ -7,6 +7,7 @@ layout (location = 3) in vec3 inNormal;
 
 layout (location = 0) out vec4 outPos;
 layout (location = 1) out vec3 outLightPos;
+layout (location = 2) out vec2 outUV;
 
 layout (binding = 0) uniform UBO 
 {
@@ -36,4 +37,5 @@ void main()
 
 	outPos = vec4(inPos, 1.0f);
 	outLightPos = ubo.lightPos.xyz; 
+	outUV = inUV;
 }

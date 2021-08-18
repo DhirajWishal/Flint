@@ -14,6 +14,8 @@ int main(int argc, char** argv)
 	try
 	{
 		SceneState mState{ "Flint: Point Shadow Map" };
+		double average = 0.0;
+		UI64 counter = 0;
 
 		{
 			Light* pLight = nullptr;
@@ -22,7 +24,15 @@ int main(int argc, char** argv)
 			ImGUI mImGui(glm::vec3(0.0f), &mState);
 			std::vector<std::unique_ptr<GameObject>> pGameObjects;
 			pGameObjects.push_back(std::make_unique<Light>(glm::vec3(1.0f), &mState));
-			pGameObjects.push_back(std::make_unique<Preview>(glm::vec3(0.0f), &mState, std::filesystem::path("E:\\Dynamik\\Game Repository\\InHouse\\DemoScene.obj"), std::vector<std::filesystem::path>{}));
+			pGameObjects.push_back(std::make_unique<Preview>(glm::vec3(0.0f), &mState, std::filesystem::path(mState.GetAssetPath().string() + "\\Packages\\Tree001\\Tree01\\Tree1\\Tree1.obj"), std::vector<std::filesystem::path>{
+				mState.GetAssetPath().string() + "\\Packages\\Tree001\\Tree01\\Tree1\\BarkDecidious0143_5_S.jpg",
+					mState.GetAssetPath().string() + "\\Packages\\Tree001\\Tree01\\Tree1\\Leaves0142_4_S.png",
+					mState.GetAssetPath().string() + "\\Packages\\Tree001\\Tree01\\Tree1\\BarkDecidious0194_7_S.jpg",
+					mState.GetAssetPath().string() + "\\Packages\\Tree001\\Tree01\\Tree1\\Leaves0156_1_S.png",
+					mState.GetAssetPath().string() + "\\Packages\\Tree001\\Tree01\\Tree1\\BarkDecidious0194_7_S.jpg",
+					mState.GetAssetPath().string() + "\\Packages\\Tree001\\Tree01\\Tree1\\Leaves0120_35_S.png",
+					mState.GetAssetPath().string() + "\\Packages\\Tree001\\Tree01\\Tree1\\2560x1440-gray-web-gray-solid-color-background.jpg"
+			}));
 
 			pLight = static_cast<Light*>(pGameObjects[0].get());
 			pPreview = static_cast<Preview*>(pGameObjects[1].get());
@@ -43,7 +53,11 @@ int main(int argc, char** argv)
 				ImGuizmo::BeginFrame();
 
 				float frameTime = delta / (1000.0f * 1000.0f);
+				average += frameTime;
+				counter++;
+
 				ImGui::Text("Frame Time: %f ms", frameTime);
+				ImGui::Text("Average Frame Time: %f ms", average / counter);
 
 				ImGuiIO& io = ImGui::GetIO();
 
