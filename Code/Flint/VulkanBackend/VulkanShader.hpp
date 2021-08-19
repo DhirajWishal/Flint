@@ -16,6 +16,7 @@ namespace Flint
 			VulkanShader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::filesystem::path& path);
 			VulkanShader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::vector<UI32>& code);
 			VulkanShader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::string& code);
+			~VulkanShader() { if (!bIsTerminated) Terminate(); }
 
 			virtual void Terminate() override final;
 

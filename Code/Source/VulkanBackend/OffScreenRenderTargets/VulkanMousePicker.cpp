@@ -125,15 +125,14 @@ namespace Flint
 		{
 			vRenderTarget.Terminate();
 
-			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
-
-			vDevice.DestroyCommandBufferList(pCommandBufferList);
-			vDevice.DestroyCommandBufferList(std::move(pSecondaryCommandBuffer));
+			pCommandBufferList->Terminate();
+			pSecondaryCommandBuffer->Terminate();
 
 			for (auto pResult : pResults)
-				vDevice.DestroyImage(pResult);
+				pResult->Terminate();
 
 			pResults.clear();
+			bIsTerminated = true;
 		}
 
 		VkFramebuffer VulkanMousePicker::GetFrameBuffer(UI32 index) const

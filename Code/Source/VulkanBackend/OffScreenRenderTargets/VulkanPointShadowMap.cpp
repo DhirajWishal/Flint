@@ -61,20 +61,20 @@ namespace Flint
 		void VulkanPointShadowMap::Terminate()
 		{
 			vRenderTarget.Terminate();
-			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 
-			vDevice.DestroyCommandBufferList(pCommandBufferList);
+			pCommandBufferList->Terminate();
 
 			if (pSecondaryCommandBuffer)
-				vDevice.DestroyCommandBufferList(std::move(pSecondaryCommandBuffer));
+				pSecondaryCommandBuffer->Terminate();
 
-			vDevice.DestroyImage(std::move(pColorImage));
-			vDevice.DestroyImage(std::move(pDepthImage));
+			pColorImage->Terminate();
+			pDepthImage->Terminate();
 
 			for (auto pResult : pResults)
-				vDevice.DestroyImage(pResult);
+				pResult->Terminate();
 
 			pResults.clear();
+			bIsTerminated = true;
 		}
 
 		VkFramebuffer VulkanPointShadowMap::GetFrameBuffer(UI32 index) const
@@ -103,6 +103,7 @@ namespace Flint
 
 			// Begin the command buffer.
 			auto& vPrimaryCommandBufferList = pCommandBufferList->StaticCast<VulkanCommandBufferList>();
+			vPrimaryCommandBufferList.ClearBuffers();
 
 			// Bind the draw instances.
 			for (UI32 frame = 0; frame < mBufferCount; frame++)

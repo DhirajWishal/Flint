@@ -134,8 +134,8 @@ Preview::Preview(glm::vec3 position, SceneState* pSceneState, std::filesystem::p
 		}
 	}
 
-	pSceneState->pDevice->DestroyBuffer(asset.pVertexBuffer);
-	pSceneState->pDevice->DestroyBuffer(asset.pIndexBuffer);
+	asset.pVertexBuffer->Terminate();
+	asset.pIndexBuffer->Terminate();
 
 	mVertexOffset = vertexOffset;
 	mIndexOffset = indexOffset;
@@ -149,31 +149,29 @@ Preview::~Preview()
 		pSceneState->pGraphicsPipelines["Default"]->RemoveDrawData(drawID);
 	mDrawIDs.clear();
 
-	pSceneState->pDevice->DestroyImageSampler(pShadowSampler);
-	pSceneState->pDevice->DestroyImageSampler(pTextureSampler);
+	pShadowSampler->Terminate();
+	pTextureSampler->Terminate();
 
 	if (pTexture)
-	{
-		pSceneState->pDevice->DestroyImage(pTexture);
-	}
+		pTexture->Terminate();
 	else
 	{
-		pSceneState->pDevice->DestroyShader(pVertexShader);
-		pSceneState->pDevice->DestroyShader(pFragmentShader);
+		pVertexShader->Terminate();
+		pFragmentShader->Terminate();
 
-		pSceneState->pDevice->DestroyShader(pShadowVertexShader);
-		pSceneState->pDevice->DestroyShader(pShadowFragmentShader);
+		pShadowVertexShader->Terminate();
+		pShadowFragmentShader->Terminate();
 	}
 
 	for (auto pModelMatrix : pModelMatrixes)
-		pSceneState->pDevice->DestroyBuffer(pModelMatrix);
+		pModelMatrix->Terminate();
 
 	for (auto pTexture : pTextures)
-		pSceneState->pDevice->DestroyImage(pTexture);
+		pTexture->Terminate();
 
-	pSceneState->pDevice->DestroyBuffer(pLightUniform);
-	pSceneState->pDevice->DestroyBuffer(pShadowMapUniform);
-	pSceneState->pDevice->DestroyBuffer(pShadowMapCamera);
+	pLightUniform->Terminate();
+	pShadowMapUniform->Terminate();
+	pShadowMapCamera->Terminate();
 }
 
 void Preview::OnUpdate(UI64 delta)

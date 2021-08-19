@@ -14,6 +14,7 @@ namespace Flint
 		{
 		public:
 			VulkanImageSampler(const std::shared_ptr<Device>& pDevice, const ImageSamplerSpecification& specification);
+			~VulkanImageSampler() { if (!bIsTerminated) Terminate(); }
 
 			virtual void Terminate() override final;
 

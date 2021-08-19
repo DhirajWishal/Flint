@@ -18,7 +18,7 @@ void Camera::Initialize(std::shared_ptr<Flint::Device> pDevice)
 
 void Camera::Terminate()
 {
-	pDevice->DestroyBuffer(pCameraBuffer);
+	pCameraBuffer->Terminate();
 }
 
 void Camera::WalkUp(UI64 delta)

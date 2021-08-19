@@ -33,7 +33,7 @@ GameObject::GameObject(glm::vec3 position, SceneState* pSceneState) : mPosition(
 
 GameObject::~GameObject()
 {
-	pSceneState->pDevice->DestroyBuffer(pModelUniform);
+	pModelUniform->Terminate();
 }
 
 void GameObject::EnableBoundingBox()

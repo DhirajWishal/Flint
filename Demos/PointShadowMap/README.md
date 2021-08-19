@@ -10,3 +10,6 @@ for(UI8 face = 0; face < 6; face++)
 	pPipeline->AddDrawData(shadowResoutceMap, pDynamicStates, instance.mVertexOffset, instance.mVertexCount, instance.mIndexOffset, instance.mIndexCount);
 }
 ```
+
+As an optimization, the resources are pre-bound to command buffers. This means that frequently changing content in the shadow map will result in worst performance.
+Make sure that the number of off screen render pass changes (adding and removing pipelines, along with pipeline content) are minimal.

@@ -173,6 +173,8 @@ namespace Flint
 		void VulkanImageSampler::Terminate()
 		{
 			vkDestroySampler(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), vSampler, nullptr);
+
+			bIsTerminated = true;
 		}
 	}
 }

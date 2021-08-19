@@ -90,7 +90,12 @@ namespace Flint
 		mBinarySemaphores.resize(mNumberOfThreads);
 
 		for (UI32 i = 0; i < mNumberOfThreads; i++)
-			mWorkerThreads.push_back(std::thread([this, i] { SecondaryCommandsWorker(mDrawInstanceMaps[i], mDrawInstanceOrder[i], mBinarySemaphores[i], mCountingSemaphore, bThreadShouldRun); }));
+		{
+			mWorkerThreads.push_back(std::thread([this](DrawInstanceMap& drawInstanceMap, std::list<std::shared_ptr<GeometryStore>>& drawOrder, BinarySemaphore& binarySemaphore, CountingSemaphore& countingSemaphore, std::atomic<bool>& shouldRun)
+				{
+					SecondaryCommandsWorker(drawInstanceMap, drawOrder, binarySemaphore, countingSemaphore, shouldRun);
+				}, std::ref(mDrawInstanceMaps.at(i)), std::ref(mDrawInstanceOrder.at(i)), std::ref(mBinarySemaphores.at(i)), std::ref(mCountingSemaphore), std::ref(bThreadShouldRun)));
+		}
 	}
 
 	void RenderTarget::TerminateThreads()

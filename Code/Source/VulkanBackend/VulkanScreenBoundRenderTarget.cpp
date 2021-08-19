@@ -190,13 +190,15 @@ namespace Flint
 			pColorBuffer->Terminate();
 			pDepthBuffer->Terminate();
 
-			pDevice->DestroyCommandBufferList(pCommandBufferList);
-			pDevice->DestroyCommandBufferList(pVolatileCommandBufferList);
+			pCommandBufferList->Terminate();
+			pVolatileCommandBufferList->Terminate();
 
 			TerminateThreads();
 
 			if (pDefaultSecondaryCommandBuffer)
-				pDevice->DestroyCommandBufferList(std::move(pDefaultSecondaryCommandBuffer));
+				pDefaultSecondaryCommandBuffer->Terminate();
+
+			bIsTerminated = true;
 		}
 
 		void VulkanScreenBoundRenderTarget::Recreate()

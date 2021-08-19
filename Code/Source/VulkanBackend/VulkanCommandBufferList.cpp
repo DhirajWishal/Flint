@@ -16,7 +16,7 @@ namespace Flint
 		{
 			FLINT_SETUP_PROFILER();
 
-			auto vDevice = pDevice->StaticCast<VulkanDevice>();
+			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 
 			VkCommandPoolCreateInfo vPoolCI = {};
 			vPoolCI.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
@@ -42,7 +42,7 @@ namespace Flint
 		{
 			FLINT_SETUP_PROFILER();
 
-			auto vDevice = pDevice->StaticCast<VulkanDevice>();
+			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 
 			VkCommandPoolCreateInfo vPoolCI = {};
 			vPoolCI.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
@@ -338,9 +338,11 @@ namespace Flint
 
 		void VulkanCommandBufferList::Terminate()
 		{
-			auto vDevice = pDevice->StaticCast<VulkanDevice>();
+			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 			vkFreeCommandBuffers(vDevice.GetLogicalDevice(), vCommandPool, static_cast<UI32>(vCommandBuffers.size()), vCommandBuffers.data());
 			vkDestroyCommandPool(vDevice.GetLogicalDevice(), vCommandPool, nullptr);
+
+			bIsTerminated = true;
 		}
 
 		void VulkanCommandBufferList::ClearBuffers()

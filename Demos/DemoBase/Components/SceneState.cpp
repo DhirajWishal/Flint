@@ -40,28 +40,28 @@ SceneState::SceneState(const std::string& displayTitle)
 SceneState::~SceneState()
 {
 	for (auto pRenderTarget : pScreenBoundRenderTargets)
-		pDevice->DestroyRenderTarget(pRenderTarget.second);
+		pRenderTarget.second->Terminate();
 
 	for (auto pRenderTarget : pOffScreenRenderTargets)
-		pDevice->DestroyRenderTarget(pRenderTarget.second);
+		pRenderTarget.second->Terminate();
 
 	for (auto pPipeline : pGraphicsPipelines)
-		pDevice->DestroyPipeline(pPipeline.second);
+		pPipeline.second->Terminate();
 
 	for (auto pGeometryStore : pGeometryStores)
-		pDevice->DestroyGeometryStore(pGeometryStore.second);
+		pGeometryStore.second->Terminate();
 
-	pDevice->DestroyShader(pVertexShader);
-	pDevice->DestroyShader(pFragmentShader);
+	pVertexShader->Terminate();
+	pFragmentShader->Terminate();
 
-	pDevice->DestroyShader(pVertexShaderBB);
-	pDevice->DestroyShader(pFragmentShaderBB);
+	pVertexShaderBB->Terminate();
+	pFragmentShaderBB->Terminate();
 
 	mCamera.Terminate();
 
-	pInstance->DestroyDisplay(pDisplay);
-	pInstance->DestroyDevice(pDevice);
-	pInstance->Terminate();
+	//pInstance->DestroyDisplay(pDisplay);
+	//pInstance->DestroyDevice(pDevice);
+	//pInstance->Terminate();
 }
 
 void SceneState::PrepareRenderTargetsToDraw()

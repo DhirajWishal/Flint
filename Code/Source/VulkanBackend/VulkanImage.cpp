@@ -341,6 +341,8 @@ namespace Flint
 			vkDestroyImage(vDevice.GetLogicalDevice(), vImage, nullptr);
 			vkDestroyImageView(vDevice.GetLogicalDevice(), vImageView, nullptr);
 			vkFreeMemory(vDevice.GetLogicalDevice(), vImageMemory, nullptr);
+
+			bIsTerminated = true;
 		}
 
 		void VulkanImage::CopyFromImage(VkImage vSrcImage, VkImageLayout vSrcLayout, VkOffset3D srcOffset, VkOffset3D dstOffset, VkImageSubresourceLayers subresourceLayers)

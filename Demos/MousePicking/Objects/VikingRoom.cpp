@@ -53,8 +53,9 @@ VikingRoom::VikingRoom(glm::vec3 position, SceneState* pSceneState) : GameObject
 	mVertexOffset = vertexOffset;
 	mIndexOffset = indexOffset;
 
-	pSceneState->pDevice->DestroyBuffer(asset.pVertexBuffer);
-	pSceneState->pDevice->DestroyBuffer(asset.pIndexBuffer);
+	asset.pVertexBuffer->Terminate();
+	asset.pIndexBuffer->Terminate();
+
 	SetupBoundingBox();
 }
 
@@ -63,13 +64,13 @@ VikingRoom::~VikingRoom()
 	pSceneState->pGeometryStores["Default"]->RemoveGeometry(mVertexOffset, mVertexCount, mIndexOffset, mIndexCount);
 	pSceneState->pGraphicsPipelines["DefaultWireframe"]->RemoveDrawData(mDrawIndex);
 
-	pSceneState->pDevice->DestroyImage(pTexture);
-	pSceneState->pDevice->DestroyImageSampler(pTextureSampler);
+	pTexture->Terminate();
+	pTextureSampler->Terminate();
 
-	pSceneState->pDevice->DestroyShader(pVertexShaderMP);
-	pSceneState->pDevice->DestroyShader(pFragmentShaderMP);
+	pVertexShaderMP->Terminate();
+	pFragmentShaderMP->Terminate();
 
-	pSceneState->pDevice->DestroyBuffer(pUniformBufferObject);
+	pUniformBufferObject->Terminate();
 }
 
 void VikingRoom::OnUpdate(UI64 delta)

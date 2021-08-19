@@ -42,18 +42,18 @@ SkyBox::SkyBox(glm::vec3 position, SceneState* pSceneState) : GameObject(positio
 	for (auto instance : asset.mDrawInstances)
 		pPipeline->AddDrawData(pResourceMap, pDynamicStates, vertexOffset + instance.mVertexOffset, instance.mVertexCount, indexOffset + instance.mIndexOffset, instance.mIndexCount);
 
-	pSceneState->pDevice->DestroyBuffer(asset.pVertexBuffer);
-	pSceneState->pDevice->DestroyBuffer(asset.pIndexBuffer);
+	asset.pVertexBuffer->Terminate();
+	asset.pIndexBuffer->Terminate();
 
 	//SubmitToUniformBuffer(pModelUniform, mModelMatrix);
 }
 
 SkyBox::~SkyBox()
 {
-	pSceneState->pDevice->DestroyShader(pVertexShader);
-	pSceneState->pDevice->DestroyShader(pFragmentShader);
-	pSceneState->pDevice->DestroyImage(pTexture);
-	pSceneState->pDevice->DestroyImageSampler(pTextureSampler);
+	pVertexShader->Terminate();
+	pFragmentShader->Terminate();
+	pTexture->Terminate();
+	pTextureSampler->Terminate();
 }
 
 void SkyBox::OnUpdate(UI64 delta)

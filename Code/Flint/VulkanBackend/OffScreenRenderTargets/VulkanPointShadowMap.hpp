@@ -12,13 +12,9 @@ namespace Flint
 	{
 		class VulkanPointShadowMap final : public VulkanOffScreenRenderTarget
 		{
-			struct FaceData
-			{
-
-			};
-
 		public:
 			VulkanPointShadowMap(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, UI32 threadCount = 0);
+			~VulkanPointShadowMap() { if (!bIsTerminated) Terminate(); }
 
 			virtual void Execute(const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget = nullptr) override final;
 			virtual void Terminate() override final;

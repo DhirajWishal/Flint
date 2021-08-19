@@ -658,6 +658,8 @@ namespace Flint
 
 			if (vDescriptorSetPool)
 				vkDestroyDescriptorPool(vDevice.GetLogicalDevice(), vDescriptorSetPool, nullptr);
+
+			bIsTerminated = true;
 		}
 
 		void VulkanGraphicsPipeline::PrepareResourcesToDraw()

@@ -165,6 +165,8 @@ namespace Flint
 
 			TerminateInstance();
 			TerminateGLFW();
+
+			bIsTerminated = true;
 		}
 
 		void VulkanInstance::InitializeGLFW()

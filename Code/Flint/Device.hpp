@@ -105,13 +105,6 @@ namespace Flint
 		virtual std::shared_ptr<CommandBufferList> CreateSecondaryCommandBufferList(UI32 bufferCount, const std::shared_ptr<CommandBufferList>& pParent) = 0;
 
 		/**
-		 * Terminate a created command buffer list.
-		 *
-		 * @param pCommandBufferList: The command buffer list to terminate.
-		 */
-		virtual void DestroyCommandBufferList(const std::shared_ptr<CommandBufferList>& pCommandBufferList) = 0;
-
-		/**
 		 * Create a new screen bound render target.
 		 * Screen bound render targets render frames to the display. This display must be compatible with the device object.
 		 *
@@ -132,13 +125,6 @@ namespace Flint
 		virtual std::shared_ptr<OffScreenRenderTargetFactory> CreateOffScreenRenderTargetFactory() = 0;
 
 		/**
-		 * Destroy a created render target.
-		 *
-		 * @param pRenderTarget: The render target to destroy.
-		 */
-		virtual void DestroyRenderTarget(const std::shared_ptr<RenderTarget>& pRenderTarget) = 0;
-
-		/**
 		 * Create a new buffer.
 		 *
 		 * @param type: The buffer type.
@@ -147,13 +133,6 @@ namespace Flint
 		 * @return The buffer object.
 		 */
 		virtual std::shared_ptr<Buffer> CreateBuffer(BufferType type, UI64 size, BufferMemoryProfile profile = BufferMemoryProfile::AUTOMATIC) = 0;
-
-		/**
-		 * Destroy a created buffer.
-		 *
-		 * @param pBuffer: The buffer to be destroyed.
-		 */
-		virtual void DestroyBuffer(const std::shared_ptr<Buffer>& pBuffer) = 0;
 
 		/**
 		 * Create a new image.
@@ -170,26 +149,12 @@ namespace Flint
 		virtual std::shared_ptr<Image> CreateImage(const ImageType type, ImageUsage usage, const FBox3D& extent, PixelFormat format, UI8 layers, UI32 mipLevels, const void* pImageData) = 0;
 
 		/**
-		 * Destroy a created image.
-		 *
-		 * @param pImage: The image pointer.
-		 */
-		virtual void DestroyImage(const std::shared_ptr<Image>& pImage) = 0;
-
-		/**
 		 * Create a new image sampler.
 		 *
 		 * @param specification: The sampler specification.
 		 * @return The newly created sampler.
 		 */
 		virtual std::shared_ptr<ImageSampler> CreateImageSampler(const ImageSamplerSpecification& specification) = 0;
-
-		/**
-		 * Destroy a created image sampler.
-		 *
-		 * @param pSampler: The sampler pointer.
-		 */
-		virtual void DestroyImageSampler(const std::shared_ptr<ImageSampler>& pSampler) = 0;
 
 		/**
 		 * Create a new shader.
@@ -220,13 +185,6 @@ namespace Flint
 		 * @return The vertex shader object.
 		 */
 		virtual std::shared_ptr<Shader> CreateShader(ShaderType type, const std::string& code) = 0;
-
-		/**
-		 * Destroy a created shader.
-		 *
-		 * @param pShader: The shader object to destroy.
-		 */
-		virtual void DestroyShader(const std::shared_ptr<Shader>& pShader) = 0;
 
 		/**
 		 * Create a new graphics pipeline bound to a screen bound render target.
@@ -275,13 +233,6 @@ namespace Flint
 			const GraphicsPipelineSpecification& specification) = 0;
 
 		/**
-		 * Destroy the created pipeline.
-		 *
-		 * @param pPipeline: The pipeline pointer.
-		 */
-		virtual void DestroyPipeline(const std::shared_ptr<Pipeline>& pPipeline) = 0;
-
-		/**
 		 * Create a new geometry store.
 		 *
 		 * @param vertexAttributes: The vertex attributes of the store.
@@ -290,13 +241,6 @@ namespace Flint
 		 * @return The newly created geometry store pointer.
 		 */
 		virtual std::shared_ptr<GeometryStore> CreateGeometryStore(const std::unordered_map<UI32, std::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize, BufferMemoryProfile profile = BufferMemoryProfile::AUTOMATIC) = 0;
-
-		/**
-		 * Destroy a created geometry store.
-		 *
-		 * @param pGeometryStore: The geometry store pointer.
-		 */
-		virtual void DestroyGeometryStore(const std::shared_ptr<GeometryStore>& pGeometryStore) = 0;
 
 	public:
 		/**
@@ -322,13 +266,6 @@ namespace Flint
 		 * Terminate the device object.
 		 */
 		virtual void Terminate() = 0;
-
-		/**
-		 * Terminate a device bound object.
-		 *
-		 * @param object: The object to terminate.
-		 */
-		void TerminateDeviceBoundObject(DeviceBoundObject& object) const { object.Terminate(); }
 
 	protected:
 		std::shared_ptr<Instance> pInstance = nullptr;

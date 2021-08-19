@@ -105,11 +105,6 @@ namespace Flint
 			return std::make_shared<VulkanCommandBufferList>(shared_from_this(), bufferCount, pParent);
 		}
 
-		void VulkanDevice::DestroyCommandBufferList(const std::shared_ptr<CommandBufferList>& pCommandBufferList)
-		{
-			TerminateDeviceBoundObject(*pCommandBufferList);
-		}
-
 		std::shared_ptr<ScreenBoundRenderTarget> VulkanDevice::CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, UI32 threadCount)
 		{
 			return std::make_shared<VulkanScreenBoundRenderTarget>(shared_from_this(), pDisplay, extent, bufferCount, threadCount);
@@ -120,19 +115,9 @@ namespace Flint
 			return std::make_shared<VulkanOffScreenRenderTargetFactory>(shared_from_this());
 		}
 
-		void VulkanDevice::DestroyRenderTarget(const std::shared_ptr<RenderTarget>& pRenderTarget)
-		{
-			TerminateDeviceBoundObject(*pRenderTarget);
-		}
-
 		std::shared_ptr<Buffer> VulkanDevice::CreateBuffer(BufferType type, UI64 size, BufferMemoryProfile profile)
 		{
 			return std::make_shared<VulkanBuffer>(shared_from_this(), type, size, profile);
-		}
-
-		void VulkanDevice::DestroyBuffer(const std::shared_ptr<Buffer>& pBuffer)
-		{
-			TerminateDeviceBoundObject(*pBuffer);
 		}
 
 		std::shared_ptr<Image> VulkanDevice::CreateImage(const ImageType type, ImageUsage usage, const FBox3D& extent, PixelFormat format, UI8 layers, UI32 mipLevels, const void* pImageData)
@@ -140,19 +125,9 @@ namespace Flint
 			return std::make_shared<VulkanImage>(shared_from_this(), type, usage, extent, format, layers, mipLevels, pImageData);
 		}
 
-		void VulkanDevice::DestroyImage(const std::shared_ptr<Image>& pImage)
-		{
-			TerminateDeviceBoundObject(*pImage);
-		}
-
 		std::shared_ptr<ImageSampler> VulkanDevice::CreateImageSampler(const ImageSamplerSpecification& specification)
 		{
 			return std::make_shared<VulkanImageSampler>(shared_from_this(), specification);
-		}
-
-		void VulkanDevice::DestroyImageSampler(const std::shared_ptr<ImageSampler>& pSampler)
-		{
-			TerminateDeviceBoundObject(*pSampler);
 		}
 
 		std::shared_ptr<Shader> VulkanDevice::CreateShader(ShaderType type, const std::filesystem::path& path)
@@ -170,11 +145,6 @@ namespace Flint
 			return std::make_shared<VulkanShader>(shared_from_this(), type, code);
 		}
 
-		void VulkanDevice::DestroyShader(const std::shared_ptr<Shader>& pShader)
-		{
-			TerminateDeviceBoundObject(*pShader);
-		}
-
 		std::shared_ptr<GraphicsPipeline> VulkanDevice::CreateGraphicsPipeline(const std::string& pipelineName, const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget, const std::shared_ptr<Shader>& pVertexShader, const std::shared_ptr<Shader>& pTessellationControlShader, const std::shared_ptr<Shader>& pTessellationEvaluationShader, const std::shared_ptr<Shader>& pGeometryShader, const std::shared_ptr<Shader>& pFragmentShader, const GraphicsPipelineSpecification& specification)
 		{
 			return std::make_shared<VulkanGraphicsPipeline>(shared_from_this(), pipelineName, pScreenBoundRenderTarget, pVertexShader, pTessellationControlShader, pTessellationEvaluationShader, pGeometryShader, pFragmentShader, specification);
@@ -185,19 +155,9 @@ namespace Flint
 			return std::make_shared<VulkanGraphicsPipeline>(shared_from_this(), pipelineName, pOffScreenRenderTarget, pVertexShader, pTessellationControlShader, pTessellationEvaluationShader, pGeometryShader, pFragmentShader, specification);
 		}
 
-		void VulkanDevice::DestroyPipeline(const std::shared_ptr<Pipeline>& pPipeline)
-		{
-			TerminateDeviceBoundObject(*pPipeline);
-		}
-
 		std::shared_ptr<GeometryStore> VulkanDevice::CreateGeometryStore(const std::unordered_map<UI32, std::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize, BufferMemoryProfile profile)
 		{
 			return std::make_shared<GeometryStore>(shared_from_this(), vertexAttributes, indexSize, profile);
-		}
-
-		void VulkanDevice::DestroyGeometryStore(const std::shared_ptr<GeometryStore>& pGeometryStore)
-		{
-			TerminateDeviceBoundObject(*pGeometryStore);
 		}
 
 		void VulkanDevice::WaitIdle()
@@ -213,6 +173,7 @@ namespace Flint
 		void VulkanDevice::Terminate()
 		{
 			TerminateLogicalDevice();
+			bIsTerminated = true;
 		}
 
 		VkResult VulkanDevice::CreateImageMemory(const std::vector<VkImage>& vImages, VkMemoryPropertyFlags vMemoryflags, VkDeviceMemory* pDeviceMemory) const

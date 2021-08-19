@@ -78,11 +78,11 @@ Light::Light(glm::vec3 position, SceneState* pSceneState)
 
 Light::~Light()
 {
-	pSceneState->pDevice->DestroyShader(pVertexShader);
-	pSceneState->pDevice->DestroyShader(pFragmentShader);
+	pVertexShader->Terminate();
+	pFragmentShader->Terminate();
 
-	pSceneState->pDevice->DestroyImage(pTexture);
-	pSceneState->pDevice->DestroyImageSampler(pTextureSampler);
+	pTexture->Terminate();
+	pTextureSampler->Terminate();
 }
 
 void Light::OnUpdate(UI64 delta)

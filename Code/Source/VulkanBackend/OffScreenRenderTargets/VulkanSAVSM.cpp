@@ -18,6 +18,7 @@ namespace Flint
 
 		void VulkanSAVSM::Terminate()
 		{
+			bIsTerminated = true;
 		}
 
 		VkFramebuffer VulkanSAVSM::GetFrameBuffer(UI32 index) const

@@ -232,6 +232,8 @@ namespace Flint
 		{
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 			vkDestroyShaderModule(vDevice.GetLogicalDevice(), vModule, nullptr);
+
+			bIsTerminated = true;
 		}
 
 		VkPipelineShaderStageCreateInfo VulkanShader::GetShaderStageCreateInfo() const

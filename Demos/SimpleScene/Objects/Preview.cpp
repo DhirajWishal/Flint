@@ -83,35 +83,11 @@ Preview::Preview(glm::vec3 position, SceneState* pSceneState, std::filesystem::p
 		pSceneState->pGraphicsPipelines["DefaultOffScreenWireFrame"]->AddDrawData(shadowResoutceMap, pShadowDynamicStates, vertexOffset + instance.mVertexOffset, instance.mVertexCount, indexOffset + instance.mIndexOffset, instance.mIndexCount);
 	}
 
-	pSceneState->pDevice->DestroyBuffer(asset.pVertexBuffer);
-	pSceneState->pDevice->DestroyBuffer(asset.pIndexBuffer);
-
-	//// Load the cube.
-	//asset = ImportAsset(pSceneState->pDevice, pSceneState->GetAssetPath().string() + "\\Models\\Cube\\Cube.obj", attributes);
-	//for (auto instance : asset.mDrawInstances)
-	//{
-	//	pLightObject = pSceneState->pDevice->CreateBuffer(Flint::BufferType::UNIFORM, sizeof(glm::mat4));
-	//
-	//	auto pResourceMap = pPipeline->CreateResourceMap();
-	//	pResourceMap->SetResource("ubo", pLightObject);
-	//	pResourceMap->SetResource("cam", pSceneState->mCamera.GetCameraBuffer());
-	//	pResourceMap->SetResource("light", pLightUniform);
-	//	pResourceMap->SetResource("shadowMap", pTextureSampler, pSceneState->pOffScreenRenderTargets["ShadowMap"]->GetResult(0));
-	//
-	//	mDrawIDs.push_back(pPipeline->AddDrawData(pResourceMap, pDynamicStates, vertexOffset + instance.mVertexOffset, instance.mVertexCount, indexOffset + instance.mIndexOffset, instance.mIndexCount));
-	//	mVertexCount += instance.mVertexCount;
-	//	mIndexCount += instance.mIndexCount;
-	//
-	//	auto shadowResoutceMap = pSceneState->pGraphicsPipelines["DefaultOffScreenWireFrame"]->CreateResourceMap();
-	//	shadowResoutceMap->SetResource("light", pShadowMapUniform);
-	//	pSceneState->pGraphicsPipelines["DefaultOffScreenWireFrame"]->AddDrawData(shadowResoutceMap, pDynamicStates, vertexOffset + instance.mVertexOffset, instance.mVertexCount, indexOffset + instance.mIndexOffset, instance.mIndexCount);
-	//}
+	asset.pVertexBuffer->Terminate();
+	asset.pIndexBuffer->Terminate();
 
 	mVertexOffset = vertexOffset;
 	mIndexOffset = indexOffset;
-
-	//pSceneState->pDevice->DestroyBuffer(asset.pVertexBuffer);
-	//pSceneState->pDevice->DestroyBuffer(asset.pIndexBuffer);
 }
 
 Preview::~Preview()
@@ -122,30 +98,28 @@ Preview::~Preview()
 		pSceneState->pGraphicsPipelines["Default"]->RemoveDrawData(drawID);
 	mDrawIDs.clear();
 
-	pSceneState->pDevice->DestroyImageSampler(pShadowSampler);
-	pSceneState->pDevice->DestroyImageSampler(pTextureSampler);
+	pShadowSampler->Terminate();
+	pTextureSampler->Terminate();
 
 	if (pTexture)
-	{
-		pSceneState->pDevice->DestroyImage(pTexture);
-	}
+		pTexture->Terminate();
 	else
 	{
-		pSceneState->pDevice->DestroyShader(pVertexShader);
-		pSceneState->pDevice->DestroyShader(pFragmentShader);
+		pVertexShader->Terminate();
+		pFragmentShader->Terminate();
 
-		pSceneState->pDevice->DestroyShader(pShadowVertexShader);
-		pSceneState->pDevice->DestroyShader(pShadowFragmentShader);
+		pShadowVertexShader->Terminate();
+		pShadowFragmentShader->Terminate();
 	}
 
 	for (auto pModelMatrix : pModelMatrixes)
-		pSceneState->pDevice->DestroyBuffer(pModelMatrix);
+		pModelMatrix->Terminate();
 
 	for (auto pTexture : pTextures)
-		pSceneState->pDevice->DestroyImage(pTexture);
+		pTexture->Terminate();
 
-	pSceneState->pDevice->DestroyBuffer(pLightUniform);
-	pSceneState->pDevice->DestroyBuffer(pShadowMapUniform);
+	pLightUniform->Terminate();
+	pShadowMapUniform->Terminate();
 }
 
 void Preview::OnUpdate(UI64 delta)

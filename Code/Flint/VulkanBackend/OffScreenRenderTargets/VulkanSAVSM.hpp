@@ -18,6 +18,7 @@ namespace Flint
 		{
 		public:
 			VulkanSAVSM(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, UI32 threadCount = 0);
+			~VulkanSAVSM() { if (!bIsTerminated) Terminate(); }
 
 			virtual void Execute(const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget = nullptr) override final;
 			virtual void Terminate() override final;

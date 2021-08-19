@@ -16,6 +16,7 @@ namespace Flint
 		{
 		public:
 			VulkanInstance(bool enableValidation);
+			~VulkanInstance() { if (!bIsTerminated) Terminate(); }
 
 			virtual std::shared_ptr<Device> CreateDevice(DeviceFlags flags) override final;
 			virtual void DestroyDevice(const std::shared_ptr<Device>& pDevice) override final;

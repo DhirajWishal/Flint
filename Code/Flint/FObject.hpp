@@ -47,5 +47,8 @@ namespace Flint
 		 */
 		template<class Type>
 		const Type& StaticCast() const { return *static_cast<const Type*>(this); }
+
+	protected:
+		bool bIsTerminated = false;
 	};
 }

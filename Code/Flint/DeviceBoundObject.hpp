@@ -330,7 +330,6 @@ namespace Flint
 		 */
 		std::shared_ptr<Device> GetDevice() const { return pDevice; }
 
-	protected:
 		/**
 		 * Terminate the device bound object.
 		 */

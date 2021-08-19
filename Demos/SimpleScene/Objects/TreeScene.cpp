@@ -43,8 +43,8 @@ TreeScene::TreeScene(glm::vec3 position, SceneState* pSceneState)
 	mVertexOffset = vertexOffset;
 	mIndexOffset = indexOffset;
 
-	pSceneState->pDevice->DestroyBuffer(asset.pVertexBuffer);
-	pSceneState->pDevice->DestroyBuffer(asset.pIndexBuffer);
+	asset.pVertexBuffer->Terminate();
+	asset.pIndexBuffer->Terminate();
 }
 
 TreeScene::~TreeScene()
@@ -54,10 +54,10 @@ TreeScene::~TreeScene()
 	for (UI8 i = 0; i < ImageCount; i++)
 		pSceneState->pGraphicsPipelines["Default"]->RemoveDrawData(mDrawIndexes[i]);
 
-	pSceneState->pDevice->DestroyImageSampler(pTextureSampler);
+	pTextureSampler->Terminate();
 
 	for (UI8 i = 0; i < ImageCount; i++)
-		pSceneState->pDevice->DestroyImage(pTextures[i]);
+		pTextures[i]->Terminate();
 }
 
 void TreeScene::OnUpdate(UI64 delta)

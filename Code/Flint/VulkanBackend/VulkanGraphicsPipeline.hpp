@@ -34,6 +34,7 @@ namespace Flint
 				const std::shared_ptr<Shader>& pGeometryShader,
 				const std::shared_ptr<Shader>& pFragmentShader,
 				const GraphicsPipelineSpecification& specification);
+			~VulkanGraphicsPipeline() { if (!bIsTerminated) Terminate(); }
 
 			virtual void Recreate(const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget) override final;
 			virtual void Terminate() override final;

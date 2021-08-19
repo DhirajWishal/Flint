@@ -92,7 +92,7 @@ namespace Flint
 
 				// Copy buffer content.
 				CopyFromBuffer(pStagingBuffer, oldSize, 0, 0);
-				pDevice->DestroyBuffer(pStagingBuffer);
+				pStagingBuffer->Terminate();
 			}
 			else if (mode == BufferResizeMode::CLEAR)
 			{
@@ -148,6 +148,8 @@ namespace Flint
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 			vkDestroyBuffer(vDevice.GetLogicalDevice(), vBuffer, nullptr);
 			vkFreeMemory(vDevice.GetLogicalDevice(), vMemory, nullptr);
+
+			bIsTerminated = true;
 		}
 
 		void VulkanBuffer::CreateBuffer()

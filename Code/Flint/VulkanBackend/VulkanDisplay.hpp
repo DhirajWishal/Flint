@@ -31,6 +31,7 @@ namespace Flint
 		{
 		public:
 			VulkanDisplay(const std::shared_ptr<Instance>& pInstance, const FBox2D& extent, const std::string& title);
+			~VulkanDisplay() { if (!bIsTerminated) Terminate(); }
 
 			virtual void Update() override final;
 			virtual void Terminate() override final;

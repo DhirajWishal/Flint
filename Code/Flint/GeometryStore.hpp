@@ -29,6 +29,7 @@ namespace Flint
 		 * @param profile: The memory profile of the buffer. Default is BufferMemoryProfile::AUTOMATIC.
 		 */
 		GeometryStore(const std::shared_ptr<Device>& pDevice, const std::unordered_map<UI32, std::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize, BufferMemoryProfile profile = BufferMemoryProfile::AUTOMATIC);
+		~GeometryStore() { if (!bIsTerminated) Terminate(); }
 
 		GeometryStore(const GeometryStore&) = delete;
 		GeometryStore& operator=(const GeometryStore&) = delete;
@@ -72,7 +73,7 @@ namespace Flint
 		 */
 		void RemoveGeometry(UI64 vertexOffset, UI64 vertexCount, UI64 indexOffset, UI64 indexCount);
 
-	private:
+	public:
 		/**
 		 * Terminate the geometry store.
 		 */

@@ -83,10 +83,10 @@ namespace Flint
 		const std::pair<UI64, UI64> oldExtent = AddGeometry(pVertexStagingBuffer, pIndexStagingBuffer);
 
 		if (pVertexStagingBuffer)
-			pDevice->DestroyBuffer(pVertexStagingBuffer);
+			pVertexStagingBuffer->Terminate();
 
 		if (pIndexStagingBuffer)
-			pDevice->DestroyBuffer(pIndexStagingBuffer);
+			pIndexStagingBuffer->Terminate();
 
 		return oldExtent;
 	}
@@ -153,7 +153,7 @@ namespace Flint
 
 			mVertexCount -= vertexCount;
 
-			pDevice->DestroyBuffer(pVertexBuffer);
+			pVertexBuffer->Terminate();
 			pVertexBuffer = pDevice->CreateBuffer(Flint::BufferType::VERTEX, mVertexCount * mVertexSize, mMemoryProfile);
 
 			UI64 offset = 0;
@@ -161,13 +161,13 @@ namespace Flint
 			{
 				pVertexBuffer->CopyFromBuffer(pStagingBuffer1, pStagingBuffer1->GetSize(), 0, 0);
 				offset += pStagingBuffer1->GetSize();
-				pDevice->DestroyBuffer(pStagingBuffer1);
+				pStagingBuffer1->Terminate();
 			}
 
 			if (pStagingBuffer2)
 			{
 				pVertexBuffer->CopyFromBuffer(pStagingBuffer2, pStagingBuffer2->GetSize(), 0, offset);
-				pDevice->DestroyBuffer(pStagingBuffer2);
+				pStagingBuffer2->Terminate();
 			}
 		}
 
@@ -192,7 +192,7 @@ namespace Flint
 
 			mIndexCount -= indexCount;
 
-			pDevice->DestroyBuffer(pIndexBuffer);
+			pIndexBuffer->Terminate();
 			pIndexBuffer = pDevice->CreateBuffer(Flint::BufferType::INDEX, mIndexCount * mIndexSize, mMemoryProfile);
 
 			UI64 offset = 0;
@@ -200,24 +200,23 @@ namespace Flint
 			{
 				pIndexBuffer->CopyFromBuffer(pStagingBuffer1, pStagingBuffer1->GetSize(), 0, 0);
 				offset += pStagingBuffer1->GetSize();
-				pDevice->DestroyBuffer(pStagingBuffer1);
+				pStagingBuffer1->Terminate();
 			}
 
 			if (pStagingBuffer2)
 			{
 				pIndexBuffer->CopyFromBuffer(pStagingBuffer2, pStagingBuffer2->GetSize(), 0, offset);
-				pDevice->DestroyBuffer(pStagingBuffer2);
+				pStagingBuffer2->Terminate();
 			}
 		}
 	}
 
 	void GeometryStore::Terminate()
 	{
-		if (pVertexBuffer)
-			pDevice->DestroyBuffer(pVertexBuffer);
+		pVertexBuffer->Terminate();
+		pIndexBuffer->Terminate();
 
-		if (pIndexBuffer)
-			pDevice->DestroyBuffer(pIndexBuffer);
+		bIsTerminated = true;
 	}
 
 	void* GeometryStore::MapVertexBuffer() const

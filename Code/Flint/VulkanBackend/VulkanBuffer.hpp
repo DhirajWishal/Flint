@@ -14,6 +14,7 @@ namespace Flint
 		{
 		public:
 			VulkanBuffer(const std::shared_ptr<Device>& pDevice, BufferType type, const UI64 size, BufferMemoryProfile profile = BufferMemoryProfile::AUTOMATIC);
+			~VulkanBuffer() { if (!bIsTerminated) Terminate(); }
 
 			virtual void Resize(UI64 size, BufferResizeMode mode) override final;
 			virtual void CopyFromBuffer(const std::shared_ptr<Buffer>& pSrcBuffer, UI64 size, UI64 srcOffset, UI64 dstOffset) override final;

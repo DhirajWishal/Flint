@@ -142,6 +142,8 @@ namespace Flint
 		{
 			vkDestroySurfaceKHR(pInstance->StaticCast<VulkanInstance>().GetInstance(), vSurface, nullptr);
 			glfwDestroyWindow(pWindow);
+
+			bIsTerminated = true;
 		}
 
 		UI32 VulkanDisplay::FindBestBufferCount(const std::shared_ptr<Device>& pDevice, UI32 count)

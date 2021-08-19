@@ -35,11 +35,11 @@ ImGUI::ImGUI(glm::vec3 position, SceneState* pSceneState)
 
 ImGUI::~ImGUI()
 {
-	pSceneState->pDevice->DestroyImage(pTextImage);
-	pSceneState->pDevice->DestroyImageSampler(pTextImageSampler);
+	pTextImage->Terminate();
+	pTextImageSampler->Terminate();
 
-	pSceneState->pDevice->DestroyShader(pVertexShader);
-	pSceneState->pDevice->DestroyShader(pFragmentShader);
+	pVertexShader->Terminate();
+	pFragmentShader->Terminate();
 
 	ImGui::DestroyContext();
 }
@@ -206,12 +206,12 @@ void ImGUI::UpdateBuffers()
 	pGeometryStore->SetData(pVertexBuffer, pIndexBuffer);
 
 	if (pVertexBuffer)
-		pSceneState->pDevice->DestroyBuffer(pVertexBuffer);
+		pVertexBuffer->Terminate();
 	else
 		pGeometryStore->UnmapVertexBuffer();
 
 	if (pIndexBuffer)
-		pSceneState->pDevice->DestroyBuffer(pIndexBuffer);
+		pIndexBuffer->Terminate();
 	else
 		pGeometryStore->UnmapIndexBuffer();
 }
