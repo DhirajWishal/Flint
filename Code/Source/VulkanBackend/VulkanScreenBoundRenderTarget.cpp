@@ -151,7 +151,9 @@ namespace Flint
 
 			vRenderTarget.vImagesInFlightFences[mImageIndex] = vRenderTarget.vInFlightFences[mFrameIndex];
 
-			vSI.pCommandBuffers = vCommandBuffer;
+			vSubmitCommandBuffers.push_back(pCommandBufferList->StaticCast<VulkanCommandBufferList>().GetCommandBuffer(mFrameIndex));
+			vSI.commandBufferCount = static_cast<UI32>(vSubmitCommandBuffers.size());
+			vSI.pCommandBuffers = vSubmitCommandBuffers.data();
 			vSI.pWaitSemaphores = &vRenderTarget.vImageAvailables[mFrameIndex];
 			vSI.pSignalSemaphores = &vRenderTarget.vRenderFinishes[mFrameIndex];
 			vSI.pWaitDstStageMask = &vWaitStage;
@@ -337,6 +339,7 @@ namespace Flint
 		{
 			FLINT_SETUP_PROFILER();
 
+			vSubmitCommandBuffers.clear();
 			pCommandBufferList->BeginBufferRecording(mFrameIndex);
 
 			// Execute the render targets. TODO

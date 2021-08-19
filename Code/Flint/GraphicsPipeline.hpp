@@ -384,6 +384,13 @@ namespace Flint
 		const std::unordered_map<UI64, DrawData> GetDrawData() const { return mDrawDataList; }
 
 		/**
+		 * Get the number of draw data stored.
+		 *
+		 * @return The draw data count.
+		 */
+		const UI64 GetDrawDataCount() const { return mDrawDataList.size(); }
+
+		/**
 		 * Get the current draw data index.
 		 *
 		 * @return The index.

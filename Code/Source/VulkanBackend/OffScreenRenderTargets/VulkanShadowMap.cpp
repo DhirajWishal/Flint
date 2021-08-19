@@ -55,54 +55,19 @@ namespace Flint
 				VulkanScreenBoundRenderTarget& vScreenBoundRenderTarget = pScreenBoundRenderTarget->StaticCast<VulkanScreenBoundRenderTarget>();
 
 				// Begin the command buffer.
-				auto& vScreenBoundCommandBuffer = pScreenBoundRenderTarget->GetCommandBufferList()->StaticCast<VulkanCommandBufferList>();
+				auto& vPrimaryCommandBufferList = pCommandBufferList->StaticCast<VulkanCommandBufferList>();
 				mFrameIndex = vScreenBoundRenderTarget.GetFrameIndex();
 
 				// Iterate through frame buffers in a cluster.
 				vInheritInfo.renderPass = vRenderTarget.vRenderPass;
 				vInheritInfo.framebuffer = GetFrameBuffer(mFrameIndex);
 
-				vScreenBoundCommandBuffer.VulkanBindRenderTargetSecondary(pThisRenderTarget, vInheritInfo.framebuffer);
+				vPrimaryCommandBufferList.BeginBufferRecording(mFrameIndex);
+				vPrimaryCommandBufferList.VulkanBindRenderTargetSecondary(pThisRenderTarget, vInheritInfo.framebuffer);
 
 				// Begin secondary command buffers.
 				auto& vCommandBufferList = *pSecondaryCommandBuffer;
 				vCommandBufferList.VulkanBeginSecondaryCommandBuffer(mFrameIndex, &vInheritInfo);
-
-				// Bind the volatile draw instances.
-				for (const auto store : mVolatileDrawInstanceOrder)
-				{
-					FLINT_SETUP_PROFILER();
-
-					if (!store->GetVertexBuffer() || !store->GetIndexBuffer())
-						continue;
-
-					vCommandBufferList.BindVertexBuffer(store->GetVertexBuffer());
-					vCommandBufferList.BindIndexBuffer(store->GetIndexBuffer(), store->GetIndexSize());
-
-					auto& pipelines = mVolatileDrawInstanceMap.at(store);
-
-					// Iterate through the pipelines.
-					for (auto& pipeline : pipelines)
-					{
-						pipeline->PrepareResourcesToDraw();
-						vCommandBufferList.BindGraphicsPipeline(pipeline);
-
-						const auto drawData = pipeline->GetDrawData();
-						const auto drawDataIndex = pipeline->GetCurrentDrawIndex();
-
-						// Bind draw data.
-						for (UI64 i = 0; i < drawDataIndex; i++)
-						{
-							if (drawData.find(i) == drawData.end())
-								continue;
-
-							const auto draw = drawData.at(i);
-							vCommandBufferList.BindDrawResources(pipeline, draw.pResourceMap);
-							vCommandBufferList.BindDynamicStates(pipeline, draw.pDynamicStates);
-							vCommandBufferList.IssueDrawCall(draw.mVertexOffset, draw.mVertexCount, draw.mIndexOffset, draw.mIndexCount);
-						}
-					}
-				}
 
 				// Bind the draw instances.
 				for (UI64 itr = 0; itr < mDrawInstanceOrder.size(); itr++)
@@ -141,9 +106,12 @@ namespace Flint
 				// End buffer recording and submit it to execute.
 				vCommandBufferList.EndBufferRecording();
 
-				vScreenBoundCommandBuffer.AddSecondaryCommandBuffer(vCommandBufferList.GetCurrentCommandBuffer());
-				vScreenBoundCommandBuffer.ExecuteSecondaryCommands();
-				vScreenBoundCommandBuffer.UnbindRenderTarget();
+				vPrimaryCommandBufferList.AddSecondaryCommandBuffer(vCommandBufferList.GetCurrentCommandBuffer());
+				vPrimaryCommandBufferList.ExecuteSecondaryCommands();
+				vPrimaryCommandBufferList.UnbindRenderTarget();
+				vPrimaryCommandBufferList.EndBufferRecording();
+
+				vScreenBoundRenderTarget.AddSubmitCommandBuffer(vPrimaryCommandBufferList.GetCurrentCommandBuffer());
 			}
 			else
 			{
@@ -159,7 +127,6 @@ namespace Flint
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 
 			vDevice.DestroyCommandBufferList(pCommandBufferList);
-			vDevice.DestroyCommandBufferList(pVolatileCommandBufferList);
 			vDevice.DestroyCommandBufferList(std::move(pSecondaryCommandBuffer));
 
 			for (auto pResult : pResults)

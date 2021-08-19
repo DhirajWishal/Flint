@@ -4,6 +4,7 @@
 #include "VulkanBackend/VulkanOffScreenRenderTargetFactory.hpp"
 #include "VulkanBackend/OffScreenRenderTargets/VulkanShadowMap.hpp"
 #include "VulkanBackend/OffScreenRenderTargets/VulkanPointShadowMap.hpp"
+#include "VulkanBackend/OffScreenRenderTargets/VulkanSAVSM.hpp"
 #include "VulkanBackend/OffScreenRenderTargets/VulkanMousePicker.hpp"
 
 namespace Flint
@@ -19,6 +20,9 @@ namespace Flint
 
 			case Flint::OffScreenRenderTargetType::POINT_SHADOW_MAP:
 				return std::make_shared<VulkanPointShadowMap>(pDevice, extent, bufferCount, threadCount);
+
+			case Flint::OffScreenRenderTargetType::SUMMED_AREA_VARIENT_SHADOW_MAP:
+				return std::make_shared<VulkanSAVSM>(pDevice, extent, bufferCount, threadCount);
 
 			case Flint::OffScreenRenderTargetType::MOUSE_PICKER:
 				return std::make_shared<VulkanMousePicker>(pDevice, extent, bufferCount, threadCount);

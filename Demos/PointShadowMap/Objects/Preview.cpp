@@ -33,7 +33,37 @@ Preview::Preview(glm::vec3 position, SceneState* pSceneState, std::filesystem::p
 	attributes[3] = VertexAttribute(sizeof(glm::vec3), VertexAttributeType::NORMAL);
 
 	auto asset = ImportAsset(pSceneState->pDevice, model, attributes);
+
 	views.resize(asset.mDrawInstances.size() * 6);
+	for (UI32 faceIndex = 0; faceIndex < 6; faceIndex++)
+	{
+		glm::mat4 viewMatrix = glm::mat4(1.0f);
+		switch (faceIndex)
+		{
+		case 0: // POSITIVE_X
+			viewMatrix = glm::rotate(viewMatrix, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+			viewMatrix = glm::rotate(viewMatrix, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+			break;
+		case 1:	// NEGATIVE_X
+			viewMatrix = glm::rotate(viewMatrix, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+			viewMatrix = glm::rotate(viewMatrix, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+			break;
+		case 2:	// POSITIVE_Y
+			viewMatrix = glm::rotate(viewMatrix, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+			break;
+		case 3:	// NEGATIVE_Y
+			viewMatrix = glm::rotate(viewMatrix, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+			break;
+		case 4:	// POSITIVE_Z
+			viewMatrix = glm::rotate(viewMatrix, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+			break;
+		case 5:	// NEGATIVE_Z
+			viewMatrix = glm::rotate(viewMatrix, glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+			break;
+		}
+
+		views[faceIndex] = viewMatrix;
+	}
 
 	if (pSceneState->pGraphicsPipelines.find("Default") == pSceneState->pGraphicsPipelines.end())
 		pSceneState->CreateDefaultPipeline();
@@ -65,10 +95,10 @@ Preview::Preview(glm::vec3 position, SceneState* pSceneState, std::filesystem::p
 		//if (instance.mName == "Plane")
 		//	continue;
 
-		auto image = LoadImage(texture[imageIndex++]);
-		auto pTexture = pSceneState->pDevice->CreateImage(Flint::ImageType::DIMENSIONS_2, Flint::ImageUsage::GRAPHICS, image.mExtent, Flint::PixelFormat::R8G8B8A8_SRGB, 1, 1, image.pImageData);
-		pTextures.push_back(pTexture);
-		DestroyImage(image);
+		//auto image = LoadImage(texture[imageIndex++]);
+		//auto pTexture = pSceneState->pDevice->CreateImage(Flint::ImageType::DIMENSIONS_2, Flint::ImageUsage::GRAPHICS, image.mExtent, Flint::PixelFormat::R8G8B8A8_SRGB, 1, 1, image.pImageData);
+		//pTextures.push_back(pTexture);
+		//DestroyImage(image);
 
 		pModelMatrixes.push_back(pSceneState->pDevice->CreateBuffer(Flint::BufferType::UNIFORM, sizeof(glm::mat4)));
 		std::shared_ptr<Flint::Buffer> pModelMatrix = pModelMatrixes.back();
@@ -81,7 +111,7 @@ Preview::Preview(glm::vec3 position, SceneState* pSceneState, std::filesystem::p
 		pResourceMap->SetResource("cam", pSceneState->mCamera.GetCameraBuffer());
 		pResourceMap->SetResource("light", pLightUniform);
 		pResourceMap->SetResource("shadowCubeMap", pShadowSampler, pSceneState->pOffScreenRenderTargets["ShadowMap"]->GetResult(0));
-		pResourceMap->SetResource("texSampler", pTextureSampler, pTexture);
+		//pResourceMap->SetResource("texSampler", pTextureSampler, pTexture);
 		//pResourceMap->SetResource("texSampler", pTextureSampler, pTexture);
 
 		mDrawIDs.push_back(pPipeline->AddDrawData(pResourceMap, pDynamicStates, vertexOffset + instance.mVertexOffset, instance.mVertexCount, indexOffset + instance.mIndexOffset, instance.mIndexCount));
@@ -91,41 +121,14 @@ Preview::Preview(glm::vec3 position, SceneState* pSceneState, std::filesystem::p
 		auto shadowResoutceMap = pSceneState->pGraphicsPipelines["DefaultOffScreenWireFrame"]->CreateResourceMap();
 		shadowResoutceMap->SetResource("cam", pShadowMapCamera);
 		shadowResoutceMap->SetResource("ubo", pShadowMapUniform);
-		shadowResoutceMap->SetResource("texSampler", pTextureSampler, pTexture);
+		//shadowResoutceMap->SetResource("texSampler", pTextureSampler, pTexture);
 
 		for (UI32 faceIndex = 0; faceIndex < 6; faceIndex++)
 		{
-			glm::mat4 viewMatrix = glm::mat4(1.0f);
-			switch (faceIndex)
-			{
-			case 0: // POSITIVE_X
-				viewMatrix = glm::rotate(viewMatrix, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-				viewMatrix = glm::rotate(viewMatrix, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-				break;
-			case 1:	// NEGATIVE_X
-				viewMatrix = glm::rotate(viewMatrix, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-				viewMatrix = glm::rotate(viewMatrix, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-				break;
-			case 2:	// POSITIVE_Y
-				viewMatrix = glm::rotate(viewMatrix, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-				break;
-			case 3:	// NEGATIVE_Y
-				viewMatrix = glm::rotate(viewMatrix, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-				break;
-			case 4:	// POSITIVE_Z
-				viewMatrix = glm::rotate(viewMatrix, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-				break;
-			case 5:	// NEGATIVE_Z
-				viewMatrix = glm::rotate(viewMatrix, glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-				break;
-			}
-
-			views[(i * 6) + faceIndex] = viewMatrix;
-
 			auto pDynamicStates = std::make_shared<Flint::DynamicStateContainer>();
 			pDynamicStates->SetViewPort(Flint::FExtent2D<float>{1024}, Flint::FExtent2D<float>(0.0f, 1.0f), { 0.0f, 0.0f });
 			pDynamicStates->SetScissor(Flint::FBox2D(1024), { 0, 0 });
-			pDynamicStates->SetConstantData(Flint::ShaderType::VERTEX, &views[(i * 6) + faceIndex], sizeof(viewMatrix));
+			pDynamicStates->SetConstantData(Flint::ShaderType::VERTEX, &views[faceIndex], sizeof(glm::mat4));
 
 			pSceneState->pGraphicsPipelines["DefaultOffScreenWireFrame"]->AddDrawData(shadowResoutceMap, pDynamicStates, vertexOffset + instance.mVertexOffset, instance.mVertexCount, indexOffset + instance.mIndexOffset, instance.mIndexCount);
 		}

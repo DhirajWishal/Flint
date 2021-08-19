@@ -44,7 +44,7 @@ namespace Flint
 			virtual void ClearBuffers() override final;
 
 			VkCommandPool GetCommandPool() const { return vCommandPool; }
-			VkCommandBuffer GetCurrentCommandBuffer() const { return vCurrentBuffer; }
+			VkCommandBuffer GetCurrentCommandBuffer() const { return vCommandBuffers[mCurrentBufferIndex]; }
 			VkCommandBuffer GetCommandBuffer(UI32 index) const { return vCommandBuffers[index]; }
 			std::vector<VkCommandBuffer> GetCommandBuffers() const { return vCommandBuffers; }
 
@@ -55,14 +55,13 @@ namespace Flint
 		public:
 			void VulkanBeginSecondaryCommandBuffer(UI32 bufferIndex, const VkCommandBufferInheritanceInfo* pInheritanceInfo);
 			void VulkanBeginNextSecondaryCommandBuffer(const VkCommandBufferInheritanceInfo* pInheritanceInfo);
+			void VulkanBindRenderTarget(const std::shared_ptr<OffScreenRenderTarget>& pRenderTarget, const VkFramebuffer vFrameBuffer);
 			void VulkanBindRenderTargetSecondary(const std::shared_ptr<OffScreenRenderTarget>& pRenderTarget, const VkFramebuffer vFrameBuffer);
 
 		private:
 			VkCommandPool vCommandPool = VK_NULL_HANDLE;
 			std::vector<VkCommandBuffer> vCommandBuffers = {};
 			std::vector<VkCommandBuffer> vSecondaryCommandBuffers = {};
-
-			VkCommandBuffer vCurrentBuffer = VK_NULL_HANDLE;
 		};
 	}
 }

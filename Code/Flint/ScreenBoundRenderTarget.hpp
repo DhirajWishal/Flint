@@ -53,6 +53,24 @@ namespace Flint
 
 	public:
 		/**
+		 * Submit a volatile pipeline to the render target to be drawn.
+		 * Volatile pipelines are the ones that change rapidly (per frame) and the changes are required to be updated regularly.
+		 *
+		 * @param pGeometryStore: The geometry store to bind to.
+		 * @param pPipeline: The pipeline to submit.
+		 */
+		void SubmitVolatilePipeline(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::shared_ptr<GraphicsPipeline>& pPipeline);
+
+		/**
+		 * Remove a volatile pipeline from the render target.
+		 *
+		 * @param pGeometryStore: The geometry store which the pipeline is bound to.
+		 * @param pPipeline: The pipeline to remove.
+		 */
+		void RemoveVolatilePipeline(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::shared_ptr<GraphicsPipeline>& pPipeline);
+
+	public:
+		/**
 		 * Get the current frame index.
 		 *
 		 * @return The frame index.
@@ -90,6 +108,11 @@ namespace Flint
 		virtual void Recreate() = 0;
 
 	protected:
+		std::shared_ptr<CommandBufferList> pVolatileCommandBufferList = nullptr;
+
+		DrawInstanceMap mVolatileDrawInstanceMap;
+		std::list<std::shared_ptr<GeometryStore>> mVolatileDrawInstanceOrder;
+
 		std::shared_ptr<Display> pDisplay = nullptr;
 		std::vector<std::shared_ptr<OffScreenRenderTarget>> pOffScreenRenderTargets;
 

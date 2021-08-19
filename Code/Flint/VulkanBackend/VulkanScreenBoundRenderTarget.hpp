@@ -43,6 +43,7 @@ namespace Flint
 
 			const VkCommandBufferInheritanceInfo* GetVulkanInheritanceInfo() const { return &vInheritInfo; }
 			void AddVulkanCommandBuffer(VkCommandBuffer vCommandBuffer) { vSecondaryCommandBuffers.push_back(vCommandBuffer); }
+			void AddSubmitCommandBuffer(VkCommandBuffer vCommandBuffer) { vSubmitCommandBuffers.push_back(vCommandBuffer); }
 
 		private:
 			void BindSecondaryCommands();
@@ -57,6 +58,7 @@ namespace Flint
 			std::atomic<VkCommandBufferInheritanceInfo> vInheritanceInfo = {};
 			VkCommandBufferInheritanceInfo vInheritInfo = {};
 			std::vector<VkCommandBuffer> vSecondaryCommandBuffers = {};
+			std::vector<VkCommandBuffer> vSubmitCommandBuffers = {};
 
 			VkSubmitInfo vSI = {};
 			VkPresentInfoKHR vPI = {};

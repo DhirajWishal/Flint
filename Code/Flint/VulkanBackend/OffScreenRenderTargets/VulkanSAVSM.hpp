@@ -10,15 +10,14 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanPointShadowMap final : public VulkanOffScreenRenderTarget
+		/**
+		 * Vulkan Summed-Area Variance Shadow Maps.
+		 * https://developer.nvidia.com/gpugems/gpugems3/part-ii-light-and-shadows/chapter-8-summed-area-variance-shadow-maps
+		 */
+		class VulkanSAVSM final : public VulkanOffScreenRenderTarget
 		{
-			struct FaceData
-			{
-
-			};
-
 		public:
-			VulkanPointShadowMap(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, UI32 threadCount = 0);
+			VulkanSAVSM(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, UI32 threadCount = 0);
 
 			virtual void Execute(const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget = nullptr) override final;
 			virtual void Terminate() override final;
@@ -32,15 +31,10 @@ namespace Flint
 			virtual const VkClearValue* GetClearScreenValues() const override final { return pClearValues; }
 
 		private:
-			void PrepareCommandBuffers();
-
-		private:
 			std::unique_ptr<VulkanImage> pColorImage = nullptr;
 			std::unique_ptr<VulkanImage> pDepthImage = nullptr;
 
 			VkClearValue pClearValues[2] = {};
-
-			std::vector<DrawInstanceMap> mSortedDrawMaps[6] = {};
 		};
 	}
 }

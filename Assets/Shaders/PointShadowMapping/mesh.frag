@@ -1,7 +1,7 @@
 #version 450
 
 layout (binding = 3) uniform samplerCube shadowCubeMap;
-layout (binding = 4) uniform sampler2D texSampler;
+//layout (binding = 4) uniform sampler2D texSampler;
 
 layout (location = 0) in vec3 inNormal;
 layout (location = 1) in vec2 inUV;
@@ -18,10 +18,10 @@ layout (location = 0) out vec4 outFragColor;
 
 void main() 
 {
-	vec4 texColor = texture(texSampler, inUV);
-
-	if(texColor.a < 1.0f)
-		discard;
+	//vec4 texColor = texture(texSampler, inUV);
+	vec4 texColor = vec4(vec3(0.5f), 1.0f);
+	//if(texColor.a < 1.0f)
+	//	discard;
 
 	// Lighting
 	vec3 N = normalize(inNormal);
