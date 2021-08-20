@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "SceneState.hpp"
+#include "ShaderCompiler.hpp"
 
 #include "Flint/Instance.hpp"
 
@@ -9,6 +10,7 @@ SceneState::SceneState(const std::string& displayTitle)
 {
 	mSolutionPath = std::filesystem::path(__FILE__).parent_path().parent_path().parent_path().parent_path();
 	mAssetPath = mSolutionPath.string() + "\\Assets";
+
 	mCamera.SetPosition(glm::vec3(1.0f, 1.0f, 1.0f));
 
 #ifndef FLINT_RELEASE
@@ -19,6 +21,8 @@ SceneState::SceneState(const std::string& displayTitle)
 	pInstance = Flint::CreateInstance(false);
 
 #endif // !FLINT_RELEASE
+
+	CompileAllShaders(mSolutionPath);
 
 	//pDisplay = pInstance->CreateDisplay(Flint::FBox2D(), "Flint: Sample Scene");
 	pDisplay = pInstance->CreateDisplay(Flint::FBox2D(1280, 720), displayTitle);

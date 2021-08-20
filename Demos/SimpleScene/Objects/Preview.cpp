@@ -181,8 +181,8 @@ void Preview::PrepareNoTexturePipeline()
 	if (pSceneState->pGraphicsPipelines["NoTexture"])
 		return;
 
-	pVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path(pSceneState->GetAssetPath().string() + "\\Shaders\\NoTexture\\shader.vert.spv"));
-	pFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path(pSceneState->GetAssetPath().string() + "\\Shaders\\NoTexture\\shader.frag.spv"));
+	pVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("Flint\\Shaders\\NoTexture\\shader.vert.spv"));
+	pFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("Flint\\Shaders\\NoTexture\\shader.frag.spv"));
 
 	Flint::GraphicsPipelineSpecification specification = {};
 	specification.mRasterizationSamples = pSceneState->pDevice->GetSupportedRasterizationSamples();
@@ -200,8 +200,8 @@ void Preview::PrepareShadowMapPipeline()
 	pSceneState->pOffScreenRenderTargets["ShadowMap"] = pSceneState->pDevice->CreateOffScreenRenderTarget(Flint::FBox2D(2048), pSceneState->pScreenBoundRenderTargets["Default"]->GetBufferCount(), { Flint::OffScreenResultSpecification(Flint::OffScreenRenderTargetAttachment::DEPTH_BUFFER, 1, Flint::PixelFormat::D32_SFLOAT) });
 	pSceneState->pScreenBoundRenderTargets["Default"]->AttachOffScreenRenderTarget(pSceneState->pOffScreenRenderTargets["ShadowMap"]);
 
-	pVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path(pSceneState->GetAssetPath().string() + "\\Shaders\\ShadowMapping\\mesh.vert.spv"));
-	pFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path(pSceneState->GetAssetPath().string() + "\\Shaders\\ShadowMapping\\mesh.frag.spv"));
+	pVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("Flint\\Shaders\\ShadowMapping\\mesh.vert.spv"));
+	pFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("Flint\\Shaders\\ShadowMapping\\mesh.frag.spv"));
 
 	Flint::GraphicsPipelineSpecification specification = {};
 	specification.mRasterizationSamples = pSceneState->pDevice->GetSupportedRasterizationSamples();
@@ -214,8 +214,8 @@ void Preview::PrepareShadowMapPipeline()
 
 	if (!pSceneState->pGraphicsPipelines["DefaultOffScreenWireFrame"])
 	{
-		pShadowVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path(pSceneState->GetAssetPath().string() + "\\Shaders\\ShadowMapping\\shader.vert.spv"));
-		pShadowFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path(pSceneState->GetAssetPath().string() + "\\Shaders\\ShadowMapping\\shader.frag.spv"));
+		pShadowVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("Flint\\Shaders\\ShadowMapping\\shader.vert.spv"));
+		pShadowFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("Flint\\Shaders\\ShadowMapping\\shader.frag.spv"));
 
 		specification.mRasterizationSamples = Flint::RasterizationSamples::BITS_1;
 		specification.mColorBlendAttachments.clear();

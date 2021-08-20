@@ -5,7 +5,6 @@
 
 #include "Pipeline.hpp"
 #include "Shader.hpp"
-#include "RenderTarget.hpp"
 #include "DynamicStateContainer.hpp"
 #include "ResourceMap.hpp"
 

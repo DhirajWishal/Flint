@@ -21,6 +21,15 @@ project "DemoBase"
 		"**.lua",
 		"**.wfc",
 
+		"**.exe",
+
+		"**.vert",
+		"**.frag",
+		"**.comp",
+		"**.tesc",
+		"**.tese",
+		"**.geom",
+
 		"$(SolutionDir)Demos/ThirdParty/imgui/imgui.cpp",
 		"$(SolutionDir)Demos/ThirdParty/imgui/imgui_demo.cpp",
 		"$(SolutionDir)Demos/ThirdParty/imgui/imgui_draw.cpp",

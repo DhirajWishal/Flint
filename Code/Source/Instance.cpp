@@ -17,6 +17,9 @@ namespace Flint
 		std::filesystem::path flintRuntimeDirectory = workingDirectory.string() + "\\Flint";
 		if (!std::filesystem::exists(flintRuntimeDirectory.string() + "\\Cache"))
 			std::filesystem::create_directory(flintRuntimeDirectory.string() + "\\Cache");
+
+		if (!std::filesystem::exists(flintRuntimeDirectory.string() + "\\Shaders"))
+			std::filesystem::create_directory(flintRuntimeDirectory.string() + "\\Shaders");
 	}
 
 	std::shared_ptr<Instance> CreateInstance(bool enableValidation)

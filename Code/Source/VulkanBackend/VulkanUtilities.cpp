@@ -4,6 +4,7 @@
 #include "VulkanBackend/VulkanUtilities.hpp"
 #include "VulkanBackend/VulkanMacros.hpp"
 #include "VulkanBackend/VulkanDevice.hpp"
+#include "VulkanBackend/VulkanShader.hpp"
 
 namespace Flint
 {

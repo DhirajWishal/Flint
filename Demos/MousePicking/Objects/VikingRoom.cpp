@@ -191,8 +191,8 @@ void VikingRoom::SetupPipeline()
 	pSceneState->pScreenBoundRenderTargets["Default"]->AttachOffScreenRenderTarget(pSceneState->pOffScreenRenderTargets["MousePicker"]);
 
 	// Prepare pipeline.
-	pVertexShaderMP = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path(pSceneState->GetAssetPath().string() + "\\Shaders\\MousePicking3D\\shader.vert.spv"));
-	pFragmentShaderMP = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path(pSceneState->GetAssetPath().string() + "\\Shaders\\MousePicking3D\\shader.frag.spv"));
+	pVertexShaderMP = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("Flint\\Shaders\\MousePicking3D\\shader.vert.spv"));
+	pFragmentShaderMP = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("Flint\\Shaders\\MousePicking3D\\shader.frag.spv"));
 
 	specification.mRasterizationSamples = Flint::RasterizationSamples::BITS_1;
 	pSceneState->pGraphicsPipelines["MousePicker"] = pSceneState->pDevice->CreateGraphicsPipeline("MousePicker", pSceneState->pOffScreenRenderTargets["MousePicker"], pVertexShaderMP, nullptr, nullptr, nullptr, pFragmentShaderMP, specification);

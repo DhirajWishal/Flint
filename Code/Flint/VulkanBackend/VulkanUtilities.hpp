@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "VulkanShader.hpp"
+#include "Shader.hpp"
 
 #include <vulkan/vulkan.h>
 #include <vector>
@@ -13,6 +13,7 @@ namespace Flint
 	namespace VulkanBackend
 	{
 		class VulkanDevice;
+		class VulkanShader;
 
 		namespace Utilities
 		{
