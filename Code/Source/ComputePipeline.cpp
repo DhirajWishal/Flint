@@ -11,4 +11,21 @@ namespace Flint
 		if (!pShader)
 			FLINT_THROW_INVALID_ARGUMENT("Compute shader pointers should not be null!");
 	}
+
+	const UI64 ComputePipeline::AddInstance(const std::shared_ptr<ResourceMap>& pResourceMap, const std::shared_ptr<DynamicStateContainer>& pDynamicStates, const FBox3D& computeGroups)
+	{
+		mComputeInstances[mInstanceIndex] = ComputeInstance(pResourceMap, pDynamicStates, computeGroups);
+
+		bShouldPrepareResources = true;
+		return mInstanceIndex++;
+	}
+
+	void ComputePipeline::RemoveInstance(const UI64 ID)
+	{
+		if (mComputeInstances.find(ID) == mComputeInstances.end())
+			FLINT_THROW_INVALID_ARGUMENT("The provided ID is not present within the compute pipeline!");
+
+		bShouldPrepareResources = true;
+		mComputeInstances.erase(ID);
+	}
 }

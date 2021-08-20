@@ -12,6 +12,7 @@
 #include "VulkanBackend/VulkanImageSampler.hpp"
 #include "VulkanBackend/VulkanShader.hpp"
 #include "VulkanBackend/VulkanGraphicsPipeline.hpp"
+#include "VulkanBackend/VulkanComputePipeline.hpp"
 
 #include "GeometryStore.hpp"
 
@@ -153,6 +154,11 @@ namespace Flint
 		std::shared_ptr<GraphicsPipeline> VulkanDevice::CreateGraphicsPipeline(const std::string& pipelineName, const std::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget, const std::shared_ptr<Shader>& pVertexShader, const std::shared_ptr<Shader>& pTessellationControlShader, const std::shared_ptr<Shader>& pTessellationEvaluationShader, const std::shared_ptr<Shader>& pGeometryShader, const std::shared_ptr<Shader>& pFragmentShader, const GraphicsPipelineSpecification& specification)
 		{
 			return std::make_shared<VulkanGraphicsPipeline>(shared_from_this(), pipelineName, pOffScreenRenderTarget, pVertexShader, pTessellationControlShader, pTessellationEvaluationShader, pGeometryShader, pFragmentShader, specification);
+		}
+
+		std::shared_ptr<ComputePipeline> VulkanDevice::CreateComputePipeline(const std::string& pipelineName, const std::shared_ptr<Shader>& pShader)
+		{
+			return std::make_shared<VulkanComputePipeline>(shared_from_this(), pipelineName, pShader);
 		}
 
 		std::shared_ptr<GeometryStore> VulkanDevice::CreateGeometryStore(const std::unordered_map<UI32, std::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize, BufferMemoryProfile profile)

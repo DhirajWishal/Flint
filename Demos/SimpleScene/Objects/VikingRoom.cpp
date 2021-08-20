@@ -118,8 +118,8 @@ void VikingRoom::SetupPipeline()
 	//specification.mPolygonMode = Flint::PolygonMode::LINE;
 
 	pSceneState->pGraphicsPipelines["DefaultWireframe"] = pSceneState->pDevice->CreateGraphicsPipeline("DefaultWireframe", pSceneState->pScreenBoundRenderTargets["Default"], pSceneState->pVertexShader, nullptr, nullptr, nullptr, pSceneState->pFragmentShader, specification);
-	pSceneState->pScreenBoundRenderTargets["Default"]->SubmitPipeline(pSceneState->pGeometryStores["Default"], pSceneState->pGraphicsPipelines["DefaultWireframe"]);
+	pSceneState->pScreenBoundRenderTargets["Default"]->SubmitGraphicsPipeline(pSceneState->pGeometryStores["Default"], pSceneState->pGraphicsPipelines["DefaultWireframe"]);
 
 	pSceneState->pGraphicsPipelines["DefaultOffScreenWireFrame"] = pSceneState->pDevice->CreateGraphicsPipeline("DefaultOffScreenWireFrame", pSceneState->pOffScreenRenderTargets["ShadowMap"], pSceneState->pVertexShader, nullptr, nullptr, nullptr, pSceneState->pFragmentShader, specification);
-	pSceneState->pOffScreenRenderTargets["ShadowMap"]->SubmitPipeline(pSceneState->pGeometryStores["Default"], pSceneState->pGraphicsPipelines["DefaultOffScreenWireFrame"]);
+	pSceneState->pOffScreenRenderTargets["ShadowMap"]->SubmitGraphicsPipeline(pSceneState->pGeometryStores["Default"], pSceneState->pGraphicsPipelines["DefaultOffScreenWireFrame"]);
 }

@@ -4,6 +4,7 @@
 #pragma once
 
 #include "CommandBufferList.hpp"
+#include "ComputePipeline.hpp"
 #include "Core/CountingSemaphore.hpp"
 
 #include <unordered_map>
@@ -56,20 +57,36 @@ namespace Flint
 
 	public:
 		/**
-		 * Submit a pipeline to the render target to be drawn.
+		 * Submit a graphics pipeline to the render target to be drawn.
 		 *
 		 * @param pGeometryStore: The geometry store to bind to.
 		 * @param pPipeline: The pipeline to submit.
 		 */
-		void SubmitPipeline(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::shared_ptr<GraphicsPipeline>& pPipeline);
+		void SubmitGraphicsPipeline(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::shared_ptr<GraphicsPipeline>& pPipeline);
 
 		/**
-		 * Remove a pipeline from the render target.
+		 * Remove a graphics pipeline from the render target.
 		 *
 		 * @param pGeometryStore: The geometry store which the pipeline is bound to.
 		 * @param pPipeline: The pipeline to remove.
 		 */
-		void RemovePipeline(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::shared_ptr<GraphicsPipeline>& pPipeline);
+		void RemoveGraphicsPipeline(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::shared_ptr<GraphicsPipeline>& pPipeline);
+
+		/**
+		 * Submit a compute pipeline to the render target.
+		 *
+		 * @param pPipeline: The pipeline pointer.
+		 * @param dispatchMode: The dispatch mode describing when to dispatch the pipeline commands.
+		 */
+		void SubmitComputePipeline(const std::shared_ptr<ComputePipeline>& pPipeline, ComputeDispatchMode dispatchMode);
+
+		/**
+		 * Remove a compute pipeline from the render target.
+		 *
+		 * @param pPipeline: The pipeline pointer.
+		 * @param dispatchMode: The dispatch mode used for the pipeline.
+		 */
+		void RemoveComputePipeline(const std::shared_ptr<ComputePipeline>& pPipeline, ComputeDispatchMode dispatchMode);
 
 	public:
 		/**
@@ -168,6 +185,8 @@ namespace Flint
 
 		std::vector<DrawInstanceMap> mDrawInstanceMaps;
 		std::vector<std::list<std::shared_ptr<GeometryStore>>> mDrawInstanceOrder;
+
+		std::vector<std::pair<std::shared_ptr<ComputePipeline>, ComputeDispatchMode>> mComputePipelines;
 
 		std::vector<std::thread> mWorkerThreads;
 		std::vector<BinarySemaphore> mBinarySemaphores;

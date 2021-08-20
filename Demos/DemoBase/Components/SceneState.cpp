@@ -148,5 +148,5 @@ void SceneState::CreateDefaultPipeline()
 	//specification.mPolygonMode = Flint::PolygonMode::LINE;
 
 	pGraphicsPipelines["Default"] = pDevice->CreateGraphicsPipeline("Default", pScreenBoundRenderTargets["Default"], pVertexShader, nullptr, nullptr, nullptr, pFragmentShader, specification);
-	pScreenBoundRenderTargets["Default"]->SubmitPipeline(pGeometryStores["Default"], pGraphicsPipelines["Default"]);
+	pScreenBoundRenderTargets["Default"]->SubmitGraphicsPipeline(pGeometryStores["Default"], pGraphicsPipelines["Default"]);
 }

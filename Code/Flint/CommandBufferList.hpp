@@ -11,6 +11,7 @@ namespace Flint
 	class ScreenBoundRenderTarget;
 	class OffScreenRenderTarget;
 	class GraphicsPipeline;
+	class ComputePipeline;
 	class ResourceMap;
 
 	/**
@@ -110,6 +111,13 @@ namespace Flint
 		virtual void BindGraphicsPipeline(const std::shared_ptr<GraphicsPipeline>& pGraphicsPipeline) = 0;
 
 		/**
+		 * Bind a compute pipeline to the current command buffer.
+		 *
+		 * @param pComputePipeline: The compute pipeline pointer.
+		 */
+		virtual void BindComputePipeline(const std::shared_ptr<ComputePipeline>& pComputePipeline) = 0;
+
+		/**
 		 * Bind a vertex buffer to the current command buffer.
 		 *
 		 * @param pVertexBuffer: The vertex buffer to bind.
@@ -130,7 +138,15 @@ namespace Flint
 		 * @param pPipeline: The pipeline pointer.
 		 * @param pResourceMap: The resource map to bind.
 		 */
-		virtual void BindDrawResources(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::shared_ptr<ResourceMap>& pResourceMap) = 0;
+		virtual void BindResourceMap(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::shared_ptr<ResourceMap>& pResourceMap) = 0;
+
+		/**
+		 * Bind instance resources to the current command buffer.
+		 *
+		 * @param pPipeline: The pipeline pointer.
+		 * @param pResourceMap: The resource map to bind.
+		 */
+		virtual void BindResourceMap(const std::shared_ptr<ComputePipeline>& pPipeline, const std::shared_ptr<ResourceMap>& pResourceMap) = 0;
 
 		/**
 		 * Bind dynamic states to the current command buffer.
@@ -141,6 +157,14 @@ namespace Flint
 		virtual void BindDynamicStates(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::shared_ptr<DynamicStateContainer>& pDynamicStates) = 0;
 
 		/**
+		 * Bind dynamic states to the current command buffer.
+		 *
+		 * @param pPipeline: The pipeline to which the dynamic states are bound to.
+		 * @param pDynamicStates: The dynamic states to bind.
+		 */
+		virtual void BindDynamicStates(const std::shared_ptr<ComputePipeline>& pPipeline, const std::shared_ptr<DynamicStateContainer>& pDynamicStates) = 0;
+
+		/**
 		 * Issue a draw call to the current command buffer.
 		 *
 		 * @param vertexOffset: The vertex offset of the vertex buffer to find the first vertex.
@@ -149,6 +173,13 @@ namespace Flint
 		 * @param indexCount: The number of indexes to draw.
 		 */
 		virtual void IssueDrawCall(UI64 vertexOffset, UI64 vertexCount, UI64 indexOffset, UI64 indexCount) = 0;
+
+		/**
+		 * Issue the compute call to the current command buffer.
+		 * 
+		 * @param groups: The compute groups.
+		 */
+		virtual void IssueComputeCall(const FBox3D& groups) = 0;
 
 		/**
 		 * Execute all the secondary commands.

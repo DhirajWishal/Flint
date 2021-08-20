@@ -30,14 +30,18 @@ namespace Flint
 			virtual void BindRenderTargetSecondary(const std::shared_ptr<OffScreenRenderTarget>& pRenderTarget) override final;
 			virtual void UnbindRenderTarget() override final;
 			virtual void BindGraphicsPipeline(const std::shared_ptr<GraphicsPipeline>& pGraphicsPipeline) override final;
+			virtual void BindComputePipeline(const std::shared_ptr<ComputePipeline>& pComputePipeline) override final;
 
 			virtual void BindVertexBuffer(const std::shared_ptr<Buffer>& pVertexBuffer) override final;
 			virtual void BindIndexBuffer(const std::shared_ptr<Buffer>& pIndexBuffer, UI64 indexSize) override final;
 
-			virtual void BindDrawResources(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::shared_ptr<ResourceMap>& pResourceMap) override final;
+			virtual void BindResourceMap(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::shared_ptr<ResourceMap>& pResourceMap) override final;
+			virtual void BindResourceMap(const std::shared_ptr<ComputePipeline>& pPipeline, const std::shared_ptr<ResourceMap>& pResourceMap) override final;
 			virtual void BindDynamicStates(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::shared_ptr<DynamicStateContainer>& pDynamicStates) override final;
+			virtual void BindDynamicStates(const std::shared_ptr<ComputePipeline>& pPipeline, const std::shared_ptr<DynamicStateContainer>& pDynamicStates) override final;
 
 			virtual void IssueDrawCall(UI64 vertexOffset, UI64 vertexCount, UI64 indexOffset, UI64 indexCount) override final;
+			virtual void IssueComputeCall(const FBox3D& groups) override final;
 			virtual void ExecuteSecondaryCommands() override final;
 
 			virtual void EndBufferRecording() override final;
@@ -58,6 +62,8 @@ namespace Flint
 			void VulkanBeginNextSecondaryCommandBuffer(const VkCommandBufferInheritanceInfo* pInheritanceInfo);
 			void VulkanBindRenderTarget(const std::shared_ptr<OffScreenRenderTarget>& pRenderTarget, const VkFramebuffer vFrameBuffer);
 			void VulkanBindRenderTargetSecondary(const std::shared_ptr<OffScreenRenderTarget>& pRenderTarget, const VkFramebuffer vFrameBuffer);
+
+			void SubmitComputeCommands();
 
 		private:
 			VkCommandPool vCommandPool = VK_NULL_HANDLE;

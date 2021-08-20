@@ -5,14 +5,6 @@
 
 namespace Flint
 {
-	namespace Helpers
-	{
-		ResourceDescriptor::BufferAttachment CreateBufferResourceAttachment(const std::string& resourceName, const std::shared_ptr<Buffer>& pBuffer)
-		{
-			return ResourceDescriptor::BufferAttachment(resourceName, pBuffer);
-		}
-	}
-
 	void Pipeline::WriteDataToCacheFile(UI64 size, unsigned char* pData) const
 	{
 		// Return if the name is empty.

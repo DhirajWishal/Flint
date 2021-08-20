@@ -88,7 +88,7 @@ namespace Flint
 						// Iterate through the pipelines.
 						for (auto& pipeline : pipelines)
 						{
-							pipeline->PrepareResourcesToDraw();
+							pipeline->PrepareResources();
 							vCommandBufferList.BindGraphicsPipeline(pipeline);
 
 							const auto drawData = pipeline->GetDrawData();
@@ -96,7 +96,7 @@ namespace Flint
 							// Bind draw data.
 							for (const auto draw : drawData)
 							{
-								vCommandBufferList.BindDrawResources(pipeline, draw.second.pResourceMap);
+								vCommandBufferList.BindResourceMap(pipeline, draw.second.pResourceMap);
 								vCommandBufferList.BindDynamicStates(pipeline, draw.second.pDynamicStates);
 								vCommandBufferList.IssueDrawCall(draw.second.mVertexOffset, draw.second.mVertexCount, draw.second.mIndexOffset, draw.second.mIndexCount);
 							}

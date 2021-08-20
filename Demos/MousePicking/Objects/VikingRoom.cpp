@@ -184,7 +184,7 @@ void VikingRoom::SetupPipeline()
 	//specification.mPolygonMode = Flint::PolygonMode::LINE;
 
 	pSceneState->pGraphicsPipelines["DefaultWireframe"] = pSceneState->pDevice->CreateGraphicsPipeline("DefaultWireframe", pSceneState->pScreenBoundRenderTargets["Default"], pSceneState->pVertexShader, nullptr, nullptr, nullptr, pSceneState->pFragmentShader, specification);
-	pSceneState->pScreenBoundRenderTargets["Default"]->SubmitPipeline(pSceneState->pGeometryStores["Default"], pSceneState->pGraphicsPipelines["DefaultWireframe"]);
+	pSceneState->pScreenBoundRenderTargets["Default"]->SubmitGraphicsPipeline(pSceneState->pGeometryStores["Default"], pSceneState->pGraphicsPipelines["DefaultWireframe"]);
 
 	// Create off screen render target.
 	pSceneState->pOffScreenRenderTargets["MousePicker"] = pSceneState->pDevice->CreateOffScreenRenderTargetFactory()->Create(Flint::OffScreenRenderTargetType::MOUSE_PICKER, pSceneState->pDisplay->GetExtent(), 3);
@@ -196,5 +196,5 @@ void VikingRoom::SetupPipeline()
 
 	specification.mRasterizationSamples = Flint::RasterizationSamples::BITS_1;
 	pSceneState->pGraphicsPipelines["MousePicker"] = pSceneState->pDevice->CreateGraphicsPipeline("MousePicker", pSceneState->pOffScreenRenderTargets["MousePicker"], pVertexShaderMP, nullptr, nullptr, nullptr, pFragmentShaderMP, specification);
-	pSceneState->pOffScreenRenderTargets["MousePicker"]->SubmitPipeline(pSceneState->pGeometryStores["Default"], pSceneState->pGraphicsPipelines["MousePicker"]);
+	pSceneState->pOffScreenRenderTargets["MousePicker"]->SubmitGraphicsPipeline(pSceneState->pGeometryStores["Default"], pSceneState->pGraphicsPipelines["MousePicker"]);
 }

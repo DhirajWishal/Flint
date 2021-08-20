@@ -243,6 +243,30 @@ namespace Flint
 
 				return PixelFormat::UNDEFINED;
 			}
+
+			void AddResourceBindingsToVector(std::vector<VkDescriptorSetLayoutBinding>& bindings, const VulkanShader& shader)
+			{
+				std::vector<VkDescriptorSetLayoutBinding> tempBindings = shader.GetResourceBindings();
+				bindings.insert(bindings.end(), tempBindings.begin(), tempBindings.end());
+			}
+			
+			void AddPushConstantRangesToVector(std::vector<VkPushConstantRange>& ranges, const VulkanShader& shader)
+			{
+				std::vector<VkPushConstantRange> tempRanges = shader.GetPushConstantRanges();
+				ranges.insert(ranges.end(), tempRanges.begin(), tempRanges.end());
+			}
+			
+			void AddPoolSizesToVector(std::vector<VkDescriptorPoolSize>& poolSizes, const VulkanShader& shader)
+			{
+				std::vector<VkDescriptorPoolSize> tempPoolSizes = shader.GetPoolSizes();
+				poolSizes.insert(poolSizes.end(), tempPoolSizes.begin(), tempPoolSizes.end());
+			}
+			
+			void AddResourcesToMap(std::unordered_map<std::string, ShaderResource>& resources, const VulkanShader& shader)
+			{
+				const std::unordered_map<std::string, ShaderResource> tempResources = shader.GetShaderResources();
+				resources.insert(tempResources.begin(), tempResources.end());
+			}
 		}
 	}
 }

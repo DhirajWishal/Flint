@@ -312,7 +312,7 @@ namespace Flint
 				// Iterate through the pipelines.
 				for (auto& pipeline : pipelines)
 				{
-					pipeline->PrepareResourcesToDraw();
+					pipeline->PrepareResources();
 					vCommandBufferList.BindGraphicsPipeline(pipeline);
 
 					const auto drawData = pipeline->GetDrawData();
@@ -325,7 +325,7 @@ namespace Flint
 							continue;
 
 						const auto draw = drawData.at(i);
-						vCommandBufferList.BindDrawResources(pipeline, draw.pResourceMap);
+						vCommandBufferList.BindResourceMap(pipeline, draw.pResourceMap);
 						vCommandBufferList.BindDynamicStates(pipeline, draw.pDynamicStates);
 						vCommandBufferList.IssueDrawCall(draw.mVertexOffset, draw.mVertexCount, draw.mIndexOffset, draw.mIndexCount);
 					}
@@ -385,7 +385,7 @@ namespace Flint
 						// Iterate through the pipelines.
 						for (auto& pipeline : pipelines)
 						{
-							pipeline->PrepareResourcesToDraw();
+							pipeline->PrepareResources();
 							pDefaultSecondaryCommandBuffer->BindGraphicsPipeline(pipeline);
 
 							const auto drawData = pipeline->GetDrawData();
@@ -393,7 +393,7 @@ namespace Flint
 							// Bind draw data.
 							for (const auto draw : drawData)
 							{
-								pDefaultSecondaryCommandBuffer->BindDrawResources(pipeline, draw.second.pResourceMap);
+								pDefaultSecondaryCommandBuffer->BindResourceMap(pipeline, draw.second.pResourceMap);
 								pDefaultSecondaryCommandBuffer->BindDynamicStates(pipeline, draw.second.pDynamicStates);
 								pDefaultSecondaryCommandBuffer->IssueDrawCall(draw.second.mVertexOffset, draw.second.mVertexCount, draw.second.mIndexOffset, draw.second.mIndexCount);
 							}
@@ -440,7 +440,7 @@ namespace Flint
 						// Iterate through the pipelines.
 						for (auto& pipeline : pipelines)
 						{
-							pipeline->PrepareResourcesToDraw();
+							pipeline->PrepareResources();
 							vCommandBufferList.BindGraphicsPipeline(pipeline);
 
 							const auto drawData = pipeline->GetDrawData();
@@ -448,7 +448,7 @@ namespace Flint
 							// Bind draw data.
 							for (const auto draw : drawData)
 							{
-								vCommandBufferList.BindDrawResources(pipeline, draw.second.pResourceMap);
+								vCommandBufferList.BindResourceMap(pipeline, draw.second.pResourceMap);
 								vCommandBufferList.BindDynamicStates(pipeline, draw.second.pDynamicStates);
 								vCommandBufferList.IssueDrawCall(draw.second.mVertexOffset, draw.second.mVertexCount, draw.second.mIndexOffset, draw.second.mIndexCount);
 							}

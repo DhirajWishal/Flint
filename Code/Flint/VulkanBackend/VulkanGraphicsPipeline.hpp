@@ -39,7 +39,7 @@ namespace Flint
 			virtual void Recreate(const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget) override final;
 			virtual void Terminate() override final;
 
-			virtual void PrepareResourcesToDraw() override final;
+			virtual void PrepareResources() override final;
 
 			const VkPipelineLayout GetPipelineLayout() const { return vPipelineLayout; }
 			const VkPipeline GetPipeline() const { return vPipeline; }

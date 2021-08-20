@@ -5,6 +5,7 @@
 #include "VulkanBackend/VulkanScreenBoundRenderTarget.hpp"
 #include "VulkanBackend/VulkanOffScreenRenderTarget.hpp"
 #include "VulkanBackend/VulkanGraphicsPipeline.hpp"
+#include "VulkanBackend/VulkanComputePipeline.hpp"
 #include "VulkanBackend/VulkanBuffer.hpp"
 #include "VulkanBackend/VulkanUtilities.hpp"
 
@@ -200,6 +201,13 @@ namespace Flint
 			vkCmdBindPipeline(GetCurrentCommandBuffer(), VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_GRAPHICS, pGraphicsPipeline->StaticCast<VulkanGraphicsPipeline>().GetPipeline());
 		}
 
+		void VulkanCommandBufferList::BindComputePipeline(const std::shared_ptr<ComputePipeline>& pComputePipeline)
+		{
+			FLINT_SETUP_PROFILER();
+
+			vkCmdBindPipeline(GetCurrentCommandBuffer(), VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_COMPUTE, pComputePipeline->StaticCast<VulkanComputePipeline>().GetPipeline());
+		}
+
 		void VulkanCommandBufferList::BindVertexBuffer(const std::shared_ptr<Buffer>& pVertexBuffer)
 		{
 			FLINT_SETUP_PROFILER();
@@ -232,7 +240,7 @@ namespace Flint
 			vkCmdBindIndexBuffer(GetCurrentCommandBuffer(), pIndexBuffer->StaticCast<VulkanBuffer>().GetBuffer(), 0, indexType);
 		}
 
-		void VulkanCommandBufferList::BindDrawResources(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::shared_ptr<ResourceMap>& pResourceMap)
+		void VulkanCommandBufferList::BindResourceMap(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::shared_ptr<ResourceMap>& pResourceMap)
 		{
 			FLINT_SETUP_PROFILER();
 
@@ -241,6 +249,17 @@ namespace Flint
 
 			if (pDescriptorSet)
 				vkCmdBindDescriptorSets(GetCurrentCommandBuffer(), VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_GRAPHICS, vPipeline.GetPipelineLayout(), 0, 1, pDescriptorSet, 0, nullptr);
+		}
+
+		void VulkanCommandBufferList::BindResourceMap(const std::shared_ptr<ComputePipeline>& pPipeline, const std::shared_ptr<ResourceMap>& pResourceMap)
+		{
+			FLINT_SETUP_PROFILER();
+
+			const VulkanComputePipeline& vPipeline = pPipeline->StaticCast<VulkanComputePipeline>();
+			const VkDescriptorSet* pDescriptorSet = vPipeline.GetDescriptorSetAddress(pResourceMap);
+
+			if (pDescriptorSet)
+				vkCmdBindDescriptorSets(GetCurrentCommandBuffer(), VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_COMPUTE, vPipeline.GetPipelineLayout(), 0, 1, pDescriptorSet, 0, nullptr);
 		}
 
 		void VulkanCommandBufferList::BindDynamicStates(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::shared_ptr<DynamicStateContainer>& pDynamicStates)
@@ -311,11 +330,84 @@ namespace Flint
 			}
 		}
 
+		void VulkanCommandBufferList::BindDynamicStates(const std::shared_ptr<ComputePipeline>& pPipeline, const std::shared_ptr<DynamicStateContainer>& pDynamicStates)
+		{
+			FLINT_SETUP_PROFILER();
+
+			if (!pDynamicStates)
+				return;
+
+			DynamicStateFlags flags = pDynamicStates->mFlags;
+			if (flags & DynamicStateFlags::VIEWPORT)
+			{
+				DynamicStateContainer::ViewPort& viewPort = pDynamicStates->mViewPort;
+
+				VkViewport vVP = {};
+				vVP.width = viewPort.mExtent.mWidth;
+				vVP.height = viewPort.mExtent.mHeight;
+				vVP.minDepth = viewPort.mDepth.mWidth;
+				vVP.maxDepth = viewPort.mDepth.mHeight;
+				vVP.x = viewPort.mOffset.mWidth;
+				vVP.y = viewPort.mOffset.mHeight;
+
+				vkCmdSetViewport(GetCurrentCommandBuffer(), 0, 1, &vVP);
+			}
+
+			if (flags & DynamicStateFlags::SCISSOR)
+			{
+				DynamicStateContainer::Scissor& scissor = pDynamicStates->mScissor;
+
+				VkRect2D vR2D = {};
+				vR2D.extent.width = scissor.mExtent.mWidth;
+				vR2D.extent.height = scissor.mExtent.mHeight;
+				vR2D.offset.x = scissor.mOffset.mWidth;
+				vR2D.offset.y = scissor.mOffset.mHeight;
+
+				vkCmdSetScissor(GetCurrentCommandBuffer(), 0, 1, &vR2D);
+			}
+
+			if (flags & DynamicStateFlags::LINE_WIDTH)
+			{
+				vkCmdSetLineWidth(GetCurrentCommandBuffer(), pDynamicStates->mLineWidth.mLineWidth);
+			}
+
+			if (flags & DynamicStateFlags::DEPTH_BIAS)
+			{
+				DynamicStateContainer::DepthBias& depthBias = pDynamicStates->mDepthBias;
+				vkCmdSetDepthBias(GetCurrentCommandBuffer(), depthBias.mDepthBiasFactor, depthBias.mDepthClampFactor, depthBias.mDepthSlopeFactor);
+			}
+
+			if (flags & DynamicStateFlags::BLEND_CONSTANTS)
+			{
+				vkCmdSetBlendConstants(GetCurrentCommandBuffer(), pDynamicStates->mBlendConstants.mConstants);
+			}
+
+			if (flags & DynamicStateFlags::DEPTH_BOUNDS)
+			{
+				DynamicStateContainer::DepthBounds& bounds = pDynamicStates->mDepthBounds;
+				vkCmdSetDepthBounds(GetCurrentCommandBuffer(), bounds.mBounds.mWidth, bounds.mBounds.mHeight);
+			}
+
+			for (UI8 i = 0; i < 10; i++)
+			{
+				if (!pDynamicStates->mConstantBlocks[i].IsNull())
+				{
+					DynamicStateContainer::ConstantData& data = pDynamicStates->mConstantBlocks[i];
+					vkCmdPushConstants(GetCurrentCommandBuffer(), pPipeline->StaticCast<VulkanComputePipeline>().GetPipelineLayout(), Utilities::GetShaderStage(ShaderType(i + 1)), static_cast<UI32>(data.mOffset), static_cast<UI32>(data.mSize), data.pData);
+				}
+			}
+		}
+
 		void VulkanCommandBufferList::IssueDrawCall(UI64 vertexOffset, UI64 vertexCount, UI64 indexOffset, UI64 indexCount)
 		{
 			FLINT_SETUP_PROFILER();
 
 			vkCmdDrawIndexed(GetCurrentCommandBuffer(), static_cast<UI32>(indexCount), 1, static_cast<UI32>(indexOffset), static_cast<UI32>(vertexOffset), 0);
+		}
+
+		void VulkanCommandBufferList::IssueComputeCall(const FBox3D& groups)
+		{
+			vkCmdDispatch(GetCurrentCommandBuffer(), groups.X, groups.Y, groups.Z);
 		}
 
 		void VulkanCommandBufferList::ExecuteSecondaryCommands()
@@ -420,6 +512,34 @@ namespace Flint
 			vBeginInfo.renderArea.extent.height = vRenderTarget.GetExtent().mHeight;
 
 			vkCmdBeginRenderPass(GetCurrentCommandBuffer(), &vBeginInfo, VkSubpassContents::VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+		}
+		
+		void VulkanCommandBufferList::SubmitComputeCommands()
+		{
+			FLINT_SETUP_PROFILER();
+
+			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
+
+			VkSubmitInfo vSI = {};
+			vSI.sType = VkStructureType::VK_STRUCTURE_TYPE_SUBMIT_INFO;
+			vSI.commandBufferCount = 1;
+			vSI.pCommandBuffers = &vCommandBuffers[mCurrentBufferIndex];
+
+			VkFenceCreateInfo vFCI = {};
+			vFCI.sType = VkStructureType::VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+			vFCI.pNext = VK_NULL_HANDLE;
+			vFCI.flags = 0;
+
+			VkFence vFence = VK_NULL_HANDLE;
+			FLINT_VK_ASSERT(vkCreateFence(vDevice.GetLogicalDevice(), &vFCI, nullptr, &vFence));
+
+			FLINT_VK_ASSERT(vkQueueSubmit(vDevice.GetQueue().vComputeQueue, 1, &vSI, vFence));
+			FLINT_VK_ASSERT(vkWaitForFences(vDevice.GetLogicalDevice(), 1, &vFence, VK_TRUE, UINT64_MAX));
+			FLINT_VK_ASSERT(vkQueueWaitIdle(vDevice.GetQueue().vComputeQueue));
+			vkDestroyFence(vDevice.GetLogicalDevice(), vFence, nullptr);
+
+			vkFreeCommandBuffers(vDevice.GetLogicalDevice(), vCommandPool, 1, vSI.pCommandBuffers);
+			vkDestroyCommandPool(vDevice.GetLogicalDevice(), vCommandPool, nullptr);
 		}
 	}
 }

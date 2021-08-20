@@ -246,7 +246,7 @@ void Preview::PrepareNoTexturePipeline()
 	specification.mDynamicStateFlags = Flint::DynamicStateFlags::VIEWPORT | Flint::DynamicStateFlags::SCISSOR;
 
 	pSceneState->pGraphicsPipelines["NoTexture"] = pSceneState->pDevice->CreateGraphicsPipeline("NoTexture", pSceneState->pScreenBoundRenderTargets["Default"], pVertexShader, nullptr, nullptr, nullptr, pFragmentShader, specification);
-	pSceneState->pScreenBoundRenderTargets["Default"]->SubmitPipeline(pSceneState->pGeometryStores["Default"], pSceneState->pGraphicsPipelines["NoTexture"]);
+	pSceneState->pScreenBoundRenderTargets["Default"]->SubmitGraphicsPipeline(pSceneState->pGeometryStores["Default"], pSceneState->pGraphicsPipelines["NoTexture"]);
 }
 
 void Preview::PrepareShadowMapPipeline()
@@ -269,7 +269,7 @@ void Preview::PrepareShadowMapPipeline()
 	pSceneState->pGeometryStores["ShadowMap"] = pSceneState->pDevice->CreateGeometryStore(pVertexShader->GetInputAttributes(), sizeof(UI32));
 
 	pSceneState->pGraphicsPipelines["ShadowMap"] = pSceneState->pDevice->CreateGraphicsPipeline("ShadowMap", pSceneState->pScreenBoundRenderTargets["Default"], pVertexShader, nullptr, nullptr, nullptr, pFragmentShader, specification);
-	pSceneState->pScreenBoundRenderTargets["Default"]->SubmitPipeline(pSceneState->pGeometryStores["ShadowMap"], pSceneState->pGraphicsPipelines["ShadowMap"]);
+	pSceneState->pScreenBoundRenderTargets["Default"]->SubmitGraphicsPipeline(pSceneState->pGeometryStores["ShadowMap"], pSceneState->pGraphicsPipelines["ShadowMap"]);
 
 	if (!pSceneState->pGraphicsPipelines["DefaultOffScreenWireFrame"])
 	{
@@ -287,6 +287,6 @@ void Preview::PrepareShadowMapPipeline()
 		//specification.mCullMode = Flint::CullMode::FRONT;
 
 		pSceneState->pGraphicsPipelines["DefaultOffScreenWireFrame"] = pSceneState->pDevice->CreateGraphicsPipeline("DefaultOffScreenWireFrame", pSceneState->pOffScreenRenderTargets["ShadowMap"], pShadowVertexShader, nullptr, nullptr, nullptr, pShadowFragmentShader, specification);
-		pSceneState->pOffScreenRenderTargets["ShadowMap"]->SubmitPipeline(pSceneState->pGeometryStores["ShadowMap"], pSceneState->pGraphicsPipelines["DefaultOffScreenWireFrame"]);
+		pSceneState->pOffScreenRenderTargets["ShadowMap"]->SubmitGraphicsPipeline(pSceneState->pGeometryStores["ShadowMap"], pSceneState->pGraphicsPipelines["DefaultOffScreenWireFrame"]);
 	}
 }

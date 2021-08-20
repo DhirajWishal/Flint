@@ -25,6 +25,7 @@ namespace Flint
 
 	class Pipeline;
 	class GraphicsPipeline;
+	class ComputePipeline;
 
 	struct GraphicsPipelineSpecification;
 	struct ShaderAttribute;
@@ -231,6 +232,15 @@ namespace Flint
 			const std::shared_ptr<Shader>& pGeometryShader,
 			const std::shared_ptr<Shader>& pFragmentShader,
 			const GraphicsPipelineSpecification& specification) = 0;
+
+		/**
+		 * Create a new compute pipeline.
+		 * 
+		 * @param pipelineName: The unique name of the pipeline.
+		 * @param pShader: The compute shader pointer.
+		 * @return The pipeline pointer.
+		 */
+		virtual std::shared_ptr<ComputePipeline> CreateComputePipeline(const std::string& pipelineName, const std::shared_ptr<Shader>& pShader) = 0;
 
 		/**
 		 * Create a new geometry store.

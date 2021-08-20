@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Shader.hpp"
+#include "VulkanShader.hpp"
 
 #include <vulkan/vulkan.h>
 #include <vector>
@@ -24,6 +24,11 @@ namespace Flint
 			VkDescriptorType GetDescriptorType(ShaderResourceType type);
 			VkShaderStageFlags GetShaderStage(ShaderType type);
 			PixelFormat GetPixelFormat(VkFormat format);
+
+			void AddResourceBindingsToVector(std::vector<VkDescriptorSetLayoutBinding>& bindings, const VulkanShader& shader);
+			void AddPushConstantRangesToVector(std::vector<VkPushConstantRange>& ranges, const VulkanShader& shader);
+			void AddPoolSizesToVector(std::vector<VkDescriptorPoolSize>& poolSizes, const VulkanShader& shader);
+			void AddResourcesToMap(std::unordered_map<std::string, ShaderResource>& resources, const VulkanShader& shader);
 		}
 	}
 }

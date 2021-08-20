@@ -7,33 +7,7 @@
 
 namespace Flint
 {
-	class Buffer;
 	class RenderTarget;
-
-	/**
-	 * Resource descriptor structure.
-	 * This structure defines how a set of resources should be bound to a pipeline.
-	 */
-	struct ResourceDescriptor
-	{
-		/**
-		 * Buffer attachment structure.
-		 * This structure contains a buffer's attachment information.
-		 */
-		struct BufferAttachment
-		{
-			BufferAttachment() = default;
-			BufferAttachment(const std::string& resourceName, const std::shared_ptr<Buffer>& pBuffer) : mResourceName(resourceName), pBuffer(pBuffer) {}
-
-			std::string mResourceName;
-			std::shared_ptr<Buffer> pBuffer = nullptr;
-		};
-
-	public:
-		ResourceDescriptor() = default;
-
-		std::vector<BufferAttachment> pBufferAttachments;
-	};
 
 	/**
 	 * Flint pipeline object.
@@ -56,7 +30,7 @@ namespace Flint
 		/**
 		 * Prepare resources to draw.
 		 */
-		virtual void PrepareResourcesToDraw() = 0;
+		virtual void PrepareResources() = 0;
 
 	protected:
 		/**
@@ -77,17 +51,6 @@ namespace Flint
 
 	protected:
 		std::string mPipelineName = "";
+		bool bShouldPrepareResources = true;
 	};
-
-	namespace Helpers
-	{
-		/**
-		 * Create a new buffer resource attachment object.
-		 *
-		 * @param resourceName: The name of the resource to be bound to.
-		 * @param pBuffer: The buffer pointer.
-		 * @return The newly created Buffer Attachment object.
-		 */
-		ResourceDescriptor::BufferAttachment CreateBufferResourceAttachment(const std::string& resourceName, const std::shared_ptr<Buffer>& pBuffer);
-	}
 }

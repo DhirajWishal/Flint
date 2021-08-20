@@ -303,8 +303,6 @@ namespace Flint
 			std::shared_ptr<DynamicStateContainer> pDynamicStates = nullptr;
 		};
 
-		typedef void(*FDrawBinder)(const DrawData&, const std::shared_ptr<CommandBufferList>&);
-
 	public:
 		/**
 		 * Construct the pipeline using a screen bound render target.
@@ -435,7 +433,5 @@ namespace Flint
 		std::shared_ptr<Shader> pTessellationControlShader = nullptr;
 		std::shared_ptr<Shader> pTessellationEvaluationShader = nullptr;
 		std::shared_ptr<Shader> pGeometryShader = nullptr;
-
-		bool bShouldPrepareResources = true;
 	};
 }

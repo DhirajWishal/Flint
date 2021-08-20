@@ -65,7 +65,7 @@ void GameObject::SetupBoundingBox()
 	{
 		pSceneState->pGeometryStores["BoundingBox"] = pSceneState->pDevice->CreateGeometryStore(pSceneState->pVertexShaderBB->GetInputAttributes(), sizeof(UI32));
 		auto [vertexOffset, indexOffset] = pSceneState->pGeometryStores["BoundingBox"]->AddGeometry(mBoundingVertexes.size(), mBoundingVertexes.data(), mBoundingIndexes.size(), mBoundingIndexes.data());
-		pSceneState->pScreenBoundRenderTargets["Default"]->SubmitPipeline(pSceneState->pGeometryStores["BoundingBox"], pSceneState->pGraphicsPipelines["BoundingBox"]);
+		pSceneState->pScreenBoundRenderTargets["Default"]->SubmitGraphicsPipeline(pSceneState->pGeometryStores["BoundingBox"], pSceneState->pGraphicsPipelines["BoundingBox"]);
 	}
 
 	pResourceMapBB = pSceneState->pGraphicsPipelines["BoundingBox"]->CreateResourceMap();

@@ -21,7 +21,7 @@ namespace Flint
 		InitiateThreads();
 	}
 
-	void RenderTarget::SubmitPipeline(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::shared_ptr<GraphicsPipeline>& pPipeline)
+	void RenderTarget::SubmitGraphicsPipeline(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::shared_ptr<GraphicsPipeline>& pPipeline)
 	{
 		bool inserted = false;
 		for (UI32 i = 0; i < mDrawInstanceMaps.size(); i++)
@@ -45,7 +45,7 @@ namespace Flint
 		bIsAltered = true;
 	}
 
-	void RenderTarget::RemovePipeline(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::shared_ptr<GraphicsPipeline>& pPipeline)
+	void RenderTarget::RemoveGraphicsPipeline(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::shared_ptr<GraphicsPipeline>& pPipeline)
 	{
 		for (UI32 i = 0; i < mDrawInstanceMaps.size(); i++)
 		{
@@ -72,6 +72,20 @@ namespace Flint
 				}
 			}
 		}
+	}
+
+	void RenderTarget::SubmitComputePipeline(const std::shared_ptr<ComputePipeline>& pPipeline, ComputeDispatchMode dispatchMode)
+	{
+		const auto pairToInsert = std::pair(pPipeline, dispatchMode);
+		if (std::find(mComputePipelines.begin(), mComputePipelines.end(), pairToInsert) == mComputePipelines.end())
+			FLINT_THROW_INVALID_ARGUMENT("Provided pipeline and dispatch mode already exists!");
+
+		mComputePipelines.push_back(pairToInsert);
+	}
+
+	void RenderTarget::RemoveComputePipeline(const std::shared_ptr<ComputePipeline>& pPipeline, ComputeDispatchMode dispatchMode)
+	{
+		mComputePipelines.erase(std::find(mComputePipelines.begin(), mComputePipelines.end(), std::pair(pPipeline, dispatchMode)));
 	}
 
 	void RenderTarget::InitiateThreads()

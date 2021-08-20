@@ -538,30 +538,6 @@ namespace Flint
 
 				return flags;
 			}
-
-			void AddResourceBindingsToVector(std::vector<VkDescriptorSetLayoutBinding>& bindings, const VulkanShader& shader)
-			{
-				std::vector<VkDescriptorSetLayoutBinding> tempBindings = shader.GetResourceBindings();
-				bindings.insert(bindings.end(), tempBindings.begin(), tempBindings.end());
-			}
-
-			void AddPushConstantRangesToVector(std::vector<VkPushConstantRange>& ranges, const VulkanShader& shader)
-			{
-				std::vector<VkPushConstantRange> tempRanges = shader.GetPushConstantRanges();
-				ranges.insert(ranges.end(), tempRanges.begin(), tempRanges.end());
-			}
-
-			void AddPoolSizesToVector(std::vector<VkDescriptorPoolSize>& poolSizes, const VulkanShader& shader)
-			{
-				std::vector<VkDescriptorPoolSize> tempPoolSizes = shader.GetPoolSizes();
-				poolSizes.insert(poolSizes.end(), tempPoolSizes.begin(), tempPoolSizes.end());
-			}
-
-			void AddResourcesToMap(std::unordered_map<std::string, ShaderResource>& resources, const VulkanShader& shader)
-			{
-				const std::unordered_map<std::string, ShaderResource> tempResources = shader.GetShaderResources();
-				resources.insert(tempResources.begin(), tempResources.end());
-			}
 		}
 
 		VulkanGraphicsPipeline::VulkanGraphicsPipeline(
@@ -662,7 +638,7 @@ namespace Flint
 			bIsTerminated = true;
 		}
 
-		void VulkanGraphicsPipeline::PrepareResourcesToDraw()
+		void VulkanGraphicsPipeline::PrepareResources()
 		{
 			FLINT_SETUP_PROFILER();
 			UI32 descriptorSetCount = static_cast<UI32>(mDrawDataList.size());
@@ -682,40 +658,40 @@ namespace Flint
 			// Resolve vertex shader data.
 			{
 				VulkanShader& vVertexShader = pVertexShader->StaticCast<VulkanShader>();
-				_Helpers::AddPoolSizesToVector(vPoolSizes, vVertexShader);
-				_Helpers::AddResourcesToMap(resources, vVertexShader);
+				Utilities::AddPoolSizesToVector(vPoolSizes, vVertexShader);
+				Utilities::AddResourcesToMap(resources, vVertexShader);
 			}
 
 			// Check and resolve fragment shader data.
 			if (pFragmentShader)
 			{
 				VulkanShader& vFragmentShader = pFragmentShader->StaticCast<VulkanShader>();
-				_Helpers::AddPoolSizesToVector(vPoolSizes, vFragmentShader);
-				_Helpers::AddResourcesToMap(resources, vFragmentShader);
+				Utilities::AddPoolSizesToVector(vPoolSizes, vFragmentShader);
+				Utilities::AddResourcesToMap(resources, vFragmentShader);
 			}
 
 			// Check and resolve tessellation control shader data.
 			if (pTessellationControlShader)
 			{
 				VulkanShader& vShader = pTessellationControlShader->StaticCast<VulkanShader>();
-				_Helpers::AddPoolSizesToVector(vPoolSizes, vShader);
-				_Helpers::AddResourcesToMap(resources, vShader);
+				Utilities::AddPoolSizesToVector(vPoolSizes, vShader);
+				Utilities::AddResourcesToMap(resources, vShader);
 			}
 
 			// Check and resolve tessellation evaluation shader data.
 			if (pTessellationEvaluationShader)
 			{
 				VulkanShader& vShader = pTessellationEvaluationShader->StaticCast<VulkanShader>();
-				_Helpers::AddPoolSizesToVector(vPoolSizes, vShader);
-				_Helpers::AddResourcesToMap(resources, vShader);
+				Utilities::AddPoolSizesToVector(vPoolSizes, vShader);
+				Utilities::AddResourcesToMap(resources, vShader);
 			}
 
 			// Check and resolve geometry shader data.
 			if (pGeometryShader)
 			{
 				VulkanShader& vShader = pGeometryShader->StaticCast<VulkanShader>();
-				_Helpers::AddPoolSizesToVector(vPoolSizes, vShader);
-				_Helpers::AddResourcesToMap(resources, vShader);
+				Utilities::AddPoolSizesToVector(vPoolSizes, vShader);
+				Utilities::AddResourcesToMap(resources, vShader);
 			}
 
 			// Return if the pool size is empty.
@@ -1012,35 +988,42 @@ namespace Flint
 			std::vector<VkPushConstantRange> vConstantRanges;
 
 			// Resolve vertex shader data.
-			_Helpers::AddResourceBindingsToVector(vBindings, pVertexShader->StaticCast<VulkanShader>());
-			_Helpers::AddPushConstantRangesToVector(vConstantRanges, pVertexShader->StaticCast<VulkanShader>());
+			{
+				auto& vShader = pVertexShader->StaticCast<VulkanShader>();
+				Utilities::AddResourceBindingsToVector(vBindings, vShader);
+				Utilities::AddPushConstantRangesToVector(vConstantRanges, vShader);
+			}
 
 			// Check and resolve fragment shader data.
 			if (pFragmentShader)
 			{
-				_Helpers::AddResourceBindingsToVector(vBindings, pFragmentShader->StaticCast<VulkanShader>());
-				_Helpers::AddPushConstantRangesToVector(vConstantRanges, pFragmentShader->StaticCast<VulkanShader>());
+				auto& vShader = pFragmentShader->StaticCast<VulkanShader>();
+				Utilities::AddResourceBindingsToVector(vBindings, vShader);
+				Utilities::AddPushConstantRangesToVector(vConstantRanges, vShader);
 			}
 
 			// Check and resolve tessellation control shader data.
 			if (pTessellationControlShader)
 			{
-				_Helpers::AddResourceBindingsToVector(vBindings, pTessellationControlShader->StaticCast<VulkanShader>());
-				_Helpers::AddPushConstantRangesToVector(vConstantRanges, pTessellationControlShader->StaticCast<VulkanShader>());
+				auto& vShader = pTessellationControlShader->StaticCast<VulkanShader>();
+				Utilities::AddResourceBindingsToVector(vBindings, vShader);
+				Utilities::AddPushConstantRangesToVector(vConstantRanges, vShader);
 			}
 
 			// Check and resolve tessellation evaluation shader data.
 			if (pTessellationEvaluationShader)
 			{
-				_Helpers::AddResourceBindingsToVector(vBindings, pTessellationEvaluationShader->StaticCast<VulkanShader>());
-				_Helpers::AddPushConstantRangesToVector(vConstantRanges, pTessellationEvaluationShader->StaticCast<VulkanShader>());
+				auto& vShader = pTessellationEvaluationShader->StaticCast<VulkanShader>();
+				Utilities::AddResourceBindingsToVector(vBindings, vShader);
+				Utilities::AddPushConstantRangesToVector(vConstantRanges, vShader);
 			}
 
 			// Check and resolve geometry shader data.
 			if (pGeometryShader)
 			{
-				_Helpers::AddResourceBindingsToVector(vBindings, pGeometryShader->StaticCast<VulkanShader>());
-				_Helpers::AddPushConstantRangesToVector(vConstantRanges, pGeometryShader->StaticCast<VulkanShader>());
+				auto& vShader = pGeometryShader->StaticCast<VulkanShader>();
+				Utilities::AddResourceBindingsToVector(vBindings, vShader);
+				Utilities::AddPushConstantRangesToVector(vConstantRanges, vShader);
 			}
 
 			// Create descriptor set layout.

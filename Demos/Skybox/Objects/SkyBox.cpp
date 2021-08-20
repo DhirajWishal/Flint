@@ -83,7 +83,7 @@ void SkyBox::CreateNewPipeline()
 	specification.mDynamicStateFlags = Flint::DynamicStateFlags::VIEWPORT | Flint::DynamicStateFlags::SCISSOR;
 
 	pSceneState->pGraphicsPipelines["SkyBox"] = pSceneState->pDevice->CreateGraphicsPipeline("SkyBox", pSceneState->pScreenBoundRenderTargets["Default"], pVertexShader, nullptr, nullptr, nullptr, pFragmentShader, specification);
-	pSceneState->pScreenBoundRenderTargets["Default"]->SubmitPipeline(pSceneState->pGeometryStores["Default"], pSceneState->pGraphicsPipelines["SkyBox"]);
+	pSceneState->pScreenBoundRenderTargets["Default"]->SubmitGraphicsPipeline(pSceneState->pGeometryStores["Default"], pSceneState->pGraphicsPipelines["SkyBox"]);
 }
 
 ImageData SkyBox::LoadSkyboxImages()
