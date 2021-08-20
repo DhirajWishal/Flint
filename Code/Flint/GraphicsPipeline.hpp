@@ -7,7 +7,6 @@
 #include "Shader.hpp"
 #include "RenderTarget.hpp"
 #include "DynamicStateContainer.hpp"
-#include "ResourceMap.hpp"
 
 namespace Flint
 {
@@ -372,7 +371,7 @@ namespace Flint
 		 *
 		 * @return The newly created resource map.
 		 */
-		std::shared_ptr<ResourceMap> CreateResourceMap() const;
+		virtual std::shared_ptr<ResourceMap> CreateResourceMap() const override final;
 
 		/**
 		 * Get draw data from the pipeline.

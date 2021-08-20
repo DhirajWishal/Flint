@@ -45,7 +45,7 @@ namespace Flint
 
 		bool VulkanQueue::IsComplete() const
 		{
-			return mGraphicsFamily.has_value() && mComputeFamily.has_value() && mTransferFamily.has_value();
+			return (mGraphicsFamily.has_value() || mComputeFamily.has_value()) && mTransferFamily.has_value();
 		}
 	}
 }

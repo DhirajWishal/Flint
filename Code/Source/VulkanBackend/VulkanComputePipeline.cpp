@@ -21,6 +21,21 @@ namespace Flint
 			CreatePipeline();
 		}
 
+		void VulkanComputePipeline::ReloadShaders()
+		{
+			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
+
+			vkDestroyPipeline(vDevice.GetLogicalDevice(), vPipeline, nullptr);
+			vkDestroyDescriptorSetLayout(vDevice.GetLogicalDevice(), vDescriptorSetLayout, nullptr);
+			vkDestroyPipelineLayout(vDevice.GetLogicalDevice(), vPipelineLayout, nullptr);
+
+			bShouldPrepareResources = true;
+
+			CreatePipelineCache();
+			CreatePipelineLayout();
+			CreatePipeline();
+		}
+
 		void VulkanComputePipeline::Dispatch()
 		{
 			if (!pThisPipeline)
@@ -47,6 +62,7 @@ namespace Flint
 			}
 
 			vCommandBufferList.EndBufferRecording();
+			vCommandBufferList.SubmitComputeCommands();
 			vCommandBufferList.Terminate();
 		}
 
@@ -132,19 +148,19 @@ namespace Flint
 			vWrite.dstArrayElement = 0;
 
 			UI64 descriptorIndex = 0;
-			for (const auto drawData : mComputeInstances)
+			for (const auto instance : mComputeInstances)
 			{
-				if (!drawData.second.pResourceMap)
+				if (!instance.second.pResourceMap)
 					continue;
 
 				vWrite.dstSet = vDescriptorSets[descriptorIndex++];
-				vDescriptorSetMap[drawData.second.pResourceMap] = vWrite.dstSet;
+				vDescriptorSetMap[instance.second.pResourceMap] = vWrite.dstSet;
 
 				vWrite.pImageInfo = VK_NULL_HANDLE;
 
 				// Get buffer resources.
 				{
-					const auto bufferResources = drawData.second.pResourceMap->GetBufferResourceMap();
+					const auto bufferResources = instance.second.pResourceMap->GetBufferResourceMap();
 					for (const auto resource : bufferResources)
 					{
 						if (!resource.second)
@@ -168,7 +184,7 @@ namespace Flint
 
 				// Get image resources.
 				{
-					const auto imageResources = drawData.second.pResourceMap->GetImageResourceMap();
+					const auto imageResources = instance.second.pResourceMap->GetImageResourceMap();
 					for (const auto resource : imageResources)
 					{
 						if (!resource.second.second)

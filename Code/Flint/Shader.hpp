@@ -94,6 +94,28 @@ namespace Flint
 		Shader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::string& code);
 
 		/**
+		 * Reload the shader using the shader file.
+		 * 
+		 * @param path: The shader file path.
+		 */
+		virtual void Reload(const std::filesystem::path& path) = 0;
+
+		/**
+		 * Reload the shader using the shader code vector.
+		 * 
+		 * @param code: The shader code.
+		 */
+		virtual void Reload(const std::vector<UI32>& code) = 0;
+
+		/**
+		 * Reload the shader using the shader code string.
+		 *
+		 * @param code: The shader code.
+		 */
+		virtual void Reload(const std::string& code) = 0;
+
+	public:
+		/**
 		 * Get the shader resources of the shader.
 		 *
 		 * @return The shader resources.

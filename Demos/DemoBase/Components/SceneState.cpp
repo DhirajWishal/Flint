@@ -28,8 +28,8 @@ SceneState::SceneState(const std::string& displayTitle)
 	pDisplay = pInstance->CreateDisplay(Flint::FBox2D(1280, 720), displayTitle);
 	pDevice = pInstance->CreateDevice(Flint::DeviceFlags::GRAPHICS_COMPATIBLE | Flint::DeviceFlags::EXTERNAL | Flint::DeviceFlags::COMPUTE_COMPATIBLE);
 
-	pVertexShader = pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path(mAssetPath.string() + "\\Shaders\\3D\\shader.vert.spv"));
-	pFragmentShader = pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path(mAssetPath.string() + "\\Shaders\\3D\\shader.frag.spv"));
+	pVertexShader = pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("Flint\\Shaders\\3D\\shader.vert.spv"));
+	pFragmentShader = pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("Flint\\Shaders\\3D\\shader.frag.spv"));
 	pGeometryStores["Default"] = pDevice->CreateGeometryStore(pVertexShader->GetInputAttributes(), sizeof(UI32));
 
 	CreateDefaultRenderTarget();
@@ -126,8 +126,8 @@ void SceneState::CreateDefaultRenderTarget()
 
 void SceneState::CreateBoundingBoxPipeline()
 {
-	pVertexShaderBB = pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path(GetAssetPath().string() + "\\Shaders\\BoundingBox\\shader.vert.spv"));
-	pFragmentShaderBB = pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path(GetAssetPath().string() + "\\Shaders\\BoundingBox\\shader.frag.spv"));
+	pVertexShaderBB = pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("Flint\\Shaders\\BoundingBox\\shader.vert.spv"));
+	pFragmentShaderBB = pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("Flint\\Shaders\\BoundingBox\\shader.frag.spv"));
 
 	Flint::GraphicsPipelineSpecification specification = {};
 	specification.mRasterizationSamples = pDevice->GetSupportedRasterizationSamples();

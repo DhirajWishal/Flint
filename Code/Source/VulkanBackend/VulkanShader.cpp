@@ -228,6 +228,57 @@ namespace Flint
 			PerformReflection();
 		}
 
+		void VulkanShader::Reload(const std::filesystem::path& path)
+		{
+			FLINT_SETUP_PROFILER();
+			Terminate();
+			bIsTerminated = false;
+
+			ResolveShaderStage();
+			std::ifstream shaderFile(path, std::ios::ate | std::ios::binary);
+
+			if (!shaderFile.is_open())
+				FLINT_THROW_RUNTIME_ERROR("Submitted shader file path is invalid!");
+
+			UI64 codeSize = shaderFile.tellg();
+			shaderFile.seekg(0);
+
+			mShaderCode.resize(codeSize);
+			shaderFile.read(reinterpret_cast<char*>(mShaderCode.data()), codeSize);
+
+			shaderFile.close();
+			CreateShaderModule();
+			PerformReflection();
+		}
+
+		void VulkanShader::Reload(const std::vector<UI32>& code)
+		{
+			FLINT_SETUP_PROFILER();
+			Terminate();
+			bIsTerminated = false;
+
+			ResolveShaderStage();
+
+			mShaderCode = code;
+			CreateShaderModule();
+			PerformReflection();
+		}
+
+		void VulkanShader::Reload(const std::string& code)
+		{
+			FLINT_SETUP_PROFILER();
+			Terminate();
+			bIsTerminated = false;
+
+			ResolveShaderStage();
+
+			mShaderCode.resize(code.size());
+			std::copy(code.begin(), code.end(), reinterpret_cast<char*>(mShaderCode.data()));
+
+			CreateShaderModule();
+			PerformReflection();
+		}
+
 		void VulkanShader::Terminate()
 		{
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
@@ -273,15 +324,27 @@ namespace Flint
 					if (resource->format == SpvReflectFormat::SPV_REFLECT_FORMAT_UNDEFINED)
 						continue;
 
-					if (resource->location >= mInputAttributes[0].size())
-						FLINT_THROW_BACKEND_ERROR("Invalid shader input location! Make sure that they are numbered and in order.");
+					if (resource->built_in == SpvBuiltIn::SpvBuiltInGlobalInvocationId)
+					{
+						mInputAttributes[0][0] = ShaderAttribute(
+							resource->name,
+							resource->location,
+							static_cast<ShaderAttributeDataType>(
+								(resource->type_description->traits.numeric.scalar.width / 8) *
+								std::max(resource->type_description->traits.numeric.vector.component_count, UI32(1))));
+					}
+					else
+					{
+						if (resource->location >= mInputAttributes[0].size())
+							FLINT_THROW_BACKEND_ERROR("Invalid shader input location! Make sure that they are numbered and in order.");
 
-					mInputAttributes[0][resource->location] = ShaderAttribute(
-						resource->name,
-						resource->location,
-						static_cast<ShaderAttributeDataType>(
-							(resource->type_description->traits.numeric.scalar.width / 8) *
-							std::max(resource->type_description->traits.numeric.vector.component_count, UI32(1))));
+						mInputAttributes[0][resource->location] = ShaderAttribute(
+							resource->name,
+							resource->location,
+							static_cast<ShaderAttributeDataType>(
+								(resource->type_description->traits.numeric.scalar.width / 8) *
+								std::max(resource->type_description->traits.numeric.vector.component_count, UI32(1))));
+					}
 				}
 			}
 

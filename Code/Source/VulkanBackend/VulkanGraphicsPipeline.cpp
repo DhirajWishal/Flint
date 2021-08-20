@@ -602,6 +602,22 @@ namespace Flint
 			CreatePipeline();
 		}
 
+		void VulkanGraphicsPipeline::ReloadShaders()
+		{
+			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
+
+			vkDestroyPipeline(vDevice.GetLogicalDevice(), vPipeline, nullptr);
+			vkDestroyDescriptorSetLayout(vDevice.GetLogicalDevice(), vDescriptorSetLayout, nullptr);
+			vkDestroyPipelineLayout(vDevice.GetLogicalDevice(), vPipelineLayout, nullptr);
+
+			bShouldPrepareResources = true;
+
+			SetupDefaults();
+			CreatePipelineLayout();
+			CreatePipelineCache();
+			CreatePipeline();
+		}
+
 		void VulkanGraphicsPipeline::Recreate(const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget)
 		{
 			FLINT_SETUP_PROFILER();

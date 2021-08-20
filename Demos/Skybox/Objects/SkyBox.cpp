@@ -12,19 +12,19 @@ SkyBox::SkyBox(glm::vec3 position, SceneState* pSceneState) : GameObject(positio
 
 	pDynamicStates = std::make_shared<Flint::DynamicStateContainer>();
 
-	pVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("Flint\\Shaders\\SkyBox\\skycylinder.vert.spv"));
-	pFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("Flint\\Shaders\\SkyBox\\skycylinder.frag.spv"));
+	pVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("Flint\\Shaders\\SkyBox\\skybox.vert.spv"));
+	pFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("Flint\\Shaders\\SkyBox\\skybox.frag.spv"));
 
-	//auto image = LoadSkyboxImages();
-	auto image = LoadImage("C:\\Users\\RLG Evo\\Downloads\\orbita_4k_result.png");
-	pTexture = pSceneState->pDevice->CreateImage(Flint::ImageType::DIMENSIONS_2, Flint::ImageUsage::GRAPHICS, image.mExtent, Flint::PixelFormat::R8G8B8A8_SRGB, 1, 1, image.pImageData);
-	//delete[] image.pImageData;
-	DestroyImage(image);
+	auto image = LoadSkyboxImages();
+	//auto image = LoadImage("C:\\Users\\RLG Evo\\Downloads\\orbita_4k_result.png");
+	pTexture = pSceneState->pDevice->CreateImage(Flint::ImageType::CUBEMAP, Flint::ImageUsage::GRAPHICS, image.mExtent, Flint::PixelFormat::R8G8B8A8_SRGB, 6, 1, image.pImageData);
+	delete[] image.pImageData;
+	//DestroyImage(image);
 
 	Flint::ImageSamplerSpecification samplerSpecification = {};
-	//samplerSpecification.mAddressModeU = Flint::AddressMode::CLAMP_TO_EDGE;
-	//samplerSpecification.mAddressModeV = Flint::AddressMode::CLAMP_TO_EDGE;
-	//samplerSpecification.mAddressModeW = Flint::AddressMode::CLAMP_TO_EDGE;
+	samplerSpecification.mAddressModeU = Flint::AddressMode::CLAMP_TO_EDGE;
+	samplerSpecification.mAddressModeV = Flint::AddressMode::CLAMP_TO_EDGE;
+	samplerSpecification.mAddressModeW = Flint::AddressMode::CLAMP_TO_EDGE;
 	pTextureSampler = pSceneState->pDevice->CreateImageSampler(samplerSpecification);
 
 	CreateNewPipeline();

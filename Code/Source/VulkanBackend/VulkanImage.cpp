@@ -55,11 +55,29 @@ namespace Flint
 				case Flint::PixelFormat::R8G8B8A8_SRGB:
 					return VkFormat::VK_FORMAT_R8G8B8A8_SRGB;
 
+				case Flint::PixelFormat::R8_UNORMAL:
+					return VkFormat::VK_FORMAT_R8_UNORM;
+
+				case Flint::PixelFormat::R8G8_UNORMAL:
+					return VkFormat::VK_FORMAT_R8G8_UNORM;
+
+				case Flint::PixelFormat::R8G8B8_UNORMAL:
+					return VkFormat::VK_FORMAT_R8G8B8_UNORM;
+
+				case Flint::PixelFormat::R8G8B8A8_UNORMAL:
+					return VkFormat::VK_FORMAT_R8G8B8A8_UNORM;
+
 				case Flint::PixelFormat::B8G8R8_SRGB:
 					return VkFormat::VK_FORMAT_B8G8R8_SRGB;
 
 				case Flint::PixelFormat::B8G8R8A8_SRGB:
 					return VkFormat::VK_FORMAT_B8G8R8A8_SRGB;
+
+				case Flint::PixelFormat::B8G8R8_UNORMAL:
+					return VkFormat::VK_FORMAT_B8G8R8_UNORM;
+
+				case Flint::PixelFormat::B8G8R8A8_UNORMAL:
+					return VkFormat::VK_FORMAT_B8G8R8A8_UNORM;
 
 				case Flint::PixelFormat::D16_SINT:
 					return VkFormat::VK_FORMAT_D16_UNORM;
@@ -79,25 +97,21 @@ namespace Flint
 
 			VkImageUsageFlags GetImageUsage(ImageUsage usage)
 			{
-				switch (usage)
-				{
-				case Flint::ImageUsage::GRAPHICS:
-					return VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_DST_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_SAMPLED_BIT;
+				VkImageUsageFlags vFlags = VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_DST_BIT;
 
-				case Flint::ImageUsage::STORAGE:
-					return VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_DST_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_STORAGE_BIT;
+				if ((usage & ImageUsage::GRAPHICS) == ImageUsage::GRAPHICS)
+					vFlags |= VkImageUsageFlagBits::VK_IMAGE_USAGE_SAMPLED_BIT;
 
-				case Flint::ImageUsage::COLOR:
-					return VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_DST_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_STORAGE_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+				if ((usage & ImageUsage::STORAGE) == ImageUsage::STORAGE)
+					vFlags |= VkImageUsageFlagBits::VK_IMAGE_USAGE_STORAGE_BIT;
 
-				case Flint::ImageUsage::DEPTH:
-					return VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_DST_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_SAMPLED_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+				if ((usage & ImageUsage::COLOR) == ImageUsage::COLOR)
+					vFlags |= VkImageUsageFlagBits::VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-				default:
-					FLINT_THROW_BACKEND_ERROR("Invalid image usage type!");
-				}
+				if ((usage & ImageUsage::DEPTH) == ImageUsage::DEPTH)
+					vFlags |= VkImageUsageFlagBits::VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 
-				return VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_DST_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_SAMPLED_BIT;
+				return vFlags;
 			}
 
 			UI8 GetByteDepth(PixelFormat format)
@@ -105,18 +119,24 @@ namespace Flint
 				switch (format)
 				{
 				case Flint::PixelFormat::R8_SRGB:
+				case Flint::PixelFormat::R8_UNORMAL:
 					return 1;
 
 				case Flint::PixelFormat::R8G8_SRGB:
+				case Flint::PixelFormat::R8G8_UNORMAL:
 				case Flint::PixelFormat::D16_SINT:
 					return 2;
 
 				case Flint::PixelFormat::R8G8B8_SRGB:
+				case Flint::PixelFormat::R8G8B8_UNORMAL:
 				case Flint::PixelFormat::B8G8R8_SRGB:
+				case Flint::PixelFormat::B8G8R8_UNORMAL:
 					return 3;
 
 				case Flint::PixelFormat::R8G8B8A8_SRGB:
+				case Flint::PixelFormat::R8G8B8A8_UNORMAL:
 				case Flint::PixelFormat::B8G8R8A8_SRGB:
+				case Flint::PixelFormat::B8G8R8A8_UNORMAL:
 				case Flint::PixelFormat::D32_SFLOAT:
 				case Flint::PixelFormat::R32_SFLOAT:
 					return 4;
@@ -162,18 +182,21 @@ namespace Flint
 
 			VkImageAspectFlags GetImageAspectFlags(ImageUsage usage)
 			{
-				switch (usage)
-				{
-				case Flint::ImageUsage::GRAPHICS:
-				case Flint::ImageUsage::STORAGE:
-				case Flint::ImageUsage::COLOR:
-					return VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
-
-				case Flint::ImageUsage::DEPTH:
+				if ((usage & ImageUsage::DEPTH) == ImageUsage::DEPTH)
 					return VkImageAspectFlagBits::VK_IMAGE_ASPECT_DEPTH_BIT;
-				}
 
-				return VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
+				VkImageAspectFlags vFlags = 0;
+
+				if ((usage & ImageUsage::GRAPHICS) == ImageUsage::GRAPHICS)
+					vFlags |= VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
+
+				if ((usage & ImageUsage::STORAGE) == ImageUsage::STORAGE)
+					vFlags |= VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
+
+				if ((usage & ImageUsage::COLOR) == ImageUsage::COLOR)
+					vFlags |= VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
+
+				return vFlags;
 			}
 
 			VkComponentMapping GetComponentMapping(PixelFormat format)
@@ -192,6 +215,7 @@ namespace Flint
 
 				case Flint::PixelFormat::R32_SFLOAT:
 				case Flint::PixelFormat::R8_SRGB:
+				case Flint::PixelFormat::R8_UNORMAL:
 					vComponentMapping.r = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_R;
 					vComponentMapping.g = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_R;
 					vComponentMapping.b = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_R;
@@ -199,6 +223,7 @@ namespace Flint
 					break;
 
 				case Flint::PixelFormat::R8G8_SRGB:
+				case Flint::PixelFormat::R8G8_UNORMAL:
 					vComponentMapping.r = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_R;
 					vComponentMapping.g = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_G;
 					vComponentMapping.b = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_ZERO;
@@ -206,6 +231,7 @@ namespace Flint
 					break;
 
 				case Flint::PixelFormat::R8G8B8_SRGB:
+				case Flint::PixelFormat::R8G8B8_UNORMAL:
 					vComponentMapping.r = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_R;
 					vComponentMapping.g = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_G;
 					vComponentMapping.b = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_B;
@@ -213,6 +239,7 @@ namespace Flint
 					break;
 
 				case Flint::PixelFormat::R8G8B8A8_SRGB:
+				case Flint::PixelFormat::R8G8B8A8_UNORMAL:
 					vComponentMapping.r = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_R;
 					vComponentMapping.g = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_G;
 					vComponentMapping.b = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_B;
@@ -220,6 +247,7 @@ namespace Flint
 					break;
 
 				case Flint::PixelFormat::B8G8R8_SRGB:
+				case Flint::PixelFormat::B8G8R8_UNORMAL:
 					vComponentMapping.b = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_R;
 					vComponentMapping.g = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_G;
 					vComponentMapping.r = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_B;
@@ -227,6 +255,7 @@ namespace Flint
 					break;
 
 				case Flint::PixelFormat::B8G8R8A8_SRGB:
+				case Flint::PixelFormat::B8G8R8A8_UNORMAL:
 					vComponentMapping.b = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_R;
 					vComponentMapping.g = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_G;
 					vComponentMapping.r = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_B;
@@ -283,16 +312,21 @@ namespace Flint
 				vStagingBuffer.Terminate();
 			}
 
-			if (mType != ImageType::CUBEMAP && mType != ImageType::CUBEMAP_ARRAY && mUsage != ImageUsage::DEPTH && mUsage != ImageUsage::COLOR)
+			if (mType != ImageType::CUBEMAP && mType != ImageType::CUBEMAP_ARRAY && mUsage == ImageUsage::GRAPHICS)
 				GenerateMipMaps();
-			else if (mUsage == ImageUsage::DEPTH)
+			else if ((mUsage & ImageUsage::DEPTH) == ImageUsage::DEPTH)
 			{
 				vCurrentLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;	// TODO
 			}
-			else if (mUsage == ImageUsage::COLOR)
+			else if ((mUsage & ImageUsage::COLOR) == ImageUsage::COLOR)
 			{
 				vDevice.SetImageLayout(vImage, vCurrentLayout, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, _Helpers::GetImageFormat(mFormat), mLayerCount, 0, mMipLevels);
 				vCurrentLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+			}
+			else if ((mUsage & ImageUsage::STORAGE) == ImageUsage::STORAGE)
+			{
+				vDevice.SetImageLayout(vImage, vCurrentLayout, VK_IMAGE_LAYOUT_GENERAL, _Helpers::GetImageFormat(mFormat), mLayerCount, 0, mMipLevels);
+				vCurrentLayout = VK_IMAGE_LAYOUT_GENERAL;
 			}
 			else
 			{
@@ -464,6 +498,30 @@ namespace Flint
 			if (mType == ImageType::CUBEMAP || mType == ImageType::CUBEMAP_ARRAY)
 				vCreateInfo.flags = VkImageCreateFlagBits::VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
 
+			if ((mUsage & ImageUsage::COLOR) == ImageUsage::COLOR)
+			{
+				VkFormatProperties vProperties = {};
+				vkGetPhysicalDeviceFormatProperties(vDevice.GetPhysicalDevice(), _Helpers::GetImageFormat(mFormat), &vProperties);
+
+				if (!(vProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT))
+					FLINT_THROW_BACKEND_ERROR("Texture format does not support using as storage image!");
+			}
+
+			std::vector<UI32> queueIndexes = {};
+			if (vDevice.IsGraphicsCompatible() && vDevice.IsComputeCompatible())
+			{
+				if (vDevice.GetQueue().mGraphicsFamily != vDevice.GetQueue().mComputeFamily)
+				{
+					queueIndexes.push_back(vDevice.GetQueue().mGraphicsFamily.value());
+					queueIndexes.push_back(vDevice.GetQueue().mComputeFamily.value());
+
+					vCreateInfo.sharingMode = VK_SHARING_MODE_CONCURRENT;
+				}
+			}
+
+			vCreateInfo.queueFamilyIndexCount = static_cast<UI32>(queueIndexes.size());
+			vCreateInfo.pQueueFamilyIndices = queueIndexes.data();
+
 			FLINT_VK_ASSERT(vkCreateImage(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vImage));
 		}
 
@@ -478,7 +536,7 @@ namespace Flint
 		{
 			FLINT_SETUP_PROFILER();
 
-			if (mType == ImageType::CUBEMAP || mType == ImageType::CUBEMAP_ARRAY)
+			if (mType == ImageType::CUBEMAP || mType == ImageType::CUBEMAP_ARRAY || mUsage == ImageUsage::STORAGE)
 				vImageView = Utilities::CreateImageViews({ vImage }, _Helpers::GetImageFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), _Helpers::GetImageAspectFlags(mUsage), _Helpers::GetImageViewType(mType), mLayerCount, 0, _Helpers::GetComponentMapping(mFormat))[0];
 			else
 				vImageView = Utilities::CreateImageViews({ vImage }, _Helpers::GetImageFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), _Helpers::GetImageAspectFlags(mUsage), _Helpers::GetImageViewType(mType), mLayerCount)[0];

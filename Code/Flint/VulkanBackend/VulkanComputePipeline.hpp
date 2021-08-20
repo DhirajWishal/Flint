@@ -16,6 +16,7 @@ namespace Flint
 			VulkanComputePipeline(const std::shared_ptr<Device>& pDevice, const std::string& pipelineName, const std::shared_ptr<Shader>& pComputeShader);
 			~VulkanComputePipeline() { if (!bIsTerminated) Terminate(); }
 
+			virtual void ReloadShaders() override final;
 			virtual void Dispatch() override final;
 			virtual void Dispatch(const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget) override final;
 			virtual void Dispatch(const std::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget) override final;

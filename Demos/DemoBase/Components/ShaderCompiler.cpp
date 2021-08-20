@@ -45,7 +45,7 @@ void CompileAllShaders(const std::filesystem::path& solutionDirectory)
 				+ iterator.path().filename().string()
 				+ ".spv\"";
 
-			int result = system(command.c_str());
+			system(command.c_str());
 		}
 	}
 }

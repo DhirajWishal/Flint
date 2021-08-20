@@ -133,7 +133,7 @@ namespace Flint
 					return VkDescriptorType::VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
 
 				case Flint::ShaderResourceType::STORAGE_IMAGE:
-					return VkDescriptorType::VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+					return VkDescriptorType::VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
 
 				case Flint::ShaderResourceType::UNIFORM_TEXEL_BUFFER:
 					return VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER;

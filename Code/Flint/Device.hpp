@@ -120,7 +120,7 @@ namespace Flint
 		/**
 		 * Create a new off screen render target factory.
 		 * These factories are used to create different types of render targets, like Shadow maps.
-		 * 
+		 *
 		 * @return The factory pointer.
 		 */
 		virtual std::shared_ptr<OffScreenRenderTargetFactory> CreateOffScreenRenderTargetFactory() = 0;
@@ -235,7 +235,7 @@ namespace Flint
 
 		/**
 		 * Create a new compute pipeline.
-		 * 
+		 *
 		 * @param pipelineName: The unique name of the pipeline.
 		 * @param pShader: The compute shader pointer.
 		 * @return The pipeline pointer.
@@ -265,8 +265,23 @@ namespace Flint
 
 	public:
 		/**
+		 * Check if the device is graphics compatible.
+		 *
+		 * @return The compatibility status (boolean).
+		 */
+		const bool IsGraphicsCompatible() const { return (mFlags & DeviceFlags::GRAPHICS_COMPATIBLE) == DeviceFlags::GRAPHICS_COMPATIBLE; }
+
+		/**
+		 * Check if the device is compute compatible.
+		 *
+		 * @return The compatibility status (boolean).
+		 */
+		const bool IsComputeCompatible() const { return (mFlags & DeviceFlags::COMPUTE_COMPATIBLE) == DeviceFlags::COMPUTE_COMPATIBLE; }
+
+	public:
+		/**
 		 * Get the supported rasterization samples.
-		 * 
+		 *
 		 * @return The samples.
 		 */
 		virtual RasterizationSamples GetSupportedRasterizationSamples() const = 0;

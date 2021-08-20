@@ -53,7 +53,7 @@ namespace Flint
 			Type pixel = pPixels[index];
 
 			pStagingBuffer->UnmapMemory();
-			pDevice->DestroyBuffer(pStagingBuffer);
+			pStagingBuffer->Terminate();
 
 			return pixel;
 		}

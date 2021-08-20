@@ -50,6 +50,7 @@ int main(int argc, char** argv)
 				ImGui::PlotLines("Frame Times", &floatArray[0], 50, 0, "", minFrameTime, maxFrameTime, ImVec2(0, 80));
 
 				ImGuiIO& io = ImGui::GetIO();
+				mState.pComputePipelines["TextureGenerator"]->Dispatch();
 
 				{
 					io.DeltaTime = delta / (1000.0f * 1000.0f * 1000.0f);

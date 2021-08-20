@@ -16,7 +16,7 @@ namespace Flint
 		{
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 			pSecondaryCommandBuffer = std::make_unique<VulkanCommandBufferList>(pDevice, bufferCount, pCommandBufferList);
-			pResults.push_back(pDevice->CreateImage(ImageType::DIMENSIONS_2, ImageUsage::COLOR, FBox3D(mExtent.mWidth, mExtent.mHeight, 1), PixelFormat::R32_SFLOAT, 1, 1, nullptr));
+			pResults.push_back(pDevice->CreateImage(ImageType::DIMENSIONS_2, ImageUsage::COLOR | ImageUsage::STORAGE, FBox3D(mExtent.mWidth, mExtent.mHeight, 1), PixelFormat::R32_SFLOAT, 1, 1, nullptr));
 
 			std::vector<VkSubpassDependency> vDependencies{ 2 };
 

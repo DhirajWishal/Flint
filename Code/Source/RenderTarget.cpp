@@ -105,10 +105,10 @@ namespace Flint
 
 		for (UI32 i = 0; i < mNumberOfThreads; i++)
 		{
-			mWorkerThreads.push_back(std::thread([this](DrawInstanceMap& drawInstanceMap, std::list<std::shared_ptr<GeometryStore>>& drawOrder, BinarySemaphore& binarySemaphore, CountingSemaphore& countingSemaphore, std::atomic<bool>& shouldRun)
+			mWorkerThreads.push_back(std::move(std::thread([this](DrawInstanceMap& drawInstanceMap, std::list<std::shared_ptr<GeometryStore>>& drawOrder, BinarySemaphore& binarySemaphore, CountingSemaphore& countingSemaphore, std::atomic<bool>& shouldRun)
 				{
 					SecondaryCommandsWorker(drawInstanceMap, drawOrder, binarySemaphore, countingSemaphore, shouldRun);
-				}, std::ref(mDrawInstanceMaps.at(i)), std::ref(mDrawInstanceOrder.at(i)), std::ref(mBinarySemaphores.at(i)), std::ref(mCountingSemaphore), std::ref(bThreadShouldRun)));
+				}, std::ref(mDrawInstanceMaps.at(i)), std::ref(mDrawInstanceOrder.at(i)), std::ref(mBinarySemaphores.at(i)), std::ref(mCountingSemaphore), std::ref(bThreadShouldRun))));
 		}
 	}
 

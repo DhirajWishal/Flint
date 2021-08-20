@@ -70,7 +70,6 @@ namespace Flint
 				return vQueue.IsComplete()
 					&& extensionsSupported
 					&& supportedFeatures.samplerAnisotropy;
-				return true;
 			}
 		}
 
@@ -423,10 +422,14 @@ namespace Flint
 
 			std::vector<VkDeviceQueueCreateInfo> vQueueCreateInfos;
 			std::set<UI32> uniqueQueueFamilies = {
-				vQueue.mGraphicsFamily.value(),
-				vQueue.mComputeFamily.value(),
 				vQueue.mTransferFamily.value()
 			};
+
+			if (vQueue.mGraphicsFamily.has_value())
+				uniqueQueueFamilies.insert(vQueue.mGraphicsFamily.value());
+
+			if (vQueue.mComputeFamily.has_value())
+				uniqueQueueFamilies.insert(vQueue.mComputeFamily.value());
 
 			float queuePriority = 1.0f;
 			for (UI32 queueFamily : uniqueQueueFamilies)

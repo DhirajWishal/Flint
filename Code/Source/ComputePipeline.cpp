@@ -28,4 +28,24 @@ namespace Flint
 		bShouldPrepareResources = true;
 		mComputeInstances.erase(ID);
 	}
+
+	std::shared_ptr<ResourceMap> ComputePipeline::CreateResourceMap() const
+	{
+		std::vector<std::string> buffers;
+		std::vector<std::string> images;
+
+		const auto resources = pShader->GetShaderResources();
+		for (const auto resource : resources)
+		{
+			if (resource.second.mType == ShaderResourceType::SAMPLER ||
+				resource.second.mType == ShaderResourceType::SAMPLED_IMAGE ||
+				resource.second.mType == ShaderResourceType::STORAGE_IMAGE ||
+				resource.second.mType == ShaderResourceType::COMBINED_IMAGE_SAMPLER)
+				INSERT_INTO_VECTOR(images, resource.first);
+			else
+				INSERT_INTO_VECTOR(buffers, resource.first);
+		}
+
+		return std::make_shared<ResourceMap>(buffers, images);
+	}
 }

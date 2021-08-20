@@ -4,6 +4,7 @@
 #pragma once
 
 #include "DeviceBoundObject.hpp"
+#include "ResourceMap.hpp"
 
 namespace Flint
 {
@@ -31,6 +32,20 @@ namespace Flint
 		 * Prepare resources to draw.
 		 */
 		virtual void PrepareResources() = 0;
+
+		/**
+		 * Reload the shaders.
+		 * NOTE: This will only reload the shaders and will perform reflection on the shader code. If any input, output or uniform was changed, make sure to reflect them in
+		 * input data.
+		 */
+		virtual void ReloadShaders() = 0;
+
+		/**
+		 * Create a new resource map using the provided shaders.
+		 * 
+		 * @return The resource map pointer.
+		 */
+		virtual std::shared_ptr<ResourceMap> CreateResourceMap() const = 0;
 
 	protected:
 		/**

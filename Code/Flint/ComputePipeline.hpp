@@ -93,6 +93,13 @@ namespace Flint
 		 */
 		void RemoveInstance(const UI64 ID);
 
+		/**
+		 * Create a new resource map.
+		 *
+		 * @return The newly created resource map.
+		 */
+		virtual std::shared_ptr<ResourceMap> CreateResourceMap() const override final;
+
 	protected:
 		std::shared_ptr<Shader> pShader = nullptr;
 		std::unordered_map<UI64, ComputeInstance> mComputeInstances = {};

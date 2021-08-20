@@ -10,7 +10,7 @@ VikingRoom::VikingRoom(glm::vec3 position, SceneState* pSceneState) : GameObject
 	pDynamicStates = std::make_shared<Flint::DynamicStateContainer>();
 
 	auto image = LoadImage(pSceneState->GetAssetPath().string() + "\\Packages\\VikingRoom\\VikingRoom\\texture.png");
-	pTexture = pSceneState->pDevice->CreateImage(Flint::ImageType::DIMENSIONS_2, Flint::ImageUsage::GRAPHICS, image.mExtent, Flint::PixelFormat::R8G8B8A8_SRGB, 1, 1, image.pImageData);
+	pTexture = pSceneState->pDevice->CreateImage(Flint::ImageType::DIMENSIONS_2, Flint::ImageUsage::GRAPHICS | Flint::ImageUsage::STORAGE, image.mExtent, Flint::PixelFormat::R8G8B8A8_UNORMAL, 1, 1, image.pImageData);
 	DestroyImage(image);
 
 	pTextureSampler = pSceneState->pDevice->CreateImageSampler(Flint::ImageSamplerSpecification());
@@ -45,6 +45,23 @@ VikingRoom::VikingRoom(glm::vec3 position, SceneState* pSceneState) : GameObject
 	asset.pIndexBuffer->Terminate();
 
 	SetupBoundingBox();
+
+	{
+		auto pDevice = pSceneState->pDevice;
+
+		auto pResultTexture = pDevice->CreateImage(Flint::ImageType::DIMENSIONS_2, Flint::ImageUsage::STORAGE, image.mExtent, Flint::PixelFormat::R8G8B8A8_UNORMAL, 1, 1, nullptr);
+		auto pShader = pDevice->CreateShader(Flint::ShaderType::COMPUTE, std::filesystem::path("Flint\\Shaders\\ComputeShader\\EdgeDetection.comp.spv"));
+		auto pTextureSampler = pDevice->CreateImageSampler(Flint::ImageSamplerSpecification());
+		auto pComputePipeline = pDevice->CreateComputePipeline("TextureGenerator", pShader);
+
+		auto pResourceMap = pComputePipeline->CreateResourceMap();
+		pResourceMap->SetResource("inputImage", pTextureSampler, pTexture);
+		pResourceMap->SetResource("resultImage", pTextureSampler, pResultTexture);
+		pComputePipeline->AddInstance(pResourceMap, nullptr, Flint::FBox3D(image.mExtent.X / 16, image.mExtent.Y / 16, 1));
+		pComputePipeline->Dispatch();
+
+		pSceneState->pComputePipelines["TextureGenerator"] = pComputePipeline;
+	}
 }
 
 VikingRoom::~VikingRoom()

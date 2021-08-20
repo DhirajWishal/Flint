@@ -155,11 +155,29 @@ namespace Flint
 	 * Image usage enum.
 	 */
 	enum class ImageUsage : UI8 {
-		GRAPHICS,
-		STORAGE,
-		DEPTH,
-		COLOR
+		GRAPHICS = BIT_SHIFT(0),
+		STORAGE = BIT_SHIFT(1),
+		DEPTH = BIT_SHIFT(2),
+		COLOR = BIT_SHIFT(3)
 	};
+
+	/**
+	 * Bitwise OR operator for the image usage.
+	 * 
+	 * @param lhs: The left hand side argument.
+	 * @param rhs: The right hand side argument.
+	 * @return The OR-ed value.
+	 */
+	constexpr ImageUsage operator|(const ImageUsage& lhs, const ImageUsage& rhs) { return static_cast<ImageUsage>(static_cast<UI8>(lhs) | static_cast<UI8>(rhs)); }
+
+	/**
+	 * Bitwise AND operator for the image usage.
+	 *
+	 * @param lhs: The left hand side argument.
+	 * @param rhs: The right hand side argument.
+	 * @return The AND-ed value.
+	 */
+	constexpr ImageUsage operator&(const ImageUsage& lhs, const ImageUsage& rhs) { return static_cast<ImageUsage>(static_cast<UI8>(lhs) & static_cast<UI8>(rhs)); }
 
 	/**
 	 * Pixel format enum.
@@ -172,8 +190,16 @@ namespace Flint
 		R8G8B8_SRGB,
 		R8G8B8A8_SRGB,
 
+		R8_UNORMAL,
+		R8G8_UNORMAL,
+		R8G8B8_UNORMAL,
+		R8G8B8A8_UNORMAL,
+
 		B8G8R8_SRGB,
 		B8G8R8A8_SRGB,
+
+		B8G8R8_UNORMAL,
+		B8G8R8A8_UNORMAL,
 
 		R32_SFLOAT,
 

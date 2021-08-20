@@ -16,7 +16,7 @@ namespace Flint
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 			pResults.push_back(pDevice->CreateImage(ImageType::CUBEMAP, ImageUsage::GRAPHICS, FBox3D(mExtent.mWidth, mExtent.mHeight, 1), PixelFormat::R32_SFLOAT, 6, 1, nullptr));
 
-			pColorImage = std::make_unique<VulkanImage>(pDevice, ImageType::DIMENSIONS_2, ImageUsage::COLOR, FBox3D(mExtent.mWidth, mExtent.mHeight, 1), PixelFormat::R32_SFLOAT, 1, 1, nullptr);
+			pColorImage = std::make_unique<VulkanImage>(pDevice, ImageType::DIMENSIONS_2, ImageUsage::COLOR | ImageUsage::STORAGE, FBox3D(mExtent.mWidth, mExtent.mHeight, 1), PixelFormat::R32_SFLOAT, 1, 1, nullptr);
 			pDepthImage = std::make_unique<VulkanImage>(pDevice, ImageType::DIMENSIONS_2, ImageUsage::DEPTH, FBox3D(mExtent.mWidth, mExtent.mHeight, 1), PixelFormat::D16_SINT, 1, 1, nullptr);
 
 			vRenderTarget.CreateRenderPass({ pColorImage.get(), pDepthImage.get() }, VK_PIPELINE_BIND_POINT_GRAPHICS, {});

@@ -30,6 +30,7 @@ public:
 	std::unordered_map<std::string, std::shared_ptr<Flint::ScreenBoundRenderTarget>> pScreenBoundRenderTargets;
 	std::unordered_map<std::string, std::shared_ptr<Flint::OffScreenRenderTarget>> pOffScreenRenderTargets;
 	std::unordered_map<std::string, std::shared_ptr<Flint::GraphicsPipeline>> pGraphicsPipelines;
+	std::unordered_map<std::string, std::shared_ptr<Flint::ComputePipeline>> pComputePipelines;
 	std::unordered_map<std::string, std::shared_ptr<Flint::GeometryStore>> pGeometryStores;
 
 	std::filesystem::path mSolutionPath = "";
