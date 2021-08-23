@@ -95,14 +95,14 @@ namespace Flint
 
 		/**
 		 * Reload the shader using the shader file.
-		 * 
+		 *
 		 * @param path: The shader file path.
 		 */
 		virtual void Reload(const std::filesystem::path& path) = 0;
 
 		/**
 		 * Reload the shader using the shader code vector.
-		 * 
+		 *
 		 * @param code: The shader code.
 		 */
 		virtual void Reload(const std::vector<UI32>& code) = 0;

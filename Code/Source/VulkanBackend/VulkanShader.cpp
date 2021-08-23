@@ -318,35 +318,33 @@ namespace Flint
 				std::vector<SpvReflectInterfaceVariable*> pInputs(variableCount);
 				_Helpers::ValidateReflection(spvReflectEnumerateInputVariables(&sShaderModule, &variableCount, pInputs.data()));
 
-				mInputAttributes[0].resize(pInputs.size());
+				mInputAttributes[0].reserve(pInputs.size());
 				for (auto& resource : pInputs)
 				{
 					if (resource->format == SpvReflectFormat::SPV_REFLECT_FORMAT_UNDEFINED)
 						continue;
 
-					if (resource->built_in == SpvBuiltIn::SpvBuiltInGlobalInvocationId)
+					if (resource->built_in > -1)
 					{
-						mInputAttributes[0][0] = ShaderAttribute(
+						mInputAttributes[0].push_back(ShaderAttribute(
 							resource->name,
 							resource->location,
-							static_cast<ShaderAttributeDataType>(
-								(resource->type_description->traits.numeric.scalar.width / 8) *
-								std::max(resource->type_description->traits.numeric.vector.component_count, UI32(1))));
+							ShaderAttributeDataType::BUILT_IN));
 					}
 					else
 					{
-						if (resource->location >= mInputAttributes[0].size())
-							FLINT_THROW_BACKEND_ERROR("Invalid shader input location! Make sure that they are numbered and in order.");
-
-						mInputAttributes[0][resource->location] = ShaderAttribute(
+						mInputAttributes[0].push_back(ShaderAttribute(
 							resource->name,
 							resource->location,
 							static_cast<ShaderAttributeDataType>(
 								(resource->type_description->traits.numeric.scalar.width / 8) *
-								std::max(resource->type_description->traits.numeric.vector.component_count, UI32(1))));
+								std::max(resource->type_description->traits.numeric.vector.component_count, UI32(1)))));
 					}
 				}
 			}
+
+			// Sort the inputs.
+			std::sort(mInputAttributes[0].begin(), mInputAttributes[0].end(), [] (const ShaderAttribute& lhs, const ShaderAttribute& rhs) { return lhs.mLocation < rhs.mLocation; });
 
 			// Resolve shader outputs.
 			{
@@ -369,6 +367,8 @@ namespace Flint
 				}
 			}
 
+			// Sort the outputs.
+			std::sort(mOutputAttributes[0].begin(), mOutputAttributes[0].end(), [](const ShaderAttribute& lhs, const ShaderAttribute& rhs) { return lhs.mLocation < rhs.mLocation; });
 
 			// Resolve uniforms.
 			{

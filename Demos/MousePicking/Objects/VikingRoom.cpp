@@ -119,7 +119,6 @@ void VikingRoom::OnUpdate(UI64 delta)
 	if (pSceneState->pDisplay->GetMouseButtonEvent(Flint::MouseButton::RIGHT).IsPressed())
 		DisableBoundingBox();
 
-
 	if (bIsBoundingBoxEnabled)
 	{
 		auto mat = pSceneState->mCamera.GetMatrix();

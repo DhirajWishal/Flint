@@ -101,7 +101,7 @@ namespace Flint
 
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 
-			// Resolve vertex shader data.				
+			// Resolve vertex shader data.
 			VulkanShader& vShader = pShader->StaticCast<VulkanShader>();
 			Utilities::AddPoolSizesToVector(vPoolSizes, vShader);
 			Utilities::AddResourcesToMap(resources, vShader);

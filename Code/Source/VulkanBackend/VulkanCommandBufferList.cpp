@@ -494,7 +494,7 @@ namespace Flint
 
 			vkCmdBeginRenderPass(GetCurrentCommandBuffer(), &vBeginInfo, VkSubpassContents::VK_SUBPASS_CONTENTS_INLINE);
 		}
-		
+
 		void VulkanCommandBufferList::VulkanBindRenderTargetSecondary(const std::shared_ptr<OffScreenRenderTarget>& pRenderTarget, const VkFramebuffer vFrameBuffer)
 		{
 			FLINT_SETUP_PROFILER();
@@ -513,7 +513,7 @@ namespace Flint
 
 			vkCmdBeginRenderPass(GetCurrentCommandBuffer(), &vBeginInfo, VkSubpassContents::VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 		}
-		
+
 		void VulkanCommandBufferList::SubmitComputeCommands()
 		{
 			FLINT_SETUP_PROFILER();

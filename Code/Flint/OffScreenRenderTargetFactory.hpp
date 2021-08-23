@@ -16,14 +16,14 @@ namespace Flint
 	public:
 		/**
 		 * Default constructor.
-		 * 
+		 *
 		 * @param pDevice: The device pointer.
 		 */
 		OffScreenRenderTargetFactory(const std::shared_ptr<Device>& pDevice) : pDevice(pDevice) {}
 
 		/**
 		 * Create a new render target.
-		 * 
+		 *
 		 * @param type: The type of the off screen render target.
 		 * @param extent: The extent of the render target.
 		 * @param bufferCount: The number of buffers in the render target.

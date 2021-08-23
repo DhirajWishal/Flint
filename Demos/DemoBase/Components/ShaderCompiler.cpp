@@ -5,12 +5,16 @@
 
 void CompileShader(const std::filesystem::path& shaderFile, const std::filesystem::path& solutionDirectory)
 {
-	std::string command = "\"" 
-		+ solutionDirectory.string() 
-		+ "\\Demos\\DemoBase\\ThirdParty\\glslangValidator\" -V \"" 
-		+ solutionDirectory.string() 
-		+ "\\Demos\\DemoBase\\Shaders\\" + shaderFile.string() 
-		+ "\" \"Flint\\Shaders\\\"";
+	std::string outputDirectory = "Flint\\Shaders\\" + shaderFile.parent_path().string();
+	if (!std::filesystem::exists(outputDirectory))
+		std::filesystem::create_directory(outputDirectory);
+
+	std::string command = "call \""
+		+ solutionDirectory.string()
+		+ "\\Demos\\DemoBase\\ThirdParty\\glslangValidator\" -V \""
+		+ solutionDirectory.string()
+		+ "\\Demos\\DemoBase\\Shaders\\" + shaderFile.string()
+		+ "\" -o \"Flint\\Shaders\\" + shaderFile.string() + ".spv\"";
 
 	system(command.c_str());
 }

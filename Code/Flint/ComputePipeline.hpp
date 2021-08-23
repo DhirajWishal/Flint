@@ -62,7 +62,7 @@ namespace Flint
 		/**
 		 * Dispatch compute commands to the GPU.
 		 * This will be executed depending on the dispatch mode.
-		 * 
+		 *
 		 * @param pScreenBoundRenderTarget: The screen bound render target pointer.
 		 */
 		virtual void Dispatch(const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget) = 0;
@@ -78,7 +78,7 @@ namespace Flint
 	public:
 		/**
 		 * Add a new compute instance to the pipeline.
-		 * 
+		 *
 		 * @param pResourceMap: The resource map of the instance.
 		 * @param pDynamicStates: The dynamic states pointer.
 		 * @param computeGroups: The compute groups.
@@ -88,7 +88,7 @@ namespace Flint
 
 		/**
 		 * Remove a compute instance form the pipeline.
-		 * 
+		 *
 		 * @param ID: The compute instance ID.
 		 */
 		void RemoveInstance(const UI64 ID);

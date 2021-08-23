@@ -29,7 +29,7 @@ void ProcessNode(const aiNode* pNode, std::vector<Asset::DrawInstance>& drawInst
 
 	for (UI32 i = 0; i < pNode->mNumMeshes; i++)
 	{
-		auto worldPos = pNode->mParent->mTransformation *  pNode->mTransformation;
+		auto worldPos = pNode->mParent->mTransformation * pNode->mTransformation;
 
 		UI64 index = pNode->mMeshes[i];
 		auto& instance = drawInstances[index];
@@ -53,7 +53,7 @@ void ProcessNode(const aiNode* pNode, std::vector<Asset::DrawInstance>& drawInst
 		instance.mTransform[3][1] = worldPos.d2;
 		instance.mTransform[3][2] = worldPos.d3;
 		instance.mTransform[3][3] = worldPos.d4;
-		
+
 		//glm::normalize(drawInstances[index].mTransform);
 	}
 

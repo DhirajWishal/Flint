@@ -23,6 +23,7 @@ namespace Flint
 				{
 					if (resource.second.mType == ShaderResourceType::SAMPLER ||
 						resource.second.mType == ShaderResourceType::SAMPLED_IMAGE ||
+						resource.second.mType == ShaderResourceType::STORAGE_IMAGE ||
 						resource.second.mType == ShaderResourceType::COMBINED_IMAGE_SAMPLER)
 						INSERT_INTO_VECTOR(images, resource.first);
 					else
@@ -112,7 +113,7 @@ namespace Flint
 		bShouldPrepareResources = true;
 		pRenderTarget->FlagAltered();
 	}
-	
+
 	void GraphicsPipeline::ClearDrawData()
 	{
 		mDrawDataList.clear();

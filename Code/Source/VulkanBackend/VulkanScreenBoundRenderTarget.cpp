@@ -18,7 +18,7 @@ namespace Flint
 			FLINT_SETUP_PROFILER();
 
 			if (!mNumberOfThreads)
-				pDefaultSecondaryCommandBuffer = std::make_unique<VulkanCommandBufferList>(pCommandBufferList->GetDevice(), 1, pCommandBufferList);
+				pDefaultSecondaryCommandBuffer = std::make_unique<VulkanCommandBufferList>(pCommandBufferList->GetDevice(), mBufferCount, pCommandBufferList);
 
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 			auto& vDisplay = pDisplay->StaticCast<VulkanDisplay>();
@@ -365,7 +365,7 @@ namespace Flint
 			else
 			{
 				// Begin the command buffer.
-				pDefaultSecondaryCommandBuffer->VulkanBeginSecondaryCommandBuffer(0, &vInheritInfo);
+				pDefaultSecondaryCommandBuffer->VulkanBeginSecondaryCommandBuffer(mFrameIndex, &vInheritInfo);
 
 				// Bind the draw instances.
 				for (UI64 itr = 0; itr < mDrawInstanceOrder.size(); itr++)

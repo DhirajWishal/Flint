@@ -67,7 +67,7 @@ namespace Flint
 			pVertexStagingBuffer->UnmapMemory();
 		}
 
-		// Extend the buffer and add index data. 
+		// Extend the buffer and add index data.
 		if (indexCount)
 		{
 			UI64 srcSize = mIndexCount * mIndexSize;
@@ -111,7 +111,7 @@ namespace Flint
 			mVertexCount += newSize / mVertexSize;
 		}
 
-		// Extend the buffer and add index data. 
+		// Extend the buffer and add index data.
 		if (pIndexStagingBuffer)
 		{
 			UI64 srcSize = mIndexCount * mIndexSize;

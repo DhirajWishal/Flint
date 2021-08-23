@@ -76,6 +76,8 @@ namespace Flint
 		MAT2 = 16,
 		MAT3 = 36,
 		MAT4 = 64,
+
+		BUILT_IN = 255
 	};
 
 	/**
@@ -163,7 +165,7 @@ namespace Flint
 
 	/**
 	 * Bitwise OR operator for the image usage.
-	 * 
+	 *
 	 * @param lhs: The left hand side argument.
 	 * @param rhs: The right hand side argument.
 	 * @return The OR-ed value.

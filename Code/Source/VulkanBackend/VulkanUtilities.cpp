@@ -206,7 +206,7 @@ namespace Flint
 
 				return VkShaderStageFlagBits::VK_SHADER_STAGE_ALL;
 			}
-			
+
 			PixelFormat GetPixelFormat(VkFormat format)
 			{
 				switch (format)
@@ -250,19 +250,19 @@ namespace Flint
 				std::vector<VkDescriptorSetLayoutBinding> tempBindings = shader.GetResourceBindings();
 				bindings.insert(bindings.end(), tempBindings.begin(), tempBindings.end());
 			}
-			
+
 			void AddPushConstantRangesToVector(std::vector<VkPushConstantRange>& ranges, const VulkanShader& shader)
 			{
 				std::vector<VkPushConstantRange> tempRanges = shader.GetPushConstantRanges();
 				ranges.insert(ranges.end(), tempRanges.begin(), tempRanges.end());
 			}
-			
+
 			void AddPoolSizesToVector(std::vector<VkDescriptorPoolSize>& poolSizes, const VulkanShader& shader)
 			{
 				std::vector<VkDescriptorPoolSize> tempPoolSizes = shader.GetPoolSizes();
 				poolSizes.insert(poolSizes.end(), tempPoolSizes.begin(), tempPoolSizes.end());
 			}
-			
+
 			void AddResourcesToMap(std::unordered_map<std::string, ShaderResource>& resources, const VulkanShader& shader)
 			{
 				const std::unordered_map<std::string, ShaderResource> tempResources = shader.GetShaderResources();

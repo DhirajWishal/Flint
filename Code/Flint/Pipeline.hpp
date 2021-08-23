@@ -42,7 +42,7 @@ namespace Flint
 
 		/**
 		 * Create a new resource map using the provided shaders.
-		 * 
+		 *
 		 * @return The resource map pointer.
 		 */
 		virtual std::shared_ptr<ResourceMap> CreateResourceMap() const = 0;

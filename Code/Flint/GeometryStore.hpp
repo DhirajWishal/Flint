@@ -132,7 +132,7 @@ namespace Flint
 		/**
 		 * Map the vertex buffer to the local address space.
 		 * Before mapping, make sure that the buffer memory profile is BufferMemoryProfile::TRANSFER_FRIENDLY.
-		 * 
+		 *
 		 * @return The memory address.
 		 */
 		void* MapVertexBuffer() const;

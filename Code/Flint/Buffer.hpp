@@ -99,7 +99,7 @@ namespace Flint
 
 		/**
 		 * Get the memory profile of the buffer.
-		 * 
+		 *
 		 * @return The memory profile.
 		 */
 		const BufferMemoryProfile GetMemoryProfile() const { return mMemoryProfile; }

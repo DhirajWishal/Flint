@@ -31,7 +31,7 @@ namespace Flint
 
 		pImageMap[name] = std::pair(pSampler, pImage);
 	}
-	
+
 	bool ResourceMap::operator==(const ResourceMap& other) const
 	{
 		return pBufferMap == other.pBufferMap && pImageMap == other.pImageMap;

@@ -213,7 +213,6 @@ void Preview::OnUpdate(UI64 delta)
 			mLight.mLightPosition += -mRotationBias * glm::vec3(0.0f, 0.0f, 1.0f);
 	}
 
-
 #define SCALE		glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 0.5f))
 #define ROTATE		glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f))
 #define TRANSLATE	glm::translate(glm::mat4(1.0f), glm::vec3(-mLight.mLightPosition.x, -mLight.mLightPosition.y, -mLight.mLightPosition.z))

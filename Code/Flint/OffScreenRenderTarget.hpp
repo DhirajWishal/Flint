@@ -72,7 +72,7 @@ namespace Flint
 
 		/**
 		 * Get the off screen render target type.
-		 * 
+		 *
 		 * @return The target type.
 		 */
 		const OffScreenRenderTargetType GetType() const { return mType; }

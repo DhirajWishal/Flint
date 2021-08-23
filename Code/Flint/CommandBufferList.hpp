@@ -41,7 +41,7 @@ namespace Flint
 
 		/**
 		 * Create a child command buffer.
-		 * 
+		 *
 		 * @return The child command buffer pointer.
 		 */
 		virtual std::shared_ptr<CommandBufferList> CreateChild() = 0;
@@ -176,7 +176,7 @@ namespace Flint
 
 		/**
 		 * Issue the compute call to the current command buffer.
-		 * 
+		 *
 		 * @param groups: The compute groups.
 		 */
 		virtual void IssueComputeCall(const FBox3D& groups) = 0;
@@ -218,7 +218,7 @@ namespace Flint
 
 		/**
 		 * Check if the command buffer is recording.
-		 * 
+		 *
 		 * @return The boolean value.
 		 */
 		const bool IsRecording() const { return bIsRecording; }

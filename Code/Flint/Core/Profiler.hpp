@@ -50,7 +50,7 @@ namespace Flint
 		/**
 		 * Lock the resources.
 		 */
-		void Lock() { while(!mMutex.try_lock()); }
+		void Lock() { while (!mMutex.try_lock()); }
 
 		/**
 		 * Unlock the resources.
@@ -103,5 +103,4 @@ namespace Flint
 #endif // !FLINT_RELEASE
 }
 
-
-#define FLINT_SETUP_PROFILER()	::Flint::Profiler __profiler{ __FUNCSIG__ }  
+#define FLINT_SETUP_PROFILER()	::Flint::Profiler __profiler{ __FUNCSIG__ }

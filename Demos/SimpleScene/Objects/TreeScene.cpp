@@ -35,7 +35,7 @@ TreeScene::TreeScene(glm::vec3 position, SceneState* pSceneState)
 		pMap->SetResource("texSampler", pTextureSampler, pTextures[i]);
 
 		mDrawIndexes[i] = pPipeline->AddDrawData(pMap, pDynamicStates, vertexOffset + instance.mVertexOffset, instance.mVertexCount, indexOffset + instance.mIndexOffset, instance.mIndexCount);
-		
+
 		mVertexCount += instance.mVertexCount;
 		mIndexCount += instance.mIndexCount;
 	}

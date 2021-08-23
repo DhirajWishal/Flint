@@ -162,7 +162,7 @@ namespace Flint
 
 			/**
 			 * Check if the constant block is null.
-			 * 
+			 *
 			 * @return The boolean value.
 			 */
 			constexpr bool IsNull() const { return pData == nullptr; }
@@ -224,7 +224,7 @@ namespace Flint
 
 		/**
 		 * Set constant data which is to be submitted to shaders.
-		 * 
+		 *
 		 * @param shaderType: The shader type to which the data is submitted to.
 		 * @param pData: The data pointer.
 		 * @param size: The size to be passed.

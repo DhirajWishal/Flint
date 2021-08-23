@@ -30,14 +30,14 @@ namespace Flint
 
 		/**
 		 * Copy the image content to a buffer.
-		 * 
+		 *
 		 * @return The stagging buffer.
 		 */
 		virtual std::shared_ptr<Buffer> CopyToBuffer() = 0;
 
 		/**
 		 * Get the value of a single pixel.
-		 * 
+		 *
 		 * @tparam Type: The type of the pixel.
 		 * @param position: The position of the pixel.
 		 * @return The pixel data.
@@ -68,7 +68,7 @@ namespace Flint
 
 		/**
 		 * Get the mip levels of the current image.
-		 * 
+		 *
 		 * @return The mip levels.
 		 */
 		const UI32 GetMipLevels() const { return mMipLevels; }

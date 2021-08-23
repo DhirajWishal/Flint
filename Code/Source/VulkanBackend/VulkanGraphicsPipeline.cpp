@@ -870,6 +870,9 @@ namespace Flint
 					vAttributeDescription.offset = 0;
 					for (const auto attribute : binding.second)
 					{
+						if (attribute.mDataType == ShaderAttributeDataType::BUILT_IN)
+							continue;
+
 						vAttributeDescription.location = attribute.mLocation;
 						vAttributeDescription.format = _Helpers::GetFormatFromSize(attribute.mDataType);
 

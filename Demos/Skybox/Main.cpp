@@ -73,7 +73,6 @@ int main(int argc, char** argv)
 						io.MouseDown[1] = false;
 				}
 
-
 				if (!io.WantCaptureMouse)
 				{
 					mState.UpdateCamera(delta);

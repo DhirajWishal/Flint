@@ -361,6 +361,11 @@ namespace Flint
 			{
 				vCurrentLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;	// TODO
 			}
+			else if ((mUsage & ImageUsage::GRAPHICS) == ImageUsage::GRAPHICS)
+			{
+				vDevice.SetImageLayout(vImage, vCurrentLayout, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, _Helpers::GetImageFormat(mFormat), mLayerCount, 0, mMipLevels);
+				vCurrentLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			}
 			else if ((mUsage & ImageUsage::COLOR) == ImageUsage::COLOR)
 			{
 				vDevice.SetImageLayout(vImage, vCurrentLayout, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, _Helpers::GetImageFormat(mFormat), mLayerCount, 0, mMipLevels);
@@ -381,7 +386,6 @@ namespace Flint
 		std::shared_ptr<Buffer> VulkanImage::CopyToBuffer()
 		{
 			std::shared_ptr<VulkanBuffer> pBuffer = std::make_shared<VulkanBuffer>(pDevice, BufferType::STAGING, static_cast<UI64>(mExtent.mWidth) * mExtent.mHeight * mExtent.mDepth * _Helpers::GetByteDepth(mFormat) * mLayerCount);
-
 
 			VkBufferImageCopy vCopy = {};
 			vCopy.bufferOffset = 0;
@@ -453,9 +457,9 @@ namespace Flint
 			vDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 			vDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 
-			if (mUsage == ImageUsage::DEPTH)
+			if ((mUsage & ImageUsage::DEPTH) == ImageUsage::DEPTH)
 				vDesc.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
-			else if (mUsage == ImageUsage::COLOR)
+			else if ((mUsage & ImageUsage::COLOR) == ImageUsage::COLOR)
 				vDesc.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 			else
 				vDesc.finalLayout = vCurrentLayout;
@@ -465,10 +469,10 @@ namespace Flint
 
 		VkImageLayout VulkanImage::GetAttachmentLayout() const
 		{
-			if (mUsage == ImageUsage::DEPTH)
+			if ((mUsage & ImageUsage::DEPTH) == ImageUsage::DEPTH)
 				return VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
-			if (mUsage == ImageUsage::COLOR)
+			if ((mUsage & ImageUsage::COLOR) == ImageUsage::COLOR)
 				return VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
 			return vCurrentLayout;
@@ -481,7 +485,7 @@ namespace Flint
 
 		RenderTargetAttachmenType VulkanImage::GetAttachmentType() const
 		{
-			return mUsage == ImageUsage::DEPTH ? RenderTargetAttachmenType::DEPTH_BUFFER : RenderTargetAttachmenType::COLOR_BUFFER;
+			return (mUsage & ImageUsage::DEPTH) == ImageUsage::DEPTH ? RenderTargetAttachmenType::DEPTH_BUFFER : RenderTargetAttachmenType::COLOR_BUFFER;
 		}
 
 		VkFormat VulkanImage::GetImageFormat() const

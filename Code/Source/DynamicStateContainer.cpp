@@ -40,7 +40,7 @@ namespace Flint
 		mDepthBounds = DepthBounds(bounds);
 		mFlags = mFlags | DynamicStateFlags::DEPTH_BOUNDS;
 	}
-	
+
 	void DynamicStateContainer::SetConstantData(ShaderType shaderType, void* pData, UI64 size, UI64 offset)
 	{
 		switch (shaderType)

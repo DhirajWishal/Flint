@@ -24,7 +24,7 @@ int main(int argc, char** argv)
 			ImGUI mImGui(glm::vec3(0.0f), &mState);
 			std::vector<std::unique_ptr<GameObject>> pGameObjects;
 			pGameObjects.push_back(std::make_unique<Light>(glm::vec3(1.0f), &mState));
-			pGameObjects.push_back(std::make_unique<Preview>(glm::vec3(0.0f), &mState, 
+			pGameObjects.push_back(std::make_unique<Preview>(glm::vec3(0.0f), &mState,
 				std::filesystem::path("E:\\Dynamik\\Game Repository\\InHouse\\sponza.obj"), std::vector<std::filesystem::path>{
 			}));
 

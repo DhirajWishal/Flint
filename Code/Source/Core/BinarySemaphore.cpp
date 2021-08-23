@@ -9,7 +9,7 @@ namespace Flint
 	{
 		mAtomicBool.store(other.mAtomicBool);
 	}
-	
+
 	void BinarySemaphore::Release()
 	{
 		mAtomicBool = true;

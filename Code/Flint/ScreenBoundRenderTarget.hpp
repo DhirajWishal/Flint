@@ -95,7 +95,7 @@ namespace Flint
 
 		/**
 		 * Detach an off screen render target from the screen bound render target.
-		 * 
+		 *
 		 * @param pOffScreenRenderTarget: The render target pointer.
 		 */
 		void DetachOffScreenRenderTarget(const std::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget);

@@ -3,6 +3,7 @@
 
 #include "Preview.hpp"
 #include "Flint/OffScreenRenderTargetFactory.hpp"
+#include "Components/ShaderCompiler.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -203,6 +204,8 @@ void Preview::PrepareShadowMapPipeline()
 	pSceneState->pOffScreenRenderTargets["ShadowMap"] = pFactory->Create(Flint::OffScreenRenderTargetType::SHADOW_MAP, Flint::FBox2D(2048), pSceneState->pScreenBoundRenderTargets["Default"]->GetBufferCount());;
 	pSceneState->pScreenBoundRenderTargets["Default"]->AttachOffScreenRenderTarget(pSceneState->pOffScreenRenderTargets["ShadowMap"]);
 
+	CompileShader("ShadowMapping\\mesh.vert", pSceneState->GetSolutionPath());
+	CompileShader("ShadowMapping\\mesh.frag", pSceneState->GetSolutionPath());
 	pVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("Flint\\Shaders\\ShadowMapping\\mesh.vert.spv"));
 	pFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("Flint\\Shaders\\ShadowMapping\\mesh.frag.spv"));
 
@@ -217,6 +220,9 @@ void Preview::PrepareShadowMapPipeline()
 
 	if (!pSceneState->pGraphicsPipelines["DefaultOffScreenWireFrame"])
 	{
+
+		CompileShader("ShadowMapping\\shader.vert", pSceneState->GetSolutionPath());
+		CompileShader("ShadowMapping\\shader.frag", pSceneState->GetSolutionPath());
 		pShadowVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("Flint\\Shaders\\ShadowMapping\\shader.vert.spv"));
 		pShadowFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("Flint\\Shaders\\ShadowMapping\\shader.frag.spv"));
 

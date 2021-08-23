@@ -18,7 +18,7 @@ namespace Flint
 
 		/**
 		 * Copy constructor.
-		 * 
+		 *
 		 * @param other: The other semaphore.
 		 */
 		BinarySemaphore(const BinarySemaphore& other);
@@ -37,7 +37,7 @@ namespace Flint
 		/**
 		 * Try and acquire the semaphore.
 		 * This does not wait until the other thread releases it.
-		 * 
+		 *
 		 * @return Whether or not if its acquired.
 		 */
 		bool TryAcquire();

@@ -80,7 +80,7 @@ void Camera::Update(UI64 delta)
 	cameraFront = glm::normalize(front);
 	cameraRight = glm::normalize(glm::cross(cameraFront, worldUp));
 	cameraUp = glm::normalize(glm::cross(cameraRight, cameraFront));
-	
+
 	viewMatrix = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
 
 	CameraMatrix* pMatrix = static_cast<CameraMatrix*>(pCameraBuffer->MapMemory(sizeof(CameraMatrix)));
