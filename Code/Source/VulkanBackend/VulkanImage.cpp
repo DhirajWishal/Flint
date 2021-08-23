@@ -79,14 +79,35 @@ namespace Flint
 				case Flint::PixelFormat::B8G8R8A8_UNORMAL:
 					return VkFormat::VK_FORMAT_B8G8R8A8_UNORM;
 
+				case Flint::PixelFormat::R16_SFLOAT:
+					return VkFormat::VK_FORMAT_R16_SFLOAT;
+
+				case Flint::PixelFormat::R16G16_SFLOAT:
+					return VkFormat::VK_FORMAT_R16G16_SFLOAT;
+
+				case Flint::PixelFormat::R16G16B16_SFLOAT:
+					return VkFormat::VK_FORMAT_R16G16B16_SFLOAT;
+
+				case Flint::PixelFormat::R16G16B16A16_SFLOAT:
+					return VkFormat::VK_FORMAT_R16G16B16A16_SFLOAT;
+
+				case Flint::PixelFormat::R32_SFLOAT:
+					return VkFormat::VK_FORMAT_R32_SFLOAT;
+
+				case Flint::PixelFormat::R32G32_SFLOAT:
+					return VkFormat::VK_FORMAT_R32G32_SFLOAT;
+
+				case Flint::PixelFormat::R32G32B32_SFLOAT:
+					return VkFormat::VK_FORMAT_R32G32B32_SFLOAT;
+
+				case Flint::PixelFormat::R32G32B32A32_SFLOAT:
+					return VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT;
+
 				case Flint::PixelFormat::D16_SINT:
 					return VkFormat::VK_FORMAT_D16_UNORM;
 
 				case Flint::PixelFormat::D32_SFLOAT:
 					return VkFormat::VK_FORMAT_D32_SFLOAT;
-
-				case Flint::PixelFormat::R32_SFLOAT:
-					return VkFormat::VK_FORMAT_R32_SFLOAT;
 
 				default:
 					FLINT_THROW_BACKEND_ERROR("Invalid or undefined pixel format!");
@@ -125,6 +146,7 @@ namespace Flint
 				case Flint::PixelFormat::R8G8_SRGB:
 				case Flint::PixelFormat::R8G8_UNORMAL:
 				case Flint::PixelFormat::D16_SINT:
+				case Flint::PixelFormat::R16_SFLOAT:
 					return 2;
 
 				case Flint::PixelFormat::R8G8B8_SRGB:
@@ -139,7 +161,21 @@ namespace Flint
 				case Flint::PixelFormat::B8G8R8A8_UNORMAL:
 				case Flint::PixelFormat::D32_SFLOAT:
 				case Flint::PixelFormat::R32_SFLOAT:
+				case Flint::PixelFormat::R16G16_SFLOAT:
 					return 4;
+
+				case Flint::PixelFormat::R16G16B16_SFLOAT:
+					return 6;
+
+				case Flint::PixelFormat::R32G32_SFLOAT:
+				case Flint::PixelFormat::R16G16B16A16_SFLOAT:
+					return 8;
+
+				case Flint::PixelFormat::R32G32B32_SFLOAT:
+					return 12;
+
+				case Flint::PixelFormat::R32G32B32A32_SFLOAT:
+					return 16;
 				}
 
 				return 0;
@@ -213,9 +249,10 @@ namespace Flint
 					vComponentMapping.a = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_IDENTITY;
 					break;
 
-				case Flint::PixelFormat::R32_SFLOAT:
 				case Flint::PixelFormat::R8_SRGB:
 				case Flint::PixelFormat::R8_UNORMAL:
+				case Flint::PixelFormat::R16_SFLOAT:
+				case Flint::PixelFormat::R32_SFLOAT:
 					vComponentMapping.r = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_R;
 					vComponentMapping.g = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_R;
 					vComponentMapping.b = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_R;
@@ -224,6 +261,8 @@ namespace Flint
 
 				case Flint::PixelFormat::R8G8_SRGB:
 				case Flint::PixelFormat::R8G8_UNORMAL:
+				case Flint::PixelFormat::R16G16_SFLOAT:
+				case Flint::PixelFormat::R32G32_SFLOAT:
 					vComponentMapping.r = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_R;
 					vComponentMapping.g = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_G;
 					vComponentMapping.b = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_ZERO;
@@ -232,6 +271,8 @@ namespace Flint
 
 				case Flint::PixelFormat::R8G8B8_SRGB:
 				case Flint::PixelFormat::R8G8B8_UNORMAL:
+				case Flint::PixelFormat::R16G16B16_SFLOAT:
+				case Flint::PixelFormat::R32G32B32_SFLOAT:
 					vComponentMapping.r = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_R;
 					vComponentMapping.g = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_G;
 					vComponentMapping.b = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_B;
@@ -240,6 +281,8 @@ namespace Flint
 
 				case Flint::PixelFormat::R8G8B8A8_SRGB:
 				case Flint::PixelFormat::R8G8B8A8_UNORMAL:
+				case Flint::PixelFormat::R16G16B16A16_SFLOAT:
+				case Flint::PixelFormat::R32G32B32A32_SFLOAT:
 					vComponentMapping.r = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_R;
 					vComponentMapping.g = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_G;
 					vComponentMapping.b = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_B;
