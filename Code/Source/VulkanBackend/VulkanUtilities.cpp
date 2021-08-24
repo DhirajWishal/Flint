@@ -226,11 +226,53 @@ namespace Flint
 				case VK_FORMAT_R8G8B8A8_SRGB:
 					return PixelFormat::R8G8B8A8_SRGB;
 
+				case VK_FORMAT_R8_UNORM:
+					return PixelFormat::R8_UNORMAL;
+
+				case VK_FORMAT_R8G8_UNORM:
+					return PixelFormat::R8G8_UNORMAL;
+
+				case VK_FORMAT_R8G8B8_UNORM:
+					return PixelFormat::R8G8B8_UNORMAL;
+
+				case VK_FORMAT_R8G8B8A8_UNORM:
+					return PixelFormat::R8G8B8A8_UNORMAL;
+
 				case VK_FORMAT_B8G8R8_SRGB:
 					return PixelFormat::B8G8R8_SRGB;
 
 				case VK_FORMAT_B8G8R8A8_SRGB:
 					return PixelFormat::B8G8R8A8_SRGB;
+
+				case VK_FORMAT_B8G8R8_UNORM:
+					return PixelFormat::B8G8R8_UNORMAL;
+
+				case VK_FORMAT_B8G8R8A8_UNORM:
+					return PixelFormat::B8G8R8A8_UNORMAL;
+
+				case VK_FORMAT_R16_SFLOAT:
+					return PixelFormat::R16_SFLOAT;
+
+				case VK_FORMAT_R16G16_SFLOAT:
+					return PixelFormat::R16G16_SFLOAT;
+
+				case VK_FORMAT_R16G16B16_SFLOAT:
+					return PixelFormat::R16G16B16_SFLOAT;
+
+				case VK_FORMAT_R16G16B16A16_SFLOAT:
+					return PixelFormat::R16G16B16A16_SFLOAT;
+
+				case VK_FORMAT_R32_SFLOAT:
+					return PixelFormat::R32_SFLOAT;
+
+				case VK_FORMAT_R32G32_SFLOAT:
+					return PixelFormat::R32G32_SFLOAT;
+
+				case VK_FORMAT_R32G32B32_SFLOAT:
+					return PixelFormat::R32G32B32_SFLOAT;
+
+				case VK_FORMAT_R32G32B32A32_SFLOAT:
+					return PixelFormat::R32G32B32A32_SFLOAT;
 
 				case VK_FORMAT_D16_UNORM:
 					return PixelFormat::D16_SINT;
@@ -243,6 +285,132 @@ namespace Flint
 				}
 
 				return PixelFormat::UNDEFINED;
+			}
+
+			VkFormat GetVulkanFormat(PixelFormat format)
+			{
+				switch (format)
+				{
+				case Flint::PixelFormat::UNDEFINED:
+					return VkFormat::VK_FORMAT_UNDEFINED;
+
+				case Flint::PixelFormat::R8_SRGB:
+					return VkFormat::VK_FORMAT_R8_SRGB;
+
+				case Flint::PixelFormat::R8G8_SRGB:
+					return VkFormat::VK_FORMAT_R8G8_SRGB;
+
+				case Flint::PixelFormat::R8G8B8_SRGB:
+					return VkFormat::VK_FORMAT_R8G8B8_SRGB;
+
+				case Flint::PixelFormat::R8G8B8A8_SRGB:
+					return VkFormat::VK_FORMAT_R8G8B8A8_SRGB;
+
+				case Flint::PixelFormat::R8_UNORMAL:
+					return VkFormat::VK_FORMAT_R8_UNORM;
+
+				case Flint::PixelFormat::R8G8_UNORMAL:
+					return VkFormat::VK_FORMAT_R8G8_UNORM;
+
+				case Flint::PixelFormat::R8G8B8_UNORMAL:
+					return VkFormat::VK_FORMAT_R8G8B8_UNORM;
+
+				case Flint::PixelFormat::R8G8B8A8_UNORMAL:
+					return VkFormat::VK_FORMAT_R8G8B8A8_UNORM;
+
+				case Flint::PixelFormat::B8G8R8_SRGB:
+					return VkFormat::VK_FORMAT_B8G8R8_SRGB;
+
+				case Flint::PixelFormat::B8G8R8A8_SRGB:
+					return VkFormat::VK_FORMAT_B8G8R8A8_SRGB;
+
+				case Flint::PixelFormat::B8G8R8_UNORMAL:
+					return VkFormat::VK_FORMAT_B8G8R8_UNORM;
+
+				case Flint::PixelFormat::B8G8R8A8_UNORMAL:
+					return VkFormat::VK_FORMAT_B8G8R8A8_UNORM;
+
+				case Flint::PixelFormat::R16_SFLOAT:
+					return VkFormat::VK_FORMAT_R16_SFLOAT;
+
+				case Flint::PixelFormat::R16G16_SFLOAT:
+					return VkFormat::VK_FORMAT_R16G16_SFLOAT;
+
+				case Flint::PixelFormat::R16G16B16_SFLOAT:
+					return VkFormat::VK_FORMAT_R16G16B16_SFLOAT;
+
+				case Flint::PixelFormat::R16G16B16A16_SFLOAT:
+					return VkFormat::VK_FORMAT_R16G16B16A16_SFLOAT;
+
+				case Flint::PixelFormat::R32_SFLOAT:
+					return VkFormat::VK_FORMAT_R32_SFLOAT;
+
+				case Flint::PixelFormat::R32G32_SFLOAT:
+					return VkFormat::VK_FORMAT_R32G32_SFLOAT;
+
+				case Flint::PixelFormat::R32G32B32_SFLOAT:
+					return VkFormat::VK_FORMAT_R32G32B32_SFLOAT;
+
+				case Flint::PixelFormat::R32G32B32A32_SFLOAT:
+					return VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT;
+
+				case Flint::PixelFormat::D16_SINT:
+					return VkFormat::VK_FORMAT_D16_UNORM;
+
+				case Flint::PixelFormat::D32_SFLOAT:
+					return VkFormat::VK_FORMAT_D32_SFLOAT;
+
+				default:
+					FLINT_THROW_BACKEND_ERROR("Invalid pixel format!");
+				}
+
+				return VkFormat::VK_FORMAT_UNDEFINED;
+			}
+
+			UI8 GetByteDepth(PixelFormat format)
+			{
+				switch (format)
+				{
+				case Flint::PixelFormat::R8_SRGB:
+				case Flint::PixelFormat::R8_UNORMAL:
+					return 1;
+
+				case Flint::PixelFormat::R8G8_SRGB:
+				case Flint::PixelFormat::R8G8_UNORMAL:
+				case Flint::PixelFormat::D16_SINT:
+				case Flint::PixelFormat::R16_SFLOAT:
+					return 2;
+
+				case Flint::PixelFormat::R8G8B8_SRGB:
+				case Flint::PixelFormat::R8G8B8_UNORMAL:
+				case Flint::PixelFormat::B8G8R8_SRGB:
+				case Flint::PixelFormat::B8G8R8_UNORMAL:
+					return 3;
+
+				case Flint::PixelFormat::R8G8B8A8_SRGB:
+				case Flint::PixelFormat::R8G8B8A8_UNORMAL:
+				case Flint::PixelFormat::B8G8R8A8_SRGB:
+				case Flint::PixelFormat::B8G8R8A8_UNORMAL:
+				case Flint::PixelFormat::D32_SFLOAT:
+				case Flint::PixelFormat::R32_SFLOAT:
+				case Flint::PixelFormat::R16G16_SFLOAT:
+					return 4;
+
+				case Flint::PixelFormat::R16G16B16_SFLOAT:
+					return 6;
+
+				case Flint::PixelFormat::R32G32_SFLOAT:
+				case Flint::PixelFormat::R16G16B16A16_SFLOAT:
+					return 8;
+
+				case Flint::PixelFormat::R32G32B32_SFLOAT:
+					return 12;
+
+				case Flint::PixelFormat::R32G32B32A32_SFLOAT:
+					return 16;
+				}
+
+				return 0;
 			}
 
 			void AddResourceBindingsToVector(std::vector<VkDescriptorSetLayoutBinding>& bindings, const VulkanShader& shader)

@@ -67,6 +67,7 @@ namespace Flint
 			vSI.commandBufferCount = 1;
 			vSI.waitSemaphoreCount = 1;
 			vSI.signalSemaphoreCount = 1;
+			vSI.pWaitDstStageMask = &vWaitStage;
 
 			vPI.sType = VkStructureType::VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 			vPI.pNext = VK_NULL_HANDLE;
@@ -156,7 +157,6 @@ namespace Flint
 			vSI.pCommandBuffers = vSubmitCommandBuffers.data();
 			vSI.pWaitSemaphores = &vRenderTarget.vImageAvailables[mFrameIndex];
 			vSI.pSignalSemaphores = &vRenderTarget.vRenderFinishes[mFrameIndex];
-			vSI.pWaitDstStageMask = &vWaitStage;
 
 			FLINT_VK_ASSERT(vkResetFences(vDevice.GetLogicalDevice(), 1, &vRenderTarget.vInFlightFences[mFrameIndex]));
 			FLINT_VK_ASSERT(vkQueueSubmit(vDevice.GetQueue().vGraphicsQueue, 1, &vSI, vRenderTarget.vInFlightFences[mFrameIndex]));

@@ -8,25 +8,67 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanSwapChain::VulkanSwapChain(VulkanDevice& device, VulkanDisplay& display, const FBox2D& extent, const UI32 bufferCount)
-			: VulkanRenderTargetAttachment(RenderTargetAttachmenType::SWAP_CHAIN, device, extent, bufferCount), vDisplay(display)
+		namespace _Helpers
 		{
-			FLINT_SETUP_PROFILER();
+			VkPresentModeKHR GetPresentMode(SwapChainPresentMode mode)
+			{
+				switch (mode)
+				{
+				case Flint::SwapChainPresentMode::IMMEDIATE:
+					return VkPresentModeKHR::VK_PRESENT_MODE_IMMEDIATE_KHR;
 
-			Initialize();
+				case Flint::SwapChainPresentMode::MAILBOX:
+					return VkPresentModeKHR::VK_PRESENT_MODE_MAILBOX_KHR;
+
+				case Flint::SwapChainPresentMode::FIFO:
+					return VkPresentModeKHR::VK_PRESENT_MODE_FIFO_KHR;
+
+				case Flint::SwapChainPresentMode::FIFO_RELAXED:
+					return VkPresentModeKHR::VK_PRESENT_MODE_FIFO_RELAXED_KHR;
+
+				case Flint::SwapChainPresentMode::SHARED_DEMAND_REFRESH:
+					return VkPresentModeKHR::VK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR;
+
+				case Flint::SwapChainPresentMode::SHARED_CONTINUOUS_REFRESH:
+					return VkPresentModeKHR::VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR;
+				}
+
+				FLINT_THROW_BACKEND_ERROR("Invalid swap chain present mode!");
+			}
 		}
 
-		void VulkanSwapChain::Recreate(const FBox2D& extent)
+		VulkanSwapChain::VulkanSwapChain(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, UI32 imageCount, SwapChainPresentMode presentMode)
+			: SwapChain(pDevice, pDisplay, imageCount, presentMode)
 		{
 			FLINT_SETUP_PROFILER();
 
-			mExtent = extent;
+			CreateSwapChain();
+			CreateSyncObjects();
+		}
 
-			Initialize();
+		void VulkanSwapChain::Recreate()
+		{
+			FLINT_SETUP_PROFILER();
+
+			mExtent = pDisplay->GetExtent();
+			CreateSwapChain();
+		}
+
+		NextImageInfo VulkanSwapChain::AcquireNextImage(UI32 frameIndex)
+		{
+			NextImageInfo imageInfo = {};
+			VkResult result = vkAcquireNextImageKHR(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), vSwapChain, UI64_MAX, vPresentedImages[frameIndex], VK_NULL_HANDLE, &imageInfo.mIndex);
+			if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
+				imageInfo.bShouldRecreate = true;
+			else FLINT_VK_ASSERT(result);
+
+			return imageInfo;
 		}
 
 		void VulkanSwapChain::Terminate()
 		{
+			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
+
 			// Terminate the image views.
 			for (auto itr = vImageViews.begin(); itr != vImageViews.end(); itr++)
 				vkDestroyImageView(vDevice.GetLogicalDevice(), *itr, nullptr);
@@ -35,15 +77,29 @@ namespace Flint
 			vkDestroySwapchainKHR(vDevice.GetLogicalDevice(), vSwapChain, nullptr);
 
 			vSwapChain = VK_NULL_HANDLE;
-			vImageViews.clear();
 			vImages.clear();
+			vImageViews.clear();
+
+			for (UI32 i = 0; i < mImageCount; i++)
+			{
+				vkDestroySemaphore(vDevice.GetLogicalDevice(), vPendingImages[i], nullptr);
+				vkDestroySemaphore(vDevice.GetLogicalDevice(), vPresentedImages[i], nullptr);
+			}
+
+			vPendingImages.clear();
+			vPresentedImages.clear();
+		}
+
+		VkFormat VulkanSwapChain::GetImageFormat() const
+		{
+			return Utilities::GetVulkanFormat(mPixelForamt);
 		}
 
 		VkAttachmentDescription VulkanSwapChain::GetAttachmentDescription() const
 		{
 			VkAttachmentDescription vDesc = {};
 			vDesc.flags = 0;
-			vDesc.format = vFormat;
+			vDesc.format = GetImageFormat();
 			vDesc.samples = VK_SAMPLE_COUNT_1_BIT;
 			vDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 			vDesc.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
@@ -60,13 +116,29 @@ namespace Flint
 			return VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 		}
 
-		void VulkanSwapChain::Initialize()
+		void VulkanSwapChain::CreateSwapChain()
 		{
 			FLINT_SETUP_PROFILER();
 
+			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
+			auto& vDisplay = pDisplay->StaticCast<VulkanDisplay>();
+
 			SwapChainSupportDetails vSupport = SwapChainSupportDetails::Query(vDevice.GetPhysicalDevice(), vDisplay.GetSurface());
 			VkSurfaceFormatKHR surfaceFormat = vDisplay.ChooseSurfaceFormat(vSupport.mFormats);
-			VkPresentModeKHR presentMode = vDisplay.ChoosePresentMode(vSupport.mPresentModes);
+
+			bool bPresentModeAvailable = false;
+			VkPresentModeKHR presentMode = _Helpers::GetPresentMode(mPresentMode);
+			for (const auto availablePresentMode : vSupport.mPresentModes)
+			{
+				if (availablePresentMode == presentMode)
+				{
+					bPresentModeAvailable = true;
+					break;
+				}
+			}
+
+			if (!bPresentModeAvailable)
+				FLINT_THROW_BACKEND_ERROR("Requested swap chain present mode is not supported!");
 
 			auto vCapabilities = vDisplay.GetSurfaceCapabilities(vDevice);
 
@@ -79,15 +151,15 @@ namespace Flint
 				? VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR
 				: VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR;
 
-			vFormat = surfaceFormat.format;
+			mPixelForamt = Utilities::GetPixelFormat(surfaceFormat.format);
 
 			VkSwapchainCreateInfoKHR vCreateInfo = {};
 			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
 			vCreateInfo.flags = 0;
 			vCreateInfo.pNext = VK_NULL_HANDLE;
 			vCreateInfo.surface = vDisplay.GetSurface();
-			vCreateInfo.minImageCount = mBufferCount;
-			vCreateInfo.imageFormat = vFormat;
+			vCreateInfo.minImageCount = mImageCount;
+			vCreateInfo.imageFormat = surfaceFormat.format;
 			vCreateInfo.imageColorSpace = surfaceFormat.colorSpace;
 			vCreateInfo.imageExtent = { static_cast<UI32>(mExtent.mWidth), static_cast<UI32>(mExtent.mHeight) };
 			vCreateInfo.imageArrayLayers = 1;
@@ -132,6 +204,23 @@ namespace Flint
 			FLINT_VK_ASSERT(vkGetSwapchainImagesKHR(vDevice.GetLogicalDevice(), vSwapChain, &vCreateInfo.minImageCount, vImages.data()));
 
 			vImageViews = std::move(Utilities::CreateImageViews(vImages, vCreateInfo.imageFormat, vDevice));
+		}
+
+		void VulkanSwapChain::CreateSyncObjects()
+		{
+			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
+
+			vPendingImages.resize(mImageCount);
+			vPresentedImages.resize(mImageCount);
+
+			VkSemaphoreCreateInfo vSCI = {};
+			vSCI.sType = VkStructureType::VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+			for (UI32 i = 0; i < mImageCount; i++)
+			{
+				FLINT_VK_ASSERT(vkCreateSemaphore(vDevice.GetLogicalDevice(), &vSCI, nullptr, &vPendingImages[i]));
+				FLINT_VK_ASSERT(vkCreateSemaphore(vDevice.GetLogicalDevice(), &vSCI, nullptr, &vPresentedImages[i]));
+			}
 		}
 	}
 }

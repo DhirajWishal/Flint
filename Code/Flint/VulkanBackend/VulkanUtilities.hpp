@@ -25,6 +25,8 @@ namespace Flint
 			VkDescriptorType GetDescriptorType(ShaderResourceType type);
 			VkShaderStageFlags GetShaderStage(ShaderType type);
 			PixelFormat GetPixelFormat(VkFormat format);
+			VkFormat GetVulkanFormat(PixelFormat format);
+			UI8 GetByteDepth(PixelFormat format);
 
 			void AddResourceBindingsToVector(std::vector<VkDescriptorSetLayoutBinding>& bindings, const VulkanShader& shader);
 			void AddPushConstantRangesToVector(std::vector<VkPushConstantRange>& ranges, const VulkanShader& shader);

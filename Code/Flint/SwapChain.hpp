@@ -3,11 +3,22 @@
 
 #pragma once
 
-#include "DeviceBoundObject.hpp"
 #include "Display.hpp"
 
 namespace Flint
 {
+	/**
+	 * Next image info structure.
+	 */
+	struct NextImageInfo
+	{
+		NextImageInfo() = default;
+		NextImageInfo(UI32 index, bool shouldRecreate) : mIndex(index), bShouldRecreate(shouldRecreate) {}
+
+		UI32 mIndex = 0;
+		bool bShouldRecreate = 0;
+	};
+
 	/**
 	 * Flint swap chain object.
 	 * Swap chains are used to render images to the display after being rendered to a render target.
@@ -20,16 +31,24 @@ namespace Flint
 		 *
 		 * @param pDevice: The device pointer.
 		 * @param pDisplay: The display pointer.
-		 * @param extent: The swap chain extent.
-		 * @param mImageCount: The image count of the swap chain.
+		 * @param imageCount: The image count of the swap chain.
+		 * @param presntMode: The swap chain present mode. If the requested present mode is not supported, an exception is thrown.
 		 */
-		SwapChain(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, UI32 mImageCount) : DeviceBoundObject(pDevice) {}
+		SwapChain(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, UI32 imageCount, SwapChainPresentMode presentMode);
 
 		/**
 		 * Recreate the swap chain.
 		 * This is necessary if the display is resized.
 		 */
 		virtual void Recreate() = 0;
+
+		/**
+		 * Acquire the next swap chain image.
+		 * 
+		 * @param frameIndex: The frame index of the swap chain.
+		 * @return The next image info structure.
+		 */
+		virtual NextImageInfo AcquireNextImage(UI32 frameIndex) = 0;
 
 	public:
 		/**
@@ -60,6 +79,13 @@ namespace Flint
 		 */
 		const PixelFormat GetPixelFormat() const { return mPixelForamt; }
 
+		/**
+		 * Get the swap chain present mode.
+		 * 
+		 * @return The present mode.
+		 */
+		const SwapChainPresentMode GetPresentMode() const { return mPresentMode; }
+
 	protected:
 		std::shared_ptr<Display> pDisplay = nullptr;
 
@@ -67,5 +93,6 @@ namespace Flint
 		UI32 mImageCount = 0;
 
 		PixelFormat mPixelForamt = PixelFormat::UNDEFINED;
+		SwapChainPresentMode mPresentMode = SwapChainPresentMode::MAILBOX;
 	};
 }

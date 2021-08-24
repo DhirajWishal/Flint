@@ -344,6 +344,18 @@ namespace Flint
 	constexpr RasterizationSamples operator&(const RasterizationSamples& lhs, const RasterizationSamples& rhs) { return static_cast<RasterizationSamples>(static_cast<UI8>(lhs) & static_cast<UI8>(rhs)); }
 
 	/**
+	 * Swap chain present mode.
+	 */
+	enum class SwapChainPresentMode : UI8 {
+		IMMEDIATE,
+		MAILBOX,
+		FIFO,
+		FIFO_RELAXED,
+		SHARED_DEMAND_REFRESH,
+		SHARED_CONTINUOUS_REFRESH,
+	};
+
+	/**
 	 * Flint device bound object.
 	 * This object is the base class for all the resources in Flint which are based on a device.
 	 */

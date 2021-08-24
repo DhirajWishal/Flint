@@ -5,6 +5,7 @@
 #include "VulkanBackend/VulkanDisplay.hpp"
 #include "VulkanBackend/VulkanOneTimeCommandBuffer.hpp"
 #include "VulkanBackend/VulkanCommandBufferList.hpp"
+#include "VulkanBackend/VulkanSwapChain.hpp"
 #include "VulkanBackend/VulkanScreenBoundRenderTarget.hpp"
 #include "VulkanBackend/VulkanOffScreenRenderTargetFactory.hpp"
 #include "VulkanBackend/VulkanBuffer.hpp"
@@ -103,6 +104,11 @@ namespace Flint
 		std::shared_ptr<CommandBufferList> VulkanDevice::CreateSecondaryCommandBufferList(UI32 bufferCount, const std::shared_ptr<CommandBufferList>& pParent)
 		{
 			return std::make_shared<VulkanCommandBufferList>(shared_from_this(), bufferCount, pParent);
+		}
+
+		std::shared_ptr<SwapChain> VulkanDevice::CreateSwapChain(const std::shared_ptr<Display>& pDisplay, UI32 imageCount, SwapChainPresentMode presentMode)
+		{
+			return std::make_shared<VulkanSwapChain>(shared_from_this(), pDisplay, imageCount, presentMode);
 		}
 
 		std::shared_ptr<ScreenBoundRenderTarget> VulkanDevice::CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, UI32 threadCount)

@@ -17,6 +17,16 @@ namespace Flint
 	using DrawInstanceMap = std::unordered_map<std::shared_ptr<GeometryStore>, std::vector<std::shared_ptr<GraphicsPipeline>>>;
 
 	/**
+	 * Draw instance storage structure.
+	 * This structure holds information about draw instances.
+	 */
+	struct DrawInstanceStorage
+	{
+		std::vector<DrawInstanceMap> mDrawMaps;
+		std::vector<std::list<std::shared_ptr<GeometryStore>>> mDrawOrder;
+	};
+
+	/**
 	 * Flint render target object.
 	 * This object is the base class for all the supported render targets.
 	 *
@@ -183,6 +193,10 @@ namespace Flint
 	protected:
 		std::shared_ptr<CommandBufferList> pCommandBufferList = nullptr;
 
+		DrawInstanceStorage mCustomDrawInstanceStorage = {};
+		DrawInstanceStorage mVolatileDrawInstanceStorage = {};
+		DrawInstanceStorage mFastDrawInstanceStorage = {};
+
 		std::vector<DrawInstanceMap> mDrawInstanceMaps;
 		std::vector<std::list<std::shared_ptr<GeometryStore>>> mDrawInstanceOrder;
 
@@ -205,3 +219,21 @@ namespace Flint
 		UI32 mNextMap = 0;
 	};
 }
+
+/*
+StrictRenderTarget.
+	- Best for rendering to a display
+	- Is multi threaded
+	- Easy to setup and use
+
+PermissiveRenderTarget.
+	- Best for off screen purposes
+	- Resource binding is done by the client
+	- Can render to a display
+	- Can be attached to a strict render target
+
+RenderTarget.
+	- Fast draw
+	- Volatile draw
+	- Custom draw
+*/

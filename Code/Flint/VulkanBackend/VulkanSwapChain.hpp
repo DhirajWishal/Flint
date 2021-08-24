@@ -6,28 +6,40 @@
 #include "VulkanRenderTargetAttachment.hpp"
 #include "VulkanDisplay.hpp"
 
+#include "SwapChain.hpp"
+
 namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanSwapChain final : public VulkanRenderTargetAttachment
+		class VulkanSwapChain final : public SwapChain, public VulkanRenderTargetAttachmentInterface
 		{
 		public:
-			VulkanSwapChain(VulkanDevice& device, VulkanDisplay& display, const FBox2D& extent, const UI32 bufferCount);
+			VulkanSwapChain(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, UI32 imageCount, SwapChainPresentMode presentMode);
+			~VulkanSwapChain() { if (!bIsTerminated) Terminate(); }
 
-			virtual void Recreate(const FBox2D& extent) override final;
-			void Terminate();
+			virtual void Recreate() override final;
+			virtual NextImageInfo AcquireNextImage(UI32 frameIndex) override final;
+			virtual void Terminate() override final;
 
+			virtual RenderTargetAttachmenType GetAttachmentType() const override final { return RenderTargetAttachmenType::SWAP_CHAIN; }
+			virtual VkFormat GetImageFormat() const override final;
 			virtual VkAttachmentDescription GetAttachmentDescription() const override final;
 			virtual VkImageLayout GetAttachmentLayout() const override final;
 
-			VkSwapchainKHR GetSwapChain() const { return vSwapChain; }
+			const VkSwapchainKHR GetSwapChain() const { return vSwapChain; }
 
 		private:
-			void Initialize();
+			void CreateSwapChain();
+			void CreateSyncObjects();
 
 		private:
-			VulkanDisplay& vDisplay;
+			std::vector<VkImage> vImages = {};
+			std::vector<VkImageView> vImageViews = {};
+
+			std::vector<VkSemaphore> vPendingImages = {};
+			std::vector<VkSemaphore> vPresentedImages = {};
+
 			VkSwapchainKHR vSwapChain = VK_NULL_HANDLE;
 		};
 	}
