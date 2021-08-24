@@ -73,6 +73,13 @@ namespace Flint
 		const UI32 GetImageCount() const { return mImageCount; }
 
 		/**
+		 * Get the current image index.
+		 * 
+		 * @return The image index.
+		 */
+		const UI32 GetImageIndex() const { return mImageIndex; }
+
+		/**
 		 * Get the pixel format of the swap chain.
 		 *
 		 * @return The pixel format.
@@ -91,6 +98,7 @@ namespace Flint
 
 		FBox2D mExtent = {};
 		UI32 mImageCount = 0;
+		UI32 mImageIndex = 0;
 
 		PixelFormat mPixelForamt = PixelFormat::UNDEFINED;
 		SwapChainPresentMode mPresentMode = SwapChainPresentMode::MAILBOX;

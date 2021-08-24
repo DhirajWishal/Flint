@@ -132,6 +132,8 @@ namespace Flint
 			if (enableValidation)
 				INSERT_INTO_VECTOR(mValidationLayers, "VK_LAYER_KHRONOS_validation");
 
+			VK_KHR_RAY_TRACING_PIPELINE_SPEC_VERSION;
+
 			InitializeInstance();
 
 			if (IsValidationEnabled())

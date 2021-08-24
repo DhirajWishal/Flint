@@ -16,6 +16,20 @@ namespace Flint
 		VulkanCommandBuffer::VulkanCommandBuffer(const std::shared_ptr<CommandBufferAllocator>& pAllocator, VkCommandBuffer vCommandBuffer)
 			: CommandBuffer(pAllocator), vCommandBuffer(vCommandBuffer)
 		{
+			VkSemaphoreCreateInfo vSemaphoreCreateInfo = {};
+			vSemaphoreCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_EXPORT_SEMAPHORE_CREATE_INFO;
+			vSemaphoreCreateInfo.pNext = VK_NULL_HANDLE;
+			vSemaphoreCreateInfo.flags = 0;
+
+			VkFenceCreateInfo vFenceCreateInfo = {};
+			vFenceCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_EXPORT_FENCE_CREATE_INFO;
+			vFenceCreateInfo.pNext = VK_NULL_HANDLE;
+			vFenceCreateInfo.flags = VkFenceCreateFlagBits::VK_FENCE_CREATE_SIGNALED_BIT;
+
+			auto& vDevice = pAllocator->GetDevice()->StaticCast<VulkanDevice>();
+			vkCreateSemaphore(vDevice.GetLogicalDevice(), &vSemaphoreCreateInfo, nullptr, &vInFlight);
+			vkCreateSemaphore(vDevice.GetLogicalDevice(), &vSemaphoreCreateInfo, nullptr, &vRenderFinished);
+			vkCreateFence(vDevice.GetLogicalDevice(), &vFenceCreateInfo, nullptr, &vInFlightFence);
 		}
 
 		void VulkanCommandBuffer::BeginBufferRecording()
@@ -28,6 +42,7 @@ namespace Flint
 			vBeginInfo.flags = VkCommandBufferUsageFlagBits::VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
 			vBeginInfo.pInheritanceInfo = VK_NULL_HANDLE;
 
+			FLINT_VK_ASSERT(vkWaitForFences(pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetLogicalDevice(), 1, &vInFlightFence, VK_TRUE, UI64_MAX));
 			FLINT_VK_ASSERT(vkBeginCommandBuffer(vCommandBuffer, &vBeginInfo));
 
 			bIsRecording = true;
@@ -35,7 +50,18 @@ namespace Flint
 
 		void VulkanCommandBuffer::BeginBufferRecording(const std::shared_ptr<CommandBufferList> pParent)
 		{
-			BeginBufferRecording();
+			FLINT_SETUP_PROFILER();
+
+			VkCommandBufferBeginInfo vBeginInfo = {};
+			vBeginInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+			vBeginInfo.pNext = VK_NULL_HANDLE;
+			vBeginInfo.flags = VkCommandBufferUsageFlagBits::VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
+			vBeginInfo.pInheritanceInfo = VK_NULL_HANDLE;	// TODO
+
+			FLINT_VK_ASSERT(vkWaitForFences(pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetLogicalDevice(), 1, &vInFlightFence, VK_TRUE, UI64_MAX));
+			FLINT_VK_ASSERT(vkBeginCommandBuffer(vCommandBuffer, &vBeginInfo));
+
+			bIsRecording = true;
 		}
 
 		void VulkanCommandBuffer::BindRenderTarget(const std::shared_ptr<ScreenBoundRenderTarget>& pRenderTarget)
@@ -358,6 +384,16 @@ namespace Flint
 
 			FLINT_VK_ASSERT(vkEndCommandBuffer(vCommandBuffer));
 			bIsRecording = false;
+		}
+
+		void VulkanCommandBuffer::Terminate()
+		{
+			auto& vDevice = pAllocator->GetDevice()->StaticCast<VulkanDevice>();
+
+			vkDestroySemaphore(vDevice.GetLogicalDevice(), vInFlight, nullptr);
+			vkDestroySemaphore(vDevice.GetLogicalDevice(), vRenderFinished, nullptr);
+			vkDestroyFence(vDevice.GetLogicalDevice(), vInFlightFence, nullptr);
+			bIsTerminated = true;
 		}
 	}
 }

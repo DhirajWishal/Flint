@@ -7,6 +7,8 @@
 #include "ComputePipeline.hpp"
 #include "Core/CountingSemaphore.hpp"
 
+#include "CommandBuffer.hpp"
+
 #include <unordered_map>
 
 namespace Flint
@@ -25,6 +27,19 @@ namespace Flint
 		std::vector<DrawInstanceMap> mDrawMaps;
 		std::vector<std::list<std::shared_ptr<GeometryStore>>> mDrawOrder;
 	};
+
+	struct BeginFrameInfo
+	{
+		std::shared_ptr<CommandBuffer> pCommandBuffer = nullptr;
+		UI32 mFrameIndex = 0;
+
+		DrawInstanceStorage const* pDrawInstanceStorage = nullptr;
+	};
+
+	void BindCustomResources(RenderTarget* pRenderTarget, DrawInstanceStorage* pCustomInstanceStorage)
+	{
+
+	}
 
 	/**
 	 * Flint render target object.
@@ -50,6 +65,19 @@ namespace Flint
 		 * @param threadCount: The number of threads used for secondary commands
 		 */
 		RenderTarget(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, const std::shared_ptr<CommandBufferList>& pCommandBufferList, UI32 threadCount = 0);
+		RenderTarget(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, UI32 threadCount = 0);
+
+		/**
+		 * Begin a new frame to render.
+		 *
+		 * @return The frame begin info structure.
+		 */
+		virtual BeginFrameInfo BeginFrame() = 0;
+
+		/**
+		 * Submit the frame to the device to be rendered.
+		 */
+		virtual void SubmitFrame() = 0;
 
 		/**
 		 * Get the render targets clear screen color.
@@ -67,7 +95,42 @@ namespace Flint
 
 	public:
 		/**
+		 * Submit a graphics pipeline to the render target to be drawn using a custom function.
+		 * These pipelines are bound to a command buffer before binding anything else.
+		 *
+		 * @param pGeometryStore: The geometry store to bind to.
+		 * @param pPipeline: The pipeline to submit.
+		 */
+		void SubmitGraphicsPipelineCustom(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::shared_ptr<GraphicsPipeline>& pPipeline);
+
+		/**
+		 * Remove a graphics pipeline from the render target which was submitted to be drawn using a custom function.
+		 *
+		 * @param pGeometryStore: The geometry store which the pipeline is bound to.
+		 * @param pPipeline: The pipeline to remove.
+		 */
+		void RemoveGraphicsPipelineCustom(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::shared_ptr<GraphicsPipeline>& pPipeline);
+
+		/**
+		 * Submit a graphics pipeline to the render target to be drawn before the default submissions.
+		 * These pipelines are bound after the custom bindings, and before the defaults.
+		 *
+		 * @param pGeometryStore: The geometry store to bind to.
+		 * @param pPipeline: The pipeline to submit.
+		 */
+		void SubmitGraphicsPipelineVolatile(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::shared_ptr<GraphicsPipeline>& pPipeline);
+
+		/**
+		 * Remove a graphics pipeline from the render target which was submitted to be drawn before the default submissions.
+		 *
+		 * @param pGeometryStore: The geometry store which the pipeline is bound to.
+		 * @param pPipeline: The pipeline to remove.
+		 */
+		void RemoveGraphicsPipelineVolatile(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::shared_ptr<GraphicsPipeline>& pPipeline);
+
+		/**
 		 * Submit a graphics pipeline to the render target to be drawn.
+		 * These pipelines are bound at the end, and will be issued to a thread if enabled.
 		 *
 		 * @param pGeometryStore: The geometry store to bind to.
 		 * @param pPipeline: The pipeline to submit.

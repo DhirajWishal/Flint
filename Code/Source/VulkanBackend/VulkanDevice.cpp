@@ -5,6 +5,7 @@
 #include "VulkanBackend/VulkanDisplay.hpp"
 #include "VulkanBackend/VulkanOneTimeCommandBuffer.hpp"
 #include "VulkanBackend/VulkanCommandBufferList.hpp"
+#include "VulkanBackend/VulkanCommandBuffer.hpp"
 #include "VulkanBackend/VulkanSwapChain.hpp"
 #include "VulkanBackend/VulkanScreenBoundRenderTarget.hpp"
 #include "VulkanBackend/VulkanOffScreenRenderTargetFactory.hpp"
@@ -81,6 +82,13 @@ namespace Flint
 
 			InitializePhysicalDevice();
 			InitializeLogicalDevice();
+
+			VkFenceCreateInfo vCreateInfo = {};
+			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_EXPORT_FENCE_CREATE_INFO;
+			vCreateInfo.pNext = VK_NULL_HANDLE;
+			vCreateInfo.flags = VkFenceCreateFlagBits::VK_FENCE_CREATE_SIGNALED_BIT;
+
+			FLINT_VK_ASSERT(vkCreateFence(vLogicalDevice, &vCreateInfo, nullptr, &vSubmitFence));
 		}
 
 		bool VulkanDevice::IsDisplayCompatible(const std::shared_ptr<Display>& pDisplay)
@@ -171,6 +179,70 @@ namespace Flint
 			return std::make_shared<GeometryStore>(shared_from_this(), vertexAttributes, indexSize, profile);
 		}
 
+		void VulkanDevice::SubmitCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers)
+		{
+			VkSemaphoreWaitFlags vWaitStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+
+			VkSubmitInfo vSubmitInfo = {};
+			vSubmitInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_SUBMIT_INFO;
+			vSubmitInfo.pNext = VK_NULL_HANDLE;
+			vSubmitInfo.commandBufferCount = static_cast<UI32>(pCommandBuffers.size());
+			vSubmitInfo.signalSemaphoreCount = static_cast<UI32>(pCommandBuffers.size());
+			vSubmitInfo.waitSemaphoreCount = static_cast<UI32>(pCommandBuffers.size());
+			vSubmitInfo.pWaitDstStageMask = &vWaitStage;
+
+			std::vector<VkCommandBuffer> vCommandBuffers(pCommandBuffers.size());
+			std::vector<VkSemaphore> vSignalSemaphores(pCommandBuffers.size());
+			std::vector<VkSemaphore> vWaitSemaphores(pCommandBuffers.size());
+			std::vector<VkFence> vFences(pCommandBuffers.size());
+			for (UI64 i = 0; i < pCommandBuffers.size(); i++)
+			{
+				auto& vCommandBuffer = pCommandBuffers[i]->StaticCast<VulkanCommandBuffer>();
+
+				vCommandBuffers[i] = vCommandBuffer.GetVulkanCommandBuffer();
+				vSignalSemaphores[i] = vCommandBuffer.GetRenderFinishedSemaphore();
+				vWaitSemaphores[i] = vCommandBuffer.GetInFlightSemaphore();
+				vFences[i] = vCommandBuffer.GetInFlightFence();
+			}
+
+			vSubmitInfo.pCommandBuffers = vCommandBuffers.data();
+			vSubmitInfo.pSignalSemaphores = vSignalSemaphores.data();
+			vSubmitInfo.pWaitSemaphores = vWaitSemaphores.data();
+
+			FLINT_VK_ASSERT(vkResetFences(vLogicalDevice, static_cast<UI32>(vFences.size()), vFences.data()));
+			FLINT_VK_ASSERT(vkQueueSubmit(GetQueue().vGraphicsQueue, 1, &vSubmitInfo, vSubmitFence));
+		}
+
+		void VulkanDevice::PresentSwapChains(const std::vector<std::shared_ptr<SwapChain>>& pSwapChain)
+		{
+			std::vector<VkResult> vResults(pSwapChain.size());
+			std::vector<VkSwapchainKHR> vSwapChains(pSwapChain.size());
+			std::vector<UI32> imageIndexes(pSwapChain.size());
+			std::vector<VkSemaphore> vWaitSemaphores(pSwapChain.size());
+
+			VkPresentInfoKHR vPresentInfo = {};
+			vPresentInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+			vPresentInfo.pNext = VK_NULL_HANDLE;
+			vPresentInfo.swapchainCount = static_cast<UI32>(pSwapChain.size());
+			vPresentInfo.waitSemaphoreCount = static_cast<UI32>(pSwapChain.size());
+			vPresentInfo.pResults = vResults.data();
+
+			for (UI64 i = 0; i < pSwapChain.size(); i++)
+			{
+				auto& vSwapChain = pSwapChain[i]->StaticCast<VulkanSwapChain>();
+
+				imageIndexes[i] = vSwapChain.GetImageIndex();
+				vSwapChains[i] = vSwapChain.GetSwapChain();
+				vWaitSemaphores[i] = vSwapChain.GetSemaphore();
+			}
+
+			vPresentInfo.pImageIndices = imageIndexes.data();
+			vPresentInfo.pSwapchains = vSwapChains.data();
+			vPresentInfo.pWaitSemaphores = vWaitSemaphores.data();
+
+			VkResult result = vkQueuePresentKHR(GetQueue().vTransferQueue, &vPresentInfo);
+		}
+
 		void VulkanDevice::WaitIdle()
 		{
 			FLINT_VK_ASSERT(vkDeviceWaitIdle(GetLogicalDevice()));
@@ -183,6 +255,7 @@ namespace Flint
 
 		void VulkanDevice::Terminate()
 		{
+			vkDestroyFence(vLogicalDevice, vSubmitFence, nullptr);
 			TerminateLogicalDevice();
 			bIsTerminated = true;
 		}

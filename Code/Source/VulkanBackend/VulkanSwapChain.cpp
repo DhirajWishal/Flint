@@ -57,11 +57,13 @@ namespace Flint
 		NextImageInfo VulkanSwapChain::AcquireNextImage(UI32 frameIndex)
 		{
 			NextImageInfo imageInfo = {};
-			VkResult result = vkAcquireNextImageKHR(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), vSwapChain, UI64_MAX, vPresentedImages[frameIndex], VK_NULL_HANDLE, &imageInfo.mIndex);
+
+			VkResult result = vkAcquireNextImageKHR(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), vSwapChain, UI64_MAX, vSemaphores[frameIndex], VK_NULL_HANDLE, &mImageIndex);
 			if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
 				imageInfo.bShouldRecreate = true;
 			else FLINT_VK_ASSERT(result);
 
+			imageInfo.mIndex = mImageIndex;
 			return imageInfo;
 		}
 
@@ -81,13 +83,9 @@ namespace Flint
 			vImageViews.clear();
 
 			for (UI32 i = 0; i < mImageCount; i++)
-			{
-				vkDestroySemaphore(vDevice.GetLogicalDevice(), vPendingImages[i], nullptr);
-				vkDestroySemaphore(vDevice.GetLogicalDevice(), vPresentedImages[i], nullptr);
-			}
+				vkDestroySemaphore(vDevice.GetLogicalDevice(), vSemaphores[i], nullptr);
 
-			vPendingImages.clear();
-			vPresentedImages.clear();
+			vSemaphores.clear();
 		}
 
 		VkFormat VulkanSwapChain::GetImageFormat() const
@@ -210,17 +208,12 @@ namespace Flint
 		{
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 
-			vPendingImages.resize(mImageCount);
-			vPresentedImages.resize(mImageCount);
-
 			VkSemaphoreCreateInfo vSCI = {};
 			vSCI.sType = VkStructureType::VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
+			vSemaphores.resize(mImageCount);
 			for (UI32 i = 0; i < mImageCount; i++)
-			{
-				FLINT_VK_ASSERT(vkCreateSemaphore(vDevice.GetLogicalDevice(), &vSCI, nullptr, &vPendingImages[i]));
-				FLINT_VK_ASSERT(vkCreateSemaphore(vDevice.GetLogicalDevice(), &vSCI, nullptr, &vPresentedImages[i]));
-			}
+				FLINT_VK_ASSERT(vkCreateSemaphore(vDevice.GetLogicalDevice(), &vSCI, nullptr, &vSemaphores[i]));
 		}
 	}
 }

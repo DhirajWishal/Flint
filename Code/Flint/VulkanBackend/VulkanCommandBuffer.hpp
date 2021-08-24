@@ -14,6 +14,7 @@ namespace Flint
 		{
 		public:
 			VulkanCommandBuffer(const std::shared_ptr<CommandBufferAllocator>& pAllocator, VkCommandBuffer vCommandBuffer);
+			~VulkanCommandBuffer() { if (!bIsTerminated) Terminate(); }
 
 			virtual void BeginBufferRecording() override final;
 			virtual void BeginBufferRecording(const std::shared_ptr<CommandBufferList> pParent) override final;
@@ -41,11 +42,21 @@ namespace Flint
 
 			virtual void EndBufferRecording() override final;
 
+			virtual void Terminate() override final;
+
 		public:
 			const VkCommandBuffer GetVulkanCommandBuffer() const { return vCommandBuffer; }
 
+			const VkSemaphore GetInFlightSemaphore() const { return vInFlight; }
+			const VkSemaphore GetRenderFinishedSemaphore() const { return vRenderFinished; }
+			const VkFence GetInFlightFence() const { return vInFlightFence; }
+
 		private:
 			std::vector<VkCommandBuffer> vSecondaryCommandBuffers = {};
+
+			VkSemaphore vInFlight = VK_NULL_HANDLE;
+			VkSemaphore vRenderFinished = VK_NULL_HANDLE;
+			VkFence vInFlightFence = VK_NULL_HANDLE;
 
 			VkCommandBuffer vCommandBuffer = VK_NULL_HANDLE;
 		};

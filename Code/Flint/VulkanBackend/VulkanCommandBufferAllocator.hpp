@@ -17,6 +17,7 @@ namespace Flint
 			VulkanCommandBufferAllocator(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<CommandBufferAllocator>& pParent, UI32 bufferCount);
 			~VulkanCommandBufferAllocator() { if(!bIsTerminated) Terminate(); }
 
+			virtual std::shared_ptr<CommandBufferAllocator> CreateChildAllocator() override final;
 			virtual void Terminate() override final;
 
 		private:

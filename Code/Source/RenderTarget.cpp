@@ -21,6 +21,22 @@ namespace Flint
 		InitiateThreads();
 	}
 
+	void RenderTarget::SubmitGraphicsPipelineCustom(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::shared_ptr<GraphicsPipeline>& pPipeline)
+	{
+	}
+
+	void RenderTarget::RemoveGraphicsPipelineCustom(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::shared_ptr<GraphicsPipeline>& pPipeline)
+	{
+	}
+
+	void RenderTarget::SubmitGraphicsPipelineVolatile(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::shared_ptr<GraphicsPipeline>& pPipeline)
+	{
+	}
+
+	void RenderTarget::RemoveGraphicsPipelineVolatile(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::shared_ptr<GraphicsPipeline>& pPipeline)
+	{
+	}
+
 	void RenderTarget::SubmitGraphicsPipeline(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::shared_ptr<GraphicsPipeline>& pPipeline)
 	{
 		bool inserted = false;

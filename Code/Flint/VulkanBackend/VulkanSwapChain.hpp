@@ -28,6 +28,7 @@ namespace Flint
 			virtual VkImageLayout GetAttachmentLayout() const override final;
 
 			const VkSwapchainKHR GetSwapChain() const { return vSwapChain; }
+			const VkSemaphore GetSemaphore() const { return vSemaphores[mImageIndex]; }
 
 		private:
 			void CreateSwapChain();
@@ -37,9 +38,7 @@ namespace Flint
 			std::vector<VkImage> vImages = {};
 			std::vector<VkImageView> vImageViews = {};
 
-			std::vector<VkSemaphore> vPendingImages = {};
-			std::vector<VkSemaphore> vPresentedImages = {};
-
+			std::vector<VkSemaphore> vSemaphores = {};
 			VkSwapchainKHR vSwapChain = VK_NULL_HANDLE;
 		};
 	}

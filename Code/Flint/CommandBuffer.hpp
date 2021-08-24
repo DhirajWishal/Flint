@@ -193,11 +193,11 @@ namespace Flint
 		 */
 		const bool IsRecording() const { return bIsRecording; }
 
-	private:
+	protected:
 		/**
-		 * Flag this command buffer as terminated.
+		 * Terminate the command buffer.
 		 */
-		void FlagAsTerminated() { bIsTerminated = true; }
+		virtual void Terminate() = 0;
 
 	protected:
 		std::shared_ptr<CommandBufferAllocator> pAllocator = nullptr;

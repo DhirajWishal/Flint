@@ -12,7 +12,10 @@ namespace Flint
 	class Display;
 	class DeviceBoundObject;
 	class Instance;
+
 	class CommandBufferList;
+	class CommandBufferAllocator;
+	class CommandBuffer;
 
 	class SwapChain;
 
@@ -278,6 +281,20 @@ namespace Flint
 		virtual std::shared_ptr<GeometryStore> CreateGeometryStore(const std::unordered_map<UI32, std::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize, BufferMemoryProfile profile = BufferMemoryProfile::AUTOMATIC) = 0;
 
 	public:
+		/**
+		 * Submit command buffers to the device.
+		 * 
+		 * @param pCommandBuffers: The command buffer pointers.
+		 */
+		virtual void SubmitCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers) = 0;
+
+		/**
+		 * Present the swap chains to the device, and then transfer them to the display.
+		 * 
+		 * @param pSwapChains: The swap chain pointers.
+		 */
+		virtual void PresentSwapChains(const std::vector<std::shared_ptr<SwapChain>>& pSwapChain) = 0;
+
 		/**
 		 * Wait till the device finish execution.
 		 */

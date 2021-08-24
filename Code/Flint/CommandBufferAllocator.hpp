@@ -37,6 +37,13 @@ namespace Flint
 		 */
 		CommandBufferAllocator(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<CommandBufferAllocator>& pParent, UI32 bufferCount);
 
+		/**
+		 * Create a child allocator object.
+		 * 
+		 * @return The created secondary command buffer allocator.
+		 */
+		virtual std::shared_ptr<CommandBufferAllocator> CreateChildAllocator() = 0;
+
 	public:
 		/**
 		 * Get the allocated buffer count.
@@ -65,7 +72,7 @@ namespace Flint
 		 * 
 		 * @param index: The command buffer index.
 		 */
-		void FlagCommandBufferAsTerminated(UI32 index) { pCommandBuffers[index]->FlagAsTerminated(); }
+		void FlagCommandBufferAsTerminated(UI32 index) { pCommandBuffers[index]->Terminate(); }
 
 	protected:
 		std::vector<std::shared_ptr<CommandBuffer>> pCommandBuffers = {};

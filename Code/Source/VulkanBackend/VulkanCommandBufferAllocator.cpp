@@ -11,6 +11,7 @@ namespace Flint
 		VulkanCommandBufferAllocator::VulkanCommandBufferAllocator(const std::shared_ptr<Device>& pDevice, UI32 bufferCount)
 			: CommandBufferAllocator(pDevice, bufferCount)
 		{
+			FLINT_SETUP_PROFILER();
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 
 			VkCommandPoolCreateInfo vCreateInfo = {};
@@ -39,6 +40,7 @@ namespace Flint
 		VulkanCommandBufferAllocator::VulkanCommandBufferAllocator(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<CommandBufferAllocator>& pParent, UI32 bufferCount)
 			: CommandBufferAllocator(pDevice, pParent, bufferCount)
 		{
+			FLINT_SETUP_PROFILER();
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 
 			VkCommandPoolCreateInfo vCreateInfo = {};
@@ -62,6 +64,11 @@ namespace Flint
 			pCommandBuffers.reserve(mBufferCount);
 			for (const auto vCommandBuffer : vCommandBuffers)
 				pCommandBuffers.push_back(std::make_shared<VulkanCommandBuffer>(shared_from_this(), vCommandBuffer));
+		}
+
+		std::shared_ptr<CommandBufferAllocator> VulkanCommandBufferAllocator::CreateChildAllocator()
+		{
+			return std::make_shared<VulkanCommandBufferAllocator>(pDevice, shared_from_this(), mBufferCount);
 		}
 
 		void VulkanCommandBufferAllocator::Terminate()
