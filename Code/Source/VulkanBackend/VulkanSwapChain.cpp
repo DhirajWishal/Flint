@@ -51,7 +51,14 @@ namespace Flint
 			FLINT_SETUP_PROFILER();
 
 			mExtent = pDisplay->GetExtent();
+
+			if (pDisplay->IsDisplayResized())
+				pDisplay->StaticCast<VulkanDisplay>().ToggleResize();
+
 			CreateSwapChain();
+
+			bShouldRecreate = false;
+			mImageIndex = 0;
 		}
 
 		NextImageInfo VulkanSwapChain::AcquireNextImage(UI32 frameIndex)

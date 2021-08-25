@@ -166,6 +166,14 @@ namespace Flint
 			return count;
 		}
 
+		PixelFormat VulkanDisplay::GetBestSwapChainFormat(const std::shared_ptr<Device>& pDevice)
+		{
+			SwapChainSupportDetails vSupport = SwapChainSupportDetails::Query(pDevice->StaticCast<VulkanDevice>().GetPhysicalDevice(), GetSurface());
+			VkSurfaceFormatKHR surfaceFormat = ChooseSurfaceFormat(vSupport.mFormats);
+
+			return Utilities::GetPixelFormat(surfaceFormat.format);
+		}
+
 		void VulkanDisplay::SetTitle(const std::string& title)
 		{
 			glfwSetWindowTitle(pWindow, title.c_str());

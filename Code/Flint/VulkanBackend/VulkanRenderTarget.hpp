@@ -4,7 +4,7 @@
 #pragma once
 
 #include "VulkanDevice.hpp"
-#include "VulkanRenderTargetAttachment.hpp"
+#include "VulkanRenderTargetAttachmentInterface.hpp"
 #include "RenderTarget.hpp"
 
 namespace Flint
@@ -42,12 +42,6 @@ namespace Flint
 
 		private:
 			VulkanDevice& vDevice;
-		};
-
-		class VulkanRenderTarget final : public RenderTarget
-		{
-		public:
-
 		};
 	}
 }

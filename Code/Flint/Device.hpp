@@ -17,8 +17,6 @@ namespace Flint
 	class CommandBufferAllocator;
 	class CommandBuffer;
 
-	class SwapChain;
-
 	class RenderTarget;
 	class ScreenBoundRenderTarget;
 	class OffScreenRenderTarget;
@@ -37,18 +35,6 @@ namespace Flint
 	struct ShaderAttribute;
 
 	class GeometryStore;
-
-	/**
-	 * Swap chain submit info structure.
-	 */
-	struct SwapChainSubmitInfo
-	{
-		SwapChainSubmitInfo() = default;
-		SwapChainSubmitInfo(const std::shared_ptr<SwapChain>& pSwapChain, UI32 frameIndex) : pSwapChain(pSwapChain), mFrameIndex(frameIndex) {}
-
-		std::shared_ptr<SwapChain> pSwapChain = nullptr;
-		UI32 mFrameIndex = 0;
-	};
 
 	/**
 	 * Device flags enum.
@@ -122,16 +108,6 @@ namespace Flint
 		 * @return The command buffer list object.
 		 */
 		virtual std::shared_ptr<CommandBufferList> CreateSecondaryCommandBufferList(UI32 bufferCount, const std::shared_ptr<CommandBufferList>& pParent) = 0;
-
-		/**
-		 * Create a new swap chain object.
-		 * 
-		 * @param pDisplay: The display pointer.
-		 * @param imageCount: The number of images in the swap chain.
-		 * @param presentMode: The swap chain present mode. If the mode is not supported, an exception is thrown.
-		 * @return The swap chain pointer.
-		 */
-		virtual std::shared_ptr<SwapChain> CreateSwapChain(const std::shared_ptr<Display>& pDisplay, UI32 imageCount, SwapChainPresentMode presentMode) = 0;
 
 		/**
 		 * Create a new screen bound render target.
@@ -289,11 +265,11 @@ namespace Flint
 		virtual void SubmitCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers) = 0;
 
 		/**
-		 * Present the swap chains to the device, and then transfer them to the display.
+		 * Present the screen bound render targets to the display.
 		 * 
-		 * @param pSwapChains: The swap chain pointers.
+		 * @param pScreenBoundRenderTargets: The screen bound render target pointers.
 		 */
-		virtual void PresentSwapChains(const std::vector<std::shared_ptr<SwapChain>>& pSwapChain) = 0;
+		virtual void PresentScreenBoundRenderTargets(const std::vector<std::shared_ptr<ScreenBoundRenderTarget>>& pScreenBoundRenderTargets) = 0;
 
 		/**
 		 * Wait till the device finish execution.

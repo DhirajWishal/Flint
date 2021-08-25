@@ -9,6 +9,8 @@
 #include "VulkanBackend/VulkanBuffer.hpp"
 #include "VulkanBackend/VulkanUtilities.hpp"
 
+#include "GeometryStore.hpp"
+
 namespace Flint
 {
 	namespace VulkanBackend
@@ -48,14 +50,30 @@ namespace Flint
 			bIsRecording = true;
 		}
 
-		void VulkanCommandBuffer::BeginBufferRecording(const std::shared_ptr<CommandBufferList> pParent)
+		void VulkanCommandBuffer::BeginBufferRecording(const std::shared_ptr<ScreenBoundRenderTarget> pRenderTarget)
 		{
 			FLINT_SETUP_PROFILER();
 
 			VkCommandBufferBeginInfo vBeginInfo = {};
 			vBeginInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 			vBeginInfo.pNext = VK_NULL_HANDLE;
-			vBeginInfo.flags = VkCommandBufferUsageFlagBits::VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
+			vBeginInfo.flags = VkCommandBufferUsageFlagBits::VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT;
+			vBeginInfo.pInheritanceInfo = pRenderTarget->StaticCast<VulkanScreenBoundRenderTarget>().GetVulkanInheritanceInfo();
+
+			FLINT_VK_ASSERT(vkWaitForFences(pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetLogicalDevice(), 1, &vInFlightFence, VK_TRUE, UI64_MAX));
+			FLINT_VK_ASSERT(vkBeginCommandBuffer(vCommandBuffer, &vBeginInfo));
+
+			bIsRecording = true;
+		}
+
+		void VulkanCommandBuffer::BeginBufferRecording(const std::shared_ptr<OffScreenRenderTarget> pRenderTarget)
+		{
+			FLINT_SETUP_PROFILER();
+
+			VkCommandBufferBeginInfo vBeginInfo = {};
+			vBeginInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+			vBeginInfo.pNext = VK_NULL_HANDLE;
+			vBeginInfo.flags = VkCommandBufferUsageFlagBits::VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT;
 			vBeginInfo.pInheritanceInfo = VK_NULL_HANDLE;	// TODO
 
 			FLINT_VK_ASSERT(vkWaitForFences(pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetLogicalDevice(), 1, &vInFlightFence, VK_TRUE, UI64_MAX));
@@ -76,7 +94,7 @@ namespace Flint
 			vBeginInfo.renderPass = vRenderTarget.GetRenderPass();
 			vBeginInfo.framebuffer = vRenderTarget.GetFrameBuffer(vRenderTarget.GetFrameIndex());
 			vBeginInfo.clearValueCount = vRenderTarget.GetClearScreenValueCount();
-			vBeginInfo.pClearValues = vRenderTarget.GetClearScreenValues();
+			vBeginInfo.pClearValues = vRenderTarget.GetClearScreenValues().data();
 			vBeginInfo.renderArea.extent.width = vRenderTarget.GetExtent().mWidth;
 			vBeginInfo.renderArea.extent.height = vRenderTarget.GetExtent().mHeight;
 
@@ -95,7 +113,7 @@ namespace Flint
 			vBeginInfo.renderPass = vRenderTarget.GetRenderPass();
 			vBeginInfo.framebuffer = vRenderTarget.GetFrameBuffer(vRenderTarget.GetFrameIndex());
 			vBeginInfo.clearValueCount = vRenderTarget.GetClearScreenValueCount();
-			vBeginInfo.pClearValues = vRenderTarget.GetClearScreenValues();
+			vBeginInfo.pClearValues = vRenderTarget.GetClearScreenValues().data();
 			vBeginInfo.renderArea.extent.width = vRenderTarget.GetExtent().mWidth;
 			vBeginInfo.renderArea.extent.height = vRenderTarget.GetExtent().mHeight;
 
@@ -161,24 +179,12 @@ namespace Flint
 			vkCmdBindPipeline(vCommandBuffer, VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_COMPUTE, pComputePipeline->StaticCast<VulkanComputePipeline>().GetPipeline());
 		}
 
-		void VulkanCommandBuffer::BindVertexBuffer(const std::shared_ptr<Buffer>& pVertexBuffer)
+		void VulkanCommandBuffer::BindGeometryStore(const std::shared_ptr<GeometryStore>& pGeometryStore)
 		{
-			FLINT_SETUP_PROFILER();
+			auto pVertexBuffer = pGeometryStore->GetVertexBuffer();
+			auto pIndexBuffer = pGeometryStore->GetIndexBuffer();
 
-			if (pVertexBuffer->GetType() != BufferType::VERTEX)
-				FLINT_THROW_INVALID_ARGUMENT("Invalid buffer type submitted to bind! Make sure that the buffer type is VERTEX.");
-
-			VkDeviceSize offsets[1] = { 0 };
-			vkCmdBindVertexBuffers(vCommandBuffer, 0, 1, pVertexBuffer->StaticCast<VulkanBuffer>().GetBufferAddress(), offsets);
-		}
-
-		void VulkanCommandBuffer::BindIndexBuffer(const std::shared_ptr<Buffer>& pIndexBuffer, UI64 indexSize)
-		{
-			FLINT_SETUP_PROFILER();
-
-			if (pIndexBuffer->GetType() != BufferType::INDEX)
-				FLINT_THROW_INVALID_ARGUMENT("Invalid buffer type submitted to bind! Make sure that the buffer type is INDEX.");
-
+			UI64 indexSize = pGeometryStore->GetIndexSize();
 			VkIndexType indexType = VkIndexType::VK_INDEX_TYPE_UINT32;
 
 			if (indexSize == sizeof(UI8))
@@ -190,6 +196,8 @@ namespace Flint
 			else
 				FLINT_THROW_INVALID_ARGUMENT("Invalid index size submitted to bind! The valid sizes are 1, 2, and 4 bytes.");
 
+			VkDeviceSize offsets[1] = { 0 };
+			vkCmdBindVertexBuffers(vCommandBuffer, 0, 1, pVertexBuffer->StaticCast<VulkanBuffer>().GetBufferAddress(), offsets);
 			vkCmdBindIndexBuffer(vCommandBuffer, pIndexBuffer->StaticCast<VulkanBuffer>().GetBuffer(), 0, indexType);
 		}
 

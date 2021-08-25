@@ -114,11 +114,6 @@ namespace Flint
 			return std::make_shared<VulkanCommandBufferList>(shared_from_this(), bufferCount, pParent);
 		}
 
-		std::shared_ptr<SwapChain> VulkanDevice::CreateSwapChain(const std::shared_ptr<Display>& pDisplay, UI32 imageCount, SwapChainPresentMode presentMode)
-		{
-			return std::make_shared<VulkanSwapChain>(shared_from_this(), pDisplay, imageCount, presentMode);
-		}
-
 		std::shared_ptr<ScreenBoundRenderTarget> VulkanDevice::CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, UI32 threadCount)
 		{
 			return std::make_shared<VulkanScreenBoundRenderTarget>(shared_from_this(), pDisplay, extent, bufferCount, threadCount);
@@ -213,34 +208,43 @@ namespace Flint
 			FLINT_VK_ASSERT(vkQueueSubmit(GetQueue().vGraphicsQueue, 1, &vSubmitInfo, vSubmitFence));
 		}
 
-		void VulkanDevice::PresentSwapChains(const std::vector<std::shared_ptr<SwapChain>>& pSwapChain)
+		void VulkanDevice::PresentScreenBoundRenderTargets(const std::vector<std::shared_ptr<ScreenBoundRenderTarget>>& pScreenBoundRenderTargets)
 		{
-			std::vector<VkResult> vResults(pSwapChain.size());
-			std::vector<VkSwapchainKHR> vSwapChains(pSwapChain.size());
-			std::vector<UI32> imageIndexes(pSwapChain.size());
-			std::vector<VkSemaphore> vWaitSemaphores(pSwapChain.size());
+			std::vector<VkResult> vResults(pScreenBoundRenderTargets.size());
+			std::vector<VkSwapchainKHR> vSwapChains(pScreenBoundRenderTargets.size());
+			std::vector<UI32> imageIndexes(pScreenBoundRenderTargets.size());
+			std::vector<VkSemaphore> vWaitSemaphores(pScreenBoundRenderTargets.size());
 
 			VkPresentInfoKHR vPresentInfo = {};
 			vPresentInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 			vPresentInfo.pNext = VK_NULL_HANDLE;
-			vPresentInfo.swapchainCount = static_cast<UI32>(pSwapChain.size());
-			vPresentInfo.waitSemaphoreCount = static_cast<UI32>(pSwapChain.size());
+			vPresentInfo.swapchainCount = static_cast<UI32>(pScreenBoundRenderTargets.size());
+			vPresentInfo.waitSemaphoreCount = static_cast<UI32>(pScreenBoundRenderTargets.size());
 			vPresentInfo.pResults = vResults.data();
 
-			for (UI64 i = 0; i < pSwapChain.size(); i++)
+			for (UI64 i = 0; i < pScreenBoundRenderTargets.size(); i++)
 			{
-				auto& vSwapChain = pSwapChain[i]->StaticCast<VulkanSwapChain>();
+				auto& vScreenBoundRenderTargets = pScreenBoundRenderTargets[i]->StaticCast<VulkanScreenBoundRenderTarget>();
 
-				imageIndexes[i] = vSwapChain.GetImageIndex();
-				vSwapChains[i] = vSwapChain.GetSwapChain();
-				vWaitSemaphores[i] = vSwapChain.GetSemaphore();
+				imageIndexes[i] = vScreenBoundRenderTargets.GetImageIndex();
+				vSwapChains[i] = vScreenBoundRenderTargets.GetSwapChain()->GetSwapChain();
+				vWaitSemaphores[i] = vScreenBoundRenderTargets.GetSwapChain()->GetSemaphore();
 			}
 
 			vPresentInfo.pImageIndices = imageIndexes.data();
 			vPresentInfo.pSwapchains = vSwapChains.data();
 			vPresentInfo.pWaitSemaphores = vWaitSemaphores.data();
 
-			VkResult result = vkQueuePresentKHR(GetQueue().vTransferQueue, &vPresentInfo);
+			vkQueuePresentKHR(GetQueue().vTransferQueue, &vPresentInfo);
+
+			for (UI64 i = 0; i < pScreenBoundRenderTargets.size(); i++)
+			{
+				VkResult vResult = vResults[i];
+
+				if (vResult == VK_ERROR_OUT_OF_DATE_KHR || vResult == VK_SUBOPTIMAL_KHR)
+					pScreenBoundRenderTargets[i]->Recreate();
+				else FLINT_VK_ASSERT(vResult);
+			}
 		}
 
 		void VulkanDevice::WaitIdle()

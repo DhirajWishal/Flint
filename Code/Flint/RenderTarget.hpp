@@ -3,11 +3,9 @@
 
 #pragma once
 
-#include "CommandBufferList.hpp"
+#include "CommandBuffer.hpp"
 #include "ComputePipeline.hpp"
 #include "Core/CountingSemaphore.hpp"
-
-#include "CommandBuffer.hpp"
 
 #include <unordered_map>
 
@@ -36,10 +34,30 @@ namespace Flint
 		DrawInstanceStorage const* pDrawInstanceStorage = nullptr;
 	};
 
-	void BindCustomResources(RenderTarget* pRenderTarget, DrawInstanceStorage* pCustomInstanceStorage)
+	/**
+	 * Render target attachment structure.
+	 */
+	struct RenderTargetAttachment
 	{
+		struct DepthClearValues
+		{
+			DepthClearValues() = default;
+			DepthClearValues(float depth, UI32 stencil) : mDepth(depth), mStencil(stencil) {}
 
-	}
+			float mDepth = 0.0f;
+			UI32 mStencil = 0;
+		};
+
+	public:
+		RenderTargetAttachment() = default;
+		RenderTargetAttachment(const std::shared_ptr<Image>& pImage, const FColor4D& clearColor) : pImage(pImage), mClearColor(clearColor) {}
+		RenderTargetAttachment(const std::shared_ptr<Image>& pImage, const DepthClearValues& depthValue) : pImage(pImage), mDepthClearValue(depthValue) {}
+
+		std::shared_ptr<Image> pImage = nullptr;
+
+		FColor4D mClearColor = FColor4D(CREATE_COLOR_256(32.0f), CREATE_COLOR_256(32.0f), CREATE_COLOR_256(32.0f), 1.0f);
+		DepthClearValues mDepthClearValue = {};
+	};
 
 	/**
 	 * Flint render target object.
@@ -61,11 +79,8 @@ namespace Flint
 		 * @param pDevice: The device pointer.
 		 * @param extent: The render target extent.
 		 * @param bufferCount: The frame buffer count.
-		 * @param pCommandBufferList: The command buffer list used by the render target.
-		 * @param threadCount: The number of threads used for secondary commands
 		 */
-		RenderTarget(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, const std::shared_ptr<CommandBufferList>& pCommandBufferList, UI32 threadCount = 0);
-		RenderTarget(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, UI32 threadCount = 0);
+		RenderTarget(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments);
 
 		/**
 		 * Begin a new frame to render.
@@ -79,95 +94,20 @@ namespace Flint
 		 */
 		virtual void SubmitFrame() = 0;
 
-		/**
-		 * Get the render targets clear screen color.
-		 *
-		 * @return The color container.
-		 */
-		virtual FColor4D GetClearColor() const = 0;
-
-		/**
-		 * Set the clear color values.
-		 *
-		 * @param newColor: The new color to set.
-		 */
-		virtual void SetClearColor(const FColor4D& newColor) = 0;
-
 	public:
 		/**
-		 * Submit a graphics pipeline to the render target to be drawn using a custom function.
-		 * These pipelines are bound to a command buffer before binding anything else.
+		 * Get the attachments of the render target.
 		 *
-		 * @param pGeometryStore: The geometry store to bind to.
-		 * @param pPipeline: The pipeline to submit.
+		 * @return The attachments.
 		 */
-		void SubmitGraphicsPipelineCustom(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::shared_ptr<GraphicsPipeline>& pPipeline);
+		const std::vector<RenderTargetAttachment> GetAttachments() const { return mAttachments; }
 
 		/**
-		 * Remove a graphics pipeline from the render target which was submitted to be drawn using a custom function.
+		 * Get the current frame index.
 		 *
-		 * @param pGeometryStore: The geometry store which the pipeline is bound to.
-		 * @param pPipeline: The pipeline to remove.
+		 * @return The frame index.
 		 */
-		void RemoveGraphicsPipelineCustom(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::shared_ptr<GraphicsPipeline>& pPipeline);
-
-		/**
-		 * Submit a graphics pipeline to the render target to be drawn before the default submissions.
-		 * These pipelines are bound after the custom bindings, and before the defaults.
-		 *
-		 * @param pGeometryStore: The geometry store to bind to.
-		 * @param pPipeline: The pipeline to submit.
-		 */
-		void SubmitGraphicsPipelineVolatile(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::shared_ptr<GraphicsPipeline>& pPipeline);
-
-		/**
-		 * Remove a graphics pipeline from the render target which was submitted to be drawn before the default submissions.
-		 *
-		 * @param pGeometryStore: The geometry store which the pipeline is bound to.
-		 * @param pPipeline: The pipeline to remove.
-		 */
-		void RemoveGraphicsPipelineVolatile(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::shared_ptr<GraphicsPipeline>& pPipeline);
-
-		/**
-		 * Submit a graphics pipeline to the render target to be drawn.
-		 * These pipelines are bound at the end, and will be issued to a thread if enabled.
-		 *
-		 * @param pGeometryStore: The geometry store to bind to.
-		 * @param pPipeline: The pipeline to submit.
-		 */
-		void SubmitGraphicsPipeline(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::shared_ptr<GraphicsPipeline>& pPipeline);
-
-		/**
-		 * Remove a graphics pipeline from the render target.
-		 *
-		 * @param pGeometryStore: The geometry store which the pipeline is bound to.
-		 * @param pPipeline: The pipeline to remove.
-		 */
-		void RemoveGraphicsPipeline(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::shared_ptr<GraphicsPipeline>& pPipeline);
-
-		/**
-		 * Submit a compute pipeline to the render target.
-		 *
-		 * @param pPipeline: The pipeline pointer.
-		 * @param dispatchMode: The dispatch mode describing when to dispatch the pipeline commands.
-		 */
-		void SubmitComputePipeline(const std::shared_ptr<ComputePipeline>& pPipeline, ComputeDispatchMode dispatchMode);
-
-		/**
-		 * Remove a compute pipeline from the render target.
-		 *
-		 * @param pPipeline: The pipeline pointer.
-		 * @param dispatchMode: The dispatch mode used for the pipeline.
-		 */
-		void RemoveComputePipeline(const std::shared_ptr<ComputePipeline>& pPipeline, ComputeDispatchMode dispatchMode);
-
-	public:
-		/**
-		 * Get the command buffer list of the render target.
-		 *
-		 * @return The command buffer list pointer.
-		 */
-		const std::shared_ptr<CommandBufferList> GetCommandBufferList() const { return pCommandBufferList; }
+		const UI32 GetFrameIndex() const { return mFrameIndex; }
 
 		/**
 		 * Get the render target extent.
@@ -184,13 +124,6 @@ namespace Flint
 		const UI32 GetBufferCount() const { return mBufferCount; }
 
 		/**
-		 * Get the number of threads used by this thread.
-		 *
-		 * @return The thread count.
-		 */
-		const UI32 GetNumberOfThreads() const { return mNumberOfThreads; }
-
-		/**
 		 * Check if the render target is altered.
 		 *
 		 * @return Boolean value.
@@ -202,101 +135,19 @@ namespace Flint
 		 */
 		void FlagAltered() { bIsAltered = true; }
 
-	protected:
 		/**
 		 * Increment the frame index.
 		 * If the frame index is bigger than or equal to the buffer count, it is rolled back to 0.
 		 */
 		void IncrementFrameIndex() { mFrameIndex++; if (mFrameIndex >= mBufferCount) mFrameIndex = 0; }
 
-		/**
-		 * Bind the volatile instances.
-		 */
-		virtual void BindVolatileInstances() = 0;
-
-		/**
-		 * Secondary commands worker function.
-		 * This function will be executed as a worker thread.
-		 *
-		 * @param drawInstanceMap: The draw instance map.
-		 * @param drawOrder: The order in which resources are drawn.
-		 * @param binarySemaphore: The binary semaphore used to control the secondary thread.
-		 * @param countingSemaphore: The counting semaphore used to control the parent thread.
-		 * @param shouldRun: The boolean stating whether or not to run.
-		 */
-		virtual void SecondaryCommandsWorker(DrawInstanceMap& drawInstanceMap, std::list<std::shared_ptr<GeometryStore>>& drawOrder, BinarySemaphore& binarySemaphore, CountingSemaphore& countingSemaphore, std::atomic<bool>& shouldRun) = 0;
-
-		/**
-		 * Initiate all the worker threads.
-		 */
-		void InitiateThreads();
-
-		/**
-		 * Terminate all the threads.
-		 */
-		void TerminateThreads();
-
-		/**
-		 * Acquire all the threads.
-		 * This waits until all the threads are acquired.
-		 */
-		void AcquireAllThreads();
-
-		/**
-		 * Release all the threads.
-		 */
-		void ReleaseAllThreads();
-
-	private:
-		/**
-		 * Increment the next map to place the next geometry data to.
-		 */
-		void IncrementNextMap();
-
 	protected:
-		std::shared_ptr<CommandBufferList> pCommandBufferList = nullptr;
-
-		DrawInstanceStorage mCustomDrawInstanceStorage = {};
-		DrawInstanceStorage mVolatileDrawInstanceStorage = {};
-		DrawInstanceStorage mFastDrawInstanceStorage = {};
-
-		std::vector<DrawInstanceMap> mDrawInstanceMaps;
-		std::vector<std::list<std::shared_ptr<GeometryStore>>> mDrawInstanceOrder;
-
-		std::vector<std::pair<std::shared_ptr<ComputePipeline>, ComputeDispatchMode>> mComputePipelines;
-
-		std::vector<std::thread> mWorkerThreads;
-		std::vector<BinarySemaphore> mBinarySemaphores;
-		std::atomic<bool> bThreadShouldRun;
-		CountingSemaphore mCountingSemaphore = {};
+		std::vector<RenderTargetAttachment> mAttachments = {};
 
 		FBox2D mExtent = {};
 		UI32 mBufferCount = 0;
 		UI32 mFrameIndex = 0;
 
-		UI32 mNumberOfThreads = 0;
-
 		bool bIsAltered = false;
-
-	private:
-		UI32 mNextMap = 0;
 	};
 }
-
-/*
-StrictRenderTarget.
-	- Best for rendering to a display
-	- Is multi threaded
-	- Easy to setup and use
-
-PermissiveRenderTarget.
-	- Best for off screen purposes
-	- Resource binding is done by the client
-	- Can render to a display
-	- Can be attached to a strict render target
-
-RenderTarget.
-	- Fast draw
-	- Volatile draw
-	- Custom draw
-*/

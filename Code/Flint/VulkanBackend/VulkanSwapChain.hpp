@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "VulkanRenderTargetAttachment.hpp"
+#include "VulkanRenderTargetAttachmentInterface.hpp"
 #include "VulkanDisplay.hpp"
 
 #include "SwapChain.hpp"

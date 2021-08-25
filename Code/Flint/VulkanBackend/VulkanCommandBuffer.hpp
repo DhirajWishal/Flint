@@ -17,7 +17,8 @@ namespace Flint
 			~VulkanCommandBuffer() { if (!bIsTerminated) Terminate(); }
 
 			virtual void BeginBufferRecording() override final;
-			virtual void BeginBufferRecording(const std::shared_ptr<CommandBufferList> pParent) override final;
+			virtual void BeginBufferRecording(const std::shared_ptr<ScreenBoundRenderTarget> pRenderTarget) override final;
+			virtual void BeginBufferRecording(const std::shared_ptr<OffScreenRenderTarget> pRenderTarget) override final;
 
 			virtual void BindRenderTarget(const std::shared_ptr<ScreenBoundRenderTarget>& pRenderTarget) override final;
 			virtual void BindRenderTargetSecondary(const std::shared_ptr<ScreenBoundRenderTarget>& pRenderTarget) override final;
@@ -27,8 +28,7 @@ namespace Flint
 			virtual void BindGraphicsPipeline(const std::shared_ptr<GraphicsPipeline>& pGraphicsPipeline) override final;
 			virtual void BindComputePipeline(const std::shared_ptr<ComputePipeline>& pComputePipeline) override final;
 
-			virtual void BindVertexBuffer(const std::shared_ptr<Buffer>& pVertexBuffer) override final;
-			virtual void BindIndexBuffer(const std::shared_ptr<Buffer>& pIndexBuffer, UI64 indexSize) override final;
+			virtual void BindGeometryStore(const std::shared_ptr<GeometryStore>& pGeometryStore) override final;
 
 			virtual void BindResourceMap(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::shared_ptr<ResourceMap>& pResourceMap) override final;
 			virtual void BindResourceMap(const std::shared_ptr<ComputePipeline>& pPipeline, const std::shared_ptr<ResourceMap>& pResourceMap) override final;

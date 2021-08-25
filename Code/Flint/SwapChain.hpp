@@ -44,7 +44,7 @@ namespace Flint
 
 		/**
 		 * Acquire the next swap chain image.
-		 * 
+		 *
 		 * @param frameIndex: The frame index of the swap chain.
 		 * @return The next image info structure.
 		 */
@@ -74,7 +74,7 @@ namespace Flint
 
 		/**
 		 * Get the current image index.
-		 * 
+		 *
 		 * @return The image index.
 		 */
 		const UI32 GetImageIndex() const { return mImageIndex; }
@@ -88,10 +88,23 @@ namespace Flint
 
 		/**
 		 * Get the swap chain present mode.
-		 * 
+		 *
 		 * @return The present mode.
 		 */
 		const SwapChainPresentMode GetPresentMode() const { return mPresentMode; }
+
+		/**
+		 * Toggle the recreate boolean.
+		 */
+		void ToggleRecreate() { bShouldRecreate = true; }
+
+		/**
+		 * Check if the swap chain should recreate.
+		 * This occurs if the display is resized or due to some other issue. In that case, the swap chain should be created, and all the attached render targets.
+		 * 
+		 * @return The boolean value.
+		 */
+		const bool ShouldRecreate() const { return bShouldRecreate; }
 
 	protected:
 		std::shared_ptr<Display> pDisplay = nullptr;
@@ -102,5 +115,7 @@ namespace Flint
 
 		PixelFormat mPixelForamt = PixelFormat::UNDEFINED;
 		SwapChainPresentMode mPresentMode = SwapChainPresentMode::MAILBOX;
+
+		bool bShouldRecreate = false;
 	};
 }

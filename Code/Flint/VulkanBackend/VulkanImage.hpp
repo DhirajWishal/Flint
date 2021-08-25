@@ -4,7 +4,7 @@
 #pragma once
 
 #include "Image.hpp"
-#include "VulkanRenderTargetAttachment.hpp"
+#include "VulkanRenderTargetAttachmentInterface.hpp"
 
 namespace Flint
 {

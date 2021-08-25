@@ -23,8 +23,6 @@ namespace Flint
 			virtual std::shared_ptr<CommandBufferList> CreatePrimaryCommandBufferList(UI32 bufferCount) override final;
 			virtual std::shared_ptr<CommandBufferList> CreateSecondaryCommandBufferList(UI32 bufferCount, const std::shared_ptr<CommandBufferList>& pParent) override final;
 
-			virtual std::shared_ptr<SwapChain> CreateSwapChain(const std::shared_ptr<Display>& pDisplay, UI32 imageCount, SwapChainPresentMode presentMode) override final;
-
 			virtual std::shared_ptr<ScreenBoundRenderTarget> CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, UI32 threadCount = 0) override final;
 			virtual std::shared_ptr<OffScreenRenderTargetFactory> CreateOffScreenRenderTargetFactory() override final;
 
@@ -61,7 +59,7 @@ namespace Flint
 			virtual std::shared_ptr<GeometryStore> CreateGeometryStore(const std::unordered_map<UI32, std::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize, BufferMemoryProfile profile = BufferMemoryProfile::AUTOMATIC) override final;
 
 			virtual void SubmitCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers) override final;
-			virtual void PresentSwapChains(const std::vector<std::shared_ptr<SwapChain>>& pSwapChain) override final;
+			virtual void PresentScreenBoundRenderTargets(const std::vector<std::shared_ptr<ScreenBoundRenderTarget>>& pScreenBoundRenderTargets) override final;
 			virtual void WaitIdle() override final;
 			virtual void WaitForQueue() override final;
 

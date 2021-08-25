@@ -344,7 +344,7 @@ namespace Flint
 	constexpr RasterizationSamples operator&(const RasterizationSamples& lhs, const RasterizationSamples& rhs) { return static_cast<RasterizationSamples>(static_cast<UI8>(lhs) & static_cast<UI8>(rhs)); }
 
 	/**
-	 * Swap chain present mode.
+	 * Screen bound render target present mode.
 	 */
 	enum class SwapChainPresentMode : UI8 {
 		IMMEDIATE,
