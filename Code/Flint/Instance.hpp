@@ -27,7 +27,7 @@ namespace Flint
 		 * @param flags: The device flags.
 		 * @return The created device object.
 		 */
-		virtual std::shared_ptr<Device> CreateDevice(DeviceFlags flags) = 0;
+		virtual std::shared_ptr<Device> CreateDevice(const DeviceFlags flags) = 0;
 
 		/**
 		 * Destroy a created device.

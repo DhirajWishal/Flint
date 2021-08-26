@@ -95,7 +95,7 @@ ImageData SkyBox::LoadSkyboxImages()
 	images[5] = LoadImage(pSceneState->GetAssetPath().string() + "\\Textures\\SkyBox\\back.jpg");
 
 	UI64 imageSize = static_cast<UI64>(images[0].mExtent.mWidth) * images[0].mExtent.mHeight * 4;
-	UI64 size = imageSize * 6;
+	const UI64 size = imageSize * 6;
 
 	ImageData finalImage = {};
 	finalImage.mExtent = images[0].mExtent;

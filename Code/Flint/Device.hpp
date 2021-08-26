@@ -78,7 +78,7 @@ namespace Flint
 		 * @param pInstance: The instance pointer.
 		 * @param flags: The device flags.
 		 */
-		Device(const std::shared_ptr<Instance>& pInstance, DeviceFlags flags);
+		Device(const std::shared_ptr<Instance>& pInstance, const DeviceFlags flags);
 
 		/**
 		 * Check if the display is compatible with the device.
@@ -94,7 +94,7 @@ namespace Flint
 		 * @param bufferCount: The number of buffers the allocator should create.
 		 * @return The allocator pointer.
 		 */
-		virtual std::shared_ptr<CommandBufferAllocator> CreateCommandBufferAllocator(UI32 bufferCount) = 0;
+		virtual std::shared_ptr<CommandBufferAllocator> CreateCommandBufferAllocator(const UI32 bufferCount) = 0;
 
 		/**
 		 * Create a new secondary command buffer allocator.
@@ -103,7 +103,7 @@ namespace Flint
 		 * @param pParentAllocator: The parent command buffer allocator pointer.
 		 * @return The command buffer allocator pointer.
 		 */
-		virtual std::shared_ptr<CommandBufferAllocator> CreateSecondaryCommandBufferAllocator(UI32 bufferCount, const std::shared_ptr<CommandBufferAllocator>& pParentAllocator) = 0;
+		virtual std::shared_ptr<CommandBufferAllocator> CreateSecondaryCommandBufferAllocator(const UI32 bufferCount, const std::shared_ptr<CommandBufferAllocator>& pParentAllocator) = 0;
 
 		/**
 		 * Create a new screen bound render target.
@@ -116,7 +116,7 @@ namespace Flint
 		 * @param presentMode: The swap chain present mode.
 		 * @return The screen bound render target object.
 		 */
-		virtual std::shared_ptr<ScreenBoundRenderTarget> CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, SwapChainPresentMode presentMode) = 0;
+		virtual std::shared_ptr<ScreenBoundRenderTarget> CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode) = 0;
 
 		/**
 		 * Create a new off screen render target.
@@ -137,7 +137,7 @@ namespace Flint
 		 * @param profile: The memory profile of the buffer. Default is BufferMemoryProfile::AUTOMATIC.
 		 * @return The buffer object.
 		 */
-		virtual std::shared_ptr<Buffer> CreateBuffer(BufferType type, UI64 size, BufferMemoryProfile profile = BufferMemoryProfile::AUTOMATIC) = 0;
+		virtual std::shared_ptr<Buffer> CreateBuffer(const BufferType type, const UI64 size, const BufferMemoryProfile profile = BufferMemoryProfile::AUTOMATIC) = 0;
 
 		/**
 		 * Create a new image.
@@ -151,7 +151,7 @@ namespace Flint
 		 * @param pImageData: The image data pointer to load data from.
 		 * @return The newly created image.
 		 */
-		virtual std::shared_ptr<Image> CreateImage(const ImageType type, ImageUsage usage, const FBox3D& extent, PixelFormat format, UI8 layers, UI32 mipLevels, const void* pImageData) = 0;
+		virtual std::shared_ptr<Image> CreateImage(const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const UI8 layers, const UI32 mipLevels, const void* pImageData) = 0;
 
 		/**
 		 * Create a new image sampler.
@@ -169,7 +169,7 @@ namespace Flint
 		 * @param path: The shade code path.
 		 * @return The vertex shader object.
 		 */
-		virtual std::shared_ptr<Shader> CreateShader(ShaderType type, const std::filesystem::path& path) = 0;
+		virtual std::shared_ptr<Shader> CreateShader(const ShaderType type, const std::filesystem::path& path) = 0;
 
 		/**
 		 * Create a new shader.
@@ -179,7 +179,7 @@ namespace Flint
 		 * @param code: The shade code.
 		 * @return The vertex shader object.
 		 */
-		virtual std::shared_ptr<Shader> CreateShader(ShaderType type, const std::vector<UI32>& code) = 0;
+		virtual std::shared_ptr<Shader> CreateShader(const ShaderType type, const std::vector<UI32>& code) = 0;
 
 		/**
 		 * Create a new shader.
@@ -189,7 +189,7 @@ namespace Flint
 		 * @param code: The shade code.
 		 * @return The vertex shader object.
 		 */
-		virtual std::shared_ptr<Shader> CreateShader(ShaderType type, const std::string& code) = 0;
+		virtual std::shared_ptr<Shader> CreateShader(const ShaderType type, const std::string& code) = 0;
 
 		/**
 		 * Create a new graphics pipeline bound to a screen bound render target.
@@ -254,7 +254,7 @@ namespace Flint
 		 * @param profile: The memory profile of the geometry store. Default is BufferMemoryProfile::AUTOMATIC.
 		 * @return The newly created geometry store pointer.
 		 */
-		virtual std::shared_ptr<GeometryStore> CreateGeometryStore(const std::unordered_map<UI32, std::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize, BufferMemoryProfile profile = BufferMemoryProfile::AUTOMATIC) = 0;
+		virtual std::shared_ptr<GeometryStore> CreateGeometryStore(const std::unordered_map<UI32, std::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile = BufferMemoryProfile::AUTOMATIC) = 0;
 
 	public:
 		/**

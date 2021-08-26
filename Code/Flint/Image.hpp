@@ -26,7 +26,7 @@ namespace Flint
 		 * @param mipLevels: The mip levels.
 		 * @param pImageData: The image data pointer to load data from.
 		 */
-		Image(const std::shared_ptr<Device>& pDevice, ImageType type, ImageUsage usage, const FBox3D& extent, PixelFormat format, UI8 layers, UI32 mipLevels, const void* pImageData);
+		Image(const std::shared_ptr<Device>& pDevice, const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const UI8 layers, const UI32 mipLevels, const void* pImageData);
 
 		/**
 		 * Copy the image content to a buffer.

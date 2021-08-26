@@ -158,7 +158,7 @@ namespace Flint
 		struct ConstantData
 		{
 			ConstantData() = default;
-			ConstantData(const void* pData, UI64 size, UI64 offset) : pData(pData), mSize(size), mOffset(offset) {}
+			ConstantData(const void* pData, const UI64 size, const UI64 offset) : pData(pData), mSize(size), mOffset(offset) {}
 
 			/**
 			 * Check if the constant block is null.
@@ -230,7 +230,7 @@ namespace Flint
 		 * @param size: The size to be passed.
 		 * @param offset: The offset of the data. Default is 0.
 		 */
-		void SetConstantData(ShaderType shaderType, void* pData, UI64 size, UI64 offset = 0);
+		void SetConstantData(const ShaderType shaderType, void* pData, const UI64 size, const UI64 offset = 0);
 
 	public:
 		ViewPort mViewPort = {};

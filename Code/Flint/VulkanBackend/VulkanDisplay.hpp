@@ -36,7 +36,7 @@ namespace Flint
 			virtual void Update() override final;
 			virtual void Terminate() override final;
 			virtual void ToggleResize() override final { mIsDislayResized = false; }
-			virtual UI32 FindBestBufferCount(const std::shared_ptr<Device>& pDevice, UI32 count = 0) override final;
+			virtual UI32 FindBestBufferCount(const std::shared_ptr<Device>& pDevice, const UI32 count = 0) override final;
 			virtual PixelFormat GetBestSwapChainFormat(const std::shared_ptr<Device>& pDevice) override final;
 			virtual void SetTitle(const std::string& title) override final;
 			virtual void SetExtent(FBox2D newExtent) override final;
@@ -45,7 +45,7 @@ namespace Flint
 			VkPresentModeKHR ChoosePresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
 			VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, UI32 width, UI32 height);
 			VkSurfaceCapabilitiesKHR GetSurfaceCapabilities(VulkanDevice& device) const;
-			UI32 FindSupporterBufferCount(VulkanDevice& device, UI32 count) const;
+			UI32 FindSupporterBufferCount(VulkanDevice& device, const UI32 count) const;
 
 			void ActivateKey(UI32 scanCode, UI32 action, SpecialCharacter character);
 			void ActivateMouseButton(UI32 scanCode, UI32 action, SpecialCharacter character);

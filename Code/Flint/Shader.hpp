@@ -71,7 +71,7 @@ namespace Flint
 		 * @param type: The shader type.
 		 * @param path: The file path to the asset file.
 		 */
-		Shader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::filesystem::path& path);
+		Shader(const std::shared_ptr<Device>& pDevice, const ShaderType type, const std::filesystem::path& path);
 
 		/**
 		 * Construct the shader using a shader code.
@@ -81,7 +81,7 @@ namespace Flint
 		 * @param type: The shader type.
 		 * @param code: The shader code as a vector of UI32.
 		 */
-		Shader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::vector<UI32>& code);
+		Shader(const std::shared_ptr<Device>& pDevice, const ShaderType type, const std::vector<UI32>& code);
 
 		/**
 		 * Construct the shader using a shader code.
@@ -91,7 +91,7 @@ namespace Flint
 		 * @param type: The shader type.
 		 * @param code: The shader code as a string.
 		 */
-		Shader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::string& code);
+		Shader(const std::shared_ptr<Device>& pDevice, const ShaderType type, const std::string& code);
 
 		/**
 		 * Reload the shader using the shader file.

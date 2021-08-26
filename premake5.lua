@@ -65,6 +65,9 @@ workspace "Flint"
 	group "Code"
 		include "Code/Flint.lua"
 
+	group "Editor"
+		include "Editor/Editor.lua"
+
 	group "Demos"
 		include "Demos/ComputeShader/ComputeShader.lua"
 		include "Demos/DemoBase/DemoBase.lua"

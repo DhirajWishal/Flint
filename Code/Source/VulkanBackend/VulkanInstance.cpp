@@ -140,7 +140,7 @@ namespace Flint
 				InitializeDebugger();
 		}
 
-		std::shared_ptr<Device> VulkanInstance::CreateDevice(DeviceFlags flags)
+		std::shared_ptr<Device> VulkanInstance::CreateDevice(const DeviceFlags flags)
 		{
 			return std::make_shared<VulkanDevice>(shared_from_this(), flags);
 		}

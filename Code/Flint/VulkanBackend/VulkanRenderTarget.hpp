@@ -22,7 +22,7 @@ namespace Flint
 			void CreateRenderPassWithMultipleSubpasses(std::vector<std::vector<VulkanRenderTargetAttachmentInterface*>> pSubpasses, VkPipelineBindPoint vBindPoint, const std::vector<VkSubpassDependency>& vSubpassDependencies);
 			void DestroyRenderPass();
 
-			void CreateFrameBuffer(std::vector<VulkanRenderTargetAttachmentInterface*> pAttachments, const FBox2D& extent, UI32 bufferCount);
+			void CreateFrameBuffer(std::vector<VulkanRenderTargetAttachmentInterface*> pAttachments, const FBox2D& extent, const UI32 bufferCount);
 			void DestroyFrameBuffers();
 
 			void CreateSyncObjects(UI32 count);

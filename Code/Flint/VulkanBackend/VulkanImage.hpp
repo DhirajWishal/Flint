@@ -13,7 +13,7 @@ namespace Flint
 		class VulkanImage final : public Image, public VulkanRenderTargetAttachmentInterface, public std::enable_shared_from_this<VulkanImage>
 		{
 		public:
-			VulkanImage(const std::shared_ptr<Device>& pDevice, ImageType type, ImageUsage usage, const FBox3D& extent, PixelFormat format, UI8 layers, UI32 mipLevels, const void* pImageData);
+			VulkanImage(const std::shared_ptr<Device>& pDevice, const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const UI8 layers, const UI32 mipLevels, const void* pImageData);
 			~VulkanImage() { if (!bIsTerminated) Terminate(); }
 
 			virtual std::shared_ptr<Buffer> CopyToBuffer() override final;
@@ -33,7 +33,7 @@ namespace Flint
 
 		public:
 			VkImageView CreateLayerBasedImageView(UI32 layerNumber) const;
-			void SetImageLayout(VkCommandBuffer vCommandBuffer, VkImageLayout vNewLayout, UI32 layerCount = 1, UI32 layerIndex = 0, UI32 mipLevels = 1);
+			void SetImageLayout(VkCommandBuffer vCommandBuffer, VkImageLayout vNewLayout, UI32 layerCount = 1, UI32 layerIndex = 0, const UI32 mipLevels = 1);
 			void SetImageLayout(VkImageLayout vNewLayout);
 
 			const VkImage GetImage() const { return vImage; }

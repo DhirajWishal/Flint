@@ -1,0 +1,30 @@
+// Copyright 2021 Dhiraj Wishal
+// SPDX-License-Identifier: Apache-2.0
+
+#pragma once
+
+#include "Flint/Device.hpp"
+
+#include "Components/EditorRenderTarget.hpp"
+
+/**
+ * Main application class of the editor.
+ */
+class Application
+{
+public:
+	Application();
+	~Application();
+
+private:
+	void Execute();
+
+private:
+	std::shared_ptr<Flint::Instance> pInstance = nullptr;
+	std::shared_ptr<Flint::Device> pDevice = nullptr;
+	std::shared_ptr<Flint::Display> pDisplay = nullptr;
+
+	EditorRenderTarget mRenderTarget;
+
+	bool bShouldRun = true;
+};

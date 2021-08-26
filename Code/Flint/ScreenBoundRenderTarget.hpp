@@ -25,7 +25,7 @@ namespace Flint
 		 * @param bufferCount: The frame buffer count.
 		 * @param presentMode: The image present mode to the display.
 		 */
-		ScreenBoundRenderTarget(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, SwapChainPresentMode presentMode);
+		ScreenBoundRenderTarget(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode);
 
 		/**
 		 * Present the images to the display.

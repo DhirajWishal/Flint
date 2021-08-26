@@ -31,7 +31,7 @@ namespace Flint
 		 * @param size: The size of the buffer.
 		 * @param profile: The memory profile of the buffer. Default is BufferMemoryProfile::AUTOMATIC.
 		 */
-		Buffer(const std::shared_ptr<Device>& pDevice, BufferType type, const UI64 size, BufferMemoryProfile profile = BufferMemoryProfile::AUTOMATIC);
+		Buffer(const std::shared_ptr<Device>& pDevice, const BufferType type, const UI64 size, const BufferMemoryProfile profile = BufferMemoryProfile::AUTOMATIC);
 
 		/**
 		 * Resize the buffer.
@@ -40,7 +40,7 @@ namespace Flint
 		 * @param size: The new size of the buffer.
 		 * @param mode: The resize mode.
 		 */
-		virtual void Resize(UI64 size, BufferResizeMode mode) = 0;
+		virtual void Resize(const UI64 size, const BufferResizeMode mode) = 0;
 
 		/**
 		 * Copy data to this buffer using another buffer.
@@ -50,7 +50,7 @@ namespace Flint
 		 * @param srcOffet: The source buffer offset.
 		 * @param dstOffset: The destination (this) buffer offset.
 		 */
-		virtual void CopyFromBuffer(const std::shared_ptr<Buffer>& pSrcBuffer, UI64 size, UI64 srcOffset, UI64 dstOffset) = 0;
+		virtual void CopyFromBuffer(const std::shared_ptr<Buffer>& pSrcBuffer, const UI64 size, const UI64 srcOffset, const UI64 dstOffset) = 0;
 
 		/**
 		 * Map the buffer memory to the local address space.
@@ -59,7 +59,7 @@ namespace Flint
 		 * @param offset: The offset of the buffer to map.
 		 * @return The mapped address pointer.
 		 */
-		virtual void* MapMemory(UI64 size, UI64 offset = 0) = 0;
+		virtual void* MapMemory(const UI64 size, const UI64 offset = 0) = 0;
 
 		/**
 		 * Unmap the buffer memory from the local address space.
@@ -73,7 +73,7 @@ namespace Flint
 		 * @param sizeToAdd: The size to extend the buffer with.
 		 * @param mode: The resize mode.
 		 */
-		void Extend(UI64 sizeToAdd, BufferResizeMode mode) { Resize(GetSize() + sizeToAdd, mode); }
+		void Extend(const UI64 sizeToAdd, const BufferResizeMode mode) { Resize(GetSize() + sizeToAdd, mode); }
 
 		/**
 		 * Shrink the buffer's size.
@@ -81,7 +81,7 @@ namespace Flint
 		 * @param sizeToReduce: The size to shrink the buffer with.
 		 * @param mode: The resize mode.
 		 */
-		void Shrink(UI64 sizeToReduce, BufferResizeMode mode) { Resize(GetSize() - sizeToReduce, mode); }
+		void Shrink(const UI64 sizeToReduce, const BufferResizeMode mode) { Resize(GetSize() - sizeToReduce, mode); }
 
 		/**
 		 * Get the buffer size.

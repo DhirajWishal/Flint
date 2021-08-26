@@ -9,7 +9,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		void VulkanQueue::Initialize(VkPhysicalDevice vPhysicalDevice, DeviceFlags flags)
+		void VulkanQueue::Initialize(VkPhysicalDevice vPhysicalDevice, const DeviceFlags flags)
 		{
 			FLINT_SETUP_PROFILER();
 

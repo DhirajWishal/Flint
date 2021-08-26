@@ -166,7 +166,7 @@ namespace Flint
 				return VkDescriptorType();
 			}
 
-			VkShaderStageFlags GetShaderStage(ShaderType type)
+			VkShaderStageFlags GetShaderStage(const ShaderType type)
 			{
 				switch (type)
 				{
@@ -287,7 +287,7 @@ namespace Flint
 				return PixelFormat::UNDEFINED;
 			}
 
-			VkFormat GetVulkanFormat(PixelFormat format)
+			VkFormat GetVulkanFormat(const PixelFormat format)
 			{
 				switch (format)
 				{
@@ -367,7 +367,7 @@ namespace Flint
 				return VkFormat::VK_FORMAT_UNDEFINED;
 			}
 
-			UI8 GetByteDepth(PixelFormat format)
+			UI8 GetByteDepth(const PixelFormat format)
 			{
 				switch (format)
 				{

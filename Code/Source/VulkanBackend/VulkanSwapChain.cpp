@@ -37,7 +37,7 @@ namespace Flint
 			}
 		}
 
-		VulkanSwapChain::VulkanSwapChain(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, UI32 imageCount, SwapChainPresentMode presentMode)
+		VulkanSwapChain::VulkanSwapChain(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, UI32 imageCount, const SwapChainPresentMode presentMode)
 			: SwapChain(pDevice, pDisplay, imageCount, presentMode)
 		{
 			FLINT_SETUP_PROFILER();

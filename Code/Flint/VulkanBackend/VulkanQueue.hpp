@@ -17,7 +17,7 @@ namespace Flint
 		public:
 			VulkanQueue() = default;
 
-			void Initialize(VkPhysicalDevice vPhysicalDevice, DeviceFlags flags);
+			void Initialize(VkPhysicalDevice vPhysicalDevice, const DeviceFlags flags);
 			bool IsComplete() const;
 
 		public:

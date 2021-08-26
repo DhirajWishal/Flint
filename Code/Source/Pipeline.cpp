@@ -5,7 +5,7 @@
 
 namespace Flint
 {
-	void Pipeline::WriteDataToCacheFile(UI64 size, unsigned char* pData) const
+	void Pipeline::WriteDataToCacheFile(const UI64 size, unsigned char* pData) const
 	{
 		// Return if the name is empty.
 		if (mPipelineName.empty())
@@ -33,7 +33,7 @@ namespace Flint
 		if (!cacheFile.is_open())
 			return std::pair<UI64, unsigned char*>(0, nullptr);
 
-		UI64 size = cacheFile.tellg();
+		const UI64 size = cacheFile.tellg();
 		cacheFile.seekg(0);
 
 		unsigned char* pDataStore = new unsigned char[size];

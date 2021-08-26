@@ -55,7 +55,7 @@ namespace Flint
 		 * @param size: The size of the data block.
 		 * @param pData: The data to be written.
 		 */
-		void WriteDataToCacheFile(UI64 size, unsigned char* pData) const;
+		void WriteDataToCacheFile(const UI64 size, unsigned char* pData) const;
 
 		/**
 		 * Read the pipeline cache data from an external file.

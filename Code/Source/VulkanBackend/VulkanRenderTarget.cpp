@@ -176,7 +176,7 @@ namespace Flint
 			vkDestroyRenderPass(vDevice.GetLogicalDevice(), vRenderPass, nullptr);
 		}
 
-		void VulkanRenderTarget::CreateFrameBuffer(std::vector<VulkanRenderTargetAttachmentInterface*> pAttachments, const FBox2D& extent, UI32 bufferCount)
+		void VulkanRenderTarget::CreateFrameBuffer(std::vector<VulkanRenderTargetAttachmentInterface*> pAttachments, const FBox2D& extent, const UI32 bufferCount)
 		{
 			FLINT_SETUP_PROFILER();
 

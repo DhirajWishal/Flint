@@ -338,20 +338,22 @@ namespace Flint
 	};
 
 	/**
+	 * Depth clear values structure.
+	 */
+	struct DepthClearValues
+	{
+		DepthClearValues() = default;
+		DepthClearValues(float depth, UI32 stencil) : mDepth(depth), mStencil(stencil) {}
+
+		float mDepth = 0.0f;
+		UI32 mStencil = 0;
+	};
+
+	/**
 	 * Render target attachment structure.
 	 */
 	struct RenderTargetAttachment
 	{
-		struct DepthClearValues
-		{
-			DepthClearValues() = default;
-			DepthClearValues(float depth, UI32 stencil) : mDepth(depth), mStencil(stencil) {}
-
-			float mDepth = 0.0f;
-			UI32 mStencil = 0;
-		};
-
-	public:
 		RenderTargetAttachment() = default;
 		RenderTargetAttachment(const std::shared_ptr<Image>& pImage, const FColor4D& clearColor) : pImage(pImage), mClearColor(clearColor) {}
 		RenderTargetAttachment(const std::shared_ptr<Image>& pImage, const DepthClearValues& depthValue) : pImage(pImage), mDepthClearValue(depthValue) {}

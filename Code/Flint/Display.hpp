@@ -216,7 +216,7 @@ namespace Flint
 		 * @param count: The count that needs to be checked. Default is 0.
 		 * @return The best buffer count integer.
 		 */
-		virtual UI32 FindBestBufferCount(const std::shared_ptr<Device>& pDevice, UI32 count = 0) = 0;
+		virtual UI32 FindBestBufferCount(const std::shared_ptr<Device>& pDevice, const UI32 count = 0) = 0;
 
 		/**
 		 * Get the best swap chain format.

@@ -180,7 +180,7 @@ namespace Flint
 			}
 		}
 
-		VulkanShader::VulkanShader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::filesystem::path& path)
+		VulkanShader::VulkanShader(const std::shared_ptr<Device>& pDevice, const ShaderType type, const std::filesystem::path& path)
 			: Shader(pDevice, type, path)
 		{
 			FLINT_SETUP_PROFILER();
@@ -202,7 +202,7 @@ namespace Flint
 			PerformReflection();
 		}
 
-		VulkanShader::VulkanShader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::vector<UI32>& code)
+		VulkanShader::VulkanShader(const std::shared_ptr<Device>& pDevice, const ShaderType type, const std::vector<UI32>& code)
 			: Shader(pDevice, type, code)
 		{
 			FLINT_SETUP_PROFILER();
@@ -214,7 +214,7 @@ namespace Flint
 			PerformReflection();
 		}
 
-		VulkanShader::VulkanShader(const std::shared_ptr<Device>& pDevice, ShaderType type, const std::string& code)
+		VulkanShader::VulkanShader(const std::shared_ptr<Device>& pDevice, const ShaderType type, const std::string& code)
 			: Shader(pDevice, type, code)
 		{
 			FLINT_SETUP_PROFILER();

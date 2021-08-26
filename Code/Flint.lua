@@ -7,7 +7,7 @@ project "Flint"
 	language "C++"
 	kind "StaticLib"
 	systemversion "latest"
-	cppdialect "C++17"
+	cppdialect "C++20"
 	staticruntime "On"
 
 	targetdir "$(SolutionDir)Builds/Binaries/$(Configuration)"

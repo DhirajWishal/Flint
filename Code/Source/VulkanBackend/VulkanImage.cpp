@@ -12,7 +12,7 @@ namespace Flint
 	{
 		namespace _Helpers
 		{
-			VkImageType GetImageType(ImageType type)
+			VkImageType GetImageType(const ImageType type)
 			{
 				switch (type)
 				{
@@ -39,7 +39,7 @@ namespace Flint
 				return VkImageType::VK_IMAGE_TYPE_2D;
 			}
 
-			VkImageUsageFlags GetImageUsage(ImageUsage usage)
+			VkImageUsageFlags GetImageUsage(const ImageUsage usage)
 			{
 				VkImageUsageFlags vFlags = VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_DST_BIT;
 
@@ -58,7 +58,7 @@ namespace Flint
 				return vFlags;
 			}
 
-			VkImageViewType GetImageViewType(ImageType type)
+			VkImageViewType GetImageViewType(const ImageType type)
 			{
 				switch (type)
 				{
@@ -93,7 +93,7 @@ namespace Flint
 				return VkImageViewType::VK_IMAGE_VIEW_TYPE_2D;
 			}
 
-			VkImageAspectFlags GetImageAspectFlags(ImageUsage usage)
+			VkImageAspectFlags GetImageAspectFlags(const ImageUsage usage)
 			{
 				if ((usage & ImageUsage::DEPTH) == ImageUsage::DEPTH)
 					return VkImageAspectFlagBits::VK_IMAGE_ASPECT_DEPTH_BIT;
@@ -112,7 +112,7 @@ namespace Flint
 				return vFlags;
 			}
 
-			VkComponentMapping GetComponentMapping(PixelFormat format)
+			VkComponentMapping GetComponentMapping(const PixelFormat format)
 			{
 				VkComponentMapping vComponentMapping = {};
 				switch (format)
@@ -187,7 +187,7 @@ namespace Flint
 			}
 		}
 
-		VulkanImage::VulkanImage(const std::shared_ptr<Device>& pDevice, ImageType type, ImageUsage usage, const FBox3D& extent, PixelFormat format, UI8 layers, UI32 mipLevels, const void* pImageData)
+		VulkanImage::VulkanImage(const std::shared_ptr<Device>& pDevice, const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const UI8 layers, const UI32 mipLevels, const void* pImageData)
 			: Image(pDevice, type, usage, extent, format, layers, mipLevels, pImageData)
 		{
 			Initialize(pImageData);
@@ -324,7 +324,7 @@ namespace Flint
 			return vImageView;
 		}
 
-		void VulkanImage::SetImageLayout(VkCommandBuffer vCommandBuffer, VkImageLayout vNewLayout, UI32 layerCount, UI32 layerIndex, UI32 mipLevels)
+		void VulkanImage::SetImageLayout(VkCommandBuffer vCommandBuffer, VkImageLayout vNewLayout, UI32 layerCount, UI32 layerIndex, const UI32 mipLevels)
 		{
 			pDevice->StaticCast<VulkanDevice>().SetImageLayout(vCommandBuffer, vImage, vCurrentLayout, vNewLayout, Utilities::GetVulkanFormat(mFormat), layerCount, layerIndex, mipLevels);
 			vCurrentLayout = vNewLayout;
@@ -516,7 +516,7 @@ namespace Flint
 			// Copy date to the device.
 			if (pImageData)
 			{
-				UI64 size = static_cast<UI64>(mExtent.mWidth) * mExtent.mHeight * mExtent.mDepth * Utilities::GetByteDepth(mFormat) * mLayerCount;
+				const UI64 size = static_cast<UI64>(mExtent.mWidth) * mExtent.mHeight * mExtent.mDepth * Utilities::GetByteDepth(mFormat) * mLayerCount;
 				VulkanBuffer vStagingBuffer(pDevice, BufferType::STAGING, size);
 
 				BYTE* pBytes = static_cast<BYTE*>(vStagingBuffer.MapMemory(size));

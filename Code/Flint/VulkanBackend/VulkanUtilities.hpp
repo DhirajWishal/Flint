@@ -23,10 +23,10 @@ namespace Flint
 			bool HasStencilComponent(VkFormat vFormat);
 			VkFormat FindDepthFormat(VkPhysicalDevice vPhysicalDevice);
 			VkDescriptorType GetDescriptorType(ShaderResourceType type);
-			VkShaderStageFlags GetShaderStage(ShaderType type);
+			VkShaderStageFlags GetShaderStage(const ShaderType type);
 			PixelFormat GetPixelFormat(VkFormat format);
-			VkFormat GetVulkanFormat(PixelFormat format);
-			UI8 GetByteDepth(PixelFormat format);
+			VkFormat GetVulkanFormat(const PixelFormat format);
+			UI8 GetByteDepth(const PixelFormat format);
 
 			void AddResourceBindingsToVector(std::vector<VkDescriptorSetLayoutBinding>& bindings, const VulkanShader& shader);
 			void AddPushConstantRangesToVector(std::vector<VkPushConstantRange>& ranges, const VulkanShader& shader);

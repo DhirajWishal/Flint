@@ -14,27 +14,27 @@ namespace Flint
 		class VulkanDevice final : public Device, public std::enable_shared_from_this<VulkanDevice>
 		{
 		public:
-			VulkanDevice(const std::shared_ptr<Instance>& pInstance, DeviceFlags flags);
+			VulkanDevice(const std::shared_ptr<Instance>& pInstance, const DeviceFlags flags);
 			~VulkanDevice() { if (!bIsTerminated) Terminate(); }
 
 			virtual bool IsDisplayCompatible(const std::shared_ptr<Display>& pDisplay) override final;
 			virtual RasterizationSamples GetSupportedRasterizationSamples() const override final;
 
-			virtual std::shared_ptr<CommandBufferAllocator> CreateCommandBufferAllocator(UI32 bufferCount) override final;
-			virtual std::shared_ptr<CommandBufferAllocator> CreateSecondaryCommandBufferAllocator(UI32 bufferCount, const std::shared_ptr<CommandBufferAllocator>& pParentAllocator) override final;
+			virtual std::shared_ptr<CommandBufferAllocator> CreateCommandBufferAllocator(const UI32 bufferCount) override final;
+			virtual std::shared_ptr<CommandBufferAllocator> CreateSecondaryCommandBufferAllocator(const UI32 bufferCount, const std::shared_ptr<CommandBufferAllocator>& pParentAllocator) override final;
 
-			virtual std::shared_ptr<ScreenBoundRenderTarget> CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, SwapChainPresentMode presentMode) override final;
+			virtual std::shared_ptr<ScreenBoundRenderTarget> CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode) override final;
 			virtual std::shared_ptr<OffScreenRenderTarget> CreateOffScreenRenderTarget(const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments) override final;
 
-			virtual std::shared_ptr<Buffer> CreateBuffer(BufferType type, UI64 size, BufferMemoryProfile profile = BufferMemoryProfile::AUTOMATIC) override final;
+			virtual std::shared_ptr<Buffer> CreateBuffer(const BufferType type, const UI64 size, const BufferMemoryProfile profile = BufferMemoryProfile::AUTOMATIC) override final;
 
-			virtual std::shared_ptr<Image> CreateImage(const ImageType type, ImageUsage usage, const FBox3D& extent, PixelFormat format, UI8 layers, UI32 mipLevels, const void* pImageData) override final;
+			virtual std::shared_ptr<Image> CreateImage(const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const UI8 layers, const UI32 mipLevels, const void* pImageData) override final;
 
 			virtual std::shared_ptr<ImageSampler> CreateImageSampler(const ImageSamplerSpecification& specification) override final;
 
-			virtual std::shared_ptr<Shader> CreateShader(ShaderType type, const std::filesystem::path& path) override final;
-			virtual std::shared_ptr<Shader> CreateShader(ShaderType type, const std::vector<UI32>& code) override final;
-			virtual std::shared_ptr<Shader> CreateShader(ShaderType type, const std::string& code) override final;
+			virtual std::shared_ptr<Shader> CreateShader(const ShaderType type, const std::filesystem::path& path) override final;
+			virtual std::shared_ptr<Shader> CreateShader(const ShaderType type, const std::vector<UI32>& code) override final;
+			virtual std::shared_ptr<Shader> CreateShader(const ShaderType type, const std::string& code) override final;
 
 			virtual std::shared_ptr<GraphicsPipeline> CreateGraphicsPipeline(
 				const std::string& pipelineName,
@@ -56,7 +56,7 @@ namespace Flint
 				const GraphicsPipelineSpecification& specification) override final;
 			virtual std::shared_ptr<ComputePipeline> CreateComputePipeline(const std::string& pipelineName, const std::shared_ptr<Shader>& pShader) override final;
 
-			virtual std::shared_ptr<GeometryStore> CreateGeometryStore(const std::unordered_map<UI32, std::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize, BufferMemoryProfile profile = BufferMemoryProfile::AUTOMATIC) override final;
+			virtual std::shared_ptr<GeometryStore> CreateGeometryStore(const std::unordered_map<UI32, std::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile = BufferMemoryProfile::AUTOMATIC) override final;
 
 			virtual void SubmitGraphicsCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers) override final;
 			virtual void SubmitComputeCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers) override final;
@@ -74,8 +74,8 @@ namespace Flint
 			VkSampleCountFlags GetSampleCount() const { return vSampleCount; }
 
 			VkResult CreateImageMemory(const std::vector<VkImage>& vImages, VkMemoryPropertyFlags vMemoryflags, VkDeviceMemory* pDeviceMemory) const;
-			void SetImageLayout(VkCommandBuffer vCommandBuffer, VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, UI32 layerCount = 1, UI32 currentLayer = 0, UI32 mipLevels = 1) const;
-			void SetImageLayout(VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, UI32 layerCount = 1, UI32 currentLayer = 0, UI32 mipLevels = 1) const;
+			void SetImageLayout(VkCommandBuffer vCommandBuffer, VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, UI32 layerCount = 1, UI32 currentLayer = 0, const UI32 mipLevels = 1) const;
+			void SetImageLayout(VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, UI32 layerCount = 1, UI32 currentLayer = 0, const UI32 mipLevels = 1) const;
 
 		private:
 			void InitializePhysicalDevice();

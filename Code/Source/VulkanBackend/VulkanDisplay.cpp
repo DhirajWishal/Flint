@@ -146,7 +146,7 @@ namespace Flint
 			bIsTerminated = true;
 		}
 
-		UI32 VulkanDisplay::FindBestBufferCount(const std::shared_ptr<Device>& pDevice, UI32 count)
+		UI32 VulkanDisplay::FindBestBufferCount(const std::shared_ptr<Device>& pDevice, const UI32 count)
 		{
 			FLINT_SETUP_PROFILER();
 
@@ -237,7 +237,7 @@ namespace Flint
 			return vCapabilities;
 		}
 
-		UI32 VulkanDisplay::FindSupporterBufferCount(VulkanDevice& device, UI32 count) const
+		UI32 VulkanDisplay::FindSupporterBufferCount(VulkanDevice& device, const UI32 count) const
 		{
 			auto vSurfaceCapabilities = GetSurfaceCapabilities(device);
 			if (count == std::numeric_limits<UI32>::max())

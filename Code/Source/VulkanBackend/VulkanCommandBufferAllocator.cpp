@@ -8,7 +8,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanCommandBufferAllocator::VulkanCommandBufferAllocator(const std::shared_ptr<Device>& pDevice, UI32 bufferCount)
+		VulkanCommandBufferAllocator::VulkanCommandBufferAllocator(const std::shared_ptr<Device>& pDevice, const UI32 bufferCount)
 			: CommandBufferAllocator(pDevice, bufferCount)
 		{
 			FLINT_SETUP_PROFILER();
@@ -37,7 +37,7 @@ namespace Flint
 				pCommandBuffers.push_back(std::make_shared<VulkanCommandBuffer>(shared_from_this(), vCommandBuffer));
 		}
 
-		VulkanCommandBufferAllocator::VulkanCommandBufferAllocator(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<CommandBufferAllocator>& pParent, UI32 bufferCount)
+		VulkanCommandBufferAllocator::VulkanCommandBufferAllocator(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<CommandBufferAllocator>& pParent, const UI32 bufferCount)
 			: CommandBufferAllocator(pDevice, pParent, bufferCount)
 		{
 			FLINT_SETUP_PROFILER();

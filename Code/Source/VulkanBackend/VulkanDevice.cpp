@@ -58,7 +58,7 @@ namespace Flint
 				return requiredExtensions.empty();
 			}
 
-			bool IsPhysicalDeviceSuitable(VkPhysicalDevice vDevice, const std::vector<const char*>& deviceExtensions, DeviceFlags flags)
+			bool IsPhysicalDeviceSuitable(VkPhysicalDevice vDevice, const std::vector<const char*>& deviceExtensions, const DeviceFlags flags)
 			{
 				VulkanQueue vQueue = {};
 				vQueue.Initialize(vDevice, flags);
@@ -75,7 +75,7 @@ namespace Flint
 			}
 		}
 
-		VulkanDevice::VulkanDevice(const std::shared_ptr<Instance>& pInstance, DeviceFlags flags) : Device(pInstance, flags)
+		VulkanDevice::VulkanDevice(const std::shared_ptr<Instance>& pInstance, const DeviceFlags flags) : Device(pInstance, flags)
 		{
 			if ((flags & DeviceFlags::GRAPHICS_COMPATIBLE) == DeviceFlags::GRAPHICS_COMPATIBLE)
 				INSERT_INTO_VECTOR(mDeviceExtensions, VK_KHR_SWAPCHAIN_EXTENSION_NAME);
@@ -84,7 +84,7 @@ namespace Flint
 			InitializeLogicalDevice();
 
 			VkFenceCreateInfo vCreateInfo = {};
-			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_EXPORT_FENCE_CREATE_INFO;
+			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
 			vCreateInfo.pNext = VK_NULL_HANDLE;
 			vCreateInfo.flags = VkFenceCreateFlagBits::VK_FENCE_CREATE_SIGNALED_BIT;
 
@@ -104,17 +104,17 @@ namespace Flint
 			return RasterizationSamples(vSampleCount);
 		}
 
-		std::shared_ptr<CommandBufferAllocator> VulkanDevice::CreateCommandBufferAllocator(UI32 bufferCount)
+		std::shared_ptr<CommandBufferAllocator> VulkanDevice::CreateCommandBufferAllocator(const UI32 bufferCount)
 		{
 			return std::make_shared<VulkanCommandBufferAllocator>(shared_from_this(), bufferCount);
 		}
 
-		std::shared_ptr<CommandBufferAllocator> VulkanDevice::CreateSecondaryCommandBufferAllocator(UI32 bufferCount, const std::shared_ptr<CommandBufferAllocator>& pParentAllocator)
+		std::shared_ptr<CommandBufferAllocator> VulkanDevice::CreateSecondaryCommandBufferAllocator(const UI32 bufferCount, const std::shared_ptr<CommandBufferAllocator>& pParentAllocator)
 		{
 			return std::make_shared<VulkanCommandBufferAllocator>(shared_from_this(), pParentAllocator, bufferCount);
 		}
 
-		std::shared_ptr<ScreenBoundRenderTarget> VulkanDevice::CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, SwapChainPresentMode presentMode)
+		std::shared_ptr<ScreenBoundRenderTarget> VulkanDevice::CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode)
 		{
 			return  std::make_shared<VulkanScreenBoundRenderTarget>(shared_from_this(), pDisplay, extent, bufferCount, imageAttachments, presentMode);
 		}
@@ -124,12 +124,12 @@ namespace Flint
 			return std::make_shared<VulkanOffScreenRenderTarget>(shared_from_this(), extent, bufferCount, imageAttachments);
 		}
 
-		std::shared_ptr<Buffer> VulkanDevice::CreateBuffer(BufferType type, UI64 size, BufferMemoryProfile profile)
+		std::shared_ptr<Buffer> VulkanDevice::CreateBuffer(const BufferType type, const UI64 size, const BufferMemoryProfile profile)
 		{
 			return std::make_shared<VulkanBuffer>(shared_from_this(), type, size, profile);
 		}
 
-		std::shared_ptr<Image> VulkanDevice::CreateImage(const ImageType type, ImageUsage usage, const FBox3D& extent, PixelFormat format, UI8 layers, UI32 mipLevels, const void* pImageData)
+		std::shared_ptr<Image> VulkanDevice::CreateImage(const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const UI8 layers, const UI32 mipLevels, const void* pImageData)
 		{
 			return std::make_shared<VulkanImage>(shared_from_this(), type, usage, extent, format, layers, mipLevels, pImageData);
 		}
@@ -139,17 +139,17 @@ namespace Flint
 			return std::make_shared<VulkanImageSampler>(shared_from_this(), specification);
 		}
 
-		std::shared_ptr<Shader> VulkanDevice::CreateShader(ShaderType type, const std::filesystem::path& path)
+		std::shared_ptr<Shader> VulkanDevice::CreateShader(const ShaderType type, const std::filesystem::path& path)
 		{
 			return std::make_shared<VulkanShader>(shared_from_this(), type, path);
 		}
 
-		std::shared_ptr<Shader> VulkanDevice::CreateShader(ShaderType type, const std::vector<UI32>& code)
+		std::shared_ptr<Shader> VulkanDevice::CreateShader(const ShaderType type, const std::vector<UI32>& code)
 		{
 			return std::make_shared<VulkanShader>(shared_from_this(), type, code);
 		}
 
-		std::shared_ptr<Shader> VulkanDevice::CreateShader(ShaderType type, const std::string& code)
+		std::shared_ptr<Shader> VulkanDevice::CreateShader(const ShaderType type, const std::string& code)
 		{
 			return std::make_shared<VulkanShader>(shared_from_this(), type, code);
 		}
@@ -169,7 +169,7 @@ namespace Flint
 			return std::make_shared<VulkanComputePipeline>(shared_from_this(), pipelineName, pShader);
 		}
 
-		std::shared_ptr<GeometryStore> VulkanDevice::CreateGeometryStore(const std::unordered_map<UI32, std::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize, BufferMemoryProfile profile)
+		std::shared_ptr<GeometryStore> VulkanDevice::CreateGeometryStore(const std::unordered_map<UI32, std::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile)
 		{
 			return std::make_shared<GeometryStore>(shared_from_this(), vertexAttributes, indexSize, profile);
 		}
@@ -262,7 +262,7 @@ namespace Flint
 			return result;
 		}
 
-		void VulkanDevice::SetImageLayout(VkCommandBuffer vCommandBuffer, VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, UI32 layerCount, UI32 currentLayer, UI32 mipLevels) const
+		void VulkanDevice::SetImageLayout(VkCommandBuffer vCommandBuffer, VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, UI32 layerCount, UI32 currentLayer, const UI32 mipLevels) const
 		{
 			FLINT_SETUP_PROFILER();
 
@@ -373,7 +373,7 @@ namespace Flint
 			vkCmdPipelineBarrier(vCommandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &vMB);
 		}
 
-		void VulkanDevice::SetImageLayout(VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, UI32 layerCount, UI32 currentLayer, UI32 mipLevels) const
+		void VulkanDevice::SetImageLayout(VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, UI32 layerCount, UI32 currentLayer, const UI32 mipLevels) const
 		{
 			FLINT_SETUP_PROFILER();
 
