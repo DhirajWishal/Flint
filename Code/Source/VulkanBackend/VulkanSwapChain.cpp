@@ -44,6 +44,14 @@ namespace Flint
 
 			CreateSwapChain();
 			CreateSyncObjects();
+
+			vPresentInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+			vPresentInfo.pNext = VK_NULL_HANDLE;
+			vPresentInfo.pResults = VK_NULL_HANDLE;
+			vPresentInfo.swapchainCount = 1;
+			vPresentInfo.waitSemaphoreCount = 1;
+			vPresentInfo.pSwapchains = &vSwapChain;
+			vPresentInfo.pWaitSemaphores = &vSemaphore;
 		}
 
 		void VulkanSwapChain::Recreate()
@@ -57,15 +65,16 @@ namespace Flint
 
 			CreateSwapChain();
 
+			vPresentInfo.pSwapchains = &vSwapChain;
 			bShouldRecreate = false;
 			mImageIndex = 0;
 		}
 
-		NextImageInfo VulkanSwapChain::AcquireNextImage(UI32 frameIndex)
+		NextImageInfo VulkanSwapChain::AcquireNextImage()
 		{
 			NextImageInfo imageInfo = {};
 
-			VkResult result = vkAcquireNextImageKHR(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), vSwapChain, UI64_MAX, vSemaphores[frameIndex], VK_NULL_HANDLE, &mImageIndex);
+			VkResult result = vkAcquireNextImageKHR(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), vSwapChain, UI64_MAX, vSemaphore, VK_NULL_HANDLE, &mImageIndex);
 			if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
 				imageInfo.bShouldRecreate = true;
 			else FLINT_VK_ASSERT(result);
@@ -89,10 +98,13 @@ namespace Flint
 			vImages.clear();
 			vImageViews.clear();
 
-			for (UI32 i = 0; i < mImageCount; i++)
-				vkDestroySemaphore(vDevice.GetLogicalDevice(), vSemaphores[i], nullptr);
+			vkDestroySemaphore(vDevice.GetLogicalDevice(), vSemaphore, nullptr);
+		}
 
-			vSemaphores.clear();
+		VkPresentInfoKHR* VulkanSwapChain::PrepareToPresent()
+		{
+			vPresentInfo.pImageIndices = &mImageIndex;
+			return &vPresentInfo;
 		}
 
 		VkFormat VulkanSwapChain::GetImageFormat() const
@@ -218,9 +230,7 @@ namespace Flint
 			VkSemaphoreCreateInfo vSCI = {};
 			vSCI.sType = VkStructureType::VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
-			vSemaphores.resize(mImageCount);
-			for (UI32 i = 0; i < mImageCount; i++)
-				FLINT_VK_ASSERT(vkCreateSemaphore(vDevice.GetLogicalDevice(), &vSCI, nullptr, &vSemaphores[i]));
+			FLINT_VK_ASSERT(vkCreateSemaphore(vDevice.GetLogicalDevice(), &vSCI, nullptr, &vSemaphore));
 		}
 	}
 }

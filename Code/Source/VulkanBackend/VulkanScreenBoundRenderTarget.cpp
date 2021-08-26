@@ -20,7 +20,7 @@ namespace Flint
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 			auto& vDisplay = pDisplay->StaticCast<VulkanDisplay>();
 
-			pSwapChain = std::make_unique<VulkanSwapChain>(vDevice, vDisplay, extent, bufferCount);
+			pSwapChain = std::make_unique<VulkanSwapChain>(pDevice, pDisplay, bufferCount, presentMode);
 
 			vDependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
 			vDependencies[0].dstSubpass = 0;
@@ -48,6 +48,20 @@ namespace Flint
 			vRenderTarget.CreateRenderPass(pAttachmentInferfaces, VK_PIPELINE_BIND_POINT_GRAPHICS, vDependencies);
 			vRenderTarget.CreateFrameBuffer(pAttachmentInferfaces, extent, bufferCount);
 			vRenderTarget.CreateSyncObjects(bufferCount);
+		}
+
+		void VulkanScreenBoundRenderTarget::PresentToDisplay()
+		{
+			auto nextImage = pSwapChain->AcquireNextImage();
+			if (nextImage.bShouldRecreate)
+				Recreate();
+
+			VkResult vResult = vkQueuePresentKHR(pDevice->StaticCast<VulkanDevice>().GetQueue().vTransferQueue, pSwapChain->PrepareToPresent());
+			if (vResult == VK_ERROR_OUT_OF_DATE_KHR || vResult == VK_SUBOPTIMAL_KHR)
+				Recreate();
+			else FLINT_VK_ASSERT(vResult);
+
+			IncrementFrameIndex();
 		}
 
 		void VulkanScreenBoundRenderTarget::Terminate()
@@ -78,6 +92,8 @@ namespace Flint
 			vRenderTarget.DestroyFrameBuffers();
 
 			pSwapChain->Recreate();
+			for (auto attachment : mAttachments)
+				attachment.pImage->StaticCast<VulkanImage>().Recreate(mExtent);
 
 			std::vector<VulkanRenderTargetAttachmentInterface*> pAttachmentInferfaces;
 			pAttachmentInferfaces.reserve(mAttachments.size() + 1);
@@ -95,13 +111,10 @@ namespace Flint
 
 		const VkFramebuffer VulkanScreenBoundRenderTarget::PrepareAndGetFramebuffer()
 		{
+			const auto frameBuffer = vRenderTarget.vFrameBuffers[mFrameIndex];
 			IncrementFrameIndex();
-			auto info = pSwapChain->AcquireNextImage(mFrameIndex);
 
-			if (info.bShouldRecreate)
-				Recreate();
-
-			return vRenderTarget.vFrameBuffers[mFrameIndex];
+			return frameBuffer;
 		}
 		
 		std::vector<VkClearValue> VulkanScreenBoundRenderTarget::GetClearScreenValues() const

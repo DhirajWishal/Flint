@@ -21,8 +21,6 @@ namespace Flint
 		public:
 			VulkanRenderTargetAttachmentInterface() = default;
 
-			virtual void Recreate(const FBox2D& extent) = 0;
-
 			virtual VkAttachmentDescription GetAttachmentDescription() const = 0;
 			virtual VkImageLayout GetAttachmentLayout() const = 0;
 			virtual VkImageView GetImageView(UI32 index) const = 0;

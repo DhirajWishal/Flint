@@ -7,7 +7,8 @@
 #include "VulkanBackend/VulkanImage.hpp"
 #include "VulkanBackend/VulkanBuffer.hpp"
 #include "VulkanBackend/VulkanImageSampler.hpp"
-#include "VulkanBackend/VulkanCommandBufferList.hpp"
+#include "VulkanBackend/VulkanCommandBuffer.hpp"
+#include "VulkanBackend/VulkanCommandBufferAllocator.hpp"
 
 namespace Flint
 {
@@ -44,10 +45,11 @@ namespace Flint
 			if (bShouldPrepareResources)
 				PrepareResources();
 
-			VulkanCommandBufferList vCommandBufferList(pDevice, 1);
+			VulkanCommandBufferAllocator vCommandBuffeAllocator(pDevice, 1);
+			auto& vCommandBuffer = vCommandBuffeAllocator.GetCommandBuffers()[0]->StaticCast<VulkanCommandBuffer>();
 
-			vCommandBufferList.BeginBufferRecording(0);
-			vCommandBufferList.BindComputePipeline(pThisPipeline);
+			vCommandBuffer.BeginBufferRecording();
+			vCommandBuffer.BindComputePipeline(pThisPipeline);
 
 			for (UI64 index = 0; index < mInstanceIndex; index++)
 			{
@@ -56,14 +58,14 @@ namespace Flint
 
 				const auto instance = mComputeInstances.at(index);
 
-				vCommandBufferList.BindResourceMap(pThisPipeline, instance.pResourceMap);
-				vCommandBufferList.BindDynamicStates(pThisPipeline, instance.pDynamicStates);
-				vCommandBufferList.IssueComputeCall(instance.mComputeGroups);
+				vCommandBuffer.BindResourceMap(pThisPipeline, instance.pResourceMap);
+				vCommandBuffer.BindDynamicStates(pThisPipeline, instance.pDynamicStates);
+				vCommandBuffer.IssueComputeCall(instance.mComputeGroups);
 			}
 
-			vCommandBufferList.EndBufferRecording();
-			vCommandBufferList.SubmitComputeCommands();
-			vCommandBufferList.Terminate();
+			vCommandBuffer.EndBufferRecording();
+			pDevice->SubmitComputeCommandBuffers({ vCommandBuffer.shared_from_this() });
+			vCommandBuffeAllocator.Terminate();
 		}
 
 		void VulkanComputePipeline::Dispatch(const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget)

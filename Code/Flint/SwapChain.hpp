@@ -45,10 +45,9 @@ namespace Flint
 		/**
 		 * Acquire the next swap chain image.
 		 *
-		 * @param frameIndex: The frame index of the swap chain.
 		 * @return The next image info structure.
 		 */
-		virtual NextImageInfo AcquireNextImage(UI32 frameIndex) = 0;
+		virtual NextImageInfo AcquireNextImage() = 0;
 
 	public:
 		/**

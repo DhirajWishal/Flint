@@ -13,6 +13,7 @@ namespace Flint
 {
 	class GraphicsPipeline;
 	class GeometryStore;
+	class CommandBuffer;
 
 	using DrawInstanceMap = std::unordered_map<std::shared_ptr<GeometryStore>, std::vector<std::shared_ptr<GraphicsPipeline>>>;
 
@@ -35,31 +36,6 @@ namespace Flint
 	};
 
 	/**
-	 * Render target attachment structure.
-	 */
-	struct RenderTargetAttachment
-	{
-		struct DepthClearValues
-		{
-			DepthClearValues() = default;
-			DepthClearValues(float depth, UI32 stencil) : mDepth(depth), mStencil(stencil) {}
-
-			float mDepth = 0.0f;
-			UI32 mStencil = 0;
-		};
-
-	public:
-		RenderTargetAttachment() = default;
-		RenderTargetAttachment(const std::shared_ptr<Image>& pImage, const FColor4D& clearColor) : pImage(pImage), mClearColor(clearColor) {}
-		RenderTargetAttachment(const std::shared_ptr<Image>& pImage, const DepthClearValues& depthValue) : pImage(pImage), mDepthClearValue(depthValue) {}
-
-		std::shared_ptr<Image> pImage = nullptr;
-
-		FColor4D mClearColor = FColor4D(CREATE_COLOR_256(32.0f), CREATE_COLOR_256(32.0f), CREATE_COLOR_256(32.0f), 1.0f);
-		DepthClearValues mDepthClearValue = {};
-	};
-
-	/**
 	 * Flint render target object.
 	 * This object is the base class for all the supported render targets.
 	 *
@@ -79,20 +55,9 @@ namespace Flint
 		 * @param pDevice: The device pointer.
 		 * @param extent: The render target extent.
 		 * @param bufferCount: The frame buffer count.
+		 * @param imageAttachments: The image attachments used by the render target.
 		 */
 		RenderTarget(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments);
-
-		/**
-		 * Begin a new frame to render.
-		 *
-		 * @return The frame begin info structure.
-		 */
-		virtual BeginFrameInfo BeginFrame() = 0;
-
-		/**
-		 * Submit the frame to the device to be rendered.
-		 */
-		virtual void SubmitFrame() = 0;
 
 	public:
 		/**

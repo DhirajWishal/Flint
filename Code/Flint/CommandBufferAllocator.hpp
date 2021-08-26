@@ -3,12 +3,10 @@
 
 #pragma once
 
-#include "DeviceBoundObject.hpp"
+#include "CommandBuffer.hpp"
 
 namespace Flint
 {
-	class CommandBuffer;
-
 	/**
 	 * Flint command buffer allocator.
 	 * These allocators are used to allocate command buffers and are responsible for the command buffers' lifetime.

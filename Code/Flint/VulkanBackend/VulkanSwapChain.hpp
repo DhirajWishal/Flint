@@ -19,16 +19,20 @@ namespace Flint
 			~VulkanSwapChain() { if (!bIsTerminated) Terminate(); }
 
 			virtual void Recreate() override final;
-			virtual NextImageInfo AcquireNextImage(UI32 frameIndex) override final;
+			virtual NextImageInfo AcquireNextImage() override final;
 			virtual void Terminate() override final;
+
+			VkPresentInfoKHR* PrepareToPresent();
 
 			virtual RenderTargetAttachmenType GetAttachmentType() const override final { return RenderTargetAttachmenType::SWAP_CHAIN; }
 			virtual VkFormat GetImageFormat() const override final;
 			virtual VkAttachmentDescription GetAttachmentDescription() const override final;
 			virtual VkImageLayout GetAttachmentLayout() const override final;
+			virtual VkImageView GetImageView(UI32 index) const override final { return vImageViews[index]; }
 
 			const VkSwapchainKHR GetSwapChain() const { return vSwapChain; }
-			const VkSemaphore GetSemaphore() const { return vSemaphores[mImageIndex]; }
+			const VkSwapchainKHR* GetSwapChainPtr() const { return &vSwapChain; }
+			const UI32* GetImageIndexPtr() const { return &mImageIndex; }
 
 		private:
 			void CreateSwapChain();
@@ -38,8 +42,10 @@ namespace Flint
 			std::vector<VkImage> vImages = {};
 			std::vector<VkImageView> vImageViews = {};
 
-			std::vector<VkSemaphore> vSemaphores = {};
 			VkSwapchainKHR vSwapChain = VK_NULL_HANDLE;
+			VkSemaphore vSemaphore = VK_NULL_HANDLE;
+
+			VkPresentInfoKHR vPresentInfo = {};
 		};
 	}
 }

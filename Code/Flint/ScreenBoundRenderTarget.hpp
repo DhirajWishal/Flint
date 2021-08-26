@@ -28,6 +28,11 @@ namespace Flint
 		ScreenBoundRenderTarget(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, SwapChainPresentMode presentMode);
 
 		/**
+		 * Present the images to the display.
+		 */
+		virtual void PresentToDisplay() = 0;
+
+		/**
 		 * Recreate the screen bound render target.
 		 */
 		virtual void Recreate() = 0;

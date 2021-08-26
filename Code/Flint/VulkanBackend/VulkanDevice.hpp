@@ -20,11 +20,11 @@ namespace Flint
 			virtual bool IsDisplayCompatible(const std::shared_ptr<Display>& pDisplay) override final;
 			virtual RasterizationSamples GetSupportedRasterizationSamples() const override final;
 
-			virtual std::shared_ptr<CommandBufferList> CreatePrimaryCommandBufferList(UI32 bufferCount) override final;
-			virtual std::shared_ptr<CommandBufferList> CreateSecondaryCommandBufferList(UI32 bufferCount, const std::shared_ptr<CommandBufferList>& pParent) override final;
+			virtual std::shared_ptr<CommandBufferAllocator> CreateCommandBufferAllocator(UI32 bufferCount) override final;
+			virtual std::shared_ptr<CommandBufferAllocator> CreateSecondaryCommandBufferAllocator(UI32 bufferCount, const std::shared_ptr<CommandBufferAllocator>& pParentAllocator) override final;
 
-			virtual std::shared_ptr<ScreenBoundRenderTarget> CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, UI32 threadCount = 0) override final;
-			virtual std::shared_ptr<OffScreenRenderTargetFactory> CreateOffScreenRenderTargetFactory() override final;
+			virtual std::shared_ptr<ScreenBoundRenderTarget> CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, SwapChainPresentMode presentMode) override final;
+			virtual std::shared_ptr<OffScreenRenderTarget> CreateOffScreenRenderTarget(const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments) override final;
 
 			virtual std::shared_ptr<Buffer> CreateBuffer(BufferType type, UI64 size, BufferMemoryProfile profile = BufferMemoryProfile::AUTOMATIC) override final;
 
@@ -58,8 +58,8 @@ namespace Flint
 
 			virtual std::shared_ptr<GeometryStore> CreateGeometryStore(const std::unordered_map<UI32, std::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize, BufferMemoryProfile profile = BufferMemoryProfile::AUTOMATIC) override final;
 
-			virtual void SubmitCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers) override final;
-			virtual void PresentScreenBoundRenderTargets(const std::vector<std::shared_ptr<ScreenBoundRenderTarget>>& pScreenBoundRenderTargets) override final;
+			virtual void SubmitGraphicsCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers) override final;
+			virtual void SubmitComputeCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers) override final;
 			virtual void WaitIdle() override final;
 			virtual void WaitForQueue() override final;
 

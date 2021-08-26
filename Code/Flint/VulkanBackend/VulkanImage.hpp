@@ -22,7 +22,7 @@ namespace Flint
 			void CopyFromImage(VkImage vSrcImage, VkImageLayout vSrcLayout, VkOffset3D srcOffset, VkOffset3D dstOffset, VkImageSubresourceLayers subresourceLayers);
 
 		public:
-			virtual void Recreate(const FBox2D& extent) override final;
+			virtual void Recreate(const FBox2D& extent);
 
 			virtual VkImageLayout GetImageLayout() const { return vCurrentLayout; }
 			virtual VkAttachmentDescription GetAttachmentDescription() const override final;
@@ -43,6 +43,8 @@ namespace Flint
 			void CreateImageMemory();
 			void CreateImageView();
 			void GenerateMipMaps();
+
+			void Initialize(const void* pImageData);
 
 		private:
 			VkImage vImage = VK_NULL_HANDLE;

@@ -4,11 +4,11 @@
 #include "VulkanBackend/VulkanDevice.hpp"
 #include "VulkanBackend/VulkanDisplay.hpp"
 #include "VulkanBackend/VulkanOneTimeCommandBuffer.hpp"
-#include "VulkanBackend/VulkanCommandBufferList.hpp"
 #include "VulkanBackend/VulkanCommandBuffer.hpp"
+#include "VulkanBackend/VulkanCommandBufferAllocator.hpp"
 #include "VulkanBackend/VulkanSwapChain.hpp"
 #include "VulkanBackend/VulkanScreenBoundRenderTarget.hpp"
-#include "VulkanBackend/VulkanOffScreenRenderTargetFactory.hpp"
+#include "VulkanBackend/VulkanOffScreenRenderTarget.hpp"
 #include "VulkanBackend/VulkanBuffer.hpp"
 #include "VulkanBackend/VulkanImage.hpp"
 #include "VulkanBackend/VulkanImageSampler.hpp"
@@ -104,24 +104,24 @@ namespace Flint
 			return RasterizationSamples(vSampleCount);
 		}
 
-		std::shared_ptr<CommandBufferList> VulkanDevice::CreatePrimaryCommandBufferList(UI32 bufferCount)
+		std::shared_ptr<CommandBufferAllocator> VulkanDevice::CreateCommandBufferAllocator(UI32 bufferCount)
 		{
-			return std::make_shared<VulkanCommandBufferList>(shared_from_this(), bufferCount);
+			return std::make_shared<VulkanCommandBufferAllocator>(shared_from_this(), bufferCount);
 		}
 
-		std::shared_ptr<CommandBufferList> VulkanDevice::CreateSecondaryCommandBufferList(UI32 bufferCount, const std::shared_ptr<CommandBufferList>& pParent)
+		std::shared_ptr<CommandBufferAllocator> VulkanDevice::CreateSecondaryCommandBufferAllocator(UI32 bufferCount, const std::shared_ptr<CommandBufferAllocator>& pParentAllocator)
 		{
-			return std::make_shared<VulkanCommandBufferList>(shared_from_this(), bufferCount, pParent);
+			return std::make_shared<VulkanCommandBufferAllocator>(shared_from_this(), pParentAllocator, bufferCount);
 		}
 
-		std::shared_ptr<ScreenBoundRenderTarget> VulkanDevice::CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, UI32 threadCount)
+		std::shared_ptr<ScreenBoundRenderTarget> VulkanDevice::CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, SwapChainPresentMode presentMode)
 		{
-			return std::make_shared<VulkanScreenBoundRenderTarget>(shared_from_this(), pDisplay, extent, bufferCount, threadCount);
+			return  std::make_shared<VulkanScreenBoundRenderTarget>(shared_from_this(), pDisplay, extent, bufferCount, imageAttachments, presentMode);
 		}
 
-		std::shared_ptr<OffScreenRenderTargetFactory> VulkanDevice::CreateOffScreenRenderTargetFactory()
+		std::shared_ptr<OffScreenRenderTarget> VulkanDevice::CreateOffScreenRenderTarget(const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments)
 		{
-			return std::make_shared<VulkanOffScreenRenderTargetFactory>(shared_from_this());
+			return std::make_shared<VulkanOffScreenRenderTarget>(shared_from_this(), extent, bufferCount, imageAttachments);
 		}
 
 		std::shared_ptr<Buffer> VulkanDevice::CreateBuffer(BufferType type, UI64 size, BufferMemoryProfile profile)
@@ -174,77 +174,40 @@ namespace Flint
 			return std::make_shared<GeometryStore>(shared_from_this(), vertexAttributes, indexSize, profile);
 		}
 
-		void VulkanDevice::SubmitCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers)
+		void VulkanDevice::SubmitGraphicsCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers)
 		{
-			VkSemaphoreWaitFlags vWaitStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+			const UI64 bufferCount = pCommandBuffers.size();
 
-			VkSubmitInfo vSubmitInfo = {};
-			vSubmitInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_SUBMIT_INFO;
-			vSubmitInfo.pNext = VK_NULL_HANDLE;
-			vSubmitInfo.commandBufferCount = static_cast<UI32>(pCommandBuffers.size());
-			vSubmitInfo.signalSemaphoreCount = static_cast<UI32>(pCommandBuffers.size());
-			vSubmitInfo.waitSemaphoreCount = static_cast<UI32>(pCommandBuffers.size());
-			vSubmitInfo.pWaitDstStageMask = &vWaitStage;
-
-			std::vector<VkCommandBuffer> vCommandBuffers(pCommandBuffers.size());
-			std::vector<VkSemaphore> vSignalSemaphores(pCommandBuffers.size());
-			std::vector<VkSemaphore> vWaitSemaphores(pCommandBuffers.size());
-			std::vector<VkFence> vFences(pCommandBuffers.size());
-			for (UI64 i = 0; i < pCommandBuffers.size(); i++)
+			std::vector<VkSubmitInfo> vSubmitInfos(bufferCount);
+			for (UI64 i = 0; i < bufferCount; i++)
 			{
 				auto& vCommandBuffer = pCommandBuffers[i]->StaticCast<VulkanCommandBuffer>();
 
-				vCommandBuffers[i] = vCommandBuffer.GetVulkanCommandBuffer();
-				vSignalSemaphores[i] = vCommandBuffer.GetRenderFinishedSemaphore();
-				vWaitSemaphores[i] = vCommandBuffer.GetInFlightSemaphore();
-				vFences[i] = vCommandBuffer.GetInFlightFence();
+				vCommandBuffer.ResetFence();
+				vSubmitInfos[i] = vCommandBuffer.GetSubmitInfo();
 			}
 
-			vSubmitInfo.pCommandBuffers = vCommandBuffers.data();
-			vSubmitInfo.pSignalSemaphores = vSignalSemaphores.data();
-			vSubmitInfo.pWaitSemaphores = vWaitSemaphores.data();
-
-			FLINT_VK_ASSERT(vkResetFences(vLogicalDevice, static_cast<UI32>(vFences.size()), vFences.data()));
-			FLINT_VK_ASSERT(vkQueueSubmit(GetQueue().vGraphicsQueue, 1, &vSubmitInfo, vSubmitFence));
+			FLINT_VK_ASSERT(vkQueueSubmit(GetQueue().vGraphicsQueue, static_cast<UI32>(vSubmitInfos.size()), vSubmitInfos.data(), vSubmitFence));
+			FLINT_VK_ASSERT(vkWaitForFences(vLogicalDevice, 1, &vSubmitFence, VK_TRUE, UI64_MAX));
+			FLINT_VK_ASSERT(vkResetFences(vLogicalDevice, 1, &vSubmitFence));
 		}
 
-		void VulkanDevice::PresentScreenBoundRenderTargets(const std::vector<std::shared_ptr<ScreenBoundRenderTarget>>& pScreenBoundRenderTargets)
+		void VulkanDevice::SubmitComputeCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers)
 		{
-			std::vector<VkResult> vResults(pScreenBoundRenderTargets.size());
-			std::vector<VkSwapchainKHR> vSwapChains(pScreenBoundRenderTargets.size());
-			std::vector<UI32> imageIndexes(pScreenBoundRenderTargets.size());
-			std::vector<VkSemaphore> vWaitSemaphores(pScreenBoundRenderTargets.size());
+			const UI64 bufferCount = pCommandBuffers.size();
 
-			VkPresentInfoKHR vPresentInfo = {};
-			vPresentInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-			vPresentInfo.pNext = VK_NULL_HANDLE;
-			vPresentInfo.swapchainCount = static_cast<UI32>(pScreenBoundRenderTargets.size());
-			vPresentInfo.waitSemaphoreCount = static_cast<UI32>(pScreenBoundRenderTargets.size());
-			vPresentInfo.pResults = vResults.data();
-
-			for (UI64 i = 0; i < pScreenBoundRenderTargets.size(); i++)
+			std::vector<VkSubmitInfo> vSubmitInfos(bufferCount);
+			for (UI64 i = 0; i < bufferCount; i++)
 			{
-				auto& vScreenBoundRenderTargets = pScreenBoundRenderTargets[i]->StaticCast<VulkanScreenBoundRenderTarget>();
+				auto& vCommandBuffer = pCommandBuffers[i]->StaticCast<VulkanCommandBuffer>();
 
-				imageIndexes[i] = vScreenBoundRenderTargets.GetImageIndex();
-				vSwapChains[i] = vScreenBoundRenderTargets.GetSwapChain()->GetSwapChain();
-				vWaitSemaphores[i] = vScreenBoundRenderTargets.GetSwapChain()->GetSemaphore();
+				vCommandBuffer.ResetFence();
+				vSubmitInfos[i] = vCommandBuffer.GetSubmitInfo();
 			}
 
-			vPresentInfo.pImageIndices = imageIndexes.data();
-			vPresentInfo.pSwapchains = vSwapChains.data();
-			vPresentInfo.pWaitSemaphores = vWaitSemaphores.data();
-
-			vkQueuePresentKHR(GetQueue().vTransferQueue, &vPresentInfo);
-
-			for (UI64 i = 0; i < pScreenBoundRenderTargets.size(); i++)
-			{
-				VkResult vResult = vResults[i];
-
-				if (vResult == VK_ERROR_OUT_OF_DATE_KHR || vResult == VK_SUBOPTIMAL_KHR)
-					pScreenBoundRenderTargets[i]->Recreate();
-				else FLINT_VK_ASSERT(vResult);
-			}
+			FLINT_VK_ASSERT(vkQueueSubmit(GetQueue().vComputeQueue, static_cast<UI32>(vSubmitInfos.size()), vSubmitInfos.data(), vSubmitFence));
+			FLINT_VK_ASSERT(vkWaitForFences(vLogicalDevice, 1, &vSubmitFence, VK_TRUE, UI64_MAX));
+			FLINT_VK_ASSERT(vkResetFences(vLogicalDevice, 1, &vSubmitFence));
 		}
 
 		void VulkanDevice::WaitIdle()

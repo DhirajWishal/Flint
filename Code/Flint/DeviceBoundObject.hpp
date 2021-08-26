@@ -12,6 +12,7 @@
 namespace Flint
 {
 	class Device;
+	class Image;
 
 	/**
 	 * Shader attribute type enum.
@@ -91,25 +92,6 @@ namespace Flint
 
 		ShaderAttribueType mType = ShaderAttribueType::UNDEFINED;
 		ShaderAttributeDataType mDataType = ShaderAttributeDataType::VEC3;
-	};
-
-	/**
-	 * Flint vertex descriptor.
-	 * This describes the size and attributes of a single vertex.
-	 */
-	struct VertexDescriptor
-	{
-		VertexDescriptor() = default;
-		VertexDescriptor(const std::vector<VertexAttribute>& attributes) : mAttributeTypes(attributes) {}
-
-		/**
-		 * Get the stride (size of) the vertex.
-		 *
-		 * @return The size of the vertex in bytes.
-		 */
-		UI64 Stride() const;
-
-		std::vector<VertexAttribute> mAttributeTypes;
 	};
 
 	/**
@@ -353,6 +335,31 @@ namespace Flint
 		FIFO_RELAXED,
 		SHARED_DEMAND_REFRESH,
 		SHARED_CONTINUOUS_REFRESH,
+	};
+
+	/**
+	 * Render target attachment structure.
+	 */
+	struct RenderTargetAttachment
+	{
+		struct DepthClearValues
+		{
+			DepthClearValues() = default;
+			DepthClearValues(float depth, UI32 stencil) : mDepth(depth), mStencil(stencil) {}
+
+			float mDepth = 0.0f;
+			UI32 mStencil = 0;
+		};
+
+	public:
+		RenderTargetAttachment() = default;
+		RenderTargetAttachment(const std::shared_ptr<Image>& pImage, const FColor4D& clearColor) : pImage(pImage), mClearColor(clearColor) {}
+		RenderTargetAttachment(const std::shared_ptr<Image>& pImage, const DepthClearValues& depthValue) : pImage(pImage), mDepthClearValue(depthValue) {}
+
+		std::shared_ptr<Image> pImage = nullptr;
+
+		FColor4D mClearColor = FColor4D(CREATE_COLOR_256(32.0f), CREATE_COLOR_256(32.0f), CREATE_COLOR_256(32.0f), 1.0f);
+		DepthClearValues mDepthClearValue = {};
 	};
 
 	/**

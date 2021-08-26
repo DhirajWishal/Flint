@@ -13,14 +13,12 @@ namespace Flint
 	class DeviceBoundObject;
 	class Instance;
 
-	class CommandBufferList;
 	class CommandBufferAllocator;
 	class CommandBuffer;
 
 	class RenderTarget;
 	class ScreenBoundRenderTarget;
 	class OffScreenRenderTarget;
-	class OffScreenRenderTargetFactory;
 
 	class Buffer;
 	class Image;
@@ -91,23 +89,21 @@ namespace Flint
 		virtual bool IsDisplayCompatible(const std::shared_ptr<Display>& pDisplay) = 0;
 
 		/**
-		 * Create a new primary command buffer list.
-		 * These command buffers are used to submit data to the device.
-		 *
-		 * @param bufferCount: The number of command buffers in the list.
-		 * @return The command buffer list object.
+		 * Create a new command buffer allocator.
+		 * 
+		 * @param bufferCount: The number of buffers the allocator should create.
+		 * @return The allocator pointer.
 		 */
-		virtual std::shared_ptr<CommandBufferList> CreatePrimaryCommandBufferList(UI32 bufferCount) = 0;
+		virtual std::shared_ptr<CommandBufferAllocator> CreateCommandBufferAllocator(UI32 bufferCount) = 0;
 
 		/**
-		 * Create a new secondary command buffer list.
-		 * Secondary command buffers are used in multi threading and it uses a primary command buffer to submit data to the device.
-		 *
-		 * @param bufferCount: The number of command buffers in the list.
-		 * @param pParent: The parent command buffer list to derive information from.
-		 * @return The command buffer list object.
+		 * Create a new secondary command buffer allocator.
+		 * 
+		 * @param bufferCount: The number of buffers the allocator should create.
+		 * @param pParentAllocator: The parent command buffer allocator pointer.
+		 * @return The command buffer allocator pointer.
 		 */
-		virtual std::shared_ptr<CommandBufferList> CreateSecondaryCommandBufferList(UI32 bufferCount, const std::shared_ptr<CommandBufferList>& pParent) = 0;
+		virtual std::shared_ptr<CommandBufferAllocator> CreateSecondaryCommandBufferAllocator(UI32 bufferCount, const std::shared_ptr<CommandBufferAllocator>& pParentAllocator) = 0;
 
 		/**
 		 * Create a new screen bound render target.
@@ -116,18 +112,22 @@ namespace Flint
 		 * @param display: The display object.
 		 * @param extent: The extent of the render target.
 		 * @param bufferCount: The buffer count of the frame buffer.
-		 * @param threadCount: The number of worker threads used. Default is 0.
+		 * @param imageAttachments: The image attachments to use.
+		 * @param presentMode: The swap chain present mode.
 		 * @return The screen bound render target object.
 		 */
-		virtual std::shared_ptr<ScreenBoundRenderTarget> CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, UI32 threadCount = 0) = 0;
+		virtual std::shared_ptr<ScreenBoundRenderTarget> CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, SwapChainPresentMode presentMode) = 0;
 
 		/**
-		 * Create a new off screen render target factory.
-		 * These factories are used to create different types of render targets, like Shadow maps.
+		 * Create a new off screen render target.
+		 * Off screen render targets are used to perform calculations or other off screen operations required.
 		 *
-		 * @return The factory pointer.
+		 * @param extent: The render target extent.
+		 * @param bufferCount: The number of buffers to use.
+		 * @param imageAttachments: The image attachments which the render target uses.
+		 * @return The render target pointer.
 		 */
-		virtual std::shared_ptr<OffScreenRenderTargetFactory> CreateOffScreenRenderTargetFactory() = 0;
+		virtual std::shared_ptr<OffScreenRenderTarget> CreateOffScreenRenderTarget(const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments) = 0;
 
 		/**
 		 * Create a new buffer.
@@ -258,18 +258,18 @@ namespace Flint
 
 	public:
 		/**
-		 * Submit command buffers to the device.
+		 * Submit graphics command buffers to the device.
 		 * 
 		 * @param pCommandBuffers: The command buffer pointers.
 		 */
-		virtual void SubmitCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers) = 0;
+		virtual void SubmitGraphicsCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers) = 0;
 
 		/**
-		 * Present the screen bound render targets to the display.
-		 * 
-		 * @param pScreenBoundRenderTargets: The screen bound render target pointers.
+		 * Submit compute command buffers to the device.
+		 *
+		 * @param pCommandBuffers: The command buffer pointers.
 		 */
-		virtual void PresentScreenBoundRenderTargets(const std::vector<std::shared_ptr<ScreenBoundRenderTarget>>& pScreenBoundRenderTargets) = 0;
+		virtual void SubmitComputeCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers) = 0;
 
 		/**
 		 * Wait till the device finish execution.

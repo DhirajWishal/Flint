@@ -3,11 +3,22 @@
 
 #pragma once
 
-#include "CommandBufferAllocator.hpp"
+#include "DeviceBoundObject.hpp"
 #include "RenderTarget.hpp"
 
 namespace Flint
 {
+	class ScreenBoundRenderTarget;
+	class OffScreenRenderTarget;
+	class GraphicsPipeline;
+	class ComputePipeline;
+	class GeometryStore;
+	class ResourceMap;
+
+	class CommandBufferAllocator;
+
+	struct DynamicStateContainer;
+
 	/**
 	 * Flint command buffer object.
 	 * Command buffers are used to record commands and to be submitted to the device to execute those commands.

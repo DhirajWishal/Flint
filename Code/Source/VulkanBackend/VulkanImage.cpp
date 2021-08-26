@@ -190,74 +190,7 @@ namespace Flint
 		VulkanImage::VulkanImage(const std::shared_ptr<Device>& pDevice, ImageType type, ImageUsage usage, const FBox3D& extent, PixelFormat format, UI8 layers, UI32 mipLevels, const void* pImageData)
 			: Image(pDevice, type, usage, extent, format, layers, mipLevels, pImageData)
 		{
-			FLINT_SETUP_PROFILER();
-			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-
-			CreateImage();
-			CreateImageMemory();
-			CreateImageView();
-
-			// Copy date to the device.
-			if (pImageData)
-			{
-				UI64 size = static_cast<UI64>(mExtent.mWidth) * mExtent.mHeight * mExtent.mDepth * Utilities::GetByteDepth(mFormat) * mLayerCount;
-				VulkanBuffer vStagingBuffer(pDevice, BufferType::STAGING, size);
-
-				BYTE* pBytes = static_cast<BYTE*>(vStagingBuffer.MapMemory(size));
-				std::copy(static_cast<const BYTE*>(pImageData), static_cast<const BYTE*>(pImageData) + size, pBytes);
-				vStagingBuffer.UnmapMemory();
-
-				vDevice.SetImageLayout(vImage, vCurrentLayout, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels);
-				vCurrentLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-
-				// Copy from buffer. TODO
-				{
-					VkBufferImageCopy vCopy = {};
-					vCopy.bufferImageHeight = 0;
-					vCopy.bufferRowLength = 0;
-					vCopy.bufferOffset = 0;
-					vCopy.imageOffset = { 0, 0, 0 };
-					vCopy.imageExtent.width = mExtent.mWidth;
-					vCopy.imageExtent.height = mExtent.mHeight;
-					vCopy.imageExtent.depth = mExtent.mDepth;
-					vCopy.imageSubresource.aspectMask = _Helpers::GetImageAspectFlags(mUsage);
-					vCopy.imageSubresource.baseArrayLayer = 0;
-					vCopy.imageSubresource.layerCount = mLayerCount;
-					vCopy.imageSubresource.mipLevel = 0;
-
-					VulkanOneTimeCommandBuffer vCommandBuffer(vDevice);
-					vkCmdCopyBufferToImage(vCommandBuffer, vStagingBuffer.GetBuffer(), vImage, vCurrentLayout, 1, &vCopy);
-				}
-
-				vStagingBuffer.Terminate();
-			}
-
-			if (mType != ImageType::CUBEMAP && mType != ImageType::CUBEMAP_ARRAY && mUsage == ImageUsage::GRAPHICS)
-				GenerateMipMaps();
-			else if ((mUsage & ImageUsage::DEPTH) == ImageUsage::DEPTH)
-			{
-				vCurrentLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;	// TODO
-			}
-			else if ((mUsage & ImageUsage::GRAPHICS) == ImageUsage::GRAPHICS)
-			{
-				vDevice.SetImageLayout(vImage, vCurrentLayout, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels);
-				vCurrentLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			}
-			else if ((mUsage & ImageUsage::COLOR) == ImageUsage::COLOR)
-			{
-				vDevice.SetImageLayout(vImage, vCurrentLayout, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels);
-				vCurrentLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-			}
-			else if ((mUsage & ImageUsage::STORAGE) == ImageUsage::STORAGE)
-			{
-				vDevice.SetImageLayout(vImage, vCurrentLayout, VK_IMAGE_LAYOUT_GENERAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels);
-				vCurrentLayout = VK_IMAGE_LAYOUT_GENERAL;
-			}
-			else
-			{
-				vDevice.SetImageLayout(vImage, vCurrentLayout, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels);
-				vCurrentLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			}
+			Initialize(pImageData);
 		}
 
 		std::shared_ptr<Buffer> VulkanImage::CopyToBuffer()
@@ -320,6 +253,15 @@ namespace Flint
 
 		void VulkanImage::Recreate(const FBox2D& extent)
 		{
+			if ((mUsage & ImageUsage::COLOR) == ImageUsage::COLOR || (mUsage & ImageUsage::DEPTH) == ImageUsage::DEPTH)
+			{
+				mExtent = FBox3D(extent.mWidth, extent.mHeight, mExtent.mDepth);
+
+				Terminate();
+				Initialize(nullptr);
+
+				bIsTerminated = false;
+			}
 		}
 
 		VkAttachmentDescription VulkanImage::GetAttachmentDescription() const
@@ -399,6 +341,7 @@ namespace Flint
 			FLINT_SETUP_PROFILER();
 
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
+			vCurrentLayout = VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED;
 
 			VkImageCreateInfo vCreateInfo = {};
 			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -410,7 +353,7 @@ namespace Flint
 			vCreateInfo.arrayLayers = mLayerCount;
 			vCreateInfo.format = Utilities::GetVulkanFormat(mFormat);
 			vCreateInfo.imageType = _Helpers::GetImageType(mType);
-			vCreateInfo.initialLayout = VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED;
+			vCreateInfo.initialLayout = vCurrentLayout;
 			vCreateInfo.mipLevels = mMipLevels;
 			vCreateInfo.queueFamilyIndexCount = 0;
 			vCreateInfo.pQueueFamilyIndices = VK_NULL_HANDLE;
@@ -559,6 +502,78 @@ namespace Flint
 			}
 
 			vCurrentLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		}
+		
+		void VulkanImage::Initialize(const void* pImageData)
+		{
+			FLINT_SETUP_PROFILER();
+			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
+
+			CreateImage();
+			CreateImageMemory();
+			CreateImageView();
+
+			// Copy date to the device.
+			if (pImageData)
+			{
+				UI64 size = static_cast<UI64>(mExtent.mWidth) * mExtent.mHeight * mExtent.mDepth * Utilities::GetByteDepth(mFormat) * mLayerCount;
+				VulkanBuffer vStagingBuffer(pDevice, BufferType::STAGING, size);
+
+				BYTE* pBytes = static_cast<BYTE*>(vStagingBuffer.MapMemory(size));
+				std::copy(static_cast<const BYTE*>(pImageData), static_cast<const BYTE*>(pImageData) + size, pBytes);
+				vStagingBuffer.UnmapMemory();
+
+				vDevice.SetImageLayout(vImage, vCurrentLayout, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels);
+				vCurrentLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+
+				// Copy from buffer. TODO
+				{
+					VkBufferImageCopy vCopy = {};
+					vCopy.bufferImageHeight = 0;
+					vCopy.bufferRowLength = 0;
+					vCopy.bufferOffset = 0;
+					vCopy.imageOffset = { 0, 0, 0 };
+					vCopy.imageExtent.width = mExtent.mWidth;
+					vCopy.imageExtent.height = mExtent.mHeight;
+					vCopy.imageExtent.depth = mExtent.mDepth;
+					vCopy.imageSubresource.aspectMask = _Helpers::GetImageAspectFlags(mUsage);
+					vCopy.imageSubresource.baseArrayLayer = 0;
+					vCopy.imageSubresource.layerCount = mLayerCount;
+					vCopy.imageSubresource.mipLevel = 0;
+
+					VulkanOneTimeCommandBuffer vCommandBuffer(vDevice);
+					vkCmdCopyBufferToImage(vCommandBuffer, vStagingBuffer.GetBuffer(), vImage, vCurrentLayout, 1, &vCopy);
+				}
+
+				vStagingBuffer.Terminate();
+			}
+
+			if (mType != ImageType::CUBEMAP && mType != ImageType::CUBEMAP_ARRAY && mUsage == ImageUsage::GRAPHICS)
+				GenerateMipMaps();
+			else if ((mUsage & ImageUsage::DEPTH) == ImageUsage::DEPTH)
+			{
+				vCurrentLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;	// TODO
+			}
+			else if ((mUsage & ImageUsage::GRAPHICS) == ImageUsage::GRAPHICS)
+			{
+				vDevice.SetImageLayout(vImage, vCurrentLayout, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels);
+				vCurrentLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			}
+			else if ((mUsage & ImageUsage::COLOR) == ImageUsage::COLOR)
+			{
+				vDevice.SetImageLayout(vImage, vCurrentLayout, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels);
+				vCurrentLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+			}
+			else if ((mUsage & ImageUsage::STORAGE) == ImageUsage::STORAGE)
+			{
+				vDevice.SetImageLayout(vImage, vCurrentLayout, VK_IMAGE_LAYOUT_GENERAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels);
+				vCurrentLayout = VK_IMAGE_LAYOUT_GENERAL;
+			}
+			else
+			{
+				vDevice.SetImageLayout(vImage, vCurrentLayout, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels);
+				vCurrentLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			}
 		}
 	}
 }

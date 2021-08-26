@@ -10,7 +10,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanCommandBuffer final : public CommandBuffer
+		class VulkanCommandBuffer final : public CommandBuffer, public std::enable_shared_from_this<VulkanCommandBuffer>
 		{
 		public:
 			VulkanCommandBuffer(const std::shared_ptr<CommandBufferAllocator>& pAllocator, VkCommandBuffer vCommandBuffer);
@@ -46,12 +46,15 @@ namespace Flint
 
 		public:
 			const VkCommandBuffer GetVulkanCommandBuffer() const { return vCommandBuffer; }
+			const VkSubmitInfo GetSubmitInfo() const { return vSubmitInfo; }
+			void ResetFence();
 
 			const VkSemaphore GetInFlightSemaphore() const { return vInFlight; }
 			const VkSemaphore GetRenderFinishedSemaphore() const { return vRenderFinished; }
 			const VkFence GetInFlightFence() const { return vInFlightFence; }
 
 		private:
+			VkSemaphoreWaitFlags vWaitStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 			std::vector<VkCommandBuffer> vSecondaryCommandBuffers = {};
 
 			VkSemaphore vInFlight = VK_NULL_HANDLE;
@@ -59,6 +62,8 @@ namespace Flint
 			VkFence vInFlightFence = VK_NULL_HANDLE;
 
 			VkCommandBuffer vCommandBuffer = VK_NULL_HANDLE;
+
+			VkSubmitInfo vSubmitInfo = {};
 		};
 	}
 }
