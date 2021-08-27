@@ -4,6 +4,7 @@
 #pragma once
 
 #include "GraphicsCore/GeometryStore.hpp"
+#include "GraphicsCore/WireFrame.hpp"
 
 namespace Flint
 {
@@ -14,10 +15,12 @@ namespace Flint
 		UNDEFINED,
 		POSITION,
 		NORMAL,
+
 		COLOR_0,
 		COLOR_1,
 		COLOR_2,
 		COLOR_3,
+
 		TEXTURE_COORDINATES_0,
 		TEXTURE_COORDINATES_1,
 		TEXTURE_COORDINATES_2,
@@ -26,13 +29,12 @@ namespace Flint
 		TEXTURE_COORDINATES_5,
 		TEXTURE_COORDINATES_6,
 		TEXTURE_COORDINATES_7,
+
 		UV_COORDINATES,
 		TANGENT,
 		BITANGENT,
-		INTEGRITY,
 		BONE_ID,
 		BONE_WEIGHT,
-		CUSTOM
 	};
 
 	/**
@@ -54,6 +56,13 @@ namespace Flint
 	struct VertexDescriptor
 	{
 		std::vector<VertexAttribute> mAttributes = {};
+
+		/**
+		 * Get the size of the vertex.
+		 * 
+		 * @return The size in bytes.
+		 */
+		const UI64 Size() const;
 	};
 
 	/**
@@ -67,11 +76,21 @@ namespace Flint
 		 * Construct the loader.
 		 *
 		 * @param pGeometryStore: The geometry store pointer to store the geometry data to.
+		 * @param assetPath: The asset file to load.
 		 * @param vertexDescriptor: The vertex descriptor describing the vertex attributes and loading order.
 		 */
-		AssetLoader(const std::shared_ptr<GeometryStore>& pGeometryStore, const VertexDescriptor& vertexDescriptor);
+		AssetLoader(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::filesystem::path& assetPath, const VertexDescriptor& vertexDescriptor);
+
+		/**
+		 * Get the loaded wire frames.
+		 * 
+		 * @return The vector of wire frames.
+		 */
+		const std::vector<WireFrame> GetWireFrames() const { return mWireFrames; }
 
 	private:
+		std::vector<WireFrame> mWireFrames = {};
+
 		std::shared_ptr<GeometryStore> pGeometryStore = nullptr;
 		VertexDescriptor mDescriptor = {};
 	};

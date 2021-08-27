@@ -15,6 +15,11 @@ namespace Flint
 	{
 	public:
 		/**
+		 * Default constructor.
+		 */
+		WireFrame() = default;
+
+		/**
 		 * Construct the wire frame.
 		 * 
 		 * @param name: The name of the wire frame.
@@ -41,6 +46,13 @@ namespace Flint
 		const UI64 GetVertexOffset() const { return mVertexOffset; }
 
 		/**
+		 * Set the vertex offset.
+		 * 
+		 * @param offset: The offset to set.
+		 */
+		void SetVertexOffset(const UI64 offset) { mVertexOffset = offset; }
+
+		/**
 		 * Get the vertex count of the wire frame.
 		 *
 		 * @return The vertex count.
@@ -53,6 +65,13 @@ namespace Flint
 		 * @return The index offset.
 		 */
 		const UI64 GetIndexOffset() const { return mIndexOffset; }
+
+		/**
+		 * Set the index offset.
+		 *
+		 * @param offset: The offset to set.
+		 */
+		void SetIndexOffset(const UI64 offset) { mIndexOffset = offset; }
 
 		/**
 		 * Get the index count of the wire frame.

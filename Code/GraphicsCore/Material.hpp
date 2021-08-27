@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "FObject.hpp"
+#include "MaterialProperties.hpp"
 
 namespace Flint
 {
@@ -13,5 +13,11 @@ namespace Flint
 	class Material : public FObject
 	{
 	public:
+		Material() {}
+
+		void AddProperty(std::unique_ptr<MaterialProperties::Property>&& pProperty) { pProperties.push_back(std::move(pProperty)); }
+
+	private:
+		std::vector<std::unique_ptr<MaterialProperties::Property>> pProperties = {};
 	};
 }

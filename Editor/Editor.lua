@@ -5,7 +5,7 @@
 
 project "FlintEditor"
 	kind "ConsoleApp"
-	cppdialect "C++20"
+	cppdialect "C++17"
 	language "C++"
 	staticruntime "On"
 	systemversion "latest"
@@ -18,7 +18,7 @@ project "FlintEditor"
 	postbuildcommands {
 		"{COPY} \"$(SolutionDir)ThirdParty/glfw/src/Release/glfw3.dll\" \"%{cfg.targetdir}\"",
 		"{COPY} \"$(SolutionDir)ThirdParty/Runtime/vulkan-1.dll\" \"%{cfg.targetdir}\"",
-		"{COPY} \"$(SolutionDir)Demos/ThirdParty/Assimp/bin/Release/assimp-vc142-mt.dll\" \"%{cfg.targetdir}\"",
+		"{COPY} \"$(SolutionDir)ThirdParty/Assimp/bin/Release/assimp-vc142-mt.dll\" \"%{cfg.targetdir}\"",
 	}
 
 	files {
@@ -28,6 +28,13 @@ project "FlintEditor"
 		"**.h",
 		"**.lua",
 		"**.wfc",
+
+		"**.vert",
+		"**.frag",
+		"**.comp",
+		"**.tesc",
+		"**.tese",
+		"**.geom",
 	}
 
 	includedirs {
@@ -42,7 +49,7 @@ project "FlintEditor"
 	}
 
 	links {
-		"Flint",
+		"FlintEngine",
 	}
 
 	filter "configurations:Debug"

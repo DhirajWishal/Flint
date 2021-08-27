@@ -19,3 +19,6 @@
 [submodule "Demos/ThirdParty/ImGuizmo"]
 	path = Demos/ThirdParty/ImGuizmo
 	url = https://github.com/DhirajWishal/ImGuizmo
+[submodule "ThirdParty/shaderc"]
+	path = ThirdParty/shaderc
+	url = https://github.com/DhirajWishal/shaderc

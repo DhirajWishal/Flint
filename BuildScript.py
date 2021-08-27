@@ -32,6 +32,10 @@ os.system("cd \"ThirdParty/glfw\" && cmake CMakeLists.txt -DBUILD_SHARED_LIBS=ON
 print("\nBuilding SPIRV-Cross ...")
 os.system("cd \"ThirdParty/SPIRV-Cross\" && cmake CMakeLists.txt && cmake --build . --config Release")
 
+# Build shaderc
+print("\nBuilding shaderc ...")
+os.system("cd \"ThirdParty/shaderc\" && python utils/git-sync-deps && cmake CMakeLists.txt && cmake --build . --config Release")
+
 # Build Assimp
 print("\nBuilding Assimp ...")
 os.system("cd \"ThirdParty/Assimp\" && cmake CMakeLists.txt -DBUILD_SHARED_LIBS=ON -DASSIMP_BUILD_TESTS=OFF && cmake --build . --config Release")
