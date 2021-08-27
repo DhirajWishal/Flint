@@ -58,7 +58,7 @@ Light::Light(glm::vec3 position, SceneState* pSceneState)
 	pFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("Flint\\Shaders\\Guizmo\\shader.frag.spv"));
 
 	Flint::GraphicsPipelineSpecification specification = {};
-	specification.mRasterizationSamples = pSceneState->pDevice->GetSupportedRasterizationSamples();
+	specification.mRasterizationSamples = pSceneState->pDevice->GetSupportedMultiSampleCount();
 	specification.mDynamicStateFlags = Flint::DynamicStateFlags::VIEWPORT | Flint::DynamicStateFlags::SCISSOR;
 	specification.mFrontFace = Flint::FrontFace::CLOCKWISE;
 

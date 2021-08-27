@@ -130,7 +130,7 @@ void SceneState::CreateBoundingBoxPipeline()
 	pFragmentShaderBB = pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("Flint\\Shaders\\BoundingBox\\shader.frag.spv"));
 
 	Flint::GraphicsPipelineSpecification specification = {};
-	specification.mRasterizationSamples = pDevice->GetSupportedRasterizationSamples();
+	specification.mRasterizationSamples = pDevice->GetSupportedMultiSampleCount();
 	specification.mPrimitiveTopology = Flint::PrimitiveTopology::LINE_LIST;
 	specification.mPolygonMode = Flint::PolygonMode::LINE;
 
@@ -140,7 +140,7 @@ void SceneState::CreateBoundingBoxPipeline()
 void SceneState::CreateDefaultPipeline()
 {
 	Flint::GraphicsPipelineSpecification specification = {};
-	specification.mRasterizationSamples = pDevice->GetSupportedRasterizationSamples();
+	specification.mRasterizationSamples = pDevice->GetSupportedMultiSampleCount();
 	specification.mDynamicStateFlags = Flint::DynamicStateFlags::VIEWPORT | Flint::DynamicStateFlags::SCISSOR;
 	specification.bEnableDepthTest = true;
 	specification.bEnableDepthWrite = true;

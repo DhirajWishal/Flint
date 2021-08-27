@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Flint/Device.hpp"
+#include "GraphicsCore/Device.hpp"
 
 #include "Components/EditorRenderTarget.hpp"
 
@@ -22,7 +22,6 @@ private:
 private:
 	std::shared_ptr<Flint::Instance> pInstance = nullptr;
 	std::shared_ptr<Flint::Device> pDevice = nullptr;
-	std::shared_ptr<Flint::Display> pDisplay = nullptr;
 
 	EditorRenderTarget mRenderTarget;
 

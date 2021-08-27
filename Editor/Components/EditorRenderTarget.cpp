@@ -3,19 +3,42 @@
 
 #include "EditorRenderTarget.hpp"
 
-void EditorRenderTarget::Initialize(const std::shared_ptr<Flint::Device>& pDevice, const std::shared_ptr<Flint::Display>& pDisplay)
-{
-	const auto displayExtent = pDisplay->GetExtent();
-	Flint::FBox3D imageExtent = Flint::FBox3D(displayExtent.mWidth, displayExtent.mHeight, 1);
+#include "GraphicsCore/Instance.hpp"
 
-	std::vector<Flint::RenderTargetAttachment> attachments(2);
-	attachments[0] = Flint::RenderTargetAttachment(
-		pDevice->CreateImage(Flint::ImageType::DIMENSIONS_2, Flint::ImageUsage::COLOR, imageExtent, pDisplay->GetBestSwapChainFormat(pDevice), 1, 1, nullptr),
+void EditorRenderTarget::Initialize(const std::shared_ptr<Flint::Device>& pDevice, const std::shared_ptr<Flint::Instance>& pInstnace)
+{
+	const Flint::FBox2D extent = Flint::FBox2D(1280, 720);
+	pDisplay = pInstnace->CreateDisplay(extent, "Flint Editor");
+
+	Flint::FBox3D imageExtent = Flint::FBox3D(extent.mWidth, extent.mHeight, 1);
+	const auto sampleCount = pDevice->GetSupportedMultiSampleCount();
+
+	mAttachments[0] = Flint::RenderTargetAttachment(
+		pDevice->CreateImage(Flint::ImageType::DIMENSIONS_2, Flint::ImageUsage::COLOR, imageExtent, pDisplay->GetBestSwapChainFormat(pDevice), 1, 1, nullptr, sampleCount),
 		Flint::FColor4D(CREATE_COLOR_256(32.0f), CREATE_COLOR_256(32.0f), CREATE_COLOR_256(32.0f), 1.0f));
 
-	attachments[1] = Flint::RenderTargetAttachment(
-		pDevice->CreateImage(Flint::ImageType::DIMENSIONS_2, Flint::ImageUsage::DEPTH, imageExtent, Flint::PixelFormat::D16_SINT, 1, 1, nullptr),
+	mAttachments[1] = Flint::RenderTargetAttachment(
+		pDevice->CreateImage(Flint::ImageType::DIMENSIONS_2, Flint::ImageUsage::DEPTH, imageExtent, Flint::PixelFormat::D24_UNORMAL_S8_UINT, 1, 1, nullptr, sampleCount),
 		Flint::DepthClearValues(1.0f, 0));
 
-	pRenderTarget = pDevice->CreateScreenBoundRenderTarget(pDisplay, displayExtent, pDisplay->FindBestBufferCount(pDevice), attachments, Flint::SwapChainPresentMode::MAILBOX);
+	pRenderTarget = pDevice->CreateScreenBoundRenderTarget(pDisplay, extent, pDisplay->FindBestBufferCount(pDevice), mAttachments, Flint::SwapChainPresentMode::MAILBOX);
+}
+
+void EditorRenderTarget::Terminate()
+{
+	pRenderTarget->Terminate();
+	pDisplay->Terminate();
+
+	for (auto& attachment : mAttachments)
+		attachment.pImage->Terminate();
+}
+
+bool EditorRenderTarget::IsDisplayOpen() const
+{
+	return pDisplay->IsOpen();
+}
+
+void EditorRenderTarget::PollEvents()
+{
+	pDisplay->Update();
 }

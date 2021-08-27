@@ -24,18 +24,17 @@ workspace "Flint"
 	IncludeDir["GLFW"] = "$(SolutionDir)ThirdParty/glfw/include"
 	IncludeDir["Vulkan"] = "$(SolutionDir)ThirdParty/Vulkan/include"
 	IncludeDir["SPIRV_Cross"] = "$(SolutionDir)ThirdParty/SPIRV-Cross/include"
+	IncludeDir["Assimp"] = "$(SolutionDir)ThirdParty/Assimp/include"
 
 	IncludeDir["imgui"] = "$(SolutionDir)Demos/ThirdParty/imgui/"
 	IncludeDir["ImGuizmo"] = "$(SolutionDir)Demos/ThirdParty/ImGuizmo/"
 	IncludeDir["glm"] = "$(SolutionDir)Demos/ThirdParty/glm/"
-	IncludeDir["Assimp"] = "$(SolutionDir)Demos/ThirdParty/Assimp/include"
 
 	-- Binaries
 	IncludeLib["GLFW"] = "$(SolutionDir)ThirdParty/glfw/src/Release"
 	IncludeLib["Vulkan"] = "$(SolutionDir)ThirdParty/Vulkan/lib"
 	IncludeLib["SPIRV_Cross"] = "$(SolutionDir)ThirdParty/SPIRV-Cross/Release"
-
-	IncludeLib["Assimp"] = "$(SolutionDir)Demos/ThirdParty/Assimp/lib/Release"
+	IncludeLib["Assimp"] = "$(SolutionDir)ThirdParty/Assimp/lib/Release"
 
 	filter "configurations:Debug"
 		defines { "FLINT_DEBUG" }
@@ -63,7 +62,10 @@ workspace "Flint"
 	filter ""
 
 	group "Code"
-		include "Code/Flint.lua"
+		include "Code/Core/Core.lua"
+		include "Code/Engine/Engine.lua"
+		include "Code/GraphicsCore/GraphicsCore.lua"
+		include "Code/VulkanBackend/VulkanBackend.lua"
 
 	group "Editor"
 		include "Editor/Editor.lua"

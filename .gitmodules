@@ -1,5 +1,5 @@
-[submodule "Demos/ThirdParty/Assimp"]
-	path = Demos/ThirdParty/Assimp
+[submodule "ThirdParty/Assimp"]
+	path = ThirdParty/Assimp
 	url = https://github.com/DhirajWishal/assimp
 [submodule "ThirdParty/glfw"]
 	path = ThirdParty/glfw

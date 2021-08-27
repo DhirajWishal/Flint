@@ -171,7 +171,7 @@ void VikingRoom::OnUpdate(UI64 delta)
 void VikingRoom::SetupPipeline()
 {
 	Flint::GraphicsPipelineSpecification specification = {};
-	specification.mRasterizationSamples = pSceneState->pDevice->GetSupportedRasterizationSamples();
+	specification.mRasterizationSamples = pSceneState->pDevice->GetSupportedMultiSampleCount();
 	specification.mDynamicStateFlags = Flint::DynamicStateFlags::VIEWPORT | Flint::DynamicStateFlags::SCISSOR;
 	specification.bEnableDepthTest = true;
 	specification.bEnableDepthWrite = true;
@@ -193,7 +193,7 @@ void VikingRoom::SetupPipeline()
 	pVertexShaderMP = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("Flint\\Shaders\\MousePicking3D\\shader.vert.spv"));
 	pFragmentShaderMP = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("Flint\\Shaders\\MousePicking3D\\shader.frag.spv"));
 
-	specification.mRasterizationSamples = Flint::RasterizationSamples::BITS_1;
+	specification.mRasterizationSamples = Flint::MultiSampleCount::BITS_1;
 	pSceneState->pGraphicsPipelines["MousePicker"] = pSceneState->pDevice->CreateGraphicsPipeline("MousePicker", pSceneState->pOffScreenRenderTargets["MousePicker"], pVertexShaderMP, nullptr, nullptr, nullptr, pFragmentShaderMP, specification);
 	pSceneState->pOffScreenRenderTargets["MousePicker"]->SubmitGraphicsPipeline(pSceneState->pGeometryStores["Default"], pSceneState->pGraphicsPipelines["MousePicker"]);
 }

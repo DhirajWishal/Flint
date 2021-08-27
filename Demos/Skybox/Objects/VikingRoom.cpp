@@ -120,7 +120,7 @@ void VikingRoom::OnUpdate(UI64 delta)
 void VikingRoom::SetupPipeline()
 {
 	Flint::GraphicsPipelineSpecification specification = {};
-	specification.mRasterizationSamples = pSceneState->pDevice->GetSupportedRasterizationSamples();
+	specification.mRasterizationSamples = pSceneState->pDevice->GetSupportedMultiSampleCount();
 	specification.mDynamicStateFlags = Flint::DynamicStateFlags::VIEWPORT | Flint::DynamicStateFlags::SCISSOR;
 	specification.bEnableDepthTest = true;
 	specification.bEnableDepthWrite = true;

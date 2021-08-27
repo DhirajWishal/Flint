@@ -78,7 +78,7 @@ void SkyBox::OnUpdate(UI64 delta)
 void SkyBox::CreateNewPipeline()
 {
 	Flint::GraphicsPipelineSpecification specification = {};
-	specification.mRasterizationSamples = pSceneState->pDevice->GetSupportedRasterizationSamples();
+	specification.mRasterizationSamples = pSceneState->pDevice->GetSupportedMultiSampleCount();
 	specification.mFrontFace = Flint::FrontFace::CLOCKWISE;
 	specification.mDynamicStateFlags = Flint::DynamicStateFlags::VIEWPORT | Flint::DynamicStateFlags::SCISSOR;
 

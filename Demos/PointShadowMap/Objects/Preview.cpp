@@ -241,7 +241,7 @@ void Preview::PrepareNoTexturePipeline()
 	pFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("Flint\\Shaders\\NoTexture\\shader.frag.spv"));
 
 	Flint::GraphicsPipelineSpecification specification = {};
-	specification.mRasterizationSamples = pSceneState->pDevice->GetSupportedRasterizationSamples();
+	specification.mRasterizationSamples = pSceneState->pDevice->GetSupportedMultiSampleCount();
 	specification.mDynamicStateFlags = Flint::DynamicStateFlags::VIEWPORT | Flint::DynamicStateFlags::SCISSOR;
 
 	pSceneState->pGraphicsPipelines["NoTexture"] = pSceneState->pDevice->CreateGraphicsPipeline("NoTexture", pSceneState->pScreenBoundRenderTargets["Default"], pVertexShader, nullptr, nullptr, nullptr, pFragmentShader, specification);
@@ -262,7 +262,7 @@ void Preview::PrepareShadowMapPipeline()
 	pFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("Flint\\Shaders\\PointShadowMapping\\mesh.frag.spv"));
 
 	Flint::GraphicsPipelineSpecification specification = {};
-	specification.mRasterizationSamples = pSceneState->pDevice->GetSupportedRasterizationSamples();
+	specification.mRasterizationSamples = pSceneState->pDevice->GetSupportedMultiSampleCount();
 	specification.mDynamicStateFlags = Flint::DynamicStateFlags::VIEWPORT | Flint::DynamicStateFlags::SCISSOR;
 
 	pSceneState->pGeometryStores["ShadowMap"] = pSceneState->pDevice->CreateGeometryStore(pVertexShader->GetInputAttributes(), sizeof(UI32));
@@ -275,7 +275,7 @@ void Preview::PrepareShadowMapPipeline()
 		pShadowVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("Flint\\Shaders\\PointShadowMapping\\shader.vert.spv"));
 		pShadowFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("Flint\\Shaders\\PointShadowMapping\\shader.frag.spv"));
 
-		specification.mRasterizationSamples = Flint::RasterizationSamples::BITS_1;
+		specification.mRasterizationSamples = Flint::MultiSampleCount::BITS_1;
 		//specification.mColorBlendAttachments.clear();
 		specification.bEnableDepthBias = true;
 		specification.bEnableDepthTest = true;
