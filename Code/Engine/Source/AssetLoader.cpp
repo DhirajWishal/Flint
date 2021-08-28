@@ -135,53 +135,10 @@ namespace Flint
 					if (std::string(pProperty->mKey.C_Str()) == _AI_MATKEY_TEXTURE_BASE)
 					{
 						aiString path;
-						aiReturn result;
-
-						if (pMaterial->GetTextureCount(aiTextureType::aiTextureType_DIFFUSE))
-							result = pMaterial->GetTexture(aiTextureType::aiTextureType_DIFFUSE, pProperty->mIndex, &path);
-						else if (pMaterial->GetTextureCount(aiTextureType::aiTextureType_SPECULAR))
-							result = pMaterial->GetTexture(aiTextureType::aiTextureType_SPECULAR, pProperty->mIndex, &path);
-						else if (pMaterial->GetTextureCount(aiTextureType::aiTextureType_AMBIENT))
-							result = pMaterial->GetTexture(aiTextureType::aiTextureType_AMBIENT, pProperty->mIndex, &path);
-						else if (pMaterial->GetTextureCount(aiTextureType::aiTextureType_EMISSIVE))
-							result = pMaterial->GetTexture(aiTextureType::aiTextureType_EMISSIVE, pProperty->mIndex, &path);
-						else if (pMaterial->GetTextureCount(aiTextureType::aiTextureType_HEIGHT))
-							result = pMaterial->GetTexture(aiTextureType::aiTextureType_HEIGHT, pProperty->mIndex, &path);
-						else if (pMaterial->GetTextureCount(aiTextureType::aiTextureType_NORMALS))
-							result = pMaterial->GetTexture(aiTextureType::aiTextureType_NORMALS, pProperty->mIndex, &path);
-						else if (pMaterial->GetTextureCount(aiTextureType::aiTextureType_SHININESS))
-							result = pMaterial->GetTexture(aiTextureType::aiTextureType_SHININESS, pProperty->mIndex, &path);
-						else if (pMaterial->GetTextureCount(aiTextureType::aiTextureType_OPACITY))
-							result = pMaterial->GetTexture(aiTextureType::aiTextureType_OPACITY, pProperty->mIndex, &path);
-						else if (pMaterial->GetTextureCount(aiTextureType::aiTextureType_DISPLACEMENT))
-							result = pMaterial->GetTexture(aiTextureType::aiTextureType_DISPLACEMENT, pProperty->mIndex, &path);
-						else if (pMaterial->GetTextureCount(aiTextureType::aiTextureType_LIGHTMAP))
-							result = pMaterial->GetTexture(aiTextureType::aiTextureType_LIGHTMAP, pProperty->mIndex, &path);
-						else if (pMaterial->GetTextureCount(aiTextureType::aiTextureType_REFLECTION))
-							result = pMaterial->GetTexture(aiTextureType::aiTextureType_REFLECTION, pProperty->mIndex, &path);
-						else if (pMaterial->GetTextureCount(aiTextureType::aiTextureType_BASE_COLOR))
-							result = pMaterial->GetTexture(aiTextureType::aiTextureType_BASE_COLOR, pProperty->mIndex, &path);
-						else if (pMaterial->GetTextureCount(aiTextureType::aiTextureType_NORMAL_CAMERA))
-							result = pMaterial->GetTexture(aiTextureType::aiTextureType_NORMAL_CAMERA, pProperty->mIndex, &path);
-						else if (pMaterial->GetTextureCount(aiTextureType::aiTextureType_EMISSION_COLOR))
-							result = pMaterial->GetTexture(aiTextureType::aiTextureType_EMISSION_COLOR, pProperty->mIndex, &path);
-						else if (pMaterial->GetTextureCount(aiTextureType::aiTextureType_METALNESS))
-							result = pMaterial->GetTexture(aiTextureType::aiTextureType_METALNESS, pProperty->mIndex, &path);
-						else if (pMaterial->GetTextureCount(aiTextureType::aiTextureType_DIFFUSE_ROUGHNESS))
-							result = pMaterial->GetTexture(aiTextureType::aiTextureType_DIFFUSE_ROUGHNESS, pProperty->mIndex, &path);
-						else if (pMaterial->GetTextureCount(aiTextureType::aiTextureType_AMBIENT_OCCLUSION))
-							result = pMaterial->GetTexture(aiTextureType::aiTextureType_AMBIENT_OCCLUSION, pProperty->mIndex, &path);
-						else if (pMaterial->GetTextureCount(aiTextureType::aiTextureType_SHEEN))
-							result = pMaterial->GetTexture(aiTextureType::aiTextureType_SHEEN, pProperty->mIndex, &path);
-						else if (pMaterial->GetTextureCount(aiTextureType::aiTextureType_CLEARCOAT))
-							result = pMaterial->GetTexture(aiTextureType::aiTextureType_CLEARCOAT, pProperty->mIndex, &path);
-						else if (pMaterial->GetTextureCount(aiTextureType::aiTextureType_TRANSMISSION))
-							result = pMaterial->GetTexture(aiTextureType::aiTextureType_TRANSMISSION, pProperty->mIndex, &path);
+						aiReturn result = pMaterial->Get(AI_MATKEY_TEXTURE_DIFFUSE(pProperty->mIndex), path);
 
 						if (path.length > 0)
-						{
 							std::filesystem::path texturePath = path.C_Str();
-						}
 					}
 				}
 			}

@@ -45,6 +45,13 @@ namespace Flint
 		 */
 		const std::shared_ptr<Display> GetDisplay() const { return pDisplay; }
 
+		/**
+		 * Get the current image index.
+		 * 
+		 * @return The image index.
+		 */
+		virtual const UI32 GetImageIndex() const = 0;
+
 	protected:
 		std::shared_ptr<Display> pDisplay = nullptr;
 	};

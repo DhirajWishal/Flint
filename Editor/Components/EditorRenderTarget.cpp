@@ -22,10 +22,18 @@ void EditorRenderTarget::Initialize(const std::shared_ptr<Flint::Device>& pDevic
 		Flint::DepthClearValues(1.0f, 0));
 
 	pRenderTarget = pDevice->CreateScreenBoundRenderTarget(pDisplay, extent, pDisplay->FindBestBufferCount(pDevice), mAttachments, Flint::SwapChainPresentMode::MAILBOX);
+
+	pAllocator = pDevice->CreateCommandBufferAllocator(pRenderTarget->GetBufferCount());
+	pSecondaryAllocator = pAllocator->CreateChildAllocator();
+
+	pAllocator->CreateCommandBuffers();
+	pSecondaryAllocator->CreateCommandBuffers();
 }
 
 void EditorRenderTarget::Terminate()
 {
+	pAllocator->Terminate();
+	pSecondaryAllocator->Terminate();
 	pRenderTarget->Terminate();
 	pDisplay->Terminate();
 
@@ -41,4 +49,28 @@ bool EditorRenderTarget::IsDisplayOpen() const
 void EditorRenderTarget::PollEvents()
 {
 	pDisplay->Update();
+}
+
+void EditorRenderTarget::DrawFrame()
+{
+	pRenderTarget->PrepareNewFrame();
+	auto pCommandBuffer = pAllocator->GetCommandBuffer(pRenderTarget->GetImageIndex());
+	auto pSecondaryCommandBuffer = pSecondaryAllocator->GetCommandBuffer(pRenderTarget->GetImageIndex());
+
+	pCommandBuffer->BeginBufferRecording();
+	pCommandBuffer->BindRenderTargetSecondary(pRenderTarget);
+
+	pSecondaryCommandBuffer->BeginBufferRecording(pRenderTarget);
+	pSecondaryCommandBuffer->EndBufferRecording();
+
+	pCommandBuffer->SubmitSecondaryCommandBuffer(pSecondaryCommandBuffer);
+	pCommandBuffer->ExecuteSecondaryCommands();
+
+	pCommandBuffer->UnbindRenderTarget();
+	pCommandBuffer->EndBufferRecording();
+
+	pRenderTarget->GetDevice()->SubmitGraphicsCommandBuffers({ pCommandBuffer });
+	pRenderTarget->PresentToDisplay();
+	pRenderTarget->IncrementFrameIndex();
+	pRenderTarget->GetDevice()->WaitForQueue();
 }

@@ -22,20 +22,21 @@ namespace Flint
 			VulkanScreenBoundRenderTarget(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode);
 			~VulkanScreenBoundRenderTarget() { if (!bIsTerminated) Terminate(); }
 
+			virtual void PrepareNewFrame() override final;
 			virtual void PresentToDisplay() override final;
 			virtual void Terminate() override final;
 			virtual void Recreate() override final;
+			virtual const UI32 GetImageIndex() const override final { return pSwapChain->GetImageIndex(); }
 
 			VkRenderPass GetRenderPass() const { return vRenderTarget.vRenderPass; }
-			VkFramebuffer GetFrameBuffer(UI32 index) const { return vRenderTarget.vFrameBuffers[index]; }
-			const VkFramebuffer PrepareAndGetFramebuffer();
+			const VkFramebuffer GetFramebuffer() const { return vRenderTarget.vFrameBuffers[GetImageIndex()]; }
 
 			const VulkanSwapChain* GetSwapChain() const { return pSwapChain.get(); }
 
-			UI32 GetClearScreenValueCount() const { return static_cast<UI32>(mAttachments.size()); }
-			std::vector<VkClearValue> GetClearScreenValues() const;
+			const UI32 GetClearScreenValueCount() const { return static_cast<UI32>(mAttachments.size()); }
+			const VkClearValue* GetClearScreenValues() const { return vClearValues.data(); }
 
-			const VkCommandBufferInheritanceInfo* GetVulkanInheritanceInfo() const { return &vInheritInfo; }
+			const VkCommandBufferInheritanceInfo* GetVulkanInheritanceInfo();
 
 		private:
 			VulkanRenderTarget vRenderTarget;
@@ -44,34 +45,11 @@ namespace Flint
 			std::atomic<VkCommandBufferInheritanceInfo> vInheritanceInfo = {};
 			VkCommandBufferInheritanceInfo vInheritInfo = {};
 
+			std::vector<VkClearValue> vClearValues = {};
+
 			std::unique_ptr<VulkanSwapChain> pSwapChain = nullptr;
 
 			bool bShouldSkip = false;
 		};
 	}
 }
-
-/*
-typedef struct VkSubmitInfo {
-	VkStructureType                sType;
-	const void*                    pNext;
-	uint32_t                       waitSemaphoreCount;
-	const VkSemaphore*             pWaitSemaphores;
-	const VkPipelineStageFlags*    pWaitDstStageMask;
-	uint32_t                       commandBufferCount;
-	const VkCommandBuffer*         pCommandBuffers;
-	uint32_t                       signalSemaphoreCount;
-	const VkSemaphore*             pSignalSemaphores;
-} VkSubmitInfo;
-
-typedef struct VkPresentInfoKHR {
-	VkStructureType          sType;
-	const void*              pNext;
-	uint32_t                 waitSemaphoreCount;
-	const VkSemaphore*       pWaitSemaphores;
-	uint32_t                 swapchainCount;
-	const VkSwapchainKHR*    pSwapchains;
-	const uint32_t*          pImageIndices;
-	VkResult*                pResults;
-} VkPresentInfoKHR;
-*/

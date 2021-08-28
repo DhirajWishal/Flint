@@ -38,27 +38,46 @@ namespace Flint
 			std::vector<VulkanRenderTargetAttachmentInterface*> pAttachmentInferfaces;
 			pAttachmentInferfaces.reserve(mAttachments.size() + 1);
 			for (const auto attachment : mAttachments)
+			{
 				pAttachmentInferfaces.push_back(&attachment.pImage->StaticCast<VulkanImage>());
+
+				VkClearValue vClearValue = {};
+				vClearValue.color.float32[0] = attachment.mClearColor.mRed;
+				vClearValue.color.float32[1] = attachment.mClearColor.mGreen;
+				vClearValue.color.float32[2] = attachment.mClearColor.mBlue;
+				vClearValue.color.float32[3] = attachment.mClearColor.mAlpha;
+
+				vClearValue.depthStencil.depth = attachment.mDepthClearValue.mDepth;
+				vClearValue.depthStencil.stencil = attachment.mDepthClearValue.mStencil;
+				vClearValues.push_back(vClearValue);
+			}
 
 			pAttachmentInferfaces.push_back(pSwapChain.get());
 
 			vRenderTarget.CreateRenderPass(pAttachmentInferfaces, VK_PIPELINE_BIND_POINT_GRAPHICS, vDependencies);
 			vRenderTarget.CreateFrameBuffer(pAttachmentInferfaces, extent, bufferCount);
-			vRenderTarget.CreateSyncObjects(bufferCount);
+
+			vInheritInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
+			vInheritInfo.pNext = VK_NULL_HANDLE;
+			vInheritInfo.renderPass = vRenderTarget.vRenderPass;
+		}
+
+		void VulkanScreenBoundRenderTarget::PrepareNewFrame()
+		{
+			auto nextImage = pSwapChain->AcquireNextImage();
+			if (nextImage.bShouldRecreate)
+			{
+				Recreate();
+				PrepareNewFrame();
+			}
 		}
 
 		void VulkanScreenBoundRenderTarget::PresentToDisplay()
 		{
-			auto nextImage = pSwapChain->AcquireNextImage();
-			if (nextImage.bShouldRecreate)
-				Recreate();
-
 			VkResult vResult = vkQueuePresentKHR(pDevice->StaticCast<VulkanDevice>().GetQueue().vTransferQueue, pSwapChain->PrepareToPresent());
 			if (vResult == VK_ERROR_OUT_OF_DATE_KHR || vResult == VK_SUBOPTIMAL_KHR)
 				Recreate();
 			else FLINT_VK_ASSERT(vResult);
-
-			IncrementFrameIndex();
 		}
 
 		void VulkanScreenBoundRenderTarget::Terminate()
@@ -88,50 +107,29 @@ namespace Flint
 			vRenderTarget.DestroyRenderPass();
 			vRenderTarget.DestroyFrameBuffers();
 
-			pSwapChain->Recreate();
-			for (auto attachment : mAttachments)
-				attachment.pImage->StaticCast<VulkanImage>().Recreate(mExtent);
-
 			std::vector<VulkanRenderTargetAttachmentInterface*> pAttachmentInferfaces;
 			pAttachmentInferfaces.reserve(mAttachments.size() + 1);
-			for (const auto attachment : mAttachments)
-				pAttachmentInferfaces.push_back(&attachment.pImage->StaticCast<VulkanImage>());
 
+			for (auto attachment : mAttachments)
+			{
+				attachment.pImage->StaticCast<VulkanImage>().Recreate(mExtent);
+				pAttachmentInferfaces.push_back(&attachment.pImage->StaticCast<VulkanImage>());
+			}
+
+			pSwapChain->Recreate();
 			pAttachmentInferfaces.push_back(pSwapChain.get());
 
 			vRenderTarget.CreateRenderPass(pAttachmentInferfaces, VK_PIPELINE_BIND_POINT_GRAPHICS, vDependencies);
 			vRenderTarget.CreateFrameBuffer(pAttachmentInferfaces, mExtent, mBufferCount);
 
-			vRenderTarget.vInFlightFences.resize(vRenderTarget.vInFlightFences.size(), VK_NULL_HANDLE);
+			vInheritInfo.renderPass = vRenderTarget.vRenderPass;
 			mFrameIndex = 0;
 		}
-
-		const VkFramebuffer VulkanScreenBoundRenderTarget::PrepareAndGetFramebuffer()
-		{
-			const auto frameBuffer = vRenderTarget.vFrameBuffers[mFrameIndex];
-			IncrementFrameIndex();
-
-			return frameBuffer;
-		}
 		
-		std::vector<VkClearValue> VulkanScreenBoundRenderTarget::GetClearScreenValues() const
+		const VkCommandBufferInheritanceInfo* VulkanScreenBoundRenderTarget::GetVulkanInheritanceInfo()
 		{
-			std::vector<VkClearValue> vClearValues;
-			vClearValues.reserve(mAttachments.size());
-			for (const auto attachment : mAttachments)
-			{
-				VkClearValue vClearValue = {};
-				vClearValue.color.float32[0] = attachment.mClearColor.mRed;
-				vClearValue.color.float32[1] = attachment.mClearColor.mGreen;
-				vClearValue.color.float32[2] = attachment.mClearColor.mBlue;
-				vClearValue.color.float32[3] = attachment.mClearColor.mAlpha;
-
-				vClearValue.depthStencil.depth = attachment.mDepthClearValue.mDepth;
-				vClearValue.depthStencil.stencil = attachment.mDepthClearValue.mStencil;
-				vClearValues.push_back(vClearValue);
-			}
-
-			return vClearValues;
+			vInheritInfo.framebuffer = GetFramebuffer();
+			return &vInheritInfo;
 		}
 	}
 }

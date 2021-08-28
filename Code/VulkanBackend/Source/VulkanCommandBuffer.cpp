@@ -22,28 +22,21 @@ namespace Flint
 			FLINT_SETUP_PROFILER();
 
 			VkSemaphoreCreateInfo vSemaphoreCreateInfo = {};
-			vSemaphoreCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_EXPORT_SEMAPHORE_CREATE_INFO;
+			vSemaphoreCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 			vSemaphoreCreateInfo.pNext = VK_NULL_HANDLE;
 			vSemaphoreCreateInfo.flags = 0;
 
 			VkFenceCreateInfo vFenceCreateInfo = {};
-			vFenceCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_EXPORT_FENCE_CREATE_INFO;
+			vFenceCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
 			vFenceCreateInfo.pNext = VK_NULL_HANDLE;
 			vFenceCreateInfo.flags = VkFenceCreateFlagBits::VK_FENCE_CREATE_SIGNALED_BIT;
 
-			auto& vDevice = pAllocator->GetDevice()->StaticCast<VulkanDevice>();
-			vkCreateSemaphore(vDevice.GetLogicalDevice(), &vSemaphoreCreateInfo, nullptr, &vInFlight);
-			vkCreateSemaphore(vDevice.GetLogicalDevice(), &vSemaphoreCreateInfo, nullptr, &vRenderFinished);
-			vkCreateFence(vDevice.GetLogicalDevice(), &vFenceCreateInfo, nullptr, &vInFlightFence);
+			FLINT_VK_ASSERT(vkCreateFence(pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetLogicalDevice(), &vFenceCreateInfo, nullptr, &vInFlightFence));
 
 			vSubmitInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_SUBMIT_INFO;
 			vSubmitInfo.pNext = VK_NULL_HANDLE;
 			vSubmitInfo.commandBufferCount = 1;
-			vSubmitInfo.pCommandBuffers = &vCommandBuffer;
-			vSubmitInfo.signalSemaphoreCount = 1;
-			vSubmitInfo.pSignalSemaphores = &vRenderFinished;
-			vSubmitInfo.waitSemaphoreCount = 1;
-			vSubmitInfo.pWaitSemaphores = &vInFlight;
+			vSubmitInfo.pCommandBuffers = &this->vCommandBuffer;
 			vSubmitInfo.pWaitDstStageMask = &vWaitStage;
 		}
 
@@ -57,8 +50,11 @@ namespace Flint
 			vBeginInfo.flags = VkCommandBufferUsageFlagBits::VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
 			vBeginInfo.pInheritanceInfo = VK_NULL_HANDLE;
 
-			FLINT_VK_ASSERT(vkWaitForFences(pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetLogicalDevice(), 1, &vInFlightFence, VK_TRUE, UI64_MAX));
+			//FLINT_VK_ASSERT(vkWaitForFences(pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetLogicalDevice(), 1, &vInFlightFence, VK_TRUE, UI64_MAX));
 			FLINT_VK_ASSERT(vkBeginCommandBuffer(vCommandBuffer, &vBeginInfo));
+
+			vInFlightSemaphores.clear();
+			vRenderFinishedSemaphores.clear();
 
 			bIsRecording = true;
 		}
@@ -70,10 +66,10 @@ namespace Flint
 			VkCommandBufferBeginInfo vBeginInfo = {};
 			vBeginInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 			vBeginInfo.pNext = VK_NULL_HANDLE;
-			vBeginInfo.flags = VkCommandBufferUsageFlagBits::VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT;
+			vBeginInfo.flags = VkCommandBufferUsageFlagBits::VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT | VkCommandBufferUsageFlagBits::VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
 			vBeginInfo.pInheritanceInfo = pRenderTarget->StaticCast<VulkanScreenBoundRenderTarget>().GetVulkanInheritanceInfo();
 
-			FLINT_VK_ASSERT(vkWaitForFences(pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetLogicalDevice(), 1, &vInFlightFence, VK_TRUE, UI64_MAX));
+			//FLINT_VK_ASSERT(vkWaitForFences(pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetLogicalDevice(), 1, &vInFlightFence, VK_TRUE, UI64_MAX));
 			FLINT_VK_ASSERT(vkBeginCommandBuffer(vCommandBuffer, &vBeginInfo));
 
 			bIsRecording = true;
@@ -86,10 +82,10 @@ namespace Flint
 			VkCommandBufferBeginInfo vBeginInfo = {};
 			vBeginInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 			vBeginInfo.pNext = VK_NULL_HANDLE;
-			vBeginInfo.flags = VkCommandBufferUsageFlagBits::VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT;
-			vBeginInfo.pInheritanceInfo = VK_NULL_HANDLE;	// TODO
+			vBeginInfo.flags = VkCommandBufferUsageFlagBits::VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT | VkCommandBufferUsageFlagBits::VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
+			vBeginInfo.pInheritanceInfo = pRenderTarget->StaticCast<VulkanOffScreenRenderTarget>().GetVulkanInheritanceInfo();
 
-			FLINT_VK_ASSERT(vkWaitForFences(pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetLogicalDevice(), 1, &vInFlightFence, VK_TRUE, UI64_MAX));
+			//FLINT_VK_ASSERT(vkWaitForFences(pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetLogicalDevice(), 1, &vInFlightFence, VK_TRUE, UI64_MAX));
 			FLINT_VK_ASSERT(vkBeginCommandBuffer(vCommandBuffer, &vBeginInfo));
 
 			bIsRecording = true;
@@ -100,15 +96,17 @@ namespace Flint
 			FLINT_SETUP_PROFILER();
 
 			VulkanScreenBoundRenderTarget& vRenderTarget = pRenderTarget->StaticCast<VulkanScreenBoundRenderTarget>();
-			auto clearValues = vRenderTarget.GetClearScreenValues();
+
+			vInFlightSemaphores.push_back(vRenderTarget.GetSwapChain()->GetInFlightSemaphore());
+			vRenderFinishedSemaphores.push_back(vRenderTarget.GetSwapChain()->GetRenderFinishedSemaphore());
 
 			VkRenderPassBeginInfo vBeginInfo = {};
 			vBeginInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 			vBeginInfo.pNext = VK_NULL_HANDLE;
 			vBeginInfo.renderPass = vRenderTarget.GetRenderPass();
-			vBeginInfo.framebuffer = vRenderTarget.PrepareAndGetFramebuffer();
-			vBeginInfo.clearValueCount = static_cast<UI32>(clearValues.size());
-			vBeginInfo.pClearValues = clearValues.data();
+			vBeginInfo.framebuffer = vRenderTarget.GetFramebuffer();
+			vBeginInfo.clearValueCount = vRenderTarget.GetClearScreenValueCount();
+			vBeginInfo.pClearValues = vRenderTarget.GetClearScreenValues();
 			vBeginInfo.renderArea.extent.width = vRenderTarget.GetExtent().mWidth;
 			vBeginInfo.renderArea.extent.height = vRenderTarget.GetExtent().mHeight;
 
@@ -120,15 +118,17 @@ namespace Flint
 			FLINT_SETUP_PROFILER();
 
 			VulkanScreenBoundRenderTarget& vRenderTarget = pRenderTarget->StaticCast<VulkanScreenBoundRenderTarget>();
-			auto clearValues = vRenderTarget.GetClearScreenValues();
+
+			vInFlightSemaphores.push_back(vRenderTarget.GetSwapChain()->GetInFlightSemaphore());
+			vRenderFinishedSemaphores.push_back(vRenderTarget.GetSwapChain()->GetRenderFinishedSemaphore());
 
 			VkRenderPassBeginInfo vBeginInfo = {};
 			vBeginInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 			vBeginInfo.pNext = VK_NULL_HANDLE;
 			vBeginInfo.renderPass = vRenderTarget.GetRenderPass();
-			vBeginInfo.framebuffer = vRenderTarget.PrepareAndGetFramebuffer();
-			vBeginInfo.clearValueCount = static_cast<UI32>(clearValues.size());
-			vBeginInfo.pClearValues = clearValues.data();
+			vBeginInfo.framebuffer = vRenderTarget.GetFramebuffer();
+			vBeginInfo.clearValueCount = vRenderTarget.GetClearScreenValueCount();
+			vBeginInfo.pClearValues = vRenderTarget.GetClearScreenValues();
 			vBeginInfo.renderArea.extent.width = vRenderTarget.GetExtent().mWidth;
 			vBeginInfo.renderArea.extent.height = vRenderTarget.GetExtent().mHeight;
 
@@ -140,15 +140,14 @@ namespace Flint
 			FLINT_SETUP_PROFILER();
 
 			VulkanOffScreenRenderTarget& vRenderTarget = pRenderTarget->StaticCast<VulkanOffScreenRenderTarget>();
-			auto clearValues = vRenderTarget.GetClearScreenValues();
 
 			VkRenderPassBeginInfo vBeginInfo = {};
 			vBeginInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 			vBeginInfo.pNext = VK_NULL_HANDLE;
 			vBeginInfo.renderPass = vRenderTarget.GetRenderPass();
-			vBeginInfo.framebuffer = vRenderTarget.PrepareAndGetFramebuffer();
-			vBeginInfo.clearValueCount = static_cast<UI32>(clearValues.size());
-			vBeginInfo.pClearValues = clearValues.data();
+			vBeginInfo.framebuffer = vRenderTarget.GetFramebuffer();
+			vBeginInfo.clearValueCount = vRenderTarget.GetClearScreenValueCount();
+			vBeginInfo.pClearValues = vRenderTarget.GetClearScreenValues();
 			vBeginInfo.renderArea.extent.width = vRenderTarget.GetExtent().mWidth;
 			vBeginInfo.renderArea.extent.height = vRenderTarget.GetExtent().mHeight;
 
@@ -160,15 +159,14 @@ namespace Flint
 			FLINT_SETUP_PROFILER();
 
 			VulkanOffScreenRenderTarget& vRenderTarget = pRenderTarget->StaticCast<VulkanOffScreenRenderTarget>();
-			auto clearValues = vRenderTarget.GetClearScreenValues();
 
 			VkRenderPassBeginInfo vBeginInfo = {};
 			vBeginInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 			vBeginInfo.pNext = VK_NULL_HANDLE;
 			vBeginInfo.renderPass = vRenderTarget.GetRenderPass();
-			vBeginInfo.framebuffer = vRenderTarget.PrepareAndGetFramebuffer();
-			vBeginInfo.clearValueCount = static_cast<UI32>(clearValues.size());
-			vBeginInfo.pClearValues = clearValues.data();
+			vBeginInfo.framebuffer = vRenderTarget.GetFramebuffer();
+			vBeginInfo.clearValueCount = vRenderTarget.GetClearScreenValueCount();
+			vBeginInfo.pClearValues = vRenderTarget.GetClearScreenValues();
 			vBeginInfo.renderArea.extent.width = vRenderTarget.GetExtent().mWidth;
 			vBeginInfo.renderArea.extent.height = vRenderTarget.GetExtent().mHeight;
 
@@ -419,10 +417,19 @@ namespace Flint
 		{
 			auto& vDevice = pAllocator->GetDevice()->StaticCast<VulkanDevice>();
 
-			vkDestroySemaphore(vDevice.GetLogicalDevice(), vInFlight, nullptr);
-			vkDestroySemaphore(vDevice.GetLogicalDevice(), vRenderFinished, nullptr);
 			vkDestroyFence(vDevice.GetLogicalDevice(), vInFlightFence, nullptr);
 			bIsTerminated = true;
+		}
+
+		const VkSubmitInfo VulkanCommandBuffer::GetSubmitInfo()
+		{
+			vSubmitInfo.signalSemaphoreCount = static_cast<UI32>(vRenderFinishedSemaphores.size());
+			vSubmitInfo.pSignalSemaphores = vRenderFinishedSemaphores.data();
+			vSubmitInfo.waitSemaphoreCount = static_cast<UI32>(vInFlightSemaphores.size());
+			vSubmitInfo.pWaitSemaphores = vInFlightSemaphores.data();
+
+			FLINT_VK_ASSERT(vkResetFences(pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetLogicalDevice(), 1, &vInFlightFence));
+			return vSubmitInfo;
 		}
 
 		void VulkanCommandBuffer::ResetFence()

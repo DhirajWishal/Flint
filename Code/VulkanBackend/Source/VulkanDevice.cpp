@@ -187,9 +187,9 @@ namespace Flint
 				vSubmitInfos[i] = vCommandBuffer.GetSubmitInfo();
 			}
 
+			FLINT_VK_ASSERT(vkResetFences(vLogicalDevice, 1, &vSubmitFence));
 			FLINT_VK_ASSERT(vkQueueSubmit(GetQueue().vGraphicsQueue, static_cast<UI32>(vSubmitInfos.size()), vSubmitInfos.data(), vSubmitFence));
 			FLINT_VK_ASSERT(vkWaitForFences(vLogicalDevice, 1, &vSubmitFence, VK_TRUE, UI64_MAX));
-			FLINT_VK_ASSERT(vkResetFences(vLogicalDevice, 1, &vSubmitFence));
 		}
 
 		void VulkanDevice::SubmitComputeCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers)
@@ -205,9 +205,9 @@ namespace Flint
 				vSubmitInfos[i] = vCommandBuffer.GetSubmitInfo();
 			}
 
+			FLINT_VK_ASSERT(vkResetFences(vLogicalDevice, 1, &vSubmitFence));
 			FLINT_VK_ASSERT(vkQueueSubmit(GetQueue().vComputeQueue, static_cast<UI32>(vSubmitInfos.size()), vSubmitInfos.data(), vSubmitFence));
 			FLINT_VK_ASSERT(vkWaitForFences(vLogicalDevice, 1, &vSubmitFence, VK_TRUE, UI64_MAX));
-			FLINT_VK_ASSERT(vkResetFences(vLogicalDevice, 1, &vSubmitFence));
 		}
 
 		void VulkanDevice::WaitIdle()

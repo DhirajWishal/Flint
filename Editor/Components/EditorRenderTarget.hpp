@@ -4,6 +4,7 @@
 #pragma once
 
 #include "GraphicsCore/ScreenBoundRenderTarget.hpp"
+#include "GraphicsCore/CommandBufferAllocator.hpp"
 
 /**
  * Editor render target.
@@ -18,10 +19,14 @@ public:
 
 	bool IsDisplayOpen() const;
 	void PollEvents();
+	void DrawFrame();
 
 private:
 	std::vector<Flint::RenderTargetAttachment> mAttachments{ 2 };
 
 	std::shared_ptr<Flint::Display> pDisplay = nullptr;
 	std::shared_ptr<Flint::ScreenBoundRenderTarget> pRenderTarget = nullptr;
+
+	std::shared_ptr<Flint::CommandBufferAllocator> pAllocator = nullptr;
+	std::shared_ptr<Flint::CommandBufferAllocator> pSecondaryAllocator = nullptr;
 };

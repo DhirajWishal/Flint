@@ -59,6 +59,11 @@ namespace Flint
 		 */
 		RenderTarget(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments);
 
+		/**
+		 * Prepare all the resources for a new frame.
+		 */
+		virtual void PrepareNewFrame() = 0;
+
 	public:
 		/**
 		 * Get the attachments of the render target.

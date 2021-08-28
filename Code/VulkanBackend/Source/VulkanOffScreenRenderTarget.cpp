@@ -38,35 +38,9 @@ namespace Flint
 			std::vector<VulkanRenderTargetAttachmentInterface*> pAttachmentInferfaces;
 			pAttachmentInferfaces.reserve(mAttachments.size());
 			for (const auto attachment : mAttachments)
+			{
 				pAttachmentInferfaces.push_back(&attachment.pImage->StaticCast<VulkanImage>());
 
-			vRenderTarget.CreateRenderPass(pAttachmentInferfaces, VK_PIPELINE_BIND_POINT_GRAPHICS, vDependencies);
-			vRenderTarget.CreateFrameBuffer(pAttachmentInferfaces, extent, bufferCount);
-			vRenderTarget.CreateSyncObjects(bufferCount);
-
-			vInheritInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
-		}
-		
-		void VulkanOffScreenRenderTarget::Terminate()
-		{
-			vRenderTarget.Terminate();
-			bIsTerminated = true;
-		}
-
-		const VkFramebuffer VulkanOffScreenRenderTarget::PrepareAndGetFramebuffer()
-		{
-			const auto frameBuffer = vRenderTarget.vFrameBuffers[mFrameIndex];
-			IncrementFrameIndex();
-
-			return frameBuffer;
-		}
-		
-		std::vector<VkClearValue> VulkanOffScreenRenderTarget::GetClearScreenValues() const
-		{
-			std::vector<VkClearValue> vClearValues;
-			vClearValues.reserve(mAttachments.size());
-			for (const auto attachment : mAttachments)
-			{
 				VkClearValue vClearValue = {};
 				vClearValue.color.float32[0] = attachment.mClearColor.mRed;
 				vClearValue.color.float32[1] = attachment.mClearColor.mGreen;
@@ -78,7 +52,28 @@ namespace Flint
 				vClearValues.push_back(vClearValue);
 			}
 
-			return vClearValues;
+			vRenderTarget.CreateRenderPass(pAttachmentInferfaces, VK_PIPELINE_BIND_POINT_GRAPHICS, vDependencies);
+			vRenderTarget.CreateFrameBuffer(pAttachmentInferfaces, extent, bufferCount);
+
+			vInheritInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
+			vInheritInfo.pNext = VK_NULL_HANDLE;
+			vInheritInfo.renderPass = vRenderTarget.vRenderPass;
+		}
+		
+		void VulkanOffScreenRenderTarget::PrepareNewFrame()
+		{
+		}
+
+		void VulkanOffScreenRenderTarget::Terminate()
+		{
+			vRenderTarget.Terminate();
+			bIsTerminated = true;
+		}
+		
+		const VkCommandBufferInheritanceInfo* VulkanOffScreenRenderTarget::GetVulkanInheritanceInfo()
+		{
+			vInheritInfo.framebuffer = vRenderTarget.vFrameBuffers[mFrameIndex];
+			return &vInheritInfo;
 		}
 	}
 }

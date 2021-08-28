@@ -34,16 +34,24 @@ namespace Flint
 			const VkSwapchainKHR* GetSwapChainPtr() const { return &vSwapChain; }
 			const UI32* GetImageIndexPtr() const { return &mImageIndex; }
 
+			const VkSemaphore GetInFlightSemaphore() const { return vInFlightSemaphore; }
+			const VkSemaphore GetRenderFinishedSemaphore() const { return vRenderFinished; }
+
 		private:
 			void CreateSwapChain();
+			void DestroySwapChain();
+
 			void CreateSyncObjects();
+			void DestroySyncObjects();
 
 		private:
 			std::vector<VkImage> vImages = {};
 			std::vector<VkImageView> vImageViews = {};
 
 			VkSwapchainKHR vSwapChain = VK_NULL_HANDLE;
-			VkSemaphore vSemaphore = VK_NULL_HANDLE;
+
+			VkSemaphore vInFlightSemaphore = VK_NULL_HANDLE;
+			VkSemaphore vRenderFinished = VK_NULL_HANDLE;
 
 			VkPresentInfoKHR vPresentInfo = {};
 		};

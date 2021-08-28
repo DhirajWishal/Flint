@@ -25,17 +25,10 @@ namespace Flint
 			void CreateFrameBuffer(std::vector<VulkanRenderTargetAttachmentInterface*> pAttachments, const FBox2D& extent, const UI32 bufferCount);
 			void DestroyFrameBuffers();
 
-			void CreateSyncObjects(UI32 count);
-			void DestroySyncObjects();
-
 		public:
 			VkFramebuffer CreateVulkanFrameBuffer(const FBox2D& extent, const std::vector<VkImageView>& vImageViews);
 
 		public:
-			std::vector<VkSemaphore> vImageAvailables;
-			std::vector<VkSemaphore> vRenderFinishes;
-			std::vector<VkFence> vInFlightFences;
-			std::vector<VkFence> vImagesInFlightFences;
 			std::vector<VkFramebuffer> vFrameBuffers = {};
 
 			VkRenderPass vRenderPass = VK_NULL_HANDLE;

@@ -7,16 +7,17 @@
 
 int main()
 {
-	try
-	{
-		Application application{};
-	}
-	catch (std::exception& e)
-	{
-		std::cerr << e.what() << std::endl;
-
-		return EXIT_FAILURE;
-	}
+	Application application{};
+	//try
+	//{
+	//	Application application{};
+	//}
+	//catch (std::exception& e)
+	//{
+	//	std::cerr << e.what() << std::endl;
+	//
+	//	return EXIT_FAILURE;
+	//}
 
 	return EXIT_SUCCESS;
 }

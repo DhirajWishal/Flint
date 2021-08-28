@@ -16,7 +16,6 @@ namespace Flint
 		{
 			DestroyRenderPass();
 			DestroyFrameBuffers();
-			DestroySyncObjects();
 		}
 
 		void VulkanRenderTarget::CreateRenderPass(std::vector<VulkanRenderTargetAttachmentInterface*> pAttachments, VkPipelineBindPoint vBindPoint, const std::vector<VkSubpassDependency>& vSubpassDependencies)
@@ -209,44 +208,6 @@ namespace Flint
 				vkDestroyFramebuffer(vDevice.GetLogicalDevice(), itr, nullptr);
 
 			vFrameBuffers.clear();
-		}
-
-		void VulkanRenderTarget::CreateSyncObjects(UI32 count)
-		{
-			FLINT_SETUP_PROFILER();
-
-			vImageAvailables.resize(count);
-			vRenderFinishes.resize(count);
-			vInFlightFences.resize(count);
-			vImagesInFlightFences.resize(count);
-
-			VkSemaphoreCreateInfo vSCI = {};
-			vSCI.sType = VkStructureType::VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-
-			VkFenceCreateInfo vFCI = {};
-			vFCI.sType = VkStructureType::VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-			vFCI.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-
-			for (auto& itr : vImageAvailables)
-				FLINT_VK_ASSERT(vkCreateSemaphore(vDevice.GetLogicalDevice(), &vSCI, nullptr, &itr));
-
-			for (auto& itr : vRenderFinishes)
-				FLINT_VK_ASSERT(vkCreateSemaphore(vDevice.GetLogicalDevice(), &vSCI, nullptr, &itr));
-
-			for (auto& itr : vInFlightFences)
-				vkCreateFence(vDevice.GetLogicalDevice(), &vFCI, nullptr, &itr);
-		}
-
-		void VulkanRenderTarget::DestroySyncObjects()
-		{
-			for (auto& itr : vImageAvailables)
-				vkDestroySemaphore(vDevice.GetLogicalDevice(), itr, nullptr);
-
-			for (auto& itr : vRenderFinishes)
-				vkDestroySemaphore(vDevice.GetLogicalDevice(), itr, nullptr);
-
-			for (auto& itr : vInFlightFences)
-				vkDestroyFence(vDevice.GetLogicalDevice(), itr, nullptr);
 		}
 
 		VkFramebuffer VulkanRenderTarget::CreateVulkanFrameBuffer(const FBox2D& extent, const std::vector<VkImageView>& vImageViews)
