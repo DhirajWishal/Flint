@@ -25,6 +25,7 @@ project "FlintEngine"
 	includedirs {
 		"$(SolutionDir)Code/",
 		"%{IncludeDir.Assimp}",
+		"%{IncludeDir.shaderc}",
 	}
 
 	libdirs {
@@ -33,16 +34,20 @@ project "FlintEngine"
 
 	links { 
 		"assimp-vc142-mt",
+		"shaderc_combined",
 		"VulkanBackend"
 	}
 
 	filter "configurations:Debug"
 	    buildoptions "/MTd"
+		libdirs { "%{IncludeLib.shaderc_debug}" }
 
 	filter "configurations:PreRelease"
 	    buildoptions "/MT"
+		libdirs { "%{IncludeLib.shaderc_release}" }
 
 	filter "configurations:Release"
 	    buildoptions "/MT"
+		libdirs { "%{IncludeLib.shaderc_release}" }
 
 	filter ""

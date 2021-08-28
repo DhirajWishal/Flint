@@ -24,7 +24,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		namespace _Helpers
+		namespace Helpers
 		{
 			VkSampleCountFlags GetMaxUsableSamples(VkPhysicalDevice vPhysicalDevice)
 			{
@@ -63,7 +63,7 @@ namespace Flint
 				VulkanQueue vQueue = {};
 				vQueue.Initialize(vDevice, flags);
 
-				bool extensionsSupported = _Helpers::CheckDeviceExtensionSupport(vDevice, deviceExtensions);
+				bool extensionsSupported = Helpers::CheckDeviceExtensionSupport(vDevice, deviceExtensions);
 				bool swapChainAdequate = false;
 
 				VkPhysicalDeviceFeatures supportedFeatures = {};
@@ -400,7 +400,7 @@ namespace Flint
 			// Iterate through all the candidate devices and find the best device.
 			for (const VkPhysicalDevice& device : devices)
 			{
-				if (_Helpers::IsPhysicalDeviceSuitable(device, mDeviceExtensions, mFlags))
+				if (Helpers::IsPhysicalDeviceSuitable(device, mDeviceExtensions, mFlags))
 				{
 					vkGetPhysicalDeviceProperties(device, &vPhysicalDeviceProperties);
 
@@ -455,7 +455,7 @@ namespace Flint
 
 #endif	// FLINT_DEBUG
 
-			vSampleCount = _Helpers::GetMaxUsableSamples(vPhysicalDevice);
+			vSampleCount = Helpers::GetMaxUsableSamples(vPhysicalDevice);
 		}
 
 		void VulkanDevice::InitializeLogicalDevice()

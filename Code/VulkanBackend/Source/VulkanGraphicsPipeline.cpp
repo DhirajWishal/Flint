@@ -13,7 +13,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		namespace _Helpers
+		namespace Helpers
 		{
 			VkFormat GetFormatFromSize(ShaderAttributeDataType type)
 			{
@@ -874,7 +874,7 @@ namespace Flint
 							continue;
 
 						vAttributeDescription.location = attribute.mLocation;
-						vAttributeDescription.format = _Helpers::GetFormatFromSize(attribute.mDataType);
+						vAttributeDescription.format = Helpers::GetFormatFromSize(attribute.mDataType);
 
 						INSERT_INTO_VECTOR(vVertexAttributes, vAttributeDescription);
 						vAttributeDescription.offset += static_cast<UI32>(attribute.mDataType);
@@ -900,7 +900,7 @@ namespace Flint
 			vInputAssemblyStateCreateInfo.pNext = VK_NULL_HANDLE;
 			vInputAssemblyStateCreateInfo.flags = 0;
 			vInputAssemblyStateCreateInfo.primitiveRestartEnable = GET_VK_BOOL(mSpecification.bEnablePrimitiveRestart);
-			vInputAssemblyStateCreateInfo.topology = _Helpers::GetPrimitiveTopology(mSpecification.mPrimitiveTopology);
+			vInputAssemblyStateCreateInfo.topology = Helpers::GetPrimitiveTopology(mSpecification.mPrimitiveTopology);
 
 			// Tessellation state.
 			vTessellationStateCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO;
@@ -913,13 +913,13 @@ namespace Flint
 			{
 				VkPipelineColorBlendAttachmentState vAttachmentState = {};
 				vAttachmentState.blendEnable = GET_VK_BOOL(attachment.mEnableBlend);
-				vAttachmentState.alphaBlendOp = _Helpers::GetBlendOp(attachment.mAlphaBlendOperator);
-				vAttachmentState.colorBlendOp = _Helpers::GetBlendOp(attachment.mBlendOperator);
-				vAttachmentState.colorWriteMask = _Helpers::GetComponentFlags(attachment.mColorWriteMask);
-				vAttachmentState.srcColorBlendFactor = _Helpers::GetBlendFactor(attachment.mSrcBlendFactor);
-				vAttachmentState.srcAlphaBlendFactor = _Helpers::GetBlendFactor(attachment.mSrcAlphaBlendFactor);
-				vAttachmentState.dstAlphaBlendFactor = _Helpers::GetBlendFactor(attachment.mDstAlphaBlendFactor);
-				vAttachmentState.dstColorBlendFactor = _Helpers::GetBlendFactor(attachment.mDstBlendFactor);
+				vAttachmentState.alphaBlendOp = Helpers::GetBlendOp(attachment.mAlphaBlendOperator);
+				vAttachmentState.colorBlendOp = Helpers::GetBlendOp(attachment.mBlendOperator);
+				vAttachmentState.colorWriteMask = Helpers::GetComponentFlags(attachment.mColorWriteMask);
+				vAttachmentState.srcColorBlendFactor = Helpers::GetBlendFactor(attachment.mSrcBlendFactor);
+				vAttachmentState.srcAlphaBlendFactor = Helpers::GetBlendFactor(attachment.mSrcAlphaBlendFactor);
+				vAttachmentState.dstAlphaBlendFactor = Helpers::GetBlendFactor(attachment.mDstAlphaBlendFactor);
+				vAttachmentState.dstColorBlendFactor = Helpers::GetBlendFactor(attachment.mDstBlendFactor);
 
 				INSERT_INTO_VECTOR(vCBASS, vAttachmentState);
 			}
@@ -927,7 +927,7 @@ namespace Flint
 			vColorBlendStateCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
 			vColorBlendStateCreateInfo.pNext = VK_NULL_HANDLE;
 			vColorBlendStateCreateInfo.flags = 0;
-			vColorBlendStateCreateInfo.logicOp = _Helpers::GetLogicOp(mSpecification.mColorBlendLogic);
+			vColorBlendStateCreateInfo.logicOp = Helpers::GetLogicOp(mSpecification.mColorBlendLogic);
 			vColorBlendStateCreateInfo.logicOpEnable = GET_VK_BOOL(mSpecification.bEnableColorBlendLogic);
 			std::copy(mSpecification.mColorBlendConstants, mSpecification.mColorBlendConstants + 4, vColorBlendStateCreateInfo.blendConstants);
 
@@ -938,15 +938,15 @@ namespace Flint
 			vRasterizationStateCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
 			vRasterizationStateCreateInfo.pNext = VK_NULL_HANDLE;
 			vRasterizationStateCreateInfo.flags = 0;
-			vRasterizationStateCreateInfo.cullMode = _Helpers::GetCullMode(mSpecification.mCullMode);
+			vRasterizationStateCreateInfo.cullMode = Helpers::GetCullMode(mSpecification.mCullMode);
 			vRasterizationStateCreateInfo.depthBiasEnable = GET_VK_BOOL(mSpecification.bEnableDepthBias);
 			vRasterizationStateCreateInfo.depthBiasClamp = mSpecification.mDepthBiasFactor;
 			vRasterizationStateCreateInfo.depthBiasConstantFactor = mSpecification.mDepthConstantFactor;
 			vRasterizationStateCreateInfo.depthBiasSlopeFactor = mSpecification.mDepthSlopeFactor;
 			vRasterizationStateCreateInfo.depthClampEnable = GET_VK_BOOL(mSpecification.bEnableDepthClamp);
-			vRasterizationStateCreateInfo.frontFace = _Helpers::GetFrontFace(mSpecification.mFrontFace);
+			vRasterizationStateCreateInfo.frontFace = Helpers::GetFrontFace(mSpecification.mFrontFace);
 			vRasterizationStateCreateInfo.lineWidth = mSpecification.mRasterizerLineWidth;
-			vRasterizationStateCreateInfo.polygonMode = _Helpers::GetPolygonMode(mSpecification.mPolygonMode);
+			vRasterizationStateCreateInfo.polygonMode = Helpers::GetPolygonMode(mSpecification.mPolygonMode);
 			vRasterizationStateCreateInfo.rasterizerDiscardEnable = GET_VK_BOOL(mSpecification.bEnableRasterizerDiscard);
 
 			// Multisample state.
@@ -958,7 +958,7 @@ namespace Flint
 			vMultisampleStateCreateInfo.minSampleShading = mSpecification.mMinSampleShading;
 			vMultisampleStateCreateInfo.pSampleMask;	// TODO
 			//vMultisampleStateCreateInfo.rasterizationSamples = VkSampleCountFlagBits::VK_SAMPLE_COUNT_1_BIT;
-			vMultisampleStateCreateInfo.rasterizationSamples = static_cast<VkSampleCountFlagBits>(_Helpers::GetSampleCount(mSpecification.mRasterizationSamples));
+			vMultisampleStateCreateInfo.rasterizationSamples = static_cast<VkSampleCountFlagBits>(Helpers::GetSampleCount(mSpecification.mRasterizationSamples));
 			//vMultisampleStateCreateInfo.rasterizationSamples = static_cast<VkSampleCountFlagBits>(pDevice->StaticCast<VulkanDevice>().GetSampleCount());
 			vMultisampleStateCreateInfo.sampleShadingEnable = GET_VK_BOOL(mSpecification.bEnableSampleShading);
 
@@ -969,10 +969,10 @@ namespace Flint
 			vDepthStencilStateCreateInfo.back.compareOp = VK_COMPARE_OP_ALWAYS;
 			vDepthStencilStateCreateInfo.depthTestEnable = GET_VK_BOOL(mSpecification.bEnableDepthTest);
 			vDepthStencilStateCreateInfo.depthWriteEnable = GET_VK_BOOL(mSpecification.bEnableDepthWrite);
-			vDepthStencilStateCreateInfo.depthCompareOp = _Helpers::GetCompareOp(mSpecification.mDepthCompareLogic);
+			vDepthStencilStateCreateInfo.depthCompareOp = Helpers::GetCompareOp(mSpecification.mDepthCompareLogic);
 
 			// Dynamic state.
-			vDynamicStates = std::move(_Helpers::GetDynamicStates(mSpecification.mDynamicStateFlags));
+			vDynamicStates = std::move(Helpers::GetDynamicStates(mSpecification.mDynamicStateFlags));
 
 			vDynamicStateCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
 			vDynamicStateCreateInfo.pNext = VK_NULL_HANDLE;

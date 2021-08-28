@@ -25,6 +25,7 @@ workspace "Flint"
 	IncludeDir["Vulkan"] = "$(SolutionDir)ThirdParty/Vulkan/include"
 	IncludeDir["SPIRV_Cross"] = "$(SolutionDir)ThirdParty/SPIRV-Cross/include"
 	IncludeDir["Assimp"] = "$(SolutionDir)ThirdParty/Assimp/include"
+	IncludeDir["shaderc"] = "$(SolutionDir)ThirdParty/shaderc/libshaderc/include"
 
 	IncludeDir["imgui"] = "$(SolutionDir)Demos/ThirdParty/imgui/"
 	IncludeDir["ImGuizmo"] = "$(SolutionDir)Demos/ThirdParty/ImGuizmo/"
@@ -35,6 +36,9 @@ workspace "Flint"
 	IncludeLib["Vulkan"] = "$(SolutionDir)ThirdParty/Vulkan/lib"
 	IncludeLib["SPIRV_Cross"] = "$(SolutionDir)ThirdParty/SPIRV-Cross/Release"
 	IncludeLib["Assimp"] = "$(SolutionDir)ThirdParty/Assimp/lib/Release"
+
+	IncludeLib["shaderc_debug"] = "$(SolutionDir)ThirdParty/shaderc/libshaderc/Debug"
+	IncludeLib["shaderc_release"] = "$(SolutionDir)ThirdParty/shaderc/libshaderc/Release"
 
 	filter "configurations:Debug"
 		defines { "FLINT_DEBUG" }

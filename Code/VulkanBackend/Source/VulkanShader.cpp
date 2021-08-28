@@ -11,7 +11,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		namespace _Helpers
+		namespace Helpers
 		{
 			std::vector<UI32> ResolvePadding(const std::vector<UI32>& code)
 			{
@@ -203,13 +203,16 @@ namespace Flint
 		}
 
 		VulkanShader::VulkanShader(const std::shared_ptr<Device>& pDevice, const ShaderType type, const std::vector<UI32>& code)
-			: Shader(pDevice, type, code)
+			: Shader(pDevice, type, code), mShaderCode(code)
 		{
 			FLINT_SETUP_PROFILER();
 
 			ResolveShaderStage();
 
-			mShaderCode = code;
+			// Add padding if the code isnt a multiple of 4.
+			for (UI8 i = 0; i < mShaderCode.size() % 4; i++)
+				mShaderCode.push_back(0);
+
 			CreateShaderModule();
 			PerformReflection();
 		}
@@ -308,15 +311,16 @@ namespace Flint
 			SpvReflectShaderModule sShaderModule = {};
 			UI32 variableCount = 0;
 
-			std::vector<UI32> shaderCode = std::move(_Helpers::ResolvePadding(mShaderCode));
-			_Helpers::ValidateReflection(spvReflectCreateShaderModule(shaderCode.size() * sizeof(UI32), shaderCode.data(), &sShaderModule));
+			//std::vector<UI32> shaderCode = mShaderCode;
+			std::vector<UI32> shaderCode = std::move(Helpers::ResolvePadding(mShaderCode));
+			Helpers::ValidateReflection(spvReflectCreateShaderModule(shaderCode.size() * sizeof(UI32), shaderCode.data(), &sShaderModule));
 
 			// Resolve shader inputs.
 			{
-				_Helpers::ValidateReflection(spvReflectEnumerateInputVariables(&sShaderModule, &variableCount, nullptr));
+				Helpers::ValidateReflection(spvReflectEnumerateInputVariables(&sShaderModule, &variableCount, nullptr));
 
 				std::vector<SpvReflectInterfaceVariable*> pInputs(variableCount);
-				_Helpers::ValidateReflection(spvReflectEnumerateInputVariables(&sShaderModule, &variableCount, pInputs.data()));
+				Helpers::ValidateReflection(spvReflectEnumerateInputVariables(&sShaderModule, &variableCount, pInputs.data()));
 
 				mInputAttributes[0].reserve(pInputs.size());
 				for (auto& resource : pInputs)
@@ -348,10 +352,10 @@ namespace Flint
 
 			// Resolve shader outputs.
 			{
-				_Helpers::ValidateReflection(spvReflectEnumerateOutputVariables(&sShaderModule, &variableCount, nullptr));
+				Helpers::ValidateReflection(spvReflectEnumerateOutputVariables(&sShaderModule, &variableCount, nullptr));
 
 				std::vector<SpvReflectInterfaceVariable*> pOutputs(variableCount);
-				_Helpers::ValidateReflection(spvReflectEnumerateOutputVariables(&sShaderModule, &variableCount, pOutputs.data()));
+				Helpers::ValidateReflection(spvReflectEnumerateOutputVariables(&sShaderModule, &variableCount, pOutputs.data()));
 
 				for (auto& resource : pOutputs)
 				{
@@ -372,10 +376,10 @@ namespace Flint
 
 			// Resolve uniforms.
 			{
-				_Helpers::ValidateReflection(spvReflectEnumerateDescriptorBindings(&sShaderModule, &variableCount, nullptr));
+				Helpers::ValidateReflection(spvReflectEnumerateDescriptorBindings(&sShaderModule, &variableCount, nullptr));
 
 				std::vector<SpvReflectDescriptorBinding*> pBindings(variableCount);
-				_Helpers::ValidateReflection(spvReflectEnumerateDescriptorBindings(&sShaderModule, &variableCount, pBindings.data()));
+				Helpers::ValidateReflection(spvReflectEnumerateDescriptorBindings(&sShaderModule, &variableCount, pBindings.data()));
 
 				VkDescriptorSetLayoutBinding vBinding = {};
 				vBinding.stageFlags = vStageFlags;
@@ -384,7 +388,7 @@ namespace Flint
 				VkDescriptorPoolSize vSize = {};
 				for (auto& resource : pBindings)
 				{
-					vBinding.descriptorType = _Helpers::GetVkDescriptorType(resource->descriptor_type);
+					vBinding.descriptorType = Helpers::GetVkDescriptorType(resource->descriptor_type);
 					vBinding.descriptorCount = resource->count;
 					vBinding.binding = resource->binding;
 					INSERT_INTO_VECTOR(mBindings, vBinding);
@@ -393,16 +397,16 @@ namespace Flint
 					vSize.descriptorCount = resource->count;
 					INSERT_INTO_VECTOR(mSizes, vSize);
 
-					mResources[resource->name] = ShaderResource(vBinding.binding, resource->set, _Helpers::GetShaderResourceType(resource->descriptor_type));
+					mResources[resource->name] = ShaderResource(vBinding.binding, resource->set, Helpers::GetShaderResourceType(resource->descriptor_type));
 				}
 			}
 
 			// Resolve push constants.
 			{
-				_Helpers::ValidateReflection(spvReflectEnumeratePushConstantBlocks(&sShaderModule, &variableCount, nullptr));
+				Helpers::ValidateReflection(spvReflectEnumeratePushConstantBlocks(&sShaderModule, &variableCount, nullptr));
 
 				std::vector<SpvReflectBlockVariable*> pPushConstants(variableCount);
-				_Helpers::ValidateReflection(spvReflectEnumeratePushConstantBlocks(&sShaderModule, &variableCount, pPushConstants.data()));
+				Helpers::ValidateReflection(spvReflectEnumeratePushConstantBlocks(&sShaderModule, &variableCount, pPushConstants.data()));
 
 				VkPushConstantRange vPushConstantRange = {};
 				vPushConstantRange.stageFlags = vStageFlags;

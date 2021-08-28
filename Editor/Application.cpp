@@ -6,6 +6,7 @@
 #include "GraphicsCore/Instance.hpp"
 
 #include "Engine/AssetLoader.hpp"
+#include "Engine/ShaderCompiler.hpp"
 
 Application::Application()
 {
@@ -17,7 +18,8 @@ Application::Application()
 
 	// Test loader.
 	{
-		auto pShader = pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("E:\\Flint\\Builds\\Demos\\Binaries\\ShadowMap\\Debug Windows\\Flint\\Shaders\\3D\\shader.vert.spv"));
+		Flint::ShaderCompiler compiler(std::filesystem::path("E:\\Flint\\Editor\\Shaders\\3D\\shader.vert"), Flint::ShaderCodeType::GLSL, Flint::ShaderType::VERTEX);
+		auto pShader = pDevice->CreateShader(Flint::ShaderType::VERTEX, compiler.GetShaderCode());
 		auto pGeometryStore = pDevice->CreateGeometryStore(pShader->GetInputAttributes(), sizeof(UI32));
 
 		Flint::VertexDescriptor vDescriptor = {};
@@ -25,7 +27,7 @@ Application::Application()
 		vDescriptor.mAttributes.push_back(Flint::VertexAttribute(sizeof(float) * 3, Flint::VertexAttributeType::COLOR_0));
 		vDescriptor.mAttributes.push_back(Flint::VertexAttribute(sizeof(float) * 2, Flint::VertexAttributeType::TEXTURE_COORDINATES_0));
 
-		Flint::AssetLoader loader(pGeometryStore, "E:\\Dynamik\\Game Repository\\assets\\assets\\donut\\Donut.obj", vDescriptor);
+		Flint::AssetLoader loader(pGeometryStore, "E:\\Demo\\Vulkan\\data\\models\\voyager.gltf", vDescriptor);
 		auto wireFrames = loader.GetWireFrames();
 	}
 

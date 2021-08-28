@@ -15,7 +15,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		namespace _Helpers
+		namespace Helpers
 		{
 			void GLFWErrorCallback(int code, const char* message)
 			{
@@ -164,7 +164,7 @@ namespace Flint
 		void VulkanInstance::InitializeGLFW()
 		{
 			glfwInit();
-			glfwSetErrorCallback(_Helpers::GLFWErrorCallback);
+			glfwSetErrorCallback(Helpers::GLFWErrorCallback);
 			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 		}
 
@@ -178,7 +178,7 @@ namespace Flint
 			FLINT_SETUP_PROFILER();
 
 			// Check if the validation layers are supported.
-			if (mEnableValidation && !_Helpers::CheckValidationLayerSupport(mValidationLayers))
+			if (mEnableValidation && !Helpers::CheckValidationLayerSupport(mValidationLayers))
 				FLINT_THROW_RUNTIME_ERROR("Validation layers requested but not available!");
 
 			// Application info.
@@ -196,7 +196,7 @@ namespace Flint
 			createInfo.pApplicationInfo = &appInfo;
 
 			// Get and insert the required instance extensions.
-			std::vector<const char*> requiredExtensions = std::move(_Helpers::GetRequiredInstanceExtensions(mEnableValidation));
+			std::vector<const char*> requiredExtensions = std::move(Helpers::GetRequiredInstanceExtensions(mEnableValidation));
 			createInfo.enabledExtensionCount = static_cast<UI32>(requiredExtensions.size());
 			createInfo.ppEnabledExtensionNames = requiredExtensions.data();
 
@@ -207,7 +207,7 @@ namespace Flint
 				createInfo.enabledLayerCount = static_cast<UI32>(mValidationLayers.size());
 				createInfo.ppEnabledLayerNames = mValidationLayers.data();
 
-				debugCreateInfo = _Helpers::CreateDebugMessengerCreateInfo();
+				debugCreateInfo = Helpers::CreateDebugMessengerCreateInfo();
 				createInfo.pNext = &debugCreateInfo;
 			}
 			else
@@ -227,7 +227,7 @@ namespace Flint
 
 		void VulkanInstance::InitializeDebugger()
 		{
-			VkDebugUtilsMessengerCreateInfoEXT createInfo = _Helpers::CreateDebugMessengerCreateInfo();
+			VkDebugUtilsMessengerCreateInfoEXT createInfo = Helpers::CreateDebugMessengerCreateInfo();
 
 			auto func = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(vInstance, "vkCreateDebugUtilsMessengerEXT"));
 			FLINT_VK_ASSERT(func(vInstance, &createInfo, nullptr, &vDebugMessenger));

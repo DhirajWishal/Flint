@@ -35,6 +35,7 @@ os.system("cd \"ThirdParty/SPIRV-Cross\" && cmake CMakeLists.txt && cmake --buil
 # Build shaderc
 print("\nBuilding shaderc ...")
 os.system("cd \"ThirdParty/shaderc\" && python utils/git-sync-deps && cmake CMakeLists.txt && cmake --build . --config Release")
+os.system("cd \"ThirdParty/shaderc\" && cmake --build . --config Debug")
 
 # Build Assimp
 print("\nBuilding Assimp ...")

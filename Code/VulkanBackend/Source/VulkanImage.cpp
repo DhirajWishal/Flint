@@ -10,7 +10,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		namespace _Helpers
+		namespace Helpers
 		{
 			VkImageType GetImageType(const ImageType type)
 			{
@@ -209,7 +209,7 @@ namespace Flint
 			vCopy.imageExtent.width = mExtent.mWidth;
 			vCopy.imageExtent.height = mExtent.mHeight;
 			vCopy.imageExtent.depth = mExtent.mDepth;
-			vCopy.imageSubresource.aspectMask = _Helpers::GetImageAspectFlags(mUsage);
+			vCopy.imageSubresource.aspectMask = Helpers::GetImageAspectFlags(mUsage);
 			vCopy.imageSubresource.baseArrayLayer = 0;
 			vCopy.imageSubresource.layerCount = mLayerCount;
 			vCopy.imageSubresource.mipLevel = 0;	// TODO
@@ -321,9 +321,9 @@ namespace Flint
 			VkImageView vImageView = VK_NULL_HANDLE;
 
 			if (mType == ImageType::CUBEMAP || mType == ImageType::CUBEMAP_ARRAY)
-				vImageView = Utilities::CreateImageViews({ vImage }, Utilities::GetVulkanFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), _Helpers::GetImageAspectFlags(mUsage), _Helpers::GetImageViewType(mType), 1, layerNumber, { VK_COMPONENT_SWIZZLE_R, VK_COMPONENT_SWIZZLE_G, VK_COMPONENT_SWIZZLE_B, VK_COMPONENT_SWIZZLE_A })[0];
+				vImageView = Utilities::CreateImageViews({ vImage }, Utilities::GetVulkanFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), Helpers::GetImageAspectFlags(mUsage), Helpers::GetImageViewType(mType), 1, layerNumber, { VK_COMPONENT_SWIZZLE_R, VK_COMPONENT_SWIZZLE_G, VK_COMPONENT_SWIZZLE_B, VK_COMPONENT_SWIZZLE_A })[0];
 			else
-				vImageView = Utilities::CreateImageViews({ vImage }, Utilities::GetVulkanFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), _Helpers::GetImageAspectFlags(mUsage), _Helpers::GetImageViewType(mType), 1, layerNumber)[0];
+				vImageView = Utilities::CreateImageViews({ vImage }, Utilities::GetVulkanFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), Helpers::GetImageAspectFlags(mUsage), Helpers::GetImageViewType(mType), 1, layerNumber)[0];
 
 			return vImageView;
 		}
@@ -356,7 +356,7 @@ namespace Flint
 			vCreateInfo.extent.depth = mExtent.mDepth;
 			vCreateInfo.arrayLayers = mLayerCount;
 			vCreateInfo.format = Utilities::GetVulkanFormat(mFormat);
-			vCreateInfo.imageType = _Helpers::GetImageType(mType);
+			vCreateInfo.imageType = Helpers::GetImageType(mType);
 			vCreateInfo.initialLayout = vCurrentLayout;
 			vCreateInfo.mipLevels = mMipLevels;
 			vCreateInfo.queueFamilyIndexCount = 0;
@@ -364,7 +364,7 @@ namespace Flint
 			vCreateInfo.samples = Utilities::GetSampleCount(mMultiSampleCount);
 			vCreateInfo.sharingMode = VkSharingMode::VK_SHARING_MODE_EXCLUSIVE;
 			vCreateInfo.tiling = VkImageTiling::VK_IMAGE_TILING_OPTIMAL;
-			vCreateInfo.usage = _Helpers::GetImageUsage(mUsage);
+			vCreateInfo.usage = Helpers::GetImageUsage(mUsage);
 
 			if (mType == ImageType::CUBEMAP || mType == ImageType::CUBEMAP_ARRAY)
 				vCreateInfo.flags = VkImageCreateFlagBits::VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
@@ -408,9 +408,9 @@ namespace Flint
 			FLINT_SETUP_PROFILER();
 
 			if (mType == ImageType::CUBEMAP || mType == ImageType::CUBEMAP_ARRAY || mUsage == ImageUsage::STORAGE)
-				vImageView = Utilities::CreateImageViews({ vImage }, Utilities::GetVulkanFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), _Helpers::GetImageAspectFlags(mUsage), _Helpers::GetImageViewType(mType), mLayerCount, 0, _Helpers::GetComponentMapping(mFormat))[0];
+				vImageView = Utilities::CreateImageViews({ vImage }, Utilities::GetVulkanFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), Helpers::GetImageAspectFlags(mUsage), Helpers::GetImageViewType(mType), mLayerCount, 0, Helpers::GetComponentMapping(mFormat))[0];
 			else
-				vImageView = Utilities::CreateImageViews({ vImage }, Utilities::GetVulkanFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), _Helpers::GetImageAspectFlags(mUsage), _Helpers::GetImageViewType(mType), mLayerCount)[0];
+				vImageView = Utilities::CreateImageViews({ vImage }, Utilities::GetVulkanFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), Helpers::GetImageAspectFlags(mUsage), Helpers::GetImageViewType(mType), mLayerCount)[0];
 		}
 
 		void VulkanImage::GenerateMipMaps()
@@ -433,7 +433,7 @@ namespace Flint
 				barrier.image = vImage;
 				barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
 				barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-				barrier.subresourceRange.aspectMask = _Helpers::GetImageAspectFlags(mUsage);
+				barrier.subresourceRange.aspectMask = Helpers::GetImageAspectFlags(mUsage);
 				barrier.subresourceRange.layerCount = mLayerCount - i;
 				barrier.subresourceRange.levelCount = 1;
 				barrier.subresourceRange.baseArrayLayer = i;
@@ -540,7 +540,7 @@ namespace Flint
 					vCopy.imageExtent.width = mExtent.mWidth;
 					vCopy.imageExtent.height = mExtent.mHeight;
 					vCopy.imageExtent.depth = mExtent.mDepth;
-					vCopy.imageSubresource.aspectMask = _Helpers::GetImageAspectFlags(mUsage);
+					vCopy.imageSubresource.aspectMask = Helpers::GetImageAspectFlags(mUsage);
 					vCopy.imageSubresource.baseArrayLayer = 0;
 					vCopy.imageSubresource.layerCount = mLayerCount;
 					vCopy.imageSubresource.mipLevel = 0;

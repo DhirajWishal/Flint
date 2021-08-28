@@ -6,7 +6,7 @@
 
 namespace Flint
 {
-	namespace _Helpers
+	namespace Helpers
 	{
 		std::pair<std::vector<std::string>, std::vector<std::string>> GetResourceNames(const std::vector<std::shared_ptr<Shader>>& pShaders)
 		{
@@ -92,7 +92,7 @@ namespace Flint
 
 	std::shared_ptr<ResourceMap> GraphicsPipeline::CreateResourceMap() const
 	{
-		auto [buffers, images] = _Helpers::GetResourceNames({ pVertexShader, pTessellationControlShader, pTessellationEvaluationShader, pGeometryShader, pFragmentShader });
+		auto [buffers, images] = Helpers::GetResourceNames({ pVertexShader, pTessellationControlShader, pTessellationEvaluationShader, pGeometryShader, pFragmentShader });
 		return std::make_shared<ResourceMap>(buffers, images);
 	}
 

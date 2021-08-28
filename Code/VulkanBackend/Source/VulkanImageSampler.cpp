@@ -7,7 +7,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		namespace _Helpers
+		namespace Helpers
 		{
 			VkSamplerAddressMode GetAddressMode(AddressMode mode)
 			{
@@ -144,20 +144,20 @@ namespace Flint
 			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
 			vCreateInfo.pNext = VK_NULL_HANDLE;
 			vCreateInfo.flags = 0;
-			vCreateInfo.addressModeU = _Helpers::GetAddressMode(specification.mAddressModeU);
-			vCreateInfo.addressModeV = _Helpers::GetAddressMode(specification.mAddressModeV);
-			vCreateInfo.addressModeW = _Helpers::GetAddressMode(specification.mAddressModeW);
+			vCreateInfo.addressModeU = Helpers::GetAddressMode(specification.mAddressModeU);
+			vCreateInfo.addressModeV = Helpers::GetAddressMode(specification.mAddressModeV);
+			vCreateInfo.addressModeW = Helpers::GetAddressMode(specification.mAddressModeW);
 			vCreateInfo.anisotropyEnable = GET_VK_BOOL(specification.bEnableAnisotropy);
-			vCreateInfo.borderColor = _Helpers::GetBorderColor(specification.mBorderColor);
+			vCreateInfo.borderColor = Helpers::GetBorderColor(specification.mBorderColor);
 			vCreateInfo.compareEnable = GET_VK_BOOL(specification.bEnableCompare);
-			vCreateInfo.compareOp = _Helpers::GetCompareOperator(specification.mCompareOperator);
-			vCreateInfo.magFilter = _Helpers::GetFilter(specification.mImageMagificationFilter);
-			vCreateInfo.minFilter = _Helpers::GetFilter(specification.mImageMinificationFilter);
+			vCreateInfo.compareOp = Helpers::GetCompareOperator(specification.mCompareOperator);
+			vCreateInfo.magFilter = Helpers::GetFilter(specification.mImageMagificationFilter);
+			vCreateInfo.minFilter = Helpers::GetFilter(specification.mImageMinificationFilter);
 			vCreateInfo.maxAnisotropy = specification.mMaxAnisotrophy;
 			vCreateInfo.maxLod = specification.mMaxLevelOfDetail;
 			vCreateInfo.minLod = specification.mMinLevelOfDetail;
 			vCreateInfo.mipLodBias = specification.mMipLoadBias;
-			vCreateInfo.mipmapMode = _Helpers::GetMipMapMode(specification.mMipMapMode);
+			vCreateInfo.mipmapMode = Helpers::GetMipMapMode(specification.mMipMapMode);
 			vCreateInfo.unnormalizedCoordinates = GET_VK_BOOL(specification.bEnableUnnormalizedCoordinates);
 
 			if (vCreateInfo.maxAnisotropy == 0.0f)

@@ -92,9 +92,10 @@ namespace Flint
 					}
 					else if (pProperty->mDataLength == (sizeof(float[4])))
 					{
-						float value[4] = {};
-						pMaterial->Get(pProperty->mKey.C_Str(), pProperty->mType, pProperty->mIndex, value);
+						aiColor4D color(0.0f, 0.0f, 0.0f, 0.0f);
+						pMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, color);
 
+						float value[4] = { color.r, color.g, color.b, color.a };
 						material.AddProperty(std::make_unique<MaterialProperties::Float4>(value));
 					}
 				}

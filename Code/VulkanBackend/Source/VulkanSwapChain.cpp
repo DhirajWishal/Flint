@@ -8,7 +8,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		namespace _Helpers
+		namespace Helpers
 		{
 			VkPresentModeKHR GetPresentMode(SwapChainPresentMode mode)
 			{
@@ -146,7 +146,7 @@ namespace Flint
 			VkSurfaceFormatKHR surfaceFormat = vDisplay.ChooseSurfaceFormat(vSupport.mFormats);
 
 			bool bPresentModeAvailable = false;
-			VkPresentModeKHR presentMode = _Helpers::GetPresentMode(mPresentMode);
+			VkPresentModeKHR presentMode = Helpers::GetPresentMode(mPresentMode);
 			for (const auto availablePresentMode : vSupport.mPresentModes)
 			{
 				if (availablePresentMode == presentMode)
