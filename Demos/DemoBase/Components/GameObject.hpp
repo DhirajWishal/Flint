@@ -32,7 +32,7 @@ public:
 
 protected:
 	template<class Type>
-	void SubmitToUniformBuffer(std::shared_ptr<Flint::Buffer> pBuffer, const Type& data)
+	void SubmitToUniformBuffer(boost::shared_ptr<Flint::Buffer> pBuffer, const Type& data)
 	{
 		Type* pDataStore = static_cast<Type*>(pBuffer->MapMemory(sizeof(Type)));
 		*pDataStore = data;
@@ -45,8 +45,8 @@ protected:
 protected:
 	glm::vec3 mPosition = {};
 	glm::mat4 mModelMatrix = glm::mat4(1.0f);
-	std::shared_ptr<Flint::Buffer> pModelUniform = nullptr;
-	std::shared_ptr<Flint::ResourceMap> pResourceMap = nullptr;
+	boost::shared_ptr<Flint::Buffer> pModelUniform = nullptr;
+	boost::shared_ptr<Flint::ResourceMap> pResourceMap = nullptr;
 
 	SceneState* pSceneState = nullptr;
 
@@ -56,7 +56,7 @@ protected:
 	bool bIsBoundingBoxEnabled = false;
 
 private:
-	std::shared_ptr<Flint::DynamicStateContainer> pDynamicStates = nullptr;
-	std::shared_ptr<Flint::ResourceMap> pResourceMapBB = nullptr;
+	boost::shared_ptr<Flint::DynamicStateContainer> pDynamicStates = nullptr;
+	boost::shared_ptr<Flint::ResourceMap> pResourceMapBB = nullptr;
 	UI64 mBoundingBoxIndex = 0;
 };

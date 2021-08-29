@@ -11,7 +11,7 @@ namespace Flint
 		if (mPipelineName.empty())
 			return;
 
-		std::ofstream cacheFile(std::filesystem::current_path().string() + FLINT_CACHE_DIRECTORY "\\" + mPipelineName + ".fpc", std::ios::binary);
+		std::ofstream cacheFile(boost::filesystem::current_path().string() + FLINT_CACHE_DIRECTORY "\\" + mPipelineName + ".fpc", std::ios::binary);
 
 		if (!cacheFile.is_open())
 			FLINT_THROW_RUNTIME_ERROR("Failed to write cache data!");
@@ -27,7 +27,7 @@ namespace Flint
 		if (mPipelineName.empty())
 			return std::pair<UI64, unsigned char*>(0, nullptr);
 
-		std::ifstream cacheFile(std::filesystem::current_path().string() + FLINT_CACHE_DIRECTORY "\\" + mPipelineName + ".fpc", std::ios::ate | std::ios::binary);
+		boost::filesystem::ifstream cacheFile(boost::filesystem::current_path().string() + FLINT_CACHE_DIRECTORY "\\" + mPipelineName + ".fpc", std::ios::ate | std::ios::binary);
 
 		// If file does not exist, return without an issue.
 		if (!cacheFile.is_open())

@@ -7,7 +7,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <imgui.h>
 
-void Camera::Initialize(std::shared_ptr<Flint::Device> pDevice)
+void Camera::Initialize(boost::shared_ptr<Flint::Device> pDevice)
 {
 	pCameraBuffer = pDevice->CreateBuffer(Flint::BufferType::UNIFORM, sizeof(CameraMatrix));
 	this->pDevice = pDevice;

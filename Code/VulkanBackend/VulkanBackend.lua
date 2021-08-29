@@ -8,7 +8,7 @@ project "VulkanBackend"
 	kind "StaticLib"
 	systemversion "latest"
 	cppdialect "C++17"
-	staticruntime "On"
+	staticruntime "on"
 
 	targetdir "$(SolutionDir)Builds/Binaries/$(Configuration)"
 	objdir "$(SolutionDir)Builds/Intermediate/$(Configuration)"
@@ -30,11 +30,13 @@ project "VulkanBackend"
 		"$(SolutionDir)ThirdParty/SPIRV-Reflect",
 		"%{IncludeDir.Vulkan}",
 		"%{IncludeDir.GLFW}",
+		"%{IncludeDir.boost}",
 	}
 
 	libdirs {
 		"%{IncludeLib.GLFW}",
 		"%{IncludeLib.Vulkan}",
+		"%{IncludeLib.boost}",
 	}
 
 	links { 

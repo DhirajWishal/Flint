@@ -7,7 +7,7 @@
 
 constexpr float Point = 1.0f;
 
-static std::vector<glm::vec3> mBoundingVertexes = {
+static boost::container::vector<glm::vec3> mBoundingVertexes = {
 	glm::vec3(-Point, Point, Point),
 	glm::vec3(-Point, Point, -Point),
 	glm::vec3(Point, Point, -Point),
@@ -18,7 +18,7 @@ static std::vector<glm::vec3> mBoundingVertexes = {
 	glm::vec3(-Point, -Point, Point)
 };
 
-static std::vector<UI32> mBoundingIndexes = {
+static boost::container::vector<UI32> mBoundingIndexes = {
 	0, 1, 1, 2, 2, 3, 3, 0,
 	3, 4, 4, 5, 5, 2, 5, 6,
 	6, 1, 6, 7, 7, 0, 7, 4
@@ -28,7 +28,7 @@ GameObject::GameObject(glm::vec3 position, SceneState* pSceneState) : mPosition(
 {
 	pModelUniform = pSceneState->pDevice->CreateBuffer(Flint::BufferType::UNIFORM, sizeof(glm::mat4));
 	mModelMatrix = glm::translate(glm::mat4(1.0f), position);
-	//pDynamicStates = std::make_shared<Flint::DynamicStateContainer>();
+	//pDynamicStates = boost::make_shared<Flint::DynamicStateContainer>();
 }
 
 GameObject::~GameObject()

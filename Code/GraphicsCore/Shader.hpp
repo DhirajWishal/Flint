@@ -5,8 +5,6 @@
 
 #include "DeviceBoundObject.hpp"
 
-#include <unordered_map>
-
 namespace Flint
 {
 	/**
@@ -71,7 +69,7 @@ namespace Flint
 		 * @param type: The shader type.
 		 * @param path: The file path to the asset file.
 		 */
-		Shader(const std::shared_ptr<Device>& pDevice, const ShaderType type, const std::filesystem::path& path);
+		Shader(const boost::shared_ptr<Device>& pDevice, const ShaderType type, const boost::filesystem::path& path);
 
 		/**
 		 * Construct the shader using a shader code.
@@ -81,7 +79,7 @@ namespace Flint
 		 * @param type: The shader type.
 		 * @param code: The shader code as a vector of UI32.
 		 */
-		Shader(const std::shared_ptr<Device>& pDevice, const ShaderType type, const std::vector<UI32>& code);
+		Shader(const boost::shared_ptr<Device>& pDevice, const ShaderType type, const boost::container::vector<UI32>& code);
 
 		/**
 		 * Construct the shader using a shader code.
@@ -91,21 +89,21 @@ namespace Flint
 		 * @param type: The shader type.
 		 * @param code: The shader code as a string.
 		 */
-		Shader(const std::shared_ptr<Device>& pDevice, const ShaderType type, const std::string& code);
+		Shader(const boost::shared_ptr<Device>& pDevice, const ShaderType type, const std::string& code);
 
 		/**
 		 * Reload the shader using the shader file.
 		 *
 		 * @param path: The shader file path.
 		 */
-		virtual void Reload(const std::filesystem::path& path) = 0;
+		virtual void Reload(const boost::filesystem::path& path) = 0;
 
 		/**
 		 * Reload the shader using the shader code vector.
 		 *
 		 * @param code: The shader code.
 		 */
-		virtual void Reload(const std::vector<UI32>& code) = 0;
+		virtual void Reload(const boost::container::vector<UI32>& code) = 0;
 
 		/**
 		 * Reload the shader using the shader code string.
@@ -120,7 +118,7 @@ namespace Flint
 		 *
 		 * @return The shader resources.
 		 */
-		const std::unordered_map<std::string, ShaderResource> GetShaderResources() const { return mResources; }
+		const boost::unordered::unordered_map<std::string, ShaderResource> GetShaderResources() const { return mResources; }
 
 		/**
 		 * Get shader input attributes.
@@ -128,7 +126,7 @@ namespace Flint
 		 *
 		 * @return The array of input attributes.
 		 */
-		const std::unordered_map<UI32, std::vector<ShaderAttribute>> GetInputAttributes() const { return mInputAttributes; }
+		const boost::unordered::unordered_map<UI32, boost::container::vector<ShaderAttribute>> GetInputAttributes() const { return mInputAttributes; }
 
 		/**
 		 * Get shader output attributes.
@@ -136,12 +134,12 @@ namespace Flint
 		 *
 		 * @return The array of output attributes.
 		 */
-		const std::unordered_map<UI32, std::vector<ShaderAttribute>> GetOutputAttributes() const { return mOutputAttributes; }
+		const boost::unordered::unordered_map<UI32, boost::container::vector<ShaderAttribute>> GetOutputAttributes() const { return mOutputAttributes; }
 
 	protected:
-		std::unordered_map<std::string, ShaderResource> mResources;
-		std::unordered_map<UI32, std::vector<ShaderAttribute>> mInputAttributes;
-		std::unordered_map<UI32, std::vector<ShaderAttribute>> mOutputAttributes;
+		boost::unordered::unordered_map<std::string, ShaderResource> mResources;
+		boost::unordered::unordered_map<UI32, boost::container::vector<ShaderAttribute>> mInputAttributes;
+		boost::unordered::unordered_map<UI32, boost::container::vector<ShaderAttribute>> mOutputAttributes;
 
 		ShaderType mType = ShaderType::UNDEFINED;
 	};

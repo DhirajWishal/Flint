@@ -55,7 +55,7 @@ namespace Flint
 	 */
 	struct VertexDescriptor
 	{
-		std::vector<VertexAttribute> mAttributes = {};
+		boost::container::vector<VertexAttribute> mAttributes = {};
 
 		/**
 		 * Get the size of the vertex.
@@ -79,19 +79,19 @@ namespace Flint
 		 * @param assetPath: The asset file to load.
 		 * @param vertexDescriptor: The vertex descriptor describing the vertex attributes and loading order.
 		 */
-		AssetLoader(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::filesystem::path& assetPath, const VertexDescriptor& vertexDescriptor);
+		AssetLoader(const boost::shared_ptr<GeometryStore>& pGeometryStore, const boost::filesystem::path& assetPath, const VertexDescriptor& vertexDescriptor);
 
 		/**
 		 * Get the loaded wire frames.
 		 * 
 		 * @return The vector of wire frames.
 		 */
-		const std::vector<WireFrame> GetWireFrames() const { return mWireFrames; }
+		const boost::container::vector<WireFrame> GetWireFrames() const { return mWireFrames; }
 
 	private:
-		std::vector<WireFrame> mWireFrames = {};
+		boost::container::vector<WireFrame> mWireFrames = {};
 
-		std::shared_ptr<GeometryStore> pGeometryStore = nullptr;
+		boost::shared_ptr<GeometryStore> pGeometryStore = nullptr;
 		VertexDescriptor mDescriptor = {};
 	};
 

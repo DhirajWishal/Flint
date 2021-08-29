@@ -12,9 +12,9 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-std::vector<VertexAttribute> GetDefaultVertexAttributes()
+boost::container::vector<VertexAttribute> GetDefaultVertexAttributes()
 {
-	std::vector<VertexAttribute> attributes(3);
+	boost::container::vector<VertexAttribute> attributes(3);
 	attributes[0] = VertexAttribute(sizeof(glm::vec3), VertexAttributeType::POSITION);
 	attributes[1] = VertexAttribute(sizeof(glm::vec3), VertexAttributeType::COLOR_0);
 	attributes[2] = VertexAttribute(sizeof(glm::vec2), VertexAttributeType::TEXTURE_COORDINATES_0);
@@ -22,7 +22,7 @@ std::vector<VertexAttribute> GetDefaultVertexAttributes()
 	return attributes;
 }
 
-void ProcessNode(const aiNode* pNode, std::vector<Asset::DrawInstance>& drawInstances)
+void ProcessNode(const aiNode* pNode, boost::container::vector<Asset::DrawInstance>& drawInstances)
 {
 	if (!pNode)
 		return;
@@ -61,7 +61,7 @@ void ProcessNode(const aiNode* pNode, std::vector<Asset::DrawInstance>& drawInst
 		ProcessNode(pNode->mChildren[i], drawInstances);
 }
 
-Asset ImportAsset(const std::shared_ptr<Flint::Device>& pDevice, const std::filesystem::path& path, const std::vector<VertexAttribute>& attributes)
+Asset ImportAsset(const boost::shared_ptr<Flint::Device>& pDevice, const boost::filesystem::path& path, const boost::container::vector<VertexAttribute>& attributes)
 {
 	Assimp::Importer importer = {};
 	const aiScene* pScene = importer.ReadFile(path.string(),
@@ -89,7 +89,7 @@ Asset ImportAsset(const std::shared_ptr<Flint::Device>& pDevice, const std::file
 	float* pDataStore = static_cast<float*>(asset.pVertexBuffer->MapMemory(vertexCount * vertexSize));
 
 	UI64 indexCount = 0;
-	std::vector<std::vector<UI32>> indexArrays;
+	boost::container::vector<boost::container::vector<UI32>> indexArrays;
 
 	Asset::DrawInstance drawData = {};
 	for (UI32 i = 0; i < pScene->mNumMeshes; i++)
@@ -100,7 +100,7 @@ Asset ImportAsset(const std::shared_ptr<Flint::Device>& pDevice, const std::file
 		auto pMesh = pScene->mMeshes[i];
 		auto pMaterial = pScene->mMaterials[pMesh->mMaterialIndex];
 
-		std::vector<aiMaterialProperty*> pProperties(pMaterial->mNumProperties);
+		boost::container::vector<aiMaterialProperty*> pProperties(pMaterial->mNumProperties);
 		std::copy(pMaterial->mProperties, pMaterial->mProperties + pMaterial->mNumProperties, pProperties.begin());
 
 		UI32 countDiff = pMaterial->GetTextureCount(aiTextureType_DIFFUSE);
@@ -232,7 +232,7 @@ Asset ImportAsset(const std::shared_ptr<Flint::Device>& pDevice, const std::file
 		}
 
 		aiFace face = {};
-		std::vector<UI32> indexes;
+		boost::container::vector<UI32> indexes;
 		for (UI32 j = 0; j < pMesh->mNumFaces; j++)
 		{
 			face = pMesh->mFaces[j];
@@ -269,7 +269,7 @@ Asset ImportAsset(const std::shared_ptr<Flint::Device>& pDevice, const std::file
 	return asset;
 }
 
-ImageData LoadImage(const std::filesystem::path& path)
+ImageData LoadImage(const boost::filesystem::path& path)
 {
 	I32 texWidth = 0, texHeight = 0, texChannels = 0;
 	stbi_uc* pixels = stbi_load(path.string().c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);

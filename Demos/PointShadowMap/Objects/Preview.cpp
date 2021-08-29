@@ -9,13 +9,13 @@
 #include <math.h>
 #include <glm/gtc/matrix_transform.hpp>
 
-std::vector<glm::mat4> views;
+boost::container::vector<glm::mat4> views;
 
-Preview::Preview(glm::vec3 position, SceneState* pSceneState, std::filesystem::path model, std::vector<std::filesystem::path> texture)
+Preview::Preview(glm::vec3 position, SceneState* pSceneState, boost::filesystem::path model, boost::container::vector<boost::filesystem::path> texture)
 	: GameObject(position, pSceneState)
 {
-	pDynamicStates = std::make_shared<Flint::DynamicStateContainer>();
-	pShadowDynamicStates = std::make_shared<Flint::DynamicStateContainer>();
+	pDynamicStates = boost::make_shared<Flint::DynamicStateContainer>();
+	pShadowDynamicStates = boost::make_shared<Flint::DynamicStateContainer>();
 
 	pSceneState->mCamera.SetCameraRange(0.1f, 1024.0f);
 
@@ -26,7 +26,7 @@ Preview::Preview(glm::vec3 position, SceneState* pSceneState, std::filesystem::p
 	pShadowMapUniform = pSceneState->pDevice->CreateBuffer(Flint::BufferType::UNIFORM, sizeof(Light));
 	pShadowMapCamera = pSceneState->pDevice->CreateBuffer(Flint::BufferType::UNIFORM, sizeof(Camera));
 
-	std::vector<VertexAttribute> attributes(4);
+	boost::container::vector<VertexAttribute> attributes(4);
 	attributes[0] = VertexAttribute(sizeof(glm::vec3), VertexAttributeType::POSITION);
 	attributes[1] = VertexAttribute(sizeof(glm::vec2), VertexAttributeType::UV_COORDINATES);
 	attributes[2] = VertexAttribute(sizeof(glm::vec3), VertexAttributeType::COLOR_0);
@@ -76,7 +76,7 @@ Preview::Preview(glm::vec3 position, SceneState* pSceneState, std::filesystem::p
 	pShadowDynamicStates->SetScissor(Flint::FBox2D(2048), { 0, 0 });
 
 	PrepareShadowMapPipeline();
-	std::shared_ptr<Flint::GraphicsPipeline> pPipeline = pSceneState->pGraphicsPipelines["ShadowMap"];
+	boost::shared_ptr<Flint::GraphicsPipeline> pPipeline = pSceneState->pGraphicsPipelines["ShadowMap"];
 
 	Flint::ImageSamplerSpecification samplerSpecification = {};
 	pTextureSampler = pSceneState->pDevice->CreateImageSampler(samplerSpecification);
@@ -101,7 +101,7 @@ Preview::Preview(glm::vec3 position, SceneState* pSceneState, std::filesystem::p
 		//DestroyImage(image);
 
 		pModelMatrixes.push_back(pSceneState->pDevice->CreateBuffer(Flint::BufferType::UNIFORM, sizeof(glm::mat4)));
-		std::shared_ptr<Flint::Buffer> pModelMatrix = pModelMatrixes.back();
+		boost::shared_ptr<Flint::Buffer> pModelMatrix = pModelMatrixes.back();
 		//SubmitToUniformBuffer(pModelMatrix, instance.mTransform);
 		SubmitToUniformBuffer(pModelMatrix, glm::mat4(1.0f));
 		//SubmitToUniformBuffer(pModelMatrix, mModelMatrix);
@@ -125,7 +125,7 @@ Preview::Preview(glm::vec3 position, SceneState* pSceneState, std::filesystem::p
 
 		for (UI32 faceIndex = 0; faceIndex < 6; faceIndex++)
 		{
-			auto pDynamicStates = std::make_shared<Flint::DynamicStateContainer>();
+			auto pDynamicStates = boost::make_shared<Flint::DynamicStateContainer>();
 			pDynamicStates->SetViewPort(Flint::FExtent2D<float>{1024}, Flint::FExtent2D<float>(0.0f, 1.0f), { 0.0f, 0.0f });
 			pDynamicStates->SetScissor(Flint::FBox2D(1024), { 0, 0 });
 			pDynamicStates->SetConstantData(Flint::ShaderType::VERTEX, &views[faceIndex], sizeof(glm::mat4));
@@ -237,8 +237,8 @@ void Preview::PrepareNoTexturePipeline()
 	if (pSceneState->pGraphicsPipelines["NoTexture"])
 		return;
 
-	pVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("Flint\\Shaders\\NoTexture\\shader.vert.spv"));
-	pFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("Flint\\Shaders\\NoTexture\\shader.frag.spv"));
+	pVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, boost::filesystem::path("Flint\\Shaders\\NoTexture\\shader.vert.spv"));
+	pFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, boost::filesystem::path("Flint\\Shaders\\NoTexture\\shader.frag.spv"));
 
 	Flint::GraphicsPipelineSpecification specification = {};
 	specification.mRasterizationSamples = pSceneState->pDevice->GetSupportedMultiSampleCount();
@@ -258,8 +258,8 @@ void Preview::PrepareShadowMapPipeline()
 	pSceneState->pOffScreenRenderTargets["ShadowMap"] = pFactory->Create(Flint::OffScreenRenderTargetType::POINT_SHADOW_MAP, Flint::FBox2D(1024), pSceneState->pScreenBoundRenderTargets["Default"]->GetBufferCount());;
 	pSceneState->pScreenBoundRenderTargets["Default"]->AttachOffScreenRenderTarget(pSceneState->pOffScreenRenderTargets["ShadowMap"]);
 
-	pVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("Flint\\Shaders\\PointShadowMapping\\mesh.vert.spv"));
-	pFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("Flint\\Shaders\\PointShadowMapping\\mesh.frag.spv"));
+	pVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, boost::filesystem::path("Flint\\Shaders\\PointShadowMapping\\mesh.vert.spv"));
+	pFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, boost::filesystem::path("Flint\\Shaders\\PointShadowMapping\\mesh.frag.spv"));
 
 	Flint::GraphicsPipelineSpecification specification = {};
 	specification.mRasterizationSamples = pSceneState->pDevice->GetSupportedMultiSampleCount();
@@ -272,8 +272,8 @@ void Preview::PrepareShadowMapPipeline()
 
 	if (!pSceneState->pGraphicsPipelines["DefaultOffScreenWireFrame"])
 	{
-		pShadowVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("Flint\\Shaders\\PointShadowMapping\\shader.vert.spv"));
-		pShadowFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("Flint\\Shaders\\PointShadowMapping\\shader.frag.spv"));
+		pShadowVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, boost::filesystem::path("Flint\\Shaders\\PointShadowMapping\\shader.vert.spv"));
+		pShadowFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, boost::filesystem::path("Flint\\Shaders\\PointShadowMapping\\shader.frag.spv"));
 
 		specification.mRasterizationSamples = Flint::MultiSampleCount::BITS_1;
 		//specification.mColorBlendAttachments.clear();

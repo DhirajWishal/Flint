@@ -7,15 +7,13 @@
 #include "ComputePipeline.hpp"
 #include "Core/CountingSemaphore.hpp"
 
-#include <unordered_map>
-
 namespace Flint
 {
 	class GraphicsPipeline;
 	class GeometryStore;
 	class CommandBuffer;
 
-	using DrawInstanceMap = std::unordered_map<std::shared_ptr<GeometryStore>, std::vector<std::shared_ptr<GraphicsPipeline>>>;
+	using DrawInstanceMap = boost::unordered::unordered_map<boost::shared_ptr<GeometryStore>, boost::container::vector<boost::shared_ptr<GraphicsPipeline>>>;
 
 	/**
 	 * Draw instance storage structure.
@@ -23,13 +21,13 @@ namespace Flint
 	 */
 	struct DrawInstanceStorage
 	{
-		std::vector<DrawInstanceMap> mDrawMaps;
-		std::vector<std::list<std::shared_ptr<GeometryStore>>> mDrawOrder;
+		boost::container::vector<DrawInstanceMap> mDrawMaps;
+		boost::container::vector<std::list<boost::shared_ptr<GeometryStore>>> mDrawOrder;
 	};
 
 	struct BeginFrameInfo
 	{
-		std::shared_ptr<CommandBuffer> pCommandBuffer = nullptr;
+		boost::shared_ptr<CommandBuffer> pCommandBuffer = nullptr;
 		UI32 mFrameIndex = 0;
 
 		DrawInstanceStorage const* pDrawInstanceStorage = nullptr;
@@ -57,7 +55,7 @@ namespace Flint
 		 * @param bufferCount: The frame buffer count.
 		 * @param imageAttachments: The image attachments used by the render target.
 		 */
-		RenderTarget(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments);
+		RenderTarget(const boost::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, const boost::container::vector<RenderTargetAttachment>& imageAttachments);
 
 		/**
 		 * Prepare all the resources for a new frame.
@@ -70,7 +68,7 @@ namespace Flint
 		 *
 		 * @return The attachments.
 		 */
-		const std::vector<RenderTargetAttachment> GetAttachments() const { return mAttachments; }
+		const boost::container::vector<RenderTargetAttachment> GetAttachments() const { return mAttachments; }
 
 		/**
 		 * Get the current frame index.
@@ -112,7 +110,7 @@ namespace Flint
 		void IncrementFrameIndex() { mFrameIndex++; if (mFrameIndex >= mBufferCount) mFrameIndex = 0; }
 
 	protected:
-		std::vector<RenderTargetAttachment> mAttachments = {};
+		boost::container::vector<RenderTargetAttachment> mAttachments = {};
 
 		FBox2D mExtent = {};
 		UI32 mBufferCount = 0;

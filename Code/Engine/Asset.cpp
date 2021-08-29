@@ -5,12 +5,12 @@
 
 namespace Flint
 {
-	Asset::Asset(const std::vector<WireFrame>& wireFrames, const std::shared_ptr<GeometryStore>& pGeometryStore)
+	Asset::Asset(const boost::container::vector<WireFrame>& wireFrames, const boost::shared_ptr<GeometryStore>& pGeometryStore)
 		: mWireFrames(wireFrames), pGeometryStore(pGeometryStore)
 	{
 	}
 
-	Asset::Asset(const std::filesystem::path& assetFile, const std::shared_ptr<GeometryStore>& pGeometryStore, const VertexDescriptor& vertexDescriptor)
+	Asset::Asset(const boost::filesystem::path& assetFile, const boost::shared_ptr<GeometryStore>& pGeometryStore, const VertexDescriptor& vertexDescriptor)
 		: pGeometryStore(pGeometryStore)
 	{
 		AssetLoader loader(pGeometryStore, assetFile, vertexDescriptor);

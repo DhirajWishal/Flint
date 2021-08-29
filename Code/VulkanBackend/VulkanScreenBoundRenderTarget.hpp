@@ -16,10 +16,10 @@ namespace Flint
 	{
 		class VulkanCommandBufferList;
 
-		class VulkanScreenBoundRenderTarget final : public ScreenBoundRenderTarget, public std::enable_shared_from_this<VulkanScreenBoundRenderTarget>
+		class VulkanScreenBoundRenderTarget final : public ScreenBoundRenderTarget, public boost::enable_shared_from_this<VulkanScreenBoundRenderTarget>
 		{
 		public:
-			VulkanScreenBoundRenderTarget(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode);
+			VulkanScreenBoundRenderTarget(const boost::shared_ptr<Device>& pDevice, const boost::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const boost::container::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode);
 			~VulkanScreenBoundRenderTarget() { if (!bIsTerminated) Terminate(); }
 
 			virtual void PrepareNewFrame() override final;
@@ -41,11 +41,11 @@ namespace Flint
 		private:
 			VulkanRenderTarget vRenderTarget;
 
-			std::vector<VkSubpassDependency> vDependencies{ 2 };
-			std::atomic<VkCommandBufferInheritanceInfo> vInheritanceInfo = {};
+			boost::container::vector<VkSubpassDependency> vDependencies{ 2 };
+			boost::atomic<VkCommandBufferInheritanceInfo> vInheritanceInfo = {};
 			VkCommandBufferInheritanceInfo vInheritInfo = {};
 
-			std::vector<VkClearValue> vClearValues = {};
+			boost::container::vector<VkClearValue> vClearValues = {};
 
 			std::unique_ptr<VulkanSwapChain> pSwapChain = nullptr;
 

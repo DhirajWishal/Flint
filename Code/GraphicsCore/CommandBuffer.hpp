@@ -35,7 +35,7 @@ namespace Flint
 		 * 
 		 * @param pAllocator: The command buffer allocator which allocated this object.
 		 */
-		CommandBuffer(const std::shared_ptr<CommandBufferAllocator>& pAllocator) : pAllocator(pAllocator) {}
+		CommandBuffer(const boost::shared_ptr<CommandBufferAllocator>& pAllocator) : pAllocator(pAllocator) {}
 
 	public:
 		/**
@@ -50,7 +50,7 @@ namespace Flint
 		 *
 		 * @param pRenderTarget: The render target to which the commands are bound to.
 		 */
-		virtual void BeginBufferRecording(const std::shared_ptr<ScreenBoundRenderTarget> pRenderTarget) = 0;
+		virtual void BeginBufferRecording(const boost::shared_ptr<ScreenBoundRenderTarget> pRenderTarget) = 0;
 
 		/**
 		 * Begin secondary command buffer recording.
@@ -58,56 +58,56 @@ namespace Flint
 		 *
 		 * @param pRenderTarget: The render target to which the commands are bound to.
 		 */
-		virtual void BeginBufferRecording(const std::shared_ptr<OffScreenRenderTarget> pRenderTarget) = 0;
+		virtual void BeginBufferRecording(const boost::shared_ptr<OffScreenRenderTarget> pRenderTarget) = 0;
 
 		/**
 		 * Bind a render target to the command buffer.
 		 *
 		 * @param pRenderTarget: The render target pointer.
 		 */
-		virtual void BindRenderTarget(const std::shared_ptr<ScreenBoundRenderTarget>& pRenderTarget) = 0;
+		virtual void BindRenderTarget(const boost::shared_ptr<ScreenBoundRenderTarget>& pRenderTarget) = 0;
 
 		/**
 		 * Bind a render target to the current command buffer as secondary.
 		 *
 		 * @param pRenderTarget: The render target pointer.
 		 */
-		virtual void BindRenderTargetSecondary(const std::shared_ptr<ScreenBoundRenderTarget>& pRenderTarget) = 0;
+		virtual void BindRenderTargetSecondary(const boost::shared_ptr<ScreenBoundRenderTarget>& pRenderTarget) = 0;
 
 		/**
 		 * Bind a render target to the command buffer.
 		 *
 		 * @param pRenderTarget: The render target pointer.
 		 */
-		virtual void BindRenderTarget(const std::shared_ptr<OffScreenRenderTarget>& pRenderTarget) = 0;
+		virtual void BindRenderTarget(const boost::shared_ptr<OffScreenRenderTarget>& pRenderTarget) = 0;
 
 		/**
 		 * Bind a render target to the current command buffer as secondary.
 		 *
 		 * @param pRenderTarget: The render target pointer.
 		 */
-		virtual void BindRenderTargetSecondary(const std::shared_ptr<OffScreenRenderTarget>& pRenderTarget) = 0;
+		virtual void BindRenderTargetSecondary(const boost::shared_ptr<OffScreenRenderTarget>& pRenderTarget) = 0;
 
 		/**
 		 * Bind a graphics pipeline to the command buffer.
 		 *
 		 * @param pGraphicsPipeline: The graphics pipeline pointer.
 		 */
-		virtual void BindGraphicsPipeline(const std::shared_ptr<GraphicsPipeline>& pGraphicsPipeline) = 0;
+		virtual void BindGraphicsPipeline(const boost::shared_ptr<GraphicsPipeline>& pGraphicsPipeline) = 0;
 
 		/**
 		 * Bind a compute pipeline to the command buffer.
 		 *
 		 * @param pComputePipeline: The compute pipeline pointer.
 		 */
-		virtual void BindComputePipeline(const std::shared_ptr<ComputePipeline>& pComputePipeline) = 0;
+		virtual void BindComputePipeline(const boost::shared_ptr<ComputePipeline>& pComputePipeline) = 0;
 
 		/**
 		 * Bind a geometry store to the command buffer.
 		 * 
 		 * @param pGeometryStore: The geometry store pointer.
 		 */
-		virtual void BindGeometryStore(const std::shared_ptr<GeometryStore>& pGeometryStore) = 0;
+		virtual void BindGeometryStore(const boost::shared_ptr<GeometryStore>& pGeometryStore) = 0;
 
 		/**
 		 * Bind draw resources to the command buffer.
@@ -115,7 +115,7 @@ namespace Flint
 		 * @param pPipeline: The pipeline pointer.
 		 * @param pResourceMap: The resource map to bind.
 		 */
-		virtual void BindResourceMap(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::shared_ptr<ResourceMap>& pResourceMap) = 0;
+		virtual void BindResourceMap(const boost::shared_ptr<GraphicsPipeline>& pPipeline, const boost::shared_ptr<ResourceMap>& pResourceMap) = 0;
 
 		/**
 		 * Bind instance resources to the command buffer.
@@ -123,7 +123,7 @@ namespace Flint
 		 * @param pPipeline: The pipeline pointer.
 		 * @param pResourceMap: The resource map to bind.
 		 */
-		virtual void BindResourceMap(const std::shared_ptr<ComputePipeline>& pPipeline, const std::shared_ptr<ResourceMap>& pResourceMap) = 0;
+		virtual void BindResourceMap(const boost::shared_ptr<ComputePipeline>& pPipeline, const boost::shared_ptr<ResourceMap>& pResourceMap) = 0;
 
 		/**
 		 * Bind dynamic states to the command buffer.
@@ -131,7 +131,7 @@ namespace Flint
 		 * @param pPipeline: The pipeline to which the dynamic states are bound to.
 		 * @param pDynamicStates: The dynamic states to bind.
 		 */
-		virtual void BindDynamicStates(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::shared_ptr<DynamicStateContainer>& pDynamicStates) = 0;
+		virtual void BindDynamicStates(const boost::shared_ptr<GraphicsPipeline>& pPipeline, const boost::shared_ptr<DynamicStateContainer>& pDynamicStates) = 0;
 
 		/**
 		 * Bind dynamic states to the command buffer.
@@ -139,7 +139,7 @@ namespace Flint
 		 * @param pPipeline: The pipeline to which the dynamic states are bound to.
 		 * @param pDynamicStates: The dynamic states to bind.
 		 */
-		virtual void BindDynamicStates(const std::shared_ptr<ComputePipeline>& pPipeline, const std::shared_ptr<DynamicStateContainer>& pDynamicStates) = 0;
+		virtual void BindDynamicStates(const boost::shared_ptr<ComputePipeline>& pPipeline, const boost::shared_ptr<DynamicStateContainer>& pDynamicStates) = 0;
 
 		/**
 		 * Issue a draw call to the command buffer.
@@ -163,7 +163,7 @@ namespace Flint
 		 * 
 		 * @param pCommandBuffer: The command buffer pointer.
 		 */
-		virtual void SubmitSecondaryCommandBuffer(const std::shared_ptr<CommandBuffer>& pCommandBuffer) = 0;
+		virtual void SubmitSecondaryCommandBuffer(const boost::shared_ptr<CommandBuffer>& pCommandBuffer) = 0;
 
 		/**
 		 * Execute all the secondary commands.
@@ -187,7 +187,7 @@ namespace Flint
 		 * 
 		 * @param The allocator pointer.
 		 */
-		const std::shared_ptr<CommandBufferAllocator> GetAllocator() const { return pAllocator; }
+		const boost::shared_ptr<CommandBufferAllocator> GetAllocator() const { return pAllocator; }
 
 		/**
 		 * Check if the command buffer is valid.
@@ -211,7 +211,7 @@ namespace Flint
 		virtual void Terminate() = 0;
 
 	protected:
-		std::shared_ptr<CommandBufferAllocator> pAllocator = nullptr;
+		boost::shared_ptr<CommandBufferAllocator> pAllocator = nullptr;
 
 		bool bIsRecording = false;
 	};

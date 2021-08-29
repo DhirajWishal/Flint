@@ -29,7 +29,7 @@ namespace Flint
 		 * @param codeType: The shader file type. Currently only supports GLSL.
 		 * @param shaderType: The type of the shader.
 		 */
-		ShaderCompiler(const std::filesystem::path& shaderFile, const ShaderCodeType codeType, const ShaderType shaderType);
+		ShaderCompiler(const boost::filesystem::path& shaderFile, const ShaderCodeType codeType, const ShaderType shaderType);
 
 		/**
 		 * Compile the shader using a high level shader code.
@@ -45,10 +45,10 @@ namespace Flint
 		 * 
 		 * @return The shader code vector.
 		 */
-		const std::vector<UI32> GetShaderCode() const { return mShaderCode; }
+		const boost::container::vector<UI32> GetShaderCode() const { return mShaderCode; }
 
 	private:
-		std::vector<UI32> mShaderCode = {};
+		boost::container::vector<UI32> mShaderCode = {};
 		ShaderCodeType mCodeType = ShaderCodeType::GLSL;
 	};
 }

@@ -191,15 +191,15 @@ namespace Flint
 			}
 		}
 
-		VulkanImage::VulkanImage(const std::shared_ptr<Device>& pDevice, const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const UI8 layers, const UI32 mipLevels, const void* pImageData, const MultiSampleCount sampleCount)
+		VulkanImage::VulkanImage(const boost::shared_ptr<Device>& pDevice, const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const UI8 layers, const UI32 mipLevels, const void* pImageData, const MultiSampleCount sampleCount)
 			: Image(pDevice, type, usage, extent, format, layers, mipLevels, pImageData, sampleCount)
 		{
 			Initialize(pImageData);
 		}
 
-		std::shared_ptr<Buffer> VulkanImage::CopyToBuffer()
+		boost::shared_ptr<Buffer> VulkanImage::CopyToBuffer()
 		{
-			std::shared_ptr<VulkanBuffer> pBuffer = std::make_shared<VulkanBuffer>(pDevice, BufferType::STAGING, static_cast<UI64>(mExtent.mWidth) * mExtent.mHeight * mExtent.mDepth * Utilities::GetByteDepth(mFormat) * mLayerCount);
+			boost::shared_ptr<VulkanBuffer> pBuffer = boost::make_shared<VulkanBuffer>(pDevice, BufferType::STAGING, static_cast<UI64>(mExtent.mWidth) * mExtent.mHeight * mExtent.mDepth * Utilities::GetByteDepth(mFormat) * mLayerCount);
 
 			VkBufferImageCopy vCopy = {};
 			vCopy.bufferOffset = 0;
@@ -378,7 +378,7 @@ namespace Flint
 					FLINT_THROW_BACKEND_ERROR("Texture format does not support using as storage image!");
 			}
 
-			std::vector<UI32> queueIndexes = {};
+			boost::container::vector<UI32> queueIndexes = {};
 			if (vDevice.IsGraphicsCompatible() && vDevice.IsComputeCompatible())
 			{
 				if (vDevice.GetQueue().mGraphicsFamily != vDevice.GetQueue().mComputeFamily)

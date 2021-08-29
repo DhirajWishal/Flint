@@ -8,7 +8,7 @@ project "FlintEngine"
 	kind "StaticLib"
 	systemversion "latest"
 	cppdialect "C++17"
-	staticruntime "On"
+	staticruntime "on"
 
 	targetdir "$(SolutionDir)Builds/Binaries/$(Configuration)"
 	objdir "$(SolutionDir)Builds/Intermediate/$(Configuration)"
@@ -26,9 +26,11 @@ project "FlintEngine"
 		"$(SolutionDir)Code/",
 		"%{IncludeDir.Assimp}",
 		"%{IncludeDir.shaderc}",
+		"%{IncludeDir.boost}",
 	}
 
 	libdirs {
+		"%{IncludeLib.boost}",
 		"%{IncludeLib.Assimp}",
 	}
 
@@ -39,15 +41,15 @@ project "FlintEngine"
 	}
 
 	filter "configurations:Debug"
-	    buildoptions "/MTd"
 		libdirs { "%{IncludeLib.shaderc_debug}" }
+	    buildoptions "/MTd"
 
 	filter "configurations:PreRelease"
-	    buildoptions "/MT"
 		libdirs { "%{IncludeLib.shaderc_release}" }
+	    buildoptions "/MT"
 
 	filter "configurations:Release"
-	    buildoptions "/MT"
 		libdirs { "%{IncludeLib.shaderc_release}" }
+	    buildoptions "/MT"
 
 	filter ""

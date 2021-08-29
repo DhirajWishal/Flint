@@ -5,7 +5,7 @@
 
 namespace Flint
 {
-	ResourceMap::ResourceMap(const std::vector<std::string>& bufferResourceNames, const std::vector<std::string>& imageResourceNames)
+	ResourceMap::ResourceMap(const boost::container::vector<std::string>& bufferResourceNames, const boost::container::vector<std::string>& imageResourceNames)
 	{
 		for (const std::string name : bufferResourceNames)
 			pBufferMap[name] = nullptr;
@@ -14,7 +14,7 @@ namespace Flint
 			pImageMap[name] = {};
 	}
 
-	void ResourceMap::SetResource(const std::string& name, const std::shared_ptr<Buffer>& pBuffer)
+	void ResourceMap::SetResource(const std::string& name, const boost::shared_ptr<Buffer>& pBuffer)
 	{
 		// If the resource name does not exist, return false.
 		if (pBufferMap.find(name) == pBufferMap.end())
@@ -23,7 +23,7 @@ namespace Flint
 		pBufferMap[name] = pBuffer;
 	}
 
-	void ResourceMap::SetResource(const std::string& name, const std::shared_ptr<ImageSampler>& pSampler, const std::shared_ptr<Image>& pImage)
+	void ResourceMap::SetResource(const std::string& name, const boost::shared_ptr<ImageSampler>& pSampler, const boost::shared_ptr<Image>& pImage)
 	{
 		// If the resource name does not exist, return false.
 		if (pImageMap.find(name) == pImageMap.end())

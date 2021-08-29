@@ -13,7 +13,7 @@ namespace Flint
 		class VulkanImageSampler final : public ImageSampler
 		{
 		public:
-			VulkanImageSampler(const std::shared_ptr<Device>& pDevice, const ImageSamplerSpecification& specification);
+			VulkanImageSampler(const boost::shared_ptr<Device>& pDevice, const ImageSamplerSpecification& specification);
 			~VulkanImageSampler() { if (!bIsTerminated) Terminate(); }
 
 			virtual void Terminate() override final;

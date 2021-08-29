@@ -8,7 +8,7 @@ project "GraphicsCore"
 	kind "StaticLib"
 	systemversion "latest"
 	cppdialect "C++17"
-	staticruntime "On"
+	staticruntime "on"
 
 	targetdir "$(SolutionDir)Builds/Binaries/$(Configuration)"
 	objdir "$(SolutionDir)Builds/Intermediate/$(Configuration)"
@@ -25,9 +25,11 @@ project "GraphicsCore"
 	includedirs {
 		"$(SolutionDir)Code/",
 		"%{IncludeDir.Vulkan}",
+		"%{IncludeDir.boost}",
 	}
 
 	libdirs {
+		"%{IncludeLib.boost}",
 	}
 
 	links { 

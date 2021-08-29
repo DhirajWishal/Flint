@@ -6,7 +6,12 @@
 #include "FObject.hpp"
 #include "Core/Error.hpp"
 
-#include <vector>
+#include <boost/container/vector.hpp>
+#include <boost/make_unique.hpp>
+
+#define _SILENCE_CXX17_OLD_ALLOCATOR_MEMBERS_DEPRECATION_WARNING
+#include <boost/unordered_map.hpp>
+
 #include <memory>
 
 namespace Flint
@@ -332,10 +337,10 @@ namespace Flint
 	struct RenderTargetAttachment
 	{
 		RenderTargetAttachment() = default;
-		RenderTargetAttachment(const std::shared_ptr<Image>& pImage, const FColor4D& clearColor) : pImage(pImage), mClearColor(clearColor) {}
-		RenderTargetAttachment(const std::shared_ptr<Image>& pImage, const DepthClearValues& depthValue) : pImage(pImage), mDepthClearValue(depthValue) {}
+		RenderTargetAttachment(const boost::shared_ptr<Image>& pImage, const FColor4D& clearColor) : pImage(pImage), mClearColor(clearColor) {}
+		RenderTargetAttachment(const boost::shared_ptr<Image>& pImage, const DepthClearValues& depthValue) : pImage(pImage), mDepthClearValue(depthValue) {}
 
-		std::shared_ptr<Image> pImage = nullptr;
+		boost::shared_ptr<Image> pImage = nullptr;
 
 		FColor4D mClearColor = FColor4D(CREATE_COLOR_256(32.0f), CREATE_COLOR_256(32.0f), CREATE_COLOR_256(32.0f), 1.0f);
 		DepthClearValues mDepthClearValue = {};
@@ -355,14 +360,14 @@ namespace Flint
 		 *
 		 * @param pDevice: The device pointer.
 		 */
-		DeviceBoundObject(const std::shared_ptr<Device>& pDevice);
+		DeviceBoundObject(const boost::shared_ptr<Device>& pDevice);
 
 		/**
 		 * Get the device of this object.
 		 *
 		 * @return The device pointer.
 		 */
-		std::shared_ptr<Device> GetDevice() const { return pDevice; }
+		boost::shared_ptr<Device> GetDevice() const { return pDevice; }
 
 		/**
 		 * Terminate the device bound object.
@@ -370,6 +375,6 @@ namespace Flint
 		virtual void Terminate() = 0;
 
 	protected:
-		std::shared_ptr<Device> pDevice = nullptr;
+		boost::shared_ptr<Device> pDevice = nullptr;
 	};
 }

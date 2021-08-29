@@ -14,6 +14,6 @@ public:
 	virtual void OnUpdate(UI64 delta) override final;
 
 private:
-	std::shared_ptr<Flint::Buffer> pCameraBuffer = nullptr;
-	std::shared_ptr<Flint::DynamicStateContainer> pDynamicStates = nullptr;
+	boost::shared_ptr<Flint::Buffer> pCameraBuffer = nullptr;
+	boost::shared_ptr<Flint::DynamicStateContainer> pDynamicStates = nullptr;
 };

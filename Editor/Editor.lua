@@ -7,8 +7,8 @@ project "FlintEditor"
 	kind "ConsoleApp"
 	cppdialect "C++17"
 	language "C++"
-	staticruntime "On"
 	systemversion "latest"
+	staticruntime "on"
 
 	targetdir "$(SolutionDir)Builds/Editor/Binaries/$(ProjectName)/$(Configuration)"
 	objdir "$(SolutionDir)Builds/Editor/Intermediate/$(ProjectName)/$(Configuration)"
@@ -43,9 +43,11 @@ project "FlintEditor"
 		"%{IncludeDir.imgui}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.Assimp}",
+		"%{IncludeDir.boost}",
 	}
 
 	libdirs {
+		"%{IncludeLib.boost}",
 	}
 
 	links {

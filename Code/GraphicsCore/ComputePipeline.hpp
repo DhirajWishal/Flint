@@ -34,11 +34,11 @@ namespace Flint
 		struct ComputeInstance
 		{
 			ComputeInstance() = default;
-			ComputeInstance(const std::shared_ptr<ResourceMap>& pResourceMap, const std::shared_ptr<DynamicStateContainer>& pDynamicStates, const FBox3D& computeGroups)
+			ComputeInstance(const boost::shared_ptr<ResourceMap>& pResourceMap, const boost::shared_ptr<DynamicStateContainer>& pDynamicStates, const FBox3D& computeGroups)
 				: pResourceMap(pResourceMap), pDynamicStates(pDynamicStates), mComputeGroups(computeGroups) {}
 
-			std::shared_ptr<ResourceMap> pResourceMap = nullptr;
-			std::shared_ptr<DynamicStateContainer> pDynamicStates = nullptr;
+			boost::shared_ptr<ResourceMap> pResourceMap = nullptr;
+			boost::shared_ptr<DynamicStateContainer> pDynamicStates = nullptr;
 
 			FBox3D mComputeGroups = {};
 		};
@@ -51,7 +51,7 @@ namespace Flint
 		 * @param pipelineName: The name of the pipeline.
 		 * @param pComputeShader: The compute shader pointer.
 		 */
-		ComputePipeline(const std::shared_ptr<Device>& pDevice, const std::string& pipelineName, const std::shared_ptr<Shader>& pComputeShader);
+		ComputePipeline(const boost::shared_ptr<Device>& pDevice, const std::string& pipelineName, const boost::shared_ptr<Shader>& pComputeShader);
 
 		/**
 		 * Dispatch compute commands to the GPU.
@@ -65,7 +65,7 @@ namespace Flint
 		 *
 		 * @param pScreenBoundRenderTarget: The screen bound render target pointer.
 		 */
-		virtual void Dispatch(const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget) = 0;
+		virtual void Dispatch(const boost::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget) = 0;
 
 		/**
 		 * Dispatch compute commands to the GPU.
@@ -73,7 +73,7 @@ namespace Flint
 		 *
 		 * @param pOffScreenRenderTarget: The off screen render target pointer.
 		 */
-		virtual void Dispatch(const std::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget) = 0;
+		virtual void Dispatch(const boost::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget) = 0;
 
 	public:
 		/**
@@ -84,7 +84,7 @@ namespace Flint
 		 * @param computeGroups: The compute groups.
 		 * @return The instance ID.
 		 */
-		const UI64 AddInstance(const std::shared_ptr<ResourceMap>& pResourceMap, const std::shared_ptr<DynamicStateContainer>& pDynamicStates, const FBox3D& computeGroups);
+		const UI64 AddInstance(const boost::shared_ptr<ResourceMap>& pResourceMap, const boost::shared_ptr<DynamicStateContainer>& pDynamicStates, const FBox3D& computeGroups);
 
 		/**
 		 * Remove a compute instance form the pipeline.
@@ -98,11 +98,11 @@ namespace Flint
 		 *
 		 * @return The newly created resource map.
 		 */
-		virtual std::shared_ptr<ResourceMap> CreateResourceMap() const override final;
+		virtual boost::shared_ptr<ResourceMap> CreateResourceMap() const override final;
 
 	protected:
-		std::shared_ptr<Shader> pShader = nullptr;
-		std::unordered_map<UI64, ComputeInstance> mComputeInstances = {};
+		boost::shared_ptr<Shader> pShader = nullptr;
+		boost::unordered::unordered_map<UI64, ComputeInstance> mComputeInstances = {};
 
 		UI64 mInstanceIndex = 0;
 	};

@@ -16,7 +16,7 @@ namespace Flint
 			UI32 queueFamilyCount = 0;
 			vkGetPhysicalDeviceQueueFamilyProperties(vPhysicalDevice, &queueFamilyCount, nullptr);
 
-			std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+			boost::container::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
 			vkGetPhysicalDeviceQueueFamilyProperties(vPhysicalDevice, &queueFamilyCount, queueFamilies.data());
 
 			I32 i = 0;

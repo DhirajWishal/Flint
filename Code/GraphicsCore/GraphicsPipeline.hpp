@@ -234,7 +234,7 @@ namespace Flint
 	struct GraphicsPipelineSpecification {
 		GraphicsPipelineSpecification() = default;
 
-		std::vector<ColorBlendAttachment> mColorBlendAttachments = { ColorBlendAttachment() };
+		boost::container::vector<ColorBlendAttachment> mColorBlendAttachments = { ColorBlendAttachment() };
 
 		float mColorBlendConstants[4] = {
 			CREATE_COLOR_256(0), CREATE_COLOR_256(0),
@@ -287,8 +287,8 @@ namespace Flint
 		{
 			DrawData() = default;
 			DrawData(
-				const std::shared_ptr<ResourceMap>& pResourceMap,
-				const std::shared_ptr<DynamicStateContainer>& pDynamicStates,
+				const boost::shared_ptr<ResourceMap>& pResourceMap,
+				const boost::shared_ptr<DynamicStateContainer>& pDynamicStates,
 				UI64 vertexOffset, UI64 vertexCount,
 				UI64 indexOffset, UI64 indexCount)
 				: pResourceMap(pResourceMap), pDynamicStates(pDynamicStates),
@@ -298,8 +298,8 @@ namespace Flint
 			UI64 mVertexOffset = 0, mVertexCount = 0;
 			UI64 mIndexOffset = 0, mIndexCount = 0;
 
-			std::shared_ptr<ResourceMap> pResourceMap = nullptr;
-			std::shared_ptr<DynamicStateContainer> pDynamicStates = nullptr;
+			boost::shared_ptr<ResourceMap> pResourceMap = nullptr;
+			boost::shared_ptr<DynamicStateContainer> pDynamicStates = nullptr;
 		};
 
 	public:
@@ -317,14 +317,14 @@ namespace Flint
 		 * @param specification: The pipeline specification.
 		 */
 		GraphicsPipeline(
-			const std::shared_ptr<Device>& pDevice,
+			const boost::shared_ptr<Device>& pDevice,
 			const std::string& pipelineName,
-			const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget,
-			const std::shared_ptr<Shader>& pVertexShader,
-			const std::shared_ptr<Shader>& pTessellationControlShader,
-			const std::shared_ptr<Shader>& pTessellationEvaluationShader,
-			const std::shared_ptr<Shader>& pGeometryShader,
-			const std::shared_ptr<Shader>& pFragmentShader,
+			const boost::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget,
+			const boost::shared_ptr<Shader>& pVertexShader,
+			const boost::shared_ptr<Shader>& pTessellationControlShader,
+			const boost::shared_ptr<Shader>& pTessellationEvaluationShader,
+			const boost::shared_ptr<Shader>& pGeometryShader,
+			const boost::shared_ptr<Shader>& pFragmentShader,
 			const GraphicsPipelineSpecification& specification);
 
 		/**
@@ -341,14 +341,14 @@ namespace Flint
 		 * @param specification: The pipeline specification.
 		 */
 		GraphicsPipeline(
-			const std::shared_ptr<Device>& pDevice,
+			const boost::shared_ptr<Device>& pDevice,
 			const std::string& pipelineName,
-			const std::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget,
-			const std::shared_ptr<Shader>& pVertexShader,
-			const std::shared_ptr<Shader>& pTessellationControlShader,
-			const std::shared_ptr<Shader>& pTessellationEvaluationShader,
-			const std::shared_ptr<Shader>& pGeometryShader,
-			const std::shared_ptr<Shader>& pFragmentShader,
+			const boost::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget,
+			const boost::shared_ptr<Shader>& pVertexShader,
+			const boost::shared_ptr<Shader>& pTessellationControlShader,
+			const boost::shared_ptr<Shader>& pTessellationEvaluationShader,
+			const boost::shared_ptr<Shader>& pGeometryShader,
+			const boost::shared_ptr<Shader>& pFragmentShader,
 			const GraphicsPipelineSpecification& specification);
 
 		/**
@@ -357,7 +357,7 @@ namespace Flint
 		 *
 		 * @param pScreenBoundRenderTarget: The screen bound render target pointer.
 		 */
-		virtual void Recreate(const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget) = 0;
+		virtual void Recreate(const boost::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget) = 0;
 
 		/**
 		 * Get the current graphics specification of the pipeline.
@@ -371,14 +371,14 @@ namespace Flint
 		 *
 		 * @return The newly created resource map.
 		 */
-		virtual std::shared_ptr<ResourceMap> CreateResourceMap() const override final;
+		virtual boost::shared_ptr<ResourceMap> CreateResourceMap() const override final;
 
 		/**
 		 * Get draw data from the pipeline.
 		 *
 		 * @return The draw data array.
 		 */
-		const std::unordered_map<UI64, DrawData> GetDrawData() const { return mDrawDataList; }
+		const boost::unordered::unordered_map<UI64, DrawData> GetDrawData() const { return mDrawDataList; }
 
 		/**
 		 * Get the number of draw data stored.
@@ -405,7 +405,7 @@ namespace Flint
 		 * @param indexCount: The number of index to draw.
 		 * @return The draw ID.
 		 */
-		UI64 AddDrawData(const std::shared_ptr<ResourceMap>& pResourceMap, const std::shared_ptr<DynamicStateContainer>& pDynamicStates, UI64 vertexOffset, UI64 vertexCount, UI64 indexOffset, UI64 indexCount);
+		UI64 AddDrawData(const boost::shared_ptr<ResourceMap>& pResourceMap, const boost::shared_ptr<DynamicStateContainer>& pDynamicStates, UI64 vertexOffset, UI64 vertexCount, UI64 indexOffset, UI64 indexCount);
 
 		/**
 		 * Remove a draw data from the pipeline.
@@ -422,15 +422,15 @@ namespace Flint
 	protected:
 		GraphicsPipelineSpecification mSpecification = {};
 
-		std::unordered_map<UI64, DrawData> mDrawDataList = {};
+		boost::unordered::unordered_map<UI64, DrawData> mDrawDataList = {};
 		UI64 mDrawDataIndex = 0;
 
-		std::shared_ptr<RenderTarget> pRenderTarget = nullptr;
+		boost::shared_ptr<RenderTarget> pRenderTarget = nullptr;
 
-		std::shared_ptr<Shader> pVertexShader = nullptr;
-		std::shared_ptr<Shader> pFragmentShader = nullptr;
-		std::shared_ptr<Shader> pTessellationControlShader = nullptr;
-		std::shared_ptr<Shader> pTessellationEvaluationShader = nullptr;
-		std::shared_ptr<Shader> pGeometryShader = nullptr;
+		boost::shared_ptr<Shader> pVertexShader = nullptr;
+		boost::shared_ptr<Shader> pFragmentShader = nullptr;
+		boost::shared_ptr<Shader> pTessellationControlShader = nullptr;
+		boost::shared_ptr<Shader> pTessellationEvaluationShader = nullptr;
+		boost::shared_ptr<Shader> pGeometryShader = nullptr;
 	};
 }

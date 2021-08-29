@@ -8,10 +8,10 @@ namespace Flint
 {
 	namespace Helpers
 	{
-		std::pair<std::vector<std::string>, std::vector<std::string>> GetResourceNames(const std::vector<std::shared_ptr<Shader>>& pShaders)
+		std::pair<boost::container::vector<std::string>, boost::container::vector<std::string>> GetResourceNames(const boost::container::vector<boost::shared_ptr<Shader>>& pShaders)
 		{
-			std::vector<std::string> buffers;
-			std::vector<std::string> images;
+			boost::container::vector<std::string> buffers;
+			boost::container::vector<std::string> images;
 
 			for (const auto pShader : pShaders)
 			{
@@ -36,14 +36,14 @@ namespace Flint
 	}
 
 	GraphicsPipeline::GraphicsPipeline(
-		const std::shared_ptr<Device>& pDevice,
+		const boost::shared_ptr<Device>& pDevice,
 		const std::string& pipelineName,
-		const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget,
-		const std::shared_ptr<Shader>& pVertexShader,
-		const std::shared_ptr<Shader>& pTessellationControlShader,
-		const std::shared_ptr<Shader>& pTessellationEvaluationShader,
-		const std::shared_ptr<Shader>& pGeometryShader,
-		const std::shared_ptr<Shader>& pFragmentShader,
+		const boost::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget,
+		const boost::shared_ptr<Shader>& pVertexShader,
+		const boost::shared_ptr<Shader>& pTessellationControlShader,
+		const boost::shared_ptr<Shader>& pTessellationEvaluationShader,
+		const boost::shared_ptr<Shader>& pGeometryShader,
+		const boost::shared_ptr<Shader>& pFragmentShader,
 		const GraphicsPipelineSpecification& specification)
 		: Pipeline(pDevice, pipelineName),
 		pRenderTarget(pScreenBoundRenderTarget),
@@ -65,14 +65,14 @@ namespace Flint
 	}
 
 	GraphicsPipeline::GraphicsPipeline(
-		const std::shared_ptr<Device>& pDevice,
+		const boost::shared_ptr<Device>& pDevice,
 		const std::string& pipelineName,
-		const std::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget,
-		const std::shared_ptr<Shader>& pVertexShader,
-		const std::shared_ptr<Shader>& pTessellationControlShader,
-		const std::shared_ptr<Shader>& pTessellationEvaluationShader,
-		const std::shared_ptr<Shader>& pGeometryShader,
-		const std::shared_ptr<Shader>& pFragmentShader,
+		const boost::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget,
+		const boost::shared_ptr<Shader>& pVertexShader,
+		const boost::shared_ptr<Shader>& pTessellationControlShader,
+		const boost::shared_ptr<Shader>& pTessellationEvaluationShader,
+		const boost::shared_ptr<Shader>& pGeometryShader,
+		const boost::shared_ptr<Shader>& pFragmentShader,
 		const GraphicsPipelineSpecification& specification)
 		: Pipeline(pDevice, pipelineName),
 		pRenderTarget(pOffScreenRenderTarget),
@@ -90,13 +90,13 @@ namespace Flint
 			FLINT_THROW_INVALID_ARGUMENT("Vertex shader pointer should not be null!");
 	}
 
-	std::shared_ptr<ResourceMap> GraphicsPipeline::CreateResourceMap() const
+	boost::shared_ptr<ResourceMap> GraphicsPipeline::CreateResourceMap() const
 	{
 		auto [buffers, images] = Helpers::GetResourceNames({ pVertexShader, pTessellationControlShader, pTessellationEvaluationShader, pGeometryShader, pFragmentShader });
-		return std::make_shared<ResourceMap>(buffers, images);
+		return boost::make_shared<ResourceMap>(buffers, images);
 	}
 
-	UI64 GraphicsPipeline::AddDrawData(const std::shared_ptr<ResourceMap>& pResourceMap, const std::shared_ptr<DynamicStateContainer>& pDynamicStates, UI64 vertexOffset, UI64 vertexCount, UI64 indexOffset, UI64 indexCount)
+	UI64 GraphicsPipeline::AddDrawData(const boost::shared_ptr<ResourceMap>& pResourceMap, const boost::shared_ptr<DynamicStateContainer>& pDynamicStates, UI64 vertexOffset, UI64 vertexCount, UI64 indexOffset, UI64 indexCount)
 	{
 		mDrawDataList[mDrawDataIndex] = DrawData(pResourceMap, pDynamicStates, vertexOffset, vertexCount, indexOffset, indexCount);
 

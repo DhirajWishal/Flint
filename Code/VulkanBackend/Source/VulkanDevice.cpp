@@ -42,12 +42,12 @@ namespace Flint
 				return VK_SAMPLE_COUNT_1_BIT;
 			}
 
-			bool CheckDeviceExtensionSupport(VkPhysicalDevice vPhysicalDevice, std::vector<const char*> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME })
+			bool CheckDeviceExtensionSupport(VkPhysicalDevice vPhysicalDevice, boost::container::vector<const char*> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME })
 			{
 				UI32 extensionCount = 0;
 				vkEnumerateDeviceExtensionProperties(vPhysicalDevice, nullptr, &extensionCount, nullptr);
 
-				std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+				boost::container::vector<VkExtensionProperties> availableExtensions(extensionCount);
 				vkEnumerateDeviceExtensionProperties(vPhysicalDevice, nullptr, &extensionCount, availableExtensions.data());
 
 				std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
@@ -58,7 +58,7 @@ namespace Flint
 				return requiredExtensions.empty();
 			}
 
-			bool IsPhysicalDeviceSuitable(VkPhysicalDevice vDevice, const std::vector<const char*>& deviceExtensions, const DeviceFlags flags)
+			bool IsPhysicalDeviceSuitable(VkPhysicalDevice vDevice, const boost::container::vector<const char*>& deviceExtensions, const DeviceFlags flags)
 			{
 				VulkanQueue vQueue = {};
 				vQueue.Initialize(vDevice, flags);
@@ -75,7 +75,7 @@ namespace Flint
 			}
 		}
 
-		VulkanDevice::VulkanDevice(const std::shared_ptr<Instance>& pInstance, const DeviceFlags flags) : Device(pInstance, flags)
+		VulkanDevice::VulkanDevice(const boost::shared_ptr<Instance>& pInstance, const DeviceFlags flags) : Device(pInstance, flags)
 		{
 			if ((flags & DeviceFlags::GRAPHICS_COMPATIBLE) == DeviceFlags::GRAPHICS_COMPATIBLE)
 				INSERT_INTO_VECTOR(mDeviceExtensions, VK_KHR_SWAPCHAIN_EXTENSION_NAME);
@@ -91,7 +91,7 @@ namespace Flint
 			FLINT_VK_ASSERT(vkCreateFence(vLogicalDevice, &vCreateInfo, nullptr, &vSubmitFence));
 		}
 
-		bool VulkanDevice::IsDisplayCompatible(const std::shared_ptr<Display>& pDisplay)
+		bool VulkanDevice::IsDisplayCompatible(const boost::shared_ptr<Display>& pDisplay)
 		{
 			const VulkanDisplay& vDisplay = pDisplay->StaticCast<VulkanDisplay>();
 			VkBool32 isSupported = VK_FALSE;
@@ -104,81 +104,81 @@ namespace Flint
 			return MultiSampleCount(vSampleCount);
 		}
 
-		std::shared_ptr<CommandBufferAllocator> VulkanDevice::CreateCommandBufferAllocator(const UI32 bufferCount)
+		boost::shared_ptr<CommandBufferAllocator> VulkanDevice::CreateCommandBufferAllocator(const UI32 bufferCount)
 		{
-			return std::make_shared<VulkanCommandBufferAllocator>(shared_from_this(), bufferCount);
+			return boost::make_shared<VulkanCommandBufferAllocator>(shared_from_this(), bufferCount);
 		}
 
-		std::shared_ptr<CommandBufferAllocator> VulkanDevice::CreateSecondaryCommandBufferAllocator(const UI32 bufferCount, const std::shared_ptr<CommandBufferAllocator>& pParentAllocator)
+		boost::shared_ptr<CommandBufferAllocator> VulkanDevice::CreateSecondaryCommandBufferAllocator(const UI32 bufferCount, const boost::shared_ptr<CommandBufferAllocator>& pParentAllocator)
 		{
-			return std::make_shared<VulkanCommandBufferAllocator>(shared_from_this(), pParentAllocator, bufferCount);
+			return boost::make_shared<VulkanCommandBufferAllocator>(shared_from_this(), pParentAllocator, bufferCount);
 		}
 
-		std::shared_ptr<ScreenBoundRenderTarget> VulkanDevice::CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode)
+		boost::shared_ptr<ScreenBoundRenderTarget> VulkanDevice::CreateScreenBoundRenderTarget(const boost::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const boost::container::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode)
 		{
-			return  std::make_shared<VulkanScreenBoundRenderTarget>(shared_from_this(), pDisplay, extent, bufferCount, imageAttachments, presentMode);
+			return  boost::make_shared<VulkanScreenBoundRenderTarget>(shared_from_this(), pDisplay, extent, bufferCount, imageAttachments, presentMode);
 		}
 
-		std::shared_ptr<OffScreenRenderTarget> VulkanDevice::CreateOffScreenRenderTarget(const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments)
+		boost::shared_ptr<OffScreenRenderTarget> VulkanDevice::CreateOffScreenRenderTarget(const FBox2D& extent, const UI32 bufferCount, const boost::container::vector<RenderTargetAttachment>& imageAttachments)
 		{
-			return std::make_shared<VulkanOffScreenRenderTarget>(shared_from_this(), extent, bufferCount, imageAttachments);
+			return boost::make_shared<VulkanOffScreenRenderTarget>(shared_from_this(), extent, bufferCount, imageAttachments);
 		}
 
-		std::shared_ptr<Buffer> VulkanDevice::CreateBuffer(const BufferType type, const UI64 size, const BufferMemoryProfile profile)
+		boost::shared_ptr<Buffer> VulkanDevice::CreateBuffer(const BufferType type, const UI64 size, const BufferMemoryProfile profile)
 		{
-			return std::make_shared<VulkanBuffer>(shared_from_this(), type, size, profile);
+			return boost::make_shared<VulkanBuffer>(shared_from_this(), type, size, profile);
 		}
 
-		std::shared_ptr<Image> VulkanDevice::CreateImage(const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const UI8 layers, const UI32 mipLevels, const void* pImageData, const MultiSampleCount sampleCount)
+		boost::shared_ptr<Image> VulkanDevice::CreateImage(const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const UI8 layers, const UI32 mipLevels, const void* pImageData, const MultiSampleCount sampleCount)
 		{
-			return std::make_shared<VulkanImage>(shared_from_this(), type, usage, extent, format, layers, mipLevels, pImageData, sampleCount);
+			return boost::make_shared<VulkanImage>(shared_from_this(), type, usage, extent, format, layers, mipLevels, pImageData, sampleCount);
 		}
 
-		std::shared_ptr<ImageSampler> VulkanDevice::CreateImageSampler(const ImageSamplerSpecification& specification)
+		boost::shared_ptr<ImageSampler> VulkanDevice::CreateImageSampler(const ImageSamplerSpecification& specification)
 		{
-			return std::make_shared<VulkanImageSampler>(shared_from_this(), specification);
+			return boost::make_shared<VulkanImageSampler>(shared_from_this(), specification);
 		}
 
-		std::shared_ptr<Shader> VulkanDevice::CreateShader(const ShaderType type, const std::filesystem::path& path)
+		boost::shared_ptr<Shader> VulkanDevice::CreateShader(const ShaderType type, const boost::filesystem::path& path)
 		{
-			return std::make_shared<VulkanShader>(shared_from_this(), type, path);
+			return boost::make_shared<VulkanShader>(shared_from_this(), type, path);
 		}
 
-		std::shared_ptr<Shader> VulkanDevice::CreateShader(const ShaderType type, const std::vector<UI32>& code)
+		boost::shared_ptr<Shader> VulkanDevice::CreateShader(const ShaderType type, const boost::container::vector<UI32>& code)
 		{
-			return std::make_shared<VulkanShader>(shared_from_this(), type, code);
+			return boost::make_shared<VulkanShader>(shared_from_this(), type, code);
 		}
 
-		std::shared_ptr<Shader> VulkanDevice::CreateShader(const ShaderType type, const std::string& code)
+		boost::shared_ptr<Shader> VulkanDevice::CreateShader(const ShaderType type, const std::string& code)
 		{
-			return std::make_shared<VulkanShader>(shared_from_this(), type, code);
+			return boost::make_shared<VulkanShader>(shared_from_this(), type, code);
 		}
 
-		std::shared_ptr<GraphicsPipeline> VulkanDevice::CreateGraphicsPipeline(const std::string& pipelineName, const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget, const std::shared_ptr<Shader>& pVertexShader, const std::shared_ptr<Shader>& pTessellationControlShader, const std::shared_ptr<Shader>& pTessellationEvaluationShader, const std::shared_ptr<Shader>& pGeometryShader, const std::shared_ptr<Shader>& pFragmentShader, const GraphicsPipelineSpecification& specification)
+		boost::shared_ptr<GraphicsPipeline> VulkanDevice::CreateGraphicsPipeline(const std::string& pipelineName, const boost::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget, const boost::shared_ptr<Shader>& pVertexShader, const boost::shared_ptr<Shader>& pTessellationControlShader, const boost::shared_ptr<Shader>& pTessellationEvaluationShader, const boost::shared_ptr<Shader>& pGeometryShader, const boost::shared_ptr<Shader>& pFragmentShader, const GraphicsPipelineSpecification& specification)
 		{
-			return std::make_shared<VulkanGraphicsPipeline>(shared_from_this(), pipelineName, pScreenBoundRenderTarget, pVertexShader, pTessellationControlShader, pTessellationEvaluationShader, pGeometryShader, pFragmentShader, specification);
+			return boost::make_shared<VulkanGraphicsPipeline>(shared_from_this(), pipelineName, pScreenBoundRenderTarget, pVertexShader, pTessellationControlShader, pTessellationEvaluationShader, pGeometryShader, pFragmentShader, specification);
 		}
 
-		std::shared_ptr<GraphicsPipeline> VulkanDevice::CreateGraphicsPipeline(const std::string& pipelineName, const std::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget, const std::shared_ptr<Shader>& pVertexShader, const std::shared_ptr<Shader>& pTessellationControlShader, const std::shared_ptr<Shader>& pTessellationEvaluationShader, const std::shared_ptr<Shader>& pGeometryShader, const std::shared_ptr<Shader>& pFragmentShader, const GraphicsPipelineSpecification& specification)
+		boost::shared_ptr<GraphicsPipeline> VulkanDevice::CreateGraphicsPipeline(const std::string& pipelineName, const boost::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget, const boost::shared_ptr<Shader>& pVertexShader, const boost::shared_ptr<Shader>& pTessellationControlShader, const boost::shared_ptr<Shader>& pTessellationEvaluationShader, const boost::shared_ptr<Shader>& pGeometryShader, const boost::shared_ptr<Shader>& pFragmentShader, const GraphicsPipelineSpecification& specification)
 		{
-			return std::make_shared<VulkanGraphicsPipeline>(shared_from_this(), pipelineName, pOffScreenRenderTarget, pVertexShader, pTessellationControlShader, pTessellationEvaluationShader, pGeometryShader, pFragmentShader, specification);
+			return boost::make_shared<VulkanGraphicsPipeline>(shared_from_this(), pipelineName, pOffScreenRenderTarget, pVertexShader, pTessellationControlShader, pTessellationEvaluationShader, pGeometryShader, pFragmentShader, specification);
 		}
 
-		std::shared_ptr<ComputePipeline> VulkanDevice::CreateComputePipeline(const std::string& pipelineName, const std::shared_ptr<Shader>& pShader)
+		boost::shared_ptr<ComputePipeline> VulkanDevice::CreateComputePipeline(const std::string& pipelineName, const boost::shared_ptr<Shader>& pShader)
 		{
-			return std::make_shared<VulkanComputePipeline>(shared_from_this(), pipelineName, pShader);
+			return boost::make_shared<VulkanComputePipeline>(shared_from_this(), pipelineName, pShader);
 		}
 
-		std::shared_ptr<GeometryStore> VulkanDevice::CreateGeometryStore(const std::unordered_map<UI32, std::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile)
+		boost::shared_ptr<GeometryStore> VulkanDevice::CreateGeometryStore(const boost::unordered::unordered_map<UI32, boost::container::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile)
 		{
-			return std::make_shared<GeometryStore>(shared_from_this(), vertexAttributes, indexSize, profile);
+			return boost::make_shared<GeometryStore>(shared_from_this(), vertexAttributes, indexSize, profile);
 		}
 
-		void VulkanDevice::SubmitGraphicsCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers)
+		void VulkanDevice::SubmitGraphicsCommandBuffers(const boost::container::vector<boost::shared_ptr<CommandBuffer>>& pCommandBuffers)
 		{
 			const UI64 bufferCount = pCommandBuffers.size();
 
-			std::vector<VkSubmitInfo> vSubmitInfos(bufferCount);
+			boost::container::vector<VkSubmitInfo> vSubmitInfos(bufferCount);
 			for (UI64 i = 0; i < bufferCount; i++)
 			{
 				auto& vCommandBuffer = pCommandBuffers[i]->StaticCast<VulkanCommandBuffer>();
@@ -192,11 +192,11 @@ namespace Flint
 			FLINT_VK_ASSERT(vkWaitForFences(vLogicalDevice, 1, &vSubmitFence, VK_TRUE, UI64_MAX));
 		}
 
-		void VulkanDevice::SubmitComputeCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers)
+		void VulkanDevice::SubmitComputeCommandBuffers(const boost::container::vector<boost::shared_ptr<CommandBuffer>>& pCommandBuffers)
 		{
 			const UI64 bufferCount = pCommandBuffers.size();
 
-			std::vector<VkSubmitInfo> vSubmitInfos(bufferCount);
+			boost::container::vector<VkSubmitInfo> vSubmitInfos(bufferCount);
 			for (UI64 i = 0; i < bufferCount; i++)
 			{
 				auto& vCommandBuffer = pCommandBuffers[i]->StaticCast<VulkanCommandBuffer>();
@@ -227,7 +227,7 @@ namespace Flint
 			bIsTerminated = true;
 		}
 
-		VkResult VulkanDevice::CreateImageMemory(const std::vector<VkImage>& vImages, VkMemoryPropertyFlags vMemoryflags, VkDeviceMemory* pDeviceMemory) const
+		VkResult VulkanDevice::CreateImageMemory(const boost::container::vector<VkImage>& vImages, VkMemoryPropertyFlags vMemoryflags, VkDeviceMemory* pDeviceMemory) const
 		{
 			FLINT_SETUP_PROFILER();
 
@@ -393,7 +393,7 @@ namespace Flint
 			if (deviceCount == 0)
 				FLINT_THROW_RUNTIME_ERROR("No available devices found!");
 
-			std::vector<VkPhysicalDevice> devices(deviceCount);
+			boost::container::vector<VkPhysicalDevice> devices(deviceCount);
 			vkEnumeratePhysicalDevices(instance.GetInstance(), &deviceCount, devices.data());
 
 			VkPhysicalDeviceProperties vPhysicalDeviceProperties = {};
@@ -466,7 +466,7 @@ namespace Flint
 
 			vQueue.Initialize(vPhysicalDevice, mFlags);
 
-			std::vector<VkDeviceQueueCreateInfo> vQueueCreateInfos;
+			boost::container::vector<VkDeviceQueueCreateInfo> vQueueCreateInfos;
 			std::set<UI32> uniqueQueueFamilies = {
 				vQueue.mTransferFamily.value()
 			};
@@ -503,7 +503,7 @@ namespace Flint
 			vDeviceCreateInfo.enabledExtensionCount = static_cast<UI32>(mDeviceExtensions.size());
 			vDeviceCreateInfo.ppEnabledExtensionNames = mDeviceExtensions.data();
 
-			std::vector<const char*> validationLayers = instance.GetValidationLayers();
+			boost::container::vector<const char*> validationLayers = instance.GetValidationLayers();
 			if (instance.IsValidationEnabled())
 			{
 				vDeviceCreateInfo.enabledLayerCount = static_cast<UI32>(validationLayers.size());

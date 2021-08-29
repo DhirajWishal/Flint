@@ -18,15 +18,15 @@ namespace Flint
 			DestroyFrameBuffers();
 		}
 
-		void VulkanRenderTarget::CreateRenderPass(std::vector<VulkanRenderTargetAttachmentInterface*> pAttachments, VkPipelineBindPoint vBindPoint, const std::vector<VkSubpassDependency>& vSubpassDependencies)
+		void VulkanRenderTarget::CreateRenderPass(boost::container::vector<VulkanRenderTargetAttachmentInterface*> pAttachments, VkPipelineBindPoint vBindPoint, const boost::container::vector<VkSubpassDependency>& vSubpassDependencies)
 		{
 			FLINT_SETUP_PROFILER();
 
-			std::vector<VkAttachmentDescription> vDescriptions;
+			boost::container::vector<VkAttachmentDescription> vDescriptions;
 
-			std::vector<VkAttachmentReference> vColorAttachmentRef;
-			std::vector<VkAttachmentReference> vDepthAttachmentRef;
-			std::vector<VkAttachmentReference> vResolveAttachmentRef;
+			boost::container::vector<VkAttachmentReference> vColorAttachmentRef;
+			boost::container::vector<VkAttachmentReference> vDepthAttachmentRef;
+			boost::container::vector<VkAttachmentReference> vResolveAttachmentRef;
 
 			VkAttachmentReference vAR = {};
 			vAR.attachment = 0;
@@ -87,22 +87,22 @@ namespace Flint
 			FLINT_VK_ASSERT(vkCreateRenderPass(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vRenderPass));
 		}
 
-		void VulkanRenderTarget::CreateRenderPassWithMultipleSubpasses(std::vector<std::vector<VulkanRenderTargetAttachmentInterface*>> pSubpasses, VkPipelineBindPoint vBindPoint, const std::vector<VkSubpassDependency>& vSubpassDependencies)
+		void VulkanRenderTarget::CreateRenderPassWithMultipleSubpasses(boost::container::vector<boost::container::vector<VulkanRenderTargetAttachmentInterface*>> pSubpasses, VkPipelineBindPoint vBindPoint, const boost::container::vector<VkSubpassDependency>& vSubpassDependencies)
 		{
 			FLINT_SETUP_PROFILER();
 
-			std::vector<VkAttachmentDescription> vDescriptions;
-			std::vector<VkSubpassDescription> vSubpassDescriptions;
+			boost::container::vector<VkAttachmentDescription> vDescriptions;
+			boost::container::vector<VkSubpassDescription> vSubpassDescriptions;
 
-			std::vector<std::vector<VkAttachmentReference>> vColorAttachmentRefs;
-			std::vector<std::vector<VkAttachmentReference>> vDepthAttachmentRefs;
-			std::vector<std::vector<VkAttachmentReference>> vResolveAttachmentRefs;
+			boost::container::vector<boost::container::vector<VkAttachmentReference>> vColorAttachmentRefs;
+			boost::container::vector<boost::container::vector<VkAttachmentReference>> vDepthAttachmentRefs;
+			boost::container::vector<boost::container::vector<VkAttachmentReference>> vResolveAttachmentRefs;
 
 			for (auto pAttachments : pSubpasses)
 			{
-				std::vector<VkAttachmentReference> vColorAttachmentRef;
-				std::vector<VkAttachmentReference> vDepthAttachmentRef;
-				std::vector<VkAttachmentReference> vResolveAttachmentRef;
+				boost::container::vector<VkAttachmentReference> vColorAttachmentRef;
+				boost::container::vector<VkAttachmentReference> vDepthAttachmentRef;
+				boost::container::vector<VkAttachmentReference> vResolveAttachmentRef;
 
 				VkAttachmentReference vAR = {};
 				vAR.attachment = 0;
@@ -175,7 +175,7 @@ namespace Flint
 			vkDestroyRenderPass(vDevice.GetLogicalDevice(), vRenderPass, nullptr);
 		}
 
-		void VulkanRenderTarget::CreateFrameBuffer(std::vector<VulkanRenderTargetAttachmentInterface*> pAttachments, const FBox2D& extent, const UI32 bufferCount)
+		void VulkanRenderTarget::CreateFrameBuffer(boost::container::vector<VulkanRenderTargetAttachmentInterface*> pAttachments, const FBox2D& extent, const UI32 bufferCount)
 		{
 			FLINT_SETUP_PROFILER();
 
@@ -192,7 +192,7 @@ namespace Flint
 			vFrameBuffers.resize(bufferCount);
 			for (UI32 i = 0; i < bufferCount; i++)
 			{
-				std::vector<VkImageView> vAttachments;
+				boost::container::vector<VkImageView> vAttachments;
 
 				for (auto itr = pAttachments.begin(); itr != pAttachments.end(); itr++)
 					INSERT_INTO_VECTOR(vAttachments, (*itr)->GetImageView(i));
@@ -210,7 +210,7 @@ namespace Flint
 			vFrameBuffers.clear();
 		}
 
-		VkFramebuffer VulkanRenderTarget::CreateVulkanFrameBuffer(const FBox2D& extent, const std::vector<VkImageView>& vImageViews)
+		VkFramebuffer VulkanRenderTarget::CreateVulkanFrameBuffer(const FBox2D& extent, const boost::container::vector<VkImageView>& vImageViews)
 		{
 			VkFramebufferCreateInfo vCreateInfo = {};
 			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;

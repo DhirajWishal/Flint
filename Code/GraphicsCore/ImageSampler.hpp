@@ -20,7 +20,7 @@ namespace Flint
 		 * @param pDevice: The device pointer.
 		 * @param specification: The sampler specification.
 		 */
-		ImageSampler(const std::shared_ptr<Device>& pDevice, const ImageSamplerSpecification& specification) : DeviceBoundObject(pDevice), mSpecification(specification) {}
+		ImageSampler(const boost::shared_ptr<Device>& pDevice, const ImageSamplerSpecification& specification) : DeviceBoundObject(pDevice), mSpecification(specification) {}
 
 		/**
 		 * Get the sampler specification.

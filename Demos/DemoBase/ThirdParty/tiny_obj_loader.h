@@ -324,9 +324,9 @@ namespace tinyobj {
 	struct tag_t {
 		std::string name;
 
-		std::vector<int> intValues;
-		std::vector<real_t> floatValues;
-		std::vector<std::string> stringValues;
+		boost::container::vector<int> intValues;
+		boost::container::vector<real_t> floatValues;
+		boost::container::vector<std::string> stringValues;
 	};
 
 	struct joint_and_weight_t {
@@ -338,7 +338,7 @@ namespace tinyobj {
 		int vertex_id;  // Corresponding vertex index in `attrib_t::vertices`.
 						// Compared to `index_t`, this index must be positive and
 						// start with 0(does not allow relative indexing)
-		std::vector<joint_and_weight_t> weightValues;
+		boost::container::vector<joint_and_weight_t> weightValues;
 	};
 
 	// Index struct to support different indices for vtx/normal/texcoord.
@@ -350,30 +350,30 @@ namespace tinyobj {
 	};
 
 	struct mesh_t {
-		std::vector<index_t> indices;
-		std::vector<unsigned char>
+		boost::container::vector<index_t> indices;
+		boost::container::vector<unsigned char>
 			num_face_vertices;          // The number of vertices per
 										// face. 3 = triangle, 4 = quad,
 										// ... Up to 255 vertices per face.
-		std::vector<int> material_ids;  // per-face material ID
-		std::vector<unsigned int> smoothing_group_ids;  // per-face smoothing group
+		boost::container::vector<int> material_ids;  // per-face material ID
+		boost::container::vector<unsigned int> smoothing_group_ids;  // per-face smoothing group
 														// ID(0 = off. positive value
 														// = group id)
-		std::vector<tag_t> tags;                        // SubD tag
+		boost::container::vector<tag_t> tags;                        // SubD tag
 	};
 
 	// struct path_t {
-	//  std::vector<int> indices;  // pairs of indices for lines
+	//  boost::container::vector<int> indices;  // pairs of indices for lines
 	//};
 
 	struct lines_t {
 		// Linear flattened indices.
-		std::vector<index_t> indices;        // indices for vertices(poly lines)
-		std::vector<int> num_line_vertices;  // The number of vertices per line.
+		boost::container::vector<index_t> indices;        // indices for vertices(poly lines)
+		boost::container::vector<int> num_line_vertices;  // The number of vertices per line.
 	};
 
 	struct points_t {
-		std::vector<index_t> indices;  // indices for points
+		boost::container::vector<index_t> indices;  // indices for points
 	};
 
 	struct shape_t {
@@ -385,17 +385,17 @@ namespace tinyobj {
 
 	// Vertex attributes
 	struct attrib_t {
-		std::vector<real_t> vertices;  // 'v'(xyz)
+		boost::container::vector<real_t> vertices;  // 'v'(xyz)
 
 		// For backward compatibility, we store vertex weight in separate array.
-		std::vector<real_t> vertex_weights;  // 'v'(w)
-		std::vector<real_t> normals;         // 'vn'
-		std::vector<real_t> texcoords;       // 'vt'(uv)
+		boost::container::vector<real_t> vertex_weights;  // 'v'(w)
+		boost::container::vector<real_t> normals;         // 'vn'
+		boost::container::vector<real_t> texcoords;       // 'vt'(uv)
 
 		// For backward compatibility, we store texture coordinate 'w' in separate
 		// array.
-		std::vector<real_t> texcoord_ws;  // 'vt'(w)
-		std::vector<real_t> colors;       // extension: vertex colors
+		boost::container::vector<real_t> texcoord_ws;  // 'vt'(w)
+		boost::container::vector<real_t> colors;       // extension: vertex colors
 
 		//
 		// TinyObj extension.
@@ -404,17 +404,17 @@ namespace tinyobj {
 		// NOTE(syoyo): array index is based on the appearance order.
 		// To get a corresponding skin weight for a specific vertex id `vid`,
 		// Need to reconstruct a look up table: `skin_weight_t::vertex_id` == `vid`
-		// (e.g. using std::map, std::unordered_map)
-		std::vector<skin_weight_t> skin_weights;
+		// (e.g. using std::map, boost::unordered::unordered_map)
+		boost::container::vector<skin_weight_t> skin_weights;
 
 		attrib_t() {}
 
 		//
 		// For pybind11
 		//
-		const std::vector<real_t>& GetVertices() const { return vertices; }
+		const boost::container::vector<real_t>& GetVertices() const { return vertices; }
 
-		const std::vector<real_t>& GetVertexWeights() const { return vertex_weights; }
+		const boost::container::vector<real_t>& GetVertexWeights() const { return vertex_weights; }
 	};
 
 	struct callback_t {
@@ -458,7 +458,7 @@ namespace tinyobj {
 		virtual ~MaterialReader();
 
 		virtual bool operator()(const std::string& matId,
-			std::vector<material_t>* materials,
+			boost::container::vector<material_t>* materials,
 			std::map<std::string, int>* matMap, std::string* warn,
 			std::string* err) = 0;
 	};
@@ -473,7 +473,7 @@ namespace tinyobj {
 			: m_mtlBaseDir(mtl_basedir) {}
 		virtual ~MaterialFileReader() TINYOBJ_OVERRIDE {}
 		virtual bool operator()(const std::string& matId,
-			std::vector<material_t>* materials,
+			boost::container::vector<material_t>* materials,
 			std::map<std::string, int>* matMap, std::string* warn,
 			std::string* err) TINYOBJ_OVERRIDE;
 
@@ -490,7 +490,7 @@ namespace tinyobj {
 			: m_inStream(inStream) {}
 		virtual ~MaterialStreamReader() TINYOBJ_OVERRIDE {}
 		virtual bool operator()(const std::string& matId,
-			std::vector<material_t>* materials,
+			boost::container::vector<material_t>* materials,
 			std::map<std::string, int>* matMap, std::string* warn,
 			std::string* err) TINYOBJ_OVERRIDE;
 
@@ -560,9 +560,9 @@ namespace tinyobj {
 
 		const attrib_t& GetAttrib() const { return attrib_; }
 
-		const std::vector<shape_t>& GetShapes() const { return shapes_; }
+		const boost::container::vector<shape_t>& GetShapes() const { return shapes_; }
 
-		const std::vector<material_t>& GetMaterials() const { return materials_; }
+		const boost::container::vector<material_t>& GetMaterials() const { return materials_; }
 
 		///
 		/// Warning message(may be filled after `Load` or `Parse`)
@@ -578,8 +578,8 @@ namespace tinyobj {
 		bool valid_;
 
 		attrib_t attrib_;
-		std::vector<shape_t> shapes_;
-		std::vector<material_t> materials_;
+		boost::container::vector<shape_t> shapes_;
+		boost::container::vector<material_t> materials_;
 
 		std::string warning_;
 		std::string error_;
@@ -599,8 +599,8 @@ namespace tinyobj {
 	/// or not.
 	/// Option 'default_vcols_fallback' specifies whether vertex colors should
 	/// always be defined, even if no colors are given (fallback to white).
-	bool LoadObj(attrib_t* attrib, std::vector<shape_t>* shapes,
-		std::vector<material_t>* materials, std::string* warn,
+	bool LoadObj(attrib_t* attrib, boost::container::vector<shape_t>* shapes,
+		boost::container::vector<material_t>* materials, std::string* warn,
 		std::string* err, const char* filename,
 		const char* mtl_basedir = NULL, bool triangulate = true,
 		bool default_vcols_fallback = true);
@@ -620,15 +620,15 @@ namespace tinyobj {
 	/// std::istream for materials.
 	/// Returns true when loading .obj become success.
 	/// Returns warning and error message into `err`
-	bool LoadObj(attrib_t* attrib, std::vector<shape_t>* shapes,
-		std::vector<material_t>* materials, std::string* warn,
+	bool LoadObj(attrib_t* attrib, boost::container::vector<shape_t>* shapes,
+		boost::container::vector<material_t>* materials, std::string* warn,
 		std::string* err, std::istream* inStream,
 		MaterialReader* readMatFn = NULL, bool triangulate = true,
 		bool default_vcols_fallback = true);
 
 	/// Loads materials into std::map
 	void LoadMtl(std::map<std::string, int>* material_map,
-		std::vector<material_t>* materials, std::istream* inStream,
+		boost::container::vector<material_t>* materials, std::istream* inStream,
 		std::string* warning, std::string* err);
 
 	///
@@ -696,7 +696,7 @@ namespace mapbox {
 		template <typename N = uint32_t>
 		class Earcut {
 		public:
-			std::vector<N> indices;
+			boost::container::vector<N> indices;
 			std::size_t vertices = 0;
 
 			template <typename Polygon>
@@ -800,7 +800,7 @@ namespace mapbox {
 				T* currentBlock = nullptr;
 				std::size_t currentIndex = 1;
 				std::size_t blockSize = 1;
-				std::vector<T*> allocations;
+				boost::container::vector<T*> allocations;
 				Alloc alloc;
 				typedef typename std::allocator_traits<Alloc> alloc_traits;
 			};
@@ -1114,7 +1114,7 @@ namespace mapbox {
 			Node* outerNode) {
 			const size_t len = points.size();
 
-			std::vector<Node*> queue;
+			boost::container::vector<Node*> queue;
 			for (size_t i = 1; i < len; i++) {
 				Node* list = linkedList(points[i], false);
 				if (list) {
@@ -1516,7 +1516,7 @@ namespace mapbox {
 	}  // namespace detail
 
 	template <typename N = uint32_t, typename Polygon>
-	std::vector<N> earcut(const Polygon& poly) {
+	boost::container::vector<N> earcut(const Polygon& poly) {
 		mapbox::detail::Earcut<N> earcut;
 		earcut(poly);
 		return std::move(earcut.indices);
@@ -1542,7 +1542,7 @@ namespace tinyobj {
 		unsigned int
 			smoothing_group_id;  // smoothing group id. 0 = smoothing groupd is off.
 		int pad_;
-		std::vector<vertex_index_t> vertex_indices;  // face vertex indices.
+		boost::container::vector<vertex_index_t> vertex_indices;  // face vertex indices.
 
 		face_t() : smoothing_group_id(0), pad_(0) {}
 	};
@@ -1552,7 +1552,7 @@ namespace tinyobj {
 		// l v1/vt1 v2/vt2 ...
 		// In the specification, line primitrive does not have normal index, but
 		// TinyObjLoader allow it
-		std::vector<vertex_index_t> vertex_indices;
+		boost::container::vector<vertex_index_t> vertex_indices;
 	};
 
 	// Internal data structure for points representation
@@ -1560,7 +1560,7 @@ namespace tinyobj {
 		// p v1 v2 ...
 		// In the specification, point primitrive does not have normal index and
 		// texture coord index, but TinyObjLoader allow it.
-		std::vector<vertex_index_t> vertex_indices;
+		boost::container::vector<vertex_index_t> vertex_indices;
 	};
 
 	struct tag_sizes {
@@ -1571,17 +1571,17 @@ namespace tinyobj {
 	};
 
 	struct obj_shape {
-		std::vector<real_t> v;
-		std::vector<real_t> vn;
-		std::vector<real_t> vt;
+		boost::container::vector<real_t> v;
+		boost::container::vector<real_t> vn;
+		boost::container::vector<real_t> vt;
 	};
 
 	//
 	// Manages group of primitives(face, line, points, ...)
 	struct PrimGroup {
-		std::vector<face_t> faceGroup;
-		std::vector<__line_t> lineGroup;
-		std::vector<__points_t> pointsGroup;
+		boost::container::vector<face_t> faceGroup;
+		boost::container::vector<__line_t> lineGroup;
+		boost::container::vector<__points_t> pointsGroup;
 
 		void clear() {
 			faceGroup.clear();
@@ -2267,9 +2267,9 @@ namespace tinyobj {
 
 	// TODO(syoyo): refactor function.
 	static bool exportGroupsToShape(shape_t* shape, const PrimGroup& prim_group,
-		const std::vector<tag_t>& tags,
+		const boost::container::vector<tag_t>& tags,
 		const int material_id, const std::string& name,
-		bool triangulate, const std::vector<real_t>& v,
+		bool triangulate, const boost::container::vector<real_t>& v,
 		std::string* warn) {
 		if (prim_group.IsEmpty()) {
 			return false;
@@ -2467,9 +2467,9 @@ namespace tinyobj {
 
 						// first polyline define the main polygon.
 						// following polylines define holes(not used in tinyobj).
-						std::vector<std::vector<Point> > polygon;
+						boost::container::vector<boost::container::vector<Point> > polygon;
 
-						std::vector<Point> polyline;
+						boost::container::vector<Point> polyline;
 
 						// Fill polygon data(facevarying vertices).
 						for (size_t k = 0; k < npolys; k++) {
@@ -2485,7 +2485,7 @@ namespace tinyobj {
 						}
 
 						polygon.push_back(polyline);
-						std::vector<uint32_t> indices = mapbox::earcut<uint32_t>(polygon);
+						boost::container::vector<uint32_t> indices = mapbox::earcut<uint32_t>(polygon);
 						// => result = 3 * faces, clockwise
 
 						assert(indices.size() % 3 == 0);
@@ -2756,7 +2756,7 @@ namespace tinyobj {
 	// Split a string with specified delimiter character and escape character.
 	// https://rosettacode.org/wiki/Tokenize_a_string_with_escaping#C.2B.2B
 	static void SplitString(const std::string& s, char delim, char escape,
-		std::vector<std::string>& elems) {
+		boost::container::vector<std::string>& elems) {
 		std::string token;
 
 		bool escaping = false;
@@ -2800,7 +2800,7 @@ namespace tinyobj {
 	}
 
 	void LoadMtl(std::map<std::string, int>* material_map,
-		std::vector<material_t>* materials, std::istream* inStream,
+		boost::container::vector<material_t>* materials, std::istream* inStream,
 		std::string* warning, std::string* err) {
 		(void)err;
 
@@ -3192,7 +3192,7 @@ namespace tinyobj {
 	}
 
 	bool MaterialFileReader::operator()(const std::string& matId,
-		std::vector<material_t>* materials,
+		boost::container::vector<material_t>* materials,
 		std::map<std::string, int>* matMap,
 		std::string* warn, std::string* err) {
 		if (!m_mtlBaseDir.empty()) {
@@ -3203,7 +3203,7 @@ namespace tinyobj {
 #endif
 
 			// https://stackoverflow.com/questions/5167625/splitting-a-c-stdstring-using-tokens-e-g
-			std::vector<std::string> paths;
+			boost::container::vector<std::string> paths;
 			std::istringstream f(m_mtlBaseDir);
 
 			std::string s;
@@ -3214,7 +3214,7 @@ namespace tinyobj {
 			for (size_t i = 0; i < paths.size(); i++) {
 				std::string filepath = JoinPath(paths[i], matId);
 
-				std::ifstream matIStream(filepath.c_str());
+				boost::filesystem::ifstream matIStream(filepath.c_str());
 				if (matIStream) {
 					LoadMtl(matMap, materials, &matIStream, warn, err);
 
@@ -3232,7 +3232,7 @@ namespace tinyobj {
 		}
 		else {
 			std::string filepath = matId;
-			std::ifstream matIStream(filepath.c_str());
+			boost::filesystem::ifstream matIStream(filepath.c_str());
 			if (matIStream) {
 				LoadMtl(matMap, materials, &matIStream, warn, err);
 
@@ -3251,7 +3251,7 @@ namespace tinyobj {
 	}
 
 	bool MaterialStreamReader::operator()(const std::string& matId,
-		std::vector<material_t>* materials,
+		boost::container::vector<material_t>* materials,
 		std::map<std::string, int>* matMap,
 		std::string* warn, std::string* err) {
 		(void)err;
@@ -3270,8 +3270,8 @@ namespace tinyobj {
 		return true;
 	}
 
-	bool LoadObj(attrib_t* attrib, std::vector<shape_t>* shapes,
-		std::vector<material_t>* materials, std::string* warn,
+	bool LoadObj(attrib_t* attrib, boost::container::vector<shape_t>* shapes,
+		boost::container::vector<material_t>* materials, std::string* warn,
 		std::string* err, const char* filename, const char* mtl_basedir,
 		bool triangulate, bool default_vcols_fallback) {
 		attrib->vertices.clear();
@@ -3282,7 +3282,7 @@ namespace tinyobj {
 
 		std::stringstream errss;
 
-		std::ifstream ifs(filename);
+		boost::filesystem::ifstream ifs(filename);
 		if (!ifs) {
 			errss << "Cannot open file [" << filename << "]\n";
 			if (err) {
@@ -3306,19 +3306,19 @@ namespace tinyobj {
 			triangulate, default_vcols_fallback);
 	}
 
-	bool LoadObj(attrib_t* attrib, std::vector<shape_t>* shapes,
-		std::vector<material_t>* materials, std::string* warn,
+	bool LoadObj(attrib_t* attrib, boost::container::vector<shape_t>* shapes,
+		boost::container::vector<material_t>* materials, std::string* warn,
 		std::string* err, std::istream* inStream,
 		MaterialReader* readMatFn /*= NULL*/, bool triangulate,
 		bool default_vcols_fallback) {
 		std::stringstream errss;
 
-		std::vector<real_t> v;
-		std::vector<real_t> vn;
-		std::vector<real_t> vt;
-		std::vector<real_t> vc;
-		std::vector<skin_weight_t> vw;
-		std::vector<tag_t> tags;
+		boost::container::vector<real_t> v;
+		boost::container::vector<real_t> vn;
+		boost::container::vector<real_t> vt;
+		boost::container::vector<real_t> vc;
+		boost::container::vector<skin_weight_t> vw;
+		boost::container::vector<tag_t> tags;
 		PrimGroup prim_group;
 		std::string name;
 
@@ -3599,7 +3599,7 @@ namespace tinyobj {
 				if (readMatFn) {
 					token += 7;
 
-					std::vector<std::string> filenames;
+					boost::container::vector<std::string> filenames;
 					SplitString(std::string(token), ' ', '\\', filenames);
 
 					if (filenames.empty()) {
@@ -3662,7 +3662,7 @@ namespace tinyobj {
 				// material = -1;
 				prim_group.clear();
 
-				std::vector<std::string> names;
+				boost::container::vector<std::string> names;
 
 				while (!IS_NEW_LINE(token[0])) {
 					std::string str = parseString(&token);
@@ -3879,11 +3879,11 @@ namespace tinyobj {
 		std::map<std::string, int> material_map;
 		int material_id = -1;  // -1 = invalid
 
-		std::vector<index_t> indices;
-		std::vector<material_t> materials;
-		std::vector<std::string> names;
+		boost::container::vector<index_t> indices;
+		boost::container::vector<material_t> materials;
+		boost::container::vector<std::string> names;
 		names.reserve(2);
-		std::vector<const char*> names_out;
+		boost::container::vector<const char*> names_out;
 
 		std::string linebuf;
 		while (inStream.peek() != -1) {
@@ -4010,7 +4010,7 @@ namespace tinyobj {
 				if (readMatFn) {
 					token += 7;
 
-					std::vector<std::string> filenames;
+					boost::container::vector<std::string> filenames;
 					SplitString(std::string(token), ' ', '\\', filenames);
 
 					if (filenames.empty()) {

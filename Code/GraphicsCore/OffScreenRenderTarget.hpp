@@ -25,6 +25,6 @@ namespace Flint
 		 * @param bufferCount: The frame buffer count.
 		 * @param imageAttachments: The image attachments used in the render target.
 		 */
-		OffScreenRenderTarget(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments);
+		OffScreenRenderTarget(const boost::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, const boost::container::vector<RenderTargetAttachment>& imageAttachments);
 	};
 }

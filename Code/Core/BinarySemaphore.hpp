@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <atomic>
+#include <boost/atomic.hpp>
 
 namespace Flint
 {
@@ -43,6 +43,6 @@ namespace Flint
 		bool TryAcquire();
 
 	private:
-		std::atomic<bool> mAtomicBool = false;
+		boost::atomic<bool> mAtomicBool = false;
 	};
 }

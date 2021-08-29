@@ -236,9 +236,9 @@ namespace Flint
 				return VkCompareOp::VK_COMPARE_OP_LESS_OR_EQUAL;
 			}
 
-			std::vector<VkDynamicState> GetDynamicStates(DynamicStateFlags flags)
+			boost::container::vector<VkDynamicState> GetDynamicStates(DynamicStateFlags flags)
 			{
-				std::vector<VkDynamicState> states;
+				boost::container::vector<VkDynamicState> states;
 				if (flags & DynamicStateFlags::VIEWPORT)
 					INSERT_INTO_VECTOR(states, VkDynamicState::VK_DYNAMIC_STATE_VIEWPORT);
 
@@ -541,14 +541,14 @@ namespace Flint
 		}
 
 		VulkanGraphicsPipeline::VulkanGraphicsPipeline(
-			const std::shared_ptr<Device>& pDevice,
+			const boost::shared_ptr<Device>& pDevice,
 			const std::string& pipelineName,
-			const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget,
-			const std::shared_ptr<Shader>& pVertexShader,
-			const std::shared_ptr<Shader>& pTessellationControlShader,
-			const std::shared_ptr<Shader>& pTessellationEvaluationShader,
-			const std::shared_ptr<Shader>& pGeometryShader,
-			const std::shared_ptr<Shader>& pFragmentShader,
+			const boost::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget,
+			const boost::shared_ptr<Shader>& pVertexShader,
+			const boost::shared_ptr<Shader>& pTessellationControlShader,
+			const boost::shared_ptr<Shader>& pTessellationEvaluationShader,
+			const boost::shared_ptr<Shader>& pGeometryShader,
+			const boost::shared_ptr<Shader>& pFragmentShader,
 			const GraphicsPipelineSpecification& specification)
 			: GraphicsPipeline(
 				pDevice,
@@ -572,14 +572,14 @@ namespace Flint
 		}
 
 		VulkanGraphicsPipeline::VulkanGraphicsPipeline(
-			const std::shared_ptr<Device>& pDevice,
+			const boost::shared_ptr<Device>& pDevice,
 			const std::string& pipelineName,
-			const std::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget,
-			const std::shared_ptr<Shader>& pVertexShader,
-			const std::shared_ptr<Shader>& pTessellationControlShader,
-			const std::shared_ptr<Shader>& pTessellationEvaluationShader,
-			const std::shared_ptr<Shader>& pGeometryShader,
-			const std::shared_ptr<Shader>& pFragmentShader,
+			const boost::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget,
+			const boost::shared_ptr<Shader>& pVertexShader,
+			const boost::shared_ptr<Shader>& pTessellationControlShader,
+			const boost::shared_ptr<Shader>& pTessellationEvaluationShader,
+			const boost::shared_ptr<Shader>& pGeometryShader,
+			const boost::shared_ptr<Shader>& pFragmentShader,
 			const GraphicsPipelineSpecification& specification)
 			: GraphicsPipeline(
 				pDevice,
@@ -618,7 +618,7 @@ namespace Flint
 			CreatePipeline();
 		}
 
-		void VulkanGraphicsPipeline::Recreate(const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget)
+		void VulkanGraphicsPipeline::Recreate(const boost::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget)
 		{
 			FLINT_SETUP_PROFILER();
 
@@ -666,8 +666,8 @@ namespace Flint
 			if (vDescriptorSetPool)
 				vkDestroyDescriptorPool(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), vDescriptorSetPool, nullptr);
 
-			std::vector<VkDescriptorPoolSize> vPoolSizes;
-			std::unordered_map<std::string, ShaderResource> resources;
+			boost::container::vector<VkDescriptorPoolSize> vPoolSizes;
+			boost::unordered::unordered_map<std::string, ShaderResource> resources;
 
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 
@@ -728,9 +728,9 @@ namespace Flint
 			}
 
 			// Allocate descriptor sets.
-			std::vector<VkDescriptorSet> vDescriptorSets(descriptorSetCount);
+			boost::container::vector<VkDescriptorSet> vDescriptorSets(descriptorSetCount);
 			{
-				std::vector<VkDescriptorSetLayout> vDescriptorSetLayouts(descriptorSetCount, vDescriptorSetLayout);
+				boost::container::vector<VkDescriptorSetLayout> vDescriptorSetLayouts(descriptorSetCount, vDescriptorSetLayout);
 
 				VkDescriptorSetAllocateInfo vAllocateInfo = {};
 				vAllocateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -743,7 +743,7 @@ namespace Flint
 			}
 
 			// Update descriptor sets.
-			std::vector<VkWriteDescriptorSet> vWrites;
+			boost::container::vector<VkWriteDescriptorSet> vWrites;
 			VkWriteDescriptorSet vWrite = {};
 			vWrite.sType = VkStructureType::VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 			vWrite.pNext = VK_NULL_HANDLE;
@@ -825,7 +825,7 @@ namespace Flint
 			bShouldPrepareResources = false;
 		}
 
-		const VkDescriptorSet VulkanGraphicsPipeline::GetDescriptorSet(const std::shared_ptr<ResourceMap>& pResourceMap) const
+		const VkDescriptorSet VulkanGraphicsPipeline::GetDescriptorSet(const boost::shared_ptr<ResourceMap>& pResourceMap) const
 		{
 			if (vDescriptorSetMap.find(pResourceMap) == vDescriptorSetMap.end())
 				return VK_NULL_HANDLE;
@@ -833,7 +833,7 @@ namespace Flint
 			return vDescriptorSetMap.at(pResourceMap);
 		}
 
-		const VkDescriptorSet* VulkanGraphicsPipeline::GetDescriptorSetAddress(const std::shared_ptr<ResourceMap>& pResourceMap) const
+		const VkDescriptorSet* VulkanGraphicsPipeline::GetDescriptorSetAddress(const boost::shared_ptr<ResourceMap>& pResourceMap) const
 		{
 			if (vDescriptorSetMap.find(pResourceMap) == vDescriptorSetMap.end())
 				return nullptr;
@@ -1003,8 +1003,8 @@ namespace Flint
 		{
 			FLINT_SETUP_PROFILER();
 
-			std::vector<VkDescriptorSetLayoutBinding> vBindings;
-			std::vector<VkPushConstantRange> vConstantRanges;
+			boost::container::vector<VkDescriptorSetLayoutBinding> vBindings;
+			boost::container::vector<VkPushConstantRange> vConstantRanges;
 
 			// Resolve vertex shader data.
 			{

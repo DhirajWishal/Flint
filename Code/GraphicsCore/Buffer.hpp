@@ -31,7 +31,7 @@ namespace Flint
 		 * @param size: The size of the buffer.
 		 * @param profile: The memory profile of the buffer. Default is BufferMemoryProfile::AUTOMATIC.
 		 */
-		Buffer(const std::shared_ptr<Device>& pDevice, const BufferType type, const UI64 size, const BufferMemoryProfile profile = BufferMemoryProfile::AUTOMATIC);
+		Buffer(const boost::shared_ptr<Device>& pDevice, const BufferType type, const UI64 size, const BufferMemoryProfile profile = BufferMemoryProfile::AUTOMATIC);
 
 		/**
 		 * Resize the buffer.
@@ -50,7 +50,7 @@ namespace Flint
 		 * @param srcOffet: The source buffer offset.
 		 * @param dstOffset: The destination (this) buffer offset.
 		 */
-		virtual void CopyFromBuffer(const std::shared_ptr<Buffer>& pSrcBuffer, const UI64 size, const UI64 srcOffset, const UI64 dstOffset) = 0;
+		virtual void CopyFromBuffer(const boost::shared_ptr<Buffer>& pSrcBuffer, const UI64 size, const UI64 srcOffset, const UI64 dstOffset) = 0;
 
 		/**
 		 * Map the buffer memory to the local address space.

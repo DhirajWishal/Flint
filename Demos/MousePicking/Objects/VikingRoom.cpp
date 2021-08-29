@@ -12,7 +12,7 @@
 
 VikingRoom::VikingRoom(glm::vec3 position, SceneState* pSceneState) : GameObject(position, pSceneState)
 {
-	pDynamicStates = std::make_shared<Flint::DynamicStateContainer>();
+	pDynamicStates = boost::make_shared<Flint::DynamicStateContainer>();
 	pUniformBufferObject = pSceneState->pDevice->CreateBuffer(Flint::BufferType::UNIFORM, sizeof(UniformBufferObject));
 
 	auto image = LoadImage(pSceneState->GetAssetPath().string() + "\\Packages\\VikingRoom\\VikingRoom\\texture.png");
@@ -190,8 +190,8 @@ void VikingRoom::SetupPipeline()
 	pSceneState->pScreenBoundRenderTargets["Default"]->AttachOffScreenRenderTarget(pSceneState->pOffScreenRenderTargets["MousePicker"]);
 
 	// Prepare pipeline.
-	pVertexShaderMP = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("Flint\\Shaders\\MousePicking3D\\shader.vert.spv"));
-	pFragmentShaderMP = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("Flint\\Shaders\\MousePicking3D\\shader.frag.spv"));
+	pVertexShaderMP = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, boost::filesystem::path("Flint\\Shaders\\MousePicking3D\\shader.vert.spv"));
+	pFragmentShaderMP = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, boost::filesystem::path("Flint\\Shaders\\MousePicking3D\\shader.frag.spv"));
 
 	specification.mRasterizationSamples = Flint::MultiSampleCount::BITS_1;
 	pSceneState->pGraphicsPipelines["MousePicker"] = pSceneState->pDevice->CreateGraphicsPipeline("MousePicker", pSceneState->pOffScreenRenderTargets["MousePicker"], pVertexShaderMP, nullptr, nullptr, nullptr, pFragmentShaderMP, specification);

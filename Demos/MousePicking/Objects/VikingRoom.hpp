@@ -23,14 +23,14 @@ private:
 	void SetupPipeline();
 
 private:
-	std::shared_ptr<Flint::Image> pTexture = nullptr;
-	std::shared_ptr<Flint::ImageSampler> pTextureSampler = nullptr;
+	boost::shared_ptr<Flint::Image> pTexture = nullptr;
+	boost::shared_ptr<Flint::ImageSampler> pTextureSampler = nullptr;
 
-	std::shared_ptr<Flint::DynamicStateContainer> pDynamicStates = nullptr;
-	std::shared_ptr<Flint::Buffer> pUniformBufferObject = nullptr;
+	boost::shared_ptr<Flint::DynamicStateContainer> pDynamicStates = nullptr;
+	boost::shared_ptr<Flint::Buffer> pUniformBufferObject = nullptr;
 
-	std::shared_ptr<Flint::Shader> pVertexShaderMP = nullptr;
-	std::shared_ptr<Flint::Shader> pFragmentShaderMP = nullptr;
+	boost::shared_ptr<Flint::Shader> pVertexShaderMP = nullptr;
+	boost::shared_ptr<Flint::Shader> pFragmentShaderMP = nullptr;
 
 	UI64 mVertexOffset = 0, mVertexCount = 0;
 	UI64 mIndexOffset = 0, mIndexCount = 0;

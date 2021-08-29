@@ -7,7 +7,7 @@
 
 VikingRoom::VikingRoom(glm::vec3 position, SceneState* pSceneState) : GameObject(position, pSceneState)
 {
-	pDynamicStates = std::make_shared<Flint::DynamicStateContainer>();
+	pDynamicStates = boost::make_shared<Flint::DynamicStateContainer>();
 
 	auto image = LoadImage(pSceneState->GetAssetPath().string() + "\\Packages\\VikingRoom\\VikingRoom\\texture.png");
 	pTexture = pSceneState->pDevice->CreateImage(Flint::ImageType::DIMENSIONS_2, Flint::ImageUsage::GRAPHICS, image.mExtent, Flint::PixelFormat::R8G8B8A8_SRGB, 1, 1, image.pImageData);

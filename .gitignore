@@ -340,4 +340,23 @@ Demos/**/*.json
 *.vcxproj.user
 
 # Stop including boost build files.
-
+ThirdParty/boost_1_77_0
+!ThirdParty/boost_1_77_0/boost
+!ThirdParty/boost_1_77_0/doc
+!ThirdParty/boost_1_77_0/libs
+!ThirdParty/boost_1_77_0/more
+!ThirdParty/boost_1_77_0/status
+!ThirdParty/boost_1_77_0/tools
+!ThirdParty/boost_1_77_0/boost-build.jam
+!ThirdParty/boost_1_77_0/boost.css
+!ThirdParty/boost_1_77_0/boost.png
+!ThirdParty/boost_1_77_0/boostcpp.jam
+!ThirdParty/boost_1_77_0/bootstrap.bat
+!ThirdParty/boost_1_77_0/bootstrap.sh
+!ThirdParty/boost_1_77_0/index.htm
+!ThirdParty/boost_1_77_0/index.html
+!ThirdParty/boost_1_77_0/INSTALL
+!ThirdParty/boost_1_77_0/Jamroot
+!ThirdParty/boost_1_77_0/LICENSE_1_0.txt
+!ThirdParty/boost_1_77_0/README.md
+!ThirdParty/boost_1_77_0/rst.css

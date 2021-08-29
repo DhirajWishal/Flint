@@ -4,23 +4,24 @@
 #include "Core/Profiler.hpp"
 #include "Core/Error.hpp"
 
-#include <thread>
+//#include <thread>
 #include <sstream>
+#include <boost/thread.hpp>
 
 namespace Flint
 {
 #ifndef FLINT_RELEASE
-	Profiler::Profiler(const char* pFunctionSignature) : pFunctionSignature(pFunctionSignature), mStart(std::chrono::high_resolution_clock::now())
+	Profiler::Profiler(const char* pFunctionSignature) : pFunctionSignature(pFunctionSignature), mStart(boost::chrono::high_resolution_clock::now())
 	{
 	}
 
 	Profiler::~Profiler()
 	{
-		mEnd = std::chrono::high_resolution_clock::now();
+		mEnd = boost::chrono::high_resolution_clock::now();
 		ProfileLogger::GetInstance().WriteContent(*this);
 	}
 
-	AtomicProfileControlBlock::AtomicProfileControlBlock(const std::filesystem::path& filePath) : mProfileFile(filePath)
+	AtomicProfileControlBlock::AtomicProfileControlBlock(const boost::filesystem::path& filePath) : mProfileFile(filePath)
 	{
 		if (!mProfileFile.is_open())
 			FLINT_THROW_RUNTIME_ERROR("Failed to open the profile logger!");
@@ -39,8 +40,8 @@ namespace Flint
 	ProfileLogger::ProfileLogger()
 	{
 		std::stringstream threadID;
-		threadID << std::this_thread::get_id();
-		pControlBlock = std::make_shared<AtomicProfileControlBlock>("ProfileLog.json");
+		threadID << boost::this_thread::get_id();
+		pControlBlock = boost::make_shared<AtomicProfileControlBlock>("ProfileLog.json");
 	}
 
 	ProfileLogger::~ProfileLogger()

@@ -12,7 +12,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanScreenBoundRenderTarget::VulkanScreenBoundRenderTarget(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode)
+		VulkanScreenBoundRenderTarget::VulkanScreenBoundRenderTarget(const boost::shared_ptr<Device>& pDevice, const boost::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const boost::container::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode)
 			: ScreenBoundRenderTarget(pDevice, pDisplay, extent, bufferCount, imageAttachments, presentMode), vRenderTarget(pDevice->StaticCast<VulkanDevice>())
 		{
 			FLINT_SETUP_PROFILER();
@@ -35,7 +35,7 @@ namespace Flint
 			vDependencies[1].dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
 			vDependencies[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
 
-			std::vector<VulkanRenderTargetAttachmentInterface*> pAttachmentInferfaces;
+			boost::container::vector<VulkanRenderTargetAttachmentInterface*> pAttachmentInferfaces;
 			pAttachmentInferfaces.reserve(mAttachments.size() + 1);
 			for (const auto attachment : mAttachments)
 			{
@@ -116,7 +116,7 @@ namespace Flint
 			vRenderTarget.DestroyRenderPass();
 			vRenderTarget.DestroyFrameBuffers();
 
-			std::vector<VulkanRenderTargetAttachmentInterface*> pAttachmentInferfaces;
+			boost::container::vector<VulkanRenderTargetAttachmentInterface*> pAttachmentInferfaces;
 			pAttachmentInferfaces.reserve(mAttachments.size() + 1);
 
 			for (auto attachment : mAttachments)

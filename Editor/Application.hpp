@@ -20,8 +20,8 @@ private:
 	void Execute();
 
 private:
-	std::shared_ptr<Flint::Instance> pInstance = nullptr;
-	std::shared_ptr<Flint::Device> pDevice = nullptr;
+	boost::shared_ptr<Flint::Instance> pInstance = nullptr;
+	boost::shared_ptr<Flint::Device> pDevice = nullptr;
 
 	EditorRenderTarget mRenderTarget;
 

@@ -8,7 +8,7 @@
 TreeScene::TreeScene(glm::vec3 position, SceneState* pSceneState)
 	: GameObject(position, pSceneState)
 {
-	pDynamicStates = std::make_shared<Flint::DynamicStateContainer>();
+	pDynamicStates = boost::make_shared<Flint::DynamicStateContainer>();
 
 	pTextureSampler = pSceneState->pDevice->CreateImageSampler(Flint::ImageSamplerSpecification());
 
@@ -105,7 +105,7 @@ void TreeScene::OnUpdate(UI64 delta)
 
 void TreeScene::LoadTreeImages()
 {
-	std::filesystem::path paths[ImageCount] = {
+	boost::filesystem::path paths[ImageCount] = {
 		pSceneState->GetAssetPath().string() + "\\Packages\\Tree001\\Tree01\\Tree1\\BarkDecidious0143_5_S.jpg",
 		pSceneState->GetAssetPath().string() + "\\Packages\\Tree001\\Tree01\\Tree1\\Leaves0120_35_S.png",
 		pSceneState->GetAssetPath().string() + "\\Packages\\Tree001\\Tree01\\Tree1\\BarkDecidious0194_7_S.jpg",

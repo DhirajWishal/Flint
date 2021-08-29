@@ -25,7 +25,7 @@ namespace Flint
 		 * @param wireFrame: The wire frames.
 		 * @param pGeometryStore: The geometry store pointer.
 		 */
-		Asset(const std::vector<WireFrame>& wireFrames, const std::shared_ptr<GeometryStore>& pGeometryStore);
+		Asset(const boost::container::vector<WireFrame>& wireFrames, const boost::shared_ptr<GeometryStore>& pGeometryStore);
 
 		/**
 		 * Load the asset from a file.
@@ -34,7 +34,7 @@ namespace Flint
 		 * @param pGeometryStore: The geometry store pointer.
 		 * @param vertexDescriptor: The vertex descriptor stating the vertex data to load.
 		 */
-		Asset(const std::filesystem::path& assetFile, const std::shared_ptr<GeometryStore>& pGeometryStore, const VertexDescriptor& vertexDescriptor);
+		Asset(const boost::filesystem::path& assetFile, const boost::shared_ptr<GeometryStore>& pGeometryStore, const VertexDescriptor& vertexDescriptor);
 
 	public:
 		/**
@@ -42,24 +42,24 @@ namespace Flint
 		 *
 		 * @return The wire frames.
 		 */
-		const std::vector<WireFrame> GetWireFrames() const { return mWireFrames; }
+		const boost::container::vector<WireFrame> GetWireFrames() const { return mWireFrames; }
 
 		/**
 		 * Get the wire frames stored in the asset.
 		 *
 		 * @return The wire frames.
 		 */
-		std::vector<WireFrame>& GetWireFrames() { return mWireFrames; }
+		boost::container::vector<WireFrame>& GetWireFrames() { return mWireFrames; }
 
 		/**
 		 * Get the geometry store in which the asset is stored.
 		 *
 		 * @return The geometry store pointer.
 		 */
-		const std::shared_ptr<GeometryStore> GetGeometryStore() const { return pGeometryStore; }
+		const boost::shared_ptr<GeometryStore> GetGeometryStore() const { return pGeometryStore; }
 
 	private:
-		std::vector<WireFrame> mWireFrames = {};
-		std::shared_ptr<GeometryStore> pGeometryStore = nullptr;
+		boost::container::vector<WireFrame> mWireFrames = {};
+		boost::shared_ptr<GeometryStore> pGeometryStore = nullptr;
 	};
 }

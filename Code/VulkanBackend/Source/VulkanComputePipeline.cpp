@@ -14,7 +14,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanComputePipeline::VulkanComputePipeline(const std::shared_ptr<Device>& pDevice, const std::string& pipelineName, const std::shared_ptr<Shader>& pComputeShader)
+		VulkanComputePipeline::VulkanComputePipeline(const boost::shared_ptr<Device>& pDevice, const std::string& pipelineName, const boost::shared_ptr<Shader>& pComputeShader)
 			: ComputePipeline(pDevice, pipelineName, pComputeShader)
 		{
 			CreatePipelineCache();
@@ -68,7 +68,7 @@ namespace Flint
 			vCommandBuffeAllocator.Terminate();
 		}
 
-		void VulkanComputePipeline::Dispatch(const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget)
+		void VulkanComputePipeline::Dispatch(const boost::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget)
 		{
 			if (!pThisPipeline)
 				pThisPipeline = shared_from_this();
@@ -77,7 +77,7 @@ namespace Flint
 				PrepareResources();
 		}
 
-		void VulkanComputePipeline::Dispatch(const std::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget)
+		void VulkanComputePipeline::Dispatch(const boost::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget)
 		{
 			if (!pThisPipeline)
 				pThisPipeline = shared_from_this();
@@ -98,8 +98,8 @@ namespace Flint
 			if (vDescriptorSetPool)
 				vkDestroyDescriptorPool(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), vDescriptorSetPool, nullptr);
 
-			std::vector<VkDescriptorPoolSize> vPoolSizes;
-			std::unordered_map<std::string, ShaderResource> resources;
+			boost::container::vector<VkDescriptorPoolSize> vPoolSizes;
+			boost::unordered::unordered_map<std::string, ShaderResource> resources;
 
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 
@@ -126,9 +126,9 @@ namespace Flint
 			}
 
 			// Allocate descriptor sets.
-			std::vector<VkDescriptorSet> vDescriptorSets(descriptorSetCount);
+			boost::container::vector<VkDescriptorSet> vDescriptorSets(descriptorSetCount);
 			{
-				std::vector<VkDescriptorSetLayout> vDescriptorSetLayouts(descriptorSetCount, vDescriptorSetLayout);
+				boost::container::vector<VkDescriptorSetLayout> vDescriptorSetLayouts(descriptorSetCount, vDescriptorSetLayout);
 
 				VkDescriptorSetAllocateInfo vAllocateInfo = {};
 				vAllocateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -141,7 +141,7 @@ namespace Flint
 			}
 
 			// Update descriptor sets.
-			std::vector<VkWriteDescriptorSet> vWrites;
+			boost::container::vector<VkWriteDescriptorSet> vWrites;
 			VkWriteDescriptorSet vWrite = {};
 			vWrite.sType = VkStructureType::VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 			vWrite.pNext = VK_NULL_HANDLE;
@@ -249,7 +249,7 @@ namespace Flint
 			bIsTerminated = true;
 		}
 
-		const VkDescriptorSet VulkanComputePipeline::GetDescriptorSet(const std::shared_ptr<ResourceMap>& pResourceMap) const
+		const VkDescriptorSet VulkanComputePipeline::GetDescriptorSet(const boost::shared_ptr<ResourceMap>& pResourceMap) const
 		{
 			if (vDescriptorSetMap.find(pResourceMap) == vDescriptorSetMap.end())
 				return VK_NULL_HANDLE;
@@ -257,7 +257,7 @@ namespace Flint
 			return vDescriptorSetMap.at(pResourceMap);
 		}
 
-		const VkDescriptorSet* VulkanComputePipeline::GetDescriptorSetAddress(const std::shared_ptr<ResourceMap>& pResourceMap) const
+		const VkDescriptorSet* VulkanComputePipeline::GetDescriptorSetAddress(const boost::shared_ptr<ResourceMap>& pResourceMap) const
 		{
 			if (vDescriptorSetMap.find(pResourceMap) == vDescriptorSetMap.end())
 				return nullptr;
@@ -288,8 +288,8 @@ namespace Flint
 			FLINT_SETUP_PROFILER();
 
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
-			std::vector<VkDescriptorSetLayoutBinding> vBindings;
-			std::vector<VkPushConstantRange> vConstantRanges;
+			boost::container::vector<VkDescriptorSetLayoutBinding> vBindings;
+			boost::container::vector<VkPushConstantRange> vConstantRanges;
 
 			// Resolve compute shader data.
 			Utilities::AddResourceBindingsToVector(vBindings, pShader->StaticCast<VulkanShader>());

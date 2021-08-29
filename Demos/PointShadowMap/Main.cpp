@@ -22,10 +22,10 @@ int main(int argc, char** argv)
 			Preview* pPreview = nullptr;
 
 			ImGUI mImGui(glm::vec3(0.0f), &mState);
-			std::vector<std::unique_ptr<GameObject>> pGameObjects;
+			boost::container::vector<std::unique_ptr<GameObject>> pGameObjects;
 			pGameObjects.push_back(std::make_unique<Light>(glm::vec3(1.0f), &mState));
 			pGameObjects.push_back(std::make_unique<Preview>(glm::vec3(0.0f), &mState,
-				std::filesystem::path("E:\\Dynamik\\Game Repository\\InHouse\\sponza.obj"), std::vector<std::filesystem::path>{
+				boost::filesystem::path("E:\\Dynamik\\Game Repository\\InHouse\\sponza.obj"), boost::container::vector<boost::filesystem::path>{
 			}));
 
 			pLight = static_cast<Light*>(pGameObjects[0].get());
@@ -108,7 +108,7 @@ int main(int argc, char** argv)
 }
 
 /*
-std::shared_ptr<Flint::SwapChain> pSwapChain = pDevice->CreateSwapChain(pDisplay, Flint::SwapChainMode::MAIL_BOX, bufferCount);
-std::shared_ptr<Flint::Image> pColorBuffer = pDevice->CreateColorBuffer(bufferCount, pSwapChain->GetPixelFormat());
-std::shared_ptr<Flint::Image> pDepthBuffer = pDevice->CreateDepthBuffer(bufferCount, pDevice->GetBestDepthFormat());
+boost::shared_ptr<Flint::SwapChain> pSwapChain = pDevice->CreateSwapChain(pDisplay, Flint::SwapChainMode::MAIL_BOX, bufferCount);
+boost::shared_ptr<Flint::Image> pColorBuffer = pDevice->CreateColorBuffer(bufferCount, pSwapChain->GetPixelFormat());
+boost::shared_ptr<Flint::Image> pDepthBuffer = pDevice->CreateDepthBuffer(bufferCount, pDevice->GetBestDepthFormat());
 */

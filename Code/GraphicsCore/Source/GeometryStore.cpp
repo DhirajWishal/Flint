@@ -6,7 +6,7 @@
 
 namespace Flint
 {
-	GeometryStore::GeometryStore(const std::shared_ptr<Device>& pDevice, const std::unordered_map<UI32, std::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile)
+	GeometryStore::GeometryStore(const boost::shared_ptr<Device>& pDevice, const boost::unordered::unordered_map<UI32, boost::container::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile)
 		: DeviceBoundObject(pDevice), mVertexAttribtues(vertexAttributes), mIndexSize(indexSize), mMemoryProfile(profile)
 	{
 		if (mVertexAttribtues.empty())
@@ -20,7 +20,7 @@ namespace Flint
 				mVertexSize += static_cast<UI8>(attribute.mDataType);
 	}
 
-	void GeometryStore::SetData(const std::shared_ptr<Buffer>& pVertexStagingBuffer, const std::shared_ptr<Buffer>& pIndexStagingBuffer)
+	void GeometryStore::SetData(const boost::shared_ptr<Buffer>& pVertexStagingBuffer, const boost::shared_ptr<Buffer>& pIndexStagingBuffer)
 	{
 		// Set vertex information.
 		if (pVertexStagingBuffer)
@@ -51,8 +51,8 @@ namespace Flint
 
 	std::pair<UI64, UI64> GeometryStore::AddGeometry(UI64 vertexCount, const void* pVertexData, UI64 indexCount, const void* pIndexData)
 	{
-		std::shared_ptr<Buffer> pVertexStagingBuffer = nullptr;
-		std::shared_ptr<Buffer> pIndexStagingBuffer = nullptr;
+		boost::shared_ptr<Buffer> pVertexStagingBuffer = nullptr;
+		boost::shared_ptr<Buffer> pIndexStagingBuffer = nullptr;
 
 		// Extend the buffer and add vertex data.
 		if (vertexCount)
@@ -91,7 +91,7 @@ namespace Flint
 		return oldExtent;
 	}
 
-	std::pair<UI64, UI64> GeometryStore::AddGeometry(const std::shared_ptr<Buffer>& pVertexStagingBuffer, const std::shared_ptr<Buffer>& pIndexStagingBuffer)
+	std::pair<UI64, UI64> GeometryStore::AddGeometry(const boost::shared_ptr<Buffer>& pVertexStagingBuffer, const boost::shared_ptr<Buffer>& pIndexStagingBuffer)
 	{
 		const std::pair<UI64, UI64> oldExtent = std::pair<UI64, UI64>(mVertexCount, mIndexCount);
 
@@ -135,8 +135,8 @@ namespace Flint
 		// Shrink the vertex buffer.
 		if (pVertexBuffer)
 		{
-			std::shared_ptr<Buffer> pStagingBuffer1 = nullptr;
-			std::shared_ptr<Buffer> pStagingBuffer2 = nullptr;
+			boost::shared_ptr<Buffer> pStagingBuffer1 = nullptr;
+			boost::shared_ptr<Buffer> pStagingBuffer2 = nullptr;
 
 			if (vertexOffset)
 			{
@@ -174,8 +174,8 @@ namespace Flint
 		// Shrink the index buffer.
 		if (pIndexBuffer)
 		{
-			std::shared_ptr<Buffer> pStagingBuffer1 = nullptr;
-			std::shared_ptr<Buffer> pStagingBuffer2 = nullptr;
+			boost::shared_ptr<Buffer> pStagingBuffer1 = nullptr;
+			boost::shared_ptr<Buffer> pStagingBuffer2 = nullptr;
 
 			if (indexOffset)
 			{

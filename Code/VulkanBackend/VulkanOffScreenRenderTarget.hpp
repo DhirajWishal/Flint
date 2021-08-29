@@ -10,10 +10,10 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanOffScreenRenderTarget : public OffScreenRenderTarget, public std::enable_shared_from_this<VulkanOffScreenRenderTarget>
+		class VulkanOffScreenRenderTarget : public OffScreenRenderTarget, public boost::enable_shared_from_this<VulkanOffScreenRenderTarget>
 		{
 		public:
-			VulkanOffScreenRenderTarget(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments);
+			VulkanOffScreenRenderTarget(const boost::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, const boost::container::vector<RenderTargetAttachment>& imageAttachments);
 
 			virtual void PrepareNewFrame() override final;
 			virtual void Terminate() override final;
@@ -29,11 +29,11 @@ namespace Flint
 		protected:
 			VulkanRenderTarget vRenderTarget;
 
-			std::vector<VkSubpassDependency> vDependencies{ 2 };
-			std::shared_ptr<OffScreenRenderTarget> pThisRenderTarget = nullptr;
+			boost::container::vector<VkSubpassDependency> vDependencies{ 2 };
+			boost::shared_ptr<OffScreenRenderTarget> pThisRenderTarget = nullptr;
 			VkCommandBufferInheritanceInfo vInheritInfo = {};
 
-			std::vector<VkClearValue> vClearValues = {};
+			boost::container::vector<VkClearValue> vClearValues = {};
 		};
 	}
 }

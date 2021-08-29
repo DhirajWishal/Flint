@@ -49,6 +49,10 @@ os.system("cd \"Demos/ThirdParty/imgui\" && git checkout docking")
 print("\nSetting up gdown ...")
 os.system("cd \"ThirdParty/gdown\" && python setup.py install")
 
+# Setup boost
+print("\nSetting up boost ...")
+os.system("cd \"ThirdParty/boost_1_77_0\" && call bootstrap.bat && call b2 runtime-link=static cxxstd=17")
+
 if input("\nDownload assets from the remote data store? (y/n) ").lower() == "y":
     os.system("cd Script && python DownloadAssets.py")
 else:

@@ -5,8 +5,6 @@
 
 #include "DeviceBoundObject.hpp"
 
-#include <memory>
-
 namespace Flint
 {
 	/**

@@ -10,16 +10,16 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanComputePipeline final : public ComputePipeline, public std::enable_shared_from_this<VulkanComputePipeline>
+		class VulkanComputePipeline final : public ComputePipeline, public boost::enable_shared_from_this<VulkanComputePipeline>
 		{
 		public:
-			VulkanComputePipeline(const std::shared_ptr<Device>& pDevice, const std::string& pipelineName, const std::shared_ptr<Shader>& pComputeShader);
+			VulkanComputePipeline(const boost::shared_ptr<Device>& pDevice, const std::string& pipelineName, const boost::shared_ptr<Shader>& pComputeShader);
 			~VulkanComputePipeline() { if (!bIsTerminated) Terminate(); }
 
 			virtual void ReloadShaders() override final;
 			virtual void Dispatch() override final;
-			virtual void Dispatch(const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget) override final;
-			virtual void Dispatch(const std::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget) override final;
+			virtual void Dispatch(const boost::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget) override final;
+			virtual void Dispatch(const boost::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget) override final;
 
 			virtual void PrepareResources() override final;
 
@@ -27,8 +27,8 @@ namespace Flint
 
 			const VkPipelineLayout GetPipelineLayout() const { return vPipelineLayout; }
 			const VkPipeline GetPipeline() const { return vPipeline; }
-			const VkDescriptorSet GetDescriptorSet(const std::shared_ptr<ResourceMap>& pResourceMap) const;
-			const VkDescriptorSet* GetDescriptorSetAddress(const std::shared_ptr<ResourceMap>& pResourceMap) const;
+			const VkDescriptorSet GetDescriptorSet(const boost::shared_ptr<ResourceMap>& pResourceMap) const;
+			const VkDescriptorSet* GetDescriptorSetAddress(const boost::shared_ptr<ResourceMap>& pResourceMap) const;
 
 		private:
 			void CreatePipelineCache();
@@ -36,8 +36,8 @@ namespace Flint
 			void CreatePipeline();
 
 		private:
-			std::shared_ptr<ComputePipeline> pThisPipeline = nullptr;
-			std::unordered_map<std::shared_ptr<ResourceMap>, VkDescriptorSet> vDescriptorSetMap;
+			boost::shared_ptr<ComputePipeline> pThisPipeline = nullptr;
+			boost::unordered::unordered_map<boost::shared_ptr<ResourceMap>, VkDescriptorSet> vDescriptorSetMap;
 
 			VkPipelineLayout vPipelineLayout = VK_NULL_HANDLE;
 			VkPipeline vPipeline = VK_NULL_HANDLE;

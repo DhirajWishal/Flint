@@ -20,7 +20,7 @@ class Preview final : public GameObject
 	} mCamera;
 
 public:
-	Preview(glm::vec3 position, SceneState* pSceneState, std::filesystem::path model, std::vector<std::filesystem::path> textures);
+	Preview(glm::vec3 position, SceneState* pSceneState, boost::filesystem::path model, boost::container::vector<boost::filesystem::path> textures);
 	~Preview();
 
 	virtual void OnUpdate(UI64 delta) override final;
@@ -31,28 +31,28 @@ private:
 	void PrepareShadowMapPipeline();
 
 private:
-	std::shared_ptr<Flint::ImageSampler> pShadowSampler = nullptr;
-	std::shared_ptr<Flint::ImageSampler> pTextureSampler = nullptr;
-	std::shared_ptr<Flint::Image> pTexture = nullptr;
+	boost::shared_ptr<Flint::ImageSampler> pShadowSampler = nullptr;
+	boost::shared_ptr<Flint::ImageSampler> pTextureSampler = nullptr;
+	boost::shared_ptr<Flint::Image> pTexture = nullptr;
 
-	std::vector<std::shared_ptr<Flint::ImageSampler>> pTextureSamplers;
-	std::vector<std::shared_ptr<Flint::Image>> pTextures;
+	boost::container::vector<boost::shared_ptr<Flint::ImageSampler>> pTextureSamplers;
+	boost::container::vector<boost::shared_ptr<Flint::Image>> pTextures;
 
-	std::shared_ptr<Flint::DynamicStateContainer> pDynamicStates = nullptr;
-	std::shared_ptr<Flint::DynamicStateContainer> pShadowDynamicStates = nullptr;
+	boost::shared_ptr<Flint::DynamicStateContainer> pDynamicStates = nullptr;
+	boost::shared_ptr<Flint::DynamicStateContainer> pShadowDynamicStates = nullptr;
 
-	std::shared_ptr<Flint::Shader> pVertexShader = nullptr;
-	std::shared_ptr<Flint::Shader> pFragmentShader = nullptr;
+	boost::shared_ptr<Flint::Shader> pVertexShader = nullptr;
+	boost::shared_ptr<Flint::Shader> pFragmentShader = nullptr;
 
-	std::shared_ptr<Flint::Shader> pShadowVertexShader = nullptr;
-	std::shared_ptr<Flint::Shader> pShadowFragmentShader = nullptr;
+	boost::shared_ptr<Flint::Shader> pShadowVertexShader = nullptr;
+	boost::shared_ptr<Flint::Shader> pShadowFragmentShader = nullptr;
 
 	UI64 mVertexOffset = 0, mVertexCount = 0;
 	UI64 mIndexOffset = 0, mIndexCount = 0;
-	std::vector<UI64> mDrawIDs;
-	std::vector<std::shared_ptr<Flint::Buffer>> pModelMatrixes;
-	std::shared_ptr<Flint::Buffer> pLightUniform;
-	std::shared_ptr<Flint::Buffer> pShadowMapUniform;
-	std::shared_ptr<Flint::Buffer> pShadowMapCamera;
-	std::shared_ptr<Flint::Buffer> pLightObject;
+	boost::container::vector<UI64> mDrawIDs;
+	boost::container::vector<boost::shared_ptr<Flint::Buffer>> pModelMatrixes;
+	boost::shared_ptr<Flint::Buffer> pLightUniform;
+	boost::shared_ptr<Flint::Buffer> pShadowMapUniform;
+	boost::shared_ptr<Flint::Buffer> pShadowMapCamera;
+	boost::shared_ptr<Flint::Buffer> pLightObject;
 };
