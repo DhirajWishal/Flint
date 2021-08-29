@@ -94,4 +94,16 @@ namespace Flint
 		std::shared_ptr<GeometryStore> pGeometryStore = nullptr;
 		VertexDescriptor mDescriptor = {};
 	};
+
+	namespace Defaults
+	{
+		/**
+		 * Create the default vertex descriptor.
+		 * The default descriptor contains,
+		 * 1. Position (float 3).
+		 * 2. Color (float 3).
+		 * 3. Texture Coordinates (float 2).
+		 */
+		VertexDescriptor CreateDefaultVertexDescriptor();
+	}
 }

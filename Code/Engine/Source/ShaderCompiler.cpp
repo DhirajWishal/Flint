@@ -4,8 +4,8 @@
 #include "Engine/ShaderCompiler.hpp"
 
 #include <shaderc/shaderc.hpp>
-#include <fstream>
 
+#include <fstream>
 #include <iostream>
 
 namespace Flint

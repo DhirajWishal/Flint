@@ -338,3 +338,6 @@ Demos/**/*.json
 *.vcxproj
 *.vcxproj.filters
 *.vcxproj.user
+
+# Stop including boost build files.
+

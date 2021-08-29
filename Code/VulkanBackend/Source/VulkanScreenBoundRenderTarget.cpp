@@ -42,13 +42,22 @@ namespace Flint
 				pAttachmentInferfaces.push_back(&attachment.pImage->StaticCast<VulkanImage>());
 
 				VkClearValue vClearValue = {};
-				vClearValue.color.float32[0] = attachment.mClearColor.mRed;
-				vClearValue.color.float32[1] = attachment.mClearColor.mGreen;
-				vClearValue.color.float32[2] = attachment.mClearColor.mBlue;
-				vClearValue.color.float32[3] = attachment.mClearColor.mAlpha;
 
-				vClearValue.depthStencil.depth = attachment.mDepthClearValue.mDepth;
-				vClearValue.depthStencil.stencil = attachment.mDepthClearValue.mStencil;
+				if ((attachment.pImage->GetUsage() & ImageUsage::COLOR) == ImageUsage::COLOR)
+				{
+					vClearValue.color.float32[0] = attachment.mClearColor.mRed;
+					vClearValue.color.float32[1] = attachment.mClearColor.mGreen;
+					vClearValue.color.float32[2] = attachment.mClearColor.mBlue;
+					vClearValue.color.float32[3] = attachment.mClearColor.mAlpha;
+				}
+				else if ((attachment.pImage->GetUsage() & ImageUsage::DEPTH) == ImageUsage::DEPTH)
+				{
+					vClearValue.depthStencil.depth = attachment.mDepthClearValue.mDepth;
+					vClearValue.depthStencil.stencil = attachment.mDepthClearValue.mStencil;
+				}
+				else
+					FLINT_THROW_BACKEND_ERROR("Invalid attachment type! The image usage should contain either COLOR or DEPTH.");
+
 				vClearValues.push_back(vClearValue);
 			}
 
@@ -125,7 +134,7 @@ namespace Flint
 			vInheritInfo.renderPass = vRenderTarget.vRenderPass;
 			mFrameIndex = 0;
 		}
-		
+
 		const VkCommandBufferInheritanceInfo* VulkanScreenBoundRenderTarget::GetVulkanInheritanceInfo()
 		{
 			vInheritInfo.framebuffer = GetFramebuffer();

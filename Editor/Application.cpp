@@ -5,7 +5,7 @@
 
 #include "GraphicsCore/Instance.hpp"
 
-#include "Engine/AssetLoader.hpp"
+#include "Engine/Asset.hpp"
 #include "Engine/ShaderCompiler.hpp"
 
 Application::Application()
@@ -22,13 +22,7 @@ Application::Application()
 		auto pShader = pDevice->CreateShader(Flint::ShaderType::VERTEX, compiler.GetShaderCode());
 		auto pGeometryStore = pDevice->CreateGeometryStore(pShader->GetInputAttributes(), sizeof(UI32));
 	
-		Flint::VertexDescriptor vDescriptor = {};
-		vDescriptor.mAttributes.push_back(Flint::VertexAttribute(sizeof(float) * 3, Flint::VertexAttributeType::POSITION));
-		vDescriptor.mAttributes.push_back(Flint::VertexAttribute(sizeof(float) * 3, Flint::VertexAttributeType::COLOR_0));
-		vDescriptor.mAttributes.push_back(Flint::VertexAttribute(sizeof(float) * 2, Flint::VertexAttributeType::TEXTURE_COORDINATES_0));
-	
-		Flint::AssetLoader loader(pGeometryStore, "E:\\Demo\\Vulkan\\data\\models\\voyager.gltf", vDescriptor);
-		auto wireFrames = loader.GetWireFrames();
+		Flint::Asset asset("E:\\Demo\\Vulkan\\data\\models\\voyager.gltf", pGeometryStore, Flint::Defaults::CreateDefaultVertexDescriptor());
 	}
 
 	// Main execution loop.

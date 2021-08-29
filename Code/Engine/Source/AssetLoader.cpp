@@ -297,4 +297,17 @@ namespace Flint
 		pVertexStagingBuffer->Terminate();
 		pIndexStagingBuffer->Terminate();
 	}
+
+	namespace Defaults
+	{
+		VertexDescriptor CreateDefaultVertexDescriptor()
+		{
+			Flint::VertexDescriptor vDescriptor = {};
+			vDescriptor.mAttributes.push_back(Flint::VertexAttribute(sizeof(float) * 3, Flint::VertexAttributeType::POSITION));
+			vDescriptor.mAttributes.push_back(Flint::VertexAttribute(sizeof(float) * 3, Flint::VertexAttributeType::COLOR_0));
+			vDescriptor.mAttributes.push_back(Flint::VertexAttribute(sizeof(float) * 2, Flint::VertexAttributeType::TEXTURE_COORDINATES_0));
+
+			return vDescriptor;
+		}
+	}
 }
