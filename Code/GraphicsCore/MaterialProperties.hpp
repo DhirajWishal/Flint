@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "FObject.hpp"
+#include "Core/FObject.hpp"
 
 namespace Flint
 {

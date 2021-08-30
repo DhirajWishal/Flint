@@ -21,7 +21,7 @@ namespace Flint
 		return size;
 	}
 
-	AssetLoader::AssetLoader(const boost::shared_ptr<GeometryStore>& pGeometryStore, const boost::filesystem::path& assetPath, const VertexDescriptor& vertexDescriptor)
+	AssetLoader::AssetLoader(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::filesystem::path& assetPath, const VertexDescriptor& vertexDescriptor)
 		: pGeometryStore(pGeometryStore), mDescriptor(vertexDescriptor)
 	{
 		// Validate the geometry store and vertex descriptor.
@@ -49,18 +49,18 @@ namespace Flint
 
 		mWireFrames.resize(pScene->mNumMeshes);
 
-		boost::shared_ptr<Flint::Buffer> pVertexStagingBuffer = pGeometryStore->GetDevice()->CreateBuffer(Flint::BufferType::STAGING, vertexSize * vertexCount);
+		std::shared_ptr<Flint::Buffer> pVertexStagingBuffer = pGeometryStore->GetDevice()->CreateBuffer(Flint::BufferType::STAGING, vertexSize * vertexCount);
 		float* pBufferMemory = static_cast<float*>(pVertexStagingBuffer->MapMemory(vertexSize * vertexCount));
 
 		// Load the mesh data.
 		UI64 vertexOffset = 0, indexOffset = 0;
-		boost::container::vector<boost::container::vector<UI32>> indexData{ pScene->mNumMeshes };
+		std::vector<std::vector<UI32>> indexData{ pScene->mNumMeshes };
 		for (UI32 i = 0; i < pScene->mNumMeshes; i++)
 		{
 			const auto pMesh = pScene->mMeshes[i];
 			const auto pMaterial = pScene->mMaterials[pMesh->mMaterialIndex];
 
-			boost::container::vector<aiMaterialProperty*> pProperties(pMaterial->mNumProperties);
+			std::vector<aiMaterialProperty*> pProperties(pMaterial->mNumProperties);
 			std::copy(pMaterial->mProperties, pMaterial->mProperties + pMaterial->mNumProperties, pProperties.begin());
 
 			Material material;
@@ -138,7 +138,7 @@ namespace Flint
 						aiReturn result = pMaterial->Get(AI_MATKEY_TEXTURE_DIFFUSE(pProperty->mIndex), path);
 
 						if (path.length > 0)
-							boost::filesystem::path texturePath = path.C_Str();
+							std::filesystem::path texturePath = path.C_Str();
 					}
 				}
 			}
@@ -258,7 +258,7 @@ namespace Flint
 			}
 
 			aiFace face = {};
-			boost::container::vector<UI32> indexes;
+			std::vector<UI32> indexes;
 			for (UI32 j = 0; j < pMesh->mNumFaces; j++)
 			{
 				face = pMesh->mFaces[j];
@@ -276,7 +276,7 @@ namespace Flint
 
 		pVertexStagingBuffer->UnmapMemory();
 
-		boost::shared_ptr<Flint::Buffer> pIndexStagingBuffer = pGeometryStore->GetDevice()->CreateBuffer(Flint::BufferType::STAGING, indexOffset * sizeof(UI32));
+		std::shared_ptr<Flint::Buffer> pIndexStagingBuffer = pGeometryStore->GetDevice()->CreateBuffer(Flint::BufferType::STAGING, indexOffset * sizeof(UI32));
 		UI32* pIndexMemory = static_cast<UI32*>(pIndexStagingBuffer->MapMemory(indexOffset * sizeof(UI32)));
 
 		UI64 offset = 0;

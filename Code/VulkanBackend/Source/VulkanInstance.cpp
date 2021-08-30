@@ -23,12 +23,12 @@ namespace Flint
 					FLINT_THROW_RUNTIME_ERROR(message);
 			}
 
-			bool CheckValidationLayerSupport(boost::container::vector<const char*> layers)
+			bool CheckValidationLayerSupport(std::vector<const char*> layers)
 			{
 				UI32 layerCount = 0;
 				vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
 
-				boost::container::vector<VkLayerProperties> availableLayers(layerCount);
+				std::vector<VkLayerProperties> availableLayers(layerCount);
 				vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
 
 				for (const char* layerName : layers)
@@ -50,12 +50,12 @@ namespace Flint
 				return true;
 			}
 
-			boost::container::vector<const char*> GetRequiredInstanceExtensions(bool enableValidation)
+			std::vector<const char*> GetRequiredInstanceExtensions(bool enableValidation)
 			{
 				UI32 glfwExtentionCount = 0;
 				const char** glfwExtensions = nullptr;
 				glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtentionCount);
-				boost::container::vector<const char*> extentions(glfwExtensions, glfwExtensions + glfwExtentionCount);
+				std::vector<const char*> extentions(glfwExtensions, glfwExtensions + glfwExtentionCount);
 
 				if (enableValidation)
 					INSERT_INTO_VECTOR(extentions, VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
@@ -140,14 +140,14 @@ namespace Flint
 				InitializeDebugger();
 		}
 
-		boost::shared_ptr<Device> VulkanInstance::CreateDevice(const DeviceFlags flags)
+		std::shared_ptr<Device> VulkanInstance::CreateDevice(const DeviceFlags flags)
 		{
-			return boost::make_shared<VulkanDevice>(shared_from_this(), flags);
+			return std::make_shared<VulkanDevice>(shared_from_this(), flags);
 		}
 
-		boost::shared_ptr<Display> VulkanInstance::CreateDisplay(const FBox2D& extent, const std::string& title)
+		std::shared_ptr<Display> VulkanInstance::CreateDisplay(const FBox2D& extent, const std::string& title)
 		{
-			return boost::make_shared<VulkanDisplay>(shared_from_this(), extent, title);
+			return std::make_shared<VulkanDisplay>(shared_from_this(), extent, title);
 		}
 
 		void VulkanInstance::Terminate()
@@ -196,7 +196,7 @@ namespace Flint
 			createInfo.pApplicationInfo = &appInfo;
 
 			// Get and insert the required instance extensions.
-			boost::container::vector<const char*> requiredExtensions = std::move(Helpers::GetRequiredInstanceExtensions(mEnableValidation));
+			std::vector<const char*> requiredExtensions = std::move(Helpers::GetRequiredInstanceExtensions(mEnableValidation));
 			createInfo.enabledExtensionCount = static_cast<UI32>(requiredExtensions.size());
 			createInfo.ppEnabledExtensionNames = requiredExtensions.data();
 

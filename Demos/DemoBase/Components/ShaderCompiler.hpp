@@ -5,5 +5,5 @@
 
 #include <filesystem>
 
-void CompileShader(const boost::filesystem::path& shaderFile, const boost::filesystem::path& solutionDirectory);
-void CompileAllShaders(const boost::filesystem::path& solutionDirectory);
+void CompileShader(const std::filesystem::path& shaderFile, const std::filesystem::path& solutionDirectory);
+void CompileAllShaders(const std::filesystem::path& solutionDirectory);

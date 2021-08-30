@@ -26,13 +26,13 @@ struct Asset
 		UI64 mIndexCount = 0;
 	};
 
-	boost::shared_ptr<Flint::Buffer> pVertexBuffer = nullptr;
+	std::shared_ptr<Flint::Buffer> pVertexBuffer = nullptr;
 	UI64 mVertexCount = 0;
 
-	boost::shared_ptr<Flint::Buffer> pIndexBuffer = nullptr;
+	std::shared_ptr<Flint::Buffer> pIndexBuffer = nullptr;
 	UI64 mIndexCount = 0;
 
-	boost::container::vector<DrawInstance> mDrawInstances;
+	std::vector<DrawInstance> mDrawInstances;
 };
 
 enum class VertexAttributeType : UI8 {
@@ -69,9 +69,9 @@ struct VertexAttribute
 	VertexAttributeType mType = VertexAttributeType::UNDEFINED;
 };
 
-boost::container::vector<VertexAttribute> GetDefaultVertexAttributes();
+std::vector<VertexAttribute> GetDefaultVertexAttributes();
 
-Asset ImportAsset(const boost::shared_ptr<Flint::Device>& pDevice, const boost::filesystem::path& path, const boost::container::vector<VertexAttribute>& attributes = GetDefaultVertexAttributes());
+Asset ImportAsset(const std::shared_ptr<Flint::Device>& pDevice, const std::filesystem::path& path, const std::vector<VertexAttribute>& attributes = GetDefaultVertexAttributes());
 
 struct ImageData
 {
@@ -79,5 +79,5 @@ struct ImageData
 	Flint::FBox3D mExtent;
 };
 
-ImageData LoadImage(const boost::filesystem::path& path);
+ImageData LoadImage(const std::filesystem::path& path);
 void DestroyImage(ImageData data);

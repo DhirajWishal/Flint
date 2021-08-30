@@ -5,7 +5,7 @@
 
 namespace Flint
 {
-	Device::Device(const boost::shared_ptr<Instance>& pInstance, const DeviceFlags flags) : pInstance(pInstance), mFlags(flags)
+	Device::Device(const std::shared_ptr<Instance>& pInstance, const DeviceFlags flags) : pInstance(pInstance), mFlags(flags)
 	{
 		if (!pInstance)
 			FLINT_THROW_INVALID_ARGUMENT("Instance pointer should not be null!");

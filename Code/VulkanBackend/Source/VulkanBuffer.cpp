@@ -8,7 +8,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanBuffer::VulkanBuffer(const boost::shared_ptr<Device>& pDevice, const BufferType type, const UI64 size, const BufferMemoryProfile profile)
+		VulkanBuffer::VulkanBuffer(const std::shared_ptr<Device>& pDevice, const BufferType type, const UI64 size, const BufferMemoryProfile profile)
 			: Buffer(pDevice, type, size, profile)
 		{
 			FLINT_SETUP_PROFILER();
@@ -79,7 +79,7 @@ namespace Flint
 			if (mode == BufferResizeMode::COPY)
 			{
 				// Create a stagging buffer to copy data to.
-				boost::shared_ptr<Buffer> pStagingBuffer = pDevice->CreateBuffer(BufferType::STAGING, oldSize);
+				std::shared_ptr<Buffer> pStagingBuffer = pDevice->CreateBuffer(BufferType::STAGING, oldSize);
 				pStagingBuffer->CopyFromBuffer(this->shared_from_this(), oldSize, 0, 0);
 
 				// Terminate the existing buffer and get the new size.
@@ -108,7 +108,7 @@ namespace Flint
 				FLINT_THROW_INVALID_ARGUMENT("Buffer copy mode is invalid or undefined!");
 		}
 
-		void VulkanBuffer::CopyFromBuffer(const boost::shared_ptr<Buffer>& pSrcBuffer, const UI64 size, const UI64 srcOffset, const UI64 dstOffset)
+		void VulkanBuffer::CopyFromBuffer(const std::shared_ptr<Buffer>& pSrcBuffer, const UI64 size, const UI64 srcOffset, const UI64 dstOffset)
 		{
 			FLINT_SETUP_PROFILER();
 

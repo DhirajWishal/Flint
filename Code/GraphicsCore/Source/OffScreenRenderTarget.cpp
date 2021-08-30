@@ -5,7 +5,7 @@
 
 namespace Flint
 {	
-	OffScreenRenderTarget::OffScreenRenderTarget(const boost::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, const boost::container::vector<RenderTargetAttachment>& imageAttachments)
+	OffScreenRenderTarget::OffScreenRenderTarget(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments)
 		: RenderTarget(pDevice, extent, bufferCount, imageAttachments)
 	{
 	}

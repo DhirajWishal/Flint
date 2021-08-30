@@ -10,14 +10,14 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanBuffer final : public Buffer, public boost::enable_shared_from_this<VulkanBuffer>
+		class VulkanBuffer final : public Buffer, public std::enable_shared_from_this<VulkanBuffer>
 		{
 		public:
-			VulkanBuffer(const boost::shared_ptr<Device>& pDevice, const BufferType type, const UI64 size, const BufferMemoryProfile profile = BufferMemoryProfile::AUTOMATIC);
+			VulkanBuffer(const std::shared_ptr<Device>& pDevice, const BufferType type, const UI64 size, const BufferMemoryProfile profile = BufferMemoryProfile::AUTOMATIC);
 			~VulkanBuffer() { if (!bIsTerminated) Terminate(); }
 
 			virtual void Resize(const UI64 size, const BufferResizeMode mode) override final;
-			virtual void CopyFromBuffer(const boost::shared_ptr<Buffer>& pSrcBuffer, const UI64 size, const UI64 srcOffset, const UI64 dstOffset) override final;
+			virtual void CopyFromBuffer(const std::shared_ptr<Buffer>& pSrcBuffer, const UI64 size, const UI64 srcOffset, const UI64 dstOffset) override final;
 			virtual void* MapMemory(const UI64 size, const UI64 offset = 0) override final;
 			virtual void UnmapMemory() override final;
 			virtual void Terminate() override final;

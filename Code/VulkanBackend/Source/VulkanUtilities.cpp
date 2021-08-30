@@ -56,7 +56,7 @@ namespace Flint
 				}
 			}
 
-			boost::container::vector<VkImageView> CreateImageViews(const boost::container::vector<VkImage>& vImages, VkFormat imageFormat, VulkanDevice& device, VkImageAspectFlags aspectFlags, VkImageViewType viewType, UI32 layerCount, UI32 baseLayerIndex, VkComponentMapping mapping)
+			std::vector<VkImageView> CreateImageViews(const std::vector<VkImage>& vImages, VkFormat imageFormat, VulkanDevice& device, VkImageAspectFlags aspectFlags, VkImageViewType viewType, UI32 layerCount, UI32 baseLayerIndex, VkComponentMapping mapping)
 			{
 				VkImageViewCreateInfo vCreateInfo = {};
 				vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -75,7 +75,7 @@ namespace Flint
 
 				vCreateInfo.subresourceRange = vSR;
 
-				boost::container::vector<VkImageView> vImageViews(vImages.size());
+				std::vector<VkImageView> vImageViews(vImages.size());
 				VkImageView* pArray = vImageViews.data();
 				for (auto itr = vImages.begin(); itr != vImages.end(); itr++)
 				{
@@ -87,7 +87,7 @@ namespace Flint
 				return vImageViews;
 			}
 
-			VkFormat FindSupportedFormat(const boost::container::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features, VkPhysicalDevice vPhysicalDevice)
+			VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features, VkPhysicalDevice vPhysicalDevice)
 			{
 				for (VkFormat format : candidates) {
 					VkFormatProperties props = {};
@@ -463,27 +463,27 @@ namespace Flint
 				return VkSampleCountFlagBits::VK_SAMPLE_COUNT_FLAG_BITS_MAX_ENUM;
 			}
 
-			void AddResourceBindingsToVector(boost::container::vector<VkDescriptorSetLayoutBinding>& bindings, const VulkanShader& shader)
+			void AddResourceBindingsToVector(std::vector<VkDescriptorSetLayoutBinding>& bindings, const VulkanShader& shader)
 			{
-				boost::container::vector<VkDescriptorSetLayoutBinding> tempBindings = shader.GetResourceBindings();
+				std::vector<VkDescriptorSetLayoutBinding> tempBindings = shader.GetResourceBindings();
 				bindings.insert(bindings.end(), tempBindings.begin(), tempBindings.end());
 			}
 
-			void AddPushConstantRangesToVector(boost::container::vector<VkPushConstantRange>& ranges, const VulkanShader& shader)
+			void AddPushConstantRangesToVector(std::vector<VkPushConstantRange>& ranges, const VulkanShader& shader)
 			{
-				boost::container::vector<VkPushConstantRange> tempRanges = shader.GetPushConstantRanges();
+				std::vector<VkPushConstantRange> tempRanges = shader.GetPushConstantRanges();
 				ranges.insert(ranges.end(), tempRanges.begin(), tempRanges.end());
 			}
 
-			void AddPoolSizesToVector(boost::container::vector<VkDescriptorPoolSize>& poolSizes, const VulkanShader& shader)
+			void AddPoolSizesToVector(std::vector<VkDescriptorPoolSize>& poolSizes, const VulkanShader& shader)
 			{
-				boost::container::vector<VkDescriptorPoolSize> tempPoolSizes = shader.GetPoolSizes();
+				std::vector<VkDescriptorPoolSize> tempPoolSizes = shader.GetPoolSizes();
 				poolSizes.insert(poolSizes.end(), tempPoolSizes.begin(), tempPoolSizes.end());
 			}
 
-			void AddResourcesToMap(boost::unordered::unordered_map<std::string, ShaderResource>& resources, const VulkanShader& shader)
+			void AddResourcesToMap(std::unordered_map<std::string, ShaderResource>& resources, const VulkanShader& shader)
 			{
-				const boost::unordered::unordered_map<std::string, ShaderResource> tempResources = shader.GetShaderResources();
+				const std::unordered_map<std::string, ShaderResource> tempResources = shader.GetShaderResources();
 				resources.insert(tempResources.begin(), tempResources.end());
 			}
 		}

@@ -15,7 +15,7 @@ namespace Flint
 		class VulkanSwapChain final : public SwapChain, public VulkanRenderTargetAttachmentInterface
 		{
 		public:
-			VulkanSwapChain(const boost::shared_ptr<Device>& pDevice, const boost::shared_ptr<Display>& pDisplay, UI32 imageCount, const SwapChainPresentMode presentMode);
+			VulkanSwapChain(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, UI32 imageCount, const SwapChainPresentMode presentMode);
 			~VulkanSwapChain() { if (!bIsTerminated) Terminate(); }
 
 			virtual void Recreate() override final;
@@ -45,8 +45,8 @@ namespace Flint
 			void DestroySyncObjects();
 
 		private:
-			boost::container::vector<VkImage> vImages = {};
-			boost::container::vector<VkImageView> vImageViews = {};
+			std::vector<VkImage> vImages = {};
+			std::vector<VkImageView> vImageViews = {};
 
 			VkSwapchainKHR vSwapChain = VK_NULL_HANDLE;
 

@@ -27,14 +27,14 @@ namespace Flint
 		 * @param pImageData: The image data pointer to load data from.
 		 * @param sampleCount: The multi sample count to use.
 		 */
-		Image(const boost::shared_ptr<Device>& pDevice, const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const UI8 layers, const UI32 mipLevels, const void* pImageData, const MultiSampleCount sampleCount = MultiSampleCount::BITS_1);
+		Image(const std::shared_ptr<Device>& pDevice, const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const UI8 layers, const UI32 mipLevels, const void* pImageData, const MultiSampleCount sampleCount = MultiSampleCount::BITS_1);
 
 		/**
 		 * Copy the image content to a buffer.
 		 *
 		 * @return The stagging buffer.
 		 */
-		virtual boost::shared_ptr<Buffer> CopyToBuffer() = 0;
+		virtual std::shared_ptr<Buffer> CopyToBuffer() = 0;
 
 		/**
 		 * Get the value of a single pixel.
@@ -46,7 +46,7 @@ namespace Flint
 		template<class Type>
 		Type GetPixelValue(const FBox3D position)
 		{
-			boost::shared_ptr<Buffer> pStagingBuffer = CopyToBuffer();
+			std::shared_ptr<Buffer> pStagingBuffer = CopyToBuffer();
 			Type* pPixels = static_cast<Type*>(pStagingBuffer->MapMemory(pStagingBuffer->GetSize()));
 
 			UI64 row = static_cast<UI64>(position.mHeight) * mExtent.mWidth;

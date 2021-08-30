@@ -3,15 +3,11 @@
 
 #pragma once
 
-#define _SILENCE_CXX17_OLD_ALLOCATOR_MEMBERS_DEPRECATION_WARNING
-
-#include <boost/chrono.hpp>
-#include <boost/filesystem.hpp>
-#include <boost/filesystem/fstream.hpp>
-#include <boost/thread/mutex.hpp>
-#include <boost/make_shared.hpp>
-#include <boost/enable_shared_from_this.hpp>
-
+#include <chrono>
+#include <filesystem>
+#include <fstream>
+#include <mutex>
+#include <memory>
 #include <string>
 
 namespace Flint
@@ -36,8 +32,8 @@ namespace Flint
 	private:
 #ifndef FLINT_RELEASE
 		const char* pFunctionSignature = nullptr;
-		boost::chrono::time_point<boost::chrono::high_resolution_clock> mStart = {};
-		boost::chrono::time_point<boost::chrono::high_resolution_clock> mEnd = {};
+		std::chrono::time_point<std::chrono::high_resolution_clock> mStart = {};
+		std::chrono::time_point<std::chrono::high_resolution_clock> mEnd = {};
 
 #endif // !FLINT_RELEASE
 	};
@@ -49,7 +45,7 @@ namespace Flint
 	 */
 	struct AtomicProfileControlBlock
 	{
-		AtomicProfileControlBlock(const boost::filesystem::path& filePath);
+		AtomicProfileControlBlock(const std::filesystem::path& filePath);
 		~AtomicProfileControlBlock();
 
 		/**
@@ -62,8 +58,8 @@ namespace Flint
 		 */
 		void Unlock() { mMutex.unlock(); }
 
-		boost::filesystem::ofstream mProfileFile = {};
-		boost::mutex mMutex = {};
+		std::ofstream mProfileFile = {};
+		std::mutex mMutex = {};
 	};
 
 	/**
@@ -101,7 +97,7 @@ namespace Flint
 		void SetInstanceContext(const ProfileLogger& other);
 
 	private:
-		boost::shared_ptr<AtomicProfileControlBlock> pControlBlock = nullptr;
+		std::shared_ptr<AtomicProfileControlBlock> pControlBlock = nullptr;
 		bool bIsFirst = true;
 	};
 

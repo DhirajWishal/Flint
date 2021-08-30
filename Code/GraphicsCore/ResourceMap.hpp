@@ -25,7 +25,7 @@ namespace Flint
 		 * @param bufferResourceNames: The buffer resource names in the map.
 		 * @param imageResourceNames: The image resource names in the map.
 		 */
-		ResourceMap(const boost::container::vector<std::string>& bufferResourceNames, const boost::container::vector<std::string>& imageResourceNames);
+		ResourceMap(const std::vector<std::string>& bufferResourceNames, const std::vector<std::string>& imageResourceNames);
 
 		/**
 		 * Set a buffer resource to the map.
@@ -33,7 +33,7 @@ namespace Flint
 		 * @param name: The name of the resource to bind to.
 		 * @param pBuffer: The buffer pointer.
 		 */
-		void SetResource(const std::string& name, const boost::shared_ptr<Buffer>& pBuffer);
+		void SetResource(const std::string& name, const std::shared_ptr<Buffer>& pBuffer);
 
 		/**
 		 * Get a buffer resource from the map.
@@ -41,14 +41,14 @@ namespace Flint
 		 * @param name: The name of the buffer in the shader.
 		 * @return The buffer pointer.
 		 */
-		const boost::shared_ptr<Buffer> GetBufferResource(const std::string& name) const { return pBufferMap.at(name); }
+		const std::shared_ptr<Buffer> GetBufferResource(const std::string& name) const { return pBufferMap.at(name); }
 
 		/**
 		 * Get the buffer resource map.
 		 *
 		 * @return The resource map.
 		 */
-		const boost::unordered::unordered_map<std::string, boost::shared_ptr<Buffer>> GetBufferResourceMap() const { return pBufferMap; }
+		const std::unordered_map<std::string, std::shared_ptr<Buffer>> GetBufferResourceMap() const { return pBufferMap; }
 
 		/**
 		 * Set an image resource to the map.
@@ -57,7 +57,7 @@ namespace Flint
 		 * @param pSampler: The image sampler pointer.
 		 * @param pImage: The image pointer.
 		 */
-		void SetResource(const std::string& name, const boost::shared_ptr<ImageSampler>& pSampler, const boost::shared_ptr<Image>& pImage);
+		void SetResource(const std::string& name, const std::shared_ptr<ImageSampler>& pSampler, const std::shared_ptr<Image>& pImage);
 
 		/**
 		 * Get an image resource from the map.
@@ -65,14 +65,14 @@ namespace Flint
 		 * @param name: The name of the image in the shader.
 		 * @return The specification and image pointer.
 		 */
-		const std::pair<boost::shared_ptr<ImageSampler>, boost::shared_ptr<Image>> GetImageResource(const std::string& name) const { return pImageMap.at(name); }
+		const std::pair<std::shared_ptr<ImageSampler>, std::shared_ptr<Image>> GetImageResource(const std::string& name) const { return pImageMap.at(name); }
 
 		/**
 		 * Get the image resource map.
 		 *
 		 * @return The resource map.
 		 */
-		const boost::unordered::unordered_map<std::string, std::pair<boost::shared_ptr<ImageSampler>, boost::shared_ptr<Image>>> GetImageResourceMap() const { return pImageMap; }
+		const std::unordered_map<std::string, std::pair<std::shared_ptr<ImageSampler>, std::shared_ptr<Image>>> GetImageResourceMap() const { return pImageMap; }
 
 	public:
 		/**
@@ -84,7 +84,7 @@ namespace Flint
 		bool operator==(const ResourceMap& other) const;
 
 	protected:
-		boost::unordered::unordered_map<std::string, boost::shared_ptr<Buffer>> pBufferMap;
-		boost::unordered::unordered_map<std::string, std::pair<boost::shared_ptr<ImageSampler>, boost::shared_ptr<Image>>> pImageMap;
+		std::unordered_map<std::string, std::shared_ptr<Buffer>> pBufferMap;
+		std::unordered_map<std::string, std::pair<std::shared_ptr<ImageSampler>, std::shared_ptr<Image>>> pImageMap;
 	};
 }

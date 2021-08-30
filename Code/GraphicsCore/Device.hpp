@@ -76,7 +76,7 @@ namespace Flint
 		 * @param pInstance: The instance pointer.
 		 * @param flags: The device flags.
 		 */
-		Device(const boost::shared_ptr<Instance>& pInstance, const DeviceFlags flags);
+		Device(const std::shared_ptr<Instance>& pInstance, const DeviceFlags flags);
 
 		/**
 		 * Check if the display is compatible with the device.
@@ -84,7 +84,7 @@ namespace Flint
 		 * @param pDisplay: The display to check.
 		 * @return Boolean value stating if compatible or not.
 		 */
-		virtual bool IsDisplayCompatible(const boost::shared_ptr<Display>& pDisplay) = 0;
+		virtual bool IsDisplayCompatible(const std::shared_ptr<Display>& pDisplay) = 0;
 
 		/**
 		 * Create a new command buffer allocator.
@@ -92,7 +92,7 @@ namespace Flint
 		 * @param bufferCount: The number of buffers the allocator should create.
 		 * @return The allocator pointer.
 		 */
-		virtual boost::shared_ptr<CommandBufferAllocator> CreateCommandBufferAllocator(const UI32 bufferCount) = 0;
+		virtual std::shared_ptr<CommandBufferAllocator> CreateCommandBufferAllocator(const UI32 bufferCount) = 0;
 
 		/**
 		 * Create a new secondary command buffer allocator.
@@ -101,7 +101,7 @@ namespace Flint
 		 * @param pParentAllocator: The parent command buffer allocator pointer.
 		 * @return The command buffer allocator pointer.
 		 */
-		virtual boost::shared_ptr<CommandBufferAllocator> CreateSecondaryCommandBufferAllocator(const UI32 bufferCount, const boost::shared_ptr<CommandBufferAllocator>& pParentAllocator) = 0;
+		virtual std::shared_ptr<CommandBufferAllocator> CreateSecondaryCommandBufferAllocator(const UI32 bufferCount, const std::shared_ptr<CommandBufferAllocator>& pParentAllocator) = 0;
 
 		/**
 		 * Create a new screen bound render target.
@@ -114,7 +114,7 @@ namespace Flint
 		 * @param presentMode: The swap chain present mode.
 		 * @return The screen bound render target object.
 		 */
-		virtual boost::shared_ptr<ScreenBoundRenderTarget> CreateScreenBoundRenderTarget(const boost::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const boost::container::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode) = 0;
+		virtual std::shared_ptr<ScreenBoundRenderTarget> CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode) = 0;
 
 		/**
 		 * Create a new off screen render target.
@@ -125,7 +125,7 @@ namespace Flint
 		 * @param imageAttachments: The image attachments which the render target uses.
 		 * @return The render target pointer.
 		 */
-		virtual boost::shared_ptr<OffScreenRenderTarget> CreateOffScreenRenderTarget(const FBox2D& extent, const UI32 bufferCount, const boost::container::vector<RenderTargetAttachment>& imageAttachments) = 0;
+		virtual std::shared_ptr<OffScreenRenderTarget> CreateOffScreenRenderTarget(const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments) = 0;
 
 		/**
 		 * Create a new buffer.
@@ -135,7 +135,7 @@ namespace Flint
 		 * @param profile: The memory profile of the buffer. Default is BufferMemoryProfile::AUTOMATIC.
 		 * @return The buffer object.
 		 */
-		virtual boost::shared_ptr<Buffer> CreateBuffer(const BufferType type, const UI64 size, const BufferMemoryProfile profile = BufferMemoryProfile::AUTOMATIC) = 0;
+		virtual std::shared_ptr<Buffer> CreateBuffer(const BufferType type, const UI64 size, const BufferMemoryProfile profile = BufferMemoryProfile::AUTOMATIC) = 0;
 
 		/**
 		 * Create a new image.
@@ -150,7 +150,7 @@ namespace Flint
 		 * @param sampleCount: The image multi sample count.
 		 * @return The newly created image.
 		 */
-		virtual boost::shared_ptr<Image> CreateImage(const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const UI8 layers, const UI32 mipLevels, const void* pImageData, const MultiSampleCount sampleCount = MultiSampleCount::BITS_1) = 0;
+		virtual std::shared_ptr<Image> CreateImage(const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const UI8 layers, const UI32 mipLevels, const void* pImageData, const MultiSampleCount sampleCount = MultiSampleCount::BITS_1) = 0;
 
 		/**
 		 * Create a new image sampler.
@@ -158,7 +158,7 @@ namespace Flint
 		 * @param specification: The sampler specification.
 		 * @return The newly created sampler.
 		 */
-		virtual boost::shared_ptr<ImageSampler> CreateImageSampler(const ImageSamplerSpecification& specification) = 0;
+		virtual std::shared_ptr<ImageSampler> CreateImageSampler(const ImageSamplerSpecification& specification) = 0;
 
 		/**
 		 * Create a new shader.
@@ -168,7 +168,7 @@ namespace Flint
 		 * @param path: The shade code path.
 		 * @return The vertex shader object.
 		 */
-		virtual boost::shared_ptr<Shader> CreateShader(const ShaderType type, const boost::filesystem::path& path) = 0;
+		virtual std::shared_ptr<Shader> CreateShader(const ShaderType type, const std::filesystem::path& path) = 0;
 
 		/**
 		 * Create a new shader.
@@ -178,7 +178,7 @@ namespace Flint
 		 * @param code: The shade code.
 		 * @return The vertex shader object.
 		 */
-		virtual boost::shared_ptr<Shader> CreateShader(const ShaderType type, const boost::container::vector<UI32>& code) = 0;
+		virtual std::shared_ptr<Shader> CreateShader(const ShaderType type, const std::vector<UI32>& code) = 0;
 
 		/**
 		 * Create a new shader.
@@ -188,7 +188,7 @@ namespace Flint
 		 * @param code: The shade code.
 		 * @return The vertex shader object.
 		 */
-		virtual boost::shared_ptr<Shader> CreateShader(const ShaderType type, const std::string& code) = 0;
+		virtual std::shared_ptr<Shader> CreateShader(const ShaderType type, const std::string& code) = 0;
 
 		/**
 		 * Create a new graphics pipeline bound to a screen bound render target.
@@ -203,14 +203,14 @@ namespace Flint
 		 * @param specification: The pipeline specification.
 		 * @return The pipeline pointer.
 		 */
-		virtual boost::shared_ptr<GraphicsPipeline> CreateGraphicsPipeline(
+		virtual std::shared_ptr<GraphicsPipeline> CreateGraphicsPipeline(
 			const std::string& pipelineName,
-			const boost::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget,
-			const boost::shared_ptr<Shader>& pVertexShader,
-			const boost::shared_ptr<Shader>& pTessellationControlShader,
-			const boost::shared_ptr<Shader>& pTessellationEvaluationShader,
-			const boost::shared_ptr<Shader>& pGeometryShader,
-			const boost::shared_ptr<Shader>& pFragmentShader,
+			const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget,
+			const std::shared_ptr<Shader>& pVertexShader,
+			const std::shared_ptr<Shader>& pTessellationControlShader,
+			const std::shared_ptr<Shader>& pTessellationEvaluationShader,
+			const std::shared_ptr<Shader>& pGeometryShader,
+			const std::shared_ptr<Shader>& pFragmentShader,
 			const GraphicsPipelineSpecification& specification) = 0;
 
 		/**
@@ -226,14 +226,14 @@ namespace Flint
 		 * @param specification: The pipeline specification.
 		 * @return The pipeline pointer.
 		 */
-		virtual boost::shared_ptr<GraphicsPipeline> CreateGraphicsPipeline(
+		virtual std::shared_ptr<GraphicsPipeline> CreateGraphicsPipeline(
 			const std::string& pipelineName,
-			const boost::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget,
-			const boost::shared_ptr<Shader>& pVertexShader,
-			const boost::shared_ptr<Shader>& pTessellationControlShader,
-			const boost::shared_ptr<Shader>& pTessellationEvaluationShader,
-			const boost::shared_ptr<Shader>& pGeometryShader,
-			const boost::shared_ptr<Shader>& pFragmentShader,
+			const std::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget,
+			const std::shared_ptr<Shader>& pVertexShader,
+			const std::shared_ptr<Shader>& pTessellationControlShader,
+			const std::shared_ptr<Shader>& pTessellationEvaluationShader,
+			const std::shared_ptr<Shader>& pGeometryShader,
+			const std::shared_ptr<Shader>& pFragmentShader,
 			const GraphicsPipelineSpecification& specification) = 0;
 
 		/**
@@ -243,7 +243,7 @@ namespace Flint
 		 * @param pShader: The compute shader pointer.
 		 * @return The pipeline pointer.
 		 */
-		virtual boost::shared_ptr<ComputePipeline> CreateComputePipeline(const std::string& pipelineName, const boost::shared_ptr<Shader>& pShader) = 0;
+		virtual std::shared_ptr<ComputePipeline> CreateComputePipeline(const std::string& pipelineName, const std::shared_ptr<Shader>& pShader) = 0;
 
 		/**
 		 * Create a new geometry store.
@@ -253,7 +253,7 @@ namespace Flint
 		 * @param profile: The memory profile of the geometry store. Default is BufferMemoryProfile::AUTOMATIC.
 		 * @return The newly created geometry store pointer.
 		 */
-		virtual boost::shared_ptr<GeometryStore> CreateGeometryStore(const boost::unordered::unordered_map<UI32, boost::container::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile = BufferMemoryProfile::AUTOMATIC) = 0;
+		virtual std::shared_ptr<GeometryStore> CreateGeometryStore(const std::unordered_map<UI32, std::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile = BufferMemoryProfile::AUTOMATIC) = 0;
 
 	public:
 		/**
@@ -261,14 +261,14 @@ namespace Flint
 		 *
 		 * @param pCommandBuffers: The command buffer pointers.
 		 */
-		virtual void SubmitGraphicsCommandBuffers(const boost::container::vector<boost::shared_ptr<CommandBuffer>>& pCommandBuffers) = 0;
+		virtual void SubmitGraphicsCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers) = 0;
 
 		/**
 		 * Submit compute command buffers to the device.
 		 *
 		 * @param pCommandBuffers: The command buffer pointers.
 		 */
-		virtual void SubmitComputeCommandBuffers(const boost::container::vector<boost::shared_ptr<CommandBuffer>>& pCommandBuffers) = 0;
+		virtual void SubmitComputeCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers) = 0;
 
 		/**
 		 * Wait till the device finish execution.
@@ -310,7 +310,7 @@ namespace Flint
 		virtual MultiSampleCount GetSupportedMultiSampleCount() const = 0;
 
 	protected:
-		boost::shared_ptr<Instance> pInstance = nullptr;
+		std::shared_ptr<Instance> pInstance = nullptr;
 		DeviceFlags mFlags = DeviceFlags::EXTERNAL | DeviceFlags::GRAPHICS_COMPATIBLE;
 	};
 }

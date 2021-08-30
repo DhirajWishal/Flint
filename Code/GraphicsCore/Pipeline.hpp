@@ -26,7 +26,7 @@ namespace Flint
 		 * @param pipelineName: The name of the pipeline. This name is given to the pipeline cache object created upon destruction. Make sure that this name is unique.
 		 *	If you wish to not save cache externally, keep this field empty ("").
 		 */
-		Pipeline(const boost::shared_ptr<Device>& pDevice, const std::string& pipelineName) : DeviceBoundObject(pDevice), mPipelineName(pipelineName) {}
+		Pipeline(const std::shared_ptr<Device>& pDevice, const std::string& pipelineName) : DeviceBoundObject(pDevice), mPipelineName(pipelineName) {}
 
 		/**
 		 * Prepare resources to draw.
@@ -45,7 +45,7 @@ namespace Flint
 		 *
 		 * @return The resource map pointer.
 		 */
-		virtual boost::shared_ptr<ResourceMap> CreateResourceMap() const = 0;
+		virtual std::shared_ptr<ResourceMap> CreateResourceMap() const = 0;
 
 	protected:
 		/**

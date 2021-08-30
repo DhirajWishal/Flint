@@ -23,13 +23,13 @@ int main(int argc, char** argv)
 
 		{
 			ImGUI mImGui(glm::vec3(0.0f), &mState);
-			boost::container::vector<std::unique_ptr<GameObject>> pGameObjects;
+			std::vector<std::unique_ptr<GameObject>> pGameObjects;
 			//pGameObjects.push_back(std::make_unique<SkyBox>(glm::vec3(0.0f), &mState));
 			//pGameObjects.push_back(std::make_unique<VikingRoom>(glm::vec3(2.0f), &mState));
 			//pGameObjects.push_back(std::make_unique<TreeScene>(glm::vec3(0.0f), &mState));
 			//pGameObjects.push_back(std::make_unique<Preview>(glm::vec3(0.0f), &mState,
-			//	boost::filesystem::path(mState.GetAssetPath().string() + "\\Packages\\Tree001\\Tree01\\Tree1\\Tree1.obj"),
-			//	boost::container::vector<boost::filesystem::path>{
+			//	std::filesystem::path(mState.GetAssetPath().string() + "\\Packages\\Tree001\\Tree01\\Tree1\\Tree1.obj"),
+			//	std::vector<std::filesystem::path>{
 			//	mState.GetAssetPath().string() + "\\Packages\\Tree001\\Tree01\\Tree1\\BarkDecidious0143_5_S.jpg",
 			//		mState.GetAssetPath().string() + "\\Packages\\Tree001\\Tree01\\Tree1\\Leaves0120_35_S.png",
 			//		mState.GetAssetPath().string() + "\\Packages\\Tree001\\Tree01\\Tree1\\BarkDecidious0194_7_S.jpg",
@@ -37,8 +37,8 @@ int main(int argc, char** argv)
 			//		mState.GetAssetPath().string() + "\\Packages\\Tree001\\Tree01\\Tree1\\BarkDecidious0194_7_S.jpg",
 			//		mState.GetAssetPath().string() + "\\Packages\\Tree001\\Tree01\\Tree1\\Leaves0156_1_S.png"
 			//}));
-			//pGameObjects.push_back(std::make_unique<Preview>(glm::vec3(0.0f), &mState, boost::filesystem::path("E:\\Dynamik\\Game Repository\\InHouse\\DemoScene.obj"), boost::container::vector<boost::filesystem::path>{}));
-			pGameObjects.push_back(std::make_unique<Preview>(glm::vec3(0.0f), &mState, boost::filesystem::path("E:\\Projects\\Personal\\Game Dev\\Vulkan Examples\\data\\models\\sponza.gltf"), boost::container::vector<boost::filesystem::path>{}));
+			//pGameObjects.push_back(std::make_unique<Preview>(glm::vec3(0.0f), &mState, std::filesystem::path("E:\\Dynamik\\Game Repository\\InHouse\\DemoScene.obj"), std::vector<std::filesystem::path>{}));
+			pGameObjects.push_back(std::make_unique<Preview>(glm::vec3(0.0f), &mState, std::filesystem::path("E:\\Projects\\Personal\\Game Dev\\Vulkan Examples\\data\\models\\sponza.gltf"), std::vector<std::filesystem::path>{}));
 
 			std::chrono::time_point<std::chrono::high_resolution_clock> oldTimePoint = std::chrono::high_resolution_clock::now();
 

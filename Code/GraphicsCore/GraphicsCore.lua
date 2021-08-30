@@ -25,11 +25,9 @@ project "GraphicsCore"
 	includedirs {
 		"$(SolutionDir)Code/",
 		"%{IncludeDir.Vulkan}",
-		"%{IncludeDir.boost}",
 	}
 
 	libdirs {
-		"%{IncludeLib.boost}",
 	}
 
 	links { 

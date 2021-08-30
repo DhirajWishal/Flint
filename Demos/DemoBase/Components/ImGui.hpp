@@ -27,15 +27,15 @@ private:
 	void UpdateBuffers();
 
 private:
-	boost::shared_ptr<Flint::Shader> pVertexShader = nullptr;
-	boost::shared_ptr<Flint::Shader> pFragmentShader = nullptr;
+	std::shared_ptr<Flint::Shader> pVertexShader = nullptr;
+	std::shared_ptr<Flint::Shader> pFragmentShader = nullptr;
 
-	boost::shared_ptr<Flint::Image> pTextImage = nullptr;
-	boost::shared_ptr<Flint::ImageSampler> pTextImageSampler = nullptr;
+	std::shared_ptr<Flint::Image> pTextImage = nullptr;
+	std::shared_ptr<Flint::ImageSampler> pTextImageSampler = nullptr;
 
-	boost::shared_ptr<Flint::ResourceMap> pResourceMap = nullptr;
+	std::shared_ptr<Flint::ResourceMap> pResourceMap = nullptr;
 
-	boost::shared_ptr<Flint::GraphicsPipeline> pPipeline = nullptr;
+	std::shared_ptr<Flint::GraphicsPipeline> pPipeline = nullptr;
 
-	boost::container::vector<boost::shared_ptr<Flint::DynamicStateContainer>> pDynamicStateContainers;
+	std::vector<std::shared_ptr<Flint::DynamicStateContainer>> pDynamicStateContainers;
 };

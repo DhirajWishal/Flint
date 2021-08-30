@@ -16,7 +16,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanCommandBuffer::VulkanCommandBuffer(const boost::shared_ptr<CommandBufferAllocator>& pAllocator, VkCommandBuffer vCommandBuffer)
+		VulkanCommandBuffer::VulkanCommandBuffer(const std::shared_ptr<CommandBufferAllocator>& pAllocator, VkCommandBuffer vCommandBuffer)
 			: CommandBuffer(pAllocator), vCommandBuffer(vCommandBuffer)
 		{
 			FLINT_SETUP_PROFILER();
@@ -59,7 +59,7 @@ namespace Flint
 			bIsRecording = true;
 		}
 
-		void VulkanCommandBuffer::BeginBufferRecording(const boost::shared_ptr<ScreenBoundRenderTarget> pRenderTarget)
+		void VulkanCommandBuffer::BeginBufferRecording(const std::shared_ptr<ScreenBoundRenderTarget> pRenderTarget)
 		{
 			FLINT_SETUP_PROFILER();
 
@@ -75,7 +75,7 @@ namespace Flint
 			bIsRecording = true;
 		}
 
-		void VulkanCommandBuffer::BeginBufferRecording(const boost::shared_ptr<OffScreenRenderTarget> pRenderTarget)
+		void VulkanCommandBuffer::BeginBufferRecording(const std::shared_ptr<OffScreenRenderTarget> pRenderTarget)
 		{
 			FLINT_SETUP_PROFILER();
 
@@ -91,7 +91,7 @@ namespace Flint
 			bIsRecording = true;
 		}
 
-		void VulkanCommandBuffer::BindRenderTarget(const boost::shared_ptr<ScreenBoundRenderTarget>& pRenderTarget)
+		void VulkanCommandBuffer::BindRenderTarget(const std::shared_ptr<ScreenBoundRenderTarget>& pRenderTarget)
 		{
 			FLINT_SETUP_PROFILER();
 
@@ -113,7 +113,7 @@ namespace Flint
 			vkCmdBeginRenderPass(vCommandBuffer, &vBeginInfo, VkSubpassContents::VK_SUBPASS_CONTENTS_INLINE);
 		}
 
-		void VulkanCommandBuffer::BindRenderTargetSecondary(const boost::shared_ptr<ScreenBoundRenderTarget>& pRenderTarget)
+		void VulkanCommandBuffer::BindRenderTargetSecondary(const std::shared_ptr<ScreenBoundRenderTarget>& pRenderTarget)
 		{
 			FLINT_SETUP_PROFILER();
 
@@ -135,7 +135,7 @@ namespace Flint
 			vkCmdBeginRenderPass(vCommandBuffer, &vBeginInfo, VkSubpassContents::VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 		}
 
-		void VulkanCommandBuffer::BindRenderTarget(const boost::shared_ptr<OffScreenRenderTarget>& pRenderTarget)
+		void VulkanCommandBuffer::BindRenderTarget(const std::shared_ptr<OffScreenRenderTarget>& pRenderTarget)
 		{
 			FLINT_SETUP_PROFILER();
 
@@ -154,7 +154,7 @@ namespace Flint
 			vkCmdBeginRenderPass(vCommandBuffer, &vBeginInfo, VkSubpassContents::VK_SUBPASS_CONTENTS_INLINE);
 		}
 
-		void VulkanCommandBuffer::BindRenderTargetSecondary(const boost::shared_ptr<OffScreenRenderTarget>& pRenderTarget)
+		void VulkanCommandBuffer::BindRenderTargetSecondary(const std::shared_ptr<OffScreenRenderTarget>& pRenderTarget)
 		{
 			FLINT_SETUP_PROFILER();
 
@@ -180,21 +180,21 @@ namespace Flint
 			vkCmdEndRenderPass(vCommandBuffer);
 		}
 
-		void VulkanCommandBuffer::BindGraphicsPipeline(const boost::shared_ptr<GraphicsPipeline>& pGraphicsPipeline)
+		void VulkanCommandBuffer::BindGraphicsPipeline(const std::shared_ptr<GraphicsPipeline>& pGraphicsPipeline)
 		{
 			FLINT_SETUP_PROFILER();
 
 			vkCmdBindPipeline(vCommandBuffer, VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_GRAPHICS, pGraphicsPipeline->StaticCast<VulkanGraphicsPipeline>().GetPipeline());
 		}
 
-		void VulkanCommandBuffer::BindComputePipeline(const boost::shared_ptr<ComputePipeline>& pComputePipeline)
+		void VulkanCommandBuffer::BindComputePipeline(const std::shared_ptr<ComputePipeline>& pComputePipeline)
 		{
 			FLINT_SETUP_PROFILER();
 
 			vkCmdBindPipeline(vCommandBuffer, VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_COMPUTE, pComputePipeline->StaticCast<VulkanComputePipeline>().GetPipeline());
 		}
 
-		void VulkanCommandBuffer::BindGeometryStore(const boost::shared_ptr<GeometryStore>& pGeometryStore)
+		void VulkanCommandBuffer::BindGeometryStore(const std::shared_ptr<GeometryStore>& pGeometryStore)
 		{
 			FLINT_SETUP_PROFILER();
 
@@ -218,7 +218,7 @@ namespace Flint
 			vkCmdBindIndexBuffer(vCommandBuffer, pIndexBuffer->StaticCast<VulkanBuffer>().GetBuffer(), 0, indexType);
 		}
 
-		void VulkanCommandBuffer::BindResourceMap(const boost::shared_ptr<GraphicsPipeline>& pPipeline, const boost::shared_ptr<ResourceMap>& pResourceMap)
+		void VulkanCommandBuffer::BindResourceMap(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::shared_ptr<ResourceMap>& pResourceMap)
 		{
 			FLINT_SETUP_PROFILER();
 
@@ -229,7 +229,7 @@ namespace Flint
 				vkCmdBindDescriptorSets(vCommandBuffer, VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_GRAPHICS, vPipeline.GetPipelineLayout(), 0, 1, pDescriptorSet, 0, nullptr);
 		}
 
-		void VulkanCommandBuffer::BindResourceMap(const boost::shared_ptr<ComputePipeline>& pPipeline, const boost::shared_ptr<ResourceMap>& pResourceMap)
+		void VulkanCommandBuffer::BindResourceMap(const std::shared_ptr<ComputePipeline>& pPipeline, const std::shared_ptr<ResourceMap>& pResourceMap)
 		{
 			FLINT_SETUP_PROFILER();
 
@@ -240,7 +240,7 @@ namespace Flint
 				vkCmdBindDescriptorSets(vCommandBuffer, VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_COMPUTE, vPipeline.GetPipelineLayout(), 0, 1, pDescriptorSet, 0, nullptr);
 		}
 
-		void VulkanCommandBuffer::BindDynamicStates(const boost::shared_ptr<GraphicsPipeline>& pPipeline, const boost::shared_ptr<DynamicStateContainer>& pDynamicStates)
+		void VulkanCommandBuffer::BindDynamicStates(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::shared_ptr<DynamicStateContainer>& pDynamicStates)
 		{
 			FLINT_SETUP_PROFILER();
 
@@ -308,7 +308,7 @@ namespace Flint
 			}
 		}
 
-		void VulkanCommandBuffer::BindDynamicStates(const boost::shared_ptr<ComputePipeline>& pPipeline, const boost::shared_ptr<DynamicStateContainer>& pDynamicStates)
+		void VulkanCommandBuffer::BindDynamicStates(const std::shared_ptr<ComputePipeline>& pPipeline, const std::shared_ptr<DynamicStateContainer>& pDynamicStates)
 		{
 			FLINT_SETUP_PROFILER();
 
@@ -390,7 +390,7 @@ namespace Flint
 			vkCmdDispatch(vCommandBuffer, groups.X, groups.Y, groups.Z);
 		}
 
-		void VulkanCommandBuffer::SubmitSecondaryCommandBuffer(const boost::shared_ptr<CommandBuffer>& pCommandBuffer)
+		void VulkanCommandBuffer::SubmitSecondaryCommandBuffer(const std::shared_ptr<CommandBuffer>& pCommandBuffer)
 		{
 			vSecondaryCommandBuffers.push_back(pCommandBuffer->StaticCast<VulkanCommandBuffer>().GetVulkanCommandBuffer());
 		}

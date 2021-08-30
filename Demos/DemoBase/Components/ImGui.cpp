@@ -25,8 +25,8 @@ ImGUI::ImGUI(glm::vec3 position, SceneState* pSceneState)
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
 
-	pVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, boost::filesystem::path("Flint\\Shaders\\ImGui\\UI.vert.spv"));
-	pFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, boost::filesystem::path("Flint\\Shaders\\ImGui\\UI.frag.spv"));
+	pVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("Flint\\Shaders\\ImGui\\UI.vert.spv"));
+	pFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("Flint\\Shaders\\ImGui\\UI.frag.spv"));
 
 	PrepareGeometryStore();
 	PreparePipeline();
@@ -74,7 +74,7 @@ void ImGUI::OnUpdate(UI64 delta)
 			{
 				auto& pCommand = pCommandList->CmdBuffer[j];
 
-				boost::shared_ptr<Flint::DynamicStateContainer> pDynamicStates = boost::make_shared<Flint::DynamicStateContainer>();
+				std::shared_ptr<Flint::DynamicStateContainer> pDynamicStates = std::make_shared<Flint::DynamicStateContainer>();
 				pDynamicStates->SetViewPort(Flint::FExtent2D<float>(io.DisplaySize.x, io.DisplaySize.y), Flint::FExtent2D<float>(0.0f, 1.0f), Flint::FExtent2D<float>());
 
 				pDynamicStates->SetScissor(
@@ -163,13 +163,13 @@ void ImGUI::UpdateBuffers()
 	if ((vertexSize == 0) || (indexSize == 0))
 		return;
 
-	boost::shared_ptr<Flint::Buffer> pVertexBuffer = nullptr;
-	boost::shared_ptr<Flint::Buffer> pIndexBuffer = nullptr;
+	std::shared_ptr<Flint::Buffer> pVertexBuffer = nullptr;
+	std::shared_ptr<Flint::Buffer> pIndexBuffer = nullptr;
 
 	ImDrawVert* pVertexData = nullptr;
 	ImDrawIdx* pIndexData = nullptr;
 
-	boost::shared_ptr<Flint::GeometryStore> pGeometryStore = pSceneState->pGeometryStores["ImGUI"];
+	std::shared_ptr<Flint::GeometryStore> pGeometryStore = pSceneState->pGeometryStores["ImGUI"];
 
 	if (pGeometryStore->GetVertexCount() != pDrawData->TotalVtxCount)
 	{

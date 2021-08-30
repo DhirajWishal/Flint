@@ -5,7 +5,7 @@
 
 #include "GraphicsCore/Instance.hpp"
 
-void EditorRenderTarget::Initialize(const boost::shared_ptr<Flint::Device>& pDevice, const boost::shared_ptr<Flint::Instance>& pInstnace)
+void EditorRenderTarget::Initialize(const std::shared_ptr<Flint::Device>& pDevice, const std::shared_ptr<Flint::Instance>& pInstnace)
 {
 	const Flint::FBox2D extent = Flint::FBox2D(1280, 720);
 	pDisplay = pInstnace->CreateDisplay(extent, "Flint Editor");

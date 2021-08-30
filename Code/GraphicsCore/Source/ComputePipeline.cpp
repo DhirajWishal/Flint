@@ -5,14 +5,14 @@
 
 namespace Flint
 {
-	ComputePipeline::ComputePipeline(const boost::shared_ptr<Device>& pDevice, const std::string& pipelineName, const boost::shared_ptr<Shader>& pComputeShader)
+	ComputePipeline::ComputePipeline(const std::shared_ptr<Device>& pDevice, const std::string& pipelineName, const std::shared_ptr<Shader>& pComputeShader)
 		: Pipeline(pDevice, pipelineName), pShader(pComputeShader)
 	{
 		if (!pShader)
 			FLINT_THROW_INVALID_ARGUMENT("Compute shader pointers should not be null!");
 	}
 
-	const UI64 ComputePipeline::AddInstance(const boost::shared_ptr<ResourceMap>& pResourceMap, const boost::shared_ptr<DynamicStateContainer>& pDynamicStates, const FBox3D& computeGroups)
+	const UI64 ComputePipeline::AddInstance(const std::shared_ptr<ResourceMap>& pResourceMap, const std::shared_ptr<DynamicStateContainer>& pDynamicStates, const FBox3D& computeGroups)
 	{
 		mComputeInstances[mInstanceIndex] = ComputeInstance(pResourceMap, pDynamicStates, computeGroups);
 
@@ -29,10 +29,10 @@ namespace Flint
 		mComputeInstances.erase(ID);
 	}
 
-	boost::shared_ptr<ResourceMap> ComputePipeline::CreateResourceMap() const
+	std::shared_ptr<ResourceMap> ComputePipeline::CreateResourceMap() const
 	{
-		boost::container::vector<std::string> buffers;
-		boost::container::vector<std::string> images;
+		std::vector<std::string> buffers;
+		std::vector<std::string> images;
 
 		const auto resources = pShader->GetShaderResources();
 		for (const auto resource : resources)
@@ -46,6 +46,6 @@ namespace Flint
 				INSERT_INTO_VECTOR(buffers, resource.first);
 		}
 
-		return boost::make_shared<ResourceMap>(buffers, images);
+		return std::make_shared<ResourceMap>(buffers, images);
 	}
 }

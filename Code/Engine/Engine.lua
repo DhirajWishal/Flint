@@ -26,11 +26,9 @@ project "FlintEngine"
 		"$(SolutionDir)Code/",
 		"%{IncludeDir.Assimp}",
 		"%{IncludeDir.shaderc}",
-		"%{IncludeDir.boost}",
 	}
 
 	libdirs {
-		"%{IncludeLib.boost}",
 		"%{IncludeLib.Assimp}",
 	}
 

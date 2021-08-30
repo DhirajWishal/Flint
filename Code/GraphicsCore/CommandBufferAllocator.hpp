@@ -24,7 +24,7 @@ namespace Flint
 		 * @param pDevice: The device pointer.
 		 * @param bufferCount: The number of buffers to allocate.
 		 */
-		CommandBufferAllocator(const boost::shared_ptr<Device>& pDevice, const UI32 bufferCount);
+		CommandBufferAllocator(const std::shared_ptr<Device>& pDevice, const UI32 bufferCount);
 
 		/**
 		 * Construct a secondary command buffer allocator.
@@ -33,21 +33,21 @@ namespace Flint
 		 * @param pParent: The parent command buffer allocator.
 		 * @param bufferCount: The number of buffers to allocate.
 		 */
-		CommandBufferAllocator(const boost::shared_ptr<Device>& pDevice, const boost::shared_ptr<CommandBufferAllocator>& pParent, const UI32 bufferCount);
+		CommandBufferAllocator(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<CommandBufferAllocator>& pParent, const UI32 bufferCount);
 
 		/**
 		 * Create the command buffers.
 		 * 
 		 * @return The created command buffers.
 		 */
-		virtual const boost::container::vector<boost::shared_ptr<CommandBuffer>> CreateCommandBuffers() = 0;
+		virtual const std::vector<std::shared_ptr<CommandBuffer>> CreateCommandBuffers() = 0;
 
 		/**
 		 * Create a child allocator object.
 		 * 
 		 * @return The created secondary command buffer allocator.
 		 */
-		virtual boost::shared_ptr<CommandBufferAllocator> CreateChildAllocator() = 0;
+		virtual std::shared_ptr<CommandBufferAllocator> CreateChildAllocator() = 0;
 
 	public:
 		/**
@@ -62,14 +62,14 @@ namespace Flint
 		 * 
 		 * @return The parent pointer. Returns nullptr if this is a primary command buffer allocator.
 		 */
-		const boost::shared_ptr<CommandBufferAllocator> GetParentAllocator() const { return pParentAllocator; }
+		const std::shared_ptr<CommandBufferAllocator> GetParentAllocator() const { return pParentAllocator; }
 
 		/**
 		 * Get the allocated command buffers.
 		 * 
 		 * @return The command buffer pointers.
 		 */
-		const boost::container::vector<boost::shared_ptr<CommandBuffer>> GetCommandBuffers() const { return pCommandBuffers; }
+		const std::vector<std::shared_ptr<CommandBuffer>> GetCommandBuffers() const { return pCommandBuffers; }
 
 		/**
 		 * Get a command buffer from the allocator.
@@ -77,7 +77,7 @@ namespace Flint
 		 * @param index: The index of the command buffer.
 		 * @return The command buffer pointer.
 		 */
-		const boost::shared_ptr<CommandBuffer> GetCommandBuffer(const UI64 index) const { return pCommandBuffers[index]; }
+		const std::shared_ptr<CommandBuffer> GetCommandBuffer(const UI64 index) const { return pCommandBuffers[index]; }
 
 	protected:
 		/**
@@ -88,8 +88,8 @@ namespace Flint
 		void FlagCommandBufferAsTerminated(UI32 index) { pCommandBuffers[index]->Terminate(); }
 
 	protected:
-		boost::container::vector<boost::shared_ptr<CommandBuffer>> pCommandBuffers = {};
-		boost::shared_ptr<CommandBufferAllocator> pParentAllocator = nullptr;
+		std::vector<std::shared_ptr<CommandBuffer>> pCommandBuffers = {};
+		std::shared_ptr<CommandBufferAllocator> pParentAllocator = nullptr;
 
 		UI32 mBufferCount = 0;
 	};

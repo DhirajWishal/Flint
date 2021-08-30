@@ -24,11 +24,9 @@ project "Core"
 
 	includedirs {
 		"$(SolutionDir)Code/",
-		"%{IncludeDir.boost}",
 	}
 
 	libdirs {
-		"%{IncludeLib.boost}",
 	}
 
 	links { 

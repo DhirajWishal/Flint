@@ -5,7 +5,7 @@
 
 namespace Flint
 {	
-	Image::Image(const boost::shared_ptr<Device>& pDevice, const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const UI8 layers, const UI32 mipLevels, const void* pImageData, const MultiSampleCount sampleCount)
+	Image::Image(const std::shared_ptr<Device>& pDevice, const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const UI8 layers, const UI32 mipLevels, const void* pImageData, const MultiSampleCount sampleCount)
 		: DeviceBoundObject(pDevice), mType(type), mUsage(usage), mExtent(extent), mFormat(format), mLayerCount(layers), mMipLevels(mipLevels), mMultiSampleCount(sampleCount)
 	{
 		if (mExtent.IsZero())

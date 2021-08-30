@@ -12,7 +12,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanOffScreenRenderTarget::VulkanOffScreenRenderTarget(const boost::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, const boost::container::vector<RenderTargetAttachment>& imageAttachments)
+		VulkanOffScreenRenderTarget::VulkanOffScreenRenderTarget(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments)
 			: OffScreenRenderTarget(pDevice, extent, bufferCount, imageAttachments), vRenderTarget(pDevice->StaticCast<VulkanDevice>())
 		{
 			FLINT_SETUP_PROFILER();
@@ -35,7 +35,7 @@ namespace Flint
 			vDependencies[1].dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
 			vDependencies[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
 
-			boost::container::vector<VulkanRenderTargetAttachmentInterface*> pAttachmentInferfaces;
+			std::vector<VulkanRenderTargetAttachmentInterface*> pAttachmentInferfaces;
 			pAttachmentInferfaces.reserve(mAttachments.size());
 			for (const auto attachment : mAttachments)
 			{

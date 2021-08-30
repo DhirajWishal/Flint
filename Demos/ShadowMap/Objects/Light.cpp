@@ -19,16 +19,16 @@ struct Vertex
 	glm::vec2 texture = {};
 };
 
-std::pair<boost::container::vector<Vertex>, boost::container::vector<UI32>> CreateQuad()
+std::pair<std::vector<Vertex>, std::vector<UI32>> CreateQuad()
 {
-	boost::container::vector<Vertex> vertexes = {
+	std::vector<Vertex> vertexes = {
 		Vertex(glm::vec3(1.0f, 1.0f, 0.0f),		glm::vec2(0.0f, 0.0f)),
 		Vertex(glm::vec3(1.0f, -1.0f, 0.0f),	glm::vec2(0.0f, 1.0f)),
 		Vertex(glm::vec3(-1.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f)),
 		Vertex(glm::vec3(-1.0f, -1.0f, 0.0f),	glm::vec2(1.0f, 1.0f))
 	};
 
-	boost::container::vector<UI32> indexes = {
+	std::vector<UI32> indexes = {
 		0, 1, 2,
 		1, 3, 2
 	};
@@ -41,7 +41,7 @@ Light::Light(glm::vec3 position, SceneState* pSceneState)
 {
 	Flint::FBox2D windowExtent = pSceneState->pDisplay->GetExtent();
 
-	pDynamicStates = boost::make_shared<Flint::DynamicStateContainer>();
+	pDynamicStates = std::make_shared<Flint::DynamicStateContainer>();
 	pDynamicStates->SetViewPort(Flint::FExtent2D<float>{static_cast<float>(windowExtent.mWidth), static_cast<float>(windowExtent.mHeight)}, Flint::FExtent2D<float>(0.0f, 1.0f), { 0.0f, 0.0f });
 	pDynamicStates->SetScissor(windowExtent, { 0, 0 });
 
@@ -54,8 +54,8 @@ Light::Light(glm::vec3 position, SceneState* pSceneState)
 
 	pTextureSampler = pSceneState->pDevice->CreateImageSampler(Flint::ImageSamplerSpecification());
 
-	pVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, boost::filesystem::path("Flint\\Shaders\\Guizmo\\shader.vert.spv"));
-	pFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, boost::filesystem::path("Flint\\Shaders\\Guizmo\\shader.frag.spv"));
+	pVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("Flint\\Shaders\\Guizmo\\shader.vert.spv"));
+	pFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("Flint\\Shaders\\Guizmo\\shader.frag.spv"));
 
 	Flint::GraphicsPipelineSpecification specification = {};
 	specification.mRasterizationSamples = pSceneState->pDevice->GetSupportedMultiSampleCount();

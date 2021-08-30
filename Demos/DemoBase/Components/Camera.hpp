@@ -22,7 +22,7 @@ class Camera
 public:
 	Camera() = default;
 
-	void Initialize(boost::shared_ptr<Flint::Device> pDevice);
+	void Initialize(std::shared_ptr<Flint::Device> pDevice);
 	void Terminate();
 
 	/**
@@ -70,7 +70,7 @@ public:
 	 *
 	 * @return The buffer pointer.
 	 */
-	boost::shared_ptr<Flint::Buffer> GetCameraBuffer() { return pCameraBuffer; }
+	std::shared_ptr<Flint::Buffer> GetCameraBuffer() { return pCameraBuffer; }
 
 	/**
 	 * Reset the first mouse boolean value to its default (true).
@@ -98,8 +98,8 @@ private:
 	glm::mat4 viewMatrix = glm::mat4(1);
 	glm::mat4 projectionMatrix = glm::mat4(1);
 
-	boost::shared_ptr<Flint::Buffer> pCameraBuffer = nullptr;
-	boost::shared_ptr<Flint::Device> pDevice = nullptr;
+	std::shared_ptr<Flint::Buffer> pCameraBuffer = nullptr;
+	std::shared_ptr<Flint::Device> pDevice = nullptr;
 
 	glm::vec3 cameraPosition = { 0.0f, 1.0f, 0.0f };
 	glm::vec3 cameraUp = { 0.0f, 1.0f, 0.0f };

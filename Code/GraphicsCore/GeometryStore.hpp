@@ -17,7 +17,7 @@ namespace Flint
 	 * is comparatively more beneficial than having multiple small buffers. It also helps us to manage device memory better. The reason to organize these stores according
 	 * to vertex attributes is that it allows us to store a large group of similar types data.
 	 */
-	class GeometryStore final : public DeviceBoundObject, public boost::enable_shared_from_this<GeometryStore>
+	class GeometryStore final : public DeviceBoundObject, public std::enable_shared_from_this<GeometryStore>
 	{
 	public:
 		/**
@@ -28,7 +28,7 @@ namespace Flint
 		 * @param indexSize: The size of a single index in bytes.
 		 * @param profile: The memory profile of the buffer. Default is BufferMemoryProfile::AUTOMATIC.
 		 */
-		GeometryStore(const boost::shared_ptr<Device>& pDevice, const boost::unordered::unordered_map<UI32, boost::container::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile = BufferMemoryProfile::AUTOMATIC);
+		GeometryStore(const std::shared_ptr<Device>& pDevice, const std::unordered_map<UI32, std::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile = BufferMemoryProfile::AUTOMATIC);
 		~GeometryStore() { if (!bIsTerminated) Terminate(); }
 
 		GeometryStore(const GeometryStore&) = delete;
@@ -40,7 +40,7 @@ namespace Flint
 		 * @param pVertexStagingBuffer: The stagging buffer containing all the vertex information.
 		 * @param pIndexStagingBuffer: The stagging buffer containing all the index information.
 		 */
-		void SetData(const boost::shared_ptr<Buffer>& pVertexStagingBuffer, const boost::shared_ptr<Buffer>& pIndexStagingBuffer);
+		void SetData(const std::shared_ptr<Buffer>& pVertexStagingBuffer, const std::shared_ptr<Buffer>& pIndexStagingBuffer);
 
 		/**
 		 * Add a geometry to the store.
@@ -61,7 +61,7 @@ namespace Flint
 		 * @param pIndexStagingBuffer: The index data stored stagging buffer.
 		 * @return The pair of offsets (vertex offset, index offset) in which the geometry is stored.
 		 */
-		std::pair<UI64, UI64> AddGeometry(const boost::shared_ptr<Buffer>& pVertexStagingBuffer, const boost::shared_ptr<Buffer>& pIndexStagingBuffer);
+		std::pair<UI64, UI64> AddGeometry(const std::shared_ptr<Buffer>& pVertexStagingBuffer, const std::shared_ptr<Buffer>& pIndexStagingBuffer);
 
 		/**
 		 * Remove a geometry from the store.
@@ -85,21 +85,21 @@ namespace Flint
 		 *
 		 * @return The buffer pointer.
 		 */
-		const boost::shared_ptr<Buffer> GetVertexBuffer() const { return pVertexBuffer; }
+		const std::shared_ptr<Buffer> GetVertexBuffer() const { return pVertexBuffer; }
 
 		/**
 		 * Get the index buffer from the store.
 		 *
 		 * @return The buffer pointer.
 		 */
-		const boost::shared_ptr<Buffer> GetIndexBuffer() const { return pIndexBuffer; }
+		const std::shared_ptr<Buffer> GetIndexBuffer() const { return pIndexBuffer; }
 
 		/**
 		 * Get the vertex attributes.
 		 *
 		 * @return The attribute map.
 		 */
-		const boost::unordered::unordered_map<UI32, boost::container::vector<ShaderAttribute>> GetTheVertexAttributes() const { return mVertexAttribtues; }
+		const std::unordered_map<UI32, std::vector<ShaderAttribute>> GetTheVertexAttributes() const { return mVertexAttribtues; }
 
 		/**
 		 * Get the size of a single vertex.
@@ -156,10 +156,10 @@ namespace Flint
 		void UnmapIndexBuffer();
 
 	private:
-		boost::unordered::unordered_map<UI32, boost::container::vector<ShaderAttribute>> mVertexAttribtues = {};
+		std::unordered_map<UI32, std::vector<ShaderAttribute>> mVertexAttribtues = {};
 
-		boost::shared_ptr<Buffer> pVertexBuffer = nullptr;
-		boost::shared_ptr<Buffer> pIndexBuffer = nullptr;
+		std::shared_ptr<Buffer> pVertexBuffer = nullptr;
+		std::shared_ptr<Buffer> pIndexBuffer = nullptr;
 
 		UI64 mVertexSize = 0;
 		UI64 mIndexSize = 0;

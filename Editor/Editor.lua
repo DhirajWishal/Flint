@@ -43,11 +43,9 @@ project "FlintEditor"
 		"%{IncludeDir.imgui}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.Assimp}",
-		"%{IncludeDir.boost}",
 	}
 
 	libdirs {
-		"%{IncludeLib.boost}",
 	}
 
 	links {

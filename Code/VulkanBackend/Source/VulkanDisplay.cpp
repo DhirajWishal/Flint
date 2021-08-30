@@ -12,7 +12,7 @@ namespace Flint
 		{
 			void KeyCallback(GLFWwindow* window, I32 key, I32 scancode, I32 action, I32 mods)
 			{
-				boost::shared_ptr<VulkanDisplay> vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window))->shared_from_this();
+				std::shared_ptr<VulkanDisplay> vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window))->shared_from_this();
 				vDisplay->ActivateKey(scancode, action, static_cast<SpecialCharacter>(mods));
 			}
 
@@ -22,48 +22,48 @@ namespace Flint
 
 			void CursorPositionCallback(GLFWwindow* window, double xOffset, double yOffset)
 			{
-				boost::shared_ptr<VulkanDisplay> vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window))->shared_from_this();
+				std::shared_ptr<VulkanDisplay> vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window))->shared_from_this();
 				vDisplay->SetMousePosition(static_cast<float>(xOffset), static_cast<float>(yOffset));
 			}
 
 			void MouseButtonCallback(GLFWwindow* window, I32 button, I32 action, I32 mods)
 			{
-				boost::shared_ptr<VulkanDisplay> vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window))->shared_from_this();
+				std::shared_ptr<VulkanDisplay> vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window))->shared_from_this();
 				vDisplay->ActivateMouseButton(button, action, static_cast<SpecialCharacter>(mods));
 			}
 
 			void MouseScrollCallback(GLFWwindow* window, double xOffset, double yOffset)
 			{
-				boost::shared_ptr<VulkanDisplay> vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window))->shared_from_this();
+				std::shared_ptr<VulkanDisplay> vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window))->shared_from_this();
 				vDisplay->SetMouseScroll(static_cast<float>(xOffset), static_cast<float>(yOffset));
 			}
 
 			void MouseCursorEnterCallback(GLFWwindow* window, I32 entered)
 			{
-				boost::shared_ptr<VulkanDisplay> vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window))->shared_from_this();
+				std::shared_ptr<VulkanDisplay> vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window))->shared_from_this();
 				vDisplay->SetCursorWithinDisplay(entered == GLFW_TRUE);
 			}
 
 			void ApplicationDropPathCallback(GLFWwindow* window, I32 count, const char** strings)
 			{
-				boost::container::vector<boost::filesystem::path> paths(count);
+				std::vector<std::filesystem::path> paths(count);
 				for (UI32 i = 0; i < static_cast<UI32>(count); i++)
 					paths[i] = strings[i];
 
-				boost::shared_ptr<VulkanDisplay> vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window))->shared_from_this();
+				std::shared_ptr<VulkanDisplay> vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window))->shared_from_this();
 				vDisplay->SetDragAndDropPaths(std::move(paths));
 			}
 
 			void ApplicationResizeCallback(GLFWwindow* window, I32 width, I32 height)
 			{
-				boost::shared_ptr<VulkanDisplay> vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window))->shared_from_this();
+				std::shared_ptr<VulkanDisplay> vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window))->shared_from_this();
 				vDisplay->SetNewExtent(FBox2D(width, height));
 				vDisplay->Resized();
 			}
 
 			void WindowCloseCallback(GLFWwindow* window)
 			{
-				boost::shared_ptr<VulkanDisplay> vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window))->shared_from_this();
+				std::shared_ptr<VulkanDisplay> vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window))->shared_from_this();
 				vDisplay->ToggleClose();
 			}
 		}
@@ -94,7 +94,7 @@ namespace Flint
 			return supportDetails;
 		}
 
-		VulkanDisplay::VulkanDisplay(const boost::shared_ptr<Instance>& pInstance, const FBox2D& extent, const std::string& title) : Display(pInstance, extent, title)
+		VulkanDisplay::VulkanDisplay(const std::shared_ptr<Instance>& pInstance, const FBox2D& extent, const std::string& title) : Display(pInstance, extent, title)
 		{
 			FLINT_SETUP_PROFILER();
 
@@ -146,7 +146,7 @@ namespace Flint
 			bIsTerminated = true;
 		}
 
-		UI32 VulkanDisplay::FindBestBufferCount(const boost::shared_ptr<Device>& pDevice, const UI32 count)
+		UI32 VulkanDisplay::FindBestBufferCount(const std::shared_ptr<Device>& pDevice, const UI32 count)
 		{
 			FLINT_SETUP_PROFILER();
 
@@ -166,7 +166,7 @@ namespace Flint
 			return count;
 		}
 
-		PixelFormat VulkanDisplay::GetBestSwapChainFormat(const boost::shared_ptr<Device>& pDevice)
+		PixelFormat VulkanDisplay::GetBestSwapChainFormat(const std::shared_ptr<Device>& pDevice)
 		{
 			SwapChainSupportDetails vSupport = SwapChainSupportDetails::Query(pDevice->StaticCast<VulkanDevice>().GetPhysicalDevice(), GetSurface());
 			VkSurfaceFormatKHR surfaceFormat = ChooseSurfaceFormat(vSupport.mFormats);
@@ -189,7 +189,7 @@ namespace Flint
 			mExtent = newExtent;
 		}
 
-		VkSurfaceFormatKHR VulkanDisplay::ChooseSurfaceFormat(const boost::container::vector<VkSurfaceFormatKHR>& availableFormats)
+		VkSurfaceFormatKHR VulkanDisplay::ChooseSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
 		{
 			for (const auto& availableFormat : availableFormats)
 				if (availableFormat.format == VK_FORMAT_B8G8R8A8_UNORM
@@ -199,7 +199,7 @@ namespace Flint
 			return availableFormats[0];
 		}
 
-		VkPresentModeKHR VulkanDisplay::ChoosePresentMode(const boost::container::vector<VkPresentModeKHR>& availablePresentModes)
+		VkPresentModeKHR VulkanDisplay::ChoosePresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes)
 		{
 			VkPresentModeKHR bestMode = VK_PRESENT_MODE_FIFO_KHR;
 
@@ -282,7 +282,7 @@ namespace Flint
 			mIsCursorWithinDisplay = value;
 		}
 
-		void VulkanDisplay::SetDragAndDropPaths(boost::container::vector<boost::filesystem::path>&& paths)
+		void VulkanDisplay::SetDragAndDropPaths(std::vector<std::filesystem::path>&& paths)
 		{
 			mDragAndDropPaths = std::move(paths);
 		}

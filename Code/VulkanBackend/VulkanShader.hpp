@@ -9,16 +9,16 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanShader final : public Shader, public boost::enable_shared_from_this<VulkanShader>
+		class VulkanShader final : public Shader, public std::enable_shared_from_this<VulkanShader>
 		{
 		public:
-			VulkanShader(const boost::shared_ptr<Device>& pDevice, const ShaderType type, const boost::filesystem::path& path);
-			VulkanShader(const boost::shared_ptr<Device>& pDevice, const ShaderType type, const boost::container::vector<UI32>& code);
-			VulkanShader(const boost::shared_ptr<Device>& pDevice, const ShaderType type, const std::string& code);
+			VulkanShader(const std::shared_ptr<Device>& pDevice, const ShaderType type, const std::filesystem::path& path);
+			VulkanShader(const std::shared_ptr<Device>& pDevice, const ShaderType type, const std::vector<UI32>& code);
+			VulkanShader(const std::shared_ptr<Device>& pDevice, const ShaderType type, const std::string& code);
 			~VulkanShader() { if (!bIsTerminated) Terminate(); }
 
-			virtual void Reload(const boost::filesystem::path& path) override final;
-			virtual void Reload(const boost::container::vector<UI32>& code) override final;
+			virtual void Reload(const std::filesystem::path& path) override final;
+			virtual void Reload(const std::vector<UI32>& code) override final;
 			virtual void Reload(const std::string& code) override final;
 
 			virtual void Terminate() override final;
@@ -27,19 +27,19 @@ namespace Flint
 			void PerformReflection();
 
 			VkShaderModule GetModule() const { return vModule; }
-			const boost::container::vector<VkDescriptorSetLayoutBinding> GetResourceBindings() const { return mBindings; }
-			const boost::container::vector<VkDescriptorPoolSize> GetPoolSizes() const { return mSizes; }
-			const boost::container::vector<VkPushConstantRange> GetPushConstantRanges() const { return mConstantRanges; }
+			const std::vector<VkDescriptorSetLayoutBinding> GetResourceBindings() const { return mBindings; }
+			const std::vector<VkDescriptorPoolSize> GetPoolSizes() const { return mSizes; }
+			const std::vector<VkPushConstantRange> GetPushConstantRanges() const { return mConstantRanges; }
 
 		private:
 			void ResolveShaderStage();
 			void CreateShaderModule();
 
 		private:
-			boost::container::vector<UI32> mShaderCode;
-			boost::container::vector<VkDescriptorSetLayoutBinding> mBindings;
-			boost::container::vector<VkDescriptorPoolSize> mSizes;
-			boost::container::vector<VkPushConstantRange> mConstantRanges;
+			std::vector<UI32> mShaderCode;
+			std::vector<VkDescriptorSetLayoutBinding> mBindings;
+			std::vector<VkDescriptorPoolSize> mSizes;
+			std::vector<VkPushConstantRange> mConstantRanges;
 
 			VkShaderModule vModule = VK_NULL_HANDLE;
 

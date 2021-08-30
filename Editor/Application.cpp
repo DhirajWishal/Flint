@@ -18,7 +18,7 @@ Application::Application()
 
 	// Test loader.
 	{
-		Flint::ShaderCompiler compiler(boost::filesystem::path("E:\\Flint\\Editor\\Shaders\\3D\\shader.vert"), Flint::ShaderCodeType::GLSL, Flint::ShaderType::VERTEX);
+		Flint::ShaderCompiler compiler(std::filesystem::path("E:\\Flint\\Editor\\Shaders\\3D\\shader.vert"), Flint::ShaderCodeType::GLSL, Flint::ShaderType::VERTEX);
 		auto pShader = pDevice->CreateShader(Flint::ShaderType::VERTEX, compiler.GetShaderCode());
 		auto pGeometryStore = pDevice->CreateGeometryStore(pShader->GetInputAttributes(), sizeof(UI32));
 	

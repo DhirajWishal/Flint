@@ -25,7 +25,7 @@ namespace Flint
 		 * @param bufferCount: The frame buffer count.
 		 * @param presentMode: The image present mode to the display.
 		 */
-		ScreenBoundRenderTarget(const boost::shared_ptr<Device>& pDevice, const boost::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const boost::container::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode);
+		ScreenBoundRenderTarget(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode);
 
 		/**
 		 * Present the images to the display.
@@ -43,7 +43,7 @@ namespace Flint
 		 * 
 		 * @return The display pointer.
 		 */
-		const boost::shared_ptr<Display> GetDisplay() const { return pDisplay; }
+		const std::shared_ptr<Display> GetDisplay() const { return pDisplay; }
 
 		/**
 		 * Get the current image index.
@@ -53,6 +53,6 @@ namespace Flint
 		virtual const UI32 GetImageIndex() const = 0;
 
 	protected:
-		boost::shared_ptr<Display> pDisplay = nullptr;
+		std::shared_ptr<Display> pDisplay = nullptr;
 	};
 }

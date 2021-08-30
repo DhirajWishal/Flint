@@ -29,7 +29,7 @@ namespace Flint
 		 *
 		 * @param count: The count to wait until.
 		 */
-		void Acquire(boost::atomic<UI64> count);
+		void Acquire(std::atomic<UI64> count);
 
 		/**
 		 * Try and acquire the semaphore.
@@ -38,9 +38,9 @@ namespace Flint
 		 * @param count: The count to wait for.
 		 * @return Whether or not it acquired.
 		 */
-		bool TryAcquire(boost::atomic<UI64> count);
+		bool TryAcquire(std::atomic<UI64> count);
 
 	private:
-		boost::atomic<UI64> mAtomicCounter = 0;
+		std::atomic<UI64> mAtomicCounter = 0;
 	};
 }

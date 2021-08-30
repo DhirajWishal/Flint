@@ -95,11 +95,11 @@ namespace Flint
 		}
 	}
 
-	ShaderCompiler::ShaderCompiler(const boost::filesystem::path& shaderFile, const ShaderCodeType codeType, const ShaderType shaderType)
+	ShaderCompiler::ShaderCompiler(const std::filesystem::path& shaderFile, const ShaderCodeType codeType, const ShaderType shaderType)
 		: mCodeType(codeType)
 	{
 		// Load the shade file.
-		boost::filesystem::ifstream file(shaderFile, std::ios::in | std::ios::binary | std::ios::ate);
+		std::ifstream file(shaderFile, std::ios::in | std::ios::binary | std::ios::ate);
 		UI64 size = file.tellg();
 		file.seekg(0);
 

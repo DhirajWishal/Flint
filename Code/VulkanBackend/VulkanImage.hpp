@@ -10,11 +10,11 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanImage final : public Image, public VulkanRenderTargetAttachmentInterface, public boost::enable_shared_from_this<VulkanImage>
+		class VulkanImage final : public Image, public VulkanRenderTargetAttachmentInterface, public std::enable_shared_from_this<VulkanImage>
 		{
 		public:
 			VulkanImage(
-				const boost::shared_ptr<Device>& pDevice,
+				const std::shared_ptr<Device>& pDevice,
 				const ImageType type,
 				const ImageUsage usage,
 				const FBox3D& extent,
@@ -25,7 +25,7 @@ namespace Flint
 				const MultiSampleCount sampleCount = MultiSampleCount::BITS_1);
 			~VulkanImage() { if (!bIsTerminated) Terminate(); }
 
-			virtual boost::shared_ptr<Buffer> CopyToBuffer() override final;
+			virtual std::shared_ptr<Buffer> CopyToBuffer() override final;
 			virtual void Terminate() override final;
 
 			void CopyFromImage(VkImage vSrcImage, VkImageLayout vSrcLayout, VkOffset3D srcOffset, VkOffset3D dstOffset, VkImageSubresourceLayers subresourceLayers);

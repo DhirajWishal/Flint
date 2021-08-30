@@ -13,10 +13,10 @@ namespace Flint
 	{
 		namespace Helpers
 		{
-			boost::container::vector<UI32> ResolvePadding(const boost::container::vector<UI32>& code)
+			std::vector<UI32> ResolvePadding(const std::vector<UI32>& code)
 			{
 				const UI64 finalCodeSize = code.size() / 4;
-				boost::container::vector<UI32> resolvedCode(finalCodeSize);
+				std::vector<UI32> resolvedCode(finalCodeSize);
 				std::copy(code.begin(), code.begin() + finalCodeSize, resolvedCode.data());
 
 				return resolvedCode;
@@ -180,13 +180,13 @@ namespace Flint
 			}
 		}
 
-		VulkanShader::VulkanShader(const boost::shared_ptr<Device>& pDevice, const ShaderType type, const boost::filesystem::path& path)
+		VulkanShader::VulkanShader(const std::shared_ptr<Device>& pDevice, const ShaderType type, const std::filesystem::path& path)
 			: Shader(pDevice, type, path)
 		{
 			FLINT_SETUP_PROFILER();
 
 			ResolveShaderStage();
-			boost::filesystem::ifstream shaderFile(path, std::ios::ate | std::ios::binary);
+			std::ifstream shaderFile(path, std::ios::ate | std::ios::binary);
 
 			if (!shaderFile.is_open())
 				FLINT_THROW_RUNTIME_ERROR("Submitted shader file path is invalid!");
@@ -202,7 +202,7 @@ namespace Flint
 			PerformReflection();
 		}
 
-		VulkanShader::VulkanShader(const boost::shared_ptr<Device>& pDevice, const ShaderType type, const boost::container::vector<UI32>& code)
+		VulkanShader::VulkanShader(const std::shared_ptr<Device>& pDevice, const ShaderType type, const std::vector<UI32>& code)
 			: Shader(pDevice, type, code), mShaderCode(code)
 		{
 			FLINT_SETUP_PROFILER();
@@ -217,7 +217,7 @@ namespace Flint
 			PerformReflection();
 		}
 
-		VulkanShader::VulkanShader(const boost::shared_ptr<Device>& pDevice, const ShaderType type, const std::string& code)
+		VulkanShader::VulkanShader(const std::shared_ptr<Device>& pDevice, const ShaderType type, const std::string& code)
 			: Shader(pDevice, type, code)
 		{
 			FLINT_SETUP_PROFILER();
@@ -231,14 +231,14 @@ namespace Flint
 			PerformReflection();
 		}
 
-		void VulkanShader::Reload(const boost::filesystem::path& path)
+		void VulkanShader::Reload(const std::filesystem::path& path)
 		{
 			FLINT_SETUP_PROFILER();
 			Terminate();
 			bIsTerminated = false;
 
 			ResolveShaderStage();
-			boost::filesystem::ifstream shaderFile(path, std::ios::ate | std::ios::binary);
+			std::ifstream shaderFile(path, std::ios::ate | std::ios::binary);
 
 			if (!shaderFile.is_open())
 				FLINT_THROW_RUNTIME_ERROR("Submitted shader file path is invalid!");
@@ -254,7 +254,7 @@ namespace Flint
 			PerformReflection();
 		}
 
-		void VulkanShader::Reload(const boost::container::vector<UI32>& code)
+		void VulkanShader::Reload(const std::vector<UI32>& code)
 		{
 			FLINT_SETUP_PROFILER();
 			Terminate();
@@ -311,15 +311,15 @@ namespace Flint
 			SpvReflectShaderModule sShaderModule = {};
 			UI32 variableCount = 0;
 
-			//boost::container::vector<UI32> shaderCode = mShaderCode;
-			boost::container::vector<UI32> shaderCode = std::move(Helpers::ResolvePadding(mShaderCode));
+			//std::vector<UI32> shaderCode = mShaderCode;
+			std::vector<UI32> shaderCode = std::move(Helpers::ResolvePadding(mShaderCode));
 			Helpers::ValidateReflection(spvReflectCreateShaderModule(shaderCode.size() * sizeof(UI32), shaderCode.data(), &sShaderModule));
 
 			// Resolve shader inputs.
 			{
 				Helpers::ValidateReflection(spvReflectEnumerateInputVariables(&sShaderModule, &variableCount, nullptr));
 
-				boost::container::vector<SpvReflectInterfaceVariable*> pInputs(variableCount);
+				std::vector<SpvReflectInterfaceVariable*> pInputs(variableCount);
 				Helpers::ValidateReflection(spvReflectEnumerateInputVariables(&sShaderModule, &variableCount, pInputs.data()));
 
 				mInputAttributes[0].reserve(pInputs.size());
@@ -354,7 +354,7 @@ namespace Flint
 			{
 				Helpers::ValidateReflection(spvReflectEnumerateOutputVariables(&sShaderModule, &variableCount, nullptr));
 
-				boost::container::vector<SpvReflectInterfaceVariable*> pOutputs(variableCount);
+				std::vector<SpvReflectInterfaceVariable*> pOutputs(variableCount);
 				Helpers::ValidateReflection(spvReflectEnumerateOutputVariables(&sShaderModule, &variableCount, pOutputs.data()));
 
 				for (auto& resource : pOutputs)
@@ -378,7 +378,7 @@ namespace Flint
 			{
 				Helpers::ValidateReflection(spvReflectEnumerateDescriptorBindings(&sShaderModule, &variableCount, nullptr));
 
-				boost::container::vector<SpvReflectDescriptorBinding*> pBindings(variableCount);
+				std::vector<SpvReflectDescriptorBinding*> pBindings(variableCount);
 				Helpers::ValidateReflection(spvReflectEnumerateDescriptorBindings(&sShaderModule, &variableCount, pBindings.data()));
 
 				VkDescriptorSetLayoutBinding vBinding = {};
@@ -405,7 +405,7 @@ namespace Flint
 			{
 				Helpers::ValidateReflection(spvReflectEnumeratePushConstantBlocks(&sShaderModule, &variableCount, nullptr));
 
-				boost::container::vector<SpvReflectBlockVariable*> pPushConstants(variableCount);
+				std::vector<SpvReflectBlockVariable*> pPushConstants(variableCount);
 				Helpers::ValidateReflection(spvReflectEnumeratePushConstantBlocks(&sShaderModule, &variableCount, pPushConstants.data()));
 
 				VkPushConstantRange vPushConstantRange = {};

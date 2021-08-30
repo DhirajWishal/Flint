@@ -18,6 +18,6 @@ namespace Flint
 		void AddProperty(std::unique_ptr<MaterialProperties::Property>&& pProperty) { pProperties.push_back(std::move(pProperty)); }
 
 	private:
-		boost::container::vector<std::unique_ptr<MaterialProperties::Property>> pProperties = {};
+		std::vector<std::unique_ptr<MaterialProperties::Property>> pProperties = {};
 	};
 }

@@ -200,7 +200,7 @@ namespace Flint
 		 * @param extent: The display extent. If set to (0, 0), the window will be opened in full screen mode.
 		 * @param title: The display title.
 		 */
-		Display(const boost::shared_ptr<Instance>& pInstance, const FBox2D& extent, const std::string& title);
+		Display(const std::shared_ptr<Instance>& pInstance, const FBox2D& extent, const std::string& title);
 
 		/**
 		 * Update the display object.
@@ -216,7 +216,7 @@ namespace Flint
 		 * @param count: The count that needs to be checked. Default is 0.
 		 * @return The best buffer count integer.
 		 */
-		virtual UI32 FindBestBufferCount(const boost::shared_ptr<Device>& pDevice, const UI32 count = 0) = 0;
+		virtual UI32 FindBestBufferCount(const std::shared_ptr<Device>& pDevice, const UI32 count = 0) = 0;
 
 		/**
 		 * Get the best swap chain format.
@@ -224,7 +224,7 @@ namespace Flint
 		 * @param pDevice: The device pointer.
 		 * @return The swap chain image format.
 		 */
-		virtual PixelFormat GetBestSwapChainFormat(const boost::shared_ptr<Device>& pDevice) = 0;
+		virtual PixelFormat GetBestSwapChainFormat(const std::shared_ptr<Device>& pDevice) = 0;
 
 		/**
 		 * Terminate the device object.
@@ -250,7 +250,7 @@ namespace Flint
 		 *
 		 * @return The vector of paths.
 		 */
-		const boost::container::vector<boost::filesystem::path> GetDragAndDropValues();
+		const std::vector<std::filesystem::path> GetDragAndDropValues();
 
 		/**
 		 * Get the title of the display.
@@ -332,10 +332,10 @@ namespace Flint
 		const bool IsCursorWithinDisplay() const { return mIsCursorWithinDisplay; }
 
 	protected:
-		boost::container::vector<boost::filesystem::path> mDragAndDropPaths;
+		std::vector<std::filesystem::path> mDragAndDropPaths;
 
 		std::string mTitle = "";
-		boost::shared_ptr<Instance> pInstance = nullptr;
+		std::shared_ptr<Instance> pInstance = nullptr;
 		FBox2D mExtent = {};
 
 		ButtonEvent mKeyEvents[static_cast<UI8>(KeyCode::KEY_CODE_MAX)] = {};

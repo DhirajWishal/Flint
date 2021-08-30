@@ -10,42 +10,42 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanGraphicsPipeline final : public GraphicsPipeline, public boost::shared_ptr<VulkanGraphicsPipeline>
+		class VulkanGraphicsPipeline final : public GraphicsPipeline, public std::shared_ptr<VulkanGraphicsPipeline>
 		{
 		public:
 			VulkanGraphicsPipeline(
-				const boost::shared_ptr<Device>& pDevice,
+				const std::shared_ptr<Device>& pDevice,
 				const std::string& pipelineName,
-				const boost::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget,
-				const boost::shared_ptr<Shader>& pVertexShader,
-				const boost::shared_ptr<Shader>& pTessellationControlShader,
-				const boost::shared_ptr<Shader>& pTessellationEvaluationShader,
-				const boost::shared_ptr<Shader>& pGeometryShader,
-				const boost::shared_ptr<Shader>& pFragmentShader,
+				const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget,
+				const std::shared_ptr<Shader>& pVertexShader,
+				const std::shared_ptr<Shader>& pTessellationControlShader,
+				const std::shared_ptr<Shader>& pTessellationEvaluationShader,
+				const std::shared_ptr<Shader>& pGeometryShader,
+				const std::shared_ptr<Shader>& pFragmentShader,
 				const GraphicsPipelineSpecification& specification);
 
 			VulkanGraphicsPipeline(
-				const boost::shared_ptr<Device>& pDevice,
+				const std::shared_ptr<Device>& pDevice,
 				const std::string& pipelineName,
-				const boost::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget,
-				const boost::shared_ptr<Shader>& pVertexShader,
-				const boost::shared_ptr<Shader>& pTessellationControlShader,
-				const boost::shared_ptr<Shader>& pTessellationEvaluationShader,
-				const boost::shared_ptr<Shader>& pGeometryShader,
-				const boost::shared_ptr<Shader>& pFragmentShader,
+				const std::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget,
+				const std::shared_ptr<Shader>& pVertexShader,
+				const std::shared_ptr<Shader>& pTessellationControlShader,
+				const std::shared_ptr<Shader>& pTessellationEvaluationShader,
+				const std::shared_ptr<Shader>& pGeometryShader,
+				const std::shared_ptr<Shader>& pFragmentShader,
 				const GraphicsPipelineSpecification& specification);
 			~VulkanGraphicsPipeline() { if (!bIsTerminated) Terminate(); }
 
 			virtual void ReloadShaders() override final;
-			virtual void Recreate(const boost::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget) override final;
+			virtual void Recreate(const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget) override final;
 			virtual void Terminate() override final;
 
 			virtual void PrepareResources() override final;
 
 			const VkPipelineLayout GetPipelineLayout() const { return vPipelineLayout; }
 			const VkPipeline GetPipeline() const { return vPipeline; }
-			const VkDescriptorSet GetDescriptorSet(const boost::shared_ptr<ResourceMap>& pResourceMap) const;
-			const VkDescriptorSet* GetDescriptorSetAddress(const boost::shared_ptr<ResourceMap>& pResourceMap) const;
+			const VkDescriptorSet GetDescriptorSet(const std::shared_ptr<ResourceMap>& pResourceMap) const;
+			const VkDescriptorSet* GetDescriptorSetAddress(const std::shared_ptr<ResourceMap>& pResourceMap) const;
 
 		private:
 			void SetupDefaults();
@@ -63,13 +63,13 @@ namespace Flint
 			VkPipelineDepthStencilStateCreateInfo vDepthStencilStateCreateInfo = {};
 			VkPipelineDynamicStateCreateInfo vDynamicStateCreateInfo = {};
 
-			boost::container::vector<VkPipelineColorBlendAttachmentState> vCBASS = {};
-			boost::container::vector<VkPipelineShaderStageCreateInfo> vShaderStageCreateInfo = {};
-			boost::container::vector<VkVertexInputAttributeDescription> vVertexAttributes = {};
-			boost::container::vector<VkVertexInputBindingDescription> vVertexBindings = {};
-			boost::container::vector<VkDynamicState> vDynamicStates = {};
+			std::vector<VkPipelineColorBlendAttachmentState> vCBASS = {};
+			std::vector<VkPipelineShaderStageCreateInfo> vShaderStageCreateInfo = {};
+			std::vector<VkVertexInputAttributeDescription> vVertexAttributes = {};
+			std::vector<VkVertexInputBindingDescription> vVertexBindings = {};
+			std::vector<VkDynamicState> vDynamicStates = {};
 
-			boost::unordered::unordered_map<boost::shared_ptr<ResourceMap>, VkDescriptorSet> vDescriptorSetMap;
+			std::unordered_map<std::shared_ptr<ResourceMap>, VkDescriptorSet> vDescriptorSetMap;
 
 			VkPipelineLayout vPipelineLayout = VK_NULL_HANDLE;
 			VkPipeline vPipeline = VK_NULL_HANDLE;

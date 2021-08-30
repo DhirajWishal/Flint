@@ -10,10 +10,10 @@ SkyBox::SkyBox(glm::vec3 position, SceneState* pSceneState) : GameObject(positio
 	const float scale = 50.0f;
 	mModelMatrix = glm::scale(mModelMatrix, glm::vec3(scale, scale, scale));
 
-	pDynamicStates = boost::make_shared<Flint::DynamicStateContainer>();
+	pDynamicStates = std::make_shared<Flint::DynamicStateContainer>();
 
-	pVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, boost::filesystem::path("Flint\\Shaders\\SkyBox\\skybox.vert.spv"));
-	pFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, boost::filesystem::path("Flint\\Shaders\\SkyBox\\skybox.frag.spv"));
+	pVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("Flint\\Shaders\\SkyBox\\skybox.vert.spv"));
+	pFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("Flint\\Shaders\\SkyBox\\skybox.frag.spv"));
 
 	auto image = LoadSkyboxImages();
 	pTexture = pSceneState->pDevice->CreateImage(Flint::ImageType::CUBEMAP, Flint::ImageUsage::GRAPHICS, image.mExtent, Flint::PixelFormat::R8G8B8A8_SRGB, 6, 1, image.pImageData);

@@ -30,13 +30,11 @@ project "VulkanBackend"
 		"$(SolutionDir)ThirdParty/SPIRV-Reflect",
 		"%{IncludeDir.Vulkan}",
 		"%{IncludeDir.GLFW}",
-		"%{IncludeDir.boost}",
 	}
 
 	libdirs {
 		"%{IncludeLib.GLFW}",
 		"%{IncludeLib.Vulkan}",
-		"%{IncludeLib.boost}",
 	}
 
 	links { 

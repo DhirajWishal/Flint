@@ -20,7 +20,7 @@ int main(int argc, char** argv)
 
 		{
 			ImGUI mImGui(glm::vec3(0.0f), &mState);
-			boost::container::vector<std::unique_ptr<GameObject>> pGameObjects;
+			std::vector<std::unique_ptr<GameObject>> pGameObjects;
 			pGameObjects.push_back(std::make_unique<SkyBox>(glm::vec3(0.0f), &mState));
 			pGameObjects.push_back(std::make_unique<VikingRoom>(glm::vec3(2.0f), &mState));
 

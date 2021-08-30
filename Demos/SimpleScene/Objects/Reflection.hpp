@@ -14,12 +14,12 @@ public:
 	virtual void OnUpdate(UI64 delta) override final;
 
 private:
-	boost::shared_ptr<Flint::Buffer> pCameraBuffer = nullptr;
+	std::shared_ptr<Flint::Buffer> pCameraBuffer = nullptr;
 
-	boost::shared_ptr<Flint::Image> pTexture = nullptr;
-	boost::shared_ptr<Flint::ImageSampler> pTextureSampler = nullptr;
+	std::shared_ptr<Flint::Image> pTexture = nullptr;
+	std::shared_ptr<Flint::ImageSampler> pTextureSampler = nullptr;
 
-	boost::shared_ptr<Flint::DynamicStateContainer> pDynamicStates = nullptr;
+	std::shared_ptr<Flint::DynamicStateContainer> pDynamicStates = nullptr;
 
 	UI64 mVertexOffset = 0, mVertexCount = 0;
 	UI64 mIndexOffset = 0, mIndexCount = 0;
