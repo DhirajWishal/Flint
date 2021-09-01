@@ -12,8 +12,8 @@ namespace Flint
 	 * This defines what to do to the stored data after resizing.
 	 */
 	enum class BufferResizeMode : UI8 {
-		CLEAR,
-		COPY,
+		Clear,
+		Copy,
 	};
 
 	/**
@@ -29,9 +29,9 @@ namespace Flint
 		 * @param pDevice: The device pointer.
 		 * @param type: The buffer type.
 		 * @param size: The size of the buffer.
-		 * @param profile: The memory profile of the buffer. Default is BufferMemoryProfile::AUTOMATIC.
+		 * @param profile: The memory profile of the buffer. Default is BufferMemoryProfile::Automatic.
 		 */
-		Buffer(const std::shared_ptr<Device>& pDevice, const BufferType type, const UI64 size, const BufferMemoryProfile profile = BufferMemoryProfile::AUTOMATIC);
+		Buffer(const std::shared_ptr<Device>& pDevice, const BufferType type, const UI64 size, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic);
 
 		/**
 		 * Resize the buffer.
@@ -106,7 +106,7 @@ namespace Flint
 
 	protected:
 		UI64 mSize = 0;
-		BufferType mType = BufferType::UNDEFINED;
-		BufferMemoryProfile mMemoryProfile = BufferMemoryProfile::AUTOMATIC;
+		BufferType mType = BufferType::Undefined;
+		BufferMemoryProfile mMemoryProfile = BufferMemoryProfile::Automatic;
 	};
 }

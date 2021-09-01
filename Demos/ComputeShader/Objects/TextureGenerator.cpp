@@ -9,12 +9,12 @@ TextureGenerator::TextureGenerator(SceneState* pSceneState)
 	: pSceneState(pSceneState)
 {
 	auto pInstance = Flint::CreateInstance(true);
-	auto pDevice = pInstance->CreateDevice(Flint::DeviceFlags::COMPUTE_COMPATIBLE);
+	auto pDevice = pInstance->CreateDevice(Flint::DeviceFlags::ComputeCompatible);
 
 	//CompileAllShaders(std::filesystem::path(__FILE__).parent_path().parent_path().parent_path().parent_path());
 
-	auto pTexture = pDevice->CreateImage(Flint::ImageType::DIMENSIONS_2, Flint::ImageUsage::STORAGE, Flint::FBox3D(1024, 1024, 1), Flint::PixelFormat::R8G8B8A8_UNORMAL, 1, 1, nullptr);
-	auto pShader = pDevice->CreateShader(Flint::ShaderType::COMPUTE, std::filesystem::path("Flint\\Shaders\\TextureGenerator\\TextureGen.comp.spv"));
+	auto pTexture = pDevice->CreateImage(Flint::ImageType::TwoDimension, Flint::ImageUsage::Storage, Flint::FBox3D(1024, 1024, 1), Flint::PixelFormat::R8G8B8A8_UNORMAL, 1, 1, nullptr);
+	auto pShader = pDevice->CreateShader(Flint::ShaderType::Compute, std::filesystem::path("Flint\\Shaders\\TextureGenerator\\TextureGen.comp.spv"));
 	auto pTextureSampler = pDevice->CreateImageSampler(Flint::ImageSamplerSpecification());
 	auto pComputePipeline = pDevice->CreateComputePipeline("TextGenerator", pShader);
 

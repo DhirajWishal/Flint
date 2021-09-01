@@ -17,42 +17,42 @@ namespace Flint
 				switch (result)
 				{
 				case VK_SUCCESS:										return;
-				case VK_NOT_READY:										FLINT_THROW_BACKEND_ERROR(FLINT_BACKEND_ERROR_DEVICE_NOT_READY);
-				case VK_TIMEOUT:										FLINT_THROW_BACKEND_ERROR(FLINT_BACKEND_ERROR_DEVICE_TIMEOUT);
-				case VK_EVENT_SET:										FLINT_THROW_BACKEND_ERROR(FLINT_BACKEND_ERROR_EVENT_SET);
-				case VK_EVENT_RESET:									FLINT_THROW_BACKEND_ERROR(FLINT_BACKEND_ERROR_EVENT_RESET);
-				case VK_INCOMPLETE:										FLINT_THROW_BACKEND_ERROR(FLINT_BACKEND_ERROR_INCOMPLETE_COMMAND);
-				case VK_ERROR_OUT_OF_HOST_MEMORY:						FLINT_THROW_BACKEND_ERROR(FLINT_BACKEND_ERROR_DEVICE_OUT_OF_HOST_MEMORY);
-				case VK_ERROR_OUT_OF_DEVICE_MEMORY:						FLINT_THROW_BACKEND_ERROR(FLINT_BACKEND_ERROR_DEVICE_OUT_OF_DEVICE_MEMORY);
-				case VK_ERROR_INITIALIZATION_FAILED:					FLINT_THROW_BACKEND_ERROR(FLINT_BACKEND_ERROR_INITIALIZATION_FAILED);
-				case VK_ERROR_DEVICE_LOST:								FLINT_THROW_BACKEND_ERROR(FLINT_BACKEND_ERROR_DEVICE_LOST);
-				case VK_ERROR_MEMORY_MAP_FAILED:						FLINT_THROW_BACKEND_ERROR(FLINT_BACKEND_ERROR_MEMORY_MAPPING_FAILED);
-				case VK_ERROR_LAYER_NOT_PRESENT:						FLINT_THROW_BACKEND_ERROR(FLINT_BACKEND_ERROR_VULKAN_LAYER_NOT_PRESENT);
-				case VK_ERROR_EXTENSION_NOT_PRESENT:					FLINT_THROW_BACKEND_ERROR(FLINT_BACKEND_ERROR_VULKAN_EXTENSION_NOT_PRESENT);
-				case VK_ERROR_FEATURE_NOT_PRESENT:						FLINT_THROW_BACKEND_ERROR(FLINT_BACKEND_ERROR_DEVICE_FEATURE_NOT_PRESENT);
-				case VK_ERROR_INCOMPATIBLE_DRIVER:						FLINT_THROW_BACKEND_ERROR(FLINT_BACKEND_ERROR_INCOMPATIBLE_DRIVER);
-				case VK_ERROR_TOO_MANY_OBJECTS:							FLINT_THROW_BACKEND_ERROR(FLINT_BACKEND_ERROR_TOO_MANY_OBJECTS);
-				case VK_ERROR_FORMAT_NOT_SUPPORTED:						FLINT_THROW_BACKEND_ERROR(FLINT_BACKEND_ERROR_FORMAT_NOT_SUPPORTED);
-				case VK_ERROR_FRAGMENTED_POOL:							FLINT_THROW_BACKEND_ERROR(FLINT_BACKEND_ERROR_FRAGMENTED_POOL);
-				case VK_ERROR_OUT_OF_POOL_MEMORY:						FLINT_THROW_BACKEND_ERROR(FLINT_BACKEND_ERROR_OUT_OF_POOL_MEMORY);
-				case VK_ERROR_INVALID_EXTERNAL_HANDLE:					FLINT_THROW_BACKEND_ERROR(FLINT_BACKEND_ERROR_INVALID_HANDLE);
-				case VK_ERROR_FRAGMENTATION:							FLINT_THROW_BACKEND_ERROR(FLINT_BACKEND_ERROR_INTERNAL_FRAGMENTATION);
-				case VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS:			FLINT_THROW_BACKEND_ERROR(FLINT_BACKEND_ERROR_VULKAN_INVALID_OPAQUE_CAPTURE_ADDRESS);
-				case VK_ERROR_SURFACE_LOST_KHR:							FLINT_THROW_BACKEND_ERROR(FLINT_BACKEND_ERROR_DISPLAY_LOST);
-				case VK_ERROR_NATIVE_WINDOW_IN_USE_KHR:					FLINT_THROW_BACKEND_ERROR(FLINT_BACKEND_ERROR_DISPLAY_IN_USE);
-				case VK_SUBOPTIMAL_KHR:									FLINT_THROW_BACKEND_ERROR(FLINT_BACKEND_ERROR_RENDER_TARGET_SUBOPTIMAL);
-				case VK_ERROR_OUT_OF_DATE_KHR:							FLINT_THROW_BACKEND_ERROR(FLINT_BACKEND_ERROR_RENDER_TARGET_OUT_OF_DATE);
-				case VK_ERROR_INCOMPATIBLE_DISPLAY_KHR:					FLINT_THROW_BACKEND_ERROR(FLINT_BACKEND_ERROR_INCOMPATIBLE_DISPLAY);
-				case VK_ERROR_VALIDATION_FAILED_EXT:					FLINT_THROW_BACKEND_ERROR(FLINT_BACKEND_ERROR_VALIDATION_FAILED);
-				case VK_ERROR_INVALID_SHADER_NV:						FLINT_THROW_BACKEND_ERROR(FLINT_BACKEND_ERROR_INVALID_SHADER);
-				case VK_ERROR_NOT_PERMITTED_EXT:						FLINT_THROW_BACKEND_ERROR(FLINT_BACKEND_ERROR_OPERATION_NOT_PERMITTED);
-				case VK_ERROR_FULL_SCREEN_EXCLUSIVE_MODE_LOST_EXT:		FLINT_THROW_BACKEND_ERROR(FLINT_BACKEND_ERROR_FULL_SCREEN_MODE_LOST);
-				case VK_THREAD_IDLE_KHR:								FLINT_THROW_BACKEND_ERROR(FLINT_BACKEND_ERROR_DEVICE_THREAD_IDLE);
-				case VK_THREAD_DONE_KHR:								FLINT_THROW_BACKEND_ERROR(FLINT_BACKEND_ERROR_DEVICE_THREAD_DONE);
-				case VK_OPERATION_DEFERRED_KHR:							FLINT_THROW_BACKEND_ERROR(FLINT_BACKEND_ERROR_OPERATION_DEFERRED);
-				case VK_OPERATION_NOT_DEFERRED_KHR:						FLINT_THROW_BACKEND_ERROR(FLINT_BACKEND_ERROR_OPERATION_NOT_DEFERRED);
-				case VK_PIPELINE_COMPILE_REQUIRED_EXT:					FLINT_THROW_BACKEND_ERROR(FLINT_BACKEND_ERROR_PIPELINE_COMPILATION_REQUIRED);
-				default:												FLINT_THROW_BACKEND_ERROR(FLINT_BACKEND_ERROR_UNKNOWN);
+				case VK_NOT_READY:										throw backend_error(BackendErrorDeviceNotReady);
+				case VK_TIMEOUT:										throw backend_error(BackendErrorDeviceTimeout);
+				case VK_EVENT_SET:										throw backend_error(BackendErrorEventSet);
+				case VK_EVENT_RESET:									throw backend_error(BackendErrorEventReset);
+				case VK_INCOMPLETE:										throw backend_error(BackendErrorIncompleteCommand);
+				case VK_ERROR_OUT_OF_HOST_MEMORY:						throw backend_error(BackendErrorDeviceOutOfHostMemory);
+				case VK_ERROR_OUT_OF_DEVICE_MEMORY:						throw backend_error(BackendErrorDeviceOutOfDeviceMemory);
+				case VK_ERROR_INITIALIZATION_FAILED:					throw backend_error(BackendErrorInitializationFailed);
+				case VK_ERROR_DEVICE_LOST:								throw backend_error(BackendErrorDeviceLost);
+				case VK_ERROR_MEMORY_MAP_FAILED:						throw backend_error(BackendErrorMemoryMappingFailed);
+				case VK_ERROR_LAYER_NOT_PRESENT:						throw backend_error(BackendErrorVulkanLayerNotPresent);
+				case VK_ERROR_EXTENSION_NOT_PRESENT:					throw backend_error(BackendErrorVulkanExtensionNotPresent);
+				case VK_ERROR_FEATURE_NOT_PRESENT:						throw backend_error(BackendErrorDeviceFeatureNotPresent);
+				case VK_ERROR_INCOMPATIBLE_DRIVER:						throw backend_error(BackendErrorIncompatibleDriver);
+				case VK_ERROR_TOO_MANY_OBJECTS:							throw backend_error(BackendErrorTooManyObjects);
+				case VK_ERROR_FORMAT_NOT_SUPPORTED:						throw backend_error(BackendErrorFormatNotSupported);
+				case VK_ERROR_FRAGMENTED_POOL:							throw backend_error(BackendErrorFragmentedPool);
+				case VK_ERROR_OUT_OF_POOL_MEMORY:						throw backend_error(BackendErrorOutOfPoolMemory);
+				case VK_ERROR_INVALID_EXTERNAL_HANDLE:					throw backend_error(BackendErrorInvalidHandle);
+				case VK_ERROR_FRAGMENTATION:							throw backend_error(BackendErrorInternalFragmentation);
+				case VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS:			throw backend_error(BackendErrorVulkanInvalidOpaqueCaptureAddress);
+				case VK_ERROR_SURFACE_LOST_KHR:							throw backend_error(BackendErrorDisplayLost);
+				case VK_ERROR_NATIVE_WINDOW_IN_USE_KHR:					throw backend_error(BackendErrorDisplayInUse);
+				case VK_SUBOPTIMAL_KHR:									throw backend_error(BackendErrorRenderTargetSuboptimal);
+				case VK_ERROR_OUT_OF_DATE_KHR:							throw backend_error(BackendErrorRenderTrargetOutOfDate);
+				case VK_ERROR_INCOMPATIBLE_DISPLAY_KHR:					throw backend_error(BackendErrorIncompatibleDisplay);
+				case VK_ERROR_VALIDATION_FAILED_EXT:					throw backend_error(BackendErrorValidationFailed);
+				case VK_ERROR_INVALID_SHADER_NV:						throw backend_error(BackendErrorInvalidShader);
+				case VK_ERROR_NOT_PERMITTED_EXT:						throw backend_error(BackendErrorOperationNotPermitted);
+				case VK_ERROR_FULL_SCREEN_EXCLUSIVE_MODE_LOST_EXT:		throw backend_error(BackendErrorFullScreenModeLost);
+				case VK_THREAD_IDLE_KHR:								throw backend_error(BackendErrorDeviceThreadIdle);
+				case VK_THREAD_DONE_KHR:								throw backend_error(BackendErrorDeviceThreadDone);
+				case VK_OPERATION_DEFERRED_KHR:							throw backend_error(BackendErrorOperationDiferred);
+				case VK_OPERATION_NOT_DEFERRED_KHR:						throw backend_error(BackendErrorOperationNotDeferred);
+				case VK_PIPELINE_COMPILE_REQUIRED_EXT:					throw backend_error(BackendErrorPipelineCompilationRequired);
+				default:												throw backend_error(BackendErrorUnknown);
 				}
 			}
 
@@ -123,44 +123,44 @@ namespace Flint
 			{
 				switch (type)
 				{
-				case Flint::ShaderResourceType::SAMPLER:
+				case Flint::ShaderResourceType::Sampler:
 					return VkDescriptorType::VK_DESCRIPTOR_TYPE_SAMPLER;
 
-				case Flint::ShaderResourceType::COMBINED_IMAGE_SAMPLER:
+				case Flint::ShaderResourceType::CombinedImageSampler:
 					return VkDescriptorType::VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
-				case Flint::ShaderResourceType::SAMPLED_IMAGE:
+				case Flint::ShaderResourceType::SampledImage:
 					return VkDescriptorType::VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
 
-				case Flint::ShaderResourceType::STORAGE_IMAGE:
+				case Flint::ShaderResourceType::StorageImage:
 					return VkDescriptorType::VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
 
-				case Flint::ShaderResourceType::UNIFORM_TEXEL_BUFFER:
+				case Flint::ShaderResourceType::UniformTexelBuffer:
 					return VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER;
 
-				case Flint::ShaderResourceType::STORAGE_TEXEL_BUFFER:
+				case Flint::ShaderResourceType::StorageTexelBuffer:
 					return VkDescriptorType::VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER;
 
-				case Flint::ShaderResourceType::UNIFORM_BUFFER:
+				case Flint::ShaderResourceType::UniformBuffer:
 					return VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 
-				case Flint::ShaderResourceType::STORAGE_BUFFER:
+				case Flint::ShaderResourceType::StorageBuffer:
 					return VkDescriptorType::VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 
-				case Flint::ShaderResourceType::UNIFORM_BUFFER_DYNAMIC:
+				case Flint::ShaderResourceType::UniformBufferDynamic:
 					return VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
 
-				case Flint::ShaderResourceType::STORAGE_BUFFER_DYNAMIC:
+				case Flint::ShaderResourceType::StorageBufferDynamic:
 					return VkDescriptorType::VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC;
 
-				case Flint::ShaderResourceType::INPUT_ATTACHMENT:
+				case Flint::ShaderResourceType::InputAttachment:
 					return VkDescriptorType::VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
 
-				case Flint::ShaderResourceType::ACCELERATION_STRUCTURE:
+				case Flint::ShaderResourceType::AccelerationStructure:
 					return VkDescriptorType::VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR;
 
 				default:
-					FLINT_THROW_BACKEND_ERROR("Invalid or undefined shader resource type!");
+					throw backend_error("Invalid or undefined shader resource type!");
 				}
 
 				return VkDescriptorType();
@@ -170,34 +170,34 @@ namespace Flint
 			{
 				switch (type)
 				{
-				case Flint::ShaderType::VERTEX:
+				case Flint::ShaderType::Vertex:
 					return VkShaderStageFlagBits::VK_SHADER_STAGE_VERTEX_BIT;
 
-				case Flint::ShaderType::TESSELLATION_CONTROL:
+				case Flint::ShaderType::TessellationControl:
 					return VkShaderStageFlagBits::VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
 
-				case Flint::ShaderType::TESSELLATION_EVALUATION:
+				case Flint::ShaderType::TessellationEvaluation:
 					return VkShaderStageFlagBits::VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
 
-				case Flint::ShaderType::GEOMETRY:
+				case Flint::ShaderType::Geometry:
 					return VkShaderStageFlagBits::VK_SHADER_STAGE_GEOMETRY_BIT;
 
-				case Flint::ShaderType::FRAGMENT:
+				case Flint::ShaderType::Fragment:
 					return VkShaderStageFlagBits::VK_SHADER_STAGE_FRAGMENT_BIT;
 
-				case Flint::ShaderType::COMPUTE:
+				case Flint::ShaderType::Compute:
 					return VkShaderStageFlagBits::VK_SHADER_STAGE_COMPUTE_BIT;
 
-				case Flint::ShaderType::RAY_GEN:
+				case Flint::ShaderType::RayGen:
 					return VkShaderStageFlagBits::VK_SHADER_STAGE_RAYGEN_BIT_KHR;
 
-				case Flint::ShaderType::ANY_HIT:
+				case Flint::ShaderType::AnyHit:
 					return VkShaderStageFlagBits::VK_SHADER_STAGE_ANY_HIT_BIT_KHR;
 
-				case Flint::ShaderType::CLOSEST_HIT:
+				case Flint::ShaderType::ClosestHit:
 					return VkShaderStageFlagBits::VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
 
-				case Flint::ShaderType::RAY_MISS:
+				case Flint::ShaderType::RayMiss:
 					return VkShaderStageFlagBits::VK_SHADER_STAGE_MISS_BIT_KHR;
 
 				default:
@@ -212,7 +212,7 @@ namespace Flint
 				switch (format)
 				{
 				case VK_FORMAT_UNDEFINED:
-					return PixelFormat::UNDEFINED;
+					return PixelFormat::Undefined;
 
 				case VK_FORMAT_R8_SRGB:
 					return PixelFormat::R8_SRGB;
@@ -281,17 +281,17 @@ namespace Flint
 					return PixelFormat::D32_SFLOAT;
 
 				default:
-					FLINT_THROW_BACKEND_ERROR("Unsupported format!");
+					throw backend_error("Unsupported format!");
 				}
 
-				return PixelFormat::UNDEFINED;
+				return PixelFormat::Undefined;
 			}
 
 			VkFormat GetVulkanFormat(const PixelFormat format)
 			{
 				switch (format)
 				{
-				case Flint::PixelFormat::UNDEFINED:
+				case Flint::PixelFormat::Undefined:
 					return VkFormat::VK_FORMAT_UNDEFINED;
 
 				case Flint::PixelFormat::R8_SRGB:
@@ -373,7 +373,7 @@ namespace Flint
 					return VkFormat::VK_FORMAT_D32_SFLOAT_S8_UINT;
 
 				default:
-					FLINT_THROW_BACKEND_ERROR("Invalid pixel format!");
+					throw backend_error("Invalid pixel format!");
 				}
 
 				return VkFormat::VK_FORMAT_UNDEFINED;
@@ -435,29 +435,29 @@ namespace Flint
 			{
 				switch (count)
 				{
-				case Flint::MultiSampleCount::BITS_1:
+				case Flint::MultiSampleCount::One:
 					return VkSampleCountFlagBits::VK_SAMPLE_COUNT_1_BIT;
 
-				case Flint::MultiSampleCount::BITS_2:
+				case Flint::MultiSampleCount::Two:
 					return VkSampleCountFlagBits::VK_SAMPLE_COUNT_2_BIT;
 
-				case Flint::MultiSampleCount::BITS_4:
+				case Flint::MultiSampleCount::Four:
 					return VkSampleCountFlagBits::VK_SAMPLE_COUNT_4_BIT;
 
-				case Flint::MultiSampleCount::BITS_8:
+				case Flint::MultiSampleCount::Eight:
 					return VkSampleCountFlagBits::VK_SAMPLE_COUNT_8_BIT;
 
-				case Flint::MultiSampleCount::BITS_16:
+				case Flint::MultiSampleCount::Sixteen:
 					return VkSampleCountFlagBits::VK_SAMPLE_COUNT_16_BIT;
 
-				case Flint::MultiSampleCount::BITS_32:
+				case Flint::MultiSampleCount::ThirtyTwo:
 					return VkSampleCountFlagBits::VK_SAMPLE_COUNT_32_BIT;
 
-				case Flint::MultiSampleCount::BITS_64:
+				case Flint::MultiSampleCount::SixtyFour:
 					return VkSampleCountFlagBits::VK_SAMPLE_COUNT_64_BIT;
 
 				default:
-					FLINT_THROW_BACKEND_ERROR("Invalid sample count!");
+					throw backend_error("Invalid sample count!");
 				}
 
 				return VkSampleCountFlagBits::VK_SAMPLE_COUNT_FLAG_BITS_MAX_ENUM;

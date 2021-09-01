@@ -4,8 +4,8 @@
 #pragma once
 
 #include <chrono>
-#include <filesystem>
 #include <fstream>
+#include <filesystem>
 #include <mutex>
 #include <memory>
 #include <string>
@@ -26,12 +26,12 @@ namespace Flint
 		friend ProfileLogger;
 
 	public:
-		Profiler(const char* pFunctionSignature);
+		Profiler(std::string_view functionSignature);
 		~Profiler();
 
 	private:
 #ifndef FLINT_RELEASE
-		const char* pFunctionSignature = nullptr;
+		std::string_view mFunctionSignature = nullptr;
 		std::chrono::time_point<std::chrono::high_resolution_clock> mStart = {};
 		std::chrono::time_point<std::chrono::high_resolution_clock> mEnd = {};
 

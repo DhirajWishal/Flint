@@ -73,27 +73,27 @@ void TreeScene::OnUpdate(UI64 delta)
 	}
 
 	// Rotate x
-	if (pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_X).IsPressed() || pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_X).IsOnRepeat())
+	if (pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KeyX).IsPressed() || pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KeyX).IsOnRepeat())
 	{
-		if ((pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_X).GetSpecialCharacter() & Flint::SpecialCharacter::SHIFT) == Flint::SpecialCharacter::SHIFT)
+		if ((pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KeyX).GetSpecialCharacter() & Flint::SpecialCharacter::Shift) == Flint::SpecialCharacter::Shift)
 			mModelMatrix *= glm::rotate(glm::mat4(1.0f), mRotationBias, glm::vec3(1.0f, 0.0f, 0.0f));
 		else
 			mModelMatrix *= glm::rotate(glm::mat4(1.0f), -mRotationBias, glm::vec3(1.0f, 0.0f, 0.0f));
 	}
 
 	// Rotate y
-	if (pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Y).IsPressed() || pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Y).IsOnRepeat())
+	if (pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KeyY).IsPressed() || pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KeyY).IsOnRepeat())
 	{
-		if ((pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Y).GetSpecialCharacter() & Flint::SpecialCharacter::SHIFT) == Flint::SpecialCharacter::SHIFT)
+		if ((pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KeyY).GetSpecialCharacter() & Flint::SpecialCharacter::Shift) == Flint::SpecialCharacter::Shift)
 			mModelMatrix *= glm::rotate(glm::mat4(1.0f), mRotationBias, glm::vec3(0.0f, 1.0f, 0.0f));
 		else
 			mModelMatrix *= glm::rotate(glm::mat4(1.0f), -mRotationBias, glm::vec3(0.0f, 1.0f, 0.0f));
 	}
 
 	// Rotate z
-	if (pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Z).IsPressed() || pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Z).IsOnRepeat())
+	if (pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KeyZ).IsPressed() || pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KeyZ).IsOnRepeat())
 	{
-		if ((pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Z).GetSpecialCharacter() & Flint::SpecialCharacter::SHIFT) == Flint::SpecialCharacter::SHIFT)
+		if ((pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KeyZ).GetSpecialCharacter() & Flint::SpecialCharacter::Shift) == Flint::SpecialCharacter::Shift)
 			mModelMatrix *= glm::rotate(glm::mat4(1.0f), mRotationBias, glm::vec3(0.0f, 0.0f, 1.0f));
 		else
 			mModelMatrix *= glm::rotate(glm::mat4(1.0f), -mRotationBias, glm::vec3(0.0f, 0.0f, 1.0f));
@@ -118,7 +118,7 @@ void TreeScene::LoadTreeImages()
 	for (UI8 i = 0; i < ImageCount; i++)
 	{
 		auto image = LoadImage(paths[i]);
-		pTextures[i] = pSceneState->pDevice->CreateImage(Flint::ImageType::DIMENSIONS_2, Flint::ImageUsage::GRAPHICS, image.mExtent, Flint::PixelFormat::R8G8B8A8_SRGB, 1, 1, image.pImageData);
+		pTextures[i] = pSceneState->pDevice->CreateImage(Flint::ImageType::TwoDimension, Flint::ImageUsage::Graphics, image.mExtent, Flint::PixelFormat::R8G8B8A8_SRGB, 1, 1, image.pImageData);
 		delete[] image.pImageData;
 	}
 }

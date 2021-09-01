@@ -5,7 +5,7 @@
 
 project "FlintEditor"
 	kind "ConsoleApp"
-	cppdialect "C++17"
+	cppdialect "C++20"
 	language "C++"
 	systemversion "latest"
 	staticruntime "on"
@@ -16,9 +16,9 @@ project "FlintEditor"
 	defines { "FLINT_SOLUTION_DIR=$(SolutionDir)" }
 
 	postbuildcommands {
-		"{COPY} \"$(SolutionDir)ThirdParty/glfw/src/Release/glfw3.dll\" \"%{cfg.targetdir}\"",
-		"{COPY} \"$(SolutionDir)ThirdParty/Runtime/vulkan-1.dll\" \"%{cfg.targetdir}\"",
-		"{COPY} \"$(SolutionDir)ThirdParty/Assimp/bin/Release/assimp-vc142-mt.dll\" \"%{cfg.targetdir}\"",
+		"{Copy} \"$(SolutionDir)ThirdParty/glfw/src/Release/glfw3.dll\" \"%{cfg.targetdir}\"",
+		"{Copy} \"$(SolutionDir)ThirdParty/Runtime/vulkan-1.dll\" \"%{cfg.targetdir}\"",
+		"{Copy} \"$(SolutionDir)ThirdParty/Assimp/bin/Release/assimp-vc142-mt.dll\" \"%{cfg.targetdir}\"",
 	}
 
 	files {

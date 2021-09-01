@@ -21,10 +21,10 @@ namespace Flint
 				const auto resources = pShader->GetShaderResources();
 				for (const auto resource : resources)
 				{
-					if (resource.second.mType == ShaderResourceType::SAMPLER ||
-						resource.second.mType == ShaderResourceType::SAMPLED_IMAGE ||
-						resource.second.mType == ShaderResourceType::STORAGE_IMAGE ||
-						resource.second.mType == ShaderResourceType::COMBINED_IMAGE_SAMPLER)
+					if (resource.second.mType == ShaderResourceType::Sampler ||
+						resource.second.mType == ShaderResourceType::SampledImage ||
+						resource.second.mType == ShaderResourceType::StorageImage ||
+						resource.second.mType == ShaderResourceType::CombinedImageSampler)
 						INSERT_INTO_VECTOR(images, resource.first);
 					else
 						INSERT_INTO_VECTOR(buffers, resource.first);
@@ -55,13 +55,13 @@ namespace Flint
 		mSpecification(specification)
 	{
 		if (!pScreenBoundRenderTarget)
-			FLINT_THROW_INVALID_ARGUMENT("Render target pointer should not be null!");
+			throw std::invalid_argument("Render target pointer should not be null!");
 
 		if (pVertexShader == nullptr)
-			FLINT_THROW_INVALID_ARGUMENT("Vertex shader pointer should not be null!");
+			throw std::invalid_argument("Vertex shader pointer should not be null!");
 
 		if (pFragmentShader == nullptr)
-			FLINT_THROW_INVALID_ARGUMENT("Fragment shader pointer should not be null!");
+			throw std::invalid_argument("Fragment shader pointer should not be null!");
 	}
 
 	GraphicsPipeline::GraphicsPipeline(
@@ -84,10 +84,10 @@ namespace Flint
 		mSpecification(specification)
 	{
 		if (!pOffScreenRenderTarget)
-			FLINT_THROW_INVALID_ARGUMENT("Render target pointer should not be null!");
+			throw std::invalid_argument("Render target pointer should not be null!");
 
 		if (pVertexShader == nullptr)
-			FLINT_THROW_INVALID_ARGUMENT("Vertex shader pointer should not be null!");
+			throw std::invalid_argument("Vertex shader pointer should not be null!");
 	}
 
 	std::shared_ptr<ResourceMap> GraphicsPipeline::CreateResourceMap() const

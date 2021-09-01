@@ -25,11 +25,11 @@ namespace Flint
 				if (itr->queueCount > 0)
 				{
 					// Set graphics family.
-					if (itr->queueFlags & VK_QUEUE_GRAPHICS_BIT && (flags & DeviceFlags::GRAPHICS_COMPATIBLE) == DeviceFlags::GRAPHICS_COMPATIBLE)
+					if (itr->queueFlags & VK_QUEUE_GRAPHICS_BIT && (flags & DeviceFlags::GraphicsCompatible) == DeviceFlags::GraphicsCompatible)
 						mGraphicsFamily = i;
 
 					// Set compute family.
-					if (itr->queueFlags & VK_QUEUE_COMPUTE_BIT && (flags & DeviceFlags::COMPUTE_COMPATIBLE) == DeviceFlags::COMPUTE_COMPATIBLE)
+					if (itr->queueFlags & VK_QUEUE_COMPUTE_BIT && (flags & DeviceFlags::ComputeCompatible) == DeviceFlags::ComputeCompatible)
 						mComputeFamily = i;
 
 					// Set transfer family.

@@ -9,16 +9,16 @@ namespace Flint
 		: DeviceBoundObject(pDevice), mBufferCount(bufferCount)
 	{
 		if (bufferCount == 0)
-			FLINT_THROW_INVALID_ARGUMENT("Command buffer count should not be 0!");
+			throw std::invalid_argument("Command buffer count should not be 0!");
 	}
 
 	CommandBufferAllocator::CommandBufferAllocator(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<CommandBufferAllocator>& pParent, const UI32 bufferCount)
 		: DeviceBoundObject(pDevice), pParentAllocator(pParent), mBufferCount(bufferCount)
 	{
 		if (!pParentAllocator)
-			FLINT_THROW_INVALID_ARGUMENT("The parent command buffer allocator pointer should not be null!");
+			throw std::invalid_argument("The parent command buffer allocator pointer should not be null!");
 
 		if (bufferCount == 0)
-			FLINT_THROW_INVALID_ARGUMENT("Command buffer count should not be 0!");
+			throw std::invalid_argument("Command buffer count should not be 0!");
 	}
 }

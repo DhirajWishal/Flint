@@ -22,7 +22,7 @@ namespace Flint
 				const UI8 layers,
 				const UI32 mipLevels,
 				const void* pImageData,
-				const MultiSampleCount sampleCount = MultiSampleCount::BITS_1);
+				const MultiSampleCount sampleCount = MultiSampleCount::One);
 			~VulkanImage() { if (!bIsTerminated) Terminate(); }
 
 			virtual std::shared_ptr<Buffer> CopyToBuffer() override final;

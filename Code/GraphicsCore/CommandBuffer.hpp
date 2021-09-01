@@ -5,6 +5,7 @@
 
 #include "DeviceBoundObject.hpp"
 #include "RenderTarget.hpp"
+#include "WireFrame.hpp"
 
 namespace Flint
 {
@@ -18,6 +19,16 @@ namespace Flint
 	class CommandBufferAllocator;
 
 	struct DynamicStateContainer;
+
+	/**
+	 * Draw call mode enum.
+	 * Vertex drawing will draw individual vertexes and would cost more.
+	 * Indexed drawing will use the index buffer to draw and is generally more efficient.
+	 */
+	enum class DrawCallMode : UI8 {
+		Vertex,
+		Indexed
+	};
 
 	/**
 	 * Flint command buffer object.
@@ -143,13 +154,11 @@ namespace Flint
 
 		/**
 		 * Issue a draw call to the command buffer.
-		 *
-		 * @param vertexOffset: The vertex offset of the vertex buffer to find the first vertex.
-		 * @param vertexCount: The number of vertexes to draw.
-		 * @param indexOffset: The index offset of the index buffer to find the first index.
-		 * @param indexCount: The number of indexes to draw.
+		 * 
+		 * @param wireFrame: The wire frame to draw.
+		 * @param mode: The draw call mode. Default is Indexed.
 		 */
-		virtual void IssueDrawCall(UI64 vertexOffset, UI64 vertexCount, UI64 indexOffset, UI64 indexCount) = 0;
+		virtual void IssueDrawCall(const WireFrame& wireFrame, const DrawCallMode mode = DrawCallMode::Indexed) = 0;
 
 		/**
 		 * Issue the compute call to the command buffer.

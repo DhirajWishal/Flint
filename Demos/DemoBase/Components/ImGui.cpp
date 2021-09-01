@@ -25,8 +25,8 @@ ImGUI::ImGUI(glm::vec3 position, SceneState* pSceneState)
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
 
-	pVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("Flint\\Shaders\\ImGui\\UI.vert.spv"));
-	pFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("Flint\\Shaders\\ImGui\\UI.frag.spv"));
+	pVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::Vertex, std::filesystem::path("Flint\\Shaders\\ImGui\\UI.vert.spv"));
+	pFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::Fragment, std::filesystem::path("Flint\\Shaders\\ImGui\\UI.frag.spv"));
 
 	PrepareGeometryStore();
 	PreparePipeline();
@@ -81,7 +81,7 @@ void ImGUI::OnUpdate(UI64 delta)
 					Flint::FBox2D(static_cast<UI32>(pCommand.ClipRect.z - pCommand.ClipRect.x), static_cast<UI32>(pCommand.ClipRect.w - pCommand.ClipRect.y)),
 					Flint::FBox2D(std::max(static_cast<I32>(pCommand.ClipRect.x), 0), std::max(static_cast<I32>(pCommand.ClipRect.y), 0)));
 
-				pDynamicStates->SetConstantData(Flint::ShaderType::VERTEX, &pushConstants, sizeof(PushConstants));
+				pDynamicStates->SetConstantData(Flint::ShaderType::Vertex, &pushConstants, sizeof(PushConstants));
 
 				pPipeline->AddDrawData(pResourceMap, pDynamicStates, vertexOffset, 0, indexOffset, pCommand.ElemCount);
 
@@ -97,28 +97,28 @@ void ImGUI::OnUpdate(UI64 delta)
 		for (auto pDynamicState : pDynamicStateContainers)
 		{
 			pDynamicState->SetViewPort(Flint::FExtent2D<float>(io.DisplaySize.x, io.DisplaySize.y), Flint::FExtent2D<float>(0.0f, 1.0f), Flint::FExtent2D<float>());
-			pDynamicState->SetConstantData(Flint::ShaderType::VERTEX, &pushConstants, sizeof(PushConstants));
+			pDynamicState->SetConstantData(Flint::ShaderType::Vertex, &pushConstants, sizeof(PushConstants));
 		}
 	}
 }
 
 void ImGUI::PrepareGeometryStore()
 {
-	pSceneState->pGeometryStores["ImGUI"] = pSceneState->pDevice->CreateGeometryStore(pVertexShader->GetInputAttributes(), sizeof(UI16), Flint::BufferMemoryProfile::TRANSFER_FRIENDLY);
+	pSceneState->pGeometryStores["ImGUI"] = pSceneState->pDevice->CreateGeometryStore(pVertexShader->GetInputAttributes(), sizeof(UI16), Flint::BufferMemoryProfile::TransferFriendly);
 }
 
 void ImGUI::PreparePipeline()
 {
 	Flint::GraphicsPipelineSpecification specification = {};
 	specification.mRasterizationSamples = pSceneState->pDevice->GetSupportedMultiSampleCount();
-	specification.mDynamicStateFlags = Flint::DynamicStateFlags::VIEWPORT | Flint::DynamicStateFlags::SCISSOR;
-	specification.mCullMode = Flint::CullMode::NONE;
+	specification.mDynamicStateFlags = Flint::DynamicStateFlags::ViewPort | Flint::DynamicStateFlags::Scissor;
+	specification.mCullMode = Flint::CullMode::None;
 	specification.mColorBlendAttachments[0].mEnableBlend = true;
-	specification.mColorBlendAttachments[0].mSrcBlendFactor = Flint::ColorBlendFactor::SRC_ALPHA;
-	specification.mColorBlendAttachments[0].mDstBlendFactor = Flint::ColorBlendFactor::ONE_MINUS_SRC_ALPHA;
-	specification.mColorBlendAttachments[0].mSrcAlphaBlendFactor = Flint::ColorBlendFactor::ONE_MINUS_SRC_ALPHA;
-	specification.mColorBlendAttachments[0].mDstAlphaBlendFactor = Flint::ColorBlendFactor::ZERO;
-	specification.mDepthCompareLogic = Flint::DepthCompareLogic::LESS_OR_EQUAL;
+	specification.mColorBlendAttachments[0].mSrcBlendFactor = Flint::ColorBlendFactor::SourceAlpha;
+	specification.mColorBlendAttachments[0].mDstBlendFactor = Flint::ColorBlendFactor::OneMinusSourceAlpha;
+	specification.mColorBlendAttachments[0].mSrcAlphaBlendFactor = Flint::ColorBlendFactor::OneMinusSourceAlpha;
+	specification.mColorBlendAttachments[0].mDstAlphaBlendFactor = Flint::ColorBlendFactor::Zero;
+	specification.mDepthCompareLogic = Flint::DepthCompareLogic::LessOrEqual;
 
 	specification.mColorBlendConstants[0] = 0.0f;
 	specification.mColorBlendConstants[1] = 0.0f;
@@ -141,13 +141,13 @@ void ImGUI::PrepareImage()
 	int width = 0, height = 0, bitsPerPixel = 0;
 
 	imGuiIO.Fonts->GetTexDataAsRGBA32(&pFontImage, &width, &height, &bitsPerPixel);
-	pTextImage = pSceneState->pDevice->CreateImage(Flint::ImageType::DIMENSIONS_2, Flint::ImageUsage::GRAPHICS, Flint::FBox3D(width, height, 1), Flint::PixelFormat::R8G8B8A8_SRGB, 1, 1, pFontImage);
+	pTextImage = pSceneState->pDevice->CreateImage(Flint::ImageType::TwoDimension, Flint::ImageUsage::Graphics, Flint::FBox3D(width, height, 1), Flint::PixelFormat::R8G8B8A8_SRGB, 1, 1, pFontImage);
 
 	Flint::ImageSamplerSpecification specification = {};
-	specification.mBorderColor = Flint::BorderColor::FLOAT_OPAQUE_WHITE;
-	specification.mAddressModeU = Flint::AddressMode::CLAMP_TO_EDGE;
-	specification.mAddressModeV = Flint::AddressMode::CLAMP_TO_EDGE;
-	specification.mAddressModeW = Flint::AddressMode::CLAMP_TO_EDGE;
+	specification.mBorderColor = Flint::BorderColor::OpaqueWhiteFLOAT;
+	specification.mAddressModeU = Flint::AddressMode::ClampToEdge;
+	specification.mAddressModeV = Flint::AddressMode::ClampToEdge;
+	specification.mAddressModeW = Flint::AddressMode::ClampToEdge;
 
 	pTextImageSampler = pSceneState->pDevice->CreateImageSampler(specification);
 
@@ -173,7 +173,7 @@ void ImGUI::UpdateBuffers()
 
 	if (pGeometryStore->GetVertexCount() != pDrawData->TotalVtxCount)
 	{
-		pVertexBuffer = pSceneState->pDevice->CreateBuffer(Flint::BufferType::STAGING, vertexSize);
+		pVertexBuffer = pSceneState->pDevice->CreateBuffer(Flint::BufferType::Staging, vertexSize);
 		pVertexData = static_cast<ImDrawVert*>(pVertexBuffer->MapMemory(vertexSize));
 	}
 	else
@@ -181,7 +181,7 @@ void ImGUI::UpdateBuffers()
 
 	if (pGeometryStore->GetIndexCount() < pDrawData->TotalIdxCount)
 	{
-		pIndexBuffer = pSceneState->pDevice->CreateBuffer(Flint::BufferType::STAGING, indexSize);
+		pIndexBuffer = pSceneState->pDevice->CreateBuffer(Flint::BufferType::Staging, indexSize);
 		pIndexData = static_cast<ImDrawIdx*>(pIndexBuffer->MapMemory(indexSize));
 	}
 	else

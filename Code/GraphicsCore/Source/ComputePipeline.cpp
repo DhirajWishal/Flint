@@ -9,7 +9,7 @@ namespace Flint
 		: Pipeline(pDevice, pipelineName), pShader(pComputeShader)
 	{
 		if (!pShader)
-			FLINT_THROW_INVALID_ARGUMENT("Compute shader pointers should not be null!");
+			throw std::invalid_argument("Compute shader pointers should not be null!");
 	}
 
 	const UI64 ComputePipeline::AddInstance(const std::shared_ptr<ResourceMap>& pResourceMap, const std::shared_ptr<DynamicStateContainer>& pDynamicStates, const FBox3D& computeGroups)
@@ -23,7 +23,7 @@ namespace Flint
 	void ComputePipeline::RemoveInstance(const UI64 ID)
 	{
 		if (mComputeInstances.find(ID) == mComputeInstances.end())
-			FLINT_THROW_INVALID_ARGUMENT("The provided ID is not present within the compute pipeline!");
+			throw std::invalid_argument("The provided ID is not present within the compute pipeline!");
 
 		bShouldPrepareResources = true;
 		mComputeInstances.erase(ID);
@@ -37,10 +37,10 @@ namespace Flint
 		const auto resources = pShader->GetShaderResources();
 		for (const auto resource : resources)
 		{
-			if (resource.second.mType == ShaderResourceType::SAMPLER ||
-				resource.second.mType == ShaderResourceType::SAMPLED_IMAGE ||
-				resource.second.mType == ShaderResourceType::STORAGE_IMAGE ||
-				resource.second.mType == ShaderResourceType::COMBINED_IMAGE_SAMPLER)
+			if (resource.second.mType == ShaderResourceType::Sampler ||
+				resource.second.mType == ShaderResourceType::SampledImage ||
+				resource.second.mType == ShaderResourceType::StorageImage ||
+				resource.second.mType == ShaderResourceType::CombinedImageSampler)
 				INSERT_INTO_VECTOR(images, resource.first);
 			else
 				INSERT_INTO_VECTOR(buffers, resource.first);

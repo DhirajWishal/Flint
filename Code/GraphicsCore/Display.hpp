@@ -13,88 +13,88 @@ namespace Flint
 	 * Event action enum.
 	 */
 	enum class EventAction : UI8 {
-		RELEASED,
-		PRESSED,
-		ON_REPEAT
+		Released,
+		Pressed,
+		OnRepeat
 	};
 
 	/**
 	 * Key code enum.
 	 */
 	enum class KeyCode : UI8 {
-		UNKNOWN,
+		Unknown,
 
-		SPACE,
-		APOSTROPHE,
+		Space,
+		Apostrophe,
 
-		COMMA, MINUS, PERIOD, SLASH,
+		Comma, Minus, Preiod, Slash,
 
-		KEY_0, KEY_1, KEY_2, KEY_3, KEY_4,
-		KEY_5, KEY_6, KEY_7, KEY_8, KEY_9,
+		KeyZero, KeyOne, KeyTwo, KeyThree, KeyFour,
+		KeyFive, KeySix, KeySeven, KeyEight, KeyNine,
 
-		SEMICOLON,
-		EQUAL,
+		Semicolon,
+		Equal,
 
-		KEY_A, KEY_B, KEY_C, KEY_D, KEY_E, KEY_F, KEY_G, KEY_H, KEY_I, KEY_J, KEY_K, KEY_L,
-		KEY_M, KEY_N, KEY_O, KEY_P, KEY_Q, KEY_R, KEY_S, KEY_T, KEY_U, KEY_V, KEY_W, KEY_X, KEY_Y, KEY_Z,
+		KeyA, KeyB, KeyC, KeyD, KeyE, KeyF, KeyG, KeyH, KeyI, KeyJ, KeyK, KeyL, KeyM, 
+		KeyN, KeyO, KeyP, KeyQ, KeyR, KeyS, KeyT, KeyU, KeyV, KeyW, KeyX, KeyY, KeyZ,
 
-		LEFT_BRACKET, RIGHT_BRACKET,
+		LeftBracket, RightBracket,
 
-		BACKSLASH,
-		GRAVE_ACCENT,
-		WORLD_1, WORLD_2,
+		Backslash,
+		GraveAccent,
+		WordOne, WordTwo,
 
-		ESCAPE,
-		ENTER,
-		TAB,
-		BACKSPACE,
-		INSERT,
-		DELETE,
-		RIGHT,
-		LEFT,
-		DOWN,
-		UP,
-		PAGE_UP,
-		PAGE_DOWN,
-		HOME,
-		END,
-		CAPS_LOCK,
-		SCROLL_LOCK,
-		NUM_LOCK,
-		PRINT_SCREEN,
-		PAUSE,
+		Escape,
+		Enter,
+		Tab,
+		Backspace,
+		Insert,
+		Delete,
+		Right,
+		Left,
+		Down,
+		Up,
+		PageUp,
+		PageDowm,
+		Home,
+		End,
+		CapsLock,
+		ScrollLock,
+		NumLock,
+		PrintScreen,
+		Pause,
 
 		F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, F13,
 		F14, F15, F16, F17, F18, F19, F20, F21, F22, F23, F24, F25,
 
-		KP_0, KP_1, KP_2, KP_3, KP_4,
-		KP_5, KP_6, KP_7, KP_8, KP_9,
+		KeyPadZero, KeyPadOne, KeyPadTwo, KeyPadThree, KeyPadFour,
+		KeyPadFive, KeyPadSix, KeyPadSeven, KeyPadEight, KeyPadNine,
 
-		KP_DECIMAL,
-		KP_DIVIDE,
-		KP_MULTIPLY,
-		KP_SUBTRACT,
-		KP_ADD,
-		KP_EQUAL,
-		KP_ENTER,
+		KeyPadDecimal,
+		KeyPadDivide,
+		KeyPadMultiply,
+		KeyPadSubtract,
+		KeyPadAdd,
+		KeyPadEqual,
+		KeyPadEnter,
 
-		LEFT_SHIFT, LEFT_CONTROL, LEFT_ALT, LEFT_SUPER,
-		RIGHT_SHIFT, RIGHT_CONTROL, RIGHT_ALT, RIGHT_SUPER,
-		MENU,
+		LeftShift, LeftControl, LeftAlt, LeftSuper,
+		RightShift, RightControl, RightAlt, RightSuper,
+		Menu,
 
-		KEY_CODE_MAX
+		KeyCodeMax
 	};
 
 	/**
 	 * Special characters enum.
 	 */
 	enum class SpecialCharacter : UI8 {
-		SHIFT = BIT_SHIFT(0),
-		CONTROL = BIT_SHIFT(1),
-		ALT = BIT_SHIFT(2),
-		SUPER = BIT_SHIFT(3),
-		CAPS_LOCK = BIT_SHIFT(4),
-		NUM_LOCK = BIT_SHIFT(5)
+		Shift = BIT_SHIFT(0),
+		Control = BIT_SHIFT(1),
+		Alt = BIT_SHIFT(2),
+		Super = BIT_SHIFT(3),
+		CapsLock = BIT_SHIFT(4),
+		NumLock = BIT_SHIFT(5)
 	};
 
 	constexpr SpecialCharacter operator|(const SpecialCharacter& lhs, const SpecialCharacter& rhs) { return SpecialCharacter(static_cast<UI8>(lhs) | static_cast<UI8>(rhs)); }
@@ -104,13 +104,13 @@ namespace Flint
 	 * Mouse button enum.
 	 */
 	enum class MouseButton : UI8 {
-		BUTTON_1, BUTTON_2, BUTTON_3, BUTTON_4,
-		BUTTON_5, BUTTON_6, BUTTON_7, BUTTON_8,
+		ButtonOne, ButtonTwo, ButtonThree, ButtonFour,
+		ButtonFive, ButtonSix, ButtonSeven, ButtonEight,
 
-		LAST, LEFT,
-		RIGHT, MIDDLE,
+		Last, Left,
+		Right, Middle,
 
-		MOUSE_BUTTON_MAX
+		MouseButtonMax
 	};
 
 	/**
@@ -143,7 +143,7 @@ namespace Flint
 		/**
 		 * Reset the event back to its defaults.
 		 */
-		void Reset() { mAction = EventAction::RELEASED, mSpecialCharacter = SpecialCharacter(0); }
+		void Reset() { mAction = EventAction::Released, mSpecialCharacter = SpecialCharacter(0); }
 
 		/**
 		 * Get the event action.
@@ -164,23 +164,23 @@ namespace Flint
 		 *
 		 * @return Boolean value.
 		 */
-		const bool IsReleased() const { return mAction == EventAction::RELEASED; }
+		const bool IsReleased() const { return mAction == EventAction::Released; }
 
 		/**
 		 * Check if the event is pressed.
 		 *
 		 * @return Boolean value.
 		 */
-		const bool IsPressed() const { return mAction == EventAction::PRESSED; }
+		const bool IsPressed() const { return mAction == EventAction::Pressed; }
 
 		/**
 		 * Check if the event is on repeat.
 		 *
 		 * @return Boolean value.
 		 */
-		const bool IsOnRepeat() const { return mAction == EventAction::ON_REPEAT; }
+		const bool IsOnRepeat() const { return mAction == EventAction::OnRepeat; }
 
-		EventAction mAction = EventAction::RELEASED;
+		EventAction mAction = EventAction::Released;
 		SpecialCharacter mSpecialCharacter = SpecialCharacter(0);
 	};
 
@@ -338,8 +338,8 @@ namespace Flint
 		std::shared_ptr<Instance> pInstance = nullptr;
 		FBox2D mExtent = {};
 
-		ButtonEvent mKeyEvents[static_cast<UI8>(KeyCode::KEY_CODE_MAX)] = {};
-		ButtonEvent mMouseButtonEvents[static_cast<UI8>(MouseButton::MOUSE_BUTTON_MAX)] = {};
+		ButtonEvent mKeyEvents[static_cast<UI8>(KeyCode::KeyCodeMax)] = {};
+		ButtonEvent mMouseButtonEvents[static_cast<UI8>(MouseButton::MouseButtonMax)] = {};
 
 		float mMousePositionX = 0.0f;
 		float mMousePositionY = 0.0f;

@@ -16,34 +16,34 @@ namespace Flint
 		{
 			switch (type)
 			{
-			case Flint::ShaderType::VERTEX:
+			case Flint::ShaderType::Vertex:
 				return shaderc_shader_kind::shaderc_glsl_vertex_shader;
 
-			case Flint::ShaderType::TESSELLATION_CONTROL:
+			case Flint::ShaderType::TessellationControl:
 				return shaderc_shader_kind::shaderc_glsl_tess_control_shader;
 
-			case Flint::ShaderType::TESSELLATION_EVALUATION:
+			case Flint::ShaderType::TessellationEvaluation:
 				return shaderc_shader_kind::shaderc_glsl_tess_evaluation_shader;
 
-			case Flint::ShaderType::GEOMETRY:
+			case Flint::ShaderType::Geometry:
 				return shaderc_shader_kind::shaderc_glsl_geometry_shader;
 
-			case Flint::ShaderType::FRAGMENT:
+			case Flint::ShaderType::Fragment:
 				return shaderc_shader_kind::shaderc_glsl_fragment_shader;
 
-			case Flint::ShaderType::COMPUTE:
+			case Flint::ShaderType::Compute:
 				return shaderc_shader_kind::shaderc_glsl_compute_shader;
 
-			case Flint::ShaderType::RAY_GEN:
+			case Flint::ShaderType::RayGen:
 				return shaderc_shader_kind::shaderc_glsl_raygen_shader;
 
-			case Flint::ShaderType::ANY_HIT:
+			case Flint::ShaderType::AnyHit:
 				return shaderc_shader_kind::shaderc_glsl_anyhit_shader;
 
-			case Flint::ShaderType::CLOSEST_HIT:
+			case Flint::ShaderType::ClosestHit:
 				return shaderc_shader_kind::shaderc_glsl_closesthit_shader;
 
-			case Flint::ShaderType::RAY_MISS:
+			case Flint::ShaderType::RayMiss:
 				return shaderc_shader_kind::shaderc_glsl_miss_shader;
 
 			default:
@@ -57,34 +57,34 @@ namespace Flint
 		{
 			switch (type)
 			{
-			case Flint::ShaderType::VERTEX:
+			case Flint::ShaderType::Vertex:
 				return shaderc_shader_kind::shaderc_vertex_shader;
 
-			case Flint::ShaderType::TESSELLATION_CONTROL:
+			case Flint::ShaderType::TessellationControl:
 				return shaderc_shader_kind::shaderc_tess_control_shader;
 
-			case Flint::ShaderType::TESSELLATION_EVALUATION:
+			case Flint::ShaderType::TessellationEvaluation:
 				return shaderc_shader_kind::shaderc_tess_evaluation_shader;
 
-			case Flint::ShaderType::GEOMETRY:
+			case Flint::ShaderType::Geometry:
 				return shaderc_shader_kind::shaderc_geometry_shader;
 
-			case Flint::ShaderType::FRAGMENT:
+			case Flint::ShaderType::Fragment:
 				return shaderc_shader_kind::shaderc_fragment_shader;
 
-			case Flint::ShaderType::COMPUTE:
+			case Flint::ShaderType::Compute:
 				return shaderc_shader_kind::shaderc_compute_shader;
 
-			case Flint::ShaderType::RAY_GEN:
+			case Flint::ShaderType::RayGen:
 				return shaderc_shader_kind::shaderc_raygen_shader;
 
-			case Flint::ShaderType::ANY_HIT:
+			case Flint::ShaderType::AnyHit:
 				return shaderc_shader_kind::shaderc_anyhit_shader;
 
-			case Flint::ShaderType::CLOSEST_HIT:
+			case Flint::ShaderType::ClosestHit:
 				return shaderc_shader_kind::shaderc_closesthit_shader;
 
-			case Flint::ShaderType::RAY_MISS:
+			case Flint::ShaderType::RayMiss:
 				return shaderc_shader_kind::shaderc_miss_shader;
 
 			default:
@@ -124,7 +124,7 @@ namespace Flint
 
 		// Check the compilation result.
 		if (result.GetCompilationStatus() != shaderc_compilation_status::shaderc_compilation_status_success)
-			FLINT_THROW_RANGE_ERROR("Shader compilation failed!");
+			throw std::range_error("Shader compilation failed!");
 
 		// Insert the compiled shader code.
 		mShaderCode.resize(std::distance(result.begin(), result.end()) * sizeof(UI32));
@@ -149,7 +149,7 @@ namespace Flint
 
 		// Check the compilation result.
 		if (result.GetCompilationStatus() != shaderc_compilation_status::shaderc_compilation_status_success)
-			FLINT_THROW_RANGE_ERROR("Shader compilation failed!");
+			throw std::range_error("Shader compilation failed!");
 
 		// Insert the compiled shader code.
 		mShaderCode.resize(std::distance(result.begin(), result.end()) * sizeof(UI32));

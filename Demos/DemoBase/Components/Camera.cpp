@@ -9,7 +9,7 @@
 
 void Camera::Initialize(std::shared_ptr<Flint::Device> pDevice)
 {
-	pCameraBuffer = pDevice->CreateBuffer(Flint::BufferType::UNIFORM, sizeof(CameraMatrix));
+	pCameraBuffer = pDevice->CreateBuffer(Flint::BufferType::Uniform, sizeof(CameraMatrix));
 	this->pDevice = pDevice;
 
 	projectionMatrix = glm::perspective(glm::radians(fieldOfView), aspectRatio, cameraNear, cameraFar);

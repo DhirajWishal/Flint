@@ -14,18 +14,6 @@ namespace Flint
 	class OffScreenRenderTarget;
 
 	/**
-	 * Compute dispatch mode.
-	 * This will define when to dispatch the compute instances when attached to a render target.
-	 */
-	enum class ComputeDispatchMode : UI8 {
-		BEFORE_EXECUTION,
-		AFTER_EXECUTION,
-
-		BEFORE_EVERY_EXECUTION,
-		AFTER_EVERY_EXECUTION,
-	};
-
-	/**
 	 * Flint compute pipeline.
 	 * This pipeline is used to perform compute tasks on the GPU.
 	 */

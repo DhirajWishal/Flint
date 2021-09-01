@@ -211,7 +211,7 @@ namespace Flint
 			else if (indexSize == sizeof(UI32))
 				indexType = VkIndexType::VK_INDEX_TYPE_UINT32;
 			else
-				FLINT_THROW_INVALID_ARGUMENT("Invalid index size submitted to bind! The valid sizes are 1, 2, and 4 bytes.");
+				throw std::invalid_argument("Invalid index size submitted to bind! The valid sizes are 1, 2, and 4 bytes.");
 
 			VkDeviceSize offsets[1] = { 0 };
 			vkCmdBindVertexBuffers(vCommandBuffer, 0, 1, pVertexBuffer->StaticCast<VulkanBuffer>().GetBufferAddress(), offsets);
@@ -248,7 +248,7 @@ namespace Flint
 				return;
 
 			DynamicStateFlags flags = pDynamicStates->mFlags;
-			if (flags & DynamicStateFlags::VIEWPORT)
+			if (flags & DynamicStateFlags::ViewPort)
 			{
 				DynamicStateContainer::ViewPort& viewPort = pDynamicStates->mViewPort;
 
@@ -263,7 +263,7 @@ namespace Flint
 				vkCmdSetViewport(vCommandBuffer, 0, 1, &vVP);
 			}
 
-			if (flags & DynamicStateFlags::SCISSOR)
+			if (flags & DynamicStateFlags::Scissor)
 			{
 				DynamicStateContainer::Scissor& scissor = pDynamicStates->mScissor;
 
@@ -276,23 +276,23 @@ namespace Flint
 				vkCmdSetScissor(vCommandBuffer, 0, 1, &vR2D);
 			}
 
-			if (flags & DynamicStateFlags::LINE_WIDTH)
+			if (flags & DynamicStateFlags::LineWidth)
 			{
 				vkCmdSetLineWidth(vCommandBuffer, pDynamicStates->mLineWidth.mLineWidth);
 			}
 
-			if (flags & DynamicStateFlags::DEPTH_BIAS)
+			if (flags & DynamicStateFlags::DepthBias)
 			{
 				DynamicStateContainer::DepthBias& depthBias = pDynamicStates->mDepthBias;
 				vkCmdSetDepthBias(vCommandBuffer, depthBias.mDepthBiasFactor, depthBias.mDepthClampFactor, depthBias.mDepthSlopeFactor);
 			}
 
-			if (flags & DynamicStateFlags::BLEND_CONSTANTS)
+			if (flags & DynamicStateFlags::BlendConstants)
 			{
 				vkCmdSetBlendConstants(vCommandBuffer, pDynamicStates->mBlendConstants.mConstants);
 			}
 
-			if (flags & DynamicStateFlags::DEPTH_BOUNDS)
+			if (flags & DynamicStateFlags::DepthBounds)
 			{
 				DynamicStateContainer::DepthBounds& bounds = pDynamicStates->mDepthBounds;
 				vkCmdSetDepthBounds(vCommandBuffer, bounds.mBounds.mWidth, bounds.mBounds.mHeight);
@@ -316,7 +316,7 @@ namespace Flint
 				return;
 
 			DynamicStateFlags flags = pDynamicStates->mFlags;
-			if (flags & DynamicStateFlags::VIEWPORT)
+			if (flags & DynamicStateFlags::ViewPort)
 			{
 				DynamicStateContainer::ViewPort& viewPort = pDynamicStates->mViewPort;
 
@@ -331,7 +331,7 @@ namespace Flint
 				vkCmdSetViewport(vCommandBuffer, 0, 1, &vVP);
 			}
 
-			if (flags & DynamicStateFlags::SCISSOR)
+			if (flags & DynamicStateFlags::Scissor)
 			{
 				DynamicStateContainer::Scissor& scissor = pDynamicStates->mScissor;
 
@@ -344,23 +344,23 @@ namespace Flint
 				vkCmdSetScissor(vCommandBuffer, 0, 1, &vR2D);
 			}
 
-			if (flags & DynamicStateFlags::LINE_WIDTH)
+			if (flags & DynamicStateFlags::LineWidth)
 			{
 				vkCmdSetLineWidth(vCommandBuffer, pDynamicStates->mLineWidth.mLineWidth);
 			}
 
-			if (flags & DynamicStateFlags::DEPTH_BIAS)
+			if (flags & DynamicStateFlags::DepthBias)
 			{
 				DynamicStateContainer::DepthBias& depthBias = pDynamicStates->mDepthBias;
 				vkCmdSetDepthBias(vCommandBuffer, depthBias.mDepthBiasFactor, depthBias.mDepthClampFactor, depthBias.mDepthSlopeFactor);
 			}
 
-			if (flags & DynamicStateFlags::BLEND_CONSTANTS)
+			if (flags & DynamicStateFlags::BlendConstants)
 			{
 				vkCmdSetBlendConstants(vCommandBuffer, pDynamicStates->mBlendConstants.mConstants);
 			}
 
-			if (flags & DynamicStateFlags::DEPTH_BOUNDS)
+			if (flags & DynamicStateFlags::DepthBounds)
 			{
 				DynamicStateContainer::DepthBounds& bounds = pDynamicStates->mDepthBounds;
 				vkCmdSetDepthBounds(vCommandBuffer, bounds.mBounds.mWidth, bounds.mBounds.mHeight);
@@ -376,11 +376,18 @@ namespace Flint
 			}
 		}
 
-		void VulkanCommandBuffer::IssueDrawCall(UI64 vertexOffset, UI64 vertexCount, UI64 indexOffset, UI64 indexCount)
+		void VulkanCommandBuffer::IssueDrawCall(const WireFrame& wireFrame, const DrawCallMode mode)
 		{
 			FLINT_SETUP_PROFILER();
 
-			vkCmdDrawIndexed(vCommandBuffer, static_cast<UI32>(indexCount), 1, static_cast<UI32>(indexOffset), static_cast<UI32>(vertexOffset), 0);
+			if (mode == DrawCallMode::Vertex)
+				vkCmdDraw(vCommandBuffer, static_cast<UI32>(wireFrame.GetVertexCount()), 1, static_cast<UI32>(wireFrame.GetVertexOffset()), 0);
+
+			else if (mode == DrawCallMode::Indexed)
+				vkCmdDrawIndexed(vCommandBuffer, static_cast<UI32>(wireFrame.GetIndexCount()), 1, static_cast<UI32>(wireFrame.GetIndexOffset()), static_cast<UI32>(wireFrame.GetVertexOffset()), 0);
+
+			else
+				throw backend_error("Invalid draw call mode!");
 		}
 
 		void VulkanCommandBuffer::IssueComputeCall(const FBox3D& groups)

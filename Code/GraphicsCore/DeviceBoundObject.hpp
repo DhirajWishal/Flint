@@ -72,51 +72,51 @@ namespace Flint
 	 * Buffer type enum.
 	 */
 	enum class BufferType : UI8 {
-		UNDEFINED,
-		STAGING,
-		VERTEX, INDEX,
-		UNIFORM, STORAGE
+		Undefined,
+		Staging,
+		Vertex, Index,
+		Uniform, Storage
 	};
 
 	/**
 	 * Buffer memory profile enum.
 	 * This enum defines the buffer's memory behavior.
 	 *
-	 * AUTOMATIC will set the default memory profile for a given buffer type.
-	 * CPU_ONLY will set the content to the CPU bound memory (RAM).
-	 * DEVICE_ONLY will set data in the device and stagging buffers are required to access them.
-	 * TRANSFER_FRIENDLY will enable it to be mapped to the local address space.
+	 * Automatic will set the default memory profile for a given buffer type.
+	 * CPUOnly will set the content to the CPU bound memory (RAM).
+	 * DeviceOnly will set data in the device and stagging buffers are required to access them.
+	 * TransferFriendly will enable it to be mapped to the local address space.
 	 */
 	enum class BufferMemoryProfile : UI8 {
-		AUTOMATIC,
-		CPU_ONLY,
-		DEVICE_ONLY,
-		TRANSFER_FRIENDLY
+		Automatic,
+		CPUOnly,
+		DeviceOnly,
+		TransferFriendly
 	};
 
 	/**
 	 * Image type enum.
 	 */
 	enum class ImageType : UI8 {
-		DIMENSIONS_1,
-		DIMENSIONS_2,
-		DIMENSIONS_3,
-		CUBEMAP,
+		OneDimension,
+		TwoDimension,
+		ThreeDimension,
+		CubeMap,
 
-		DIMENSIONS_1_ARRAY,
-		DIMENSIONS_2_ARRAY,
-		DIMENSIONS_3_ARRAY,
-		CUBEMAP_ARRAY,
+		OneDimensionArray,
+		TwoDimensionArray,
+		ThreeDimensionArray,
+		CubeMapArray,
 	};
 
 	/**
 	 * Image usage enum.
 	 */
 	enum class ImageUsage : UI8 {
-		GRAPHICS = BIT_SHIFT(0),
-		STORAGE = BIT_SHIFT(1),
-		DEPTH = BIT_SHIFT(2),
-		COLOR = BIT_SHIFT(3)
+		Graphics = BIT_SHIFT(0),
+		Storage = BIT_SHIFT(1),
+		Depth = BIT_SHIFT(2),
+		Color = BIT_SHIFT(3)
 	};
 
 	/**
@@ -129,11 +129,11 @@ namespace Flint
 	constexpr ImageUsage operator|(const ImageUsage& lhs, const ImageUsage& rhs) { return static_cast<ImageUsage>(static_cast<UI8>(lhs) | static_cast<UI8>(rhs)); }
 
 	/**
-	 * Bitwise AND operator for the image usage.
+	 * Bitwise And operator for the image usage.
 	 *
 	 * @param lhs: The left hand side argument.
 	 * @param rhs: The right hand side argument.
-	 * @return The AND-ed value.
+	 * @return The And-ed value.
 	 */
 	constexpr ImageUsage operator&(const ImageUsage& lhs, const ImageUsage& rhs) { return static_cast<ImageUsage>(static_cast<UI8>(lhs) & static_cast<UI8>(rhs)); }
 
@@ -141,7 +141,7 @@ namespace Flint
 	 * Pixel format enum.
 	 */
 	enum class PixelFormat : UI8 {
-		UNDEFINED,
+		Undefined,
 
 		R8_SRGB,
 		R8G8_SRGB,
@@ -182,54 +182,54 @@ namespace Flint
 	 * Address mode enum.
 	 */
 	enum class AddressMode : UI8 {
-		REPEAT,
-		MIRRORED_REPEAT,
-		CLAMP_TO_EDGE,
-		CLAMP_TO_BORDER,
-		MIRROR_CLAMP_TO_EDGE,
+		Repeat,
+		MirroredRepeat,
+		ClampToEdge,
+		ClampToBorder,
+		MirrorClampToEdge,
 	};
 
 	/**
 	 * Border color enum.
 	 */
 	enum class BorderColor : UI8 {
-		FLOAT_TRANSPARENT_BLACK,
-		INT_TRANSPARENT_BLACK,
-		FLOAT_OPAQUE_BLACK,
-		INT_OPAQUE_BLACK,
-		FLOAT_OPAQUE_WHITE,
-		INT_OPAQUE_WHITE,
+		TransparentBlackFLOAT,
+		TransparentBlackINT,
+		OpaqueBlackFLOAT,
+		OpaqueBlackINT,
+		OpaqueWhiteFLOAT,
+		OpaqueWhiteINT,
 	};
 
 	/**
 	 * Compare operator enum.
 	 */
 	enum class CompareOperator : UI8 {
-		NEVER,
-		LESS,
-		EQUAL,
-		LESS_OR_EQUAL,
-		GREATER,
-		NOT_EQUAL,
-		GREATER_OR_EQUAL,
-		ALWAYS,
+		Never,
+		Less,
+		Equal,
+		LessOrEqual,
+		Greater,
+		NotEqual,
+		GreaterOrEqual,
+		Always,
 	};
 
 	/**
 	 * Image filter enum.
 	 */
 	enum class ImageFilter : UI8 {
-		NEAREST,
-		LINEAR,
-		CUBIC_IMG,
+		Nearest,
+		Linear,
+		CubicImage,
 	};
 
 	/**
 	 *Image mip map mode enum.
 	 */
 	enum class ImageMipMapMode : UI8 {
-		NEAREST,
-		LINEAR,
+		Nearest,
+		Linear,
 	};
 
 	/**
@@ -245,18 +245,18 @@ namespace Flint
 
 		float mMipLoadBias = 0.0f;
 
-		AddressMode mAddressModeU = AddressMode::REPEAT;
-		AddressMode mAddressModeV = AddressMode::REPEAT;
-		AddressMode mAddressModeW = AddressMode::REPEAT;
+		AddressMode mAddressModeU = AddressMode::Repeat;
+		AddressMode mAddressModeV = AddressMode::Repeat;
+		AddressMode mAddressModeW = AddressMode::Repeat;
 
-		BorderColor mBorderColor = BorderColor::INT_OPAQUE_BLACK;
+		BorderColor mBorderColor = BorderColor::OpaqueBlackINT;
 
-		CompareOperator mCompareOperator = CompareOperator::ALWAYS;
+		CompareOperator mCompareOperator = CompareOperator::Always;
 
-		ImageFilter mImageMagificationFilter = ImageFilter::LINEAR;
-		ImageFilter mImageMinificationFilter = ImageFilter::LINEAR;
+		ImageFilter mImageMagificationFilter = ImageFilter::Linear;
+		ImageFilter mImageMinificationFilter = ImageFilter::Linear;
 
-		ImageMipMapMode mMipMapMode = ImageMipMapMode::LINEAR;
+		ImageMipMapMode mMipMapMode = ImageMipMapMode::Linear;
 
 		bool bEnableAnisotropy = true;
 		bool bEnableCompare = false;
@@ -267,23 +267,23 @@ namespace Flint
 	 * Shader code type enum.
 	 */
 	enum class ShaderType : UI8 {
-		UNDEFINED,
-		VERTEX, TESSELLATION_CONTROL, TESSELLATION_EVALUATION, GEOMETRY, FRAGMENT,
-		COMPUTE,
-		RAY_GEN, ANY_HIT, CLOSEST_HIT, RAY_MISS
+		Undefined,
+		Vertex, TessellationControl, TessellationEvaluation, Geometry, Fragment,
+		Compute,
+		RayGen, AnyHit, ClosestHit, RayMiss
 	};
 
 	/**
 	 * Rasterization samples enum.
 	 */
 	enum class MultiSampleCount : UI8 {
-		BITS_1 = BIT_SHIFT(0),
-		BITS_2 = BIT_SHIFT(1),
-		BITS_4 = BIT_SHIFT(2),
-		BITS_8 = BIT_SHIFT(3),
-		BITS_16 = BIT_SHIFT(4),
-		BITS_32 = BIT_SHIFT(5),
-		BITS_64 = BIT_SHIFT(6),
+		One = BIT_SHIFT(0),
+		Two = BIT_SHIFT(1),
+		Four = BIT_SHIFT(2),
+		Eight = BIT_SHIFT(3),
+		Sixteen = BIT_SHIFT(4),
+		ThirtyTwo = BIT_SHIFT(5),
+		SixtyFour = BIT_SHIFT(6),
 	};
 
 	/**
@@ -296,11 +296,11 @@ namespace Flint
 	constexpr MultiSampleCount operator|(const MultiSampleCount& lhs, const MultiSampleCount& rhs) { return static_cast<MultiSampleCount>(static_cast<UI8>(lhs) | static_cast<UI8>(rhs)); }
 
 	/**
-	 * Rasterization samples bitwise AND operator.
+	 * Rasterization samples bitwise And operator.
 	 *
 	 * @param lhs: The left hand side argument.
 	 * @param rhs: The right hand side argument.
-	 * @return The AND performed samples.
+	 * @return The And performed samples.
 	 */
 	constexpr MultiSampleCount operator&(const MultiSampleCount& lhs, const MultiSampleCount& rhs) { return static_cast<MultiSampleCount>(static_cast<UI8>(lhs) & static_cast<UI8>(rhs)); }
 
@@ -308,12 +308,12 @@ namespace Flint
 	 * Screen bound render target present mode.
 	 */
 	enum class SwapChainPresentMode : UI8 {
-		IMMEDIATE,
-		MAILBOX,
+		Immediate,
+		MailBox,
 		FIFO,
-		FIFO_RELAXED,
-		SHARED_DEMAND_REFRESH,
-		SHARED_CONTINUOUS_REFRESH,
+		RelaxedFIFO,
+		SharedDemandRefresh,
+		SharedContinuousRefresh,
 	};
 
 	/**

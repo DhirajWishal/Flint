@@ -11,15 +11,15 @@
 Application::Application()
 {
 	pInstance = Flint::CreateInstance(true);
-	pDevice = pInstance->CreateDevice(Flint::DeviceFlags::EXTERNAL | Flint::DeviceFlags::COMPUTE_COMPATIBLE | Flint::DeviceFlags::GRAPHICS_COMPATIBLE);
+	pDevice = pInstance->CreateDevice(Flint::DeviceFlags::External | Flint::DeviceFlags::ComputeCompatible | Flint::DeviceFlags::GraphicsCompatible);
 
 	// Initialize the main render target.
 	mRenderTarget.Initialize(pDevice, pInstance);
 
 	// Test loader.
 	{
-		Flint::ShaderCompiler compiler(std::filesystem::path("E:\\Flint\\Editor\\Shaders\\3D\\shader.vert"), Flint::ShaderCodeType::GLSL, Flint::ShaderType::VERTEX);
-		auto pShader = pDevice->CreateShader(Flint::ShaderType::VERTEX, compiler.GetShaderCode());
+		Flint::ShaderCompiler compiler(std::filesystem::path("E:\\Flint\\Editor\\Shaders\\3D\\shader.vert"), Flint::ShaderCodeType::GLSL, Flint::ShaderType::Vertex);
+		auto pShader = pDevice->CreateShader(Flint::ShaderType::Vertex, compiler.GetShaderCode());
 		auto pGeometryStore = pDevice->CreateGeometryStore(pShader->GetInputAttributes(), sizeof(UI32));
 	
 		Flint::Asset asset("E:\\Demo\\Vulkan\\data\\models\\voyager.gltf", pGeometryStore, Flint::Defaults::CreateDefaultVertexDescriptor());

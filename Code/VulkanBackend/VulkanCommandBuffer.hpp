@@ -35,7 +35,7 @@ namespace Flint
 			virtual void BindDynamicStates(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::shared_ptr<DynamicStateContainer>& pDynamicStates) override final;
 			virtual void BindDynamicStates(const std::shared_ptr<ComputePipeline>& pPipeline, const std::shared_ptr<DynamicStateContainer>& pDynamicStates) override final;
 
-			virtual void IssueDrawCall(UI64 vertexOffset, UI64 vertexCount, UI64 indexOffset, UI64 indexCount) override final;
+			virtual void IssueDrawCall(const WireFrame& wireFrame, const DrawCallMode mode = DrawCallMode::Indexed) override final;
 			virtual void IssueComputeCall(const FBox3D& groups) override final;
 			virtual void SubmitSecondaryCommandBuffer(const std::shared_ptr<CommandBuffer>& pCommandBuffer) override final;
 			virtual void ExecuteSecondaryCommands() override final;

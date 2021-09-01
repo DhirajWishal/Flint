@@ -77,7 +77,7 @@ namespace Flint
 
 		VulkanDevice::VulkanDevice(const std::shared_ptr<Instance>& pInstance, const DeviceFlags flags) : Device(pInstance, flags)
 		{
-			if ((flags & DeviceFlags::GRAPHICS_COMPATIBLE) == DeviceFlags::GRAPHICS_COMPATIBLE)
+			if ((flags & DeviceFlags::GraphicsCompatible) == DeviceFlags::GraphicsCompatible)
 				INSERT_INTO_VECTOR(mDeviceExtensions, VK_KHR_SWAPCHAIN_EXTENSION_NAME);
 
 			InitializePhysicalDevice();
@@ -404,9 +404,9 @@ namespace Flint
 				{
 					vkGetPhysicalDeviceProperties(device, &vPhysicalDeviceProperties);
 
-					if (vPhysicalDeviceProperties.deviceType == VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU && (mFlags & DeviceFlags::EXTERNAL) == DeviceFlags::EXTERNAL)
+					if (vPhysicalDeviceProperties.deviceType == VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU && (mFlags & DeviceFlags::External) == DeviceFlags::External)
 						vPhysicalDevice = device;
-					else if (vPhysicalDeviceProperties.deviceType == VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU && (mFlags & DeviceFlags::INTEGRATED) == DeviceFlags::INTEGRATED)
+					else if (vPhysicalDeviceProperties.deviceType == VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU && (mFlags & DeviceFlags::Intergrated) == DeviceFlags::Intergrated)
 						vPhysicalDevice = device;
 					else
 						vPhysicalDevice = device;
@@ -515,10 +515,10 @@ namespace Flint
 			// Create the logical device.
 			FLINT_VK_ASSERT(vkCreateDevice(vPhysicalDevice, &vDeviceCreateInfo, nullptr, &vLogicalDevice));
 
-			if ((mFlags & DeviceFlags::GRAPHICS_COMPATIBLE) == DeviceFlags::GRAPHICS_COMPATIBLE)
+			if ((mFlags & DeviceFlags::GraphicsCompatible) == DeviceFlags::GraphicsCompatible)
 				vkGetDeviceQueue(GetLogicalDevice(), vQueue.mGraphicsFamily.value(), 0, &vQueue.vGraphicsQueue);
 
-			if ((mFlags & DeviceFlags::COMPUTE_COMPATIBLE) == DeviceFlags::COMPUTE_COMPATIBLE)
+			if ((mFlags & DeviceFlags::ComputeCompatible) == DeviceFlags::ComputeCompatible)
 				vkGetDeviceQueue(GetLogicalDevice(), vQueue.mComputeFamily.value(), 0, &vQueue.vComputeQueue);
 
 			vkGetDeviceQueue(GetLogicalDevice(), vQueue.mTransferFamily.value(), 0, &vQueue.vTransferQueue);

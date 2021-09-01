@@ -10,10 +10,10 @@ namespace Flint
 		: DeviceBoundObject(pDevice), mVertexAttribtues(vertexAttributes), mIndexSize(indexSize), mMemoryProfile(profile)
 	{
 		if (mVertexAttribtues.empty())
-			FLINT_THROW_INVALID_ARGUMENT("Vertex attributes should not be empty!");
+			throw std::invalid_argument("Vertex attributes should not be empty!");
 
 		if (!indexSize)
-			FLINT_THROW_INVALID_ARGUMENT("Index size should be grater than 0!");
+			throw std::invalid_argument("Index size should be grater than 0!");
 
 		for (const auto attributeList : vertexAttributes)
 			for (const auto attribute : attributeList.second)
@@ -28,9 +28,9 @@ namespace Flint
 			mVertexCount = pVertexStagingBuffer->GetSize() / mVertexSize;
 
 			if (pVertexBuffer)
-				pVertexBuffer->Resize(pVertexStagingBuffer->GetSize(), BufferResizeMode::CLEAR);
+				pVertexBuffer->Resize(pVertexStagingBuffer->GetSize(), BufferResizeMode::Clear);
 			else
-				pVertexBuffer = pDevice->CreateBuffer(BufferType::VERTEX, mVertexCount * mVertexSize, mMemoryProfile);
+				pVertexBuffer = pDevice->CreateBuffer(BufferType::Vertex, mVertexCount * mVertexSize, mMemoryProfile);
 
 			pVertexBuffer->CopyFromBuffer(pVertexStagingBuffer, pVertexStagingBuffer->GetSize(), 0, 0);
 		}
@@ -41,9 +41,9 @@ namespace Flint
 			mIndexCount = pIndexStagingBuffer->GetSize() / mIndexSize;
 
 			if (pIndexBuffer)
-				pIndexBuffer->Resize(pIndexStagingBuffer->GetSize(), BufferResizeMode::CLEAR);
+				pIndexBuffer->Resize(pIndexStagingBuffer->GetSize(), BufferResizeMode::Clear);
 			else
-				pIndexBuffer = pDevice->CreateBuffer(BufferType::INDEX, mIndexCount * mIndexSize, mMemoryProfile);
+				pIndexBuffer = pDevice->CreateBuffer(BufferType::Index, mIndexCount * mIndexSize, mMemoryProfile);
 
 			pIndexBuffer->CopyFromBuffer(pIndexStagingBuffer, pIndexStagingBuffer->GetSize(), 0, 0);
 		}
@@ -61,7 +61,7 @@ namespace Flint
 			UI64 newSize = vertexCount * mVertexSize;
 
 			// Create new stagging buffer and copy content to it.
-			pVertexStagingBuffer = pDevice->CreateBuffer(BufferType::STAGING, newSize);
+			pVertexStagingBuffer = pDevice->CreateBuffer(BufferType::Staging, newSize);
 			BYTE* pBytes = static_cast<BYTE*>(pVertexStagingBuffer->MapMemory(newSize));
 			std::copy(static_cast<const BYTE*>(pVertexData), static_cast<const BYTE*>(pVertexData) + newSize, pBytes);
 			pVertexStagingBuffer->UnmapMemory();
@@ -74,7 +74,7 @@ namespace Flint
 			UI64 newSize = mIndexSize * indexCount;
 
 			// Create new stagging buffer and copy content to it.
-			pIndexStagingBuffer = pDevice->CreateBuffer(BufferType::STAGING, newSize);
+			pIndexStagingBuffer = pDevice->CreateBuffer(BufferType::Staging, newSize);
 			BYTE* pBytes = static_cast<BYTE*>(pIndexStagingBuffer->MapMemory(newSize));
 			std::copy(static_cast<const BYTE*>(pIndexData), static_cast<const BYTE*>(pIndexData) + newSize, pBytes);
 			pIndexStagingBuffer->UnmapMemory();
@@ -103,9 +103,9 @@ namespace Flint
 
 			// Extend and copy data from the stagging buffer.
 			if (!pVertexBuffer)
-				pVertexBuffer = pDevice->CreateBuffer(BufferType::VERTEX, newSize, mMemoryProfile);
+				pVertexBuffer = pDevice->CreateBuffer(BufferType::Vertex, newSize, mMemoryProfile);
 			else
-				pVertexBuffer->Extend(newSize, BufferResizeMode::COPY);
+				pVertexBuffer->Extend(newSize, BufferResizeMode::Copy);
 
 			pVertexBuffer->CopyFromBuffer(pVertexStagingBuffer, newSize, 0, srcSize);
 			mVertexCount += newSize / mVertexSize;
@@ -119,9 +119,9 @@ namespace Flint
 
 			// Extend and copy data from the stagging buffer.
 			if (!pIndexBuffer)
-				pIndexBuffer = pDevice->CreateBuffer(BufferType::INDEX, newSize, mMemoryProfile);
+				pIndexBuffer = pDevice->CreateBuffer(BufferType::Index, newSize, mMemoryProfile);
 			else
-				pIndexBuffer->Extend(newSize, BufferResizeMode::COPY);
+				pIndexBuffer->Extend(newSize, BufferResizeMode::Copy);
 
 			pIndexBuffer->CopyFromBuffer(pIndexStagingBuffer, newSize, 0, srcSize);
 			mIndexCount += newSize / mIndexSize;
@@ -140,21 +140,21 @@ namespace Flint
 
 			if (vertexOffset)
 			{
-				pStagingBuffer1 = pDevice->CreateBuffer(BufferType::STAGING, vertexOffset * mVertexSize);
+				pStagingBuffer1 = pDevice->CreateBuffer(BufferType::Staging, vertexOffset * mVertexSize);
 				pStagingBuffer1->CopyFromBuffer(pVertexBuffer, vertexOffset * mVertexSize, 0, 0);
 			}
 
 			if (vertexOffset + vertexCount < mVertexCount)
 			{
 				UI64 vertexesToCopy = mVertexCount - (vertexOffset + vertexCount);
-				pStagingBuffer2 = pDevice->CreateBuffer(BufferType::STAGING, vertexesToCopy * mVertexSize);
+				pStagingBuffer2 = pDevice->CreateBuffer(BufferType::Staging, vertexesToCopy * mVertexSize);
 				pStagingBuffer2->CopyFromBuffer(pVertexBuffer, vertexesToCopy * mVertexSize, (vertexOffset + vertexCount) * mVertexSize, 0);
 			}
 
 			mVertexCount -= vertexCount;
 
 			pVertexBuffer->Terminate();
-			pVertexBuffer = pDevice->CreateBuffer(Flint::BufferType::VERTEX, mVertexCount * mVertexSize, mMemoryProfile);
+			pVertexBuffer = pDevice->CreateBuffer(Flint::BufferType::Vertex, mVertexCount * mVertexSize, mMemoryProfile);
 
 			UI64 offset = 0;
 			if (pStagingBuffer1)
@@ -179,21 +179,21 @@ namespace Flint
 
 			if (indexOffset)
 			{
-				pStagingBuffer1 = pDevice->CreateBuffer(BufferType::STAGING, indexOffset * mIndexSize);
+				pStagingBuffer1 = pDevice->CreateBuffer(BufferType::Staging, indexOffset * mIndexSize);
 				pStagingBuffer1->CopyFromBuffer(pIndexBuffer, indexOffset * mIndexSize, 0, 0);
 			}
 
 			if (indexOffset + indexCount < mIndexCount)
 			{
 				UI64 indexesToCopy = mIndexCount - (indexOffset + indexCount);
-				pStagingBuffer2 = pDevice->CreateBuffer(BufferType::STAGING, indexesToCopy * mIndexSize);
+				pStagingBuffer2 = pDevice->CreateBuffer(BufferType::Staging, indexesToCopy * mIndexSize);
 				pStagingBuffer2->CopyFromBuffer(pIndexBuffer, indexesToCopy * mIndexSize, (indexOffset + indexCount) * mIndexSize, 0);
 			}
 
 			mIndexCount -= indexCount;
 
 			pIndexBuffer->Terminate();
-			pIndexBuffer = pDevice->CreateBuffer(Flint::BufferType::INDEX, mIndexCount * mIndexSize, mMemoryProfile);
+			pIndexBuffer = pDevice->CreateBuffer(Flint::BufferType::Index, mIndexCount * mIndexSize, mMemoryProfile);
 
 			UI64 offset = 0;
 			if (pStagingBuffer1)

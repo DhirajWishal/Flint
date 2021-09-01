@@ -11,18 +11,18 @@ namespace Flint
 	 * Shader resource type enum.
 	 */
 	enum class ShaderResourceType : UI8 {
-		SAMPLER,
-		COMBINED_IMAGE_SAMPLER,
-		SAMPLED_IMAGE,
-		STORAGE_IMAGE,
-		UNIFORM_TEXEL_BUFFER,
-		STORAGE_TEXEL_BUFFER,
-		UNIFORM_BUFFER,
-		STORAGE_BUFFER,
-		UNIFORM_BUFFER_DYNAMIC,
-		STORAGE_BUFFER_DYNAMIC,
-		INPUT_ATTACHMENT,
-		ACCELERATION_STRUCTURE,
+		Sampler,
+		CombinedImageSampler,
+		SampledImage,
+		StorageImage,
+		UniformTexelBuffer,
+		StorageTexelBuffer,
+		UniformBuffer,
+		StorageBuffer,
+		UniformBufferDynamic,
+		StorageBufferDynamic,
+		InputAttachment,
+		AccelerationStructure,
 	};
 
 	/**
@@ -35,7 +35,7 @@ namespace Flint
 
 		UI32 mBinding = 0;
 		UI32 mSetIndex = 0;
-		ShaderResourceType mType = ShaderResourceType::UNIFORM_BUFFER;
+		ShaderResourceType mType = ShaderResourceType::UniformBuffer;
 	};
 
 	/**
@@ -141,6 +141,6 @@ namespace Flint
 		std::unordered_map<UI32, std::vector<ShaderAttribute>> mInputAttributes;
 		std::unordered_map<UI32, std::vector<ShaderAttribute>> mOutputAttributes;
 
-		ShaderType mType = ShaderType::UNDEFINED;
+		ShaderType mType = ShaderType::Undefined;
 	};
 }

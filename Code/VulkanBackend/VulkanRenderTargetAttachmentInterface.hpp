@@ -10,7 +10,7 @@ namespace Flint
 	namespace VulkanBackend
 	{
 		enum class RenderTargetAttachmenType : UI8 {
-			UNDEFINED,
+			Undefined,
 			SWAP_CHAIN,
 			COLOR_BUFFER,
 			DEPTH_BUFFER,

@@ -6,7 +6,7 @@
 Reflection::Reflection(glm::vec3 position, SceneState* pSceneState, SkyBox* pSkyBox)
 	: GameObject(position, pSceneState)
 {
-	pCameraBuffer = pSceneState->pDevice->CreateBuffer(Flint::BufferType::UNIFORM, sizeof(CameraMatrix));
+	pCameraBuffer = pSceneState->pDevice->CreateBuffer(Flint::BufferType::Uniform, sizeof(CameraMatrix));
 	pDynamicStates = std::make_shared<Flint::DynamicStateContainer>();
 
 	pTextureSampler = pSceneState->pDevice->CreateImageSampler(Flint::ImageSamplerSpecification());

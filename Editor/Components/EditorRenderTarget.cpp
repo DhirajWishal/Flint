@@ -14,14 +14,14 @@ void EditorRenderTarget::Initialize(const std::shared_ptr<Flint::Device>& pDevic
 	const auto sampleCount = pDevice->GetSupportedMultiSampleCount();
 
 	mAttachments[0] = Flint::RenderTargetAttachment(
-		pDevice->CreateImage(Flint::ImageType::DIMENSIONS_2, Flint::ImageUsage::COLOR, imageExtent, pDisplay->GetBestSwapChainFormat(pDevice), 1, 1, nullptr, sampleCount),
+		pDevice->CreateImage(Flint::ImageType::TwoDimension, Flint::ImageUsage::Color, imageExtent, pDisplay->GetBestSwapChainFormat(pDevice), 1, 1, nullptr, sampleCount),
 		Flint::FColor4D(CREATE_COLOR_256(32.0f), CREATE_COLOR_256(32.0f), CREATE_COLOR_256(32.0f), 1.0f));
 
 	mAttachments[1] = Flint::RenderTargetAttachment(
-		pDevice->CreateImage(Flint::ImageType::DIMENSIONS_2, Flint::ImageUsage::DEPTH, imageExtent, Flint::PixelFormat::D24_UNORMAL_S8_UINT, 1, 1, nullptr, sampleCount),
+		pDevice->CreateImage(Flint::ImageType::TwoDimension, Flint::ImageUsage::Depth, imageExtent, Flint::PixelFormat::D24_UNORMAL_S8_UINT, 1, 1, nullptr, sampleCount),
 		Flint::DepthClearValues(1.0f, 0));
 
-	pRenderTarget = pDevice->CreateScreenBoundRenderTarget(pDisplay, extent, pDisplay->FindBestBufferCount(pDevice), mAttachments, Flint::SwapChainPresentMode::MAILBOX);
+	pRenderTarget = pDevice->CreateScreenBoundRenderTarget(pDisplay, extent, pDisplay->FindBestBufferCount(pDevice), mAttachments, Flint::SwapChainPresentMode::MailBox);
 
 	pAllocator = pDevice->CreateCommandBufferAllocator(pRenderTarget->GetBufferCount());
 	pSecondaryAllocator = pAllocator->CreateChildAllocator();

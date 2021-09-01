@@ -9,9 +9,9 @@ namespace Flint
 		: DeviceBoundObject(pDevice), pDisplay(pDisplay), mExtent(pDisplay->GetExtent()), mImageCount(imageCount), mPresentMode(presentMode)
 	{
 		if (!pDisplay)
-			FLINT_THROW_INVALID_ARGUMENT("Display pointer should not be null!");
+			throw std::invalid_argument("Display pointer should not be null!");
 
 		if (imageCount == 0)
-			FLINT_THROW_INVALID_ARGUMENT("Swap chain image count should not be zero!");
+			throw std::invalid_argument("Swap chain image count should not be zero!");
 	}
 }

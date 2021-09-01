@@ -5,24 +5,15 @@ SPDX-License-Identifier: Apache-2.0
 Flint build script.
 """
 
-import platform
 import os
 
-Platform = platform.system()
-PremakeBinary = ""
-WorkingDirectory = os.getcwd()
-print("Working directory: " + WorkingDirectory)
-
-# Platform specifics.
-if Platform == "Windows":
-    PremakeBinary = f"\"{WorkingDirectory}\\ThirdParty\\Binaries\\premake5\\premake5.exe\""
-elif Platform == "Linux":
-    PremakeBinary = "premake5"
+# Build premake
+print("\nBuilding Premake ...")
+os.system("cd \"ThirdParty/premake\" && call Bootstrap.bat")
 
 # Build Flint
-print("Premake5 binary path set to: " + PremakeBinary)
 print("Building the Flint project ...")
-os.system("call " + PremakeBinary + " vs2019")
+os.system("call \"ThirdParty/premake/bin/release/premake5\" vs2019")
 
 # Build glfw
 print("\nBuilding glfw ...")
@@ -48,10 +39,6 @@ os.system("cd \"Demos/ThirdParty/imgui\" && git checkout docking")
 # Setup gdown
 print("\nSetting up gdown ...")
 os.system("cd \"ThirdParty/gdown\" && python setup.py install")
-
-# Setup boost
-print("\nSetting up boost ...")
-os.system("cd \"ThirdParty/boost_1_77_0\" && call bootstrap.bat && call b2 runtime-link=static cxxstd=17")
 
 if input("\nDownload assets from the remote data store? (y/n) ").lower() == "y":
     os.system("cd Script && python DownloadAssets.py")

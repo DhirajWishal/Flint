@@ -9,6 +9,6 @@ namespace Flint
 		: RenderTarget(pDevice, extent, bufferCount, imageAttachments), pDisplay(pDisplay)
 	{
 		if (!pDisplay)
-			FLINT_THROW_INVALID_ARGUMENT("Screen bound render target device pointer should not be null!");
+			throw std::invalid_argument("Screen bound render target device pointer should not be null!");
 	}
 }

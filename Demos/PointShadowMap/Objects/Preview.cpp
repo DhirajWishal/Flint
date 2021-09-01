@@ -22,15 +22,15 @@ Preview::Preview(glm::vec3 position, SceneState* pSceneState, std::filesystem::p
 	mModelMatrix = glm::rotate(mModelMatrix, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	//SubmitToUniformBuffer(pModelMatrix, glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
 
-	pLightUniform = pSceneState->pDevice->CreateBuffer(Flint::BufferType::UNIFORM, sizeof(glm::vec3));
-	pShadowMapUniform = pSceneState->pDevice->CreateBuffer(Flint::BufferType::UNIFORM, sizeof(Light));
-	pShadowMapCamera = pSceneState->pDevice->CreateBuffer(Flint::BufferType::UNIFORM, sizeof(Camera));
+	pLightUniform = pSceneState->pDevice->CreateBuffer(Flint::BufferType::Uniform, sizeof(glm::vec3));
+	pShadowMapUniform = pSceneState->pDevice->CreateBuffer(Flint::BufferType::Uniform, sizeof(Light));
+	pShadowMapCamera = pSceneState->pDevice->CreateBuffer(Flint::BufferType::Uniform, sizeof(Camera));
 
 	std::vector<VertexAttribute> attributes(4);
-	attributes[0] = VertexAttribute(sizeof(glm::vec3), VertexAttributeType::POSITION);
-	attributes[1] = VertexAttribute(sizeof(glm::vec2), VertexAttributeType::UV_COORDINATES);
-	attributes[2] = VertexAttribute(sizeof(glm::vec3), VertexAttributeType::COLOR_0);
-	attributes[3] = VertexAttribute(sizeof(glm::vec3), VertexAttributeType::NORMAL);
+	attributes[0] = VertexAttribute(sizeof(glm::vec3), VertexAttributeType::Position);
+	attributes[1] = VertexAttribute(sizeof(glm::vec2), VertexAttributeType::UVCoordinates);
+	attributes[2] = VertexAttribute(sizeof(glm::vec3), VertexAttributeType::ColorZero);
+	attributes[3] = VertexAttribute(sizeof(glm::vec3), VertexAttributeType::Normal);
 
 	auto asset = ImportAsset(pSceneState->pDevice, model, attributes);
 
@@ -81,10 +81,10 @@ Preview::Preview(glm::vec3 position, SceneState* pSceneState, std::filesystem::p
 	Flint::ImageSamplerSpecification samplerSpecification = {};
 	pTextureSampler = pSceneState->pDevice->CreateImageSampler(samplerSpecification);
 
-	samplerSpecification.mAddressModeU = Flint::AddressMode::CLAMP_TO_BORDER;
-	samplerSpecification.mAddressModeV = Flint::AddressMode::CLAMP_TO_BORDER;
-	samplerSpecification.mAddressModeW = Flint::AddressMode::CLAMP_TO_BORDER;
-	samplerSpecification.mBorderColor = Flint::BorderColor::FLOAT_OPAQUE_WHITE;
+	samplerSpecification.mAddressModeU = Flint::AddressMode::ClampToBorder;
+	samplerSpecification.mAddressModeV = Flint::AddressMode::ClampToBorder;
+	samplerSpecification.mAddressModeW = Flint::AddressMode::ClampToBorder;
+	samplerSpecification.mBorderColor = Flint::BorderColor::OpaqueWhiteFLOAT;
 	pShadowSampler = pSceneState->pDevice->CreateImageSampler(samplerSpecification);
 
 	auto [vertexOffset, indexOffset] = pSceneState->pGeometryStores["ShadowMap"]->AddGeometry(asset.pVertexBuffer, asset.pIndexBuffer);
@@ -96,11 +96,11 @@ Preview::Preview(glm::vec3 position, SceneState* pSceneState, std::filesystem::p
 		//	continue;
 
 		//auto image = LoadImage(texture[imageIndex++]);
-		//auto pTexture = pSceneState->pDevice->CreateImage(Flint::ImageType::DIMENSIONS_2, Flint::ImageUsage::GRAPHICS, image.mExtent, Flint::PixelFormat::R8G8B8A8_SRGB, 1, 1, image.pImageData);
+		//auto pTexture = pSceneState->pDevice->CreateImage(Flint::ImageType::TwoDimension, Flint::ImageUsage::Graphics, image.mExtent, Flint::PixelFormat::R8G8B8A8_SRGB, 1, 1, image.pImageData);
 		//pTextures.push_back(pTexture);
 		//DestroyImage(image);
 
-		pModelMatrixes.push_back(pSceneState->pDevice->CreateBuffer(Flint::BufferType::UNIFORM, sizeof(glm::mat4)));
+		pModelMatrixes.push_back(pSceneState->pDevice->CreateBuffer(Flint::BufferType::Uniform, sizeof(glm::mat4)));
 		std::shared_ptr<Flint::Buffer> pModelMatrix = pModelMatrixes.back();
 		//SubmitToUniformBuffer(pModelMatrix, instance.mTransform);
 		SubmitToUniformBuffer(pModelMatrix, glm::mat4(1.0f));
@@ -128,7 +128,7 @@ Preview::Preview(glm::vec3 position, SceneState* pSceneState, std::filesystem::p
 			auto pDynamicStates = std::make_shared<Flint::DynamicStateContainer>();
 			pDynamicStates->SetViewPort(Flint::FExtent2D<float>{1024}, Flint::FExtent2D<float>(0.0f, 1.0f), { 0.0f, 0.0f });
 			pDynamicStates->SetScissor(Flint::FBox2D(1024), { 0, 0 });
-			pDynamicStates->SetConstantData(Flint::ShaderType::VERTEX, &views[faceIndex], sizeof(glm::mat4));
+			pDynamicStates->SetConstantData(Flint::ShaderType::Vertex, &views[faceIndex], sizeof(glm::mat4));
 
 			pSceneState->pGraphicsPipelines["DefaultOffScreenWireFrame"]->AddDrawData(shadowResoutceMap, pDynamicStates, vertexOffset + instance.mVertexOffset, instance.mVertexCount, indexOffset + instance.mIndexOffset, instance.mIndexCount);
 		}
@@ -187,27 +187,27 @@ void Preview::OnUpdate(UI64 delta)
 	}
 
 	// Rotate x
-	if (pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_X).IsPressed() || pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_X).IsOnRepeat())
+	if (pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KeyX).IsPressed() || pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KeyX).IsOnRepeat())
 	{
-		if ((pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_X).GetSpecialCharacter() & Flint::SpecialCharacter::SHIFT) == Flint::SpecialCharacter::SHIFT)
+		if ((pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KeyX).GetSpecialCharacter() & Flint::SpecialCharacter::Shift) == Flint::SpecialCharacter::Shift)
 			mLight.mLightPosition += mRotationBias * glm::vec3(1.0f, 0.0f, 0.0f);
 		else
 			mLight.mLightPosition += -mRotationBias * glm::vec3(1.0f, 0.0f, 0.0f);
 	}
 
 	// Rotate y
-	if (pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Y).IsPressed() || pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Y).IsOnRepeat())
+	if (pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KeyY).IsPressed() || pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KeyY).IsOnRepeat())
 	{
-		if ((pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Y).GetSpecialCharacter() & Flint::SpecialCharacter::SHIFT) == Flint::SpecialCharacter::SHIFT)
+		if ((pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KeyY).GetSpecialCharacter() & Flint::SpecialCharacter::Shift) == Flint::SpecialCharacter::Shift)
 			mLight.mLightPosition += mRotationBias * glm::vec3(0.0f, 1.0f, 0.0f);
 		else
 			mLight.mLightPosition += -mRotationBias * glm::vec3(0.0f, 1.0f, 0.0f);
 	}
 
 	// Rotate z
-	if (pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Z).IsPressed() || pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Z).IsOnRepeat())
+	if (pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KeyZ).IsPressed() || pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KeyZ).IsOnRepeat())
 	{
-		if ((pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Z).GetSpecialCharacter() & Flint::SpecialCharacter::SHIFT) == Flint::SpecialCharacter::SHIFT)
+		if ((pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KeyZ).GetSpecialCharacter() & Flint::SpecialCharacter::Shift) == Flint::SpecialCharacter::Shift)
 			mLight.mLightPosition += mRotationBias * glm::vec3(0.0f, 0.0f, 1.0f);
 		else
 			mLight.mLightPosition += -mRotationBias * glm::vec3(0.0f, 0.0f, 1.0f);
@@ -237,12 +237,12 @@ void Preview::PrepareNoTexturePipeline()
 	if (pSceneState->pGraphicsPipelines["NoTexture"])
 		return;
 
-	pVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("Flint\\Shaders\\NoTexture\\shader.vert.spv"));
-	pFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("Flint\\Shaders\\NoTexture\\shader.frag.spv"));
+	pVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::Vertex, std::filesystem::path("Flint\\Shaders\\NoTexture\\shader.vert.spv"));
+	pFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::Fragment, std::filesystem::path("Flint\\Shaders\\NoTexture\\shader.frag.spv"));
 
 	Flint::GraphicsPipelineSpecification specification = {};
 	specification.mRasterizationSamples = pSceneState->pDevice->GetSupportedMultiSampleCount();
-	specification.mDynamicStateFlags = Flint::DynamicStateFlags::VIEWPORT | Flint::DynamicStateFlags::SCISSOR;
+	specification.mDynamicStateFlags = Flint::DynamicStateFlags::ViewPort | Flint::DynamicStateFlags::Scissor;
 
 	pSceneState->pGraphicsPipelines["NoTexture"] = pSceneState->pDevice->CreateGraphicsPipeline("NoTexture", pSceneState->pScreenBoundRenderTargets["Default"], pVertexShader, nullptr, nullptr, nullptr, pFragmentShader, specification);
 	pSceneState->pScreenBoundRenderTargets["Default"]->SubmitGraphicsPipeline(pSceneState->pGeometryStores["Default"], pSceneState->pGraphicsPipelines["NoTexture"]);
@@ -258,12 +258,12 @@ void Preview::PrepareShadowMapPipeline()
 	pSceneState->pOffScreenRenderTargets["ShadowMap"] = pFactory->Create(Flint::OffScreenRenderTargetType::POINT_SHADOW_MAP, Flint::FBox2D(1024), pSceneState->pScreenBoundRenderTargets["Default"]->GetBufferCount());;
 	pSceneState->pScreenBoundRenderTargets["Default"]->AttachOffScreenRenderTarget(pSceneState->pOffScreenRenderTargets["ShadowMap"]);
 
-	pVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("Flint\\Shaders\\PointShadowMapping\\mesh.vert.spv"));
-	pFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("Flint\\Shaders\\PointShadowMapping\\mesh.frag.spv"));
+	pVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::Vertex, std::filesystem::path("Flint\\Shaders\\PointShadowMapping\\mesh.vert.spv"));
+	pFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::Fragment, std::filesystem::path("Flint\\Shaders\\PointShadowMapping\\mesh.frag.spv"));
 
 	Flint::GraphicsPipelineSpecification specification = {};
 	specification.mRasterizationSamples = pSceneState->pDevice->GetSupportedMultiSampleCount();
-	specification.mDynamicStateFlags = Flint::DynamicStateFlags::VIEWPORT | Flint::DynamicStateFlags::SCISSOR;
+	specification.mDynamicStateFlags = Flint::DynamicStateFlags::ViewPort | Flint::DynamicStateFlags::Scissor;
 
 	pSceneState->pGeometryStores["ShadowMap"] = pSceneState->pDevice->CreateGeometryStore(pVertexShader->GetInputAttributes(), sizeof(UI32));
 
@@ -272,10 +272,10 @@ void Preview::PrepareShadowMapPipeline()
 
 	if (!pSceneState->pGraphicsPipelines["DefaultOffScreenWireFrame"])
 	{
-		pShadowVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("Flint\\Shaders\\PointShadowMapping\\shader.vert.spv"));
-		pShadowFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("Flint\\Shaders\\PointShadowMapping\\shader.frag.spv"));
+		pShadowVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::Vertex, std::filesystem::path("Flint\\Shaders\\PointShadowMapping\\shader.vert.spv"));
+		pShadowFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::Fragment, std::filesystem::path("Flint\\Shaders\\PointShadowMapping\\shader.frag.spv"));
 
-		specification.mRasterizationSamples = Flint::MultiSampleCount::BITS_1;
+		specification.mRasterizationSamples = Flint::MultiSampleCount::One;
 		//specification.mColorBlendAttachments.clear();
 		specification.bEnableDepthBias = true;
 		specification.bEnableDepthTest = true;
@@ -283,7 +283,7 @@ void Preview::PrepareShadowMapPipeline()
 		specification.mMinSampleShading = 0.0f;
 		//specification.mDepthSlopeFactor = 1.75f;
 		//specification.mDepthConstantFactor = 1.25f;
-		//specification.mCullMode = Flint::CullMode::FRONT;
+		//specification.mCullMode = Flint::CullMode::Front;
 
 		pSceneState->pGraphicsPipelines["DefaultOffScreenWireFrame"] = pSceneState->pDevice->CreateGraphicsPipeline("DefaultOffScreenWireFrame", pSceneState->pOffScreenRenderTargets["ShadowMap"], pShadowVertexShader, nullptr, nullptr, nullptr, pShadowFragmentShader, specification);
 		pSceneState->pOffScreenRenderTargets["ShadowMap"]->SubmitGraphicsPipeline(pSceneState->pGeometryStores["ShadowMap"], pSceneState->pGraphicsPipelines["DefaultOffScreenWireFrame"]);

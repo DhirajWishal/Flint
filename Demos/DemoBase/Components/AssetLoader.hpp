@@ -36,27 +36,27 @@ struct Asset
 };
 
 enum class VertexAttributeType : UI8 {
-	UNDEFINED,
-	POSITION,
-	NORMAL,
-	COLOR_0,
-	COLOR_1,
-	COLOR_2,
-	COLOR_3,
-	TEXTURE_COORDINATES_0,
-	TEXTURE_COORDINATES_1,
-	TEXTURE_COORDINATES_2,
-	TEXTURE_COORDINATES_3,
-	TEXTURE_COORDINATES_4,
-	TEXTURE_COORDINATES_5,
-	TEXTURE_COORDINATES_6,
-	TEXTURE_COORDINATES_7,
-	UV_COORDINATES,
-	TANGENT,
-	BITANGENT,
+	Undefined,
+	Position,
+	Normal,
+	ColorZero,
+	ColorOne,
+	ColorTwo,
+	ColorThree,
+	TextureCoordinatesZero,
+	TextureCoordinatesOne,
+	TextureCoordinatesTwo,
+	TextureCoordinatesThree,
+	TextureCoordinatesFour,
+	TextureCoordinatesFive,
+	TextureCoordinatesSix,
+	TextureCoordinatesSeven,
+	UVCoordinates,
+	Tangent,
+	Bitangent,
 	INTEGRITY,
-	BONE_ID,
-	BONE_WEIGHT,
+	BoneID,
+	BoneWeight,
 	CUSTOM
 };
 
@@ -66,7 +66,7 @@ struct VertexAttribute
 	VertexAttribute(UI8 size, VertexAttributeType type) : mAttributeSize(size), mType(type) {}
 
 	UI8 mAttributeSize = 0;
-	VertexAttributeType mType = VertexAttributeType::UNDEFINED;
+	VertexAttributeType mType = VertexAttributeType::Undefined;
 };
 
 std::vector<VertexAttribute> GetDefaultVertexAttributes();

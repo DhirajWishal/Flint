@@ -12,17 +12,17 @@ SkyBox::SkyBox(glm::vec3 position, SceneState* pSceneState) : GameObject(positio
 
 	pDynamicStates = std::make_shared<Flint::DynamicStateContainer>();
 
-	pVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("Flint\\Shaders\\SkyBox\\skybox.vert.spv"));
-	pFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("Flint\\Shaders\\SkyBox\\skybox.frag.spv"));
+	pVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::Vertex, std::filesystem::path("Flint\\Shaders\\SkyBox\\skybox.vert.spv"));
+	pFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::Fragment, std::filesystem::path("Flint\\Shaders\\SkyBox\\skybox.frag.spv"));
 
 	auto image = LoadSkyboxImages();
-	pTexture = pSceneState->pDevice->CreateImage(Flint::ImageType::CUBEMAP, Flint::ImageUsage::GRAPHICS, image.mExtent, Flint::PixelFormat::R8G8B8A8_SRGB, 6, 1, image.pImageData);
+	pTexture = pSceneState->pDevice->CreateImage(Flint::ImageType::CubeMap, Flint::ImageUsage::Graphics, image.mExtent, Flint::PixelFormat::R8G8B8A8_SRGB, 6, 1, image.pImageData);
 	delete[] image.pImageData;
 
 	Flint::ImageSamplerSpecification samplerSpecification = {};
-	samplerSpecification.mAddressModeU = Flint::AddressMode::CLAMP_TO_EDGE;
-	samplerSpecification.mAddressModeV = Flint::AddressMode::CLAMP_TO_EDGE;
-	samplerSpecification.mAddressModeW = Flint::AddressMode::CLAMP_TO_EDGE;
+	samplerSpecification.mAddressModeU = Flint::AddressMode::ClampToEdge;
+	samplerSpecification.mAddressModeV = Flint::AddressMode::ClampToEdge;
+	samplerSpecification.mAddressModeW = Flint::AddressMode::ClampToEdge;
 	pTextureSampler = pSceneState->pDevice->CreateImageSampler(samplerSpecification);
 
 	CreateNewPipeline();
@@ -76,8 +76,8 @@ void SkyBox::CreateNewPipeline()
 {
 	Flint::GraphicsPipelineSpecification specification = {};
 	specification.mRasterizationSamples = pSceneState->pDevice->GetSupportedMultiSampleCount();
-	specification.mFrontFace = Flint::FrontFace::CLOCKWISE;
-	specification.mDynamicStateFlags = Flint::DynamicStateFlags::VIEWPORT | Flint::DynamicStateFlags::SCISSOR;
+	specification.mFrontFace = Flint::FrontFace::Clockwise;
+	specification.mDynamicStateFlags = Flint::DynamicStateFlags::ViewPort | Flint::DynamicStateFlags::Scissor;
 
 	pSceneState->pGraphicsPipelines["SkyBox"] = pSceneState->pDevice->CreateGraphicsPipeline("SkyBox", pSceneState->pScreenBoundRenderTargets["Default"], pVertexShader, nullptr, nullptr, nullptr, pFragmentShader, specification);
 	pSceneState->pScreenBoundRenderTargets["Default"]->SubmitGraphicsPipeline(pSceneState->pGeometryStores["Default"], pSceneState->pGraphicsPipelines["SkyBox"]);

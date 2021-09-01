@@ -18,7 +18,7 @@ namespace Flint
 	{
 		// If the resource name does not exist, return false.
 		if (pBufferMap.find(name) == pBufferMap.end())
-			FLINT_THROW_INVALID_ARGUMENT("Buffer with the given name \"" + name + "\" is not present within the resource map!");
+			throw std::invalid_argument("Buffer with the given name \"" + name + "\" is not present within the resource map!");
 
 		pBufferMap[name] = pBuffer;
 	}
@@ -27,7 +27,7 @@ namespace Flint
 	{
 		// If the resource name does not exist, return false.
 		if (pImageMap.find(name) == pImageMap.end())
-			FLINT_THROW_INVALID_ARGUMENT("Image with the given name \"" + name + "\" is not present within the resource map!");
+			throw std::invalid_argument("Image with the given name \"" + name + "\" is not present within the resource map!");
 
 		pImageMap[name] = std::pair(pSampler, pImage);
 	}

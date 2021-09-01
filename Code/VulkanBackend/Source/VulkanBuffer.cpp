@@ -15,52 +15,52 @@ namespace Flint
 
 			switch (type)
 			{
-			case Flint::BufferType::STAGING:
+			case Flint::BufferType::Staging:
 				vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 				vMemoryProperties = VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
 				break;
 
-			case Flint::BufferType::VERTEX:
+			case Flint::BufferType::Vertex:
 				vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 				vMemoryProperties = VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 				break;
 
-			case Flint::BufferType::INDEX:
+			case Flint::BufferType::Index:
 				vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
 				vMemoryProperties = VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 				break;
 
-			case Flint::BufferType::UNIFORM:
+			case Flint::BufferType::Uniform:
 				vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
 				vMemoryProperties = VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
 				break;
 
-			case Flint::BufferType::STORAGE:
+			case Flint::BufferType::Storage:
 				vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
 				vMemoryProperties = VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
 				break;
 
 			default:
-				FLINT_THROW_RANGE_ERROR("Invalid or Undefined buffer type!");
+				throw std::range_error("Invalid or Undefined buffer type!");
 				break;
 			}
 
 			switch (profile)
 			{
-			case Flint::BufferMemoryProfile::AUTOMATIC:
+			case Flint::BufferMemoryProfile::Automatic:
 				break;
 
-			case Flint::BufferMemoryProfile::CPU_ONLY:
-			case Flint::BufferMemoryProfile::TRANSFER_FRIENDLY:
+			case Flint::BufferMemoryProfile::CPUOnly:
+			case Flint::BufferMemoryProfile::TransferFriendly:
 				vMemoryProperties = VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
 				break;
 
-			case Flint::BufferMemoryProfile::DEVICE_ONLY:
+			case Flint::BufferMemoryProfile::DeviceOnly:
 				vMemoryProperties = VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 				break;
 
 			default:
-				FLINT_THROW_BACKEND_ERROR("Invalid buffer memory profile type!");
+				throw backend_error("Invalid buffer memory profile type!");
 			}
 
 			CreateBuffer();
@@ -76,10 +76,10 @@ namespace Flint
 			FLINT_SETUP_PROFILER();
 			UI64 oldSize = mSize;
 
-			if (mode == BufferResizeMode::COPY)
+			if (mode == BufferResizeMode::Copy)
 			{
 				// Create a stagging buffer to copy data to.
-				std::shared_ptr<Buffer> pStagingBuffer = pDevice->CreateBuffer(BufferType::STAGING, oldSize);
+				std::shared_ptr<Buffer> pStagingBuffer = pDevice->CreateBuffer(BufferType::Staging, oldSize);
 				pStagingBuffer->CopyFromBuffer(this->shared_from_this(), oldSize, 0, 0);
 
 				// Terminate the existing buffer and get the new size.
@@ -94,7 +94,7 @@ namespace Flint
 				CopyFromBuffer(pStagingBuffer, oldSize, 0, 0);
 				pStagingBuffer->Terminate();
 			}
-			else if (mode == BufferResizeMode::CLEAR)
+			else if (mode == BufferResizeMode::Clear)
 			{
 				// Terminate the existing buffer and get the new size.
 				Terminate();
@@ -105,7 +105,7 @@ namespace Flint
 				CreateBufferMemory();
 			}
 			else
-				FLINT_THROW_INVALID_ARGUMENT("Buffer copy mode is invalid or undefined!");
+				throw std::invalid_argument("Buffer copy mode is invalid or undefined!");
 		}
 
 		void VulkanBuffer::CopyFromBuffer(const std::shared_ptr<Buffer>& pSrcBuffer, const UI64 size, const UI64 srcOffset, const UI64 dstOffset)
@@ -126,9 +126,9 @@ namespace Flint
 			FLINT_SETUP_PROFILER();
 
 			if (size + offset > mSize)
-				FLINT_THROW_RANGE_ERROR("Submitted size and offset goes beyond the buffer dimensions!");
+				throw std::range_error("Submitted size and offset goes beyond the buffer dimensions!");
 			else if (size <= 0)
-				FLINT_THROW_RANGE_ERROR("Submitted size is invalid!");
+				throw std::range_error("Submitted size is invalid!");
 
 			void* pDataStore = nullptr;
 			FLINT_VK_ASSERT(vkMapMemory(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), vMemory, offset, size, 0, &pDataStore));

@@ -13,10 +13,10 @@
 VikingRoom::VikingRoom(glm::vec3 position, SceneState* pSceneState) : GameObject(position, pSceneState)
 {
 	pDynamicStates = std::make_shared<Flint::DynamicStateContainer>();
-	pUniformBufferObject = pSceneState->pDevice->CreateBuffer(Flint::BufferType::UNIFORM, sizeof(UniformBufferObject));
+	pUniformBufferObject = pSceneState->pDevice->CreateBuffer(Flint::BufferType::Uniform, sizeof(UniformBufferObject));
 
 	auto image = LoadImage(pSceneState->GetAssetPath().string() + "\\Packages\\VikingRoom\\VikingRoom\\texture.png");
-	pTexture = pSceneState->pDevice->CreateImage(Flint::ImageType::DIMENSIONS_2, Flint::ImageUsage::GRAPHICS, image.mExtent, Flint::PixelFormat::R8G8B8A8_SRGB, 1, 1, image.pImageData);
+	pTexture = pSceneState->pDevice->CreateImage(Flint::ImageType::TwoDimension, Flint::ImageUsage::Graphics, image.mExtent, Flint::PixelFormat::R8G8B8A8_SRGB, 1, 1, image.pImageData);
 	DestroyImage(image);
 
 	pTextureSampler = pSceneState->pDevice->CreateImageSampler(Flint::ImageSamplerSpecification());
@@ -86,37 +86,37 @@ void VikingRoom::OnUpdate(UI64 delta)
 	}
 
 	// Rotate x
-	if (pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_X).IsPressed() || pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_X).IsOnRepeat())
+	if (pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KeyX).IsPressed() || pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KeyX).IsOnRepeat())
 	{
-		if ((pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_X).GetSpecialCharacter() & Flint::SpecialCharacter::SHIFT) == Flint::SpecialCharacter::SHIFT)
+		if ((pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KeyX).GetSpecialCharacter() & Flint::SpecialCharacter::Shift) == Flint::SpecialCharacter::Shift)
 			mModelMatrix *= glm::rotate(glm::mat4(1.0f), mRotationBias, glm::vec3(1.0f, 0.0f, 0.0f));
 		else
 			mModelMatrix *= glm::rotate(glm::mat4(1.0f), -mRotationBias, glm::vec3(1.0f, 0.0f, 0.0f));
 	}
 
 	// Rotate y
-	if (pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Y).IsPressed() || pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Y).IsOnRepeat())
+	if (pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KeyY).IsPressed() || pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KeyY).IsOnRepeat())
 	{
-		if ((pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Y).GetSpecialCharacter() & Flint::SpecialCharacter::SHIFT) == Flint::SpecialCharacter::SHIFT)
+		if ((pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KeyY).GetSpecialCharacter() & Flint::SpecialCharacter::Shift) == Flint::SpecialCharacter::Shift)
 			mModelMatrix *= glm::rotate(glm::mat4(1.0f), mRotationBias, glm::vec3(0.0f, 1.0f, 0.0f));
 		else
 			mModelMatrix *= glm::rotate(glm::mat4(1.0f), -mRotationBias, glm::vec3(0.0f, 1.0f, 0.0f));
 	}
 
 	// Rotate z
-	if (pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Z).IsPressed() || pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Z).IsOnRepeat())
+	if (pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KeyZ).IsPressed() || pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KeyZ).IsOnRepeat())
 	{
-		if ((pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Z).GetSpecialCharacter() & Flint::SpecialCharacter::SHIFT) == Flint::SpecialCharacter::SHIFT)
+		if ((pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KeyZ).GetSpecialCharacter() & Flint::SpecialCharacter::Shift) == Flint::SpecialCharacter::Shift)
 			mModelMatrix *= glm::rotate(glm::mat4(1.0f), mRotationBias, glm::vec3(0.0f, 0.0f, 1.0f));
 		else
 			mModelMatrix *= glm::rotate(glm::mat4(1.0f), -mRotationBias, glm::vec3(0.0f, 0.0f, 1.0f));
 	}
 
 	auto pos = pSceneState->pDisplay->GetMousePosition();
-	if ((pSceneState->pOffScreenRenderTargets["MousePicker"]->GetResult(0)->GetPixelValue<float>(Flint::FBox3D(static_cast<UI32>(pos.mWidth), static_cast<UI32>(pos.mHeight), 0)) == mUniformBufferObject.mIndex) && pSceneState->pDisplay->GetMouseButtonEvent(Flint::MouseButton::LEFT).IsPressed())
+	if ((pSceneState->pOffScreenRenderTargets["MousePicker"]->GetResult(0)->GetPixelValue<float>(Flint::FBox3D(static_cast<UI32>(pos.mWidth), static_cast<UI32>(pos.mHeight), 0)) == mUniformBufferObject.mIndex) && pSceneState->pDisplay->GetMouseButtonEvent(Flint::MouseButton::Left).IsPressed())
 		EnableBoundingBox();
 
-	if (pSceneState->pDisplay->GetMouseButtonEvent(Flint::MouseButton::RIGHT).IsPressed())
+	if (pSceneState->pDisplay->GetMouseButtonEvent(Flint::MouseButton::Right).IsPressed())
 		DisableBoundingBox();
 
 	if (bIsBoundingBoxEnabled)
@@ -126,11 +126,11 @@ void VikingRoom::OnUpdate(UI64 delta)
 		static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::UNIVERSAL);
 
 		auto pDisplay = pSceneState->pDisplay;
-		if (pDisplay->GetKeyEvent(Flint::KeyCode::KEY_1).IsPressed())
+		if (pDisplay->GetKeyEvent(Flint::KeyCode::KeyOne).IsPressed())
 			mCurrentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
-		else if (pDisplay->GetKeyEvent(Flint::KeyCode::KEY_2).IsPressed())
+		else if (pDisplay->GetKeyEvent(Flint::KeyCode::KeyTwo).IsPressed())
 			mCurrentGizmoOperation = ImGuizmo::OPERATION::ROTATE;
-		else if (pDisplay->GetKeyEvent(Flint::KeyCode::KEY_3).IsPressed())
+		else if (pDisplay->GetKeyEvent(Flint::KeyCode::KeyThree).IsPressed())
 			mCurrentGizmoOperation = ImGuizmo::OPERATION::SCALE;
 
 		float* matrix = &mModelMatrix[0].x;
@@ -172,15 +172,15 @@ void VikingRoom::SetupPipeline()
 {
 	Flint::GraphicsPipelineSpecification specification = {};
 	specification.mRasterizationSamples = pSceneState->pDevice->GetSupportedMultiSampleCount();
-	specification.mDynamicStateFlags = Flint::DynamicStateFlags::VIEWPORT | Flint::DynamicStateFlags::SCISSOR;
+	specification.mDynamicStateFlags = Flint::DynamicStateFlags::ViewPort | Flint::DynamicStateFlags::Scissor;
 	specification.bEnableDepthTest = true;
 	specification.bEnableDepthWrite = true;
 	specification.mColorBlendConstants[0] = 0.0f;
 	specification.mColorBlendConstants[1] = 0.0f;
 	specification.mColorBlendConstants[2] = 0.0f;
 	specification.mColorBlendConstants[3] = 0.0f;
-	//specification.mPrimitiveTopology = Flint::PrimitiveTopology::TRIANGLE_LIST;
-	//specification.mPolygonMode = Flint::PolygonMode::LINE;
+	//specification.mPrimitiveTopology = Flint::PrimitiveTopology::TriangleList;
+	//specification.mPolygonMode = Flint::PolygonMode::Line;
 
 	pSceneState->pGraphicsPipelines["DefaultWireframe"] = pSceneState->pDevice->CreateGraphicsPipeline("DefaultWireframe", pSceneState->pScreenBoundRenderTargets["Default"], pSceneState->pVertexShader, nullptr, nullptr, nullptr, pSceneState->pFragmentShader, specification);
 	pSceneState->pScreenBoundRenderTargets["Default"]->SubmitGraphicsPipeline(pSceneState->pGeometryStores["Default"], pSceneState->pGraphicsPipelines["DefaultWireframe"]);
@@ -190,10 +190,10 @@ void VikingRoom::SetupPipeline()
 	pSceneState->pScreenBoundRenderTargets["Default"]->AttachOffScreenRenderTarget(pSceneState->pOffScreenRenderTargets["MousePicker"]);
 
 	// Prepare pipeline.
-	pVertexShaderMP = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("Flint\\Shaders\\MousePicking3D\\shader.vert.spv"));
-	pFragmentShaderMP = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("Flint\\Shaders\\MousePicking3D\\shader.frag.spv"));
+	pVertexShaderMP = pSceneState->pDevice->CreateShader(Flint::ShaderType::Vertex, std::filesystem::path("Flint\\Shaders\\MousePicking3D\\shader.vert.spv"));
+	pFragmentShaderMP = pSceneState->pDevice->CreateShader(Flint::ShaderType::Fragment, std::filesystem::path("Flint\\Shaders\\MousePicking3D\\shader.frag.spv"));
 
-	specification.mRasterizationSamples = Flint::MultiSampleCount::BITS_1;
+	specification.mRasterizationSamples = Flint::MultiSampleCount::One;
 	pSceneState->pGraphicsPipelines["MousePicker"] = pSceneState->pDevice->CreateGraphicsPipeline("MousePicker", pSceneState->pOffScreenRenderTargets["MousePicker"], pVertexShaderMP, nullptr, nullptr, nullptr, pFragmentShaderMP, specification);
 	pSceneState->pOffScreenRenderTargets["MousePicker"]->SubmitGraphicsPipeline(pSceneState->pGeometryStores["Default"], pSceneState->pGraphicsPipelines["MousePicker"]);
 }

@@ -40,22 +40,22 @@ namespace Flint
 		/**
 		 * This flag states to use external device (GPU) if available over integrated.
 		 */
-		EXTERNAL = BIT_SHIFT(0),
+		External = BIT_SHIFT(0),
 
 		/**
 		 * This flag states to use only the integrated device if available. If an integrated one doesn't exist but an external one exists, it will automatically select the external device.
 		 */
-		 INTEGRATED = BIT_SHIFT(1),
+		 Intergrated = BIT_SHIFT(1),
 
 		 /**
 		  * State that the device is used for graphics. This is a must if graphics needs to be enabled.
 		  */
-		  GRAPHICS_COMPATIBLE = BIT_SHIFT(2),
+		  GraphicsCompatible = BIT_SHIFT(2),
 
 		  /**
 		   * This states the device is used for compute.
 		   */
-		   COMPUTE_COMPATIBLE = BIT_SHIFT(3)
+		   ComputeCompatible = BIT_SHIFT(3)
 	};
 
 	constexpr DeviceFlags operator|(const DeviceFlags& lhs, const DeviceFlags& rhs) { return DeviceFlags(static_cast<UI8>(lhs) | static_cast<UI8>(rhs)); }
@@ -132,10 +132,10 @@ namespace Flint
 		 *
 		 * @param type: The buffer type.
 		 * @param size: The buffer size.
-		 * @param profile: The memory profile of the buffer. Default is BufferMemoryProfile::AUTOMATIC.
+		 * @param profile: The memory profile of the buffer. Default is BufferMemoryProfile::Automatic.
 		 * @return The buffer object.
 		 */
-		virtual std::shared_ptr<Buffer> CreateBuffer(const BufferType type, const UI64 size, const BufferMemoryProfile profile = BufferMemoryProfile::AUTOMATIC) = 0;
+		virtual std::shared_ptr<Buffer> CreateBuffer(const BufferType type, const UI64 size, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic) = 0;
 
 		/**
 		 * Create a new image.
@@ -150,7 +150,7 @@ namespace Flint
 		 * @param sampleCount: The image multi sample count.
 		 * @return The newly created image.
 		 */
-		virtual std::shared_ptr<Image> CreateImage(const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const UI8 layers, const UI32 mipLevels, const void* pImageData, const MultiSampleCount sampleCount = MultiSampleCount::BITS_1) = 0;
+		virtual std::shared_ptr<Image> CreateImage(const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const UI8 layers, const UI32 mipLevels, const void* pImageData, const MultiSampleCount sampleCount = MultiSampleCount::One) = 0;
 
 		/**
 		 * Create a new image sampler.
@@ -250,10 +250,10 @@ namespace Flint
 		 *
 		 * @param vertexAttributes: The vertex attributes of the store.
 		 * @param indexSize: The size of a single index.
-		 * @param profile: The memory profile of the geometry store. Default is BufferMemoryProfile::AUTOMATIC.
+		 * @param profile: The memory profile of the geometry store. Default is BufferMemoryProfile::Automatic.
 		 * @return The newly created geometry store pointer.
 		 */
-		virtual std::shared_ptr<GeometryStore> CreateGeometryStore(const std::unordered_map<UI32, std::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile = BufferMemoryProfile::AUTOMATIC) = 0;
+		virtual std::shared_ptr<GeometryStore> CreateGeometryStore(const std::unordered_map<UI32, std::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic) = 0;
 
 	public:
 		/**
@@ -292,14 +292,14 @@ namespace Flint
 		 *
 		 * @return The compatibility status (boolean).
 		 */
-		const bool IsGraphicsCompatible() const { return (mFlags & DeviceFlags::GRAPHICS_COMPATIBLE) == DeviceFlags::GRAPHICS_COMPATIBLE; }
+		const bool IsGraphicsCompatible() const { return (mFlags & DeviceFlags::GraphicsCompatible) == DeviceFlags::GraphicsCompatible; }
 
 		/**
 		 * Check if the device is compute compatible.
 		 *
 		 * @return The compatibility status (boolean).
 		 */
-		const bool IsComputeCompatible() const { return (mFlags & DeviceFlags::COMPUTE_COMPATIBLE) == DeviceFlags::COMPUTE_COMPATIBLE; }
+		const bool IsComputeCompatible() const { return (mFlags & DeviceFlags::ComputeCompatible) == DeviceFlags::ComputeCompatible; }
 
 	public:
 		/**
@@ -311,6 +311,6 @@ namespace Flint
 
 	protected:
 		std::shared_ptr<Instance> pInstance = nullptr;
-		DeviceFlags mFlags = DeviceFlags::EXTERNAL | DeviceFlags::GRAPHICS_COMPATIBLE;
+		DeviceFlags mFlags = DeviceFlags::External | DeviceFlags::GraphicsCompatible;
 	};
 }

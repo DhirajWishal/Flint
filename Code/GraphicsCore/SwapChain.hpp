@@ -112,8 +112,8 @@ namespace Flint
 		UI32 mImageCount = 0;
 		UI32 mImageIndex = 0;
 
-		PixelFormat mPixelForamt = PixelFormat::UNDEFINED;
-		SwapChainPresentMode mPresentMode = SwapChainPresentMode::MAILBOX;
+		PixelFormat mPixelForamt = PixelFormat::Undefined;
+		SwapChainPresentMode mPresentMode = SwapChainPresentMode::MailBox;
 
 		bool bShouldRecreate = false;
 	};

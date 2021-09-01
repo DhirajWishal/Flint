@@ -27,7 +27,7 @@ namespace Flint
 		 * @param pImageData: The image data pointer to load data from.
 		 * @param sampleCount: The multi sample count to use.
 		 */
-		Image(const std::shared_ptr<Device>& pDevice, const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const UI8 layers, const UI32 mipLevels, const void* pImageData, const MultiSampleCount sampleCount = MultiSampleCount::BITS_1);
+		Image(const std::shared_ptr<Device>& pDevice, const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const UI8 layers, const UI32 mipLevels, const void* pImageData, const MultiSampleCount sampleCount = MultiSampleCount::One);
 
 		/**
 		 * Copy the image content to a buffer.
@@ -105,10 +105,10 @@ namespace Flint
 	protected:
 		FBox3D mExtent = {};
 		UI32 mMipLevels = 0;
-		ImageType mType = ImageType::DIMENSIONS_2;
-		ImageUsage mUsage = ImageUsage::GRAPHICS;
-		PixelFormat mFormat = PixelFormat::UNDEFINED;
-		MultiSampleCount mMultiSampleCount = MultiSampleCount::BITS_1;
+		ImageType mType = ImageType::TwoDimension;
+		ImageUsage mUsage = ImageUsage::Graphics;
+		PixelFormat mFormat = PixelFormat::Undefined;
+		MultiSampleCount mMultiSampleCount = MultiSampleCount::One;
 		UI8 mLayerCount = 1;
 	};
 }

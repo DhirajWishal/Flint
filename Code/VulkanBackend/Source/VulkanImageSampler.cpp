@@ -13,23 +13,23 @@ namespace Flint
 			{
 				switch (mode)
 				{
-				case Flint::AddressMode::REPEAT:
+				case Flint::AddressMode::Repeat:
 					return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_REPEAT;
 
-				case Flint::AddressMode::MIRRORED_REPEAT:
+				case Flint::AddressMode::MirroredRepeat:
 					return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
 
-				case Flint::AddressMode::CLAMP_TO_EDGE:
+				case Flint::AddressMode::ClampToEdge:
 					return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
 
-				case Flint::AddressMode::CLAMP_TO_BORDER:
+				case Flint::AddressMode::ClampToBorder:
 					return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
 
-				case Flint::AddressMode::MIRROR_CLAMP_TO_EDGE:
+				case Flint::AddressMode::MirrorClampToEdge:
 					return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE;
 
 				default:
-					FLINT_THROW_BACKEND_ERROR("Invalid address mode!");
+					throw backend_error("Invalid address mode!");
 				}
 
 				return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_REPEAT;
@@ -39,26 +39,26 @@ namespace Flint
 			{
 				switch (color)
 				{
-				case Flint::BorderColor::FLOAT_TRANSPARENT_BLACK:
+				case Flint::BorderColor::TransparentBlackFLOAT:
 					return VkBorderColor::VK_BORDER_COLOR_FLOAT_TRANSPARENT_BLACK;
 
-				case Flint::BorderColor::INT_TRANSPARENT_BLACK:
+				case Flint::BorderColor::TransparentBlackINT:
 					return VkBorderColor::VK_BORDER_COLOR_INT_TRANSPARENT_BLACK;
 
-				case Flint::BorderColor::FLOAT_OPAQUE_BLACK:
+				case Flint::BorderColor::OpaqueBlackFLOAT:
 					return VkBorderColor::VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK;
 
-				case Flint::BorderColor::INT_OPAQUE_BLACK:
+				case Flint::BorderColor::OpaqueBlackINT:
 					return VkBorderColor::VK_BORDER_COLOR_INT_OPAQUE_BLACK;
 
-				case Flint::BorderColor::FLOAT_OPAQUE_WHITE:
+				case Flint::BorderColor::OpaqueWhiteFLOAT:
 					return VkBorderColor::VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
 
-				case Flint::BorderColor::INT_OPAQUE_WHITE:
+				case Flint::BorderColor::OpaqueWhiteINT:
 					return VkBorderColor::VK_BORDER_COLOR_INT_OPAQUE_WHITE;
 
 				default:
-					FLINT_THROW_BACKEND_ERROR("Invalid border color!");
+					throw backend_error("Invalid border color!");
 				}
 
 				return VkBorderColor::VK_BORDER_COLOR_INT_OPAQUE_BLACK;
@@ -68,32 +68,32 @@ namespace Flint
 			{
 				switch (op)
 				{
-				case Flint::CompareOperator::NEVER:
+				case Flint::CompareOperator::Never:
 					return VkCompareOp::VK_COMPARE_OP_NEVER;
 
-				case Flint::CompareOperator::LESS:
+				case Flint::CompareOperator::Less:
 					return VkCompareOp::VK_COMPARE_OP_LESS;
 
-				case Flint::CompareOperator::EQUAL:
+				case Flint::CompareOperator::Equal:
 					return VkCompareOp::VK_COMPARE_OP_EQUAL;
 
-				case Flint::CompareOperator::LESS_OR_EQUAL:
+				case Flint::CompareOperator::LessOrEqual:
 					return VkCompareOp::VK_COMPARE_OP_LESS_OR_EQUAL;
 
-				case Flint::CompareOperator::GREATER:
+				case Flint::CompareOperator::Greater:
 					return VkCompareOp::VK_COMPARE_OP_GREATER;
 
-				case Flint::CompareOperator::NOT_EQUAL:
+				case Flint::CompareOperator::NotEqual:
 					return VkCompareOp::VK_COMPARE_OP_NOT_EQUAL;
 
-				case Flint::CompareOperator::GREATER_OR_EQUAL:
+				case Flint::CompareOperator::GreaterOrEqual:
 					return VkCompareOp::VK_COMPARE_OP_GREATER_OR_EQUAL;
 
-				case Flint::CompareOperator::ALWAYS:
+				case Flint::CompareOperator::Always:
 					return VkCompareOp::VK_COMPARE_OP_ALWAYS;
 
 				default:
-					FLINT_THROW_BACKEND_ERROR("Invalid compare operator!");
+					throw backend_error("Invalid compare operator!");
 				}
 
 				return VkCompareOp::VK_COMPARE_OP_ALWAYS;
@@ -103,17 +103,17 @@ namespace Flint
 			{
 				switch (filter)
 				{
-				case Flint::ImageFilter::NEAREST:
+				case Flint::ImageFilter::Nearest:
 					return VkFilter::VK_FILTER_NEAREST;
 
-				case Flint::ImageFilter::LINEAR:
+				case Flint::ImageFilter::Linear:
 					return VkFilter::VK_FILTER_LINEAR;
 
-				case Flint::ImageFilter::CUBIC_IMG:
+				case Flint::ImageFilter::CubicImage:
 					return VkFilter::VK_FILTER_CUBIC_IMG;
 
 				default:
-					FLINT_THROW_BACKEND_ERROR("Invalid image filter!");
+					throw backend_error("Invalid image filter!");
 				}
 
 				return VkFilter::VK_FILTER_LINEAR;
@@ -123,14 +123,14 @@ namespace Flint
 			{
 				switch (mode)
 				{
-				case Flint::ImageMipMapMode::NEAREST:
+				case Flint::ImageMipMapMode::Nearest:
 					return VkSamplerMipmapMode::VK_SAMPLER_MIPMAP_MODE_NEAREST;
 
-				case Flint::ImageMipMapMode::LINEAR:
+				case Flint::ImageMipMapMode::Linear:
 					return VkSamplerMipmapMode::VK_SAMPLER_MIPMAP_MODE_LINEAR;
 
 				default:
-					FLINT_THROW_BACKEND_ERROR("Invalid image mip map filter!");
+					throw backend_error("Invalid image mip map filter!");
 				}
 
 				return VkSamplerMipmapMode::VK_SAMPLER_MIPMAP_MODE_LINEAR;

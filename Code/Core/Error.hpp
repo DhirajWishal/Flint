@@ -46,29 +46,8 @@ namespace Flint
 	};
 }
 
-#define FLINT_EXCEPTION_BACKEND_ERROR									::Flint::backend_error
-#define FLINT_EXCEPTION_RUNTIME_ERROR									::Flint::runtime_error_extended
-#define FLINT_EXCEPTION_LOGIC_ERROR										std::logic_error
-#define FLINT_EXCEPTION_DOMAIN_ERROR									std::domain_error
-#define FLINT_EXCEPTION_INVALID_ARGUMENT								std::invalid_argument
-#define FLINT_EXCEPTION_LENGTH_ERROR									std::length_error
-#define FLINT_EXCEPTION_OUT_OF_RANGE									std::out_of_range
-#define FLINT_EXCEPTION_RANGE_ERROR										std::range_error
-#define FLINT_EXCEPTION_OVERFLOW_ERROR									std::overflow_error
-#define FLINT_EXCEPTION_UNDERFLOW_ERROR									std::underflow_error
-
-#define FLINT_THROW_BACKEND_ERROR										throw FLINT_EXCEPTION_BACKEND_ERROR
-#define FLINT_THROW_LOGIC_ERROR											throw FLINT_EXCEPTION_LOGIC_ERROR
-#define FLINT_THROW_DOMAIN_ERROR										throw FLINT_EXCEPTION_DOMAIN_ERROR
-#define FLINT_THROW_INVALID_ARGUMENT									throw FLINT_EXCEPTION_INVALID_ARGUMENT
-#define FLINT_THROW_LENGTH_ERROR										throw FLINT_EXCEPTION_LENGTH_ERROR
-#define FLINT_THROW_OUT_OF_RANGE										throw FLINT_EXCEPTION_OUT_OF_RANGE
-#define FLINT_THROW_RANGE_ERROR											throw FLINT_EXCEPTION_RANGE_ERROR
-#define FLINT_THROW_OVERFLOW_ERROR										throw FLINT_EXCEPTION_OVERFLOW_ERROR
-#define FLINT_THROW_UNDERFLOW_ERROR										throw FLINT_EXCEPTION_UNDERFLOW_ERROR
-
 #ifndef FLINT_RELEASE
-#	define FLINT_THROW_RUNTIME_ERROR(...)								throw FLINT_EXCEPTION_RUNTIME_ERROR(__VA_ARGS__, "\nFile:\t\t" __FILE__ "\nFunction:\t" __FUNCSIG__ "\nLine:\t\t" TO_STRING(__LINE__))
+#	define FLINT_THROW_RUNTIME_ERROR(...)								throw ::Flint::runtime_error_extended(__VA_ARGS__, "\nFile:\t\t" __FILE__ "\nFunction:\t" __FUNCSIG__ "\nLine:\t\t" TO_STRING(__LINE__))
 #	define FLINT_ASSERT(expression, condition, error)					if (expression != condition) error
 #	define FLINT_ASSERT_DISCARDABLE(expression, condition, error)		if (expression != condition) error;
 
@@ -79,39 +58,44 @@ namespace Flint
 
 #endif // !FLINT_RELEASE
 
-#define FLINT_BACKEND_ERROR_UNKNOWN										"Unknown error!"
-#define FLINT_BACKEND_ERROR_DEVICE_NOT_READY							"Device not ready!"
-#define FLINT_BACKEND_ERROR_DEVICE_TIMEOUT								"Device timeout!"
-#define FLINT_BACKEND_ERROR_EVENT_SET									"Event set!"
-#define FLINT_BACKEND_ERROR_EVENT_RESET									"Event reset!"
-#define FLINT_BACKEND_ERROR_INCOMPLETE_COMMAND							"Incomplete command!"
-#define FLINT_BACKEND_ERROR_DEVICE_OUT_OF_HOST_MEMORY					"Device out of host memory!"
-#define FLINT_BACKEND_ERROR_DEVICE_OUT_OF_DEVICE_MEMORY					"Device out of device memory!"
-#define FLINT_BACKEND_ERROR_INITIALIZATION_FAILED						"Initialization failed!"
-#define FLINT_BACKEND_ERROR_DEVICE_LOST									"Device lost!"
-#define FLINT_BACKEND_ERROR_MEMORY_MAPPING_FAILED						"Memory mapping failed!"
-#define FLINT_BACKEND_ERROR_DEVICE_FEATURE_NOT_PRESENT					"Device feature not present!"
-#define FLINT_BACKEND_ERROR_INCOMPATIBLE_DRIVER							"Incompatible driver!"
-#define FLINT_BACKEND_ERROR_TOO_MANY_OBJECTS							"Too many objects!"
-#define FLINT_BACKEND_ERROR_FORMAT_NOT_SUPPORTED						"Format not supported!"
-#define FLINT_BACKEND_ERROR_FRAGMENTED_POOL								"Fragmented pool!"
-#define FLINT_BACKEND_ERROR_OUT_OF_POOL_MEMORY							"Out of pool memory!"
-#define FLINT_BACKEND_ERROR_INVALID_HANDLE								"Invalid handle!"
-#define FLINT_BACKEND_ERROR_INTERNAL_FRAGMENTATION						"Internal fragmentation!"
-#define FLINT_BACKEND_ERROR_DISPLAY_LOST								"Display lost!"
-#define FLINT_BACKEND_ERROR_DISPLAY_IN_USE								"Display in use!"
-#define FLINT_BACKEND_ERROR_RENDER_TARGET_SUBOPTIMAL					"Render target suboptimal!"
-#define FLINT_BACKEND_ERROR_RENDER_TARGET_OUT_OF_DATE					"Render target out of date!"
-#define FLINT_BACKEND_ERROR_INCOMPATIBLE_DISPLAY						"Incompatible display!"
-#define FLINT_BACKEND_ERROR_VALIDATION_FAILED							"Validation failed!"
-#define FLINT_BACKEND_ERROR_INVALID_SHADER								"Invalid shader!"
-#define FLINT_BACKEND_ERROR_OPERATION_NOT_PERMITTED						"Operation not permitted!"
-#define FLINT_BACKEND_ERROR_FULL_SCREEN_MODE_LOST						"Full screen mode lost!"
-#define FLINT_BACKEND_ERROR_DEVICE_THREAD_IDLE							"Device thread idle!"
-#define FLINT_BACKEND_ERROR_DEVICE_THREAD_DONE							"Device thread done!"
-#define FLINT_BACKEND_ERROR_OPERATION_DEFERRED							"Operation deferred!"
-#define FLINT_BACKEND_ERROR_OPERATION_NOT_DEFERRED						"Operation not deferred!"
-#define FLINT_BACKEND_ERROR_PIPELINE_COMPILATION_REQUIRED				"Pipeline compilation required!"
-#define FLINT_BACKEND_ERROR_VULKAN_LAYER_NOT_PRESENT					"Vulkan layer not present!"
-#define FLINT_BACKEND_ERROR_VULKAN_EXTENSION_NOT_PRESENT				"Vulkan extension not present!"
-#define FLINT_BACKEND_ERROR_VULKAN_INVALID_OPAQUE_CAPTURE_ADDRESS		"Vulkan invalid opaque capture address!"
+namespace Flint
+{
+	/* Backend error constants. */
+
+	constexpr const char BackendErrorUnknown[] = "Unknown error!";
+	constexpr const char BackendErrorDeviceNotReady[] = "Device not ready!";
+	constexpr const char BackendErrorDeviceTimeout[] = "Device timeout!";
+	constexpr const char BackendErrorEventSet[] = "Event set!";
+	constexpr const char BackendErrorEventReset[] = "Event reset!";
+	constexpr const char BackendErrorIncompleteCommand[] = "Incomplete command!";
+	constexpr const char BackendErrorDeviceOutOfHostMemory[] = "Device out of host memory!";
+	constexpr const char BackendErrorDeviceOutOfDeviceMemory[] = "Device out of device memory!";
+	constexpr const char BackendErrorInitializationFailed[] = "Initialization failed!";
+	constexpr const char BackendErrorDeviceLost[] = "Device lost!";
+	constexpr const char BackendErrorMemoryMappingFailed[] = "Memory mapping failed!";
+	constexpr const char BackendErrorDeviceFeatureNotPresent[] = "Device feature not present!";
+	constexpr const char BackendErrorIncompatibleDriver[] = "Incompatible driver!";
+	constexpr const char BackendErrorTooManyObjects[] = "Too many objects!";
+	constexpr const char BackendErrorFormatNotSupported[] = "Format not supported!";
+	constexpr const char BackendErrorFragmentedPool[] = "Fragmented pool!";
+	constexpr const char BackendErrorOutOfPoolMemory[] = "Out of pool memory!";
+	constexpr const char BackendErrorInvalidHandle[] = "Invalid handle!";
+	constexpr const char BackendErrorInternalFragmentation[] = "Internal fragmentation!";
+	constexpr const char BackendErrorDisplayLost[] = "Display lost!";
+	constexpr const char BackendErrorDisplayInUse[] = "Display in use!";
+	constexpr const char BackendErrorRenderTargetSuboptimal[] = "Render target suboptimal!";
+	constexpr const char BackendErrorRenderTrargetOutOfDate[] = "Render target out of date!";
+	constexpr const char BackendErrorIncompatibleDisplay[] = "Incompatible display!";
+	constexpr const char BackendErrorValidationFailed[] = "Validation failed!";
+	constexpr const char BackendErrorInvalidShader[] = "Invalid shader!";
+	constexpr const char BackendErrorOperationNotPermitted[] = "Operation not permitted!";
+	constexpr const char BackendErrorFullScreenModeLost[] = "Full screen mode lost!";
+	constexpr const char BackendErrorDeviceThreadIdle[] = "Device thread idle!";
+	constexpr const char BackendErrorDeviceThreadDone[] = "Device thread done!";
+	constexpr const char BackendErrorOperationDiferred[] = "Operation deferred!";
+	constexpr const char BackendErrorOperationNotDeferred[] = "Operation not deferred!";
+	constexpr const char BackendErrorPipelineCompilationRequired[] = "Pipeline compilation required!";
+	constexpr const char BackendErrorVulkanLayerNotPresent[] = "Vulkan layer not present!";
+	constexpr const char BackendErrorVulkanExtensionNotPresent[] = "Vulkan extension not present!";
+	constexpr const char BackendErrorVulkanInvalidOpaqueCaptureAddress[] = "Vulkan invalid opaque capture address!";
+}

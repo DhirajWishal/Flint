@@ -65,14 +65,14 @@ int main(int argc, char** argv)
 					auto position = mState.pDisplay->GetMousePosition();
 					io.MousePos = ImVec2(position.X, position.Y);
 
-					if (mState.pDisplay->GetMouseButtonEvent(Flint::MouseButton::LEFT).IsPressed() || mState.pDisplay->GetMouseButtonEvent(Flint::MouseButton::LEFT).IsOnRepeat())
+					if (mState.pDisplay->GetMouseButtonEvent(Flint::MouseButton::Left).IsPressed() || mState.pDisplay->GetMouseButtonEvent(Flint::MouseButton::Left).IsOnRepeat())
 						io.MouseDown[0] = true;
-					else if (mState.pDisplay->GetMouseButtonEvent(Flint::MouseButton::LEFT).IsReleased())
+					else if (mState.pDisplay->GetMouseButtonEvent(Flint::MouseButton::Left).IsReleased())
 						io.MouseDown[0] = false;
 
-					if (mState.pDisplay->GetMouseButtonEvent(Flint::MouseButton::RIGHT).IsPressed() || mState.pDisplay->GetMouseButtonEvent(Flint::MouseButton::RIGHT).IsOnRepeat())
+					if (mState.pDisplay->GetMouseButtonEvent(Flint::MouseButton::Right).IsPressed() || mState.pDisplay->GetMouseButtonEvent(Flint::MouseButton::Right).IsOnRepeat())
 						io.MouseDown[1] = true;
-					else if (mState.pDisplay->GetMouseButtonEvent(Flint::MouseButton::RIGHT).IsReleased())
+					else if (mState.pDisplay->GetMouseButtonEvent(Flint::MouseButton::Right).IsReleased())
 						io.MouseDown[1] = false;
 				}
 

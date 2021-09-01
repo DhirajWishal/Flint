@@ -15,9 +15,9 @@
 std::vector<VertexAttribute> GetDefaultVertexAttributes()
 {
 	std::vector<VertexAttribute> attributes(3);
-	attributes[0] = VertexAttribute(sizeof(glm::vec3), VertexAttributeType::POSITION);
-	attributes[1] = VertexAttribute(sizeof(glm::vec3), VertexAttributeType::COLOR_0);
-	attributes[2] = VertexAttribute(sizeof(glm::vec2), VertexAttributeType::TEXTURE_COORDINATES_0);
+	attributes[0] = VertexAttribute(sizeof(glm::vec3), VertexAttributeType::Position);
+	attributes[1] = VertexAttribute(sizeof(glm::vec3), VertexAttributeType::ColorZero);
+	attributes[2] = VertexAttribute(sizeof(glm::vec2), VertexAttributeType::TextureCoordinatesZero);
 
 	return attributes;
 }
@@ -85,7 +85,7 @@ Asset ImportAsset(const std::shared_ptr<Flint::Device>& pDevice, const std::file
 		vertexCount += pScene->mMeshes[i]->mNumVertices;
 
 	Asset asset = {};
-	asset.pVertexBuffer = pDevice->CreateBuffer(Flint::BufferType::STAGING, vertexCount * vertexSize);
+	asset.pVertexBuffer = pDevice->CreateBuffer(Flint::BufferType::Staging, vertexCount * vertexSize);
 	float* pDataStore = static_cast<float*>(asset.pVertexBuffer->MapMemory(vertexCount * vertexSize));
 
 	UI64 indexCount = 0;
@@ -123,99 +123,99 @@ Asset ImportAsset(const std::shared_ptr<Flint::Device>& pDevice, const std::file
 
 				switch (attribute.mType)
 				{
-				case VertexAttributeType::POSITION:
+				case VertexAttributeType::Position:
 					if (pMesh->HasPositions())
 						std::copy(&pMesh->mVertices[j].x, (&pMesh->mVertices[j].x) + copyAmount, pDataStore);
 					break;
 
-				case VertexAttributeType::NORMAL:
+				case VertexAttributeType::Normal:
 					if (pMesh->HasNormals())
 						std::copy(&pMesh->mNormals[j].x, (&pMesh->mNormals[j].x) + copyAmount, pDataStore);
 					break;
 
-				case VertexAttributeType::COLOR_0:
+				case VertexAttributeType::ColorZero:
 					if (pMesh->HasVertexColors(0))
 						std::copy(&pMesh->mColors[0][j].r, (&pMesh->mColors[0][j].r) + copyAmount, pDataStore);
 					else
 						std::fill(pDataStore, pDataStore + (attribute.mAttributeSize / sizeof(float)), 1.0f);
 					break;
 
-				case VertexAttributeType::COLOR_1:
+				case VertexAttributeType::ColorOne:
 					if (pMesh->HasVertexColors(1))
 						std::copy(&pMesh->mColors[1][j].r, (&pMesh->mColors[1][j].r) + copyAmount, pDataStore);
 					break;
 
-				case VertexAttributeType::COLOR_2:
+				case VertexAttributeType::ColorTwo:
 					if (pMesh->HasVertexColors(2))
 						std::copy(&pMesh->mColors[2][j].r, (&pMesh->mColors[1][j].r) + copyAmount, pDataStore);
 					break;
 
-				case VertexAttributeType::COLOR_3:
+				case VertexAttributeType::ColorThree:
 					if (pMesh->HasVertexColors(3))
 						std::copy(&pMesh->mColors[3][j].r, (&pMesh->mColors[2][j].r) + copyAmount, pDataStore);
 					break;
 
-				case VertexAttributeType::TEXTURE_COORDINATES_0:
+				case VertexAttributeType::TextureCoordinatesZero:
 					if (pMesh->HasTextureCoords(0))
 						std::copy(&pMesh->mTextureCoords[0][j].x, (&pMesh->mTextureCoords[0][j].x) + copyAmount, pDataStore);
 					break;
 
-				case VertexAttributeType::TEXTURE_COORDINATES_1:
+				case VertexAttributeType::TextureCoordinatesOne:
 					if (pMesh->HasTextureCoords(1))
 						std::copy(&pMesh->mTextureCoords[1][j].x, (&pMesh->mTextureCoords[1][j].x) + copyAmount, pDataStore);
 					break;
 
-				case VertexAttributeType::TEXTURE_COORDINATES_2:
+				case VertexAttributeType::TextureCoordinatesTwo:
 					if (pMesh->HasTextureCoords(2))
 						std::copy(&pMesh->mTextureCoords[2][j].x, (&pMesh->mTextureCoords[2][j].x) + copyAmount, pDataStore);
 					break;
 
-				case VertexAttributeType::TEXTURE_COORDINATES_3:
+				case VertexAttributeType::TextureCoordinatesThree:
 					if (pMesh->HasTextureCoords(3))
 						std::copy(&pMesh->mTextureCoords[3][j].x, (&pMesh->mTextureCoords[3][j].x) + copyAmount, pDataStore);
 					break;
 
-				case VertexAttributeType::TEXTURE_COORDINATES_4:
+				case VertexAttributeType::TextureCoordinatesFour:
 					if (pMesh->HasTextureCoords(4))
 						std::copy(&pMesh->mTextureCoords[4][j].x, (&pMesh->mTextureCoords[4][j].x) + copyAmount, pDataStore);
 					break;
 
-				case VertexAttributeType::TEXTURE_COORDINATES_5:
+				case VertexAttributeType::TextureCoordinatesFive:
 					if (pMesh->HasTextureCoords(5))
 						std::copy(&pMesh->mTextureCoords[5][j].x, (&pMesh->mTextureCoords[5][j].x) + copyAmount, pDataStore);
 					break;
 
-				case VertexAttributeType::TEXTURE_COORDINATES_6:
+				case VertexAttributeType::TextureCoordinatesSix:
 					if (pMesh->HasTextureCoords(6))
 						std::copy(&pMesh->mTextureCoords[6][j].x, (&pMesh->mTextureCoords[6][j].x) + copyAmount, pDataStore);
 					break;
 
-				case VertexAttributeType::TEXTURE_COORDINATES_7:
+				case VertexAttributeType::TextureCoordinatesSeven:
 					if (pMesh->HasTextureCoords(7))
 						std::copy(&pMesh->mTextureCoords[7][j].x, (&pMesh->mTextureCoords[7][j].x) + copyAmount, pDataStore);
 					break;
 
-				case VertexAttributeType::UV_COORDINATES:
+				case VertexAttributeType::UVCoordinates:
 					if (pMesh->HasTextureCoords(0))
 						std::copy(&pMesh->mTextureCoords[0][j].x, (&pMesh->mTextureCoords[0][j].x) + copyAmount, pDataStore);
 					break;
 
-				case VertexAttributeType::TANGENT:
+				case VertexAttributeType::Tangent:
 					if (pMesh->HasTangentsAndBitangents())
 						std::copy(&pMesh->mTangents[j].x, (&pMesh->mTangents[j].x) + copyAmount, pDataStore);
 					break;
 
-				case VertexAttributeType::BITANGENT:
+				case VertexAttributeType::Bitangent:
 					if (pMesh->HasTangentsAndBitangents())
 						std::copy(&pMesh->mBitangents[j].x, (&pMesh->mBitangents[j].x) + copyAmount, pDataStore);
 					break;
 
-				case VertexAttributeType::BONE_ID:
+				case VertexAttributeType::BoneID:
 					//if (pMesh->HasPositions())
 					//	std::copy(&pMesh->mVertices[j].x, (&pMesh->mVertices[j].x) + copyAmount, pDataStore);
 					//break;
 
-				case VertexAttributeType::BONE_WEIGHT:
+				case VertexAttributeType::BoneWeight:
 					//if (pMesh->HasPositions())
 					//	std::copy(&pMesh->mVertices[j].x, (&pMesh->mVertices[j].x) + copyAmount, pDataStore);
 					//break;
@@ -249,7 +249,7 @@ Asset ImportAsset(const std::shared_ptr<Flint::Device>& pDevice, const std::file
 	asset.pVertexBuffer->UnmapMemory();
 
 	// Create the index buffer.
-	asset.pIndexBuffer = pDevice->CreateBuffer(Flint::BufferType::STAGING, indexCount * sizeof(UI32));
+	asset.pIndexBuffer = pDevice->CreateBuffer(Flint::BufferType::Staging, indexCount * sizeof(UI32));
 	UI32* pIndexDataPointer = static_cast<UI32*>(asset.pIndexBuffer->MapMemory(indexCount * sizeof(UI32)));
 
 	// Copy data to the stagging buffer.

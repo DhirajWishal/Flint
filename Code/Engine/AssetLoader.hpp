@@ -12,30 +12,30 @@ namespace Flint
 	 * Vertex attribute type enum.
 	 */
 	enum class VertexAttributeType : UI8 {
-		UNDEFINED,
-		POSITION,
-		NORMAL,
+		Undefined,
+		Position,
+		Normal,
 
-		COLOR_0,
-		COLOR_1,
-		COLOR_2,
-		COLOR_3,
+		ColorZero,
+		ColorOne,
+		ColorTwo,
+		ColorThree,
 
-		TEXTURE_COORDINATES_0,
-		TEXTURE_COORDINATES_1,
-		TEXTURE_COORDINATES_2,
-		TEXTURE_COORDINATES_3,
-		TEXTURE_COORDINATES_4,
-		TEXTURE_COORDINATES_5,
-		TEXTURE_COORDINATES_6,
-		TEXTURE_COORDINATES_7,
+		TextureCoordinatesZero,
+		TextureCoordinatesOne,
+		TextureCoordinatesTwo,
+		TextureCoordinatesThree,
+		TextureCoordinatesFour,
+		TextureCoordinatesFive,
+		TextureCoordinatesSix,
+		TextureCoordinatesSeven,
 
-		UV_COORDINATES,
-		TANGENT,
-		BITANGENT,
+		UVCoordinates,
+		Tangent,
+		Bitangent,
 
-		BONE_ID,
-		BONE_WEIGHT,
+		BoneID,
+		BoneWeight,
 	};
 
 	/**
@@ -47,7 +47,7 @@ namespace Flint
 		VertexAttribute(UI8 size, VertexAttributeType type) : mAttributeSize(size), mType(type) {}
 
 		UI8 mAttributeSize = 0;
-		VertexAttributeType mType = VertexAttributeType::UNDEFINED;
+		VertexAttributeType mType = VertexAttributeType::Undefined;
 	};
 
 	/**

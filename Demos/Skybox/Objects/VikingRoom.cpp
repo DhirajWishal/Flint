@@ -10,7 +10,7 @@ VikingRoom::VikingRoom(glm::vec3 position, SceneState* pSceneState) : GameObject
 	pDynamicStates = std::make_shared<Flint::DynamicStateContainer>();
 
 	auto image = LoadImage(pSceneState->GetAssetPath().string() + "\\Packages\\VikingRoom\\VikingRoom\\texture.png");
-	pTexture = pSceneState->pDevice->CreateImage(Flint::ImageType::DIMENSIONS_2, Flint::ImageUsage::GRAPHICS | Flint::ImageUsage::STORAGE, image.mExtent, Flint::PixelFormat::R8G8B8A8_UNORMAL, 1, 1, image.pImageData);
+	pTexture = pSceneState->pDevice->CreateImage(Flint::ImageType::TwoDimension, Flint::ImageUsage::Graphics | Flint::ImageUsage::Storage, image.mExtent, Flint::PixelFormat::R8G8B8A8_UNORMAL, 1, 1, image.pImageData);
 	DestroyImage(image);
 
 	pTextureSampler = pSceneState->pDevice->CreateImageSampler(Flint::ImageSamplerSpecification());
@@ -49,8 +49,8 @@ VikingRoom::VikingRoom(glm::vec3 position, SceneState* pSceneState) : GameObject
 	{
 		auto pDevice = pSceneState->pDevice;
 
-		auto pResultTexture = pDevice->CreateImage(Flint::ImageType::DIMENSIONS_2, Flint::ImageUsage::STORAGE, image.mExtent, Flint::PixelFormat::R8G8B8A8_UNORMAL, 1, 1, nullptr);
-		auto pShader = pDevice->CreateShader(Flint::ShaderType::COMPUTE, std::filesystem::path("Flint\\Shaders\\ComputeShader\\EdgeDetection.comp.spv"));
+		auto pResultTexture = pDevice->CreateImage(Flint::ImageType::TwoDimension, Flint::ImageUsage::Storage, image.mExtent, Flint::PixelFormat::R8G8B8A8_UNORMAL, 1, 1, nullptr);
+		auto pShader = pDevice->CreateShader(Flint::ShaderType::Compute, std::filesystem::path("Flint\\Shaders\\ComputeShader\\EdgeDetection.comp.spv"));
 		auto pTextureSampler = pDevice->CreateImageSampler(Flint::ImageSamplerSpecification());
 		auto pComputePipeline = pDevice->CreateComputePipeline("TextureGenerator", pShader);
 
@@ -86,27 +86,27 @@ void VikingRoom::OnUpdate(UI64 delta)
 	}
 
 	// Rotate x
-	if (pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_X).IsPressed() || pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_X).IsOnRepeat())
+	if (pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KeyX).IsPressed() || pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KeyX).IsOnRepeat())
 	{
-		if ((pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_X).GetSpecialCharacter() & Flint::SpecialCharacter::SHIFT) == Flint::SpecialCharacter::SHIFT)
+		if ((pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KeyX).GetSpecialCharacter() & Flint::SpecialCharacter::Shift) == Flint::SpecialCharacter::Shift)
 			mModelMatrix *= glm::rotate(glm::mat4(1.0f), mRotationBias, glm::vec3(1.0f, 0.0f, 0.0f));
 		else
 			mModelMatrix *= glm::rotate(glm::mat4(1.0f), -mRotationBias, glm::vec3(1.0f, 0.0f, 0.0f));
 	}
 
 	// Rotate y
-	if (pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Y).IsPressed() || pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Y).IsOnRepeat())
+	if (pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KeyY).IsPressed() || pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KeyY).IsOnRepeat())
 	{
-		if ((pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Y).GetSpecialCharacter() & Flint::SpecialCharacter::SHIFT) == Flint::SpecialCharacter::SHIFT)
+		if ((pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KeyY).GetSpecialCharacter() & Flint::SpecialCharacter::Shift) == Flint::SpecialCharacter::Shift)
 			mModelMatrix *= glm::rotate(glm::mat4(1.0f), mRotationBias, glm::vec3(0.0f, 1.0f, 0.0f));
 		else
 			mModelMatrix *= glm::rotate(glm::mat4(1.0f), -mRotationBias, glm::vec3(0.0f, 1.0f, 0.0f));
 	}
 
 	// Rotate z
-	if (pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Z).IsPressed() || pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Z).IsOnRepeat())
+	if (pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KeyZ).IsPressed() || pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KeyZ).IsOnRepeat())
 	{
-		if ((pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KEY_Z).GetSpecialCharacter() & Flint::SpecialCharacter::SHIFT) == Flint::SpecialCharacter::SHIFT)
+		if ((pSceneState->pDisplay->GetKeyEvent(Flint::KeyCode::KeyZ).GetSpecialCharacter() & Flint::SpecialCharacter::Shift) == Flint::SpecialCharacter::Shift)
 			mModelMatrix *= glm::rotate(glm::mat4(1.0f), mRotationBias, glm::vec3(0.0f, 0.0f, 1.0f));
 		else
 			mModelMatrix *= glm::rotate(glm::mat4(1.0f), -mRotationBias, glm::vec3(0.0f, 0.0f, 1.0f));
@@ -121,15 +121,15 @@ void VikingRoom::SetupPipeline()
 {
 	Flint::GraphicsPipelineSpecification specification = {};
 	specification.mRasterizationSamples = pSceneState->pDevice->GetSupportedMultiSampleCount();
-	specification.mDynamicStateFlags = Flint::DynamicStateFlags::VIEWPORT | Flint::DynamicStateFlags::SCISSOR;
+	specification.mDynamicStateFlags = Flint::DynamicStateFlags::ViewPort | Flint::DynamicStateFlags::Scissor;
 	specification.bEnableDepthTest = true;
 	specification.bEnableDepthWrite = true;
 	specification.mColorBlendConstants[0] = 0.0f;
 	specification.mColorBlendConstants[1] = 0.0f;
 	specification.mColorBlendConstants[2] = 0.0f;
 	specification.mColorBlendConstants[3] = 0.0f;
-	//specification.mPrimitiveTopology = Flint::PrimitiveTopology::TRIANGLE_LIST;
-	//specification.mPolygonMode = Flint::PolygonMode::LINE;
+	//specification.mPrimitiveTopology = Flint::PrimitiveTopology::TriangleList;
+	//specification.mPolygonMode = Flint::PolygonMode::Line;
 
 	pSceneState->pGraphicsPipelines["DefaultWireframe"] = pSceneState->pDevice->CreateGraphicsPipeline("DefaultWireframe", pSceneState->pScreenBoundRenderTargets["Default"], pSceneState->pVertexShader, nullptr, nullptr, nullptr, pSceneState->pFragmentShader, specification);
 	pSceneState->pScreenBoundRenderTargets["Default"]->SubmitGraphicsPipeline(pSceneState->pGeometryStores["Default"], pSceneState->pGraphicsPipelines["DefaultWireframe"]);

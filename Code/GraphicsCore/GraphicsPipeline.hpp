@@ -15,27 +15,27 @@ namespace Flint
 	 * This describes how the vertexes are connected.
 	 */
 	enum class PrimitiveTopology : UI8 {
-		POINT_LIST,
-		LINE_LIST,
-		LINE_STRIP,
-		TRIANGLE_LIST,
-		TRIANGLE_STRIP,
-		TRIANGLE_FAN,
-		LINE_LIST_WITH_ADJACENCY,
-		LINE_STRIP_WITH_ADJACENCY,
-		TRIANGLE_LIST_WITH_ADJACENCY,
-		TRIANGLE_STRIP_WITH_ADJACENCY,
-		PATCH_LIST,
+		PointList,
+		LineList,
+		LineStrip,
+		TriangleList,
+		TriangleStrip,
+		TriangleFan,
+		LineListWithAdjacency,
+		LineStripWithAdjacency,
+		TriangleListWithAdjacency,
+		TriangleStripWithAdjacency,
+		PatchList,
 	};
 
 	/**
 	 * Pipeline cull mode.
 	 */
 	enum class CullMode : UI8 {
-		NONE,
-		FRONT,
-		BACK,
-		FRONT_AND_BACK
+		None,
+		Front,
+		Back,
+		FrontAndBack
 	};
 
 	/**
@@ -46,12 +46,12 @@ namespace Flint
 		/**
 		 * In this mode, the front side of it is facing away from you.
 		 */
-		COUNTER_CLOCKWISE,
+		CounterClockwise,
 
 		/**
 		 * In this mode, the front is facing towards you.
 		 */
-		 CLOCKWISE,
+		 Clockwise,
 	};
 
 	/**
@@ -59,9 +59,9 @@ namespace Flint
 	 * This defines how a vertex group. A vertex group is defined by the primitive topology.
 	 */
 	enum class PolygonMode : UI8 {
-		FILL,
-		LINE,
-		POINT,
+		Fill,
+		Line,
+		Point,
 	};
 
 	/**
@@ -69,22 +69,22 @@ namespace Flint
 	 * This defined what logic to apply when color blending.
 	 */
 	enum class ColorBlendLogic : UI8 {
-		CLEAR,
-		AND,
-		AND_REVERSE,
-		COPY,
-		AND_INVERTED,
-		NO_OP,
+		Clear,
+		And,
+		AndReverse,
+		Copy,
+		AndInverted,
+		NoOperator,
 		XOR,
 		OR,
 		NOR,
-		EQUIVALENT,
-		INVERT,
-		OR_REVERSE,
-		COPY_INVERTED,
-		OR_INVERTED,
+		Equivalent,
+		Invert,
+		ReverseOR,
+		CopyInverted,
+		InvertedOR,
 		NAND,
-		SET,
+		Set,
 	};
 
 	/**
@@ -92,96 +92,96 @@ namespace Flint
 	 * This defines what logic to apply when depth comparing.
 	 */
 	enum class DepthCompareLogic : UI8 {
-		NEVER,
-		LESS,
-		EQUAL,
-		LESS_OR_EQUAL,
-		GREATER,
-		NOT_EQUAL,
-		GREATER_OR_EQUAL,
-		ALWAYS,
+		Never,
+		Less,
+		Equal,
+		LessOrEqual,
+		Greater,
+		NotEqual,
+		GreaterOrEqual,
+		Always,
 	};
 
 	/**
 	 * Color blend factor enum.
 	 */
 	enum class ColorBlendFactor : UI8 {
-		ZERO,
-		ONE,
-		SRC_COLOR,
-		ONE_MINUS_SRC_COLOR,
-		DST_COLOR,
-		ONE_MINUS_DST_COLOR,
-		SRC_ALPHA,
-		ONE_MINUS_SRC_ALPHA,
-		DST_ALPHA,
-		ONE_MINUS_DST_ALPHA,
-		CONSTANT_COLOR,
-		ONE_MINUS_CONSTANT_COLOR,
-		CONSTANT_ALPHA,
-		ONE_MINUS_CONSTANT_ALPHA,
-		SRC_ALPHA_SATURATE,
-		SRC1_COLOR,
-		ONE_MINUS_SRC1_COLOR,
-		SRC1_ALPHA,
-		ONE_MINUS_SRC1_ALPHA,
+		Zero,
+		One,
+		SourceColor,
+		OneMinusSourceColor,
+		DestinationColor,
+		OneMinusDestinationColor,
+		SourceAlpha,
+		OneMinusSourceAlpha,
+		DestinationAlpha,
+		OneMinusDestinationAlpha,
+		ConstantColor,
+		OneMinusConstantColor,
+		ConstantAlpha,
+		OneMinusConstantAlpha,
+		SourceAlphaSaturate,
+		SourceOneColor,
+		OneMinusSourceOneColor,
+		SourceOneAlpha,
+		OneMinusSourceOneAlpha,
 	};
 
 	/**
 	 * Color blend operator enum.
 	 */
 	enum class ColorBlendOperator : UI8 {
-		ADD,
-		SUBTRACT,
-		REVERSE_SUBTRACT,
-		MIN,
-		MAX,
-		ZERO,
-		SRC,
-		DST,
-		SRC_OVER,
-		DST_OVER,
-		SRC_IN,
-		DST_IN,
-		SRC_OUT,
-		DST_OUT,
-		SRC_ATOP,
-		DST_ATOP,
+		Add,
+		Subtract,
+		ReverseSubtract,
+		Minimum,
+		Maximum,
+		Zero,
+		Source,
+		Destination,
+		SourceOver,
+		DestinationOver,
+		SourceIn,
+		DestinationIn,
+		SouceOut,
+		DestinationOut,
+		SourceATOP,
+		DestinationATOP,
 		XOR,
-		MULTIPLY,
-		SCREEN,
-		OVERLAY,
-		DARKEN,
-		LIGHTEN,
-		COLORDODGE,
-		COLORBURN,
-		HARDLIGHT,
-		SOFTLIGHT,
-		DIFFERENCE,
-		EXCLUSION,
-		INVERT,
-		INVERT_RGB,
-		LINEARDODGE,
-		LINEARBURN,
-		VIVIDLIGHT,
-		LINEARLIGHT,
-		PINLIGHT,
-		HARDMIX,
-		HSL_HUE,
-		HSL_SATURATION,
-		HSL_COLOR,
-		HSL_LUMINOSITY,
-		PLUS,
-		PLUS_CLAMPED,
-		PLUS_CLAMPED_ALPHA,
-		PLUS_DARKER,
-		MINUS,
-		MINUS_CLAMPED,
-		CONTRAST,
-		INVERT_OVG,
-		RED,
-		GREEN,
-		BLUE,
+		Multiply,
+		Screen,
+		Overlay,
+		Darken,
+		Lighten,
+		ColorDodge,
+		ColorBurn,
+		HardLight,
+		SoftLight,
+		Difference,
+		Exclusion,
+		Invert,
+		InvertRGB,
+		LinearDodge,
+		LinearBurn,
+		VividLight,
+		LinearLight,
+		PinLight,
+		HardMix,
+		HSLHue,
+		HSLSaturation,
+		HSLColor,
+		HSLLuminosity,
+		Plus,
+		PlusClamped,
+		PlusClampedAlpha,
+		PlusDarker,
+		Minus,
+		MinusClamped,
+		Contrast,
+		InvertOVG,
+		Red,
+		Green,
+		Blue,
 	};
 
 	/**
@@ -204,11 +204,11 @@ namespace Flint
 	constexpr ColorWriteMask operator|(const ColorWriteMask& lhs, const ColorWriteMask& rhs) { return static_cast<ColorWriteMask>(static_cast<UI8>(lhs) | static_cast<UI8>(rhs)); }
 
 	/**
-	 * Color write mask bitwise AND operator.
+	 * Color write mask bitwise And operator.
 	 *
 	 * @param lhs: The left hand side argument.
 	 * @param rhs: The right hand side argument.
-	 * @return The AND performed color write mask.
+	 * @return The And performed color write mask.
 	 */
 	constexpr ColorWriteMask operator&(const ColorWriteMask& lhs, const ColorWriteMask& rhs) { return static_cast<ColorWriteMask>(static_cast<UI8>(lhs) & static_cast<UI8>(rhs)); }
 
@@ -218,12 +218,12 @@ namespace Flint
 	struct ColorBlendAttachment
 	{
 		bool mEnableBlend = false;
-		ColorBlendFactor mSrcBlendFactor = ColorBlendFactor::ZERO;
-		ColorBlendFactor mDstBlendFactor = ColorBlendFactor::ZERO;
-		ColorBlendFactor mSrcAlphaBlendFactor = ColorBlendFactor::ZERO;
-		ColorBlendFactor mDstAlphaBlendFactor = ColorBlendFactor::ZERO;
-		ColorBlendOperator mBlendOperator = ColorBlendOperator::ADD;
-		ColorBlendOperator mAlphaBlendOperator = ColorBlendOperator::ADD;
+		ColorBlendFactor mSrcBlendFactor = ColorBlendFactor::Zero;
+		ColorBlendFactor mDstBlendFactor = ColorBlendFactor::Zero;
+		ColorBlendFactor mSrcAlphaBlendFactor = ColorBlendFactor::Zero;
+		ColorBlendFactor mDstAlphaBlendFactor = ColorBlendFactor::Zero;
+		ColorBlendOperator mBlendOperator = ColorBlendOperator::Add;
+		ColorBlendOperator mAlphaBlendOperator = ColorBlendOperator::Add;
 		ColorWriteMask mColorWriteMask = ColorWriteMask::R | ColorWriteMask::G | ColorWriteMask::B | ColorWriteMask::A;
 	};
 
@@ -248,14 +248,14 @@ namespace Flint
 
 		UI32 mTessellationPatchControlPoints = 0;
 
-		PrimitiveTopology mPrimitiveTopology = PrimitiveTopology::TRIANGLE_LIST;
-		CullMode mCullMode = CullMode::BACK;
-		FrontFace mFrontFace = FrontFace::COUNTER_CLOCKWISE;
-		PolygonMode mPolygonMode = PolygonMode::FILL;
-		ColorBlendLogic mColorBlendLogic = ColorBlendLogic::CLEAR;
-		DepthCompareLogic mDepthCompareLogic = DepthCompareLogic::LESS_OR_EQUAL;
+		PrimitiveTopology mPrimitiveTopology = PrimitiveTopology::TriangleList;
+		CullMode mCullMode = CullMode::Back;
+		FrontFace mFrontFace = FrontFace::CounterClockwise;
+		PolygonMode mPolygonMode = PolygonMode::Fill;
+		ColorBlendLogic mColorBlendLogic = ColorBlendLogic::Clear;
+		DepthCompareLogic mDepthCompareLogic = DepthCompareLogic::LessOrEqual;
 		DynamicStateFlags mDynamicStateFlags = DynamicStateFlags(0);
-		MultiSampleCount mRasterizationSamples = MultiSampleCount::BITS_1;
+		MultiSampleCount mRasterizationSamples = MultiSampleCount::One;
 
 		bool bEnablePrimitiveRestart = false;
 		bool bEnableDepthBias = false;

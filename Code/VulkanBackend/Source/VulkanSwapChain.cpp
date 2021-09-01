@@ -14,26 +14,26 @@ namespace Flint
 			{
 				switch (mode)
 				{
-				case Flint::SwapChainPresentMode::IMMEDIATE:
+				case Flint::SwapChainPresentMode::Immediate:
 					return VkPresentModeKHR::VK_PRESENT_MODE_IMMEDIATE_KHR;
 
-				case Flint::SwapChainPresentMode::MAILBOX:
+				case Flint::SwapChainPresentMode::MailBox:
 					return VkPresentModeKHR::VK_PRESENT_MODE_MAILBOX_KHR;
 
 				case Flint::SwapChainPresentMode::FIFO:
 					return VkPresentModeKHR::VK_PRESENT_MODE_FIFO_KHR;
 
-				case Flint::SwapChainPresentMode::FIFO_RELAXED:
+				case Flint::SwapChainPresentMode::RelaxedFIFO:
 					return VkPresentModeKHR::VK_PRESENT_MODE_FIFO_RELAXED_KHR;
 
-				case Flint::SwapChainPresentMode::SHARED_DEMAND_REFRESH:
+				case Flint::SwapChainPresentMode::SharedDemandRefresh:
 					return VkPresentModeKHR::VK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR;
 
-				case Flint::SwapChainPresentMode::SHARED_CONTINUOUS_REFRESH:
+				case Flint::SwapChainPresentMode::SharedContinuousRefresh:
 					return VkPresentModeKHR::VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR;
 				}
 
-				FLINT_THROW_BACKEND_ERROR("Invalid swap chain present mode!");
+				throw backend_error("Invalid swap chain present mode!");
 			}
 		}
 
@@ -145,7 +145,7 @@ namespace Flint
 			}
 
 			if (!bPresentModeAvailable)
-				FLINT_THROW_BACKEND_ERROR("Requested swap chain present mode is not supported!");
+				throw backend_error("Requested swap chain present mode is not supported!");
 
 			auto vCapabilities = vDisplay.GetSurfaceCapabilities(vDevice);
 

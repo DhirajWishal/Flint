@@ -15,7 +15,7 @@ all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+FITNESS FOR A PARTICULAR PURPOSE And NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
@@ -133,7 +133,7 @@ namespace tinyobj {
 //
 // TinyObjLoader extension.
 //
-//   -colorspace SPACE                      # Color space of the texture. e.g.
+//   -colorspace Space                      # Color space of the texture. e.g.
 //   'sRGB` or 'linear'
 //
 
@@ -673,8 +673,8 @@ Permission to use, copy, modify, and/or distribute this software for any purpose
 with or without fee is hereby granted, provided that the above copyright notice
 and this permission notice appear in all copies.
 
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
-REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
+THE SOFTWARE IS PROVIDED "AS IS" And THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY And
 FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
 INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS
 OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
@@ -1684,11 +1684,11 @@ namespace tinyobj {
 	//
 	// Parses the following EBNF grammar:
 	//   sign    = "+" | "-" ;
-	//   END     = ? anything not in digit ?
+	//   End     = ? anything not in digit ?
 	//   digit   = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
 	//   integer = [sign] , digit , {digit} ;
 	//   decimal = integer , ["." , integer] ;
-	//   float   = ( decimal , END ) | ( decimal , ("E" | "e") , integer , END ) ;
+	//   float   = ( decimal , End ) | ( decimal , ("E" | "e") , integer , End ) ;
 	//
 	//  Valid strings are for example:
 	//   -0  +3.1417e+2  -0.0E-3  1.0324  -1.41   11e2

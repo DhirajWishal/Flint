@@ -49,18 +49,18 @@ Light::Light(glm::vec3 position, SceneState* pSceneState)
 		pSceneState->CreateDefaultPipeline();
 
 	auto image = LoadImage(pSceneState->GetAssetPath().string() + "\\Textures\\LightBulb\\outline_lightbulb_white_48dp.png");
-	pTexture = pSceneState->pDevice->CreateImage(Flint::ImageType::DIMENSIONS_2, Flint::ImageUsage::GRAPHICS, image.mExtent, Flint::PixelFormat::R8G8B8A8_SRGB, 1, 1, image.pImageData);
+	pTexture = pSceneState->pDevice->CreateImage(Flint::ImageType::TwoDimension, Flint::ImageUsage::Graphics, image.mExtent, Flint::PixelFormat::R8G8B8A8_SRGB, 1, 1, image.pImageData);
 	DestroyImage(image);
 
 	pTextureSampler = pSceneState->pDevice->CreateImageSampler(Flint::ImageSamplerSpecification());
 
-	pVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::VERTEX, std::filesystem::path("Flint\\Shaders\\Guizmo\\shader.vert.spv"));
-	pFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::FRAGMENT, std::filesystem::path("Flint\\Shaders\\Guizmo\\shader.frag.spv"));
+	pVertexShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::Vertex, std::filesystem::path("Flint\\Shaders\\Guizmo\\shader.vert.spv"));
+	pFragmentShader = pSceneState->pDevice->CreateShader(Flint::ShaderType::Fragment, std::filesystem::path("Flint\\Shaders\\Guizmo\\shader.frag.spv"));
 
 	Flint::GraphicsPipelineSpecification specification = {};
 	specification.mRasterizationSamples = pSceneState->pDevice->GetSupportedMultiSampleCount();
-	specification.mDynamicStateFlags = Flint::DynamicStateFlags::VIEWPORT | Flint::DynamicStateFlags::SCISSOR;
-	specification.mFrontFace = Flint::FrontFace::CLOCKWISE;
+	specification.mDynamicStateFlags = Flint::DynamicStateFlags::ViewPort | Flint::DynamicStateFlags::Scissor;
+	specification.mFrontFace = Flint::FrontFace::Clockwise;
 
 	pSceneState->pGraphicsPipelines["NoTexture"] = pSceneState->pDevice->CreateGraphicsPipeline("NoTexture", pSceneState->pScreenBoundRenderTargets["Default"], pVertexShader, nullptr, nullptr, nullptr, pFragmentShader, specification);
 	pSceneState->pScreenBoundRenderTargets["Default"]->SubmitGraphicsPipeline(pSceneState->pGeometryStores["Default"], pSceneState->pGraphicsPipelines["NoTexture"]);
@@ -103,11 +103,11 @@ void Light::OnUpdate(UI64 delta)
 		static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::UNIVERSAL);
 
 		auto pDisplay = pSceneState->pDisplay;
-		if (pDisplay->GetKeyEvent(Flint::KeyCode::KEY_1).IsPressed())
+		if (pDisplay->GetKeyEvent(Flint::KeyCode::KeyOne).IsPressed())
 			mCurrentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
-		else if (pDisplay->GetKeyEvent(Flint::KeyCode::KEY_2).IsPressed())
+		else if (pDisplay->GetKeyEvent(Flint::KeyCode::KeyTwo).IsPressed())
 			mCurrentGizmoOperation = ImGuizmo::OPERATION::ROTATE;
-		else if (pDisplay->GetKeyEvent(Flint::KeyCode::KEY_3).IsPressed())
+		else if (pDisplay->GetKeyEvent(Flint::KeyCode::KeyThree).IsPressed())
 			mCurrentGizmoOperation = ImGuizmo::OPERATION::SCALE;
 
 		float* matrix = &mModelMatrix[0].x;

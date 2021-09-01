@@ -27,61 +27,61 @@ namespace Flint
 				switch (result)
 				{
 				case SPV_REFLECT_RESULT_ERROR_PARSE_FAILED:
-					FLINT_THROW_BACKEND_ERROR("Shader parse failed!");
+					throw backend_error("Shader parse failed!");
 
 				case SPV_REFLECT_RESULT_ERROR_ALLOC_FAILED:
-					FLINT_THROW_BACKEND_ERROR("Shader allocation failed!");
+					throw backend_error("Shader allocation failed!");
 
 				case SPV_REFLECT_RESULT_ERROR_RANGE_EXCEEDED:
-					FLINT_THROW_BACKEND_ERROR("Shader range exceeded!");
+					throw backend_error("Shader range exceeded!");
 
 				case SPV_REFLECT_RESULT_ERROR_NULL_POINTER:
-					FLINT_THROW_BACKEND_ERROR("Shader null pointer!");
+					throw backend_error("Shader null pointer!");
 
 				case SPV_REFLECT_RESULT_ERROR_INTERNAL_ERROR:
-					FLINT_THROW_BACKEND_ERROR("Shader internal reflection error!");
+					throw backend_error("Shader internal reflection error!");
 
 				case SPV_REFLECT_RESULT_ERROR_COUNT_MISMATCH:
-					FLINT_THROW_BACKEND_ERROR("Shader count mismatch!");
+					throw backend_error("Shader count mismatch!");
 
 				case SPV_REFLECT_RESULT_ERROR_ELEMENT_NOT_FOUND:
-					FLINT_THROW_BACKEND_ERROR("Shader element not found!");
+					throw backend_error("Shader element not found!");
 
 				case SPV_REFLECT_RESULT_ERROR_SPIRV_INVALID_CODE_SIZE:
-					FLINT_THROW_BACKEND_ERROR("Shader invalid SPIRV code size!");
+					throw backend_error("Shader invalid SPIRV code size!");
 
 				case SPV_REFLECT_RESULT_ERROR_SPIRV_INVALID_MAGIC_NUMBER:
-					FLINT_THROW_BACKEND_ERROR("Shader invalid SPIRV magic number!");
+					throw backend_error("Shader invalid SPIRV magic number!");
 
 				case SPV_REFLECT_RESULT_ERROR_SPIRV_UNEXPECTED_EOF:
-					FLINT_THROW_BACKEND_ERROR("Shader SPIRV unexpected end of file (EOF)!");
+					throw backend_error("Shader SPIRV unexpected end of file (EOF)!");
 
 				case SPV_REFLECT_RESULT_ERROR_SPIRV_INVALID_ID_REFERENCE:
-					FLINT_THROW_BACKEND_ERROR("Shader invalid SPIRV ID reference!");
+					throw backend_error("Shader invalid SPIRV ID reference!");
 
 				case SPV_REFLECT_RESULT_ERROR_SPIRV_SET_NUMBER_OVERFLOW:
-					FLINT_THROW_BACKEND_ERROR("Shader invalid SPIRV descriptor set number overflow!");
+					throw backend_error("Shader invalid SPIRV descriptor set number overflow!");
 
 				case SPV_REFLECT_RESULT_ERROR_SPIRV_INVALID_STORAGE_CLASS:
-					FLINT_THROW_BACKEND_ERROR("Shader invalid SPIRV storage class!");
+					throw backend_error("Shader invalid SPIRV storage class!");
 
 				case SPV_REFLECT_RESULT_ERROR_SPIRV_RECURSION:
-					FLINT_THROW_BACKEND_ERROR("Shader invalid SPIRV recursion!");
+					throw backend_error("Shader invalid SPIRV recursion!");
 
 				case SPV_REFLECT_RESULT_ERROR_SPIRV_INVALID_INSTRUCTION:
-					FLINT_THROW_BACKEND_ERROR("Shader invalid SPIRV instruction!");
+					throw backend_error("Shader invalid SPIRV instruction!");
 
 				case SPV_REFLECT_RESULT_ERROR_SPIRV_UNEXPECTED_BLOCK_DATA:
-					FLINT_THROW_BACKEND_ERROR("Shader invalid SPIRV block data!");
+					throw backend_error("Shader invalid SPIRV block data!");
 
 				case SPV_REFLECT_RESULT_ERROR_SPIRV_INVALID_BLOCK_MEMBER_REFERENCE:
-					FLINT_THROW_BACKEND_ERROR("Shader invalid SPIRV block member reference!");
+					throw backend_error("Shader invalid SPIRV block member reference!");
 
 				case SPV_REFLECT_RESULT_ERROR_SPIRV_INVALID_ENTRY_POINT:
-					FLINT_THROW_BACKEND_ERROR("Shader invalid SPIRV entry point!");
+					throw backend_error("Shader invalid SPIRV entry point!");
 
 				case SPV_REFLECT_RESULT_ERROR_SPIRV_INVALID_EXECUTION_MODE:
-					FLINT_THROW_BACKEND_ERROR("Shader invalid SPIRV execution mode!");
+					throw backend_error("Shader invalid SPIRV execution mode!");
 				}
 			}
 
@@ -90,46 +90,46 @@ namespace Flint
 				switch (type)
 				{
 				case SPV_REFLECT_DESCRIPTOR_TYPE_SAMPLER:
-					return ShaderResourceType::SAMPLER;
+					return ShaderResourceType::Sampler;
 
 				case SPV_REFLECT_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER:
-					return ShaderResourceType::COMBINED_IMAGE_SAMPLER;
+					return ShaderResourceType::CombinedImageSampler;
 
 				case SPV_REFLECT_DESCRIPTOR_TYPE_SAMPLED_IMAGE:
-					return ShaderResourceType::SAMPLED_IMAGE;
+					return ShaderResourceType::SampledImage;
 
 				case SPV_REFLECT_DESCRIPTOR_TYPE_STORAGE_IMAGE:
-					return ShaderResourceType::STORAGE_IMAGE;
+					return ShaderResourceType::StorageImage;
 
 				case SPV_REFLECT_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER:
-					return ShaderResourceType::UNIFORM_TEXEL_BUFFER;
+					return ShaderResourceType::UniformTexelBuffer;
 
 				case SPV_REFLECT_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER:
-					return ShaderResourceType::STORAGE_TEXEL_BUFFER;
+					return ShaderResourceType::StorageTexelBuffer;
 
 				case SPV_REFLECT_DESCRIPTOR_TYPE_UNIFORM_BUFFER:
-					return ShaderResourceType::UNIFORM_BUFFER;
+					return ShaderResourceType::UniformBuffer;
 
 				case SPV_REFLECT_DESCRIPTOR_TYPE_STORAGE_BUFFER:
-					return ShaderResourceType::STORAGE_BUFFER;
+					return ShaderResourceType::StorageBuffer;
 
 				case SPV_REFLECT_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC:
-					return ShaderResourceType::UNIFORM_BUFFER_DYNAMIC;
+					return ShaderResourceType::UniformBufferDynamic;
 
 				case SPV_REFLECT_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC:
-					return ShaderResourceType::STORAGE_BUFFER_DYNAMIC;
+					return ShaderResourceType::StorageBufferDynamic;
 
 				case SPV_REFLECT_DESCRIPTOR_TYPE_INPUT_ATTACHMENT:
-					return ShaderResourceType::INPUT_ATTACHMENT;
+					return ShaderResourceType::InputAttachment;
 
 				case SPV_REFLECT_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR:
-					return ShaderResourceType::ACCELERATION_STRUCTURE;
+					return ShaderResourceType::AccelerationStructure;
 
 				default:
-					FLINT_THROW_BACKEND_ERROR("Invalid shader descriptor type!");
+					throw backend_error("Invalid shader descriptor type!");
 				}
 
-				return ShaderResourceType::UNIFORM_BUFFER;
+				return ShaderResourceType::UniformBuffer;
 			}
 
 			VkDescriptorType GetVkDescriptorType(SpvReflectDescriptorType type)
@@ -173,7 +173,7 @@ namespace Flint
 					return VkDescriptorType::VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR;
 
 				default:
-					FLINT_THROW_BACKEND_ERROR("Invalid shader descriptor type!");
+					throw backend_error("Invalid shader descriptor type!");
 				}
 
 				return VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;

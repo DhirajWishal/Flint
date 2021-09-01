@@ -57,14 +57,14 @@ int main(int argc, char** argv)
 					auto position = mState.pDisplay->GetMousePosition();
 					io.MousePos = ImVec2(position.X, position.Y);
 
-					if (mState.pDisplay->GetMouseButtonEvent(Flint::MouseButton::LEFT).IsPressed() || mState.pDisplay->GetMouseButtonEvent(Flint::MouseButton::LEFT).IsOnRepeat())
+					if (mState.pDisplay->GetMouseButtonEvent(Flint::MouseButton::Left).IsPressed() || mState.pDisplay->GetMouseButtonEvent(Flint::MouseButton::Left).IsOnRepeat())
 						io.MouseDown[0] = true;
-					else if (mState.pDisplay->GetMouseButtonEvent(Flint::MouseButton::LEFT).IsReleased())
+					else if (mState.pDisplay->GetMouseButtonEvent(Flint::MouseButton::Left).IsReleased())
 						io.MouseDown[0] = false;
 
-					if (mState.pDisplay->GetMouseButtonEvent(Flint::MouseButton::RIGHT).IsPressed() || mState.pDisplay->GetMouseButtonEvent(Flint::MouseButton::RIGHT).IsOnRepeat())
+					if (mState.pDisplay->GetMouseButtonEvent(Flint::MouseButton::Right).IsPressed() || mState.pDisplay->GetMouseButtonEvent(Flint::MouseButton::Right).IsOnRepeat())
 						io.MouseDown[1] = true;
-					else if (mState.pDisplay->GetMouseButtonEvent(Flint::MouseButton::RIGHT).IsReleased())
+					else if (mState.pDisplay->GetMouseButtonEvent(Flint::MouseButton::Right).IsReleased())
 						io.MouseDown[1] = false;
 				}
 
@@ -136,19 +136,19 @@ Layers: count = 14
 VK_LAYER_EOS_Overlay (Vulkan overlay layer for Epic Online Services) Vulkan version 1.2.136, layer version 1:
         Layer Extensions: count = 0
         Devices: count = 1
-                GPU id = 0 (NVIDIA GeForce GTX 1660 SUPER)
+                GPU id = 0 (NVIDIA GeForce GTX 1660 Super)
                 Layer-Device Extensions: count = 0
 
 VK_LAYER_EOS_Overlay (Vulkan overlay layer for Epic Online Services) Vulkan version 1.2.136, layer version 1:
         Layer Extensions: count = 0
         Devices: count = 1
-                GPU id = 0 (NVIDIA GeForce GTX 1660 SUPER)
+                GPU id = 0 (NVIDIA GeForce GTX 1660 Super)
                 Layer-Device Extensions: count = 0
 
 VK_LAYER_KHRONOS_synchronization2 (Khronos Synchronization2 layer) Vulkan version 1.2.182, layer version 1:
         Layer Extensions: count = 0
         Devices: count = 1
-                GPU id = 0 (NVIDIA GeForce GTX 1660 SUPER)
+                GPU id = 0 (NVIDIA GeForce GTX 1660 Super)
                 Layer-Device Extensions: count = 1
                         VK_KHR_synchronization2 : extension revision 1
 
@@ -158,7 +158,7 @@ VK_LAYER_KHRONOS_validation (Khronos Validation Layer) Vulkan version 1.2.182, l
                 VK_EXT_debug_utils         : extension revision 1
                 VK_EXT_validation_features : extension revision 2
         Devices: count = 1
-                GPU id = 0 (NVIDIA GeForce GTX 1660 SUPER)
+                GPU id = 0 (NVIDIA GeForce GTX 1660 Super)
                 Layer-Device Extensions: count = 3
                         VK_EXT_debug_marker     : extension revision 4
                         VK_EXT_tooling_info     : extension revision 1
@@ -167,35 +167,35 @@ VK_LAYER_KHRONOS_validation (Khronos Validation Layer) Vulkan version 1.2.182, l
 VK_LAYER_LUNARG_api_dump (LunarG API dump layer) Vulkan version 1.2.182, layer version 2:
         Layer Extensions: count = 0
         Devices: count = 1
-                GPU id = 0 (NVIDIA GeForce GTX 1660 SUPER)
+                GPU id = 0 (NVIDIA GeForce GTX 1660 Super)
                 Layer-Device Extensions: count = 1
                         VK_EXT_tooling_info : extension revision 1
 
 VK_LAYER_LUNARG_device_simulation (LunarG device simulation layer) Vulkan version 1.2.182, layer version 1:
         Layer Extensions: count = 0
         Devices: count = 1
-                GPU id = 0 (NVIDIA GeForce GTX 1660 SUPER)
+                GPU id = 0 (NVIDIA GeForce GTX 1660 Super)
                 Layer-Device Extensions: count = 1
                         VK_EXT_tooling_info : extension revision 1
 
 VK_LAYER_LUNARG_gfxreconstruct (GFXReconstruct Capture Layer Version 0.9.8) Vulkan version 1.2.182, layer version 36872:
         Layer Extensions: count = 0
         Devices: count = 1
-                GPU id = 0 (NVIDIA GeForce GTX 1660 SUPER)
+                GPU id = 0 (NVIDIA GeForce GTX 1660 Super)
                 Layer-Device Extensions: count = 1
                         VK_EXT_tooling_info : extension revision 1
 
 VK_LAYER_LUNARG_monitor (Execution Monitoring Layer) Vulkan version 1.2.182, layer version 1:
         Layer Extensions: count = 0
         Devices: count = 1
-                GPU id = 0 (NVIDIA GeForce GTX 1660 SUPER)
+                GPU id = 0 (NVIDIA GeForce GTX 1660 Super)
                 Layer-Device Extensions: count = 1
                         VK_EXT_tooling_info : extension revision 1
 
 VK_LAYER_LUNARG_screenshot (LunarG image capture layer) Vulkan version 1.2.182, layer version 1:
         Layer Extensions: count = 0
         Devices: count = 1
-                GPU id = 0 (NVIDIA GeForce GTX 1660 SUPER)
+                GPU id = 0 (NVIDIA GeForce GTX 1660 Super)
                 Layer-Device Extensions: count = 1
                         VK_EXT_tooling_info : extension revision 1
 
@@ -203,7 +203,7 @@ VK_LAYER_NV_GPU_Trace_release_public_2020_3_1 (NVIDIA Nsight Graphics GPU Trace 
         Layer Extensions: count = 1
                 VK_EXT_debug_utils : extension revision 1
         Devices: count = 1
-                GPU id = 0 (NVIDIA GeForce GTX 1660 SUPER)
+                GPU id = 0 (NVIDIA GeForce GTX 1660 Super)
                 Layer-Device Extensions: count = 1
                         VK_EXT_debug_marker : extension revision 3
 
@@ -211,7 +211,7 @@ VK_LAYER_NV_nomad_release_public_2020_3_1 (NVIDIA Nsight Graphics interception l
         Layer Extensions: count = 1
                 VK_EXT_debug_utils : extension revision 1
         Devices: count = 1
-                GPU id = 0 (NVIDIA GeForce GTX 1660 SUPER)
+                GPU id = 0 (NVIDIA GeForce GTX 1660 Super)
                 Layer-Device Extensions: count = 2
                         VK_EXT_debug_marker : extension revision 3
                         VK_EXT_tooling_info : extension revision 1
@@ -221,7 +221,7 @@ VK_LAYER_NV_nsight-sys (NVIDIA Nsight Systems profiler layer) Vulkan version 1.1
                 VK_EXT_debug_report : extension revision 9
                 VK_EXT_debug_utils  : extension revision 1
         Devices: count = 1
-                GPU id = 0 (NVIDIA GeForce GTX 1660 SUPER)
+                GPU id = 0 (NVIDIA GeForce GTX 1660 Super)
                 Layer-Device Extensions: count = 3
                         VK_EXT_debug_marker : extension revision 4
                         VK_KHR_swapchain    : extension revision 70
@@ -230,21 +230,21 @@ VK_LAYER_NV_nsight-sys (NVIDIA Nsight Systems profiler layer) Vulkan version 1.1
 VK_LAYER_NV_optimus (NVIDIA Optimus layer) Vulkan version 1.2.175, layer version 1:
         Layer Extensions: count = 0
         Devices: count = 1
-                GPU id = 0 (NVIDIA GeForce GTX 1660 SUPER)
+                GPU id = 0 (NVIDIA GeForce GTX 1660 Super)
                 Layer-Device Extensions: count = 0
 
 VK_LAYER_RENDERDOC_Capture (Debugging capture layer for RenderDoc) Vulkan version 1.2.131, layer version 15:
         Layer Extensions: count = 1
                 VK_EXT_debug_utils : extension revision 1
         Devices: count = 1
-                GPU id = 0 (NVIDIA GeForce GTX 1660 SUPER)
+                GPU id = 0 (NVIDIA GeForce GTX 1660 Super)
                 Layer-Device Extensions: count = 2
                         VK_EXT_debug_marker : extension revision 4
                         VK_EXT_tooling_info : extension revision 1
 
 Presentable Surfaces:
 =====================
-GPU id : 0 (NVIDIA GeForce GTX 1660 SUPER):
+GPU id : 0 (NVIDIA GeForce GTX 1660 Super):
         Surface type = VK_KHR_win32_surface
         Formats: count = 3
                 SurfaceFormat[0]:
@@ -302,13 +302,13 @@ Device Groups:
 Group 0:
         Properties:
                 physicalDevices: count = 1
-                        NVIDIA GeForce GTX 1660 SUPER (ID: 0)
+                        NVIDIA GeForce GTX 1660 Super (ID: 0)
                 subsetAllocation = 1
 
         Present Capabilities:
-                NVIDIA GeForce GTX 1660 SUPER (ID: 0):
+                NVIDIA GeForce GTX 1660 Super (ID: 0):
                         Can present images from the following devices: count = 1
-                                NVIDIA GeForce GTX 1660 SUPER (ID: 0)
+                                NVIDIA GeForce GTX 1660 Super (ID: 0)
                 Present modes: count = 1
                         DEVICE_GROUP_PRESENT_MODE_LOCAL_BIT_KHR
 
@@ -323,7 +323,7 @@ VkPhysicalDeviceProperties:
         vendorID       = 0x10de
         deviceID       = 0x21c4
         deviceType     = PHYSICAL_DEVICE_TYPE_DISCRETE_GPU
-        deviceName     = NVIDIA GeForce GTX 1660 SUPER
+        deviceName     = NVIDIA GeForce GTX 1660 Super
 
 VkPhysicalDeviceLimits:
 -----------------------

@@ -166,7 +166,7 @@ namespace Flint
 					for (const auto resource : bufferResources)
 					{
 						if (!resource.second)
-							FLINT_THROW_BACKEND_ERROR("No uniform attached to the resource slot \"" + resource.first + "\"!");
+							throw backend_error("No uniform attached to the resource slot \"" + resource.first + "\"!");
 
 						const ShaderResource sResource = resources[resource.first];
 						vWrite.descriptorType = Utilities::GetDescriptorType(sResource.mType);
@@ -190,7 +190,7 @@ namespace Flint
 					for (const auto resource : imageResources)
 					{
 						if (!resource.second.second)
-							FLINT_THROW_BACKEND_ERROR("No uniform attached to the resource slot \"" + resource.first + "\"!");
+							throw backend_error("No uniform attached to the resource slot \"" + resource.first + "\"!");
 
 						const ShaderResource sResource = resources[resource.first];
 						vWrite.descriptorType = Utilities::GetDescriptorType(sResource.mType);

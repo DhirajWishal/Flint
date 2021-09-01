@@ -12,13 +12,13 @@ namespace Flint
 	 * This determines which dynamic states the pipeline consists.
 	 */
 	enum class DynamicStateFlags : UI8 {
-		UNDEFINED,
-		VIEWPORT = BIT_SHIFT(0),
-		SCISSOR = BIT_SHIFT(1),
-		LINE_WIDTH = BIT_SHIFT(2),
-		DEPTH_BIAS = BIT_SHIFT(3),
-		BLEND_CONSTANTS = BIT_SHIFT(4),
-		DEPTH_BOUNDS = BIT_SHIFT(5),
+		Undefined,
+		ViewPort = BIT_SHIFT(0),
+		Scissor = BIT_SHIFT(1),
+		LineWidth = BIT_SHIFT(2),
+		DepthBias = BIT_SHIFT(3),
+		BlendConstants = BIT_SHIFT(4),
+		DepthBounds = BIT_SHIFT(5),
 	};
 
 	/**
@@ -34,7 +34,7 @@ namespace Flint
 	}
 
 	/**
-	 * Bitwise AND operator for the dynamic state flags.
+	 * Bitwise And operator for the dynamic state flags.
 	 *
 	 * @param lhs: The lhs argument.
 	 * @param rhs: The rhs argument.
@@ -67,7 +67,7 @@ namespace Flint
 			 */
 			DynamicStateFlags GetFlag() const { return mFlag; }
 
-			DynamicStateFlags mFlag = DynamicStateFlags::UNDEFINED;
+			DynamicStateFlags mFlag = DynamicStateFlags::Undefined;
 		};
 
 		/**
@@ -76,9 +76,9 @@ namespace Flint
 		 */
 		struct ViewPort final : public DynamicStateObject
 		{
-			ViewPort() : DynamicStateObject(DynamicStateFlags::VIEWPORT) {}
+			ViewPort() : DynamicStateObject(DynamicStateFlags::ViewPort) {}
 			ViewPort(const FExtent2D<float>& extent, const FExtent2D<float>& offset, const FExtent2D<float>& depth)
-				: DynamicStateObject(DynamicStateFlags::VIEWPORT), mExtent(extent), mOffset(offset), mDepth(depth) {}
+				: DynamicStateObject(DynamicStateFlags::ViewPort), mExtent(extent), mOffset(offset), mDepth(depth) {}
 
 			FExtent2D<float> mExtent = {};
 			FExtent2D<float> mOffset = {};
@@ -90,8 +90,8 @@ namespace Flint
 		 */
 		struct Scissor final : public DynamicStateObject
 		{
-			Scissor() : DynamicStateObject(DynamicStateFlags::SCISSOR) {}
-			Scissor(const FBox2D& extent, const FBox2D& offset) : DynamicStateObject(DynamicStateFlags::SCISSOR), mExtent(extent), mOffset(offset) {}
+			Scissor() : DynamicStateObject(DynamicStateFlags::Scissor) {}
+			Scissor(const FBox2D& extent, const FBox2D& offset) : DynamicStateObject(DynamicStateFlags::Scissor), mExtent(extent), mOffset(offset) {}
 
 			FBox2D mExtent = {};
 			FBox2D mOffset = {};
@@ -103,8 +103,8 @@ namespace Flint
 		 */
 		struct LineWidth final : public DynamicStateObject
 		{
-			LineWidth() : DynamicStateObject(DynamicStateFlags::LINE_WIDTH) {}
-			LineWidth(const float width) : DynamicStateObject(DynamicStateFlags::LINE_WIDTH), mLineWidth(width) {}
+			LineWidth() : DynamicStateObject(DynamicStateFlags::LineWidth) {}
+			LineWidth(const float width) : DynamicStateObject(DynamicStateFlags::LineWidth), mLineWidth(width) {}
 
 			float mLineWidth = 1.0f;
 		};
@@ -115,9 +115,9 @@ namespace Flint
 		 */
 		struct DepthBias final : public DynamicStateObject
 		{
-			DepthBias() : DynamicStateObject(DynamicStateFlags::DEPTH_BIAS) {}
+			DepthBias() : DynamicStateObject(DynamicStateFlags::DepthBias) {}
 			DepthBias(const float biasFactor, const float clampFactor, const float slopeFactor)
-				: DynamicStateObject(DynamicStateFlags::DEPTH_BIAS), mDepthBiasFactor(biasFactor),
+				: DynamicStateObject(DynamicStateFlags::DepthBias), mDepthBiasFactor(biasFactor),
 				mDepthClampFactor(clampFactor), mDepthSlopeFactor(slopeFactor) {}
 
 			float mDepthBiasFactor = 0.0f;
@@ -131,8 +131,8 @@ namespace Flint
 		 */
 		struct BlendConstants final : public DynamicStateObject
 		{
-			BlendConstants() : DynamicStateObject(DynamicStateFlags::BLEND_CONSTANTS) {}
-			BlendConstants(const float(&constants)[4]) : DynamicStateObject(DynamicStateFlags::BLEND_CONSTANTS) { std::copy(constants, constants + 4, mConstants); }
+			BlendConstants() : DynamicStateObject(DynamicStateFlags::BlendConstants) {}
+			BlendConstants(const float(&constants)[4]) : DynamicStateObject(DynamicStateFlags::BlendConstants) { std::copy(constants, constants + 4, mConstants); }
 
 			float mConstants[4] = {};
 		};
@@ -143,8 +143,8 @@ namespace Flint
 		 */
 		struct DepthBounds final : public DynamicStateObject
 		{
-			DepthBounds() : DynamicStateObject(DynamicStateFlags::DEPTH_BOUNDS) {}
-			DepthBounds(const FExtent2D<float>& bounds) : DynamicStateObject(DynamicStateFlags::DEPTH_BOUNDS), mBounds(bounds) {}
+			DepthBounds() : DynamicStateObject(DynamicStateFlags::DepthBounds) {}
+			DepthBounds(const FExtent2D<float>& bounds) : DynamicStateObject(DynamicStateFlags::DepthBounds), mBounds(bounds) {}
 
 			FExtent2D<float> mBounds = {};	// { Min, Max }
 		};
@@ -238,7 +238,7 @@ namespace Flint
 		BlendConstants mBlendConstants = {};
 		DepthBounds mDepthBounds = {};
 
-		DynamicStateFlags mFlags = DynamicStateFlags::UNDEFINED;
+		DynamicStateFlags mFlags = DynamicStateFlags::Undefined;
 
 		ConstantData mConstantBlocks[10] = {};
 	};

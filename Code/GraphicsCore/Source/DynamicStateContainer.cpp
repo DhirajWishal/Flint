@@ -8,85 +8,85 @@ namespace Flint
 	void DynamicStateContainer::SetViewPort(const FExtent2D<float>& extent, const FExtent2D<float>& depth, const FExtent2D<float>& offset)
 	{
 		mViewPort = ViewPort(extent, offset, depth);
-		mFlags = mFlags | DynamicStateFlags::VIEWPORT;
+		mFlags = mFlags | DynamicStateFlags::ViewPort;
 	}
 
 	void DynamicStateContainer::SetScissor(const FBox2D& extent, const FBox2D& offset)
 	{
 		mScissor = Scissor(extent, offset);
-		mFlags = mFlags | DynamicStateFlags::SCISSOR;
+		mFlags = mFlags | DynamicStateFlags::Scissor;
 	}
 
 	void DynamicStateContainer::SetLineWidth(const float width)
 	{
 		mLineWidth = LineWidth(width);
-		mFlags = mFlags | DynamicStateFlags::LINE_WIDTH;
+		mFlags = mFlags | DynamicStateFlags::LineWidth;
 	}
 
 	void DynamicStateContainer::SetDepthBias(const float biasFactor, const float clampFactor, const float slopeFactor)
 	{
 		mDepthBias = DepthBias(biasFactor, clampFactor, slopeFactor);
-		mFlags = mFlags | DynamicStateFlags::DEPTH_BIAS;
+		mFlags = mFlags | DynamicStateFlags::DepthBias;
 	}
 
 	void DynamicStateContainer::SetBlendConstants(const float(&constants)[4])
 	{
 		mBlendConstants = BlendConstants(constants);
-		mFlags = mFlags | DynamicStateFlags::BLEND_CONSTANTS;
+		mFlags = mFlags | DynamicStateFlags::BlendConstants;
 	}
 
 	void DynamicStateContainer::SetDepthBounds(const FExtent2D<float>& bounds)
 	{
 		mDepthBounds = DepthBounds(bounds);
-		mFlags = mFlags | DynamicStateFlags::DEPTH_BOUNDS;
+		mFlags = mFlags | DynamicStateFlags::DepthBounds;
 	}
 
 	void DynamicStateContainer::SetConstantData(const ShaderType shaderType, void* pData, const UI64 size, const UI64 offset)
 	{
 		switch (shaderType)
 		{
-		case Flint::ShaderType::VERTEX:
+		case Flint::ShaderType::Vertex:
 			mConstantBlocks[0] = ConstantData(pData, size, offset);
 			break;
 
-		case Flint::ShaderType::TESSELLATION_CONTROL:
+		case Flint::ShaderType::TessellationControl:
 			mConstantBlocks[1] = ConstantData(pData, size, offset);
 			break;
 
-		case Flint::ShaderType::TESSELLATION_EVALUATION:
+		case Flint::ShaderType::TessellationEvaluation:
 			mConstantBlocks[2] = ConstantData(pData, size, offset);
 			break;
 
-		case Flint::ShaderType::GEOMETRY:
+		case Flint::ShaderType::Geometry:
 			mConstantBlocks[3] = ConstantData(pData, size, offset);
 			break;
 
-		case Flint::ShaderType::FRAGMENT:
+		case Flint::ShaderType::Fragment:
 			mConstantBlocks[4] = ConstantData(pData, size, offset);
 			break;
 
-		case Flint::ShaderType::COMPUTE:
+		case Flint::ShaderType::Compute:
 			mConstantBlocks[5] = ConstantData(pData, size, offset);
 			break;
 
-		case Flint::ShaderType::RAY_GEN:
+		case Flint::ShaderType::RayGen:
 			mConstantBlocks[6] = ConstantData(pData, size, offset);
 			break;
 
-		case Flint::ShaderType::ANY_HIT:
+		case Flint::ShaderType::AnyHit:
 			mConstantBlocks[7] = ConstantData(pData, size, offset);
 			break;
 
-		case Flint::ShaderType::CLOSEST_HIT:
+		case Flint::ShaderType::ClosestHit:
 			mConstantBlocks[8] = ConstantData(pData, size, offset);
 			break;
 
-		case Flint::ShaderType::RAY_MISS:
+		case Flint::ShaderType::RayMiss:
 			mConstantBlocks[9] = ConstantData(pData, size, offset);
 			break;
 
 		default:
-			FLINT_THROW_INVALID_ARGUMENT("Invalid shader type passed to set constant data!");
+			throw std::invalid_argument("Invalid shader type passed to set constant data!");
 		}
 	}
 }

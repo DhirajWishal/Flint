@@ -8,10 +8,10 @@ namespace Flint
 	Buffer::Buffer(const std::shared_ptr<Device>& pDevice, const BufferType type, const UI64 size, const BufferMemoryProfile profile)
 		: DeviceBoundObject(pDevice), mType(type), mSize(size), mMemoryProfile(profile)
 	{
-		if (type == BufferType::UNDEFINED)
-			FLINT_THROW_INVALID_ARGUMENT("Buffer type should not be UNDEFINED!");
+		if (type == BufferType::Undefined)
+			throw std::invalid_argument("Buffer type should not be Undefined!");
 
 		if (size == 0)
-			FLINT_THROW_INVALID_ARGUMENT("Buffer size should be greater than 0!");
+			throw std::invalid_argument("Buffer size should be greater than 0!");
 	}
 }

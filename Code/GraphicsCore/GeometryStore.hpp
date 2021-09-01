@@ -26,9 +26,9 @@ namespace Flint
 		 * @param pDevice: The device pointer.
 		 * @param vertexAttributes: The vertex attributes of the geometry.
 		 * @param indexSize: The size of a single index in bytes.
-		 * @param profile: The memory profile of the buffer. Default is BufferMemoryProfile::AUTOMATIC.
+		 * @param profile: The memory profile of the buffer. Default is BufferMemoryProfile::Automatic.
 		 */
-		GeometryStore(const std::shared_ptr<Device>& pDevice, const std::unordered_map<UI32, std::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile = BufferMemoryProfile::AUTOMATIC);
+		GeometryStore(const std::shared_ptr<Device>& pDevice, const std::unordered_map<UI32, std::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic);
 		~GeometryStore() { if (!bIsTerminated) Terminate(); }
 
 		GeometryStore(const GeometryStore&) = delete;
@@ -131,7 +131,7 @@ namespace Flint
 
 		/**
 		 * Map the vertex buffer to the local address space.
-		 * Before mapping, make sure that the buffer memory profile is BufferMemoryProfile::TRANSFER_FRIENDLY.
+		 * Before mapping, make sure that the buffer memory profile is BufferMemoryProfile::TransferFriendly.
 		 *
 		 * @return The memory address.
 		 */
@@ -139,7 +139,7 @@ namespace Flint
 
 		/**
 		 * Map the index buffer to the local address space.
-		 * Before mapping, make sure that the buffer memory profile is BufferMemoryProfile::TRANSFER_FRIENDLY.
+		 * Before mapping, make sure that the buffer memory profile is BufferMemoryProfile::TransferFriendly.
 		 *
 		 * @return The memory address.
 		 */
@@ -167,6 +167,6 @@ namespace Flint
 		UI64 mVertexCount = 0;
 		UI64 mIndexCount = 0;
 
-		BufferMemoryProfile mMemoryProfile = BufferMemoryProfile::AUTOMATIC;
+		BufferMemoryProfile mMemoryProfile = BufferMemoryProfile::Automatic;
 	};
 }

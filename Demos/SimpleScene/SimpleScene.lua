@@ -5,7 +5,7 @@
 
 project "SimpleScene"
 	kind "ConsoleApp"
-	cppdialect "C++17"
+	cppdialect "C++20"
 	language "C++"
 	staticruntime "On"
 	systemversion "latest"
@@ -16,9 +16,9 @@ project "SimpleScene"
 	defines { "FLINT_SOLUTION_DIR=$(SolutionDir)" }
 
 	postbuildcommands {
-		"{COPY} \"$(SolutionDir)ThirdParty/glfw/src/Release/glfw3.dll\" \"%{cfg.targetdir}\"",
-		"{COPY} \"$(SolutionDir)ThirdParty/Runtime/vulkan-1.dll\" \"%{cfg.targetdir}\"",
-		"{COPY} \"$(SolutionDir)Demos/ThirdParty/Assimp/bin/Release/assimp-vc142-mt.dll\" \"%{cfg.targetdir}\"",
+		"{Copy} \"$(SolutionDir)ThirdParty/glfw/src/Release/glfw3.dll\" \"%{cfg.targetdir}\"",
+		"{Copy} \"$(SolutionDir)ThirdParty/Runtime/vulkan-1.dll\" \"%{cfg.targetdir}\"",
+		"{Copy} \"$(SolutionDir)Demos/ThirdParty/Assimp/bin/Release/assimp-vc142-mt.dll\" \"%{cfg.targetdir}\"",
 	}
 
 	files {

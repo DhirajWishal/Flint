@@ -10,7 +10,7 @@
 namespace Flint
 {
 #ifndef FLINT_RELEASE
-	Profiler::Profiler(const char* pFunctionSignature) : pFunctionSignature(pFunctionSignature), mStart(std::chrono::high_resolution_clock::now())
+	Profiler::Profiler(std::string_view functionSignature) : mFunctionSignature(functionSignature), mStart(std::chrono::high_resolution_clock::now())
 	{
 	}
 

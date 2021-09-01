@@ -62,7 +62,7 @@ namespace Flint
 					break;
 
 				default:
-					FLINT_THROW_BACKEND_ERROR("Invalid or Undefined render target attachment type!");
+					throw backend_error("Invalid or Undefined render target attachment type!");
 				}
 
 				vAR.attachment++;
@@ -138,7 +138,7 @@ namespace Flint
 						break;
 
 					default:
-						FLINT_THROW_BACKEND_ERROR("Invalid or Undefined render target attachment type!");
+						throw backend_error("Invalid or Undefined render target attachment type!");
 					}
 
 					vAR.attachment++;

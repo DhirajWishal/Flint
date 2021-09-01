@@ -43,20 +43,20 @@ namespace Flint
 
 				VkClearValue vClearValue = {};
 
-				if ((attachment.pImage->GetUsage() & ImageUsage::COLOR) == ImageUsage::COLOR)
+				if ((attachment.pImage->GetUsage() & ImageUsage::Color) == ImageUsage::Color)
 				{
 					vClearValue.color.float32[0] = attachment.mClearColor.mRed;
 					vClearValue.color.float32[1] = attachment.mClearColor.mGreen;
 					vClearValue.color.float32[2] = attachment.mClearColor.mBlue;
 					vClearValue.color.float32[3] = attachment.mClearColor.mAlpha;
 				}
-				else if ((attachment.pImage->GetUsage() & ImageUsage::DEPTH) == ImageUsage::DEPTH)
+				else if ((attachment.pImage->GetUsage() & ImageUsage::Depth) == ImageUsage::Depth)
 				{
 					vClearValue.depthStencil.depth = attachment.mDepthClearValue.mDepth;
 					vClearValue.depthStencil.stencil = attachment.mDepthClearValue.mStencil;
 				}
 				else
-					FLINT_THROW_BACKEND_ERROR("Invalid attachment type! The image usage should contain either COLOR or DEPTH.");
+					throw backend_error("Invalid attachment type! The image usage should contain either Color or Depth.");
 
 				vClearValues.push_back(vClearValue);
 			}

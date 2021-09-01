@@ -26,7 +26,7 @@ static std::vector<UI32> mBoundingIndexes = {
 
 GameObject::GameObject(glm::vec3 position, SceneState* pSceneState) : mPosition(position), pSceneState(pSceneState)
 {
-	pModelUniform = pSceneState->pDevice->CreateBuffer(Flint::BufferType::UNIFORM, sizeof(glm::mat4));
+	pModelUniform = pSceneState->pDevice->CreateBuffer(Flint::BufferType::Uniform, sizeof(glm::mat4));
 	mModelMatrix = glm::translate(glm::mat4(1.0f), position);
 	//pDynamicStates = std::make_shared<Flint::DynamicStateContainer>();
 }
@@ -47,7 +47,7 @@ void GameObject::EnableBoundingBox()
 
 void GameObject::UpdateBoundingBox()
 {
-	//pDynamicStates->SetConstantData(Flint::ShaderType::FRAGMENT, &mBoundingBoxColor, sizeof(glm::vec4));
+	//pDynamicStates->SetConstantData(Flint::ShaderType::Fragment, &mBoundingBoxColor, sizeof(glm::vec4));
 }
 
 void GameObject::DisableBoundingBox()
