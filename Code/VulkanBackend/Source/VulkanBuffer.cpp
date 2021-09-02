@@ -69,10 +69,6 @@ namespace Flint
 
 		void VulkanBuffer::Resize(const UI64 size, const BufferResizeMode mode)	// TODO
 		{
-			/*
-			* pRegions[0].srcOffset (114048) is greater than pRegions[0].size (14112).
-			*/
-
 			FLINT_SETUP_PROFILER();
 			UI64 oldSize = mSize;
 

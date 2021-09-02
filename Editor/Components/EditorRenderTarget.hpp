@@ -6,6 +6,8 @@
 #include "GraphicsCore/ScreenBoundRenderTarget.hpp"
 #include "GraphicsCore/CommandBufferAllocator.hpp"
 
+#include "ImGuiAdapter.hpp"
+
 /**
  * Editor render target.
  */
@@ -29,4 +31,6 @@ private:
 
 	std::shared_ptr<Flint::CommandBufferAllocator> pAllocator = nullptr;
 	std::shared_ptr<Flint::CommandBufferAllocator> pSecondaryAllocator = nullptr;
+
+	ImGuiAdapter mImGuiAdapter = {};
 };

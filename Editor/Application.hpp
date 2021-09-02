@@ -7,6 +7,7 @@
 
 #include "Components/EditorRenderTarget.hpp"
 
+
 /**
  * Main application class of the editor.
  */
@@ -20,6 +21,10 @@ private:
 	void Execute();
 
 private:
+	std::chrono::steady_clock mSteadyClock = {};
+	std::chrono::time_point<std::chrono::steady_clock> mNewTimePoint = {};
+	std::chrono::time_point<std::chrono::steady_clock> mOldTimePoint = {};
+
 	std::shared_ptr<Flint::Instance> pInstance = nullptr;
 	std::shared_ptr<Flint::Device> pDevice = nullptr;
 

@@ -8,6 +8,14 @@
 #include <fstream>
 #include <iostream>
 
+const char* bank =
+"																										\
+vec4 CalculatePosition(mat4 projection, mat4 view, mat4 model, vec3 position, float factor = 1.0f)		\
+{																										\
+	return projection * view * model * vec4(inPos, factor);												\
+}																										\
+";
+
 namespace Flint
 {
 	namespace Helpers
@@ -112,6 +120,7 @@ namespace Flint
 		shaderc::Compiler compiler;
 		shaderc::SpvCompilationResult result;
 		shaderc::CompileOptions options;
+
 		//options.SetOptimizationLevel(shaderc_optimization_level::shaderc_optimization_level_performance);
 
 		// Compile the shader.

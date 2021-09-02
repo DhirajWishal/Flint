@@ -5,35 +5,35 @@
 
 namespace Flint
 {
-	ResourceMap::ResourceMap(const std::vector<std::string>& bufferResourceNames, const std::vector<std::string>& imageResourceNames)
+	ResourceMap::ResourceMap(const std::vector<ShaderResourceKey>& bufferResourceKeys, const std::vector<ShaderResourceKey>& imageResourceKeys)
 	{
-		for (const std::string name : bufferResourceNames)
-			pBufferMap[name] = nullptr;
+		for (const ShaderResourceKey key : bufferResourceKeys)
+			mBufferMap[key] = {};
 
-		for (const std::string name : imageResourceNames)
-			pImageMap[name] = {};
+		for (const ShaderResourceKey key : imageResourceKeys)
+			mImageMap[key] = {};
 	}
 
-	void ResourceMap::SetResource(const std::string& name, const std::shared_ptr<Buffer>& pBuffer)
+	void ResourceMap::SetResource(const ShaderResourceKey& key, const std::shared_ptr<Buffer>& pBuffer, const UI64 offset)
 	{
-		// If the resource name does not exist, return false.
-		if (pBufferMap.find(name) == pBufferMap.end())
-			throw std::invalid_argument("Buffer with the given name \"" + name + "\" is not present within the resource map!");
+		// If the resource key does not exist, return false.
+		if (mBufferMap.find(key) == mBufferMap.end())
+			throw std::invalid_argument("Buffer with the given binding key {\"" + std::to_string(key.mSetIndex) + ", " + std::to_string(key.mBindingIndex) + "\"} is not present within the resource map!");
 
-		pBufferMap[name] = pBuffer;
+		mBufferMap[key] = BufferBinding(pBuffer, offset);
 	}
 
-	void ResourceMap::SetResource(const std::string& name, const std::shared_ptr<ImageSampler>& pSampler, const std::shared_ptr<Image>& pImage)
+	void ResourceMap::SetResource(const ShaderResourceKey& key, const std::shared_ptr<ImageSampler>& pSampler, const std::shared_ptr<Image>& pImage)
 	{
-		// If the resource name does not exist, return false.
-		if (pImageMap.find(name) == pImageMap.end())
-			throw std::invalid_argument("Image with the given name \"" + name + "\" is not present within the resource map!");
+		// If the resource key does not exist, return false.
+		if (mImageMap.find(key) == mImageMap.end())
+			throw std::invalid_argument("Image with the given binding key {\"" + std::to_string(key.mSetIndex) + ", " + std::to_string(key.mBindingIndex) + "\"} is not present within the resource map!");
 
-		pImageMap[name] = std::pair(pSampler, pImage);
+		mImageMap[key] = ImageBinding(pSampler, pImage);
 	}
 
 	bool ResourceMap::operator==(const ResourceMap& other) const
 	{
-		return pBufferMap == other.pBufferMap && pImageMap == other.pImageMap;
+		return mBufferMap == other.mBufferMap && mImageMap == other.mImageMap;
 	}
 }

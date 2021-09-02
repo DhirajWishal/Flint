@@ -8,10 +8,10 @@ namespace Flint
 {
 	namespace Helpers
 	{
-		std::pair<std::vector<std::string>, std::vector<std::string>> GetResourceNames(const std::vector<std::shared_ptr<Shader>>& pShaders)
+		std::pair<std::vector<ShaderResourceKey>, std::vector<ShaderResourceKey>> GetResourceKeys(const std::vector<std::shared_ptr<Shader>>& pShaders)
 		{
-			std::vector<std::string> buffers;
-			std::vector<std::string> images;
+			std::vector<ShaderResourceKey> buffers;
+			std::vector<ShaderResourceKey> images;
 
 			for (const auto pShader : pShaders)
 			{
@@ -21,10 +21,10 @@ namespace Flint
 				const auto resources = pShader->GetShaderResources();
 				for (const auto resource : resources)
 				{
-					if (resource.second.mType == ShaderResourceType::Sampler ||
-						resource.second.mType == ShaderResourceType::SampledImage ||
-						resource.second.mType == ShaderResourceType::StorageImage ||
-						resource.second.mType == ShaderResourceType::CombinedImageSampler)
+					if (resource.second == ShaderResourceType::Sampler ||
+						resource.second == ShaderResourceType::SampledImage ||
+						resource.second == ShaderResourceType::StorageImage ||
+						resource.second == ShaderResourceType::CombinedImageSampler)
 						INSERT_INTO_VECTOR(images, resource.first);
 					else
 						INSERT_INTO_VECTOR(buffers, resource.first);
@@ -92,7 +92,7 @@ namespace Flint
 
 	std::shared_ptr<ResourceMap> GraphicsPipeline::CreateResourceMap() const
 	{
-		auto [buffers, images] = Helpers::GetResourceNames({ pVertexShader, pTessellationControlShader, pTessellationEvaluationShader, pGeometryShader, pFragmentShader });
+		auto [buffers, images] = Helpers::GetResourceKeys({ pVertexShader, pTessellationControlShader, pTessellationEvaluationShader, pGeometryShader, pFragmentShader });
 		return std::make_shared<ResourceMap>(buffers, images);
 	}
 

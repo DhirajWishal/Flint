@@ -28,6 +28,8 @@ void EditorRenderTarget::Initialize(const std::shared_ptr<Flint::Device>& pDevic
 
 	pAllocator->CreateCommandBuffers();
 	pSecondaryAllocator->CreateCommandBuffers();
+
+	mImGuiAdapter.Initialize(pDevice, pRenderTarget);
 }
 
 void EditorRenderTarget::Terminate()
@@ -39,6 +41,8 @@ void EditorRenderTarget::Terminate()
 
 	for (auto& attachment : mAttachments)
 		attachment.pImage->Terminate();
+
+	mImGuiAdapter.Terminate();
 }
 
 bool EditorRenderTarget::IsDisplayOpen() const
@@ -61,6 +65,9 @@ void EditorRenderTarget::DrawFrame()
 	pCommandBuffer->BindRenderTargetSecondary(pRenderTarget);
 
 	pSecondaryCommandBuffer->BeginBufferRecording(pRenderTarget);
+
+	mImGuiAdapter.Render(pSecondaryCommandBuffer);
+
 	pSecondaryCommandBuffer->EndBufferRecording();
 
 	pCommandBuffer->SubmitSecondaryCommandBuffer(pSecondaryCommandBuffer);

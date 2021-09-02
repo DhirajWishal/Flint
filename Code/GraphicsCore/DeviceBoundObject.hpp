@@ -274,6 +274,63 @@ namespace Flint
 	};
 
 	/**
+	 * Shader resource type enum.
+	 */
+	enum class ShaderResourceType : UI8 {
+		Sampler,
+		CombinedImageSampler,
+		SampledImage,
+		StorageImage,
+		UniformTexelBuffer,
+		StorageTexelBuffer,
+		UniformBuffer,
+		StorageBuffer,
+		UniformBufferDynamic,
+		StorageBufferDynamic,
+		InputAttachment,
+		AccelerationStructure,
+	};
+
+	/**
+	 * Shader resource structure.
+	 */
+	struct ShaderResource
+	{
+		ShaderResource() = default;
+		ShaderResource(UI32 setIndex, ShaderResourceType type) : mSetIndex(setIndex), mType(type) {}
+
+		UI32 mSetIndex = 0;
+		ShaderResourceType mType = ShaderResourceType::UniformBuffer;
+	};
+
+	/**
+	 * Shader attribute structure.
+	 */
+	struct ShaderAttribute
+	{
+		ShaderAttribute() = default;
+		ShaderAttribute(const std::string& name, UI32 location, ShaderAttributeDataType type) : mAttributeName(name), mLocation(location), mDataType(type) {}
+
+		std::string mAttributeName = "";
+		UI32 mLocation = 0;
+		ShaderAttributeDataType mDataType = ShaderAttributeDataType::VEC3;
+	};
+
+	/**
+	 * Shader resource key structure.
+	 */
+	struct ShaderResourceKey
+	{
+		ShaderResourceKey() = default;
+		ShaderResourceKey(const UI32 set, UI32 binding) : mSetIndex(set), mBindingIndex(binding) {}
+
+		UI32 mSetIndex = 0;
+		UI32 mBindingIndex = 0;
+
+		constexpr bool operator==(const ShaderResourceKey& other) const { return mSetIndex == other.mSetIndex && mBindingIndex == other.mBindingIndex; }
+	};
+
+	/**
 	 * Rasterization samples enum.
 	 */
 	enum class MultiSampleCount : UI8 {

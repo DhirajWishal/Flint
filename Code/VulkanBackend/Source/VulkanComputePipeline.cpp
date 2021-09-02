@@ -99,7 +99,7 @@ namespace Flint
 				vkDestroyDescriptorPool(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), vDescriptorSetPool, nullptr);
 
 			std::vector<VkDescriptorPoolSize> vPoolSizes;
-			std::unordered_map<std::string, ShaderResource> resources;
+			std::unordered_map<ShaderResourceKey, ShaderResourceType> resources;
 
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 
@@ -165,17 +165,17 @@ namespace Flint
 					const auto bufferResources = instance.second.pResourceMap->GetBufferResourceMap();
 					for (const auto resource : bufferResources)
 					{
-						if (!resource.second)
-							throw backend_error("No uniform attached to the resource slot \"" + resource.first + "\"!");
+						if (!resource.second.pBuffer)
+							throw backend_error("No uniform attached to the resource slot {\"" + std::to_string(resource.first.mSetIndex) + ", " + std::to_string(resource.first.mBindingIndex) + "\"}!");
 
-						const ShaderResource sResource = resources[resource.first];
-						vWrite.descriptorType = Utilities::GetDescriptorType(sResource.mType);
-						vWrite.dstBinding = sResource.mBinding;
+						const ShaderResourceType sResource = resources[resource.first];
+						vWrite.descriptorType = Utilities::GetDescriptorType(sResource);
+						vWrite.dstBinding = resource.first.mBindingIndex;
 
 						VkDescriptorBufferInfo* pBufferInfo = new VkDescriptorBufferInfo;
-						pBufferInfo->buffer = resource.second->StaticCast<VulkanBuffer>().GetBuffer();
-						pBufferInfo->range = resource.second->GetSize();
-						pBufferInfo->offset = 0;
+						pBufferInfo->buffer = resource.second.pBuffer->StaticCast<VulkanBuffer>().GetBuffer();
+						pBufferInfo->range = resource.second.pBuffer->GetSize();
+						pBufferInfo->offset = resource.second.mOffset;
 
 						vWrite.pBufferInfo = pBufferInfo;
 						INSERT_INTO_VECTOR(vWrites, vWrite);
@@ -189,18 +189,18 @@ namespace Flint
 					const auto imageResources = instance.second.pResourceMap->GetImageResourceMap();
 					for (const auto resource : imageResources)
 					{
-						if (!resource.second.second)
-							throw backend_error("No uniform attached to the resource slot \"" + resource.first + "\"!");
+						if (!resource.second.pImage || !resource.second.pImageSampler)
+							throw backend_error("No uniform attached to the resource slot {\"" + std::to_string(resource.first.mSetIndex) + ", " + std::to_string(resource.first.mBindingIndex) + "\"}!");
 
-						const ShaderResource sResource = resources[resource.first];
-						vWrite.descriptorType = Utilities::GetDescriptorType(sResource.mType);
-						vWrite.dstBinding = sResource.mBinding;
+						const ShaderResourceType sResource = resources[resource.first];
+						vWrite.descriptorType = Utilities::GetDescriptorType(sResource);
+						vWrite.dstBinding = resource.first.mBindingIndex;
 
-						VulkanImage& vImage = resource.second.second->StaticCast<VulkanImage>();
+						VulkanImage& vImage = resource.second.pImage->StaticCast<VulkanImage>();
 						VkDescriptorImageInfo* pImageInfo = new VkDescriptorImageInfo;
 						pImageInfo->imageLayout = vImage.GetImageLayout();
-						pImageInfo->imageView = vImage.GetImageView(0);
-						pImageInfo->sampler = resource.second.first->StaticCast<VulkanImageSampler>().GetSampler();
+						pImageInfo->imageView = vImage.GetImageView(static_cast<UI32>(resource.second.mViewIndex));
+						pImageInfo->sampler = resource.second.pImageSampler->StaticCast<VulkanImageSampler>().GetSampler();
 
 						vWrite.pImageInfo = pImageInfo;
 						INSERT_INTO_VECTOR(vWrites, vWrite);

@@ -79,6 +79,8 @@ namespace Flint
 
 			VkDescriptorSetLayout vDescriptorSetLayout = VK_NULL_HANDLE;
 			VkDescriptorPool vDescriptorSetPool = VK_NULL_HANDLE;
+
+			UI32 mCurrentDescriptorCount = 0;
 		};
 	}
 }

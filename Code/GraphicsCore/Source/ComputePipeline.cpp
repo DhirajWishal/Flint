@@ -31,16 +31,16 @@ namespace Flint
 
 	std::shared_ptr<ResourceMap> ComputePipeline::CreateResourceMap() const
 	{
-		std::vector<std::string> buffers;
-		std::vector<std::string> images;
+		std::vector<ShaderResourceKey> buffers;
+		std::vector<ShaderResourceKey> images;
 
 		const auto resources = pShader->GetShaderResources();
 		for (const auto resource : resources)
 		{
-			if (resource.second.mType == ShaderResourceType::Sampler ||
-				resource.second.mType == ShaderResourceType::SampledImage ||
-				resource.second.mType == ShaderResourceType::StorageImage ||
-				resource.second.mType == ShaderResourceType::CombinedImageSampler)
+			if (resource.second == ShaderResourceType::Sampler ||
+				resource.second == ShaderResourceType::SampledImage ||
+				resource.second == ShaderResourceType::StorageImage ||
+				resource.second == ShaderResourceType::CombinedImageSampler)
 				INSERT_INTO_VECTOR(images, resource.first);
 			else
 				INSERT_INTO_VECTOR(buffers, resource.first);

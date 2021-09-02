@@ -481,9 +481,9 @@ namespace Flint
 				poolSizes.insert(poolSizes.end(), tempPoolSizes.begin(), tempPoolSizes.end());
 			}
 
-			void AddResourcesToMap(std::unordered_map<std::string, ShaderResource>& resources, const VulkanShader& shader)
+			void AddResourcesToMap(std::unordered_map<ShaderResourceKey, ShaderResourceType>& resources, const VulkanShader& shader)
 			{
-				const std::unordered_map<std::string, ShaderResource> tempResources = shader.GetShaderResources();
+				const std::unordered_map<ShaderResourceKey, ShaderResourceType> tempResources = shader.GetShaderResources();
 				resources.insert(tempResources.begin(), tempResources.end());
 			}
 		}

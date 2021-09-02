@@ -41,5 +41,24 @@ Application::~Application()
 void Application::Execute()
 {
 	mRenderTarget.PollEvents();
+
+	mNewTimePoint = std::chrono::steady_clock::now();
+	UI64 delta = now.time_since_epoch().count() - mOldTimePoint.time_since_epoch().count();
+
+	mState.PrepareNewFrame();
+
+	ImGui::NewFrame();
+	ImGuizmo::SetOrthographic(false);
+	ImGuizmo::BeginFrame();
+
+	float frameTime = delta / (1000.0f * 1000.0f);
+	average += frameTime;
+	counter++;
+
+	ImGui::Text("Frame Time: %f ms", frameTime);
+	ImGui::Text("Average Frame Time: %f ms", average / counter);
+
 	mRenderTarget.DrawFrame();
+
+	mOldTimePoint = mNewTimePoint;
 }

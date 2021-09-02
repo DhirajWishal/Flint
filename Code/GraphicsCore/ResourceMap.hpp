@@ -5,6 +5,7 @@
 
 #include "Buffer.hpp"
 #include "ImageSampler.hpp"
+#include "Shader.hpp"
 
 namespace Flint
 {
@@ -18,61 +19,91 @@ namespace Flint
 	{
 		friend GraphicsPipeline;
 
+		/**
+		 * Buffer binding structure.
+		 */
+		struct BufferBinding
+		{
+			BufferBinding() = default;
+			BufferBinding(const std::shared_ptr<Buffer>& pBuffer, const UI64 offset) : pBuffer(pBuffer), mOffset(offset) {}
+
+			std::shared_ptr<Buffer> pBuffer = nullptr;
+			UI64 mOffset = 0;
+
+			bool operator==(const BufferBinding& other) const { return pBuffer == other.pBuffer && mOffset == other.mOffset; }
+		};
+
+		/**
+		 * Image binding structure.
+		 */
+		struct ImageBinding
+		{
+			ImageBinding() = default;
+			ImageBinding(const std::shared_ptr<ImageSampler>& pImageSampler, const std::shared_ptr<Image>& pImage) : pImageSampler(pImageSampler), pImage(pImage) {}
+
+			std::shared_ptr<ImageSampler> pImageSampler = nullptr;
+			std::shared_ptr<Image> pImage = nullptr;
+			UI64 mViewIndex = 0;
+
+			bool operator==(const ImageBinding& other) const { return pImageSampler == other.pImageSampler && pImage == other.pImage && mViewIndex == other.mViewIndex; }
+		};
+
 	public:
 		/**
 		 * Construct the resource map using the resource names.
 		 *
-		 * @param bufferResourceNames: The buffer resource names in the map.
-		 * @param imageResourceNames: The image resource names in the map.
+		 * @param bufferResourceKeys: The buffer resource bindings in the map.
+		 * @param imageResourceKeys: The image resource bindings in the map.
 		 */
-		ResourceMap(const std::vector<std::string>& bufferResourceNames, const std::vector<std::string>& imageResourceNames);
+		ResourceMap(const std::vector<ShaderResourceKey>& bufferResourceKeys, const std::vector<ShaderResourceKey>& imageResourceKeys);
 
 		/**
 		 * Set a buffer resource to the map.
 		 *
-		 * @param name: The name of the resource to bind to.
+		 * @param key: The key of the resource to bind to.
 		 * @param pBuffer: The buffer pointer.
+		 * @param offset: The offset of the buffer. Default is 0.
 		 */
-		void SetResource(const std::string& name, const std::shared_ptr<Buffer>& pBuffer);
+		void SetResource(const ShaderResourceKey& key, const std::shared_ptr<Buffer>& pBuffer, const UI64 offset = 0);
 
 		/**
 		 * Get a buffer resource from the map.
 		 *
-		 * @param name: The name of the buffer in the shader.
+		 * @param key: The key of the buffer in the shader.
 		 * @return The buffer pointer.
 		 */
-		const std::shared_ptr<Buffer> GetBufferResource(const std::string& name) const { return pBufferMap.at(name); }
+		const BufferBinding GetBufferResource(const ShaderResourceKey& key) const { return mBufferMap.at(key); }
 
 		/**
 		 * Get the buffer resource map.
 		 *
 		 * @return The resource map.
 		 */
-		const std::unordered_map<std::string, std::shared_ptr<Buffer>> GetBufferResourceMap() const { return pBufferMap; }
+		const std::unordered_map<ShaderResourceKey, BufferBinding> GetBufferResourceMap() const { return mBufferMap; }
 
 		/**
 		 * Set an image resource to the map.
 		 *
-		 * @param name: THe name of the resource to bind to.
+		 * @param key: The key of the resource to bind to.
 		 * @param pSampler: The image sampler pointer.
 		 * @param pImage: The image pointer.
 		 */
-		void SetResource(const std::string& name, const std::shared_ptr<ImageSampler>& pSampler, const std::shared_ptr<Image>& pImage);
+		void SetResource(const ShaderResourceKey& key, const std::shared_ptr<ImageSampler>& pSampler, const std::shared_ptr<Image>& pImage);
 
 		/**
 		 * Get an image resource from the map.
 		 *
-		 * @param name: The name of the image in the shader.
+		 * @param key: The key of the image in the shader.
 		 * @return The specification and image pointer.
 		 */
-		const std::pair<std::shared_ptr<ImageSampler>, std::shared_ptr<Image>> GetImageResource(const std::string& name) const { return pImageMap.at(name); }
+		const ImageBinding GetImageResource(const ShaderResourceKey& key) const { return mImageMap.at(key); }
 
 		/**
 		 * Get the image resource map.
 		 *
 		 * @return The resource map.
 		 */
-		const std::unordered_map<std::string, std::pair<std::shared_ptr<ImageSampler>, std::shared_ptr<Image>>> GetImageResourceMap() const { return pImageMap; }
+		const std::unordered_map<ShaderResourceKey, ImageBinding> GetImageResourceMap() const { return mImageMap; }
 
 	public:
 		/**
@@ -84,7 +115,7 @@ namespace Flint
 		bool operator==(const ResourceMap& other) const;
 
 	protected:
-		std::unordered_map<std::string, std::shared_ptr<Buffer>> pBufferMap;
-		std::unordered_map<std::string, std::pair<std::shared_ptr<ImageSampler>, std::shared_ptr<Image>>> pImageMap;
+		std::unordered_map<ShaderResourceKey, BufferBinding> mBufferMap = {};
+		std::unordered_map<ShaderResourceKey, ImageBinding> mImageMap = {};
 	};
 }

@@ -397,7 +397,8 @@ namespace Flint
 					vSize.descriptorCount = resource->count;
 					INSERT_INTO_VECTOR(mSizes, vSize);
 
-					mResources[resource->name] = ShaderResource(vBinding.binding, resource->set, Helpers::GetShaderResourceType(resource->descriptor_type));
+					ShaderResourceKey key{ resource->set,vBinding.binding };
+					mResources[key] = Helpers::GetShaderResourceType(resource->descriptor_type);
 				}
 			}
 

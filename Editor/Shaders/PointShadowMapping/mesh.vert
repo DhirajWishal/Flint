@@ -28,6 +28,11 @@ layout (location = 3) out vec3 outLightVec;
 layout (location = 4) out vec3 outWorldPos;
 layout (location = 5) out vec3 outLightPos;
 
+vec4 CalculatePosition(mat4 projection, mat4 view, mat4 model, vec3 position, float factor = 1.0f)
+{
+	return projection * view * model * vec4(inPos, factor);
+}
+
 out gl_PerVertex 
 {
     vec4 gl_Position;   
@@ -38,7 +43,8 @@ void main()
 	outUV = inUV;
 	outNormal = inNormal;
 	
-	gl_Position = cam.projection * cam.view * ubo.model * vec4(inPos, 1.0);
+	gl_Position = CalculatePosition(cam.projection, cam.view, ubo.model, inPos);
+
 	outEyePos = vec3(ubo.model * vec4(inPos, 1.0f));
 	outLightVec = normalize(light.lightPos - inPos);	
 	outWorldPos = inPos;

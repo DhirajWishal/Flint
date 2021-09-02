@@ -5,52 +5,23 @@
 
 #include "DeviceBoundObject.hpp"
 
-namespace Flint
+namespace std
 {
 	/**
-	 * Shader resource type enum.
+	 * STL hash specialization.
 	 */
-	enum class ShaderResourceType : UI8 {
-		Sampler,
-		CombinedImageSampler,
-		SampledImage,
-		StorageImage,
-		UniformTexelBuffer,
-		StorageTexelBuffer,
-		UniformBuffer,
-		StorageBuffer,
-		UniformBufferDynamic,
-		StorageBufferDynamic,
-		InputAttachment,
-		AccelerationStructure,
-	};
-
-	/**
-	 * Shader resource structure.
-	 */
-	struct ShaderResource
+	template<>
+	struct hash<Flint::ShaderResourceKey>
 	{
-		ShaderResource() = default;
-		ShaderResource(UI32 binding, UI32 setIndex, ShaderResourceType type) : mBinding(binding), mSetIndex(setIndex), mType(type) {}
-
-		UI32 mBinding = 0;
-		UI32 mSetIndex = 0;
-		ShaderResourceType mType = ShaderResourceType::UniformBuffer;
+		constexpr size_t operator()(const Flint::ShaderResourceKey& resourceKey) const
+		{
+			return static_cast<size_t>(resourceKey.mSetIndex) << 32 | static_cast<size_t>(resourceKey.mBindingIndex);
+		}
 	};
+}
 
-	/**
-	 * Shader attribute structure.
-	 */
-	struct ShaderAttribute
-	{
-		ShaderAttribute() = default;
-		ShaderAttribute(const std::string& name, UI32 location, ShaderAttributeDataType type) : mAttributeName(name), mLocation(location), mDataType(type) {}
-
-		std::string mAttributeName = "";
-		UI32 mLocation = 0;
-		ShaderAttributeDataType mDataType = ShaderAttributeDataType::VEC3;
-	};
-
+namespace Flint
+{
 	/**
 	 * Flint shader object.
 	 * This object is the base class for all the shader objects.
@@ -118,7 +89,7 @@ namespace Flint
 		 *
 		 * @return The shader resources.
 		 */
-		const std::unordered_map<std::string, ShaderResource> GetShaderResources() const { return mResources; }
+		const std::unordered_map<ShaderResourceKey, ShaderResourceType> GetShaderResources() const { return mResources; }
 
 		/**
 		 * Get shader input attributes.
@@ -137,7 +108,7 @@ namespace Flint
 		const std::unordered_map<UI32, std::vector<ShaderAttribute>> GetOutputAttributes() const { return mOutputAttributes; }
 
 	protected:
-		std::unordered_map<std::string, ShaderResource> mResources;
+		std::unordered_map<ShaderResourceKey, ShaderResourceType> mResources;
 		std::unordered_map<UI32, std::vector<ShaderAttribute>> mInputAttributes;
 		std::unordered_map<UI32, std::vector<ShaderAttribute>> mOutputAttributes;
 
