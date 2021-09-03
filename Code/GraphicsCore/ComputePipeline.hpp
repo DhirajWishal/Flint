@@ -88,6 +88,14 @@ namespace Flint
 		 */
 		virtual std::shared_ptr<ResourceMap> CreateResourceMap() const override final;
 
+	public:
+		/**
+		 * Get the compute shader.
+		 *
+		 * @return The shader pointer.
+		 */
+		const std::shared_ptr<Shader> GetShader() const { return pShader; }
+
 	protected:
 		std::shared_ptr<Shader> pShader = nullptr;
 		std::unordered_map<UI64, ComputeInstance> mComputeInstances = {};

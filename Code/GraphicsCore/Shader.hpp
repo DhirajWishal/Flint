@@ -112,6 +112,8 @@ namespace Flint
 		std::unordered_map<UI32, std::vector<ShaderAttribute>> mInputAttributes;
 		std::unordered_map<UI32, std::vector<ShaderAttribute>> mOutputAttributes;
 
+		std::unordered_map<UI32, std::unordered_map<UI32, ShaderResourceType>> mResourceMap;
+
 		ShaderType mType = ShaderType::Undefined;
 	};
 }

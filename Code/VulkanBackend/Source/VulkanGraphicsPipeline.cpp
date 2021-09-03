@@ -1028,9 +1028,7 @@ namespace Flint
 			vMultisampleStateCreateInfo.alphaToOneEnable = GET_VK_BOOL(mSpecification.bEnableAlphaToOne);
 			vMultisampleStateCreateInfo.minSampleShading = mSpecification.mMinSampleShading;
 			vMultisampleStateCreateInfo.pSampleMask;	// TODO
-			//vMultisampleStateCreateInfo.rasterizationSamples = VkSampleCountFlagBits::VK_SAMPLE_COUNT_1_BIT;
 			vMultisampleStateCreateInfo.rasterizationSamples = static_cast<VkSampleCountFlagBits>(Helpers::GetSampleCount(mSpecification.mRasterizationSamples));
-			//vMultisampleStateCreateInfo.rasterizationSamples = static_cast<VkSampleCountFlagBits>(pDevice->StaticCast<VulkanDevice>().GetSampleCount());
 			vMultisampleStateCreateInfo.sampleShadingEnable = GET_VK_BOOL(mSpecification.bEnableSampleShading);
 
 			// Depth stencil state.

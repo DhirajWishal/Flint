@@ -419,6 +419,42 @@ namespace Flint
 		 */
 		void ClearDrawData();
 
+	public:
+		/**
+		 * Get the vertex shader pointer.
+		 * 
+		 * @return The shader pointer.
+		 */
+		const std::shared_ptr<Shader> GetVertexShader() const { return pVertexShader; }
+
+		/**
+		 * Get the fragment shader pointer.
+		 *
+		 * @return The shader pointer.
+		 */
+		const std::shared_ptr<Shader> GetFragmentShader() const { return pFragmentShader; }
+
+		/**
+		 * Get the tessellation control shader pointer.
+		 *
+		 * @return The shader pointer.
+		 */
+		const std::shared_ptr<Shader> GetTessellationControlShader() const { return pTessellationControlShader; }
+
+		/**
+		 * Get the tessellation evaluation shader pointer.
+		 *
+		 * @return The shader pointer.
+		 */
+		const std::shared_ptr<Shader> GetTessellationEvaluationShader() const { return pTessellationEvaluationShader; }
+
+		/**
+		 * Get the geometry shader pointer.
+		 *
+		 * @return The shader pointer.
+		 */
+		const std::shared_ptr<Shader> GetGeometryShader() const { return pGeometryShader; }
+
 	protected:
 		GraphicsPipelineSpecification mSpecification = {};
 

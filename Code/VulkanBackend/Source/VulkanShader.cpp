@@ -399,6 +399,7 @@ namespace Flint
 
 					ShaderResourceKey key{ resource->set,vBinding.binding };
 					mResources[key] = Helpers::GetShaderResourceType(resource->descriptor_type);
+					mResourceMap[resource->set][resource->binding] = Helpers::GetShaderResourceType(resource->descriptor_type);
 				}
 			}
 
