@@ -5,7 +5,7 @@
 
 project "FlintEditor"
 	kind "ConsoleApp"
-	cppdialect "C++20"
+	cppdialect "C++17"
 	language "C++"
 	systemversion "latest"
 	staticruntime "on"

@@ -29,10 +29,8 @@ namespace Flint
 			UI8 GetByteDepth(const PixelFormat format);
 			VkSampleCountFlagBits GetSampleCount(MultiSampleCount count);
 
-			void AddResourceBindingsToVector(std::vector<VkDescriptorSetLayoutBinding>& bindings, const VulkanShader& shader);
 			void AddPushConstantRangesToVector(std::vector<VkPushConstantRange>& ranges, const VulkanShader& shader);
-			void AddPoolSizesToVector(std::vector<VkDescriptorPoolSize>& poolSizes, const VulkanShader& shader);
-			void AddResourcesToMap(std::unordered_map<ShaderResourceKey, ShaderResourceType>& resources, const VulkanShader& shader);
+			void AddResourcesToMap(TShaderResourceMap& resources, const VulkanShader& shader);
 		}
 	}
 }

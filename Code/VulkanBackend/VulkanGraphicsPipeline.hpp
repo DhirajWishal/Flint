@@ -46,6 +46,7 @@ namespace Flint
 			const VkPipeline GetPipeline() const { return vPipeline; }
 			const VkDescriptorSet GetDescriptorSet(const std::shared_ptr<ResourceMap>& pResourceMap) const;
 			const VkDescriptorSet* GetDescriptorSetAddress(const std::shared_ptr<ResourceMap>& pResourceMap) const;
+			const std::vector<VkDescriptorSetLayout> GetDescriptorSetLayouts() const { return vDescriptorSetLayouts; }
 
 		private:
 			void SetupDefaults();
@@ -69,6 +70,7 @@ namespace Flint
 			std::vector<VkVertexInputBindingDescription> vVertexBindings = {};
 			std::vector<VkDynamicState> vDynamicStates = {};
 
+			std::vector<VkDescriptorSetLayout> vDescriptorSetLayouts = {};
 			std::unordered_map<std::shared_ptr<ResourceMap>, VkDescriptorSet> vDescriptorSetMap;
 
 			VkPipelineLayout vPipelineLayout = VK_NULL_HANDLE;
@@ -76,11 +78,6 @@ namespace Flint
 			VkPipelineCache vPipelineCache = VK_NULL_HANDLE;
 
 			VkRenderPass vRenderPass = VK_NULL_HANDLE;
-
-			VkDescriptorSetLayout vDescriptorSetLayout = VK_NULL_HANDLE;
-			VkDescriptorPool vDescriptorSetPool = VK_NULL_HANDLE;
-
-			UI32 mCurrentDescriptorCount = 0;
 		};
 	}
 }

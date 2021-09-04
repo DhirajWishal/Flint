@@ -5,8 +5,8 @@
 
 namespace Flint
 {
-	ResourcePackage::ResourcePackage(const UI32 setIndex, const std::vector<UI32>& bufferBindings, const std::vector<UI32>& imageBindings)
-		: mSetIndex(setIndex)
+	ResourcePackage::ResourcePackage(const std::shared_ptr<ResourcePackager>& pPackager, const std::vector<UI32>& bufferBindings, const std::vector<UI32>& imageBindings)
+		: pPackager(pPackager)
 	{
 		for (const UI32 binding : bufferBindings)
 			mBufferBindings[binding] = {};

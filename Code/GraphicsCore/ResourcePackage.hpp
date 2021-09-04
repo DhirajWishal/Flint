@@ -8,6 +8,8 @@
 
 namespace Flint
 {
+	class ResourcePackager;
+
 	/**
 	 * Buffer binding structure.
 	 */
@@ -49,11 +51,16 @@ namespace Flint
 		/**
 		 * Construct the package.
 		 *
-		 * @param setIndex: The set index of the package.
+		 * @param pPackager: The packager to which this is bound to.
 		 * @param bufferBindings: The buffer bindings.
 		 * @param imageBindings: The image bindings.
 		 */
-		ResourcePackage(const UI32 setIndex, const std::vector<UI32>& bufferBindings, const std::vector<UI32>& imageBindings);
+		ResourcePackage(const std::shared_ptr<ResourcePackager>& pPackager, const std::vector<UI32>& bufferBindings, const std::vector<UI32>& imageBindings);
+
+		/**
+		 * Prepare the backend resources if necessary.
+		 */
+		virtual void PrepareIfNecessary() = 0;
 
 		/**
 		 * Bind resources to the package.
@@ -76,13 +83,6 @@ namespace Flint
 		void BindResource(const UI32 binding, const std::shared_ptr<ImageSampler>& pImageSampler, const std::shared_ptr<Image>& pImage, const UI64 index = 0);
 
 	public:
-		/**
-		 * Get the set index of the current package.
-		 * 
-		 * @return The set index.
-		 */
-		const UI32 GetSetIndex() const { return mSetIndex; }
-
 		/**
 		 * Get the buffer binding map.
 		 *
@@ -114,10 +114,10 @@ namespace Flint
 		const ImageBinding GetImageBinding(const UI32 binding) const;
 
 	protected:
+		std::shared_ptr<ResourcePackager> pPackager = nullptr;
+
 		std::unordered_map<UI32, BufferBinding> mBufferBindings;
 		std::unordered_map<UI32, ImageBinding> mImageBindings;
-
-		UI32 mSetIndex = 0;
 
 		bool bIsUpdated = true;
 	};

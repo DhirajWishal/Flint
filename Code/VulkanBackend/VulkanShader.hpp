@@ -9,6 +9,12 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
+		struct DescriptorSetInfo
+		{
+			std::vector<VkDescriptorSetLayoutBinding> mLayoutBindings;
+			std::vector<VkDescriptorPoolSize> mPoolSizes;
+		};
+
 		class VulkanShader final : public Shader, public std::enable_shared_from_this<VulkanShader>
 		{
 		public:
@@ -27,9 +33,8 @@ namespace Flint
 			void PerformReflection();
 
 			VkShaderModule GetModule() const { return vModule; }
-			const std::vector<VkDescriptorSetLayoutBinding> GetResourceBindings() const { return mBindings; }
-			const std::vector<VkDescriptorPoolSize> GetPoolSizes() const { return mSizes; }
 			const std::vector<VkPushConstantRange> GetPushConstantRanges() const { return mConstantRanges; }
+			const std::unordered_map<UI32, DescriptorSetInfo> GetDescriptorSetMap() const { return mDescriptorSetMap; }
 
 		private:
 			void ResolveShaderStage();
@@ -37,9 +42,9 @@ namespace Flint
 
 		private:
 			std::vector<UI32> mShaderCode;
-			std::vector<VkDescriptorSetLayoutBinding> mBindings;
-			std::vector<VkDescriptorPoolSize> mSizes;
 			std::vector<VkPushConstantRange> mConstantRanges;
+
+			std::unordered_map<UI32, DescriptorSetInfo> mDescriptorSetMap;
 
 			VkShaderModule vModule = VK_NULL_HANDLE;
 

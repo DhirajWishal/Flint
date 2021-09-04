@@ -22,6 +22,8 @@ namespace std
 
 namespace Flint
 {
+	using TShaderResourceMap = std::unordered_map<UI32, std::unordered_map<UI32, ShaderResourceType>>;
+
 	/**
 	 * Flint shader object.
 	 * This object is the base class for all the shader objects.
@@ -89,7 +91,7 @@ namespace Flint
 		 *
 		 * @return The shader resources.
 		 */
-		const std::unordered_map<ShaderResourceKey, ShaderResourceType> GetShaderResources() const { return mResources; }
+		const TShaderResourceMap GetShaderResources() const { return mResourceMap; }
 
 		/**
 		 * Get shader input attributes.
@@ -108,11 +110,10 @@ namespace Flint
 		const std::unordered_map<UI32, std::vector<ShaderAttribute>> GetOutputAttributes() const { return mOutputAttributes; }
 
 	protected:
-		std::unordered_map<ShaderResourceKey, ShaderResourceType> mResources;
 		std::unordered_map<UI32, std::vector<ShaderAttribute>> mInputAttributes;
 		std::unordered_map<UI32, std::vector<ShaderAttribute>> mOutputAttributes;
 
-		std::unordered_map<UI32, std::unordered_map<UI32, ShaderResourceType>> mResourceMap;
+		TShaderResourceMap mResourceMap;
 
 		ShaderType mType = ShaderType::Undefined;
 	};

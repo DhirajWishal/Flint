@@ -391,14 +391,14 @@ namespace Flint
 					vBinding.descriptorType = Helpers::GetVkDescriptorType(resource->descriptor_type);
 					vBinding.descriptorCount = resource->count;
 					vBinding.binding = resource->binding;
-					INSERT_INTO_VECTOR(mBindings, vBinding);
 
 					vSize.type = vBinding.descriptorType;
 					vSize.descriptorCount = resource->count;
-					INSERT_INTO_VECTOR(mSizes, vSize);
+
+					mDescriptorSetMap[resource->set].mLayoutBindings.push_back(vBinding);
+					mDescriptorSetMap[resource->set].mPoolSizes.push_back(vSize);
 
 					ShaderResourceKey key{ resource->set,vBinding.binding };
-					mResources[key] = Helpers::GetShaderResourceType(resource->descriptor_type);
 					mResourceMap[resource->set][resource->binding] = Helpers::GetShaderResourceType(resource->descriptor_type);
 				}
 			}

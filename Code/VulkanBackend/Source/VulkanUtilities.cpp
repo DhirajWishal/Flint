@@ -463,27 +463,15 @@ namespace Flint
 				return VkSampleCountFlagBits::VK_SAMPLE_COUNT_FLAG_BITS_MAX_ENUM;
 			}
 
-			void AddResourceBindingsToVector(std::vector<VkDescriptorSetLayoutBinding>& bindings, const VulkanShader& shader)
-			{
-				std::vector<VkDescriptorSetLayoutBinding> tempBindings = shader.GetResourceBindings();
-				bindings.insert(bindings.end(), tempBindings.begin(), tempBindings.end());
-			}
-
 			void AddPushConstantRangesToVector(std::vector<VkPushConstantRange>& ranges, const VulkanShader& shader)
 			{
 				std::vector<VkPushConstantRange> tempRanges = shader.GetPushConstantRanges();
 				ranges.insert(ranges.end(), tempRanges.begin(), tempRanges.end());
 			}
 
-			void AddPoolSizesToVector(std::vector<VkDescriptorPoolSize>& poolSizes, const VulkanShader& shader)
+			void AddResourcesToMap(TShaderResourceMap& resources, const VulkanShader& shader)
 			{
-				std::vector<VkDescriptorPoolSize> tempPoolSizes = shader.GetPoolSizes();
-				poolSizes.insert(poolSizes.end(), tempPoolSizes.begin(), tempPoolSizes.end());
-			}
-
-			void AddResourcesToMap(std::unordered_map<ShaderResourceKey, ShaderResourceType>& resources, const VulkanShader& shader)
-			{
-				const std::unordered_map<ShaderResourceKey, ShaderResourceType> tempResources = shader.GetShaderResources();
+				const TShaderResourceMap tempResources = shader.GetShaderResources();
 				resources.insert(tempResources.begin(), tempResources.end());
 			}
 		}

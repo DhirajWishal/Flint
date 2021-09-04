@@ -607,7 +607,11 @@ namespace Flint
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 
 			vkDestroyPipeline(vDevice.GetLogicalDevice(), vPipeline, nullptr);
-			vkDestroyDescriptorSetLayout(vDevice.GetLogicalDevice(), vDescriptorSetLayout, nullptr);
+
+			for (const auto vLayout : vDescriptorSetLayouts)
+				vkDestroyDescriptorSetLayout(vDevice.GetLogicalDevice(), vLayout, nullptr);
+			vDescriptorSetLayouts.clear();
+
 			vkDestroyPipelineLayout(vDevice.GetLogicalDevice(), vPipelineLayout, nullptr);
 
 			bShouldPrepareResources = true;
@@ -644,12 +648,11 @@ namespace Flint
 
 			// Delete pipeline objects.
 			vkDestroyPipeline(vDevice.GetLogicalDevice(), vPipeline, nullptr);
-			vkDestroyDescriptorSetLayout(vDevice.GetLogicalDevice(), vDescriptorSetLayout, nullptr);
 			vkDestroyPipelineLayout(vDevice.GetLogicalDevice(), vPipelineLayout, nullptr);
 			vkDestroyPipelineCache(vDevice.GetLogicalDevice(), vPipelineCache, nullptr);
 
-			if (vDescriptorSetPool)
-				vkDestroyDescriptorPool(vDevice.GetLogicalDevice(), vDescriptorSetPool, nullptr);
+			for (const auto vLayout : vDescriptorSetLayouts)
+				vkDestroyDescriptorSetLayout(vDevice.GetLogicalDevice(), vLayout, nullptr);
 
 			bIsTerminated = true;
 		}
@@ -662,238 +665,7 @@ namespace Flint
 			if (!bShouldPrepareResources || mDrawDataList.empty())
 				return;
 
-			UI32 descriptorSetCount = static_cast<UI32>(mDrawDataList.size());
-			std::vector<VkDescriptorPoolSize> vPoolSizes;
-			std::vector<VkWriteDescriptorSet> vWrites;
-			std::unordered_map<ShaderResourceKey, ShaderResourceType> resources;
-
-			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-
-			// Resolve vertex shader data.
-			{
-				VulkanShader& vVertexShader = pVertexShader->StaticCast<VulkanShader>();
-				Utilities::AddPoolSizesToVector(vPoolSizes, vVertexShader);
-				Utilities::AddResourcesToMap(resources, vVertexShader);
-			}
-
-			// Check and resolve fragment shader data.
-			if (pFragmentShader)
-			{
-				VulkanShader& vFragmentShader = pFragmentShader->StaticCast<VulkanShader>();
-				Utilities::AddPoolSizesToVector(vPoolSizes, vFragmentShader);
-				Utilities::AddResourcesToMap(resources, vFragmentShader);
-			}
-
-			// Check and resolve tessellation control shader data.
-			if (pTessellationControlShader)
-			{
-				VulkanShader& vShader = pTessellationControlShader->StaticCast<VulkanShader>();
-				Utilities::AddPoolSizesToVector(vPoolSizes, vShader);
-				Utilities::AddResourcesToMap(resources, vShader);
-			}
-
-			// Check and resolve tessellation evaluation shader data.
-			if (pTessellationEvaluationShader)
-			{
-				VulkanShader& vShader = pTessellationEvaluationShader->StaticCast<VulkanShader>();
-				Utilities::AddPoolSizesToVector(vPoolSizes, vShader);
-				Utilities::AddResourcesToMap(resources, vShader);
-			}
-
-			// Check and resolve geometry shader data.
-			if (pGeometryShader)
-			{
-				VulkanShader& vShader = pGeometryShader->StaticCast<VulkanShader>();
-				Utilities::AddPoolSizesToVector(vPoolSizes, vShader);
-				Utilities::AddResourcesToMap(resources, vShader);
-			}
-
-			// Return if the pool size is empty.
-			if (vPoolSizes.empty())
-				return;
-
-			if (descriptorSetCount != mCurrentDescriptorCount)
-			{
-				if (vDescriptorSetPool)
-					vkDestroyDescriptorPool(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), vDescriptorSetPool, nullptr);
-
-				// Create descriptor pool.
-				{
-					VkDescriptorPoolCreateInfo vPoolCreateInfo = {};
-					vPoolCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-					vPoolCreateInfo.pNext = VK_NULL_HANDLE;
-					vPoolCreateInfo.flags = 0;
-					vPoolCreateInfo.maxSets = descriptorSetCount;
-					vPoolCreateInfo.poolSizeCount = static_cast<UI32>(vPoolSizes.size());
-					vPoolCreateInfo.pPoolSizes = vPoolSizes.data();
-
-					FLINT_VK_ASSERT(vkCreateDescriptorPool(vDevice.GetLogicalDevice(), &vPoolCreateInfo, nullptr, &vDescriptorSetPool));
-				}
-
-				// Allocate descriptor sets.
-				std::vector<VkDescriptorSet> vDescriptorSets(descriptorSetCount);
-				{
-					std::vector<VkDescriptorSetLayout> vDescriptorSetLayouts(descriptorSetCount, vDescriptorSetLayout);
-
-					VkDescriptorSetAllocateInfo vAllocateInfo = {};
-					vAllocateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-					vAllocateInfo.pNext = VK_NULL_HANDLE;
-					vAllocateInfo.descriptorPool = vDescriptorSetPool;
-					vAllocateInfo.descriptorSetCount = descriptorSetCount;
-					vAllocateInfo.pSetLayouts = vDescriptorSetLayouts.data();
-
-					FLINT_VK_ASSERT(vkAllocateDescriptorSets(vDevice.GetLogicalDevice(), &vAllocateInfo, vDescriptorSets.data()));
-				}
-
-				// Update descriptor sets.
-				VkWriteDescriptorSet vWrite = {};
-				vWrite.sType = VkStructureType::VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-				vWrite.pNext = VK_NULL_HANDLE;
-				vWrite.pTexelBufferView = VK_NULL_HANDLE;
-				vWrite.descriptorCount = 1;
-				vWrite.dstArrayElement = 0;
-
-				UI64 descriptorIndex = 0;
-				for (const auto drawData : mDrawDataList)
-				{
-					if (!drawData.second.pResourceMap)
-						continue;
-
-					vWrite.dstSet = vDescriptorSets[descriptorIndex++];
-					vDescriptorSetMap[drawData.second.pResourceMap] = vWrite.dstSet;
-
-					vWrite.pImageInfo = VK_NULL_HANDLE;
-
-					// Get buffer resources.
-					{
-						const auto bufferResources = drawData.second.pResourceMap->GetBufferResourceMap();
-						for (const auto resource : bufferResources)
-						{
-							if (!resource.second.pBuffer)
-								throw backend_error("No uniform attached to the resource slot {\"" + std::to_string(resource.first.mSetIndex) + ", " + std::to_string(resource.first.mBindingIndex) + "\"}!");
-
-							const ShaderResourceType sResource = resources[resource.first];
-							vWrite.descriptorType = Utilities::GetDescriptorType(sResource);
-							vWrite.dstBinding = resource.first.mBindingIndex;
-
-							VkDescriptorBufferInfo* pBufferInfo = new VkDescriptorBufferInfo;
-							pBufferInfo->buffer = resource.second.pBuffer->StaticCast<VulkanBuffer>().GetBuffer();
-							pBufferInfo->range = resource.second.pBuffer->GetSize();
-							pBufferInfo->offset = resource.second.mOffset;
-
-							vWrite.pBufferInfo = pBufferInfo;
-							INSERT_INTO_VECTOR(vWrites, vWrite);
-						}
-					}
-
-					vWrite.pBufferInfo = VK_NULL_HANDLE;
-
-					// Get image resources.
-					{
-						const auto imageResources = drawData.second.pResourceMap->GetImageResourceMap();
-						for (const auto resource : imageResources)
-						{
-							if (!resource.second.pImage || !resource.second.pImageSampler)
-								throw backend_error("No uniform attached to the resource slot {\"" + std::to_string(resource.first.mSetIndex) + ", " + std::to_string(resource.first.mBindingIndex) + "\"}!");
-
-							const ShaderResourceType sResource = resources[resource.first];
-							vWrite.descriptorType = Utilities::GetDescriptorType(sResource);
-							vWrite.dstBinding = resource.first.mBindingIndex;
-
-							VulkanImage& vImage = resource.second.pImage->StaticCast<VulkanImage>();
-							VkDescriptorImageInfo* pImageInfo = new VkDescriptorImageInfo;
-							pImageInfo->imageLayout = vImage.GetImageLayout();
-							pImageInfo->imageView = vImage.GetImageView(static_cast<UI32>(resource.second.mViewIndex));
-							pImageInfo->sampler = resource.second.pImageSampler->StaticCast<VulkanImageSampler>().GetSampler();
-
-							vWrite.pImageInfo = pImageInfo;
-							INSERT_INTO_VECTOR(vWrites, vWrite);
-						}
-					}
-				}
-			}
-			else
-			{
-				// Update descriptor sets.
-				VkWriteDescriptorSet vWrite = {};
-				vWrite.sType = VkStructureType::VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-				vWrite.pNext = VK_NULL_HANDLE;
-				vWrite.pTexelBufferView = VK_NULL_HANDLE;
-				vWrite.descriptorCount = 1;
-				vWrite.dstArrayElement = 0;
-
-				UI64 descriptorIndex = 0;
-				for (const auto drawData : mDrawDataList)
-				{
-					if (!drawData.second.pResourceMap)
-						continue;
-
-					vWrite.dstSet = vDescriptorSetMap[drawData.second.pResourceMap];
-					vWrite.pImageInfo = VK_NULL_HANDLE;
-
-					// Get buffer resources.
-					{
-						const auto bufferResources = drawData.second.pResourceMap->GetBufferResourceMap();
-						for (const auto resource : bufferResources)
-						{
-							if (!resource.second.pBuffer)
-								throw backend_error("No uniform attached to the resource slot {\"" + std::to_string(resource.first.mSetIndex) + ", " + std::to_string(resource.first.mBindingIndex) + "\"}!");
-
-							const ShaderResourceType sResource = resources[resource.first];
-							vWrite.descriptorType = Utilities::GetDescriptorType(sResource);
-							vWrite.dstBinding = resource.first.mBindingIndex;
-
-							VkDescriptorBufferInfo* pBufferInfo = new VkDescriptorBufferInfo;
-							pBufferInfo->buffer = resource.second.pBuffer->StaticCast<VulkanBuffer>().GetBuffer();
-							pBufferInfo->range = resource.second.pBuffer->GetSize();
-							pBufferInfo->offset = resource.second.mOffset;
-
-							vWrite.pBufferInfo = pBufferInfo;
-							INSERT_INTO_VECTOR(vWrites, vWrite);
-						}
-					}
-
-					vWrite.pBufferInfo = VK_NULL_HANDLE;
-
-					// Get image resources.
-					{
-						const auto imageResources = drawData.second.pResourceMap->GetImageResourceMap();
-						for (const auto resource : imageResources)
-						{
-							if (!resource.second.pImage || !resource.second.pImageSampler)
-								throw backend_error("No uniform attached to the resource slot {\"" + std::to_string(resource.first.mSetIndex) + ", " + std::to_string(resource.first.mBindingIndex) + "\"}!");
-
-							const ShaderResourceType sResource = resources[resource.first];
-							vWrite.descriptorType = Utilities::GetDescriptorType(sResource);
-							vWrite.dstBinding = resource.first.mBindingIndex;
-
-							VulkanImage& vImage = resource.second.pImage->StaticCast<VulkanImage>();
-							VkDescriptorImageInfo* pImageInfo = new VkDescriptorImageInfo;
-							pImageInfo->imageLayout = vImage.GetImageLayout();
-							pImageInfo->imageView = vImage.GetImageView(static_cast<UI32>(resource.second.mViewIndex));
-							pImageInfo->sampler = resource.second.pImageSampler->StaticCast<VulkanImageSampler>().GetSampler();
-
-							vWrite.pImageInfo = pImageInfo;
-							INSERT_INTO_VECTOR(vWrites, vWrite);
-						}
-					}
-				}
-			}
-
-			vkUpdateDescriptorSets(vDevice.GetLogicalDevice(), static_cast<UI32>(vWrites.size()), vWrites.data(), 0, nullptr);
-
-			// Clear memory.
-			for (auto write : vWrites)
-			{
-				if (write.pBufferInfo)
-					delete write.pBufferInfo;
-
-				else if (write.pImageInfo)
-					delete write.pImageInfo;
-			}
-
 			bShouldPrepareResources = false;
-			mCurrentDescriptorCount = descriptorSetCount;
 		}
 
 		const VkDescriptorSet VulkanGraphicsPipeline::GetDescriptorSet(const std::shared_ptr<ResourceMap>& pResourceMap) const
@@ -1072,58 +844,72 @@ namespace Flint
 		{
 			FLINT_SETUP_PROFILER();
 
-			std::vector<VkDescriptorSetLayoutBinding> vBindings;
 			std::vector<VkPushConstantRange> vConstantRanges;
+			std::unordered_map<UI32, DescriptorSetInfo> descriptorSetInfos;
 
 			// Resolve vertex shader data.
 			{
 				auto& vShader = pVertexShader->StaticCast<VulkanShader>();
-				Utilities::AddResourceBindingsToVector(vBindings, vShader);
 				Utilities::AddPushConstantRangesToVector(vConstantRanges, vShader);
+
+				const auto map = vShader.GetDescriptorSetMap();
+				descriptorSetInfos.insert(map.begin(), map.end());
 			}
 
 			// Check and resolve fragment shader data.
 			if (pFragmentShader)
 			{
 				auto& vShader = pFragmentShader->StaticCast<VulkanShader>();
-				Utilities::AddResourceBindingsToVector(vBindings, vShader);
 				Utilities::AddPushConstantRangesToVector(vConstantRanges, vShader);
+
+				const auto map = vShader.GetDescriptorSetMap();
+				descriptorSetInfos.insert(map.begin(), map.end());
 			}
 
 			// Check and resolve tessellation control shader data.
 			if (pTessellationControlShader)
 			{
 				auto& vShader = pTessellationControlShader->StaticCast<VulkanShader>();
-				Utilities::AddResourceBindingsToVector(vBindings, vShader);
 				Utilities::AddPushConstantRangesToVector(vConstantRanges, vShader);
+
+				const auto map = vShader.GetDescriptorSetMap();
+				descriptorSetInfos.insert(map.begin(), map.end());
 			}
 
 			// Check and resolve tessellation evaluation shader data.
 			if (pTessellationEvaluationShader)
 			{
 				auto& vShader = pTessellationEvaluationShader->StaticCast<VulkanShader>();
-				Utilities::AddResourceBindingsToVector(vBindings, vShader);
 				Utilities::AddPushConstantRangesToVector(vConstantRanges, vShader);
+
+				const auto map = vShader.GetDescriptorSetMap();
+				descriptorSetInfos.insert(map.begin(), map.end());
 			}
 
 			// Check and resolve geometry shader data.
 			if (pGeometryShader)
 			{
 				auto& vShader = pGeometryShader->StaticCast<VulkanShader>();
-				Utilities::AddResourceBindingsToVector(vBindings, vShader);
 				Utilities::AddPushConstantRangesToVector(vConstantRanges, vShader);
+
+				const auto map = vShader.GetDescriptorSetMap();
+				descriptorSetInfos.insert(map.begin(), map.end());
 			}
 
-			// Create descriptor set layout.
+			// Create descriptor set layouts.
+			for (const auto info : descriptorSetInfos)
 			{
 				VkDescriptorSetLayoutCreateInfo vLayoutCreateInfo = {};
 				vLayoutCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 				vLayoutCreateInfo.pNext = VK_NULL_HANDLE;
 				vLayoutCreateInfo.flags = 0;
-				vLayoutCreateInfo.bindingCount = static_cast<UI32>(vBindings.size());
-				vLayoutCreateInfo.pBindings = vBindings.data();
+				vLayoutCreateInfo.bindingCount = static_cast<UI32>(info.second.mLayoutBindings.size());
+				vLayoutCreateInfo.pBindings = info.second.mLayoutBindings.data();
 
+				VkDescriptorSetLayout vDescriptorSetLayout = VK_NULL_HANDLE;
 				FLINT_VK_ASSERT(vkCreateDescriptorSetLayout(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), &vLayoutCreateInfo, nullptr, &vDescriptorSetLayout));
+
+				vDescriptorSetLayouts.push_back(vDescriptorSetLayout);
 			}
 
 			// Create pipeline layout.
@@ -1133,8 +919,8 @@ namespace Flint
 			vCreateInfo.flags = 0;
 			vCreateInfo.pushConstantRangeCount = static_cast<UI32>(vConstantRanges.size());
 			vCreateInfo.pPushConstantRanges = vConstantRanges.data();
-			vCreateInfo.setLayoutCount = 1;
-			vCreateInfo.pSetLayouts = &vDescriptorSetLayout;
+			vCreateInfo.setLayoutCount = static_cast<UI32>(vDescriptorSetLayouts.size());
+			vCreateInfo.pSetLayouts = vDescriptorSetLayouts.data();
 
 			FLINT_VK_ASSERT(vkCreatePipelineLayout(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), &vCreateInfo, nullptr, &vPipelineLayout));
 		}

@@ -5,7 +5,7 @@
 
 project "ShadowMap"
 	kind "ConsoleApp"
-	cppdialect "C++20"
+	cppdialect "C++17"
 	language "C++"
 	staticruntime "On"
 	systemversion "latest"
