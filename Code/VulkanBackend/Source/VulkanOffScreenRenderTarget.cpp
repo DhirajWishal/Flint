@@ -42,13 +42,21 @@ namespace Flint
 				pAttachmentInferfaces.push_back(&attachment.pImage->StaticCast<VulkanImage>());
 
 				VkClearValue vClearValue = {};
-				vClearValue.color.float32[0] = attachment.mClearColor.mRed;
-				vClearValue.color.float32[1] = attachment.mClearColor.mGreen;
-				vClearValue.color.float32[2] = attachment.mClearColor.mBlue;
-				vClearValue.color.float32[3] = attachment.mClearColor.mAlpha;
+				if ((attachment.pImage->GetUsage() & ImageUsage::Color) == ImageUsage::Color)
+				{
+					vClearValue.color.float32[0] = attachment.mClearColor.mRed;
+					vClearValue.color.float32[1] = attachment.mClearColor.mGreen;
+					vClearValue.color.float32[2] = attachment.mClearColor.mBlue;
+					vClearValue.color.float32[3] = attachment.mClearColor.mAlpha;
+				}
+				else if ((attachment.pImage->GetUsage() & ImageUsage::Depth) == ImageUsage::Depth)
+				{
+					vClearValue.depthStencil.depth = attachment.mDepthClearValue.mDepth;
+					vClearValue.depthStencil.stencil = attachment.mDepthClearValue.mStencil;
+				}
+				else
+					throw backend_error("Invalid attachment type! The image usage should contain either Color or Depth.");
 
-				vClearValue.depthStencil.depth = attachment.mDepthClearValue.mDepth;
-				vClearValue.depthStencil.stencil = attachment.mDepthClearValue.mStencil;
 				vClearValues.push_back(vClearValue);
 			}
 
@@ -60,8 +68,34 @@ namespace Flint
 			vInheritInfo.renderPass = vRenderTarget.vRenderPass;
 		}
 		
-		void VulkanOffScreenRenderTarget::PrepareNewFrame()
+		void VulkanOffScreenRenderTarget::Recreate(const FBox2D& extent)
 		{
+			mExtent = extent;
+
+			pDevice->WaitIdle();
+
+			vRenderTarget.DestroyRenderPass();
+			vRenderTarget.DestroyFrameBuffers();
+
+			std::vector<VulkanRenderTargetAttachmentInterface*> pAttachmentInferfaces;
+			pAttachmentInferfaces.reserve(mAttachments.size());
+
+			for (auto attachment : mAttachments)
+			{
+				attachment.pImage->StaticCast<VulkanImage>().Recreate(mExtent);
+				pAttachmentInferfaces.push_back(&attachment.pImage->StaticCast<VulkanImage>());
+			}
+
+			vRenderTarget.CreateRenderPass(pAttachmentInferfaces, VK_PIPELINE_BIND_POINT_GRAPHICS, vDependencies);
+			vRenderTarget.CreateFrameBuffer(pAttachmentInferfaces, mExtent, mBufferCount);
+
+			vInheritInfo.renderPass = vRenderTarget.vRenderPass;
+			mFrameIndex = 0;
+		}
+
+		bool VulkanOffScreenRenderTarget::PrepareNewFrame()
+		{
+			return true;
 		}
 
 		void VulkanOffScreenRenderTarget::Terminate()

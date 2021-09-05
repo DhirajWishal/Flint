@@ -5,133 +5,107 @@
 
 #include "GraphicsCore/Instance.hpp"
 
-void EditorRenderTarget::Initialize(const std::shared_ptr<Flint::Device>& pDevice, const std::shared_ptr<Flint::Instance>& pInstnace)
+namespace Flint
 {
-	const Flint::FBox2D extent = Flint::FBox2D(1280, 720);
-	pDisplay = pInstnace->CreateDisplay(extent, "Flint Editor");
-
-	Flint::FBox3D imageExtent = Flint::FBox3D(extent.mWidth, extent.mHeight, 1);
-	const auto sampleCount = pDevice->GetSupportedMultiSampleCount();
-
-	mAttachments[0] = Flint::RenderTargetAttachment(
-		pDevice->CreateImage(Flint::ImageType::TwoDimension, Flint::ImageUsage::Color, imageExtent, pDisplay->GetBestSwapChainFormat(pDevice), 1, 1, nullptr, sampleCount),
-		Flint::FColor4D(CREATE_COLOR_256(32.0f), CREATE_COLOR_256(32.0f), CREATE_COLOR_256(32.0f), 1.0f));
-
-	mAttachments[1] = Flint::RenderTargetAttachment(
-		pDevice->CreateImage(Flint::ImageType::TwoDimension, Flint::ImageUsage::Depth, imageExtent, Flint::PixelFormat::D24_UNORMAL_S8_UINT, 1, 1, nullptr, sampleCount),
-		Flint::DepthClearValues(1.0f, 0));
-
-	pRenderTarget = pDevice->CreateScreenBoundRenderTarget(pDisplay, extent, pDisplay->FindBestBufferCount(pDevice), mAttachments, Flint::SwapChainPresentMode::MailBox);
-
-	pAllocator = pDevice->CreateCommandBufferAllocator(pRenderTarget->GetBufferCount());
-	pSecondaryAllocator = pAllocator->CreateChildAllocator();
-
-	pAllocator->CreateCommandBuffers();
-	pSecondaryAllocator->CreateCommandBuffers();
-
-	mImGuiAdapter.Initialize(pDevice, pRenderTarget);
-	mCamera.SetAspectRatio(pDisplay->GetExtent());
-
-	mVikingRoom.Initialize(pDevice, pRenderTarget, &mCamera);
-}
-
-void EditorRenderTarget::Terminate()
-{
-	mVikingRoom.Terminate();
-
-	pAllocator->Terminate();
-	pSecondaryAllocator->Terminate();
-	pRenderTarget->Terminate();
-	pDisplay->Terminate();
-
-	for (auto& attachment : mAttachments)
-		attachment.pImage->Terminate();
-
-	mImGuiAdapter.Terminate();
-}
-
-bool EditorRenderTarget::IsDisplayOpen() const
-{
-	return pDisplay->IsOpen();
-}
-
-void EditorRenderTarget::PollEvents(UI64 delta)
-{
-	pDisplay->Update();
-
-	ImGuiIO& io = ImGui::GetIO();
-	io.DeltaTime = delta / 1000.0f;
-
-	auto extent = pDisplay->GetExtent();
-	if (!extent.IsZero())
+	void EditorRenderTarget::Initialize(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Instance>& pInstnace)
 	{
-		mCamera.SetAspectRatio(extent);
-		io.DisplaySize = ImVec2(static_cast<float>(extent.mWidth), static_cast<float>(extent.mHeight));
+		const FBox2D extent = FBox2D(1280, 720);
+		const FBox2D offScreenExtent = FBox2D(848, 480);
+		pDisplay = pInstnace->CreateDisplay(extent, "Flint Editor");
+
+		const auto sampleCount = pDevice->GetSupportedMultiSampleCount();
+
+		pRenderTarget = pDevice->CreateScreenBoundRenderTarget(pDisplay, extent, pDisplay->FindBestBufferCount(pDevice), {}, SwapChainPresentMode::MailBox);
+
+		pAllocator = pDevice->CreateCommandBufferAllocator(pRenderTarget->GetBufferCount());
+		pSecondaryAllocator = pAllocator->CreateChildAllocator();
+
+		pAllocator->CreateCommandBuffers();
+		pSecondaryAllocator->CreateCommandBuffers();
+
+		mImGuiAdapter.Initialize(pDevice, pRenderTarget);
+		mSceneRenderTarget.Initialize(pDevice, pRenderTarget->GetBufferCount(), offScreenExtent, mImGuiAdapter.CreateResourcePackage());
 	}
 
-	auto position = pDisplay->GetMousePosition();
-	io.MousePos = ImVec2(position.X, position.Y);
+	void EditorRenderTarget::Terminate()
+	{
+		mSceneRenderTarget.Terminate();
+		pRenderTarget->Terminate();
 
-	if (pDisplay->GetMouseButtonEvent(Flint::MouseButton::Left).IsPressed() || pDisplay->GetMouseButtonEvent(Flint::MouseButton::Left).IsOnRepeat())
-		io.MouseDown[0] = true;
-	else if (pDisplay->GetMouseButtonEvent(Flint::MouseButton::Left).IsReleased())
-		io.MouseDown[0] = false;
+		pAllocator->Terminate();
+		pSecondaryAllocator->Terminate();
+		pDisplay->Terminate();
 
-	if (pDisplay->GetMouseButtonEvent(Flint::MouseButton::Right).IsPressed() || pDisplay->GetMouseButtonEvent(Flint::MouseButton::Right).IsOnRepeat())
-		io.MouseDown[1] = true;
-	else if (pDisplay->GetMouseButtonEvent(Flint::MouseButton::Right).IsReleased())
-		io.MouseDown[1] = false;
+		mImGuiAdapter.Terminate();
+	}
 
-	// Update the camera.
-	if (pDisplay->GetKeyEvent(Flint::KeyCode::KeyW).IsPressed() || pDisplay->GetKeyEvent(Flint::KeyCode::KeyW).IsOnRepeat())
-		mCamera.MoveFront(delta);
+	bool EditorRenderTarget::IsDisplayOpen() const
+	{
+		return pDisplay->IsOpen();
+	}
 
-	if (pDisplay->GetKeyEvent(Flint::KeyCode::KeyA).IsPressed() || pDisplay->GetKeyEvent(Flint::KeyCode::KeyA).IsOnRepeat())
-		mCamera.MoveLeft(delta);
+	void EditorRenderTarget::PollEvents(UI64 delta)
+	{
+		pDisplay->Update();
 
-	if (pDisplay->GetKeyEvent(Flint::KeyCode::KeyS).IsPressed() || pDisplay->GetKeyEvent(Flint::KeyCode::KeyS).IsOnRepeat())
-		mCamera.MoveBack(delta);
+		ImGuiIO& io = ImGui::GetIO();
+		io.DeltaTime = delta / 1000.0f;
 
-	if (pDisplay->GetKeyEvent(Flint::KeyCode::KeyD).IsPressed() || pDisplay->GetKeyEvent(Flint::KeyCode::KeyD).IsOnRepeat())
-		mCamera.MoveRight(delta);
+		auto extent = pDisplay->GetExtent();
+		if (!extent.IsZero())
+			io.DisplaySize = ImVec2(static_cast<float>(extent.mWidth), static_cast<float>(extent.mHeight));
 
-	if (pDisplay->GetMouseButtonEvent(Flint::MouseButton::Left).IsPressed() && !io.WantCaptureMouse)
-		mCamera.MousePosition(pDisplay->GetMousePosition());
+		auto position = pDisplay->GetMousePosition();
+		io.MousePos = ImVec2(position.X, position.Y);
 
-	if (pDisplay->GetMouseButtonEvent(Flint::MouseButton::Left).IsReleased())
-		mCamera.ResetFirstMouse();
+		if (pDisplay->GetMouseButtonEvent(MouseButton::Left).IsPressed() || pDisplay->GetMouseButtonEvent(MouseButton::Left).IsOnRepeat())
+			io.MouseDown[0] = true;
+		else if (pDisplay->GetMouseButtonEvent(MouseButton::Left).IsReleased())
+			io.MouseDown[0] = false;
 
-	mCamera.Update(delta);
-}
+		if (pDisplay->GetMouseButtonEvent(MouseButton::Right).IsPressed() || pDisplay->GetMouseButtonEvent(MouseButton::Right).IsOnRepeat())
+			io.MouseDown[1] = true;
+		else if (pDisplay->GetMouseButtonEvent(MouseButton::Right).IsReleased())
+			io.MouseDown[1] = false;
+	}
 
-void EditorRenderTarget::DrawFrame()
-{
-	pRenderTarget->PrepareNewFrame();
-	auto pCommandBuffer = pAllocator->GetCommandBuffer(pRenderTarget->GetImageIndex());
-	auto pSecondaryCommandBuffer = pSecondaryAllocator->GetCommandBuffer(pRenderTarget->GetImageIndex());
+	void EditorRenderTarget::DrawFrame()
+	{
+		if (!pRenderTarget->PrepareNewFrame())
+		{
+			pRenderTarget->Recreate();
+			return;
+		}
 
-	pCommandBuffer->BeginBufferRecording();
-	pCommandBuffer->BindRenderTargetSecondary(pRenderTarget);
+		auto pCommandBuffer = pAllocator->GetCommandBuffer(pRenderTarget->GetImageIndex());
+		auto pSecondaryCommandBuffer = pSecondaryAllocator->GetCommandBuffer(pRenderTarget->GetImageIndex());
 
-	pSecondaryCommandBuffer->BeginBufferRecording(pRenderTarget);
+		pCommandBuffer->BeginBufferRecording();
+		pCommandBuffer->BindRenderTargetSecondary(pRenderTarget);
 
-	mVikingRoom.SubmitToCommandBuffer(pSecondaryCommandBuffer);
-	mImGuiAdapter.Render(pSecondaryCommandBuffer);
+		pSecondaryCommandBuffer->BeginBufferRecording(pRenderTarget);
 
-	pSecondaryCommandBuffer->EndBufferRecording();
+		mImGuiAdapter.Render(pSecondaryCommandBuffer);
 
-	pCommandBuffer->SubmitSecondaryCommandBuffer(pSecondaryCommandBuffer);
-	pCommandBuffer->ExecuteSecondaryCommands();
+		pSecondaryCommandBuffer->EndBufferRecording();
 
-	pCommandBuffer->UnbindRenderTarget();
-	pCommandBuffer->EndBufferRecording();
+		pCommandBuffer->SubmitSecondaryCommandBuffer(pSecondaryCommandBuffer);
+		pCommandBuffer->ExecuteSecondaryCommands();
 
-	pRenderTarget->GetDevice()->SubmitGraphicsCommandBuffers({ pCommandBuffer });
-	pRenderTarget->PresentToDisplay();
-	pRenderTarget->IncrementFrameIndex();
-	pRenderTarget->GetDevice()->WaitForQueue();
-}
+		pCommandBuffer->UnbindRenderTarget();
+		pCommandBuffer->EndBufferRecording();
 
-void EditorRenderTarget::UpdateUI()
-{
+		pRenderTarget->GetDevice()->SubmitGraphicsCommandBuffers({ pCommandBuffer });
+
+		if (!pRenderTarget->PresentToDisplay())
+			pRenderTarget->Recreate();
+
+		pRenderTarget->IncrementFrameIndex();
+		pRenderTarget->GetDevice()->WaitForQueue();
+	}
+
+	void EditorRenderTarget::UpdateUI(const UI64 delta)
+	{
+		mSceneRenderTarget.Render(pDisplay, delta);
+	}
 }

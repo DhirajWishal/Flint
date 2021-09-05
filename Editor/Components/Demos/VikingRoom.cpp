@@ -9,85 +9,149 @@
 #include "Engine/AssetLoader.hpp"
 #include "Engine/ImageLoader.hpp"
 
-void VikingRoom::Initialize(const std::shared_ptr<Flint::Device>& pDevice, const std::shared_ptr<Flint::ScreenBoundRenderTarget>& pScreenBoundRenderTarget, const Camera* pCamera)
+namespace Flint
 {
-	this->pDevice = pDevice;
-	this->pScreenBoundRenderTarget = pScreenBoundRenderTarget;
-	this->pCamera = pCamera;
+	void VikingRoom::Initialize(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget, const Camera* pCamera)
+	{
+		this->pDevice = pDevice;
+		this->pRenderTarget = pScreenBoundRenderTarget;
+		this->pCamera = pCamera;
 
-	pDynamicStates = std::make_shared<Flint::DynamicStateContainer>();
+		pDynamicStates = std::make_shared<DynamicStateContainer>();
 
-	Flint::ShaderCompiler vertexShaderCompiler(std::filesystem::path("E:\\Flint\\Editor\\Shaders\\3D\\shader.vert"), Flint::ShaderCodeType::GLSL, Flint::ShaderType::Vertex);
-	Flint::ShaderCompiler fragmentShaderCompiler(std::filesystem::path("E:\\Flint\\Editor\\Shaders\\3D\\shader.frag"), Flint::ShaderCodeType::GLSL, Flint::ShaderType::Fragment);
+		ShaderCompiler vertexShaderCompiler(std::filesystem::path("E:\\Flint\\Editor\\Shaders\\3D\\shader.vert"), ShaderCodeType::GLSL, ShaderType::Vertex);
+		ShaderCompiler fragmentShaderCompiler(std::filesystem::path("E:\\Flint\\Editor\\Shaders\\3D\\shader.frag"), ShaderCodeType::GLSL, ShaderType::Fragment);
 
-	pVertexShader = pDevice->CreateShader(Flint::ShaderType::Vertex, vertexShaderCompiler.GetShaderCode());
-	pFragmentShader = pDevice->CreateShader(Flint::ShaderType::Fragment, fragmentShaderCompiler.GetShaderCode());
-	pUniformBuffer = pDevice->CreateBuffer(Flint::BufferType::Uniform, sizeof(UniformBufferObject));
+		pVertexShader = pDevice->CreateShader(ShaderType::Vertex, vertexShaderCompiler.GetShaderCode());
+		pFragmentShader = pDevice->CreateShader(ShaderType::Fragment, fragmentShaderCompiler.GetShaderCode());
+		pUniformBuffer = pDevice->CreateBuffer(BufferType::Uniform, sizeof(UniformBufferObject));
 
-	pGeometryStore = pDevice->CreateGeometryStore(pVertexShader->GetInputAttributes(), sizeof(UI32));
+		pGeometryStore = pDevice->CreateGeometryStore(pVertexShader->GetInputAttributes(), sizeof(UI32));
 
-	Flint::AssetLoader assetLoader(pGeometryStore, "E:\\Flint\\Assets\\Packages\\VikingRoom\\VikingRoom\\untitled.obj", Flint::Defaults::CreateDefaultVertexDescriptor());
-	mAsset = Flint::Asset(assetLoader.GetWireFrames(), pGeometryStore);
+		AssetLoader assetLoader(pGeometryStore, "E:\\Flint\\Assets\\Packages\\VikingRoom\\VikingRoom\\untitled.obj", Defaults::CreateDefaultVertexDescriptor());
+		mAsset = Asset(assetLoader.GetWireFrames(), pGeometryStore);
 
-	Flint::ImageLoader imageLoader("E:\\Flint\\Assets\\Packages\\VikingRoom\\VikingRoom\\texture.png");
-	pTexture = pDevice->CreateImage(Flint::ImageType::TwoDimension, Flint::ImageUsage::Graphics, imageLoader.GetExtent(), imageLoader.GetPixelFormat(), 1, 1, imageLoader.GetPixelData());
-	pTextureSampler = pDevice->CreateImageSampler(Flint::ImageSamplerSpecification());
+		ImageLoader imageLoader("E:\\Flint\\Assets\\Packages\\VikingRoom\\VikingRoom\\texture.png");
+		pTexture = pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Graphics, imageLoader.GetExtent(), imageLoader.GetPixelFormat(), 1, 1, imageLoader.GetPixelData());
+		pTextureSampler = pDevice->CreateImageSampler(ImageSamplerSpecification());
 
-	CreatePipeline();
+		CreatePipeline(pScreenBoundRenderTarget);
 
-	pResourcePackage->BindResource(0, pUniformBuffer);
-	pResourcePackage->BindResource(1, pTextureSampler, pTexture);
+		pResourcePackage->BindResource(0, pUniformBuffer);
+		pResourcePackage->BindResource(1, pTextureSampler, pTexture);
 
-	const auto windowExtent = pScreenBoundRenderTarget->GetExtent();
-	pDynamicStates->SetViewPort(Flint::FExtent2D<float>{static_cast<float>(windowExtent.mWidth), static_cast<float>(windowExtent.mHeight)}, Flint::FExtent2D<float>(0.0f, 1.0f), { 0.0f, 0.0f });
-	pDynamicStates->SetScissor(windowExtent, { 0, 0 });
-}
+		const auto windowExtent = pScreenBoundRenderTarget->GetExtent();
+		pDynamicStates->SetViewPort(FExtent2D<float>{static_cast<float>(windowExtent.mWidth), static_cast<float>(windowExtent.mHeight)}, FExtent2D<float>(0.0f, 1.0f), { 0.0f, 0.0f });
+		pDynamicStates->SetScissor(windowExtent, { 0, 0 });
+	}
 
-void VikingRoom::Terminate()
-{
-	pVertexShader->Terminate();
-	pFragmentShader->Terminate();
+	void VikingRoom::Initialize(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget, const Camera* pCamera)
+	{
+		this->pDevice = pDevice;
+		this->pRenderTarget = pOffScreenRenderTarget;
+		this->pCamera = pCamera;
 
-	pUniformBuffer->Terminate();
-	pGeometryStore->Terminate();
+		pDynamicStates = std::make_shared<DynamicStateContainer>();
 
-	pTexture->Terminate();
-	pTextureSampler->Terminate();
+		ShaderCompiler vertexShaderCompiler(std::filesystem::path("E:\\Flint\\Editor\\Shaders\\3D\\shader.vert"), ShaderCodeType::GLSL, ShaderType::Vertex);
+		ShaderCompiler fragmentShaderCompiler(std::filesystem::path("E:\\Flint\\Editor\\Shaders\\3D\\shader.frag"), ShaderCodeType::GLSL, ShaderType::Fragment);
 
-	pPipeline->Terminate();
-	pResourcePackager->Terminate();
-}
+		pVertexShader = pDevice->CreateShader(ShaderType::Vertex, vertexShaderCompiler.GetShaderCode());
+		pFragmentShader = pDevice->CreateShader(ShaderType::Fragment, fragmentShaderCompiler.GetShaderCode());
+		pUniformBuffer = pDevice->CreateBuffer(BufferType::Uniform, sizeof(UniformBufferObject));
 
-void VikingRoom::SubmitToCommandBuffer(const std::shared_ptr<Flint::CommandBuffer>& pCommandBuffer)
-{
-	const auto cameraData = pCamera->GetMatrix();
-	mUniformBufferObject.mViewMatrix = cameraData.mViewMatrix;
-	mUniformBufferObject.mProjectionMatrix = cameraData.mProjectionMatrix;
+		pGeometryStore = pDevice->CreateGeometryStore(pVertexShader->GetInputAttributes(), sizeof(UI32));
 
-	SubmitToUniformBuffer(pUniformBuffer, mUniformBufferObject);
+		AssetLoader assetLoader(pGeometryStore, "E:\\Flint\\Assets\\Packages\\VikingRoom\\VikingRoom\\untitled.obj", Defaults::CreateDefaultVertexDescriptor());
+		mAsset = Asset(assetLoader.GetWireFrames(), pGeometryStore);
 
-	pCommandBuffer->BindGeometryStore(pGeometryStore);
-	pCommandBuffer->BindGraphicsPipeline(pPipeline);
-	pCommandBuffer->BindDynamicStates(pPipeline, pDynamicStates);
-	pCommandBuffer->BindResourcePackages(pPipeline, { pResourcePackage });
+		ImageLoader imageLoader("E:\\Flint\\Assets\\Packages\\VikingRoom\\VikingRoom\\texture.png");
+		pTexture = pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Graphics, imageLoader.GetExtent(), imageLoader.GetPixelFormat(), 1, 1, imageLoader.GetPixelData());
+		pTextureSampler = pDevice->CreateImageSampler(ImageSamplerSpecification());
 
-	for (const auto wireFrame : mAsset.GetWireFrames())
-		pCommandBuffer->IssueDrawCall(wireFrame);
-}
+		CreatePipeline(pOffScreenRenderTarget);
 
-void VikingRoom::CreatePipeline()
-{
-	Flint::GraphicsPipelineSpecification specification = {};
-	specification.mRasterizationSamples = pDevice->GetSupportedMultiSampleCount();
-	specification.mDynamicStateFlags = Flint::DynamicStateFlags::ViewPort | Flint::DynamicStateFlags::Scissor;
-	specification.bEnableDepthTest = true;
-	specification.bEnableDepthWrite = true;
-	specification.mColorBlendConstants[0] = 0.0f;
-	specification.mColorBlendConstants[1] = 0.0f;
-	specification.mColorBlendConstants[2] = 0.0f;
-	specification.mColorBlendConstants[3] = 0.0f;
+		pResourcePackage->BindResource(0, pUniformBuffer);
+		pResourcePackage->BindResource(1, pTextureSampler, pTexture);
 
-	pPipeline = pDevice->CreateGraphicsPipeline("VikingRoom", pScreenBoundRenderTarget, pVertexShader, nullptr, nullptr, nullptr, pFragmentShader, specification);
-	pResourcePackager = pPipeline->CreateResourcePackagers()[0];
-	pResourcePackage = pResourcePackager->CreatePackage();
+		const auto windowExtent = pOffScreenRenderTarget->GetExtent();
+		pDynamicStates->SetViewPort(FExtent2D<float>{static_cast<float>(windowExtent.mWidth), static_cast<float>(windowExtent.mHeight)}, FExtent2D<float>(0.0f, 1.0f), { 0.0f, 0.0f });
+		pDynamicStates->SetScissor(windowExtent, { 0, 0 });
+	}
+
+	void VikingRoom::Recreate()
+	{
+		//pPipeline->Recreate(pRenderTarget);
+
+		const auto windowExtent = pRenderTarget->GetExtent();
+		pDynamicStates->SetViewPort(FExtent2D<float>{static_cast<float>(windowExtent.mWidth), static_cast<float>(windowExtent.mHeight)}, FExtent2D<float>(0.0f, 1.0f), { 0.0f, 0.0f });
+		pDynamicStates->SetScissor(windowExtent, { 0, 0 });
+	}
+
+	void VikingRoom::Terminate()
+	{
+		pVertexShader->Terminate();
+		pFragmentShader->Terminate();
+
+		pUniformBuffer->Terminate();
+		pGeometryStore->Terminate();
+
+		pTexture->Terminate();
+		pTextureSampler->Terminate();
+
+		pPipeline->Terminate();
+		pResourcePackager->Terminate();
+	}
+
+	void VikingRoom::SubmitToCommandBuffer(const std::shared_ptr<CommandBuffer>& pCommandBuffer)
+	{
+		const auto cameraData = pCamera->GetMatrix();
+		mUniformBufferObject.mViewMatrix = cameraData.mViewMatrix;
+		mUniformBufferObject.mProjectionMatrix = cameraData.mProjectionMatrix;
+
+		SubmitToUniformBuffer(pUniformBuffer, mUniformBufferObject);
+
+		pCommandBuffer->BindGeometryStore(pGeometryStore);
+		pCommandBuffer->BindGraphicsPipeline(pPipeline);
+		pCommandBuffer->BindDynamicStates(pPipeline, pDynamicStates);
+		pCommandBuffer->BindResourcePackages(pPipeline, { pResourcePackage });
+
+		for (const auto wireFrame : mAsset.GetWireFrames())
+			pCommandBuffer->IssueDrawCall(wireFrame);
+	}
+
+	void VikingRoom::CreatePipeline(const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget)
+	{
+		GraphicsPipelineSpecification specification = {};
+		specification.mRasterizationSamples = MultiSampleCount::One;
+		specification.mDynamicStateFlags = DynamicStateFlags::ViewPort | DynamicStateFlags::Scissor;
+		specification.bEnableDepthTest = true;
+		specification.bEnableDepthWrite = true;
+		specification.mColorBlendConstants[0] = 0.0f;
+		specification.mColorBlendConstants[1] = 0.0f;
+		specification.mColorBlendConstants[2] = 0.0f;
+		specification.mColorBlendConstants[3] = 0.0f;
+
+		pPipeline = pDevice->CreateGraphicsPipeline("VikingRoom", pScreenBoundRenderTarget, pVertexShader, nullptr, nullptr, nullptr, pFragmentShader, specification);
+		pResourcePackager = pPipeline->CreateResourcePackagers()[0];
+		pResourcePackage = pResourcePackager->CreatePackage();
+	}
+
+	void VikingRoom::CreatePipeline(const std::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget)
+	{
+		GraphicsPipelineSpecification specification = {};
+		specification.mRasterizationSamples = MultiSampleCount::One;
+		//specification.mRasterizationSamples = pDevice->GetSupportedMultiSampleCount();
+		specification.mDynamicStateFlags = DynamicStateFlags::ViewPort | DynamicStateFlags::Scissor;
+		specification.bEnableDepthTest = true;
+		specification.bEnableDepthWrite = true;
+		specification.mColorBlendConstants[0] = 0.0f;
+		specification.mColorBlendConstants[1] = 0.0f;
+		specification.mColorBlendConstants[2] = 0.0f;
+		specification.mColorBlendConstants[3] = 0.0f;
+
+		pPipeline = pDevice->CreateGraphicsPipeline("VikingRoom", pOffScreenRenderTarget, pVertexShader, nullptr, nullptr, nullptr, pFragmentShader, specification);
+		pResourcePackager = pPipeline->CreateResourcePackagers()[0];
+		pResourcePackage = pResourcePackager->CreatePackage();
+	}
 }

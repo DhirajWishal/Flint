@@ -7,30 +7,33 @@
 
 #include "Components/EditorRenderTarget.hpp"
 
-/**
- * Main application class of the editor.
- */
-class Application
+namespace Flint
 {
-public:
-	Application();
-	~Application();
+	/**
+	 * Main application class of the editor.
+	 */
+	class Application
+	{
+	public:
+		Application();
+		~Application();
 
-private:
-	void Execute();
+	private:
+		void Execute();
 
-private:
-	std::chrono::steady_clock mSteadyClock = {};
-	std::chrono::time_point<std::chrono::steady_clock> mNewTimePoint = {};
-	std::chrono::time_point<std::chrono::steady_clock> mOldTimePoint = {};
+	private:
+		std::chrono::steady_clock mSteadyClock = {};
+		std::chrono::time_point<std::chrono::steady_clock> mNewTimePoint = {};
+		std::chrono::time_point<std::chrono::steady_clock> mOldTimePoint = {};
 
-	std::shared_ptr<Flint::Instance> pInstance = nullptr;
-	std::shared_ptr<Flint::Device> pDevice = nullptr;
+		std::shared_ptr<Instance> pInstance = nullptr;
+		std::shared_ptr<Device> pDevice = nullptr;
 
-	EditorRenderTarget mRenderTarget;
+		EditorRenderTarget mRenderTarget;
 
-	float mAverageFrameTime = 0.0f;
-	UI64 mFrameCount = 0;
+		float mAverageFrameTime = 0.0f;
+		UI64 mFrameCount = 0;
 
-	bool bShouldRun = true;
-};
+		bool bShouldRun = true;
+	};
+}

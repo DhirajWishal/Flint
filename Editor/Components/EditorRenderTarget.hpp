@@ -3,42 +3,42 @@
 
 #pragma once
 
+#include "GraphicsCore/OffScreenRenderTarget.hpp"
 #include "GraphicsCore/ScreenBoundRenderTarget.hpp"
 #include "GraphicsCore/CommandBufferAllocator.hpp"
 
-#include "Camera.hpp"
-#include "ImGuiAdapter.hpp"
+#include "SceneRenderTarget.hpp"
 
 #include "Demos/VikingRoom.hpp"
 
-/**
- * Editor render target.
- */
-class EditorRenderTarget
+namespace Flint
 {
-public:
-	EditorRenderTarget() = default;
+	/**
+	 * Editor render target.
+	 */
+	class EditorRenderTarget
+	{
+	public:
+		EditorRenderTarget() = default;
 
-	void Initialize(const std::shared_ptr<Flint::Device>& pDevice, const std::shared_ptr<Flint::Instance>& pInstance);
-	void Terminate();
+		void Initialize(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Instance>& pInstance);
+		void Terminate();
 
-	bool IsDisplayOpen() const;
-	void PollEvents(UI64 delta);
-	void DrawFrame();
+		bool IsDisplayOpen() const;
+		void PollEvents(UI64 delta);
+		void DrawFrame();
 
-	void UpdateUI();
+		void UpdateUI(const UI64 delta);
 
-private:
-	Camera mCamera;
+	private:
+		std::shared_ptr<Display> pDisplay = nullptr;
 
-	std::vector<Flint::RenderTargetAttachment> mAttachments{ 2 };
+		std::shared_ptr<ScreenBoundRenderTarget> pRenderTarget = nullptr;
 
-	std::shared_ptr<Flint::Display> pDisplay = nullptr;
-	std::shared_ptr<Flint::ScreenBoundRenderTarget> pRenderTarget = nullptr;
+		std::shared_ptr<CommandBufferAllocator> pAllocator = nullptr;
+		std::shared_ptr<CommandBufferAllocator> pSecondaryAllocator = nullptr;
 
-	std::shared_ptr<Flint::CommandBufferAllocator> pAllocator = nullptr;
-	std::shared_ptr<Flint::CommandBufferAllocator> pSecondaryAllocator = nullptr;
-
-	ImGuiAdapter mImGuiAdapter = {};
-	VikingRoom mVikingRoom = {};
-};
+		ImGuiAdapter mImGuiAdapter = {};
+		SceneRenderTarget mSceneRenderTarget = {};
+	};
+}

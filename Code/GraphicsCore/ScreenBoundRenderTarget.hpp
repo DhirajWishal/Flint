@@ -29,8 +29,10 @@ namespace Flint
 
 		/**
 		 * Present the images to the display.
+		 * 
+		 * @return Returns true if successfully presented, returns false if a recreation is needed.
 		 */
-		virtual void PresentToDisplay() = 0;
+		virtual bool PresentToDisplay() = 0;
 
 		/**
 		 * Recreate the screen bound render target.

@@ -5,84 +5,87 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-Camera::Camera()
+namespace Flint
 {
-	projectionMatrix = glm::perspective(glm::radians(mFieldOfView), mAspectRatio, mCameraNear, mCameraFar);
-	projectionMatrix[1][1] *= -1.0f;
-}
-
-void Camera::MoveFront(UI64 delta)
-{
-	mPosition += mFront * (static_cast<float>(delta) / 100000000);
-}
-
-void Camera::MoveBack(UI64 delta)
-{
-	mPosition -= mFront * (static_cast<float>(delta) / 100000000);
-}
-
-void Camera::MoveLeft(UI64 delta)
-{
-	mPosition -= mRight * (static_cast<float>(delta) / 100000000);
-}
-
-void Camera::MoveRight(UI64 delta)
-{
-	mPosition += mRight * (static_cast<float>(delta) / 100000000);
-}
-
-void Camera::MousePosition(Flint::FExtent2D<float> position)
-{
-	position.X *= -1.0f;
-	position.Y *= -1.0f;
-
-	if (bFirstMouse)
+	Camera::Camera()
 	{
-		mLastX = position.X;
-		mLastY = position.Y;
-		bFirstMouse = false;
+		projectionMatrix = glm::perspective(glm::radians(mFieldOfView), mAspectRatio, mCameraNear, mCameraFar);
+		projectionMatrix[1][1] *= -1.0f;
 	}
 
-	float xoffset = position.X - mLastX;
-	float yoffset = mLastY - position.Y; // reversed since y-coordinates go from bottom to top
+	void Camera::MoveFront(UI64 delta)
+	{
+		mPosition += mFront * (static_cast<float>(delta) / 100000000) * mMovementBias;
+	}
 
-	float sensitivity = 0.05f;
-	xoffset *= sensitivity * 0.75f;
-	yoffset *= sensitivity;
+	void Camera::MoveBack(UI64 delta)
+	{
+		mPosition -= mFront * (static_cast<float>(delta) / 100000000) * mMovementBias;
+	}
 
-	mLastX = position.X;
-	mLastY = position.Y;
+	void Camera::MoveLeft(UI64 delta)
+	{
+		mPosition -= mRight * (static_cast<float>(delta) / 100000000) * mMovementBias;
+	}
 
-	mYaw += xoffset;
-	mPitch += yoffset;
+	void Camera::MoveRight(UI64 delta)
+	{
+		mPosition += mRight * (static_cast<float>(delta) / 100000000) * mMovementBias;
+	}
 
-	if (mPitch > 89.0f)
-		mPitch = 89.0f;
-	if (mPitch < -89.0f)
-		mPitch = -89.0f;
-}
+	void Camera::MousePosition(FExtent2D<float> position)
+	{
+		position.X *= -1.0f;
+		position.Y *= -1.0f;
 
-void Camera::Update(UI64 delta)
-{
-	glm::vec3 front;
-	front.x = cos(glm::radians(mYaw)) * cos(glm::radians(mPitch));
-	front.y = sin(glm::radians(mPitch));
-	front.z = sin(glm::radians(mYaw)) * cos(glm::radians(mPitch));
-	mFront = glm::normalize(front);
-	mRight = glm::normalize(glm::cross(mFront, mWorldUp));
-	mUp = glm::normalize(glm::cross(mRight, mFront));
+		if (bFirstMouse)
+		{
+			mLastX = position.X;
+			mLastY = position.Y;
+			bFirstMouse = false;
+		}
 
-	viewMatrix = glm::lookAt(mPosition, mPosition + mFront, mUp);
-}
+		float xoffset = position.X - mLastX;
+		float yoffset = mLastY - position.Y; // reversed since y-coordinates go from bottom to top
 
-void Camera::ResetFirstMouse()
-{
-	bFirstMouse = true;
-}
+		float sensitivity = 0.05f;
+		xoffset *= sensitivity * 0.75f;
+		yoffset *= sensitivity;
 
-void Camera::SetAspectRatio(Flint::FBox2D extent)
-{
-	mAspectRatio = static_cast<float>(extent.mWidth) / static_cast<float>(extent.mHeight);
-	projectionMatrix = glm::perspective(glm::radians(mFieldOfView), mAspectRatio, mCameraNear, mCameraFar);
-	projectionMatrix[1][1] *= -1.0f;
+		mLastX = position.X;
+		mLastY = position.Y;
+
+		mYaw += xoffset;
+		mPitch += yoffset;
+
+		if (mPitch > 89.0f)
+			mPitch = 89.0f;
+		if (mPitch < -89.0f)
+			mPitch = -89.0f;
+	}
+
+	void Camera::Update(UI64 delta)
+	{
+		glm::vec3 front;
+		front.x = cos(glm::radians(mYaw)) * cos(glm::radians(mPitch));
+		front.y = sin(glm::radians(mPitch));
+		front.z = sin(glm::radians(mYaw)) * cos(glm::radians(mPitch));
+		mFront = glm::normalize(front);
+		mRight = glm::normalize(glm::cross(mFront, mWorldUp));
+		mUp = glm::normalize(glm::cross(mRight, mFront));
+
+		viewMatrix = glm::lookAt(mPosition, mPosition + mFront, mUp);
+	}
+
+	void Camera::ResetFirstMouse()
+	{
+		bFirstMouse = true;
+	}
+
+	void Camera::SetAspectRatio(FBox2D extent)
+	{
+		mAspectRatio = static_cast<float>(extent.mWidth) / static_cast<float>(extent.mHeight);
+		projectionMatrix = glm::perspective(glm::radians(mFieldOfView), mAspectRatio, mCameraNear, mCameraFar);
+		projectionMatrix[1][1] *= -1.0f;
+	}
 }

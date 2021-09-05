@@ -15,7 +15,8 @@ namespace Flint
 		public:
 			VulkanOffScreenRenderTarget(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments);
 
-			virtual void PrepareNewFrame() override final;
+			virtual void Recreate(const FBox2D& extent) override final;
+			virtual bool PrepareNewFrame() override final;
 			virtual void Terminate() override final;
 
 			VkRenderPass GetRenderPass() const { return vRenderTarget.vRenderPass; }

@@ -55,7 +55,10 @@ namespace Flint
 			vWrite.pBufferInfo = VK_NULL_HANDLE;
 			for (const auto image : mImageBindings)
 			{
-				if (!image.second.pImage || !image.second.pImageSampler)
+				if (!image.second.pImage)
+					throw backend_error("Requested image at binding location: " + std::to_string(image.first) + " is not submitted! Make sure that all the bindings are properly submitted.");
+
+				if (!image.second.pImageSampler)
 					throw backend_error("Requested image sampler at binding location: " + std::to_string(image.first) + " is not submitted! Make sure that all the bindings are properly submitted.");
 
 				vWrite.dstBinding = image.first;
@@ -65,7 +68,7 @@ namespace Flint
 				auto& vImage = image.second.pImage->StaticCast<VulkanImage>();
 				VkDescriptorImageInfo* pImageInfo = new VkDescriptorImageInfo();
 				pImageInfo->imageView = vImage.GetImageView(static_cast<UI32>(image.second.mViewIndex));
-				pImageInfo->imageLayout = vImage.GetAttachmentLayout();
+				pImageInfo->imageLayout = vImage.GetImageLayout();
 				pImageInfo->sampler = image.second.pImageSampler->StaticCast<VulkanImageSampler>().GetSampler();
 
 				vWrite.pImageInfo = pImageInfo;
@@ -83,7 +86,7 @@ namespace Flint
 					delete vWriteDelete.pImageInfo;
 			}
 
-			bIsUpdated = true;
+			bIsUpdated = false;
 		}
 
 		void VulkanResourcePackage::SetDescriptorSet(const VkDescriptorSet& vSet)

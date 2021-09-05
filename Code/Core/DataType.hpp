@@ -53,6 +53,18 @@ namespace Flint
 		};
 	};
 
+	template<class Type>
+	constexpr bool operator==(const FExtent2D<Type>& lhs, const FExtent2D<Type>& rhs)
+	{
+		return lhs.X == rhs.X && lhs.Y == rhs.Y;
+	}
+
+	template<class Type>
+	constexpr bool operator!=(const FExtent2D<Type>& lhs, const FExtent2D<Type>& rhs)
+	{
+		return lhs.X != rhs.X || lhs.Y != rhs.Y;
+	}
+
 	/**
 	 * Flint extent 3D structure.
 	 *
@@ -85,6 +97,18 @@ namespace Flint
 			};
 		};
 	};
+
+	template<class Type>
+	constexpr bool operator==(const FExtent3D<Type>& lhs, const FExtent3D<Type>& rhs)
+	{
+		return lhs.X == rhs.X && lhs.Y == rhs.Y && lhs.Z == rhs.Z;
+	}
+
+	template<class Type>
+	constexpr bool operator!=(const FExtent3D<Type>& lhs, const FExtent3D<Type>& rhs)
+	{
+		return lhs.X != rhs.X || lhs.Y != rhs.Y || lhs.Z != rhs.Z;
+	}
 
 	/**
 	 * Flint color 4D structure.

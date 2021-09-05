@@ -25,6 +25,7 @@ namespace Flint
 			std::vector<VkAttachmentDescription> vDescriptions;
 
 			std::vector<VkAttachmentReference> vColorAttachmentRef;
+			std::vector<VkAttachmentReference> vTempColorAttachmentRef;
 			std::vector<VkAttachmentReference> vDepthAttachmentRef;
 			std::vector<VkAttachmentReference> vResolveAttachmentRef;
 
@@ -38,6 +39,7 @@ namespace Flint
 			vSD.preserveAttachmentCount = 0;
 			vSD.pipelineBindPoint = vBindPoint;
 
+			bool bHasColorAttachment = false;
 			for (auto itr = pAttachments.begin(); itr != pAttachments.end(); itr++)
 			{
 				if (!(*itr))
@@ -55,6 +57,7 @@ namespace Flint
 
 				case Flint::VulkanBackend::RenderTargetAttachmenType::COLOR_BUFFER:
 					INSERT_INTO_VECTOR(vColorAttachmentRef, vAR);
+					bHasColorAttachment = true;
 					break;
 
 				case Flint::VulkanBackend::RenderTargetAttachmenType::DEPTH_BUFFER:
@@ -68,10 +71,20 @@ namespace Flint
 				vAR.attachment++;
 			}
 
-			vSD.colorAttachmentCount = static_cast<UI32>(vColorAttachmentRef.size());
-			vSD.pColorAttachments = vColorAttachmentRef.data();
 			vSD.pDepthStencilAttachment = vDepthAttachmentRef.data();
-			vSD.pResolveAttachments = vResolveAttachmentRef.data();
+
+			if (bHasColorAttachment)
+			{
+				vSD.colorAttachmentCount = static_cast<UI32>(vColorAttachmentRef.size());
+				vSD.pColorAttachments = vColorAttachmentRef.data();
+				vSD.pResolveAttachments = vResolveAttachmentRef.data();
+			}
+			else
+			{
+				vSD.colorAttachmentCount = static_cast<UI32>(vResolveAttachmentRef.size());
+				vSD.pColorAttachments = vResolveAttachmentRef.data();
+				vSD.pResolveAttachments = vColorAttachmentRef.data();
+			}
 
 			VkRenderPassCreateInfo vCreateInfo = {};
 			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;

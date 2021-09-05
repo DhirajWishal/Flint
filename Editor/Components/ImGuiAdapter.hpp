@@ -7,52 +7,63 @@
 #include "GraphicsCore/CommandBuffer.hpp"
 #include "GraphicsCore/GeometryStore.hpp"
 #include "GraphicsCore/ImageSampler.hpp"
+#include "GraphicsCore/ResourcePackager.hpp"
 
 #include <imgui.h>
 #include <glm/glm.hpp>
 
-/**
- * Im Gui adapter class.
- * This class is responsible for rendering all the ImGui components.
- */
-class ImGuiAdapter
+namespace Flint
 {
-	struct PushConstants
+	struct ImGuiTextureContainer
 	{
-		glm::vec2 mScale = glm::vec2(1.0f);
-		glm::vec2 mTranslate = glm::vec2(1.0f);
-	} pushConstants;
+		std::shared_ptr<ResourcePackage> pResourcePackage = nullptr;
+	};
 
-public:
-	ImGuiAdapter();
+	/**
+	 * Im Gui adapter class.
+	 * This class is responsible for rendering all the ImGui components.
+	 */
+	class ImGuiAdapter
+	{
+		struct PushConstants
+		{
+			glm::vec2 mScale = glm::vec2(1.0f);
+			glm::vec2 mTranslate = glm::vec2(1.0f);
+		} pushConstants;
 
-	void Initialize(const std::shared_ptr<Flint::Device>& pDevice, const std::shared_ptr<Flint::ScreenBoundRenderTarget>& pRenderTarget);
-	void Render(const std::shared_ptr<Flint::CommandBuffer>& pCommandBuffer);
-	void Terminate();
+	public:
+		ImGuiAdapter();
 
-private:
-	void SetupImGui();
-	void SetupGeometryStore();
-	void SetupPipeline();
-	void SetupImage();
+		void Initialize(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<ScreenBoundRenderTarget>& pRenderTarget);
+		void Render(const std::shared_ptr<CommandBuffer>& pCommandBuffer);
+		void Terminate();
 
-	void UpdateGeometryStore();
+		std::shared_ptr<ResourcePackage> CreateResourcePackage() { return pResourcePackager->CreatePackage(); }
 
-public:
-	std::shared_ptr<Flint::Device> pDevice = nullptr;
-	std::shared_ptr<Flint::ScreenBoundRenderTarget> pRenderTarget = nullptr;
+	private:
+		void SetupImGui();
+		void SetupGeometryStore();
+		void SetupPipeline();
+		void SetupImage();
 
-	std::shared_ptr<Flint::GraphicsPipeline> pPipeline = nullptr;
+		void UpdateGeometryStore();
 
-	std::shared_ptr<Flint::Shader> pVertexShader = nullptr;
-	std::shared_ptr<Flint::Shader> pFragmentShader = nullptr;
+	public:
+		std::shared_ptr<Device> pDevice = nullptr;
+		std::shared_ptr<ScreenBoundRenderTarget> pRenderTarget = nullptr;
 
-	std::shared_ptr<Flint::GeometryStore> pGeometryStore = nullptr;
+		std::shared_ptr<GraphicsPipeline> pPipeline = nullptr;
 
-	std::shared_ptr<Flint::Image> pFontImage = nullptr;
-	std::shared_ptr<Flint::ImageSampler> pFontSampler = nullptr;
+		std::shared_ptr<Shader> pVertexShader = nullptr;
+		std::shared_ptr<Shader> pFragmentShader = nullptr;
 
-	std::shared_ptr<Flint::ResourcePackager> pResourcePackager = nullptr;
-	std::shared_ptr<Flint::ResourcePackage> pResourcePack = nullptr;
-	std::shared_ptr<Flint::DynamicStateContainer> pDynamicStateContainer;
-};
+		std::shared_ptr<GeometryStore> pGeometryStore = nullptr;
+
+		std::shared_ptr<Image> pFontImage = nullptr;
+		std::shared_ptr<ImageSampler> pFontSampler = nullptr;
+
+		std::shared_ptr<ResourcePackager> pResourcePackager = nullptr;
+		std::shared_ptr<ResourcePackage> pResourcePack = nullptr;
+		std::shared_ptr<DynamicStateContainer> pDynamicStateContainer = nullptr;
+	};
+}

@@ -42,7 +42,6 @@ namespace Flint
 				pAttachmentInferfaces.push_back(&attachment.pImage->StaticCast<VulkanImage>());
 
 				VkClearValue vClearValue = {};
-
 				if ((attachment.pImage->GetUsage() & ImageUsage::Color) == ImageUsage::Color)
 				{
 					vClearValue.color.float32[0] = attachment.mClearColor.mRed;
@@ -71,22 +70,20 @@ namespace Flint
 			vInheritInfo.renderPass = vRenderTarget.vRenderPass;
 		}
 
-		void VulkanScreenBoundRenderTarget::PrepareNewFrame()
+		bool VulkanScreenBoundRenderTarget::PrepareNewFrame()
 		{
 			auto nextImage = pSwapChain->AcquireNextImage();
-			if (nextImage.bShouldRecreate)
-			{
-				Recreate();
-				PrepareNewFrame();
-			}
+			return !nextImage.bShouldRecreate;
 		}
 
-		void VulkanScreenBoundRenderTarget::PresentToDisplay()
+		bool VulkanScreenBoundRenderTarget::PresentToDisplay()
 		{
 			VkResult vResult = vkQueuePresentKHR(pDevice->StaticCast<VulkanDevice>().GetQueue().vTransferQueue, pSwapChain->PrepareToPresent());
 			if (vResult == VK_ERROR_OUT_OF_DATE_KHR || vResult == VK_SUBOPTIMAL_KHR)
-				Recreate();
+				return false;
 			else FLINT_VK_ASSERT(vResult);
+
+			return true;
 		}
 
 		void VulkanScreenBoundRenderTarget::Terminate()

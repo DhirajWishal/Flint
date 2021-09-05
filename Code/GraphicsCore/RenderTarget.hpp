@@ -59,8 +59,10 @@ namespace Flint
 
 		/**
 		 * Prepare all the resources for a new frame.
+		 * 
+		 * @return IF successfully prepared, it returns a true, if not a false.
 		 */
-		virtual void PrepareNewFrame() = 0;
+		virtual bool PrepareNewFrame() = 0;
 
 	public:
 		/**

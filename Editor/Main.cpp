@@ -7,7 +7,7 @@
 
 int main()
 {
-	Application application{};
+	Flint::Application application{};
 	//try
 	//{
 	//	Application application{};

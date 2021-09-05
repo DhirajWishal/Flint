@@ -13,54 +13,60 @@
 
 #include <glm/glm.hpp>
 
-class VikingRoom
+namespace Flint
 {
-	struct UniformBufferObject
+	class VikingRoom
 	{
-		glm::mat4 mModelMatrix = glm::mat4(1.0f);
-		glm::mat4 mViewMatrix = glm::mat4(1.0f);
-		glm::mat4 mProjectionMatrix = glm::mat4(1.0f);
-	} mUniformBufferObject;
+		struct UniformBufferObject
+		{
+			glm::mat4 mModelMatrix = glm::mat4(1.0f);
+			glm::mat4 mViewMatrix = glm::mat4(1.0f);
+			glm::mat4 mProjectionMatrix = glm::mat4(1.0f);
+		} mUniformBufferObject;
 
-public:
-	VikingRoom() = default;
+	public:
+		VikingRoom() = default;
 
-	void Initialize(const std::shared_ptr<Flint::Device>& pDevice, const std::shared_ptr<Flint::ScreenBoundRenderTarget>& pScreenBoundRenderTarget, const Camera* pCamera);
-	void Terminate();
+		void Initialize(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget, const Camera* pCamera);
+		void Initialize(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget, const Camera* pCamera);
+		void Recreate();
+		void Terminate();
 
-	void SubmitToCommandBuffer(const std::shared_ptr<Flint::CommandBuffer>& pCommandBuffer);
+		void SubmitToCommandBuffer(const std::shared_ptr<CommandBuffer>& pCommandBuffer);
 
-private:
-	void CreatePipeline();
+	private:
+		void CreatePipeline(const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget);
+		void CreatePipeline(const std::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget);
 
-	template<class Type>
-	void SubmitToUniformBuffer(std::shared_ptr<Flint::Buffer> pBuffer, const Type& data)
-	{
-		Type* pDataStore = static_cast<Type*>(pBuffer->MapMemory(sizeof(Type)));
-		*pDataStore = data;
+		template<class Type>
+		void SubmitToUniformBuffer(std::shared_ptr<Buffer> pBuffer, const Type& data)
+		{
+			Type* pDataStore = static_cast<Type*>(pBuffer->MapMemory(sizeof(Type)));
+			*pDataStore = data;
 
-		pBuffer->UnmapMemory();
-	}
+			pBuffer->UnmapMemory();
+		}
 
-private:
-	Flint::Asset mAsset;
+	private:
+		Asset mAsset;
 
-	std::shared_ptr<Flint::Device> pDevice = nullptr;
-	std::shared_ptr<Flint::ScreenBoundRenderTarget> pScreenBoundRenderTarget = nullptr;
+		std::shared_ptr<Device> pDevice = nullptr;
+		std::shared_ptr<RenderTarget> pRenderTarget = nullptr;
 
-	std::shared_ptr<Flint::GeometryStore> pGeometryStore = nullptr;
+		std::shared_ptr<GeometryStore> pGeometryStore = nullptr;
 
-	std::shared_ptr<Flint::Shader> pVertexShader = nullptr;
-	std::shared_ptr<Flint::Shader> pFragmentShader = nullptr;
+		std::shared_ptr<Shader> pVertexShader = nullptr;
+		std::shared_ptr<Shader> pFragmentShader = nullptr;
 
-	std::shared_ptr<Flint::GraphicsPipeline> pPipeline = nullptr;
-	std::shared_ptr<Flint::ResourcePackager> pResourcePackager = nullptr;
-	std::shared_ptr<Flint::ResourcePackage> pResourcePackage = nullptr;
-	std::shared_ptr<Flint::DynamicStateContainer> pDynamicStates = nullptr;
+		std::shared_ptr<GraphicsPipeline> pPipeline = nullptr;
+		std::shared_ptr<ResourcePackager> pResourcePackager = nullptr;
+		std::shared_ptr<ResourcePackage> pResourcePackage = nullptr;
+		std::shared_ptr<DynamicStateContainer> pDynamicStates = nullptr;
 
-	std::shared_ptr<Flint::Buffer> pUniformBuffer = nullptr;
-	std::shared_ptr<Flint::Image> pTexture = nullptr;
-	std::shared_ptr<Flint::ImageSampler> pTextureSampler = nullptr;
+		std::shared_ptr<Buffer> pUniformBuffer = nullptr;
+		std::shared_ptr<Image> pTexture = nullptr;
+		std::shared_ptr<ImageSampler> pTextureSampler = nullptr;
 
-	const Camera* pCamera = nullptr;
-};
+		const Camera* pCamera = nullptr;
+	};
+}

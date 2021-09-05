@@ -280,10 +280,15 @@ namespace Flint
 			vDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 			vDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 
-			if ((mUsage & ImageUsage::Depth) == ImageUsage::Depth)
+			if ((mUsage & ImageUsage::Graphics) == ImageUsage::Graphics)
+				vDesc.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+			else if ((mUsage & ImageUsage::Depth) == ImageUsage::Depth)
 				vDesc.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
+
 			else if ((mUsage & ImageUsage::Color) == ImageUsage::Color)
 				vDesc.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
 			else
 				vDesc.finalLayout = vCurrentLayout;
 
