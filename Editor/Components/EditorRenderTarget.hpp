@@ -6,7 +6,10 @@
 #include "GraphicsCore/ScreenBoundRenderTarget.hpp"
 #include "GraphicsCore/CommandBufferAllocator.hpp"
 
+#include "Camera.hpp"
 #include "ImGuiAdapter.hpp"
+
+#include "Demos/VikingRoom.hpp"
 
 /**
  * Editor render target.
@@ -20,10 +23,14 @@ public:
 	void Terminate();
 
 	bool IsDisplayOpen() const;
-	void PollEvents();
+	void PollEvents(UI64 delta);
 	void DrawFrame();
 
+	void UpdateUI();
+
 private:
+	Camera mCamera;
+
 	std::vector<Flint::RenderTargetAttachment> mAttachments{ 2 };
 
 	std::shared_ptr<Flint::Display> pDisplay = nullptr;
@@ -33,4 +40,5 @@ private:
 	std::shared_ptr<Flint::CommandBufferAllocator> pSecondaryAllocator = nullptr;
 
 	ImGuiAdapter mImGuiAdapter = {};
+	VikingRoom mVikingRoom = {};
 };

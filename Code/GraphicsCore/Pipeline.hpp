@@ -4,11 +4,11 @@
 #pragma once
 
 #include "DeviceBoundObject.hpp"
-#include "ResourceMap.hpp"
 
 namespace Flint
 {
 	class RenderTarget;
+	class ResourcePackager;
 
 	/**
 	 * Flint pipeline object.
@@ -29,11 +29,6 @@ namespace Flint
 		Pipeline(const std::shared_ptr<Device>& pDevice, const std::string& pipelineName) : DeviceBoundObject(pDevice), mPipelineName(pipelineName) {}
 
 		/**
-		 * Prepare resources to draw.
-		 */
-		virtual void PrepareResources() = 0;
-
-		/**
 		 * Reload the shaders.
 		 * NOTE: This will only reload the shaders and will perform reflection on the shader code. If any input, output or uniform was changed, make sure to reflect them in
 		 * input data.
@@ -41,11 +36,11 @@ namespace Flint
 		virtual void ReloadShaders() = 0;
 
 		/**
-		 * Create a new resource map using the provided shaders.
-		 *
-		 * @return The resource map pointer.
+		 * Create the resource packagers.
+		 * 
+		 * @return The vector of resource package pointers.
 		 */
-		virtual std::shared_ptr<ResourceMap> CreateResourceMap() const = 0;
+		virtual std::vector<std::shared_ptr<ResourcePackager>> CreateResourcePackagers() = 0;
 
 	protected:
 		/**

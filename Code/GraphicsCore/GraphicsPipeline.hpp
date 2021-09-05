@@ -282,26 +282,6 @@ namespace Flint
 	 */
 	class GraphicsPipeline : public Pipeline
 	{
-	protected:
-		struct DrawData
-		{
-			DrawData() = default;
-			DrawData(
-				const std::shared_ptr<ResourceMap>& pResourceMap,
-				const std::shared_ptr<DynamicStateContainer>& pDynamicStates,
-				UI64 vertexOffset, UI64 vertexCount,
-				UI64 indexOffset, UI64 indexCount)
-				: pResourceMap(pResourceMap), pDynamicStates(pDynamicStates),
-				mVertexOffset(vertexOffset), mVertexCount(vertexCount),
-				mIndexOffset(indexOffset), mIndexCount(indexCount) {}
-
-			UI64 mVertexOffset = 0, mVertexCount = 0;
-			UI64 mIndexOffset = 0, mIndexCount = 0;
-
-			std::shared_ptr<ResourceMap> pResourceMap = nullptr;
-			std::shared_ptr<DynamicStateContainer> pDynamicStates = nullptr;
-		};
-
 	public:
 		/**
 		 * Construct the pipeline using a screen bound render target.
@@ -366,59 +346,6 @@ namespace Flint
 		 */
 		const GraphicsPipelineSpecification GetSpecification() const { return mSpecification; }
 
-		/**
-		 * Create a new resource map.
-		 *
-		 * @return The newly created resource map.
-		 */
-		virtual std::shared_ptr<ResourceMap> CreateResourceMap() const override final;
-
-		/**
-		 * Get draw data from the pipeline.
-		 *
-		 * @return The draw data array.
-		 */
-		const std::unordered_map<UI64, DrawData> GetDrawData() const { return mDrawDataList; }
-
-		/**
-		 * Get the number of draw data stored.
-		 *
-		 * @return The draw data count.
-		 */
-		const UI64 GetDrawDataCount() const { return mDrawDataList.size(); }
-
-		/**
-		 * Get the current draw data index.
-		 *
-		 * @return The index.
-		 */
-		const UI64 GetCurrentDrawIndex() const { return mDrawDataIndex; }
-
-		/**
-		 * Add draw data to draw.
-		 *
-		 * @param pResourceMap: The resource map to bind with.
-		 * @param pDynamicStates: The dynamic states of the draw.
-		 * @param vertexOffset: The vertex offset to begin.
-		 * @param vertexCount: The number of vertexes to draw.
-		 * @param indexOffset: The index offset to begin.
-		 * @param indexCount: The number of index to draw.
-		 * @return The draw ID.
-		 */
-		UI64 AddDrawData(const std::shared_ptr<ResourceMap>& pResourceMap, const std::shared_ptr<DynamicStateContainer>& pDynamicStates, UI64 vertexOffset, UI64 vertexCount, UI64 indexOffset, UI64 indexCount);
-
-		/**
-		 * Remove a draw data from the pipeline.
-		 *
-		 * @param drawID: The draw ID of the draw data.
-		 */
-		void RemoveDrawData(const UI64 drawID);
-
-		/**
-		 * Clear all the draw data.
-		 */
-		void ClearDrawData();
-
 	public:
 		/**
 		 * Get the vertex shader pointer.
@@ -457,9 +384,6 @@ namespace Flint
 
 	protected:
 		GraphicsPipelineSpecification mSpecification = {};
-
-		std::unordered_map<UI64, DrawData> mDrawDataList = {};
-		UI64 mDrawDataIndex = 0;
 
 		std::shared_ptr<RenderTarget> pRenderTarget = nullptr;
 

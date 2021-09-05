@@ -6,6 +6,7 @@
 #include "GraphicsCore/GraphicsPipeline.hpp"
 #include "GraphicsCore/CommandBuffer.hpp"
 #include "GraphicsCore/GeometryStore.hpp"
+#include "GraphicsCore/ImageSampler.hpp"
 
 #include <imgui.h>
 #include <glm/glm.hpp>
@@ -51,6 +52,7 @@ public:
 	std::shared_ptr<Flint::Image> pFontImage = nullptr;
 	std::shared_ptr<Flint::ImageSampler> pFontSampler = nullptr;
 
-	std::shared_ptr<Flint::ResourceMap> pResourceMap = nullptr;
+	std::shared_ptr<Flint::ResourcePackager> pResourcePackager = nullptr;
+	std::shared_ptr<Flint::ResourcePackage> pResourcePack = nullptr;
 	std::shared_ptr<Flint::DynamicStateContainer> pDynamicStateContainer;
 };

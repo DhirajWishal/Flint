@@ -14,7 +14,7 @@ namespace Flint
 	class GraphicsPipeline;
 	class ComputePipeline;
 	class GeometryStore;
-	class ResourceMap;
+	class ResourcePackage;
 
 	class CommandBufferAllocator;
 
@@ -124,17 +124,17 @@ namespace Flint
 		 * Bind draw resources to the command buffer.
 		 *
 		 * @param pPipeline: The pipeline pointer.
-		 * @param pResourceMap: The resource map to bind.
+		 * @param pResourcePackages: The resource packages to bind.
 		 */
-		virtual void BindResourceMap(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::shared_ptr<ResourceMap>& pResourceMap) = 0;
+		virtual void BindResourcePackages(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::vector<std::shared_ptr<ResourcePackage>>& pResourcePackages) = 0;
 
 		/**
 		 * Bind instance resources to the command buffer.
 		 *
 		 * @param pPipeline: The pipeline pointer.
-		 * @param pResourceMap: The resource map to bind.
+		 * @param pResourcePackages: The resource packages to bind.
 		 */
-		virtual void BindResourceMap(const std::shared_ptr<ComputePipeline>& pPipeline, const std::shared_ptr<ResourceMap>& pResourceMap) = 0;
+		virtual void BindResourcePackages(const std::shared_ptr<ComputePipeline>& pPipeline, const std::vector<std::shared_ptr<ResourcePackage>>& pResourcePackages) = 0;
 
 		/**
 		 * Bind dynamic states to the command buffer.

@@ -39,7 +39,7 @@ namespace Flint
 					throw backend_error("Requested buffer at binding location: " + std::to_string(buffer.first) + " is not submitted! Make sure that all the bindings are properly submitted.");
 
 				vWrite.dstBinding = buffer.first;
-				vWrite.dstArrayElement = buffer.second.mArrayIndex;
+				vWrite.dstArrayElement = static_cast<UI32>(buffer.second.mArrayIndex);
 				vWrite.descriptorType = Utilities::GetDescriptorType(resources.at(buffer.first));
 
 				VkDescriptorBufferInfo* pBufferInfo = new VkDescriptorBufferInfo();
@@ -59,12 +59,12 @@ namespace Flint
 					throw backend_error("Requested image sampler at binding location: " + std::to_string(image.first) + " is not submitted! Make sure that all the bindings are properly submitted.");
 
 				vWrite.dstBinding = image.first;
-				vWrite.dstArrayElement = image.second.mArrayIndex;
+				vWrite.dstArrayElement = static_cast<UI32>(image.second.mArrayIndex);
 				vWrite.descriptorType = Utilities::GetDescriptorType(resources.at(image.first));
 
 				auto& vImage = image.second.pImage->StaticCast<VulkanImage>();
 				VkDescriptorImageInfo* pImageInfo = new VkDescriptorImageInfo();
-				pImageInfo->imageView = vImage.GetImageView(image.second.mViewIndex);
+				pImageInfo->imageView = vImage.GetImageView(static_cast<UI32>(image.second.mViewIndex));
 				pImageInfo->imageLayout = vImage.GetAttachmentLayout();
 				pImageInfo->sampler = image.second.pImageSampler->StaticCast<VulkanImageSampler>().GetSampler();
 

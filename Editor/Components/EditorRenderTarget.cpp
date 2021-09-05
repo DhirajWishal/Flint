@@ -30,10 +30,15 @@ void EditorRenderTarget::Initialize(const std::shared_ptr<Flint::Device>& pDevic
 	pSecondaryAllocator->CreateCommandBuffers();
 
 	mImGuiAdapter.Initialize(pDevice, pRenderTarget);
+	mCamera.SetAspectRatio(pDisplay->GetExtent());
+
+	mVikingRoom.Initialize(pDevice, pRenderTarget, &mCamera);
 }
 
 void EditorRenderTarget::Terminate()
 {
+	mVikingRoom.Terminate();
+
 	pAllocator->Terminate();
 	pSecondaryAllocator->Terminate();
 	pRenderTarget->Terminate();
@@ -50,9 +55,53 @@ bool EditorRenderTarget::IsDisplayOpen() const
 	return pDisplay->IsOpen();
 }
 
-void EditorRenderTarget::PollEvents()
+void EditorRenderTarget::PollEvents(UI64 delta)
 {
 	pDisplay->Update();
+
+	ImGuiIO& io = ImGui::GetIO();
+	io.DeltaTime = delta / 1000.0f;
+
+	auto extent = pDisplay->GetExtent();
+	if (!extent.IsZero())
+	{
+		mCamera.SetAspectRatio(extent);
+		io.DisplaySize = ImVec2(static_cast<float>(extent.mWidth), static_cast<float>(extent.mHeight));
+	}
+
+	auto position = pDisplay->GetMousePosition();
+	io.MousePos = ImVec2(position.X, position.Y);
+
+	if (pDisplay->GetMouseButtonEvent(Flint::MouseButton::Left).IsPressed() || pDisplay->GetMouseButtonEvent(Flint::MouseButton::Left).IsOnRepeat())
+		io.MouseDown[0] = true;
+	else if (pDisplay->GetMouseButtonEvent(Flint::MouseButton::Left).IsReleased())
+		io.MouseDown[0] = false;
+
+	if (pDisplay->GetMouseButtonEvent(Flint::MouseButton::Right).IsPressed() || pDisplay->GetMouseButtonEvent(Flint::MouseButton::Right).IsOnRepeat())
+		io.MouseDown[1] = true;
+	else if (pDisplay->GetMouseButtonEvent(Flint::MouseButton::Right).IsReleased())
+		io.MouseDown[1] = false;
+
+	// Update the camera.
+	if (pDisplay->GetKeyEvent(Flint::KeyCode::KeyW).IsPressed() || pDisplay->GetKeyEvent(Flint::KeyCode::KeyW).IsOnRepeat())
+		mCamera.MoveFront(delta);
+
+	if (pDisplay->GetKeyEvent(Flint::KeyCode::KeyA).IsPressed() || pDisplay->GetKeyEvent(Flint::KeyCode::KeyA).IsOnRepeat())
+		mCamera.MoveLeft(delta);
+
+	if (pDisplay->GetKeyEvent(Flint::KeyCode::KeyS).IsPressed() || pDisplay->GetKeyEvent(Flint::KeyCode::KeyS).IsOnRepeat())
+		mCamera.MoveBack(delta);
+
+	if (pDisplay->GetKeyEvent(Flint::KeyCode::KeyD).IsPressed() || pDisplay->GetKeyEvent(Flint::KeyCode::KeyD).IsOnRepeat())
+		mCamera.MoveRight(delta);
+
+	if (pDisplay->GetMouseButtonEvent(Flint::MouseButton::Left).IsPressed() && !io.WantCaptureMouse)
+		mCamera.MousePosition(pDisplay->GetMousePosition());
+
+	if (pDisplay->GetMouseButtonEvent(Flint::MouseButton::Left).IsReleased())
+		mCamera.ResetFirstMouse();
+
+	mCamera.Update(delta);
 }
 
 void EditorRenderTarget::DrawFrame()
@@ -66,6 +115,7 @@ void EditorRenderTarget::DrawFrame()
 
 	pSecondaryCommandBuffer->BeginBufferRecording(pRenderTarget);
 
+	mVikingRoom.SubmitToCommandBuffer(pSecondaryCommandBuffer);
 	mImGuiAdapter.Render(pSecondaryCommandBuffer);
 
 	pSecondaryCommandBuffer->EndBufferRecording();
@@ -80,4 +130,8 @@ void EditorRenderTarget::DrawFrame()
 	pRenderTarget->PresentToDisplay();
 	pRenderTarget->IncrementFrameIndex();
 	pRenderTarget->GetDevice()->WaitForQueue();
+}
+
+void EditorRenderTarget::UpdateUI()
+{
 }

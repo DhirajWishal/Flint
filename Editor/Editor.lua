@@ -35,14 +35,26 @@ project "FlintEditor"
 		"**.tesc",
 		"**.tese",
 		"**.geom",
+
+		"$(SolutionDir)ThirdParty/imgui/imgui.cpp",
+		"$(SolutionDir)ThirdParty/imgui/imgui_demo.cpp",
+		"$(SolutionDir)ThirdParty/imgui/imgui_draw.cpp",
+		"$(SolutionDir)ThirdParty/imgui/imgui_tables.cpp",
+		"$(SolutionDir)ThirdParty/imgui/imgui_widgets.cpp",
+
+		"$(SolutionDir)ThirdParty/ImGuizmo/GraphEditor.cpp",
+		"$(SolutionDir)ThirdParty/ImGuizmo/ImCurveEdit.cpp",
+		"$(SolutionDir)ThirdParty/ImGuizmo/ImGradient.cpp",
+		"$(SolutionDir)ThirdParty/ImGuizmo/ImGuizmo.cpp",
+		"$(SolutionDir)ThirdParty/ImGuizmo/ImSequencer.cpp",
 	}
 
 	includedirs {
 		"$(SolutionDir)Code",
 		"$(SolutionDir)Editor",
+		"%{IncludeDir.ImGuizmo}",
 		"%{IncludeDir.imgui}",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.Assimp}",
 	}
 
 	libdirs {

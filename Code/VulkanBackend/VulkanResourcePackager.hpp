@@ -15,9 +15,10 @@ namespace Flint
 		public:
 			VulkanResourcePackager(const UI32 setIndex, const std::shared_ptr<GraphicsPipeline>& pPipeline, const VkDescriptorSetLayout vLayout);
 			VulkanResourcePackager(const UI32 setIndex, const std::shared_ptr<ComputePipeline>& pPipeline, const VkDescriptorSetLayout vLayout);
-			~VulkanResourcePackager();
+			~VulkanResourcePackager() { if (!bIsTerminated) Terminate(); }
 
 			virtual std::shared_ptr<ResourcePackage> CreatePackage() override final;
+			virtual void Terminate() override final;
 
 		private:
 			void CreateDescriptorPool();

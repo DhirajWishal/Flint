@@ -3,12 +3,9 @@
 
 layout(binding = 0) uniform UniformBufferObject {
     mat4 model;
-} Ubo;
-
-layout(binding = 1) uniform CameraObject {
     mat4 view;
     mat4 proj;
-} Camera;
+} Ubo;
 
 layout(location = 0) in vec3 inPosition;
 layout(location = 1) in vec3 inColor;
@@ -21,7 +18,7 @@ layout(location = 2) out vec3 position;
 const float mapSize = 1.0f;
 
 void main() {
-    gl_Position = Camera.proj * Camera.view * Ubo.model * vec4(inPosition, mapSize);
+    gl_Position = Ubo.proj * Ubo.view * Ubo.model * vec4(inPosition, mapSize);
 
     fragColor = inColor;
     fragTexCoord = inTexCoord;

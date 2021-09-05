@@ -17,6 +17,8 @@ namespace Flint
 
 			virtual void PrepareIfNecessary() override final;
 
+			const VkDescriptorSet GetDescriptorSet() const { return vDescriptorSet; }
+
 		public:
 			void SetDescriptorSet(const VkDescriptorSet& vSet);
 

@@ -15,55 +15,100 @@ namespace Flint
 			// Resolve vertex shader data.
 			{
 				VulkanShader& vShader = pPipeline->GetVertexShader()->StaticCast<VulkanShader>();
-				const auto resources = vShader.GetShaderResources().at(mSetIndex);
-				mResources.insert(resources.begin(), resources.end());
 
-				const auto poolSizes = vPoolSizes = vShader.GetDescriptorSetMap().at(setIndex).mPoolSizes;
-				vPoolSizes.insert(vPoolSizes.end(), poolSizes.begin(), poolSizes.end());
+				const auto resourceMap = vShader.GetShaderResources();
+				if (!resourceMap.empty())
+				{
+					const auto resources = resourceMap.at(mSetIndex);
+					mResources.insert(resources.begin(), resources.end());
+				}
+
+				const auto descriptorSetMap = vShader.GetDescriptorSetMap();
+				if (!descriptorSetMap.empty())
+				{
+					const auto poolSizes = descriptorSetMap.at(mSetIndex).mPoolSizes;
+					vPoolSizes.insert(vPoolSizes.end(), poolSizes.begin(), poolSizes.end());
+				}
 			}
 
 			// Check and resolve fragment shader data.
 			if (pPipeline->GetFragmentShader())
 			{
 				VulkanShader& vShader = pPipeline->GetFragmentShader()->StaticCast<VulkanShader>();
-				const auto resources = vShader.GetShaderResources().at(mSetIndex);
-				mResources.insert(resources.begin(), resources.end());
 
-				const auto poolSizes = vPoolSizes = vShader.GetDescriptorSetMap().at(setIndex).mPoolSizes;
-				vPoolSizes.insert(vPoolSizes.end(), poolSizes.begin(), poolSizes.end());
+				const auto resourceMap = vShader.GetShaderResources();
+				if (!resourceMap.empty())
+				{
+					const auto resources = resourceMap.at(mSetIndex);
+					mResources.insert(resources.begin(), resources.end());
+				}
+
+				const auto descriptorSetMap = vShader.GetDescriptorSetMap();
+				if (!descriptorSetMap.empty())
+				{
+					const auto poolSizes = descriptorSetMap.at(mSetIndex).mPoolSizes;
+					vPoolSizes.insert(vPoolSizes.end(), poolSizes.begin(), poolSizes.end());
+				}
 			}
 
 			// Check and resolve tessellation control shader data.
 			if (pPipeline->GetTessellationControlShader())
 			{
 				VulkanShader& vShader = pPipeline->GetTessellationControlShader()->StaticCast<VulkanShader>();
-				const auto resources = vShader.GetShaderResources().at(mSetIndex);
-				mResources.insert(resources.begin(), resources.end());
 
-				const auto poolSizes = vPoolSizes = vShader.GetDescriptorSetMap().at(setIndex).mPoolSizes;
-				vPoolSizes.insert(vPoolSizes.end(), poolSizes.begin(), poolSizes.end());
+				const auto resourceMap = vShader.GetShaderResources();
+				if (!resourceMap.empty())
+				{
+					const auto resources = resourceMap.at(mSetIndex);
+					mResources.insert(resources.begin(), resources.end());
+				}
+
+				const auto descriptorSetMap = vShader.GetDescriptorSetMap();
+				if (!descriptorSetMap.empty())
+				{
+					const auto poolSizes = descriptorSetMap.at(mSetIndex).mPoolSizes;
+					vPoolSizes.insert(vPoolSizes.end(), poolSizes.begin(), poolSizes.end());
+				}
 			}
 
 			// Check and resolve tessellation evaluation shader data.
 			if (pPipeline->GetTessellationEvaluationShader())
 			{
 				VulkanShader& vShader = pPipeline->GetTessellationEvaluationShader()->StaticCast<VulkanShader>();
-				const auto resources = vShader.GetShaderResources().at(mSetIndex);
-				mResources.insert(resources.begin(), resources.end());
 
-				const auto poolSizes = vPoolSizes = vShader.GetDescriptorSetMap().at(setIndex).mPoolSizes;
-				vPoolSizes.insert(vPoolSizes.end(), poolSizes.begin(), poolSizes.end());
+				const auto resourceMap = vShader.GetShaderResources();
+				if (!resourceMap.empty())
+				{
+					const auto resources = resourceMap.at(mSetIndex);
+					mResources.insert(resources.begin(), resources.end());
+				}
+
+				const auto descriptorSetMap = vShader.GetDescriptorSetMap();
+				if (!descriptorSetMap.empty())
+				{
+					const auto poolSizes = descriptorSetMap.at(mSetIndex).mPoolSizes;
+					vPoolSizes.insert(vPoolSizes.end(), poolSizes.begin(), poolSizes.end());
+				}
 			}
 
 			// Check and resolve geometry shader data.
 			if (pPipeline->GetGeometryShader())
 			{
 				VulkanShader& vShader = pPipeline->GetGeometryShader()->StaticCast<VulkanShader>();
-				const auto resources = vShader.GetShaderResources().at(mSetIndex);
-				mResources.insert(resources.begin(), resources.end());
 
-				const auto poolSizes = vPoolSizes = vShader.GetDescriptorSetMap().at(setIndex).mPoolSizes;
-				vPoolSizes.insert(vPoolSizes.end(), poolSizes.begin(), poolSizes.end());
+				const auto resourceMap = vShader.GetShaderResources();
+				if (!resourceMap.empty())
+				{
+					const auto resources = resourceMap.at(mSetIndex);
+					mResources.insert(resources.begin(), resources.end());
+				}
+
+				const auto descriptorSetMap = vShader.GetDescriptorSetMap();
+				if (!descriptorSetMap.empty())
+				{
+					const auto poolSizes = descriptorSetMap.at(mSetIndex).mPoolSizes;
+					vPoolSizes.insert(vPoolSizes.end(), poolSizes.begin(), poolSizes.end());
+				}
 			}
 		}
 
@@ -71,14 +116,20 @@ namespace Flint
 			: ResourcePackager(setIndex, pPipeline), vDescriptorSetLayout(vLayout)
 		{
 			VulkanShader& vShader = pPipeline->GetShader()->StaticCast<VulkanShader>();
-			mResources = vShader.GetShaderResources().at(mSetIndex);
-			vPoolSizes = vShader.GetDescriptorSetMap().at(setIndex).mPoolSizes;
-		}
 
-		VulkanResourcePackager::~VulkanResourcePackager()
-		{
-			if (vDescriptorPool)
-				vkDestroyDescriptorPool(pPipeline->GetDevice()->StaticCast<VulkanDevice>().GetLogicalDevice(), vDescriptorPool, nullptr);
+			const auto resourceMap = vShader.GetShaderResources();
+			if (!resourceMap.empty())
+			{
+				const auto resources = resourceMap.at(mSetIndex);
+				mResources.insert(resources.begin(), resources.end());
+			}
+
+			const auto descriptorSetMap = vShader.GetDescriptorSetMap();
+			if (!descriptorSetMap.empty())
+			{
+				const auto poolSizes = descriptorSetMap.at(mSetIndex).mPoolSizes;
+				vPoolSizes.insert(vPoolSizes.end(), poolSizes.begin(), poolSizes.end());
+			}
 		}
 
 		std::shared_ptr<ResourcePackage> VulkanResourcePackager::CreatePackage()
@@ -86,6 +137,14 @@ namespace Flint
 			mDescriptorSetCount++;
 			CreateDescriptorPool();
 			return CreateResourcePackage();
+		}
+
+		void VulkanResourcePackager::Terminate()
+		{
+			if (vDescriptorPool)
+				vkDestroyDescriptorPool(pPipeline->GetDevice()->StaticCast<VulkanDevice>().GetLogicalDevice(), vDescriptorPool, nullptr);
+			
+			bIsTerminated = true;
 		}
 
 		void VulkanResourcePackager::CreateDescriptorPool()

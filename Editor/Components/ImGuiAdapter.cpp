@@ -3,7 +3,10 @@
 
 #include "ImGuiAdapter.hpp"
 #include "GraphicsCore/ScreenBoundRenderTarget.hpp"
+#include "GraphicsCore/ResourcePackager.hpp"
 #include "Engine/ShaderCompiler.hpp"
+
+#include <iostream>
 
 ImGuiAdapter::ImGuiAdapter()
 	: pDynamicStateContainer(std::make_shared<Flint::DynamicStateContainer>())
@@ -29,10 +32,14 @@ void ImGuiAdapter::Initialize(const std::shared_ptr<Flint::Device>& pDevice, con
 
 void ImGuiAdapter::Render(const std::shared_ptr<Flint::CommandBuffer>& pCommandBuffer)
 {
+	ImGui::Render();
 	UpdateGeometryStore();
 
 	ImGuiIO& io = ImGui::GetIO();
 	ImDrawData* pDrawData = ImGui::GetDrawData();
+
+	if (!pDrawData)
+		return;
 
 	// Update and Render additional Platform Windows
 	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
@@ -51,7 +58,7 @@ void ImGuiAdapter::Render(const std::shared_ptr<Flint::CommandBuffer>& pCommandB
 	{
 		pCommandBuffer->BindGeometryStore(pGeometryStore);
 		pCommandBuffer->BindGraphicsPipeline(pPipeline);
-		pCommandBuffer->BindResourceMap(pPipeline, pResourceMap);
+		pCommandBuffer->BindResourcePackages(pPipeline, { pResourcePack });
 
 		UI64 vertexOffset = 0, indexOffset = 0;
 		for (I32 i = 0; i < pDrawData->CmdListsCount; i++)
@@ -68,6 +75,8 @@ void ImGuiAdapter::Render(const std::shared_ptr<Flint::CommandBuffer>& pCommandB
 
 				pCommandBuffer->BindDynamicStates(pPipeline, pDynamicStateContainer);
 				pCommandBuffer->IssueDrawCall(Flint::WireFrame("", vertexOffset, 0, indexOffset, pCommand.ElemCount));
+
+				indexOffset += pCommand.ElemCount;
 			}
 
 			vertexOffset += pCommandList->VtxBuffer.Size;
@@ -78,6 +87,7 @@ void ImGuiAdapter::Render(const std::shared_ptr<Flint::CommandBuffer>& pCommandB
 void ImGuiAdapter::Terminate()
 {
 	pPipeline->Terminate();
+	pResourcePackager->Terminate();
 
 	pVertexShader->Terminate();
 	pFragmentShader->Terminate();
@@ -155,13 +165,17 @@ void ImGuiAdapter::SetupImage()
 
 	pFontSampler = pDevice->CreateImageSampler(specification);
 
-	pResourceMap = pPipeline->CreateResourceMap();
-	pResourceMap->SetResource({ 0, 0 }, pFontSampler, pFontImage);
+	pResourcePackager = pPipeline->CreateResourcePackagers()[0];
+	pResourcePack = pResourcePackager->CreatePackage();
+	pResourcePack->BindResource(0, pFontSampler, pFontImage);
 }
 
 void ImGuiAdapter::UpdateGeometryStore()
 {
 	ImDrawData* pDrawData = ImGui::GetDrawData();
+
+	if (!pDrawData)
+		return;
 
 	UI64 vertexSize = pDrawData->TotalVtxCount * sizeof(ImDrawVert), indexSize = pDrawData->TotalIdxCount * sizeof(ImDrawIdx);
 	if ((vertexSize == 0) || (indexSize == 0))
@@ -172,8 +186,6 @@ void ImGuiAdapter::UpdateGeometryStore()
 
 	ImDrawVert* pVertexData = nullptr;
 	ImDrawIdx* pIndexData = nullptr;
-
-	std::shared_ptr<Flint::GeometryStore> pGeometryStore = pGeometryStore;
 
 	if (pGeometryStore->GetVertexCount() != pDrawData->TotalVtxCount)
 	{

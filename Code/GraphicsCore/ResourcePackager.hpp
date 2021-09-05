@@ -37,6 +37,11 @@ namespace Flint
 		 */
 		virtual std::shared_ptr<ResourcePackage> CreatePackage() = 0;
 
+		/**
+		 * Terminate the resource packager.
+		 */
+		virtual void Terminate() = 0;
+
 	public:
 		/**
 		 * Get the pipeline pointer of the packager.

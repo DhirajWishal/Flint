@@ -7,7 +7,6 @@
 
 #include "Components/EditorRenderTarget.hpp"
 
-
 /**
  * Main application class of the editor.
  */
@@ -29,6 +28,9 @@ private:
 	std::shared_ptr<Flint::Device> pDevice = nullptr;
 
 	EditorRenderTarget mRenderTarget;
+
+	float mAverageFrameTime = 0.0f;
+	UI64 mFrameCount = 0;
 
 	bool bShouldRun = true;
 };

@@ -9,6 +9,7 @@
 #include "VulkanBackend/VulkanComputePipeline.hpp"
 #include "VulkanBackend/VulkanBuffer.hpp"
 #include "VulkanBackend/VulkanUtilities.hpp"
+#include "VulkanBackend/VulkanResourcePackage.hpp"
 
 #include "GraphicsCore/GeometryStore.hpp"
 
@@ -218,26 +219,30 @@ namespace Flint
 			vkCmdBindIndexBuffer(vCommandBuffer, pIndexBuffer->StaticCast<VulkanBuffer>().GetBuffer(), 0, indexType);
 		}
 
-		void VulkanCommandBuffer::BindResourceMap(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::shared_ptr<ResourceMap>& pResourceMap)
+		void VulkanCommandBuffer::BindResourcePackages(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::vector<std::shared_ptr<ResourcePackage>>& pResourcePackages)
 		{
-			FLINT_SETUP_PROFILER();
+			std::vector<VkDescriptorSet> vDescriptorSets(pResourcePackages.size());
+			for (UI64 i = 0; i < pResourcePackages.size(); i++)
+			{
+				auto& vPackage = pResourcePackages[i]->StaticCast<VulkanResourcePackage>();
+				vPackage.PrepareIfNecessary();
+				vDescriptorSets[i] = vPackage.GetDescriptorSet();
+			}
 
-			const VulkanGraphicsPipeline& vPipeline = pPipeline->StaticCast<VulkanGraphicsPipeline>();
-			const VkDescriptorSet* pDescriptorSet = vPipeline.GetDescriptorSetAddress(pResourceMap);
-
-			if (pDescriptorSet)
-				vkCmdBindDescriptorSets(vCommandBuffer, VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_GRAPHICS, vPipeline.GetPipelineLayout(), 0, 1, pDescriptorSet, 0, nullptr);
+			vkCmdBindDescriptorSets(vCommandBuffer, VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_GRAPHICS, pPipeline->StaticCast<VulkanGraphicsPipeline>().GetPipelineLayout(), 0, static_cast<UI32>(vDescriptorSets.size()), vDescriptorSets.data(), 0, nullptr);
 		}
 
-		void VulkanCommandBuffer::BindResourceMap(const std::shared_ptr<ComputePipeline>& pPipeline, const std::shared_ptr<ResourceMap>& pResourceMap)
+		void VulkanCommandBuffer::BindResourcePackages(const std::shared_ptr<ComputePipeline>& pPipeline, const std::vector<std::shared_ptr<ResourcePackage>>& pResourcePackages)
 		{
-			FLINT_SETUP_PROFILER();
+			std::vector<VkDescriptorSet> vDescriptorSets(pResourcePackages.size());
+			for (UI64 i = 0; i < pResourcePackages.size(); i++)
+			{
+				auto& vPackage = pResourcePackages[i]->StaticCast<VulkanResourcePackage>();
+				vPackage.PrepareIfNecessary();
+				vDescriptorSets[i] = vPackage.GetDescriptorSet();
+			}
 
-			const VulkanComputePipeline& vPipeline = pPipeline->StaticCast<VulkanComputePipeline>();
-			const VkDescriptorSet* pDescriptorSet = vPipeline.GetDescriptorSetAddress(pResourceMap);
-
-			if (pDescriptorSet)
-				vkCmdBindDescriptorSets(vCommandBuffer, VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_COMPUTE, vPipeline.GetPipelineLayout(), 0, 1, pDescriptorSet, 0, nullptr);
+			vkCmdBindDescriptorSets(vCommandBuffer, VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_COMPUTE, pPipeline->StaticCast<VulkanComputePipeline>().GetPipelineLayout(), 0, static_cast<UI32>(vDescriptorSets.size()), vDescriptorSets.data(), 0, nullptr);
 		}
 
 		void VulkanCommandBuffer::BindDynamicStates(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::shared_ptr<DynamicStateContainer>& pDynamicStates)

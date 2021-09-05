@@ -133,6 +133,8 @@ namespace Flint
 
 			vInheritInfo.renderPass = vRenderTarget.vRenderPass;
 			mFrameIndex = 0;
+
+			bShouldRecreateResources = true;
 		}
 
 		const VkCommandBufferInheritanceInfo* VulkanScreenBoundRenderTarget::GetVulkanInheritanceInfo()

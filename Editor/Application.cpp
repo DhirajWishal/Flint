@@ -8,6 +8,10 @@
 #include "Engine/Asset.hpp"
 #include "Engine/ShaderCompiler.hpp"
 
+#include "Components/UI/DockSpace.hpp"
+
+#include <ImGuizmo.h>
+
 Application::Application()
 {
 	pInstance = Flint::CreateInstance(true);
@@ -16,16 +20,8 @@ Application::Application()
 	// Initialize the main render target.
 	mRenderTarget.Initialize(pDevice, pInstance);
 
-	// Test loader.
-	{
-		Flint::ShaderCompiler compiler(std::filesystem::path("E:\\Flint\\Editor\\Shaders\\3D\\shader.vert"), Flint::ShaderCodeType::GLSL, Flint::ShaderType::Vertex);
-		auto pShader = pDevice->CreateShader(Flint::ShaderType::Vertex, compiler.GetShaderCode());
-		auto pGeometryStore = pDevice->CreateGeometryStore(pShader->GetInputAttributes(), sizeof(UI32));
-	
-		Flint::Asset asset("E:\\Demo\\Vulkan\\data\\models\\voyager.gltf", pGeometryStore, Flint::Defaults::CreateDefaultVertexDescriptor());
-	}
-
 	// Main execution loop.
+	mOldTimePoint = std::chrono::steady_clock::now();
 	while (mRenderTarget.IsDisplayOpen() && bShouldRun)
 		Execute();
 }
@@ -40,25 +36,28 @@ Application::~Application()
 
 void Application::Execute()
 {
-	mRenderTarget.PollEvents();
-
 	mNewTimePoint = std::chrono::steady_clock::now();
-	UI64 delta = now.time_since_epoch().count() - mOldTimePoint.time_since_epoch().count();
+	UI64 delta = mNewTimePoint.time_since_epoch().count() - mOldTimePoint.time_since_epoch().count();
 
-	mState.PrepareNewFrame();
+	mRenderTarget.PollEvents(delta);
 
 	ImGui::NewFrame();
 	ImGuizmo::SetOrthographic(false);
 	ImGuizmo::BeginFrame();
 
-	float frameTime = delta / (1000.0f * 1000.0f);
-	average += frameTime;
-	counter++;
+	{
+		DockSpace dockSpace;
 
-	ImGui::Text("Frame Time: %f ms", frameTime);
-	ImGui::Text("Average Frame Time: %f ms", average / counter);
+		float frameTime = delta / (1000.0f * 1000.0f);
+		mAverageFrameTime += frameTime;
+		mFrameCount++;
+
+		ImGui::Begin("Frame Times");
+		ImGui::Text("Frame Time: %f ms", frameTime);
+		ImGui::Text("Average Frame Time: %f ms", mAverageFrameTime / mFrameCount);
+		ImGui::End();
+	}
 
 	mRenderTarget.DrawFrame();
-
 	mOldTimePoint = mNewTimePoint;
 }

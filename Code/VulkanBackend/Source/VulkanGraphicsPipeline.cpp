@@ -5,9 +5,7 @@
 #include "VulkanBackend/VulkanShader.hpp"
 #include "VulkanBackend/VulkanScreenBoundRenderTarget.hpp"
 #include "VulkanBackend/VulkanOffScreenRenderTarget.hpp"
-#include "VulkanBackend/VulkanBuffer.hpp"
-#include "VulkanBackend/VulkanImage.hpp"
-#include "VulkanBackend/VulkanImageSampler.hpp"
+#include "VulkanBackend/VulkanResourcePackager.hpp"
 
 namespace Flint
 {
@@ -632,6 +630,15 @@ namespace Flint
 			CreatePipeline();
 		}
 
+		std::vector<std::shared_ptr<ResourcePackager>> VulkanGraphicsPipeline::CreateResourcePackagers()
+		{
+			std::vector<std::shared_ptr<ResourcePackager>> packages;
+			for (UI32 i = 0; i < vDescriptorSetLayouts.size(); i++)
+				packages.push_back(std::make_shared<VulkanResourcePackager>(i, shared_from_this(), vDescriptorSetLayouts[i]));
+
+			return packages;
+		}
+
 		void VulkanGraphicsPipeline::Terminate()
 		{
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
@@ -655,33 +662,6 @@ namespace Flint
 				vkDestroyDescriptorSetLayout(vDevice.GetLogicalDevice(), vLayout, nullptr);
 
 			bIsTerminated = true;
-		}
-
-		void VulkanGraphicsPipeline::PrepareResources()
-		{
-			FLINT_SETUP_PROFILER();
-
-			// Check if should prepare resources, and return if not.
-			if (!bShouldPrepareResources || mDrawDataList.empty())
-				return;
-
-			bShouldPrepareResources = false;
-		}
-
-		const VkDescriptorSet VulkanGraphicsPipeline::GetDescriptorSet(const std::shared_ptr<ResourceMap>& pResourceMap) const
-		{
-			if (vDescriptorSetMap.find(pResourceMap) == vDescriptorSetMap.end())
-				return VK_NULL_HANDLE;
-
-			return vDescriptorSetMap.at(pResourceMap);
-		}
-
-		const VkDescriptorSet* VulkanGraphicsPipeline::GetDescriptorSetAddress(const std::shared_ptr<ResourceMap>& pResourceMap) const
-		{
-			if (vDescriptorSetMap.find(pResourceMap) == vDescriptorSetMap.end())
-				return nullptr;
-
-			return &vDescriptorSetMap.at(pResourceMap);
 		}
 
 		void VulkanGraphicsPipeline::SetupDefaults()
@@ -853,7 +833,12 @@ namespace Flint
 				Utilities::AddPushConstantRangesToVector(vConstantRanges, vShader);
 
 				const auto map = vShader.GetDescriptorSetMap();
-				descriptorSetInfos.insert(map.begin(), map.end());
+				for (const auto entry : map)
+				{
+					auto& info = descriptorSetInfos[entry.first];
+					info.mLayoutBindings.insert(info.mLayoutBindings.end(), entry.second.mLayoutBindings.begin(), entry.second.mLayoutBindings.end());
+					info.mPoolSizes.insert(info.mPoolSizes.end(), entry.second.mPoolSizes.begin(), entry.second.mPoolSizes.end());
+				}
 			}
 
 			// Check and resolve fragment shader data.
@@ -863,7 +848,12 @@ namespace Flint
 				Utilities::AddPushConstantRangesToVector(vConstantRanges, vShader);
 
 				const auto map = vShader.GetDescriptorSetMap();
-				descriptorSetInfos.insert(map.begin(), map.end());
+				for (const auto entry : map)
+				{
+					auto& info = descriptorSetInfos[entry.first];
+					info.mLayoutBindings.insert(info.mLayoutBindings.end(), entry.second.mLayoutBindings.begin(), entry.second.mLayoutBindings.end());
+					info.mPoolSizes.insert(info.mPoolSizes.end(), entry.second.mPoolSizes.begin(), entry.second.mPoolSizes.end());
+				}
 			}
 
 			// Check and resolve tessellation control shader data.
@@ -873,7 +863,12 @@ namespace Flint
 				Utilities::AddPushConstantRangesToVector(vConstantRanges, vShader);
 
 				const auto map = vShader.GetDescriptorSetMap();
-				descriptorSetInfos.insert(map.begin(), map.end());
+				for (const auto entry : map)
+				{
+					auto& info = descriptorSetInfos[entry.first];
+					info.mLayoutBindings.insert(info.mLayoutBindings.end(), entry.second.mLayoutBindings.begin(), entry.second.mLayoutBindings.end());
+					info.mPoolSizes.insert(info.mPoolSizes.end(), entry.second.mPoolSizes.begin(), entry.second.mPoolSizes.end());
+				}
 			}
 
 			// Check and resolve tessellation evaluation shader data.
@@ -883,7 +878,12 @@ namespace Flint
 				Utilities::AddPushConstantRangesToVector(vConstantRanges, vShader);
 
 				const auto map = vShader.GetDescriptorSetMap();
-				descriptorSetInfos.insert(map.begin(), map.end());
+				for (const auto entry : map)
+				{
+					auto& info = descriptorSetInfos[entry.first];
+					info.mLayoutBindings.insert(info.mLayoutBindings.end(), entry.second.mLayoutBindings.begin(), entry.second.mLayoutBindings.end());
+					info.mPoolSizes.insert(info.mPoolSizes.end(), entry.second.mPoolSizes.begin(), entry.second.mPoolSizes.end());
+				}
 			}
 
 			// Check and resolve geometry shader data.
@@ -893,7 +893,12 @@ namespace Flint
 				Utilities::AddPushConstantRangesToVector(vConstantRanges, vShader);
 
 				const auto map = vShader.GetDescriptorSetMap();
-				descriptorSetInfos.insert(map.begin(), map.end());
+				for (const auto entry : map)
+				{
+					auto& info = descriptorSetInfos[entry.first];
+					info.mLayoutBindings.insert(info.mLayoutBindings.end(), entry.second.mLayoutBindings.begin(), entry.second.mLayoutBindings.end());
+					info.mPoolSizes.insert(info.mPoolSizes.end(), entry.second.mPoolSizes.begin(), entry.second.mPoolSizes.end());
+				}
 			}
 
 			// Create descriptor set layouts.

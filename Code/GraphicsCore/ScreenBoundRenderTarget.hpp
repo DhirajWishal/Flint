@@ -40,19 +40,34 @@ namespace Flint
 	public:
 		/**
 		 * Get the display pointer.
-		 * 
+		 *
 		 * @return The display pointer.
 		 */
 		const std::shared_ptr<Display> GetDisplay() const { return pDisplay; }
 
 		/**
 		 * Get the current image index.
-		 * 
+		 *
 		 * @return The image index.
 		 */
 		virtual const UI32 GetImageIndex() const = 0;
 
+		/**
+		 * Check if the resources should be recreated.
+		 * This could happen as a result of a resize. After recreating all the resources, make sure to notify the render target using NotifyRecreated().
+		 * 
+		 * @return The boolean value.
+		 */
+		const bool ShouldRecreateResources() const { return bShouldRecreateResources; }
+
+		/**
+		 * Notify after recreating the resources.
+		 */
+		void NotifyRecreated() { bShouldRecreateResources = false; }
+
 	protected:
 		std::shared_ptr<Display> pDisplay = nullptr;
+
+		bool bShouldRecreateResources = false;
 	};
 }

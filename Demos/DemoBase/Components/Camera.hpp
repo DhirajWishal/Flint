@@ -1,3 +1,7 @@
+#include "..\..\..\Editor\Components\Camera.hpp"
+#include "..\..\..\Editor\Components\Camera.hpp"
+#include "..\..\..\Editor\Components\Camera.hpp"
+#include "..\..\..\Editor\Components\Camera.hpp"
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
@@ -21,6 +25,8 @@ class Camera
 {
 public:
 	Camera() = default;
+
+
 
 	void Initialize(std::shared_ptr<Flint::Device> pDevice);
 	void Terminate();

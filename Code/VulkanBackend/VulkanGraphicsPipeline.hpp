@@ -10,7 +10,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanGraphicsPipeline final : public GraphicsPipeline, public std::shared_ptr<VulkanGraphicsPipeline>
+		class VulkanGraphicsPipeline final : public GraphicsPipeline, public std::enable_shared_from_this<VulkanGraphicsPipeline>
 		{
 		public:
 			VulkanGraphicsPipeline(
@@ -38,14 +38,11 @@ namespace Flint
 
 			virtual void ReloadShaders() override final;
 			virtual void Recreate(const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget) override final;
+			virtual std::vector<std::shared_ptr<ResourcePackager>> CreateResourcePackagers() override final;
 			virtual void Terminate() override final;
-
-			virtual void PrepareResources() override final;
 
 			const VkPipelineLayout GetPipelineLayout() const { return vPipelineLayout; }
 			const VkPipeline GetPipeline() const { return vPipeline; }
-			const VkDescriptorSet GetDescriptorSet(const std::shared_ptr<ResourceMap>& pResourceMap) const;
-			const VkDescriptorSet* GetDescriptorSetAddress(const std::shared_ptr<ResourceMap>& pResourceMap) const;
 			const std::vector<VkDescriptorSetLayout> GetDescriptorSetLayouts() const { return vDescriptorSetLayouts; }
 
 		private:
@@ -71,7 +68,6 @@ namespace Flint
 			std::vector<VkDynamicState> vDynamicStates = {};
 
 			std::vector<VkDescriptorSetLayout> vDescriptorSetLayouts = {};
-			std::unordered_map<std::shared_ptr<ResourceMap>, VkDescriptorSet> vDescriptorSetMap;
 
 			VkPipelineLayout vPipelineLayout = VK_NULL_HANDLE;
 			VkPipeline vPipeline = VK_NULL_HANDLE;
