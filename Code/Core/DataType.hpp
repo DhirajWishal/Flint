@@ -124,4 +124,6 @@ namespace Flint
 
 	typedef FExtent2D<UI32> FBox2D;
 	typedef FExtent3D<UI32> FBox3D;
+
+	constexpr float CreateColor256(float color) { return color / 256.0f; }
 }

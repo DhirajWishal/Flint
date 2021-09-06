@@ -123,7 +123,8 @@ namespace Flint
 	void VikingRoom::CreatePipeline(const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget)
 	{
 		GraphicsPipelineSpecification specification = {};
-		specification.mRasterizationSamples = MultiSampleCount::One;
+		//specification.mRasterizationSamples = MultiSampleCount::One;
+		specification.mRasterizationSamples = pDevice->GetSupportedMultiSampleCount();
 		specification.mDynamicStateFlags = DynamicStateFlags::ViewPort | DynamicStateFlags::Scissor;
 		specification.bEnableDepthTest = true;
 		specification.bEnableDepthWrite = true;

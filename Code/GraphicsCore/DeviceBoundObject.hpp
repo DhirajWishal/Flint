@@ -396,7 +396,7 @@ namespace Flint
 
 		std::shared_ptr<Image> pImage = nullptr;
 
-		FColor4D mClearColor = FColor4D(CREATE_COLOR_256(32.0f), CREATE_COLOR_256(32.0f), CREATE_COLOR_256(32.0f), 1.0f);
+		FColor4D mClearColor = FColor4D(CreateColor256(32.0f), CreateColor256(32.0f), CreateColor256(32.0f), 1.0f);
 		DepthClearValues mDepthClearValue = {};
 	};
 

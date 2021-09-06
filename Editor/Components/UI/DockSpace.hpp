@@ -5,20 +5,15 @@
 
 #include <imgui.h>
 
-namespace Flint
+/**
+ * ImGui dock space wrapper.
+ */
+class DockSpace
 {
-	/**
-	 * ImGui dock space wrapper.
-	 */
-	class DockSpace
-	{
-	public:
-		DockSpace();
-		~DockSpace();
+public:
+	DockSpace();
+	~DockSpace();
 
-	private:
-		ImGuiID mDockID = 0;
-		ImGuiDockNodeFlags mDockFlags = ImGuiDockNodeFlags_None;
-		ImGuiWindowFlags mWindowFlags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
-	};
-}
+	ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None | ImGuiDockNodeFlags_PassthruCentralNode;
+	ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+};

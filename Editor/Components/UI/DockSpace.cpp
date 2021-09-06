@@ -3,33 +3,30 @@
 
 #include "DockSpace.hpp"
 
-namespace Flint
+DockSpace::DockSpace()
 {
-	DockSpace::DockSpace()
-	{
-		const ImGuiViewport* pViewPort = ImGui::GetMainViewport();
+	const ImGuiViewport* viewport = ImGui::GetMainViewport();
+	ImGui::SetNextWindowPos(viewport->WorkPos);
+	ImGui::SetNextWindowSize(viewport->WorkSize);
+	ImGui::SetNextWindowViewport(viewport->ID);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+	window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+	window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
-		ImGui::SetNextWindowPos(pViewPort->WorkPos);
-		ImGui::SetNextWindowSize(pViewPort->WorkSize);
-		ImGui::SetNextWindowViewport(pViewPort->ID);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+	if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
+		window_flags |= ImGuiWindowFlags_NoBackground;
 
-		mWindowFlags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-		mWindowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-		if (mDockFlags & ImGuiDockNodeFlags_PassthruCentralNode)
-			mWindowFlags |= ImGuiWindowFlags_NoBackground;
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+	ImGui::Begin("DockSpace Demo", NULL, window_flags);
 
-		ImGui::Begin("DockSpace", NULL, mWindowFlags);
-		ImGui::PopStyleVar(3);
+	ImGui::PopStyleVar(3);
 
-		mDockID = ImGui::GetID("EditorDockSpace");
-		ImGui::DockSpace(mDockID, ImVec2(0.0f, 0.0f), mDockFlags);
-	}
+	ImGuiID dockspace_id = ImGui::GetID("EditorDockSpace");
+	ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+}
 
-	DockSpace::~DockSpace()
-	{
-		ImGui::End();
-	}
+DockSpace::~DockSpace()
+{
+	ImGui::End();
 }

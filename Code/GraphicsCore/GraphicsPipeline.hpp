@@ -237,8 +237,8 @@ namespace Flint
 		std::vector<ColorBlendAttachment> mColorBlendAttachments = { ColorBlendAttachment() };
 
 		float mColorBlendConstants[4] = {
-			CREATE_COLOR_256(0), CREATE_COLOR_256(0),
-			CREATE_COLOR_256(0), CREATE_COLOR_256(0)
+			CreateColor256(0), CreateColor256(0),
+			CreateColor256(0), CreateColor256(0)
 		};
 		float mDepthBiasFactor = 0.0f;
 		float mDepthConstantFactor = 0.0f;

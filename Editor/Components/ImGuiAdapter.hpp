@@ -65,5 +65,8 @@ namespace Flint
 		std::shared_ptr<ResourcePackager> pResourcePackager = nullptr;
 		std::shared_ptr<ResourcePackage> pResourcePack = nullptr;
 		std::shared_ptr<DynamicStateContainer> pDynamicStateContainer = nullptr;
+
+		ImDrawVert* pVertexData = nullptr;
+		ImDrawIdx* pIndexData = nullptr;
 	};
 }

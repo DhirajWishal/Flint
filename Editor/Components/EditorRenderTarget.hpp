@@ -31,6 +31,11 @@ namespace Flint
 		void UpdateUI(const UI64 delta);
 
 	private:
+		VikingRoom mVikingRoom = {};
+		Camera mCamera = {};
+
+		std::vector<RenderTargetAttachment> mAttachments{ 2 };
+
 		std::shared_ptr<Display> pDisplay = nullptr;
 
 		std::shared_ptr<ScreenBoundRenderTarget> pRenderTarget = nullptr;

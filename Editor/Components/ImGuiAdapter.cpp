@@ -112,15 +112,41 @@ namespace Flint
 	{
 		ImGui::CreateContext();
 		ImGuiStyle& style = ImGui::GetStyle();
-		style.Colors[ImGuiCol_TitleBg] = ImVec4(1.0f, 0.0f, 0.0f, 0.6f);
-		style.Colors[ImGuiCol_TitleBgActive] = ImVec4(1.0f, 0.0f, 0.0f, 0.8f);
-		style.Colors[ImGuiCol_MenuBarBg] = ImVec4(1.0f, 0.0f, 0.0f, 0.4f);
-		style.Colors[ImGuiCol_Header] = ImVec4(1.0f, 0.0f, 0.0f, 0.4f);
-		style.Colors[ImGuiCol_CheckMark] = ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
+
+		style.Colors[ImGuiCol_TitleBg]					= ImVec4(CreateColor256(34), CreateColor256(40), CreateColor256(49), 0.75f);	
+		style.Colors[ImGuiCol_WindowBg]					= ImVec4(CreateColor256(34), CreateColor256(40), CreateColor256(49), 0.25f);
+		style.Colors[ImGuiCol_MenuBarBg]				= ImVec4(CreateColor256(34), CreateColor256(40), CreateColor256(49), 0.1f);
+
+		style.Colors[ImGuiCol_TitleBgActive]			= ImVec4(CreateColor256(57), CreateColor256(62), CreateColor256(70), 0.8f);	
+		style.Colors[ImGuiCol_Header]					= ImVec4(CreateColor256(57), CreateColor256(62), CreateColor256(70), 0.6f);
+		style.Colors[ImGuiCol_TabActive]				= ImVec4(CreateColor256(57), CreateColor256(62), CreateColor256(70), 0.25f);
+		style.Colors[ImGuiCol_TabUnfocusedActive]		= ImVec4(CreateColor256(57), CreateColor256(62), CreateColor256(70), 0.25f);
+
+		style.Colors[ImGuiCol_TabHovered]				= ImVec4(CreateColor256(0), CreateColor256(173), CreateColor256(181), 1.0f);
+		style.Colors[ImGuiCol_HeaderHovered]			= ImVec4(CreateColor256(0), CreateColor256(173), CreateColor256(181), 0.5f);
+
+		style.ChildRounding		= 6.0f;
+		style.FrameRounding		= 3.0f;
+		style.PopupRounding		= 3.0f;
+		style.TabRounding		= 3.0f;
+		style.WindowRounding	= 3.0f;
 
 		ImGuiIO& io = ImGui::GetIO();
 		io.DisplaySize = ImVec2(static_cast<float>(pRenderTarget->GetExtent().mWidth), static_cast<float>(pRenderTarget->GetExtent().mHeight));
 		io.DisplayFramebufferScale = ImVec2(16.0f, 9.0f);
+
+		io.Fonts->AddFontFromFileTTF("Fonts/simvoni-font/Simvoni-d9vV6.otf", 12.0f);
+		io.Fonts->AddFontFromFileTTF("Fonts/simvoni-font/Simvoni-d9vV6.otf", 8.0f);
+		io.Fonts->AddFontFromFileTTF("Fonts/simvoni-font/Simvoni-d9vV6.otf", 10.0f);
+		io.Fonts->AddFontFromFileTTF("Fonts/simvoni-font/Simvoni-d9vV6.otf", 14.0f);
+		io.Fonts->AddFontFromFileTTF("Fonts/simvoni-font/Simvoni-d9vV6.otf", 16.0f);
+
+		io.Fonts->AddFontFromFileTTF("Fonts/azonix-font/Azonix-1VB0.otf", 10.0f);
+		io.Fonts->AddFontFromFileTTF("Fonts/a-atomic-md-font/AtomicMd-OVJ4A.otf", 10.0f);
+		io.Fonts->AddFontFromFileTTF("Fonts/josefin-sans-font/JosefinSansRegular-x3LYV.ttf", 12.0f);
+		io.Fonts->AddFontFromFileTTF("Fonts/salma-alfasans-font/SalmaalfasansLight-d9MJx.otf", 12.0f);
+		io.Fonts->AddFontFromFileTTF("Fonts/swansea-font/Swansea-q3pd.ttf", 6.0f);
+		io.Fonts->AddFontFromFileTTF("Fonts/rawengulk-font/RawengulkBold-r8o9.otf", 13.0f);
 
 		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
 		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
@@ -136,7 +162,8 @@ namespace Flint
 	void ImGuiAdapter::SetupPipeline()
 	{
 		GraphicsPipelineSpecification specification = {};
-		specification.mRasterizationSamples = MultiSampleCount::One;
+		specification.mRasterizationSamples = pDevice->GetSupportedMultiSampleCount();
+		//specification.mRasterizationSamples = MultiSampleCount::One;
 		specification.mDynamicStateFlags = DynamicStateFlags::ViewPort | DynamicStateFlags::Scissor;
 		specification.mCullMode = CullMode::None;
 		specification.mColorBlendAttachments[0].mEnableBlend = true;
@@ -193,9 +220,6 @@ namespace Flint
 
 		std::shared_ptr<Buffer> pVertexBuffer = nullptr;
 		std::shared_ptr<Buffer> pIndexBuffer = nullptr;
-
-		ImDrawVert* pVertexData = nullptr;
-		ImDrawIdx* pIndexData = nullptr;
 
 		if (pGeometryStore->GetVertexCount() != pDrawData->TotalVtxCount)
 		{

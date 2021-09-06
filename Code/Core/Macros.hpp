@@ -33,7 +33,5 @@
 #define __TO_STRING__(...)					#__VA_ARGS__
 #define TO_STRING(...)						__TO_STRING__(__VA_ARGS__)
 
-#define CREATE_COLOR_256(value)				(value / 256.0)
-
 #define FLINT_RUNTIME_DATA_DIRECTORY		"\\Flint"
 #define FLINT_CACHE_DIRECTORY				FLINT_RUNTIME_DATA_DIRECTORY "\\Cache"

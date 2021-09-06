@@ -54,6 +54,7 @@ namespace Flint
 			float frameTime = delta / (1000.0f * 1000.0f);
 			mAverageFrameTime += frameTime;
 			mFrameCount++;
+
 			{
 				DockerMenuBar menuBar(frameTime);
 			}
@@ -62,8 +63,8 @@ namespace Flint
 			ImGui::ShowDemoWindow();
 
 			ImGui::Begin("Frame Times");
-			ImGui::Text("Frame Time: %f ms", frameTime);
-			ImGui::Text("Average Frame Time: %f ms", mAverageFrameTime / mFrameCount);
+			ImGui::Text("Frame Time: %.4f ms", frameTime);
+			ImGui::Text("Average Frame Time: %.4f ms", mAverageFrameTime / mFrameCount);
 			ImGui::End();
 		}
 

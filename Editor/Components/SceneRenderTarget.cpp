@@ -16,7 +16,7 @@ namespace Flint
 
 		mAttachments[0] = RenderTargetAttachment(
 			pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Color | ImageUsage::Graphics, imageExtent, PixelFormat::R8G8B8A8_UNORMAL, 1, 1, nullptr, sampleCount),
-			FColor4D(CREATE_COLOR_256(32.0f), CREATE_COLOR_256(32.0f), CREATE_COLOR_256(32.0f), 1.0f));
+			FColor4D(CreateColor256(32.0f), CreateColor256(32.0f), CreateColor256(32.0f), 1.0f));
 
 		mAttachments[1] = RenderTargetAttachment(
 			pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Depth, imageExtent, PixelFormat::D24_UNORMAL_S8_UINT, 1, 1, nullptr, sampleCount),
@@ -54,8 +54,8 @@ namespace Flint
 
 	void SceneRenderTarget::Render(const std::shared_ptr<Display>& pDisplay, const UI64 delta)
 	{
-		mExtent.x = pDisplay->GetExtent().mWidth / 2;
-		mExtent.y = pDisplay->GetExtent().mHeight / 2;
+		mExtent.x = static_cast<float>(pDisplay->GetExtent().mWidth) / 2;
+		mExtent.y = static_cast<float>(pDisplay->GetExtent().mHeight) / 2;
 
 		const auto frameIndex = pRenderTarget->GetFrameIndex();
 		auto pCommandBuffer = pAllocator->GetCommandBuffer(frameIndex);

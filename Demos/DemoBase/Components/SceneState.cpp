@@ -72,7 +72,7 @@ void SceneState::PrepareRenderTargetsToDraw()
 {
 	for (auto pRenderTarget : pScreenBoundRenderTargets)
 	{
-		//pRenderTarget.second->SetClearColor(Flint::FColor4D(CREATE_COLOR_256(135.0f), CREATE_COLOR_256(206.0f), CREATE_COLOR_256(235.0f), 1));
+		//pRenderTarget.second->SetClearColor(Flint::FColor4D(CreateColor256(135.0f), CreateColor256(206.0f), CreateColor256(235.0f), 1));
 		pRenderTarget.second->PrepareStaticResources();
 	}
 }
