@@ -33,6 +33,7 @@ namespace Flint
 			throw std::runtime_error("Could not load the client symbols!");
 
 		pClientInterface = mCreateClientFunction();
+		InitializeClient();
 	}
 	
 	ClientLoader::~ClientLoader()
@@ -42,5 +43,10 @@ namespace Flint
 		FreeLibrary(static_cast<HMODULE>(pModuleHandle));
 
 #endif
+	}
+	
+	void ClientLoader::InitializeClient()
+	{
+		pClientInterface->ActivateController(pClientInterface->GetClassIdentifiers().front());
 	}
 }

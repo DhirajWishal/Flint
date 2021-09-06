@@ -20,6 +20,9 @@ namespace Flint
 		const ClientInterface* GetInterface() const { return pClientInterface; }
 
 	private:
+		void InitializeClient();
+
+	private:
 		ClientInterface* pClientInterface = nullptr;
 
 		TCreateClientFunction mCreateClientFunction = nullptr;

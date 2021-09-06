@@ -8,5 +8,8 @@
 class BasicController final : public Flint::Controller
 {
 public:
-	BasicController() : Flint::Controller("BasicController") {}
+	BasicController(Flint::ClientInterface* pClientInterface);
+
+private:
+	Flint::ComponentHandle<Flint::Components::MaterialPipeline> mMaterialHandle = {};
 };

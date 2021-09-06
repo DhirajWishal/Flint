@@ -17,20 +17,15 @@ namespace Flint
 
 	void EditorRenderTarget::Initialize(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Instance>& pInstnace)
 	{
-		if (mExtent.IsZero())
-			mExtent = FBox2D(1280, 720);
-
 		pDisplay = pInstnace->CreateDisplay({ std::numeric_limits<UI32>::max() }, "Flint Editor");
 		mExtent = pDisplay->GetExtent();
 
 		const auto sampleCount = pDevice->GetSupportedMultiSampleCount();
 		const FBox3D imageExtent = FBox3D(mExtent.mWidth, mExtent.mHeight, 1);
 
-		// rgb(171, 221, 252)
-
 		mAttachments[0] = RenderTargetAttachment(
 			pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Color, imageExtent, pDisplay->GetBestSwapChainFormat(pDevice), 1, 1, nullptr, sampleCount),
-			FColor4D(CreateColor256(171.0f), CreateColor256(221.0f), CreateColor256(252.0f), 1.0f));
+			FColor4D(CreateColor256(32.0f), CreateColor256(32.0f), CreateColor256(32.0f), 1.0f));
 
 		mAttachments[1] = RenderTargetAttachment(
 			pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Depth, imageExtent, PixelFormat::D24_UNORMAL_S8_UINT, 1, 1, nullptr, sampleCount),

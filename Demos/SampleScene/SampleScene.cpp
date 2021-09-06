@@ -7,13 +7,13 @@
 
 SampleScene::SampleScene()
 {
-	RegisterIdentifiers("BasicController");
+	RegisterIdentifier("BasicController");
 }
 
 std::shared_ptr<Flint::Controller> SampleScene::CreateController(const std::string_view& identifier)
 {
 	if (identifier == "BasicController")
-		return std::make_shared<BasicController>();
+		return std::make_shared<BasicController>(this);
 
 	return std::shared_ptr<Flint::Controller>();
 }

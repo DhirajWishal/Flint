@@ -3,10 +3,12 @@
 
 #pragma once
 
-#include "Core/FObject.hpp"
+#include "ComponentRegistry.hpp"
 
 namespace Flint
 {
+	class ClientInterface;
+
 	/**
 	 * Flint controller object.
 	 * This is the base class for all the supported client objects.
@@ -18,8 +20,9 @@ namespace Flint
 		 * Construct the controller.
 		 * 
 		 * @param identifier: The controller identifier.
+		 * @param pClientInterface: The client interface pointer which created the controller.
 		 */
-		Controller(const std::string_view& identifier) : mIdentifier(identifier) {}
+		Controller(const std::string_view& identifier, ClientInterface* pClientInterface) : mIdentifier(identifier), pClientInterface(pClientInterface) {}
 
 		/**
 		 * Get the identifier of the controller.
@@ -30,5 +33,6 @@ namespace Flint
 
 	public:
 		std::string_view mIdentifier = "";
+		ClientInterface* pClientInterface = nullptr;
 	};
 }

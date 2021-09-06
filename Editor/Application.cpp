@@ -11,6 +11,7 @@
 #include "Components/UI/DockSpace.hpp"
 #include "Components/UI/DockerMenuBar.hpp"
 #include "Components/UI/ControllerView.hpp"
+#include "Components/UI/ComponentView.hpp"
 
 #include <ImGuizmo.h>
 #include <fstream>
@@ -68,38 +69,19 @@ namespace Flint
 
 			{
 				DockerMenuBar menuBar(frameTime);
-
-				if (ImGui::BeginMenu("File"))
-				{
-					// If the user selects the load client option.
-					if (ImGui::MenuItem("Load Client"))
-					{
-					}
-
-					ImGui::Separator();
-
-					ImGui::MenuItem("Close");
-					ImGui::EndMenu();
-				}
-
-				if (ImGui::BeginMenu("View"))
-				{
-					ImGui::MenuItem("Full screen");
-					ImGui::MenuItem("Minimize");
-
-					ImGui::EndMenu();
-				}
 			}
 
 			HandleClientLoad();
 
 			if (pClientLoader)
 			{
-				ControllerView controllerView(pClientLoader->GetInterface()->GetClassIdentifiers());
+				auto pInterface = pClientLoader->GetInterface();
+				ControllerView controllerView(pInterface->GetClassIdentifiers());
+				ComponentView componentView(pInterface->GetComponentMap());
 			}
 
 			mRenderTarget.UpdateUI(delta);
-			ImGui::ShowDemoWindow();
+			//ImGui::ShowDemoWindow();
 
 			ImGui::Begin("Frame Times");
 			ImGui::Text("Frame Time: %.4f ms", frameTime);

@@ -5,15 +5,15 @@
 
 #include "Controller.hpp"
 
-#include <vector>
-
 namespace Flint
 {
 	/**
 	 * Flint client interface class.
 	 * This class is the base class for the client application and all application MUST inherit from this.
+	 * 
+	 * Once the client is created, the first registered controller will be created. After that the controllers are supposed to create other controllers and keep the logic flow.
 	 */
-	class ClientInterface : public FObject
+	class ClientInterface : public ComponentRegistry
 	{
 	public:
 		ClientInterface() = default;
@@ -26,14 +26,6 @@ namespace Flint
 		std::vector<std::string_view> GetClassIdentifiers() const;
 
 		/**
-		 * Register an identifier.
-		 * If a class is not registered, the client will not be able to use the controller.
-		 *
-		 * @param identifier: The class identifier.
-		 */
-		void RegisterIdentifiers(const std::string& identifier);
-
-		/**
 		 * Create a new controller.
 		 *
 		 * @param identifier: The controller identifier.
@@ -43,12 +35,36 @@ namespace Flint
 
 	public:
 		/**
+		 * Activate a controller.
+		 * 
+		 * @identifier: The identifier of the controller.
+		 */
+		void ActivateController(const std::string_view& identifier);
+
+		/**
+		 * Deactivate a controller.
+		 *
+		 * @identifier: The identifier of the controller.
+		 */
+		void DeactivateController(const std::string_view& identifier);
+
+		/**
 		 * Run the client application.
 		 */
 		void RunClient();
 
 	protected:
+		/**
+		 * Register an identifier.
+		 * If a class is not registered, the client will not be able to use the controller.
+		 *
+		 * @param identifier: The class identifier.
+		 */
+		void RegisterIdentifier(const std::string& identifier);
+
+	protected:
 		std::vector<std::string> mRegisteredClasses = {};
+		std::unordered_map<std::string_view, std::shared_ptr<Controller>> mActiveControllers = {};
 	};
 
 	/**
