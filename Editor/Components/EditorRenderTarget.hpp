@@ -19,7 +19,8 @@ namespace Flint
 	class EditorRenderTarget
 	{
 	public:
-		EditorRenderTarget() = default;
+		EditorRenderTarget();
+		~EditorRenderTarget();
 
 		void Initialize(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Instance>& pInstance);
 		void Terminate();
@@ -30,9 +31,17 @@ namespace Flint
 
 		void UpdateUI(const UI64 delta);
 
+		const bool HasDragAndDrop() const { return pDisplay->ContainsDragAndDrop(); }
+		const std::vector<std::filesystem::path> GetDropPaths();
+
+		void SetExtent(const FBox2D extent) { mExtent = extent; }
+		const FBox2D GetExtent() const { return mExtent; }
+
 	private:
 		VikingRoom mVikingRoom = {};
 		Camera mCamera = {};
+
+		FBox2D mExtent = {};
 
 		std::vector<RenderTargetAttachment> mAttachments{ 2 };
 

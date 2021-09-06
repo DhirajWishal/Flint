@@ -98,13 +98,27 @@ namespace Flint
 		{
 			FLINT_SETUP_PROFILER();
 
+			GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+			const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
 			if (!extent.IsZero())
-				pWindow = glfwCreateWindow(extent.mWidth, extent.mHeight, title.c_str(), nullptr, nullptr);
+			{
+				if (extent.mWidth > static_cast<UI32>(mode->width) || extent.mHeight > static_cast<UI32>(mode->height))
+				{
+					pWindow = glfwCreateWindow(1280, 720, title.c_str(), nullptr, nullptr);
+					glfwMaximizeWindow(pWindow);
+
+					I32 width = 0, height = 0;
+					glfwGetWindowSize(pWindow, &width, &height);
+
+					mExtent.mWidth = width;
+					mExtent.mHeight = height;
+				}
+				else
+					pWindow = glfwCreateWindow(extent.mWidth, extent.mHeight, title.c_str(), nullptr, nullptr);
+			}
 			else
 			{
-				GLFWmonitor* monitor = glfwGetPrimaryMonitor();
-				const GLFWvidmode* mode = glfwGetVideoMode(monitor);
-
 				glfwWindowHint(GLFW_RED_BITS, mode->redBits);
 				glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
 				glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);

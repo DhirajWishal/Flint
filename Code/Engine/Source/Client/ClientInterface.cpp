@@ -9,4 +9,13 @@ namespace Flint
 	{
 		return std::vector<std::string_view>(mRegisteredClasses.begin(), mRegisteredClasses.end());
 	}
+
+	void ClientInterface::RegisterIdentifiers(const std::string& identifier)
+	{
+		mRegisteredClasses.push_back(identifier);
+	}
+	
+	void ClientInterface::RunClient()
+	{
+	}
 }

@@ -197,7 +197,8 @@ namespace Flint
 		 * Default constructor.
 		 *
 		 * @param pInstance: The instance pointer.
-		 * @param extent: The display extent. If set to (0, 0), the window will be opened in full screen mode.
+		 * @param extent: The display extent. If set to (0, 0), the window will be opened in full screen mode. If supplied with an exponentially large number, the window will open in
+		 *				  maximized mode.
 		 * @param title: The display title.
 		 */
 		Display(const std::shared_ptr<Instance>& pInstance, const FBox2D& extent, const std::string& title);
@@ -242,7 +243,7 @@ namespace Flint
 		 *
 		 * @return Boolean value.
 		 */
-		const bool ContainsDragAndDrop() const { return mDragAndDropPaths.empty(); }
+		const bool ContainsDragAndDrop() const { return !mDragAndDropPaths.empty(); }
 
 		/**
 		 * Get the drag and drop values.

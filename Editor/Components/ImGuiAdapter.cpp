@@ -34,7 +34,6 @@ namespace Flint
 
 	void ImGuiAdapter::Render(const std::shared_ptr<CommandBuffer>& pCommandBuffer)
 	{
-		ImGui::Render();
 		UpdateGeometryStore();
 
 		ImGuiIO& io = ImGui::GetIO();
@@ -115,7 +114,7 @@ namespace Flint
 
 		style.Colors[ImGuiCol_TitleBg]					= ImVec4(CreateColor256(34), CreateColor256(40), CreateColor256(49), 0.75f);	
 		style.Colors[ImGuiCol_WindowBg]					= ImVec4(CreateColor256(34), CreateColor256(40), CreateColor256(49), 0.25f);
-		style.Colors[ImGuiCol_MenuBarBg]				= ImVec4(CreateColor256(34), CreateColor256(40), CreateColor256(49), 0.1f);
+		style.Colors[ImGuiCol_MenuBarBg]				= ImVec4(CreateColor256(34), CreateColor256(40), CreateColor256(49), 0.25f);
 
 		style.Colors[ImGuiCol_TitleBgActive]			= ImVec4(CreateColor256(57), CreateColor256(62), CreateColor256(70), 0.8f);	
 		style.Colors[ImGuiCol_Header]					= ImVec4(CreateColor256(57), CreateColor256(62), CreateColor256(70), 0.6f);

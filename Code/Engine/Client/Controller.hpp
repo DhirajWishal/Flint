@@ -19,9 +19,16 @@ namespace Flint
 		 * 
 		 * @param identifier: The controller identifier.
 		 */
-		Controller(const std::string_view& identifier) : mControllerIdentifier(identifier) {}
+		Controller(const std::string_view& identifier) : mIdentifier(identifier) {}
+
+		/**
+		 * Get the identifier of the controller.
+		 * 
+		 * @return The string view.
+		 */
+		const std::string_view GetIdentifier() const { return mIdentifier; }
 
 	public:
-		std::string_view mControllerIdentifier = "";
+		std::string_view mIdentifier = "";
 	};
 }

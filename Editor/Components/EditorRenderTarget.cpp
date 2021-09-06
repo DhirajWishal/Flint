@@ -7,13 +7,24 @@
 
 namespace Flint
 {
+	EditorRenderTarget::EditorRenderTarget()
+	{
+	}
+
+	EditorRenderTarget::~EditorRenderTarget()
+	{
+	}
+
 	void EditorRenderTarget::Initialize(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Instance>& pInstnace)
 	{
-		const FBox2D extent = FBox2D(1280, 720);
-		pDisplay = pInstnace->CreateDisplay(extent, "Flint Editor");
+		if (mExtent.IsZero())
+			mExtent = FBox2D(1280, 720);
+
+		pDisplay = pInstnace->CreateDisplay({ std::numeric_limits<UI32>::max() }, "Flint Editor");
+		mExtent = pDisplay->GetExtent();
 
 		const auto sampleCount = pDevice->GetSupportedMultiSampleCount();
-		const FBox3D imageExtent = FBox3D(extent.mWidth, extent.mHeight, 1);
+		const FBox3D imageExtent = FBox3D(mExtent.mWidth, mExtent.mHeight, 1);
 
 		// rgb(171, 221, 252)
 
@@ -25,7 +36,7 @@ namespace Flint
 			pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Depth, imageExtent, PixelFormat::D24_UNORMAL_S8_UINT, 1, 1, nullptr, sampleCount),
 			DepthClearValues(1.0f, 0));
 
-		pRenderTarget = pDevice->CreateScreenBoundRenderTarget(pDisplay, extent, pDisplay->FindBestBufferCount(pDevice), mAttachments, SwapChainPresentMode::MailBox);
+		pRenderTarget = pDevice->CreateScreenBoundRenderTarget(pDisplay, mExtent, pDisplay->FindBestBufferCount(pDevice), mAttachments, SwapChainPresentMode::MailBox);
 
 		pAllocator = pDevice->CreateCommandBufferAllocator(pRenderTarget->GetBufferCount());
 		pSecondaryAllocator = pAllocator->CreateChildAllocator();
@@ -71,6 +82,7 @@ namespace Flint
 		auto extent = pDisplay->GetExtent();
 		if (!extent.IsZero())
 		{
+			mExtent = extent;
 			io.DisplaySize = ImVec2(static_cast<float>(extent.mWidth), static_cast<float>(extent.mHeight));
 			mCamera.SetAspectRatio(extent);
 		}
@@ -152,5 +164,10 @@ namespace Flint
 
 	void EditorRenderTarget::UpdateUI(const UI64 delta)
 	{
+	}
+
+	const std::vector<std::filesystem::path> EditorRenderTarget::GetDropPaths()
+	{
+		return pDisplay->GetDragAndDropValues();
 	}
 }

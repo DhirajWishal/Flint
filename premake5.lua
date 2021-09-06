@@ -73,12 +73,6 @@ workspace "Flint"
 		include "Editor/Editor.lua"
 
 	group "Demos"
-		include "Demos/ComputeShader/ComputeShader.lua"
-		include "Demos/DemoBase/DemoBase.lua"
-		include "Demos/SimpleScene/SimpleScene.lua"
-		include "Demos/Skybox/Skybox.lua"
-		include "Demos/ShadowMap/ShadowMap.lua"
-		include "Demos/PointShadowMap/PointShadowMap.lua"
-		include "Demos/MousePicking/MousePicking.lua"
+		include "Demos/SampleScene/SampleScene.lua"
 		
 	group ""
