@@ -108,6 +108,10 @@ namespace Flint
 	{
 		// Load the shade file.
 		std::ifstream file(shaderFile, std::ios::in | std::ios::binary | std::ios::ate);
+
+		if (!file.is_open())
+			throw std::invalid_argument("Provided asset file is not available!");
+
 		UI64 size = file.tellg();
 		file.seekg(0);
 

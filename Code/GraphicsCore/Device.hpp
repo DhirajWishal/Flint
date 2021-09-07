@@ -253,7 +253,7 @@ namespace Flint
 		 * @param profile: The memory profile of the geometry store. Default is BufferMemoryProfile::Automatic.
 		 * @return The newly created geometry store pointer.
 		 */
-		virtual std::shared_ptr<GeometryStore> CreateGeometryStore(const std::unordered_map<UI32, std::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic) = 0;
+		virtual std::shared_ptr<GeometryStore> CreateGeometryStore(const TShaderAttributeMap& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic) = 0;
 
 	public:
 		/**

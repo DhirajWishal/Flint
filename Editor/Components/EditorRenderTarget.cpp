@@ -5,6 +5,8 @@
 
 #include "GraphicsCore/Instance.hpp"
 
+#include "Engine/Client/Components/DrawInstance.hpp"
+
 namespace Flint
 {
 	EditorRenderTarget::EditorRenderTarget()
@@ -40,10 +42,6 @@ namespace Flint
 		pSecondaryAllocator->CreateCommandBuffers();
 
 		mImGuiAdapter.Initialize(pDevice, pRenderTarget);
-
-		mVikingRoom.Initialize(pDevice, pRenderTarget, &mCamera);
-		mCamera.SetAspectRatio(pDisplay->GetExtent());
-		//mSceneRenderTarget.Initialize(pDevice, pDisplay->FindBestBufferCount(pDevice), )
 	}
 
 	void EditorRenderTarget::Terminate()
@@ -56,7 +54,6 @@ namespace Flint
 		pDisplay->Terminate();
 
 		mImGuiAdapter.Terminate();
-		mVikingRoom.Terminate();
 
 		for (auto& attachment : mAttachments)
 			attachment.pImage->Terminate();
@@ -79,7 +76,6 @@ namespace Flint
 		{
 			mExtent = extent;
 			io.DisplaySize = ImVec2(static_cast<float>(extent.mWidth), static_cast<float>(extent.mHeight));
-			mCamera.SetAspectRatio(extent);
 		}
 
 		auto position = pDisplay->GetMousePosition();
@@ -94,35 +90,13 @@ namespace Flint
 			io.MouseDown[1] = true;
 		else if (pDisplay->GetMouseButtonEvent(MouseButton::Right).IsReleased())
 			io.MouseDown[1] = false;
-
-		// Update the camera.
-		if (pDisplay->GetKeyEvent(KeyCode::KeyW).IsPressed() || pDisplay->GetKeyEvent(KeyCode::KeyW).IsOnRepeat())
-			mCamera.MoveFront(delta);
-
-		if (pDisplay->GetKeyEvent(KeyCode::KeyA).IsPressed() || pDisplay->GetKeyEvent(KeyCode::KeyA).IsOnRepeat())
-			mCamera.MoveLeft(delta);
-
-		if (pDisplay->GetKeyEvent(KeyCode::KeyS).IsPressed() || pDisplay->GetKeyEvent(KeyCode::KeyS).IsOnRepeat())
-			mCamera.MoveBack(delta);
-
-		if (pDisplay->GetKeyEvent(KeyCode::KeyD).IsPressed() || pDisplay->GetKeyEvent(KeyCode::KeyD).IsOnRepeat())
-			mCamera.MoveRight(delta);
-
-		if (pDisplay->GetMouseButtonEvent(MouseButton::Left).IsPressed() && !io.WantCaptureMouse)
-			mCamera.MousePosition(pDisplay->GetMousePosition());
-
-		if (pDisplay->GetMouseButtonEvent(MouseButton::Left).IsReleased())
-			mCamera.ResetFirstMouse();
-
-		mCamera.Update(delta);
 	}
 
-	void EditorRenderTarget::DrawFrame()
+	void EditorRenderTarget::DrawFrame(const ClientInterface* pClient)
 	{
 		if (!pRenderTarget->PrepareNewFrame())
 		{
 			pRenderTarget->Recreate();
-			mVikingRoom.Recreate();
 			return;
 		}
 
@@ -134,7 +108,50 @@ namespace Flint
 
 		pSecondaryCommandBuffer->BeginBufferRecording(pRenderTarget);
 
-		mVikingRoom.SubmitToCommandBuffer(pSecondaryCommandBuffer);
+		// Draw the client data.
+		if (pClient)
+		{
+			// Draw the globals.
+			auto pGlobalComponentStore = pClient->FindGlobalComponentStore<Components::DrawInstanceGraphics>();
+			if (pGlobalComponentStore)
+			{
+				for (auto& component : pGlobalComponentStore->GetArray())
+				{
+					pSecondaryCommandBuffer->BindGeometryStore(component.pGeometryStore);
+					pSecondaryCommandBuffer->BindGraphicsPipeline(component.pGraphicsPipeline);
+
+					for (auto& drawData : component.mDrawData)
+					{
+						pSecondaryCommandBuffer->BindDynamicStates(component.pGraphicsPipeline, drawData.pDynamicStateContainer);
+						pSecondaryCommandBuffer->BindResourcePackages(component.pGraphicsPipeline, drawData.pResourcePackages);
+						pSecondaryCommandBuffer->IssueDrawCall(*drawData.pWireFrame);
+					}
+				}
+			}
+
+			// Draw the privates.
+			auto& componentMap = pClient->GetComponentMap();
+			for (auto& controller : componentMap)
+			{
+				auto pComponentStore = pClient->FindComponentStore<Components::DrawInstanceGraphics>(controller.first);
+				if (pComponentStore)
+				{
+					for (auto& component : pComponentStore->GetArray())
+					{
+						pSecondaryCommandBuffer->BindGeometryStore(component.pGeometryStore);
+						pSecondaryCommandBuffer->BindGraphicsPipeline(component.pGraphicsPipeline);
+
+						for (auto& drawData : component.mDrawData)
+						{
+							pSecondaryCommandBuffer->BindDynamicStates(component.pGraphicsPipeline, drawData.pDynamicStateContainer);
+							pSecondaryCommandBuffer->BindResourcePackages(component.pGraphicsPipeline, drawData.pResourcePackages);
+							pSecondaryCommandBuffer->IssueDrawCall(*drawData.pWireFrame);
+						}
+					}
+				}
+			}
+		}
+
 		mImGuiAdapter.Render(pSecondaryCommandBuffer);
 
 		pSecondaryCommandBuffer->EndBufferRecording();
@@ -148,10 +165,7 @@ namespace Flint
 		pRenderTarget->GetDevice()->SubmitGraphicsCommandBuffers({ pCommandBuffer });
 
 		if (!pRenderTarget->PresentToDisplay())
-		{
 			pRenderTarget->Recreate();
-			mVikingRoom.Recreate();
-		}
 
 		pRenderTarget->IncrementFrameIndex();
 		pRenderTarget->GetDevice()->WaitForQueue();

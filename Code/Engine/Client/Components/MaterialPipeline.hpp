@@ -4,6 +4,7 @@
 #pragma once
 
 #include "GraphicsCore/GraphicsPipeline.hpp"
+#include "ComponentBase.hpp"
 
 namespace Flint
 {
@@ -12,12 +13,9 @@ namespace Flint
 		/**
 		 * Material pipeline structure.
 		 */
-		struct MaterialPipeline
+		struct MaterialPipeline final : public ComponentBase
 		{
-			MaterialPipeline(const std::string_view& parent, const std::string_view& name) : mParentController(parent), mComponentName(name) {}
-
-			std::string_view mParentController = "";
-			std::string_view mComponentName = "";
+			MaterialPipeline(const std::string_view& name) : ComponentBase(name) {}
 
 			std::shared_ptr<GraphicsPipeline> pPipeline = nullptr;
 			std::shared_ptr<Shader> pVertexShader = nullptr;

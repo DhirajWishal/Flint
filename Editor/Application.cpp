@@ -12,6 +12,7 @@
 #include "Components/UI/DockerMenuBar.hpp"
 #include "Components/UI/ControllerView.hpp"
 #include "Components/UI/ComponentView.hpp"
+#include "Components/UI/GlobalComponentView.hpp"
 
 #include <ImGuizmo.h>
 #include <fstream>
@@ -41,10 +42,13 @@ namespace Flint
 
 	Application::~Application()
 	{
+		if (pClientManager)
+			delete pClientManager.release();
+
 		mRenderTarget.Terminate();
 
-		pDevice->Terminate();
-		pInstance->Terminate();
+		//pDevice->Terminate();
+		//pInstance->Terminate();
 
 		SaveCurrentSession();
 	}
@@ -73,11 +77,20 @@ namespace Flint
 
 			HandleClientLoad();
 
-			if (pClientLoader)
+			if (pClientManager)
 			{
-				auto pInterface = pClientLoader->GetInterface();
+				pClientManager->Update();
+
+				auto pInterface = pClientManager->GetInterface();
 				ControllerView controllerView(pInterface->GetClassIdentifiers());
 				ComponentView componentView(pInterface->GetComponentMap());
+				GlobalComponentView globalComponentView(pInterface->GetGlobalComponentMap());
+
+				UpdateSpecification spec = {};
+				spec.bSkipMousePosition = ImGui::GetIO().WantCaptureMouse;
+
+				for (auto& controller : pInterface->GetActiveControllers())
+					controller.second->OnUpdate(delta, spec);
 			}
 
 			mRenderTarget.UpdateUI(delta);
@@ -90,10 +103,15 @@ namespace Flint
 		}
 
 		ImGui::Render();
-		mRenderTarget.DrawFrame();
+
+		if (pClientManager)
+			mRenderTarget.DrawFrame(pClientManager->GetInterface());
+		else
+			mRenderTarget.DrawFrame(nullptr);
+
 		mOldTimePoint = mNewTimePoint;
 	}
-	
+
 	void Application::HandleClientLoad()
 	{
 		if (mRenderTarget.HasDragAndDrop())
@@ -105,10 +123,12 @@ namespace Flint
 				const auto extension = path.extension();
 				if (extension.string() == ".dll")
 				{
-					if (pClientLoader)
-						delete pClientLoader.release();
+					if (pClientManager)
+						delete pClientManager.release();
 
-					pClientLoader = std::make_unique<ClientLoader>(path);
+					pClientManager = std::make_unique<ClientManager>(path);
+					SetDefaultsToInterface(pClientManager->GetInterface());
+					pClientManager->InitializeClient();
 				}
 			}
 		}
@@ -144,5 +164,12 @@ namespace Flint
 		const auto extent = mRenderTarget.GetExtent();
 		session << DefaultRenderTargetExtent << extent.X << "," << extent.Y << std::endl;
 		session.close();
+	}
+
+	void Application::SetDefaultsToInterface(ClientInterface* pInterface)
+	{
+		pInterface->SetInstance(pInstance);
+		pInterface->SetDevices({ pDevice });
+		pInterface->SetDefaultScreenBoundRenderTarget(mRenderTarget.GetRenderTarget());
 	}
 }

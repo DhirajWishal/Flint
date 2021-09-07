@@ -22,21 +22,15 @@ namespace Flint
 
 		if (ImGui::BeginMenu("View"))
 		{
-			ImGui::MenuItem("Full screen");
-			ImGui::MenuItem("Minimize");
-
-			ImGui::Separator();
-
 			ImGuiIO& io = ImGui::GetIO();
 			ImFont* pCurrentFont = ImGui::GetFont();
 			if (ImGui::BeginCombo("Select Font", pCurrentFont->GetDebugName()))
 			{
-				for (int i = 0; i < io.Fonts->Fonts.Size; i++)
+				for (UI32 i = 0; i < static_cast<UI32>(io.Fonts->Fonts.Size); i++)
 				{
 					ImFont* pFont = io.Fonts->Fonts[i];
 
 					ImGui::PushID(pFont);
-
 					if (ImGui::Selectable(pFont->GetDebugName(), pFont == pCurrentFont))
 						io.FontDefault = pFont;
 

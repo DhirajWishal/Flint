@@ -5,6 +5,7 @@
 
 #include "Core/FObject.hpp"
 #include "Core/Error.hpp"
+#include "Core/Hasher.hpp"
 
 #include <vector>
 
@@ -311,6 +312,8 @@ namespace Flint
 		ShaderAttribute() = default;
 		ShaderAttribute(const std::string& name, UI32 location, ShaderAttributeDataType type) : mAttributeName(name), mLocation(location), mDataType(type) {}
 
+		const bool operator==(const ShaderAttribute& other) const { return mAttributeName == other.mAttributeName && mLocation == other.mLocation && mDataType == other.mDataType; }
+
 		std::string mAttributeName = "";
 		UI32 mLocation = 0;
 		ShaderAttributeDataType mDataType = ShaderAttributeDataType::VEC3;
@@ -329,6 +332,9 @@ namespace Flint
 
 		constexpr bool operator==(const ShaderResourceKey& other) const { return mSetIndex == other.mSetIndex && mBindingIndex == other.mBindingIndex; }
 	};
+
+	using TShaderResourceMap = std::unordered_map<UI32, std::unordered_map<UI32, ShaderResourceType>>;
+	using TShaderAttributeMap = std::unordered_map<UI32, std::vector<ShaderAttribute>>;
 
 	/**
 	 * Rasterization samples enum.
@@ -430,5 +436,35 @@ namespace Flint
 
 	protected:
 		std::shared_ptr<Device> pDevice = nullptr;
+	};
+}
+
+namespace std
+{
+	template<>
+	struct hash<Flint::ShaderAttribute>
+	{
+		const size_t operator()(const Flint::ShaderAttribute& other) const
+		{
+			return hash<std::string>()(other.mAttributeName) ^ static_cast<UI8>(other.mDataType) ^ other.mLocation;
+		}
+	};
+
+	template<>
+	struct hash<Flint::TShaderAttributeMap>
+	{
+		const size_t operator()(const Flint::TShaderAttributeMap& other) const
+		{
+			size_t hashValue = 0;
+			for (const auto attribute : other)
+			{
+				size_t x = Flint::Hasher::HashDataBlock(attribute.second.data(), sizeof(Flint::ShaderAttribute) * attribute.second.size());
+				size_t y = Flint::Hasher::HashDataBlock(&attribute.first, sizeof(UI32));
+
+				hashValue ^= static_cast<size_t>(0.5 * (x + y) * (x + y + 1) + y);
+			}
+
+			return hashValue;
+		}
 	};
 }

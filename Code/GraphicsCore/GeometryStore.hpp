@@ -28,7 +28,7 @@ namespace Flint
 		 * @param indexSize: The size of a single index in bytes.
 		 * @param profile: The memory profile of the buffer. Default is BufferMemoryProfile::Automatic.
 		 */
-		GeometryStore(const std::shared_ptr<Device>& pDevice, const std::unordered_map<UI32, std::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic);
+		GeometryStore(const std::shared_ptr<Device>& pDevice, const TShaderAttributeMap& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic);
 		~GeometryStore() { if (!bIsTerminated) Terminate(); }
 
 		GeometryStore(const GeometryStore&) = delete;
@@ -99,7 +99,7 @@ namespace Flint
 		 *
 		 * @return The attribute map.
 		 */
-		const std::unordered_map<UI32, std::vector<ShaderAttribute>> GetTheVertexAttributes() const { return mVertexAttribtues; }
+		const TShaderAttributeMap GetTheVertexAttributes() const { return mVertexAttribtues; }
 
 		/**
 		 * Get the size of a single vertex.
@@ -156,7 +156,7 @@ namespace Flint
 		void UnmapIndexBuffer();
 
 	private:
-		std::unordered_map<UI32, std::vector<ShaderAttribute>> mVertexAttribtues = {};
+		TShaderAttributeMap mVertexAttribtues = {};
 
 		std::shared_ptr<Buffer> pVertexBuffer = nullptr;
 		std::shared_ptr<Buffer> pIndexBuffer = nullptr;

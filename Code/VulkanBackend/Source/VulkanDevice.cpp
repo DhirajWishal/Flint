@@ -169,7 +169,7 @@ namespace Flint
 			return std::make_shared<VulkanComputePipeline>(shared_from_this(), pipelineName, pShader);
 		}
 
-		std::shared_ptr<GeometryStore> VulkanDevice::CreateGeometryStore(const std::unordered_map<UI32, std::vector<ShaderAttribute>>& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile)
+		std::shared_ptr<GeometryStore> VulkanDevice::CreateGeometryStore(const TShaderAttributeMap& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile)
 		{
 			return std::make_shared<GeometryStore>(shared_from_this(), vertexAttributes, indexSize, profile);
 		}

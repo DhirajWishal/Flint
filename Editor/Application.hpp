@@ -6,7 +6,7 @@
 #include "GraphicsCore/Device.hpp"
 
 #include "Components/EditorRenderTarget.hpp"
-#include "Components/ClientInterface/ClientLoader.hpp"
+#include "Components/ClientInterface/ClientManager.hpp"
 
 namespace Flint
 {
@@ -28,6 +28,8 @@ namespace Flint
 		void LoadPreviousSession();
 		void SaveCurrentSession();
 
+		void SetDefaultsToInterface(ClientInterface* pInterface);
+
 	private:
 		std::chrono::steady_clock mSteadyClock = {};
 
@@ -37,7 +39,7 @@ namespace Flint
 		std::shared_ptr<Instance> pInstance = nullptr;
 		std::shared_ptr<Device> pDevice = nullptr;
 
-		std::unique_ptr<ClientLoader> pClientLoader = nullptr;
+		std::unique_ptr<ClientManager> pClientManager = nullptr;
 
 		EditorRenderTarget mRenderTarget;
 

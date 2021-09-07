@@ -10,6 +10,15 @@ namespace Flint
 	class ClientInterface;
 
 	/**
+	 * Update specification structure.
+	 * This describes specifications each controller needs to follow when updating.
+	 */
+	struct UpdateSpecification
+	{
+		bool bSkipMousePosition = false;
+	};
+
+	/**
 	 * Flint controller object.
 	 * This is the base class for all the supported client objects.
 	 */
@@ -30,6 +39,14 @@ namespace Flint
 		 * @return The string view.
 		 */
 		const std::string_view GetIdentifier() const { return mIdentifier; }
+
+		/**
+		 * On update function.
+		 * 
+		 * @param specification: The update specification.
+		 * @param delta: The time delta.
+		 */
+		virtual void OnUpdate(const UI64 delta, const UpdateSpecification specification) = 0;
 
 	public:
 		std::string_view mIdentifier = "";

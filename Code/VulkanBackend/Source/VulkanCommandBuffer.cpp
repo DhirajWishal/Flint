@@ -221,6 +221,9 @@ namespace Flint
 
 		void VulkanCommandBuffer::BindResourcePackages(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::vector<std::shared_ptr<ResourcePackage>>& pResourcePackages)
 		{
+			if (pResourcePackages.empty())
+				return;
+
 			std::vector<VkDescriptorSet> vDescriptorSets(pResourcePackages.size());
 			for (UI64 i = 0; i < pResourcePackages.size(); i++)
 			{
@@ -234,6 +237,9 @@ namespace Flint
 
 		void VulkanCommandBuffer::BindResourcePackages(const std::shared_ptr<ComputePipeline>& pPipeline, const std::vector<std::shared_ptr<ResourcePackage>>& pResourcePackages)
 		{
+			if (pResourcePackages.empty())
+				return;
+
 			std::vector<VkDescriptorSet> vDescriptorSets(pResourcePackages.size());
 			for (UI64 i = 0; i < pResourcePackages.size(); i++)
 			{

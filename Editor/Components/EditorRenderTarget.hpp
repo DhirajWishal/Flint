@@ -7,6 +7,8 @@
 #include "GraphicsCore/ScreenBoundRenderTarget.hpp"
 #include "GraphicsCore/CommandBufferAllocator.hpp"
 
+#include "Engine/Client/ClientInterface.hpp"
+
 #include "SceneRenderTarget.hpp"
 
 #include "Demos/VikingRoom.hpp"
@@ -27,7 +29,7 @@ namespace Flint
 
 		bool IsDisplayOpen() const;
 		void PollEvents(UI64 delta);
-		void DrawFrame();
+		void DrawFrame(const ClientInterface* pClient);
 
 		void UpdateUI(const UI64 delta);
 
@@ -36,11 +38,9 @@ namespace Flint
 
 		void SetExtent(const FBox2D extent) { mExtent = extent; }
 		const FBox2D GetExtent() const { return mExtent; }
+		const std::shared_ptr<ScreenBoundRenderTarget> GetRenderTarget() const { return pRenderTarget; }
 
 	private:
-		VikingRoom mVikingRoom = {};
-		Camera mCamera = {};
-
 		FBox2D mExtent = {};
 
 		std::vector<RenderTargetAttachment> mAttachments{ 2 };

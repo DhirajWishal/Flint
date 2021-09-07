@@ -28,4 +28,14 @@ namespace Flint
 	void ClientInterface::RunClient()
 	{
 	}
+
+	std::unordered_map<std::string_view, std::shared_ptr<Controller>> ClientInterface::GetActiveControllers()
+	{
+		return mActiveControllers;
+	}
+
+	const std::unordered_map<std::string_view, std::shared_ptr<Controller>> ClientInterface::GetActiveControllers() const
+	{
+		return mActiveControllers;
+	}
 }

@@ -24,6 +24,7 @@ project "Core"
 
 	includedirs {
 		"$(SolutionDir)Code/",
+		"%{IncludeDir.xxHash}",
 	}
 
 	libdirs {

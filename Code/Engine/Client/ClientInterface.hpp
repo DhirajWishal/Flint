@@ -4,6 +4,7 @@
 #pragma once
 
 #include "Controller.hpp"
+#include "GeometryStoreManager.hpp"
 
 namespace Flint
 {
@@ -13,7 +14,7 @@ namespace Flint
 	 * 
 	 * Once the client is created, the first registered controller will be created. After that the controllers are supposed to create other controllers and keep the logic flow.
 	 */
-	class ClientInterface : public ComponentRegistry
+	class ClientInterface : public ComponentRegistry, public GeometryStoreManager
 	{
 	public:
 		ClientInterface() = default;
@@ -53,6 +54,20 @@ namespace Flint
 		 */
 		void RunClient();
 
+		/**
+		 * Get all the active controllers.
+		 * 
+		 * @return The controller map.
+		 */
+		std::unordered_map<std::string_view, std::shared_ptr<Controller>> GetActiveControllers();
+
+		/**
+		 * Get all the active controllers.
+		 *
+		 * @return The controller map.
+		 */
+		const std::unordered_map<std::string_view, std::shared_ptr<Controller>> GetActiveControllers() const;
+
 	protected:
 		/**
 		 * Register an identifier.
@@ -78,6 +93,11 @@ namespace Flint
 	typedef void (*TDestroyClientFunction)(Flint::ClientInterface*);
 }
 
+#ifdef FLINT_PLATFORM_WINDOWS
+#define EXPORT_FUNCTION			__declspec(dllexport)
+
+#endif
+
 /**
  * Setup the application.
  * Flint requires the applications to be built as executables, and when attached to the editor, it is loaded dynamically and can be debugged. Because of this, the
@@ -91,12 +111,12 @@ namespace Flint
 #define SETUP_APPLICATION(className, ...)															\
 extern "C"																							\
 {																									\
-	__declspec(dllexport) ::Flint::ClientInterface* CreateClient()									\
+	EXPORT_FUNCTION ::Flint::ClientInterface* CreateClient()										\
 	{																								\
 		return new className(__VA_ARGS__);															\
 	}																								\
 	 																								\
-	__declspec(dllexport) void DestroyClient(::Flint::ClientInterface* pClient)						\
+	EXPORT_FUNCTION void DestroyClient(::Flint::ClientInterface* pClient)							\
 	{																								\
 		delete pClient;																				\
 	}																								\

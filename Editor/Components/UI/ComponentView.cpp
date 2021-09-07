@@ -2,6 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "ComponentView.hpp"
+#include "Engine/Client/Controller.hpp"
+#include "Engine/Client/ComponentSystem.hpp"
+#include "Engine/Client/Components/StaticModel.hpp"
+#include "Engine/Client/Components/DrawInstance.hpp"
+#include "Engine/Client/Components/MaterialPipeline.hpp"
+#include "Engine/Client/Components/Camera.hpp"
+#include "Engine/Client/Components/Uniform.hpp"
 
 #include <imgui.h>
 
@@ -11,19 +18,75 @@ namespace Flint
 	{
 		ImGui::Begin("Component View");
 
-		for (const auto components : componentMap)
+		for (auto& controllers : componentMap)
 		{
-			if (components.first == typeid(Components::MaterialPipeline).name() && ImGui::CollapsingHeader("Material Pipelines"))
+			if (ImGui::CollapsingHeader(controllers.first->GetIdentifier().data()))
 			{
-				std::shared_ptr<ComponentStore<Components::MaterialPipeline>> pStore = components.second->StaticCast<ComponentStore<Components::MaterialPipeline>>().shared_from_this();
-
 				ImGui::Indent();
-				for (const auto entry : pStore->GetArray())
+				for (const auto components : controllers.second)
 				{
-					ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), entry.mParentController.data());
-					ImGui::SameLine();
-					ImGui::TextColored(ImVec4(0.0f, 1.0f, 1.0f, 1.0f), entry.mComponentName.data());
-					//ImGui::Text((std::string(entry.mParentController.data()) + " - " + std::string(entry.mComponentName)).c_str());
+					if (components.first == typeid(Components::MaterialPipeline).name() && ImGui::CollapsingHeader("Material Pipelines"))
+					{
+						std::shared_ptr<ComponentStore<Components::MaterialPipeline>> pStore = components.second->StaticCast<ComponentStore<Components::MaterialPipeline>>().shared_from_this();
+
+						ImGui::Indent();
+						for (const auto entry : pStore->GetArray())
+							ImGui::Text(entry.mComponentName.data());
+
+						ImGui::Unindent();
+					}
+
+					if (components.first == typeid(Components::StaticModel).name() && ImGui::CollapsingHeader("Static Models"))
+					{
+						std::shared_ptr<ComponentStore<Components::StaticModel>> pStore = components.second->StaticCast<ComponentStore<Components::StaticModel>>().shared_from_this();
+
+						ImGui::Indent();
+						for (const auto entry : pStore->GetArray())
+							ImGui::Text(entry.mComponentName.data());
+
+						ImGui::Unindent();
+					}
+
+					if (components.first == typeid(Components::DrawInstanceGraphics).name() && ImGui::CollapsingHeader("Draw Instances"))
+					{
+						std::shared_ptr<ComponentStore<Components::DrawInstanceGraphics>> pStore = components.second->StaticCast<ComponentStore<Components::DrawInstanceGraphics>>().shared_from_this();
+
+						ImGui::Indent();
+						for (const auto entry : pStore->GetArray())
+						{
+							if (ImGui::CollapsingHeader(entry.mComponentName.data()))
+							{
+								ImGui::Indent();
+								for (const auto drawData : entry.mDrawData)
+									ImGui::Text(drawData.pWireFrame->GetName().c_str());
+
+								ImGui::Unindent();
+							}
+						}
+						ImGui::Unindent();
+					}
+
+					if (components.first == typeid(Components::Camera).name() && ImGui::CollapsingHeader("Cameras"))
+					{
+						std::shared_ptr<ComponentStore<Components::Camera>> pStore = components.second->StaticCast<ComponentStore<Components::Camera>>().shared_from_this();
+
+						ImGui::Indent();
+						for (auto& entry : pStore->GetArray())
+							ImGui::Text(entry.mComponentName.data());
+
+						ImGui::Unindent();
+					}
+
+					if (components.first == typeid(Components::ModelViewProjectionUniform).name() && ImGui::CollapsingHeader("Model View Projection"))
+					{
+						std::shared_ptr<ComponentStore<Components::ModelViewProjectionUniform>> pStore = components.second->StaticCast<ComponentStore<Components::ModelViewProjectionUniform>>().shared_from_this();
+
+						ImGui::Indent();
+						for (auto& entry : pStore->GetArray())
+							ImGui::Text(entry.mComponentName.data());
+
+						ImGui::Unindent();
+					}
 				}
 
 				ImGui::Unindent();

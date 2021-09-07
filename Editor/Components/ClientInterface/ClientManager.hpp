@@ -8,21 +8,25 @@
 namespace Flint
 {
 	/**
-	 * Flint client loader object.
+	 * Flint client manager object.
 	 * This object acts as a wrapper to the client application upon loading.
 	 */
-	class ClientLoader
+	class ClientManager
 	{
 	public:
-		ClientLoader(const std::filesystem::path& executable);
-		~ClientLoader();
+		ClientManager(const std::filesystem::path& executable);
+		~ClientManager();
 
+		void InitializeClient();
+		void Update();
+
+		ClientInterface* GetInterface() { return pClientInterface; }
 		const ClientInterface* GetInterface() const { return pClientInterface; }
 
 	private:
-		void InitializeClient();
+		std::filesystem::path mExecutablePath = {};
+		std::filesystem::file_time_type mLastWriteTime = {};
 
-	private:
 		ClientInterface* pClientInterface = nullptr;
 
 		TCreateClientFunction mCreateClientFunction = nullptr;

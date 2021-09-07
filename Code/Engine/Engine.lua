@@ -24,6 +24,7 @@ project "FlintEngine"
 
 	includedirs {
 		"$(SolutionDir)Code/",
+		"%{IncludeDir.glm}",
 		"%{IncludeDir.Assimp}",
 		"%{IncludeDir.shaderc}",
 	}
