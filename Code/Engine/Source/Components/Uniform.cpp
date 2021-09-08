@@ -1,7 +1,7 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#include "Engine/Client/Components/Uniform.hpp"
+#include "Engine/Components/Uniform.hpp"
 #include "GraphicsCore/Device.hpp"
 
 namespace Flint

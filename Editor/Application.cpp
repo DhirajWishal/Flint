@@ -82,7 +82,7 @@ namespace Flint
 				pClientManager->Update();
 
 				auto pInterface = pClientManager->GetInterface();
-				ControllerView controllerView(pInterface->GetClassIdentifiers());
+				ControllerView controllerView(pInterface);
 				ComponentView componentView(pInterface->GetComponentMap());
 				GlobalComponentView globalComponentView(pInterface->GetGlobalComponentMap());
 

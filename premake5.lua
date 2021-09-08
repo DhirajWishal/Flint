@@ -66,6 +66,7 @@ workspace "Flint"
 
 	group "Code"
 		include "Code/Core/Core.lua"
+		include "Code/Debugger/Debugger.lua"
 		include "Code/Engine/Engine.lua"
 		include "Code/GraphicsCore/GraphicsCore.lua"
 		include "Code/VulkanBackend/VulkanBackend.lua"

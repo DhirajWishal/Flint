@@ -28,8 +28,6 @@
 #define I32_MAX								std::numeric_limits<I32>::max()
 #define I64_MAX								std::numeric_limits<I64>::max()
 
-#define BIT_SHIFT(count)					(1 << count)
-
 #define __TO_STRING__(...)					#__VA_ARGS__
 #define TO_STRING(...)						__TO_STRING__(__VA_ARGS__)
 

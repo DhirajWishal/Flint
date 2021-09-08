@@ -3,12 +3,12 @@
 
 #pragma once
 
-#include "Engine/Client/Controller.hpp"
+#include "Engine/Controller.hpp"
 
-#include "Engine/Client/Components/MaterialPipeline.hpp"
-#include "Engine/Client/Components/StaticModel.hpp"
-#include "Engine/Client/Components/DrawInstance.hpp"
-#include "Engine/Client/Components/Uniform.hpp"
+#include "Engine/Components/MaterialPipeline.hpp"
+#include "Engine/Components/StaticModel.hpp"
+#include "Engine/Components/DrawInstance.hpp"
+#include "Engine/Components/Uniform.hpp"
 
 class BasicController final : public Flint::Controller
 {

@@ -5,7 +5,7 @@
 
 #include "GraphicsCore/Instance.hpp"
 
-#include "Engine/Client/Components/DrawInstance.hpp"
+#include "Engine/Components/DrawInstance.hpp"
 
 namespace Flint
 {

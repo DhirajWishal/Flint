@@ -188,10 +188,10 @@ namespace Flint
 	 * Color write mask enum.
 	 */
 	enum class ColorWriteMask : UI8 {
-		R = BIT_SHIFT(0),
-		G = BIT_SHIFT(1),
-		B = BIT_SHIFT(2),
-		A = BIT_SHIFT(3),
+		R = BitShiftLeft(0),
+		G = BitShiftLeft(1),
+		B = BitShiftLeft(2),
+		A = BitShiftLeft(3),
 	};
 
 	/**

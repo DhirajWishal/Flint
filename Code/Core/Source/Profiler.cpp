@@ -81,7 +81,7 @@ namespace Flint
 	}
 
 #else
-	Profiler::Profiler(const char* pFunctionSignature)
+	Profiler::Profiler(std::string_view functionSignature)
 	{
 	}
 

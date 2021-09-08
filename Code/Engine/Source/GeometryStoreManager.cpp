@@ -1,7 +1,7 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#include "Engine/Client/GeometryStoreManager.hpp"
+#include "Engine/GeometryStoreManager.hpp"
 #include "Engine/AssetLoader.hpp"
 
 namespace Flint

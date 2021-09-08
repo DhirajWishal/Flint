@@ -126,4 +126,6 @@ namespace Flint
 	typedef FExtent3D<UI32> FBox3D;
 
 	constexpr float CreateColor256(float color) { return color / 256.0f; }
+	constexpr UI64 BitShiftLeft(UI64 count) { return static_cast<UI64>(1) << count; }
+	constexpr UI64 BitShiftRight(UI64 count) { return static_cast<UI64>(1) << count; }
 }

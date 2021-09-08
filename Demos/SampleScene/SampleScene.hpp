@@ -3,12 +3,13 @@
 
 #pragma once
 
-#include "Engine/Client/ClientInterface.hpp"
+#include "Engine/Engine.hpp"
 
-class SampleScene final : public Flint::ClientInterface
+class SampleScene
 {
 public:
 	SampleScene();
 
-	virtual std::shared_ptr<Flint::Controller> CreateController(const std::string_view& identifier) override final;
+private:
+	Flint::Engine mEngine = {};
 };

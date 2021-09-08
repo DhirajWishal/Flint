@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "CameraController.hpp"
-#include "Engine/Client/ClientInterface.hpp"
+#include "Engine/ClientInterface.hpp"
 #include "GraphicsCore/ScreenBoundRenderTarget.hpp"
 
 CameraController::CameraController(Flint::ClientInterface* pClientInterface)

@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Engine/Client/ClientInterface.hpp"
+#include "Engine/ClientInterface.hpp"
 
 namespace Flint
 {

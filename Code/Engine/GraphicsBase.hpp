@@ -6,7 +6,8 @@
 #include "GraphicsCore/Device.hpp"
 #include "GraphicsCore/Display.hpp"
 
-#include "Engine/ShaderCompiler.hpp"
+#include "ShaderCompiler.hpp"
+#include "PluginManager.hpp"
 
 namespace Flint
 {
@@ -14,7 +15,7 @@ namespace Flint
 	 * Flint graphics base class.
 	 * This is the base class for the flint graphics engine and contains all the basic information required.
 	 */
-	class GraphicsBase
+	class GraphicsBase : public PluginManager
 	{
 	public:
 		GraphicsBase() = default;
@@ -62,7 +63,7 @@ namespace Flint
 
 		/**
 		 * Get the default device pointer.
-		 * 
+		 *
 		 * @return The device pointer.
 		 */
 		const std::shared_ptr<Device> GetDefaultDevice() const;
@@ -100,7 +101,7 @@ namespace Flint
 
 		/**
 		 * Get the screen bound render target.
-		 * 
+		 *
 		 * @param name: The name of the render target.
 		 * @return The render target pointer.
 		 */
@@ -108,7 +109,7 @@ namespace Flint
 
 		/**
 		 * Get the default screen bound render target.
-		 * 
+		 *
 		 * @return The render target pointer.
 		 */
 		const std::shared_ptr<ScreenBoundRenderTarget> GetDefaultScreenBoundRenderTarget() const;

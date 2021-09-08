@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "BasicController.hpp"
-#include "Engine/Client/ClientInterface.hpp"
+#include "Engine/ClientInterface.hpp"
 #include "GraphicsCore/ResourcePackager.hpp"
 #include "GraphicsCore/ScreenBoundRenderTarget.hpp"
-#include "Engine/Client/Components/Camera.hpp"
+#include "Engine/Components/Camera.hpp"
 
 BasicController::BasicController(Flint::ClientInterface* pClientInterface)
 	: Flint::Controller("BasicController", pClientInterface), pDynamicStates(std::make_shared<Flint::DynamicStateContainer>())

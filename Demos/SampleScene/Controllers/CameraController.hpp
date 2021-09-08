@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "Engine/Client/Controller.hpp"
-#include "Engine/Client/Components/Camera.hpp"
+#include "Engine/Controller.hpp"
+#include "Engine/Components/Camera.hpp"
 
 class CameraController final : public Flint::Controller
 {

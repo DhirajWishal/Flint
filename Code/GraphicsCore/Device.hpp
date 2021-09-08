@@ -40,22 +40,22 @@ namespace Flint
 		/**
 		 * This flag states to use external device (GPU) if available over integrated.
 		 */
-		External = BIT_SHIFT(0),
+		External = BitShiftLeft(0),
 
 		/**
 		 * This flag states to use only the integrated device if available. If an integrated one doesn't exist but an external one exists, it will automatically select the external device.
 		 */
-		 Intergrated = BIT_SHIFT(1),
+		 Intergrated = BitShiftLeft(1),
 
 		 /**
 		  * State that the device is used for graphics. This is a must if graphics needs to be enabled.
 		  */
-		  GraphicsCompatible = BIT_SHIFT(2),
+		  GraphicsCompatible = BitShiftLeft(2),
 
 		  /**
 		   * This states the device is used for compute.
 		   */
-		   ComputeCompatible = BIT_SHIFT(3)
+		   ComputeCompatible = BitShiftLeft(3)
 	};
 
 	constexpr DeviceFlags operator|(const DeviceFlags& lhs, const DeviceFlags& rhs) { return DeviceFlags(static_cast<UI8>(lhs) | static_cast<UI8>(rhs)); }

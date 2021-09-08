@@ -114,10 +114,10 @@ namespace Flint
 	 * Image usage enum.
 	 */
 	enum class ImageUsage : UI8 {
-		Graphics = BIT_SHIFT(0),
-		Storage = BIT_SHIFT(1),
-		Depth = BIT_SHIFT(2),
-		Color = BIT_SHIFT(3)
+		Graphics = BitShiftLeft(0),
+		Storage = BitShiftLeft(1),
+		Depth = BitShiftLeft(2),
+		Color = BitShiftLeft(3)
 	};
 
 	/**
@@ -340,13 +340,13 @@ namespace Flint
 	 * Rasterization samples enum.
 	 */
 	enum class MultiSampleCount : UI8 {
-		One = BIT_SHIFT(0),
-		Two = BIT_SHIFT(1),
-		Four = BIT_SHIFT(2),
-		Eight = BIT_SHIFT(3),
-		Sixteen = BIT_SHIFT(4),
-		ThirtyTwo = BIT_SHIFT(5),
-		SixtyFour = BIT_SHIFT(6),
+		One = BitShiftLeft(0),
+		Two = BitShiftLeft(1),
+		Four = BitShiftLeft(2),
+		Eight = BitShiftLeft(3),
+		Sixteen = BitShiftLeft(4),
+		ThirtyTwo = BitShiftLeft(5),
+		SixtyFour = BitShiftLeft(6),
 	};
 
 	/**

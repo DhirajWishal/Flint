@@ -1,7 +1,7 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#include "Engine/Client/GraphicsBase.hpp"
+#include "Engine/GraphicsBase.hpp"
 #include "GraphicsCore/Instance.hpp"
 #include "Engine/ShaderCompiler.hpp"
 

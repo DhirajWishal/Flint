@@ -13,12 +13,12 @@ namespace Flint
 	 */
 	enum class DynamicStateFlags : UI8 {
 		Undefined,
-		ViewPort = BIT_SHIFT(0),
-		Scissor = BIT_SHIFT(1),
-		LineWidth = BIT_SHIFT(2),
-		DepthBias = BIT_SHIFT(3),
-		BlendConstants = BIT_SHIFT(4),
-		DepthBounds = BIT_SHIFT(5),
+		ViewPort = BitShiftLeft(0),
+		Scissor = BitShiftLeft(1),
+		LineWidth = BitShiftLeft(2),
+		DepthBias = BitShiftLeft(3),
+		BlendConstants = BitShiftLeft(4),
+		DepthBounds = BitShiftLeft(5),
 	};
 
 	/**

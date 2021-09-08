@@ -7,7 +7,7 @@
 #include "GraphicsCore/ScreenBoundRenderTarget.hpp"
 #include "GraphicsCore/CommandBufferAllocator.hpp"
 
-#include "Engine/Client/ClientInterface.hpp"
+#include "Engine/ClientInterface.hpp"
 
 #include "SceneRenderTarget.hpp"
 

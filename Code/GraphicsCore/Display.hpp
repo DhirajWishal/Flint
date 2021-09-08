@@ -89,12 +89,12 @@ namespace Flint
 	 * Special characters enum.
 	 */
 	enum class SpecialCharacter : UI8 {
-		Shift = BIT_SHIFT(0),
-		Control = BIT_SHIFT(1),
-		Alt = BIT_SHIFT(2),
-		Super = BIT_SHIFT(3),
-		CapsLock = BIT_SHIFT(4),
-		NumLock = BIT_SHIFT(5)
+		Shift = BitShiftLeft(0),
+		Control = BitShiftLeft(1),
+		Alt = BitShiftLeft(2),
+		Super = BitShiftLeft(3),
+		CapsLock = BitShiftLeft(4),
+		NumLock = BitShiftLeft(5)
 	};
 
 	constexpr SpecialCharacter operator|(const SpecialCharacter& lhs, const SpecialCharacter& rhs) { return SpecialCharacter(static_cast<UI8>(lhs) | static_cast<UI8>(rhs)); }
