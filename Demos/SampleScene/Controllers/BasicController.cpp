@@ -16,13 +16,13 @@ BasicController::BasicController(Flint::ClientInterface* pClientInterface)
 	SetupStaticModel();
 	SetupDrawInstance();
 
-	mUniformMVP = pClientInterface->CreateComponent<Flint::Components::ModelViewProjectionUniform>(this, "Main Camera", pClientInterface->GetDefaultDevice());
+	mUniformMVP = pClientInterface->CreateComponent<Flint::Components::ModelViewProjectionUniform>("Main Camera", pClientInterface->GetDefaultDevice());
 	pPackage->BindResource(0, mUniformMVP->pUniformBuffer);
 }
 
 void BasicController::OnUpdate(const UI64 delta, const Flint::UpdateSpecification specification)
 {
-	Flint::Components::Camera* pCamera = pClientInterface->GetGlobalComponent<Flint::Components::Camera>("DefaultCamera");
+	Flint::Components::Camera* pCamera = pClientInterface->GetComponent<Flint::Components::Camera>("DefaultCamera");
 	auto pUniform = mUniformMVP.GetComponent();
 
 	pUniform->mMatrix.mProjection = pCamera->mViewProjection.mProjectionMatrix;
@@ -32,7 +32,7 @@ void BasicController::OnUpdate(const UI64 delta, const Flint::UpdateSpecificatio
 
 void BasicController::SetupMaterialPipeline()
 {
-	mMaterialHandle = pClientInterface->CreateComponent<Flint::Components::MaterialPipeline>(this, "Basic component");
+	mMaterialHandle = pClientInterface->CreateComponent<Flint::Components::MaterialPipeline>("Basic component");
 
 	auto pRenderTarget = pClientInterface->GetDefaultScreenBoundRenderTarget();
 	auto pMaterialPipeline = mMaterialHandle.GetComponent();
@@ -57,13 +57,13 @@ void BasicController::SetupMaterialPipeline()
 
 void BasicController::SetupStaticModel()
 {
-	mStaticModelHandle = pClientInterface->CreateComponent<Flint::Components::StaticModel>(this, "Basic static model");
+	mStaticModelHandle = pClientInterface->CreateComponent<Flint::Components::StaticModel>("Basic static model");
 	pClientInterface->LoadStaticGeometry(mStaticModelHandle, "E:\\Flint\\Assets\\Packages\\Tree001\\Tree01\\Tree1\\Tree1.obj", mMaterialHandle->pVertexShader, Flint::Defaults::CreateDefaultVertexDescriptor());
 }
 
 void BasicController::SetupDrawInstance()
 {
-	mDrawInstance = pClientInterface->CreateComponent<Flint::Components::DrawInstanceGraphics>(this, "Model Draw", mStaticModelHandle->pGeometryStore, mMaterialHandle->pPipeline);
+	mDrawInstance = pClientInterface->CreateComponent<Flint::Components::DrawInstanceGraphics>("Model Draw", mStaticModelHandle->pGeometryStore, mMaterialHandle->pPipeline);
 	auto pDrawInstance = mDrawInstance.GetComponent();
 
 	for (auto& wireFrame : mStaticModelHandle->mWireFrames)

@@ -8,7 +8,7 @@
 CameraController::CameraController(Flint::ClientInterface* pClientInterface)
 	: Controller("Camera Controller", pClientInterface)
 {
-	mCameraHandle = pClientInterface->CreateGlobalComponent<Flint::Components::Camera>("DefaultCamera", "Default Camera");
+	mCameraHandle = pClientInterface->CreateComponent<Flint::Components::Camera>("DefaultCamera");
 }
 
 void CameraController::OnUpdate(const UI64 delta, const Flint::UpdateSpecification specification)

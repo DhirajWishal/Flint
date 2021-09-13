@@ -32,6 +32,7 @@ namespace Flint
 			{
 				ImGui::Indent();
 
+				/*
 				{
 					auto pStore = pInterface->FindComponentStore<Components::StaticModel>(pController.second.get());
 					if (pStore && ImGui::CollapsingHeader("Static Model"))
@@ -99,7 +100,7 @@ namespace Flint
 						ImGui::Unindent();
 					}
 				}
-
+				*/
 				ImGui::Unindent();
 			}
 		}

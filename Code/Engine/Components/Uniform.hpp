@@ -14,7 +14,7 @@ namespace Flint
 		/**
 		 * Uniform buffer structure.
 		 */
-		struct UniformBuffer : public ComponentBase
+		struct UniformBuffer
 		{
 			std::shared_ptr<Buffer> pUniformBuffer = nullptr;
 		};
@@ -32,9 +32,10 @@ namespace Flint
 		/**
 		 * Model view projection uniform.
 		 */
-		struct ModelViewProjectionUniform : public ComponentBase
+		struct ModelViewProjectionUniform
 		{
-			ModelViewProjectionUniform(const std::string_view& componentName, const std::shared_ptr<Device>& pDevice);
+			ModelViewProjectionUniform() = default;
+			ModelViewProjectionUniform(const std::shared_ptr<Device>& pDevice);
 
 			MatrixMVP mMatrix = {};
 			std::shared_ptr<Buffer> pUniformBuffer = nullptr;

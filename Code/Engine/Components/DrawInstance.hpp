@@ -16,6 +16,7 @@ namespace Flint
 	{
 		struct DrawData
 		{
+			DrawData() = default;
 			DrawData(const WireFrame* pWireFrame, const std::vector<std::shared_ptr<ResourcePackage>>& pPackages, const std::shared_ptr<DynamicStateContainer>& pDynamicStates)
 				: pWireFrame(pWireFrame), pResourcePackages(pPackages), pDynamicStateContainer(pDynamicStates) {}
 
@@ -27,12 +28,13 @@ namespace Flint
 		/**
 		 * Draw instance graphics structure.
 		 */
-		struct DrawInstanceGraphics : public ComponentBase
+		struct DrawInstanceGraphics
 		{
-			DrawInstanceGraphics(const std::string_view& componentName, const std::shared_ptr<GeometryStore>& pGeometryStore, const std::shared_ptr<GraphicsPipeline>& pPipeline) 
-				: ComponentBase(componentName), pGeometryStore(pGeometryStore), pGraphicsPipeline(pPipeline) {}
+			DrawInstanceGraphics() = default;
+			DrawInstanceGraphics(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::shared_ptr<GraphicsPipeline>& pPipeline)
+				: pGeometryStore(pGeometryStore), pGraphicsPipeline(pPipeline) {}
 
-			void AddDrawData(const WireFrame* pWireFrame, const std::vector<std::shared_ptr<ResourcePackage>>& pPackages, const std::shared_ptr<DynamicStateContainer>& pDynamicStates) 
+			void AddDrawData(const WireFrame* pWireFrame, const std::vector<std::shared_ptr<ResourcePackage>>& pPackages, const std::shared_ptr<DynamicStateContainer>& pDynamicStates)
 			{
 				mDrawData.push_back(DrawData(pWireFrame, pPackages, pDynamicStates));
 			}

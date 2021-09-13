@@ -23,11 +23,15 @@ project "VulkanBackend"
 
 		"$(SolutionDir)ThirdParty/SPIRV-Reflect/spirv_reflect.c",
 		"$(SolutionDir)ThirdParty/SPIRV-Reflect/spirv_reflect.h",
+
+		"$(SolutionDir)ThirdParty/volk/volk.c",
+		"$(SolutionDir)ThirdParty/volk/volk.h",
 	}
 
 	includedirs {
 		"$(SolutionDir)Code/",
 		"$(SolutionDir)ThirdParty/SPIRV-Reflect",
+		"%{IncludeDir.volk}",
 		"%{IncludeDir.Vulkan}",
 		"%{IncludeDir.GLFW}",
 	}

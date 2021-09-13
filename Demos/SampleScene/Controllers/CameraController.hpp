@@ -17,7 +17,7 @@ private:
 	void ProcessMouse(Flint::FExtent2D<float> position);
 
 private:
-	Flint::GlobalComponentHandle<Flint::Components::Camera> mCameraHandle = {};
+	Flint::ComponentHandle<Flint::Components::Camera> mCameraHandle = {};
 	float mMovementBias = 0.5f;
 	float mLastX = 0.0f, mLastY = 0.0f;
 

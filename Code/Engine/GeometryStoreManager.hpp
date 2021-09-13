@@ -4,7 +4,7 @@
 #pragma once
 
 #include "Components/StaticModel.hpp"
-#include "ComponentSystem.hpp"
+#include "ComponentSystem/ComponentRegistry.hpp"
 #include "GraphicsBase.hpp"
 #include "Engine/AssetLoader.hpp"
 

@@ -14,10 +14,8 @@ namespace Flint
 		/**
 		 * Static model structure.
 		 */
-		struct StaticModel : public ComponentBase
+		struct StaticModel 
 		{
-			StaticModel(const std::string_view& componentName) : ComponentBase(componentName) {}
-
 			std::vector<WireFrame> mWireFrames = {};
 			std::shared_ptr<GeometryStore> pGeometryStore = nullptr;
 		};

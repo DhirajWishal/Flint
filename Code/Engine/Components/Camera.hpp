@@ -25,10 +25,8 @@ namespace Flint
 			glm::vec3 mWorldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 		};
 
-		struct Camera : public ComponentBase
+		struct Camera
 		{
-			Camera(const std::string_view& componentName) : ComponentBase(componentName) {}
-
 			ViewProjectionMatrix mViewProjection;
 			CameraVectors mCameraVectors;
 

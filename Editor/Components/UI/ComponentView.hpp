@@ -3,14 +3,14 @@
 
 #pragma once
 
-#include "Engine/ComponentRegistry.hpp"
+#include "Engine/ComponentSystem/ComponentRegistry.hpp"
 
 namespace Flint
 {
 	class ComponentView
 	{
 	public:
-		ComponentView(const TComponentMap& componentMap);
+		ComponentView(const TComponentStore& componentMap);
 		~ComponentView();
 	};
 }

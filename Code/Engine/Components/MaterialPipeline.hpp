@@ -13,10 +13,8 @@ namespace Flint
 		/**
 		 * Material pipeline structure.
 		 */
-		struct MaterialPipeline final : public ComponentBase
+		struct MaterialPipeline
 		{
-			MaterialPipeline(const std::string_view& name) : ComponentBase(name) {}
-
 			std::shared_ptr<GraphicsPipeline> pPipeline = nullptr;
 			std::shared_ptr<Shader> pVertexShader = nullptr;
 			std::shared_ptr<Shader> pFragmentShader = nullptr;

@@ -12,7 +12,6 @@
 #include "Components/UI/DockerMenuBar.hpp"
 #include "Components/UI/ControllerView.hpp"
 #include "Components/UI/ComponentView.hpp"
-#include "Components/UI/GlobalComponentView.hpp"
 
 #include <ImGuizmo.h>
 #include <fstream>
@@ -82,9 +81,9 @@ namespace Flint
 				pClientManager->Update();
 
 				auto pInterface = pClientManager->GetInterface();
-				ControllerView controllerView(pInterface);
-				ComponentView componentView(pInterface->GetComponentMap());
-				GlobalComponentView globalComponentView(pInterface->GetGlobalComponentMap());
+				//ControllerView controllerView(pInterface);
+				ComponentView componentView(pInterface->GetComponentStores());
+				//GlobalComponentView globalComponentView(pInterface->GetGlobalComponentMap());
 
 				UpdateSpecification spec = {};
 				spec.bSkipMousePosition = ImGui::GetIO().WantCaptureMouse;

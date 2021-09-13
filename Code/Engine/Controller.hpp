@@ -3,7 +3,8 @@
 
 #pragma once
 
-#include "ComponentRegistry.hpp"
+#include "Core/FObject.hpp"
+#include "ComponentSystem/ComponentRegistry.hpp"
 
 namespace Flint
 {

@@ -112,41 +112,19 @@ namespace Flint
 		if (pClient)
 		{
 			// Draw the globals.
-			auto pGlobalComponentStore = pClient->FindGlobalComponentStore<Components::DrawInstanceGraphics>();
+			auto pGlobalComponentStore = pClient->GetComponentStore<Components::DrawInstanceGraphics>();
 			if (pGlobalComponentStore)
 			{
-				for (auto& component : pGlobalComponentStore->GetArray())
+				for (auto& component : *pGlobalComponentStore)
 				{
-					pSecondaryCommandBuffer->BindGeometryStore(component.pGeometryStore);
-					pSecondaryCommandBuffer->BindGraphicsPipeline(component.pGraphicsPipeline);
+					pSecondaryCommandBuffer->BindGeometryStore(component.second.pGeometryStore);
+					pSecondaryCommandBuffer->BindGraphicsPipeline(component.second.pGraphicsPipeline);
 
-					for (auto& drawData : component.mDrawData)
+					for (auto& drawData : component.second.mDrawData)
 					{
-						pSecondaryCommandBuffer->BindDynamicStates(component.pGraphicsPipeline, drawData.pDynamicStateContainer);
-						pSecondaryCommandBuffer->BindResourcePackages(component.pGraphicsPipeline, drawData.pResourcePackages);
+						pSecondaryCommandBuffer->BindDynamicStates(component.second.pGraphicsPipeline, drawData.pDynamicStateContainer);
+						pSecondaryCommandBuffer->BindResourcePackages(component.second.pGraphicsPipeline, drawData.pResourcePackages);
 						pSecondaryCommandBuffer->IssueDrawCall(*drawData.pWireFrame);
-					}
-				}
-			}
-
-			// Draw the privates.
-			auto& componentMap = pClient->GetComponentMap();
-			for (auto& controller : componentMap)
-			{
-				auto pComponentStore = pClient->FindComponentStore<Components::DrawInstanceGraphics>(controller.first);
-				if (pComponentStore)
-				{
-					for (auto& component : pComponentStore->GetArray())
-					{
-						pSecondaryCommandBuffer->BindGeometryStore(component.pGeometryStore);
-						pSecondaryCommandBuffer->BindGraphicsPipeline(component.pGraphicsPipeline);
-
-						for (auto& drawData : component.mDrawData)
-						{
-							pSecondaryCommandBuffer->BindDynamicStates(component.pGraphicsPipeline, drawData.pDynamicStateContainer);
-							pSecondaryCommandBuffer->BindResourcePackages(component.pGraphicsPipeline, drawData.pResourcePackages);
-							pSecondaryCommandBuffer->IssueDrawCall(*drawData.pWireFrame);
-						}
 					}
 				}
 			}

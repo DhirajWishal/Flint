@@ -8,6 +8,17 @@
 
 SampleScene::SampleScene()
 {
-	mEngine.CreateInstance(true);
-	mEngine.CreateNewDevice(Flint::DeviceFlags::External | Flint::DeviceFlags::GraphicsCompatible | Flint::DeviceFlags::ComputeCompatible);
+	RegisterIdentifier("BasicController");
+	RegisterIdentifier("CameraController");
+}
+
+std::shared_ptr<Flint::Controller> SampleScene::CreateController(const std::string_view& identifier)
+{
+	if (identifier == "BasicController")
+		return std::make_shared<BasicController>(this);
+
+	else if (identifier == "CameraController")
+		return std::make_shared<CameraController>(this);
+
+	return std::shared_ptr<Flint::Controller>();
 }
