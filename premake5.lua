@@ -76,5 +76,9 @@ workspace "Flint"
 
 	group "Demos"
 		include "Demos/SampleScene/SampleScene.lua"
+
+		group"Demos/Tests"
+			include "Demos/Tests/TestBase/TestBase.lua"
 		
+		group ""
 	group ""
