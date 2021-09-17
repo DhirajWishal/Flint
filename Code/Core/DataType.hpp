@@ -116,6 +116,7 @@ namespace Flint
 	struct FColor4D
 	{
 		FColor4D() = default;
+		FColor4D(float value) : mRed(value), mGreen(value), mBlue(value), mAlpha(value) {}
 		FColor4D(float red, float green, float blue, float alpha)
 			: mRed(red), mGreen(green), mBlue(blue), mAlpha(alpha) {}
 

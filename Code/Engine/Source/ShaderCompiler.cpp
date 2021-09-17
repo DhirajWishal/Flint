@@ -3,18 +3,12 @@
 
 #include "Engine/ShaderCompiler.hpp"
 
+#include "GraphicsCore/Device.hpp"
+
 #include <shaderc/shaderc.hpp>
 
 #include <fstream>
 #include <iostream>
-
-const char* bank =
-"																										\
-vec4 CalculatePosition(mat4 projection, mat4 view, mat4 model, vec3 position, float factor = 1.0f)		\
-{																										\
-	return projection * view * model * vec4(inPos, factor);												\
-}																										\
-";
 
 namespace Flint
 {
@@ -104,7 +98,7 @@ namespace Flint
 	}
 
 	ShaderCompiler::ShaderCompiler(const std::filesystem::path& shaderFile, const ShaderCodeType codeType, const ShaderType shaderType)
-		: mCodeType(codeType)
+		: mCodeType(codeType), mType(shaderType)
 	{
 		// Load the shade file.
 		std::ifstream file(shaderFile, std::ios::in | std::ios::binary | std::ios::ate);
@@ -124,8 +118,7 @@ namespace Flint
 		shaderc::Compiler compiler;
 		shaderc::SpvCompilationResult result;
 		shaderc::CompileOptions options;
-
-		//options.SetOptimizationLevel(shaderc_optimization_level::shaderc_optimization_level_performance);
+		options.SetOptimizationLevel(shaderc_optimization_level::shaderc_optimization_level_performance);
 
 		// Compile the shader.
 		if (codeType == ShaderCodeType::GLSL)
@@ -145,12 +138,12 @@ namespace Flint
 	}
 
 	ShaderCompiler::ShaderCompiler(const std::string& shaderCode, const ShaderCodeType codeType, const ShaderType shaderType)
-		: mCodeType(codeType)
+		: mCodeType(codeType), mType(shaderType)
 	{
 		shaderc::Compiler compiler;
 		shaderc::SpvCompilationResult result;
 		shaderc::CompileOptions options;
-		//options.SetOptimizationLevel(shaderc_optimization_level::shaderc_optimization_level_performance);
+		options.SetOptimizationLevel(shaderc_optimization_level::shaderc_optimization_level_performance);
 
 		// Compile the shader.
 		if (codeType == ShaderCodeType::GLSL)
@@ -167,5 +160,10 @@ namespace Flint
 		// Insert the compiled shader code.
 		mShaderCode.resize(std::distance(result.begin(), result.end()) * sizeof(UI32));
 		std::copy(reinterpret_cast<const unsigned char*>(result.begin()), reinterpret_cast<const unsigned char*>(result.end()), reinterpret_cast<unsigned char*>(mShaderCode.data()));
+	}
+	
+	std::shared_ptr<Shader> ShaderCompiler::CreateShader(const std::shared_ptr<Device>& pDevice) const
+	{
+		return pDevice->CreateShader(mType, GetShaderCode());
 	}
 }

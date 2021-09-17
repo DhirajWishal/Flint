@@ -309,5 +309,14 @@ namespace Flint
 
 			return vDescriptor;
 		}
+		
+		VertexDescriptor CreateSkyBoxVertexDescriptor()
+		{
+			Flint::VertexDescriptor vDescriptor = {};
+			vDescriptor.mAttributes.push_back(Flint::VertexAttribute(sizeof(float) * 3, Flint::VertexAttributeType::Position));
+			vDescriptor.mAttributes.push_back(Flint::VertexAttribute(sizeof(float) * 2, Flint::VertexAttributeType::TextureCoordinatesZero));
+
+			return vDescriptor;
+		}
 	}
 }

@@ -4,14 +4,14 @@
 ---------- Test Base project description ----------
 
 project "TestBase"
-	kind "ConsoleApp"
+	kind "StaticLib"
 	cppdialect "C++17"
 	language "C++"
 	systemversion "latest"
 	staticruntime "on"
 
-	targetdir "$(SolutionDir)Builds/Editor/Binaries/$(ProjectName)/$(Configuration)"
-	objdir "$(SolutionDir)Builds/Editor/Intermediate/$(ProjectName)/$(Configuration)"
+	targetdir "$(SolutionDir)Builds/Demos/Binaries/$(ProjectName)/$(Configuration)"
+	objdir "$(SolutionDir)Builds/Demos/Intermediate/$(ProjectName)/$(Configuration)"
 
 	defines { "FLINT_SOLUTION_DIR=$(SolutionDir)" }
 
@@ -51,7 +51,7 @@ project "TestBase"
 
 	includedirs {
 		"$(SolutionDir)Code",
-		"$(SolutionDir)Editor",
+		"$(SolutionDir)Demos/Tests",
 		"%{IncludeDir.ImGuizmo}",
 		"%{IncludeDir.imgui}",
 		"%{IncludeDir.glm}",

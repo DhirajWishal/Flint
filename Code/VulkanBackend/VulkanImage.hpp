@@ -25,6 +25,7 @@ namespace Flint
 				const MultiSampleCount sampleCount = MultiSampleCount::One);
 			~VulkanImage() { if (!bIsTerminated) Terminate(); }
 
+			virtual void GenerateMipMaps() override final;
 			virtual std::shared_ptr<Buffer> CopyToBuffer() override final;
 			virtual void Terminate() override final;
 
@@ -33,7 +34,7 @@ namespace Flint
 		public:
 			virtual void Recreate(const FBox2D& extent);
 
-			virtual VkImageLayout GetImageLayout() const { return vCurrentLayout; }
+			virtual VkImageLayout GetImageLayout(ImageUsage usage = ImageUsage(-1)) const;
 			virtual VkAttachmentDescription GetAttachmentDescription() const override final;
 			virtual VkImageLayout GetAttachmentLayout() const override final;
 			virtual VkImageView GetImageView(UI32 index) const override final;
@@ -51,7 +52,9 @@ namespace Flint
 			void CreateImage();
 			void CreateImageMemory();
 			void CreateImageView();
-			void GenerateMipMaps();
+
+			void GenerateDefaultMipChain();
+			void GenerateCubeMapMipChain();
 
 			void Initialize(const void* pImageData);
 
@@ -60,7 +63,7 @@ namespace Flint
 			VkDeviceMemory vImageMemory = VK_NULL_HANDLE;
 			VkImageView vImageView = VK_NULL_HANDLE;
 
-			VkImageLayout vCurrentLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+			mutable VkImageLayout vCurrentLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 		};
 	}
 }

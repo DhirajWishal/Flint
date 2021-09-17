@@ -4,13 +4,15 @@
 #include "GraphicsScene.hpp"
 
 #include "GraphicsCore/Instance.hpp"
+#include "GraphicsCore/CommandBufferAllocator.hpp"
 
 namespace Flint
 {
-	GraphicsScene::GraphicsScene(ApplicationState* pState, const FBox2D extent)
-		: pDevice(pState->pDevice)
+	GraphicsScene::GraphicsScene(Application* pApplication, FBox2D extent)
+		: pDevice(pApplication->pDevice)
 	{
-		auto pDisplay = pState->pInstance->CreateDisplay(extent, "Flint Test");
+		auto pDisplay = pApplication->pInstance->CreateDisplay(extent, "Flint Test");
+		extent = pDisplay->GetExtent();
 
 		std::vector<RenderTargetAttachment> attachments(2);
 		const auto sampleCount = pDevice->GetSupportedMultiSampleCount();
@@ -25,11 +27,25 @@ namespace Flint
 			DepthClearValues(1.0f, 0));
 
 		pRenderTarget = pDevice->CreateScreenBoundRenderTarget(pDisplay, extent, pDisplay->FindBestBufferCount(pDevice), attachments, SwapChainPresentMode::MailBox);
+
+		pAllocator = pDevice->CreateCommandBufferAllocator(pRenderTarget->GetBufferCount());
+		pSecondaryAllocator = pAllocator->CreateChildAllocator();
+
+		pCommandBuffers = pAllocator->CreateCommandBuffers();
+		pSecondaryCommandBuffers = pSecondaryAllocator->CreateCommandBuffers();
+
+		mImGuiAdapter.Initialize(pDevice, pRenderTarget);
+		mCamera.SetAspectRatio(pDisplay->GetExtent());
 	}
 
-	GraphicsScene::~GraphicsScene()
+	void GraphicsScene::Terminate()
 	{
 		pRenderTarget->Terminate();
+
+		pAllocator->Terminate();
+		pSecondaryAllocator->Terminate();
+
+		mImGuiAdapter.Terminate();
 	}
 
 	std::shared_ptr<GraphicsPipeline> GraphicsScene::CreateGraphicsPipeline(const std::string& name, const std::shared_ptr<Shader>& pVertexShader, const std::shared_ptr<Shader>& pFragmentShader, GraphicsPipelineSpecification spec)
@@ -46,5 +62,102 @@ namespace Flint
 			return nullptr;
 
 		return pGraphicsPipelines.at(name);
+	}
+	
+	void GraphicsScene::SubmitAssetsToDraw(const std::string& name, const std::shared_ptr<GraphicsPipeline>& pPipeline, const Asset& asset)
+	{
+		mDrawData[name] = DrawDataContainer(pPipeline, asset);
+	}
+
+	void GraphicsScene::Update()
+	{
+		auto currentTimePoint = mClock.now();
+		UI64 delta = currentTimePoint.time_since_epoch().count() - mOldTimePoint.time_since_epoch().count();
+
+		auto pDisplay = GetDisplay();
+		pDisplay->Update();
+
+		ImGuiIO& io = ImGui::GetIO();
+		io.DeltaTime = delta / 1000.0f;
+
+		auto extent = pDisplay->GetExtent();
+		if (!extent.IsZero())
+			io.DisplaySize = ImVec2(static_cast<float>(extent.mWidth), static_cast<float>(extent.mHeight));
+
+		auto position = pDisplay->GetMousePosition();
+		io.MousePos = ImVec2(position.X, position.Y);
+
+		if (pDisplay->GetMouseButtonEvent(MouseButton::Left).IsPressed() || pDisplay->GetMouseButtonEvent(MouseButton::Left).IsOnRepeat())
+			io.MouseDown[0] = true;
+		else if (pDisplay->GetMouseButtonEvent(MouseButton::Left).IsReleased())
+			io.MouseDown[0] = false;
+
+		if (pDisplay->GetMouseButtonEvent(MouseButton::Right).IsPressed() || pDisplay->GetMouseButtonEvent(MouseButton::Right).IsOnRepeat())
+			io.MouseDown[1] = true;
+		else if (pDisplay->GetMouseButtonEvent(MouseButton::Right).IsReleased())
+			io.MouseDown[1] = false;
+
+		for (auto pObject : pGameObjects)
+			pObject->Update(0, &mCamera);
+
+		if (pDisplay->GetKeyEvent(Flint::KeyCode::KeyW).IsPressed() || pDisplay->GetKeyEvent(Flint::KeyCode::KeyW).IsOnRepeat())
+			mCamera.MoveFront(delta);
+
+		if (pDisplay->GetKeyEvent(Flint::KeyCode::KeyA).IsPressed() || pDisplay->GetKeyEvent(Flint::KeyCode::KeyA).IsOnRepeat())
+			mCamera.MoveLeft(delta);
+
+		if (pDisplay->GetKeyEvent(Flint::KeyCode::KeyS).IsPressed() || pDisplay->GetKeyEvent(Flint::KeyCode::KeyS).IsOnRepeat())
+			mCamera.MoveBack(delta);
+
+		if (pDisplay->GetKeyEvent(Flint::KeyCode::KeyD).IsPressed() || pDisplay->GetKeyEvent(Flint::KeyCode::KeyD).IsOnRepeat())
+			mCamera.MoveRight(delta);
+
+		if (pDisplay->GetMouseButtonEvent(Flint::MouseButton::Left).IsPressed() && !io.WantCaptureMouse)
+			mCamera.MousePosition(position);
+
+		if (pDisplay->GetMouseButtonEvent(Flint::MouseButton::Left).IsReleased())
+			mCamera.ResetFirstMouse();
+
+		mCamera.Update();
+
+		mOldTimePoint = currentTimePoint;
+	}
+
+	void GraphicsScene::DrawFrame()
+	{
+		if (!pRenderTarget->PrepareNewFrame())
+		{
+			pRenderTarget->Recreate();
+			return;
+		}
+
+		auto pCommandBuffer = pAllocator->GetCommandBuffer(pRenderTarget->GetImageIndex());
+		auto pSecondaryCommandBuffer = pSecondaryAllocator->GetCommandBuffer(pRenderTarget->GetImageIndex());
+
+		pCommandBuffer->BeginBufferRecording();
+		pCommandBuffer->BindRenderTargetSecondary(pRenderTarget);
+
+		pSecondaryCommandBuffer->BeginBufferRecording(pRenderTarget);
+
+		for (auto pObject : pGameObjects)
+			pObject->Draw(pSecondaryCommandBuffer);
+
+		mImGuiAdapter.Render(pSecondaryCommandBuffer);
+
+		pSecondaryCommandBuffer->EndBufferRecording();
+
+		pCommandBuffer->SubmitSecondaryCommandBuffer(pSecondaryCommandBuffer);
+		pCommandBuffer->ExecuteSecondaryCommands();
+
+		pCommandBuffer->UnbindRenderTarget();
+		pCommandBuffer->EndBufferRecording();
+
+		pRenderTarget->GetDevice()->SubmitGraphicsCommandBuffers({ pCommandBuffer });
+
+		if (!pRenderTarget->PresentToDisplay())
+			pRenderTarget->Recreate();
+
+		pRenderTarget->IncrementFrameIndex();
+		pRenderTarget->GetDevice()->WaitForQueue();
 	}
 }

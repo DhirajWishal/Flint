@@ -47,8 +47,17 @@ namespace Flint
 		 */
 		const std::vector<UI32> GetShaderCode() const { return mShaderCode; }
 
+		/**
+		 * Create the shader object using the shader code.
+		 * 
+		 * @param pDevice: The device pointer.
+		 * @return The shader pointer.
+		 */
+		std::shared_ptr<Shader> CreateShader(const std::shared_ptr<Device>& pDevice) const;
+
 	private:
 		std::vector<UI32> mShaderCode = {};
+		ShaderType mType = ShaderType::Vertex;
 		ShaderCodeType mCodeType = ShaderCodeType::GLSL;
 	};
 }

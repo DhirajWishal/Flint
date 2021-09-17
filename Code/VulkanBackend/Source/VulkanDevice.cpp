@@ -262,7 +262,7 @@ namespace Flint
 			return result;
 		}
 
-		void VulkanDevice::SetImageLayout(VkCommandBuffer vCommandBuffer, VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, UI32 layerCount, UI32 currentLayer, const UI32 mipLevels) const
+		void VulkanDevice::SetImageLayout(VkCommandBuffer vCommandBuffer, VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, UI32 layerCount, UI32 currentLayer, const UI32 mipLevels, const UI32 currentLevel) const
 		{
 			FLINT_SETUP_PROFILER();
 
@@ -284,7 +284,7 @@ namespace Flint
 			else
 				vMB.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 
-			vMB.subresourceRange.baseMipLevel = 0;
+			vMB.subresourceRange.baseMipLevel = currentLevel;
 			vMB.subresourceRange.levelCount = mipLevels;
 			vMB.subresourceRange.layerCount = layerCount;
 			vMB.subresourceRange.baseArrayLayer = currentLayer;
@@ -296,6 +296,7 @@ namespace Flint
 
 			switch (vOldLayout)
 			{
+			case VK_IMAGE_LAYOUT_GENERAL:
 			case VK_IMAGE_LAYOUT_UNDEFINED:
 				sourceStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
 				vMB.srcAccessMask = 0;
@@ -326,12 +327,18 @@ namespace Flint
 				destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
 				vMB.srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
 				break;
+
 			default:
 				FLINT_THROW_RUNTIME_ERROR("Unsupported layout transition!");
 			}
 
 			switch (vNewLayout)
 			{
+			case VK_IMAGE_LAYOUT_UNDEFINED:
+			case VK_IMAGE_LAYOUT_GENERAL:
+				destinationStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
+				break;
+
 			case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
 				destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
 				vMB.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
@@ -363,9 +370,6 @@ namespace Flint
 				vMB.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 				break;
 
-			case VK_IMAGE_LAYOUT_GENERAL:
-				destinationStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
-				break;
 			default:
 				FLINT_THROW_RUNTIME_ERROR("Unsupported layout transition!");
 			}
@@ -373,12 +377,12 @@ namespace Flint
 			vkCmdPipelineBarrier(vCommandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &vMB);
 		}
 
-		void VulkanDevice::SetImageLayout(VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, UI32 layerCount, UI32 currentLayer, const UI32 mipLevels) const
+		void VulkanDevice::SetImageLayout(VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, UI32 layerCount, UI32 currentLayer, const UI32 mipLevels, const UI32 currentLevel) const
 		{
 			FLINT_SETUP_PROFILER();
 
 			VulkanOneTimeCommandBuffer vCommandBuffer(*this);
-			SetImageLayout(vCommandBuffer, vImage, vOldLayout, vNewLayout, vFormat, layerCount, currentLayer, mipLevels);
+			SetImageLayout(vCommandBuffer, vImage, vOldLayout, vNewLayout, vFormat, layerCount, currentLayer, mipLevels, currentLevel);
 		}
 
 		void VulkanDevice::InitializePhysicalDevice()

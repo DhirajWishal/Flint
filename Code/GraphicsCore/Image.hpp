@@ -30,6 +30,11 @@ namespace Flint
 		Image(const std::shared_ptr<Device>& pDevice, const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const UI8 layers, const UI32 mipLevels, const void* pImageData, const MultiSampleCount sampleCount = MultiSampleCount::One);
 
 		/**
+		 * Generate mip maps.
+		 */
+		virtual void GenerateMipMaps() = 0;
+
+		/**
 		 * Copy the image content to a buffer.
 		 *
 		 * @return The stagging buffer.

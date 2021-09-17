@@ -16,4 +16,9 @@ namespace Flint
 		AssetLoader loader(pGeometryStore, assetFile, vertexDescriptor);
 		mWireFrames = loader.GetWireFrames();
 	}
+	
+	void Asset::Clear()
+	{
+		mWireFrames.clear();
+	}
 }

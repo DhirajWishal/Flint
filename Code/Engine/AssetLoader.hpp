@@ -106,5 +106,13 @@ namespace Flint
 		 * 3. Texture Coordinates (float 2).
 		 */
 		VertexDescriptor CreateDefaultVertexDescriptor();
+
+		/**
+		 * Create the sky box vertex descriptor.
+		 * The default descriptor contains,
+		 * 1. Position (float 3).
+		 * 2. Texture Coordinates (float 2).
+		 */
+		VertexDescriptor CreateSkyBoxVertexDescriptor();
 	}
 }

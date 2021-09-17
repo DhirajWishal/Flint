@@ -56,7 +56,7 @@ namespace Flint
 				}
 			}
 
-			std::vector<VkImageView> CreateImageViews(const std::vector<VkImage>& vImages, VkFormat imageFormat, VulkanDevice& device, VkImageAspectFlags aspectFlags, VkImageViewType viewType, UI32 layerCount, UI32 baseLayerIndex, VkComponentMapping mapping)
+			std::vector<VkImageView> CreateImageViews(const std::vector<VkImage>& vImages, VkFormat imageFormat, VulkanDevice& device, VkImageAspectFlags aspectFlags, VkImageViewType viewType, UI32 layerCount, UI32 baseLayerIndex, UI32 mipLevels, UI32 baseMipLevel, VkComponentMapping mapping)
 			{
 				VkImageViewCreateInfo vCreateInfo = {};
 				vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -69,8 +69,8 @@ namespace Flint
 				VkImageSubresourceRange vSR = {};
 				vSR.layerCount = layerCount;
 				vSR.baseArrayLayer = baseLayerIndex;
-				vSR.levelCount = 1;
-				vSR.baseMipLevel = 0;
+				vSR.levelCount = mipLevels;
+				vSR.baseMipLevel = baseMipLevel;
 				vSR.aspectMask = aspectFlags;
 
 				vCreateInfo.subresourceRange = vSR;

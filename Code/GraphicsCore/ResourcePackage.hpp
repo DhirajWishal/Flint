@@ -31,12 +31,14 @@ namespace Flint
 	struct ImageBinding
 	{
 		ImageBinding() = default;
-		ImageBinding(const std::shared_ptr<ImageSampler>& pImageSampler, const std::shared_ptr<Image>& pImage, const UI64 index) : pImageSampler(pImageSampler), pImage(pImage), mArrayIndex(index) {}
+		ImageBinding(const std::shared_ptr<ImageSampler>& pImageSampler, const std::shared_ptr<Image>& pImage, const ImageUsage usage, const UI64 index)
+			: pImageSampler(pImageSampler), pImage(pImage), mUsage(usage), mArrayIndex(index) {}
 
 		std::shared_ptr<ImageSampler> pImageSampler = nullptr;
 		std::shared_ptr<Image> pImage = nullptr;
 		UI64 mViewIndex = 0;
 		UI64 mArrayIndex = 0;
+		ImageUsage mUsage = ImageUsage::Graphics;
 
 		const bool operator==(const ImageBinding& other) const { return pImageSampler == other.pImageSampler && pImage == other.pImage && mViewIndex == other.mViewIndex; }
 	};
@@ -80,7 +82,7 @@ namespace Flint
 		 * @param pImage: The image pointer.
 		 * @param index: The index of the image to bind to. Default is 0.
 		 */
-		void BindResource(const UI32 binding, const std::shared_ptr<ImageSampler>& pImageSampler, const std::shared_ptr<Image>& pImage, const UI64 index = 0);
+		void BindResource(const UI32 binding, const std::shared_ptr<ImageSampler>& pImageSampler, const std::shared_ptr<Image>& pImage, const ImageUsage usage = ImageUsage::Graphics, const UI64 index = 0);
 
 	public:
 		/**

@@ -36,6 +36,12 @@ namespace Flint
 		 */
 		Asset(const std::filesystem::path& assetFile, const std::shared_ptr<GeometryStore>& pGeometryStore, const VertexDescriptor& vertexDescriptor);
 
+		/**
+		 * Clear the asset data.
+		 * This will not terminate the geometry store as it might be in use by some other asset.
+		 */
+		void Clear();
+
 	public:
 		/**
 		 * Get the wire frames stored in the asset.

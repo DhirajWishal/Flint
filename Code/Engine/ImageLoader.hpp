@@ -21,6 +21,13 @@ namespace Flint
 		ImageLoader(const std::filesystem::path& assetFile);
 
 		/**
+		 * Construct the loader by loading multiple images.
+		 *
+		 * @param assetFiles: The image files to load.
+		 */
+		ImageLoader(const std::vector<std::filesystem::path>& assetFiles);
+
+		/**
 		 * Default destructor.
 		 */
 		~ImageLoader();

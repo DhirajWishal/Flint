@@ -197,6 +197,28 @@ namespace Flint
 			Initialize(pImageData);
 		}
 
+		void VulkanImage::GenerateMipMaps()
+		{
+			FLINT_SETUP_PROFILER();
+
+			if (mMipLevels == 1)
+				return;
+
+			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
+			VkFormatProperties vProperties = {};
+			vkGetPhysicalDeviceFormatProperties(vDevice.GetPhysicalDevice(), Utilities::GetVulkanFormat(mFormat), &vProperties);
+
+			if (!(vProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT))
+				throw backend_error("Texture format does not support linear bitting!");
+
+			if (mType == ImageType::CubeMap || mType == ImageType::CubeMapArray)
+				GenerateCubeMapMipChain();
+			else
+				GenerateDefaultMipChain();
+
+			vCurrentLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		}
+
 		std::shared_ptr<Buffer> VulkanImage::CopyToBuffer()
 		{
 			std::shared_ptr<VulkanBuffer> pBuffer = std::make_shared<VulkanBuffer>(pDevice, BufferType::Staging, static_cast<UI64>(mExtent.mWidth) * mExtent.mHeight * mExtent.mDepth * Utilities::GetByteDepth(mFormat) * mLayerCount);
@@ -268,6 +290,28 @@ namespace Flint
 			}
 		}
 
+		VkImageLayout VulkanImage::GetImageLayout(ImageUsage usage) const
+		{
+			if (usage == ImageUsage(-1))
+				return vCurrentLayout;
+
+			if ((usage & mUsage) != usage)
+				throw backend_error("Invalid image usage requested!");
+
+			if (usage == ImageUsage::Graphics && vCurrentLayout != VkImageLayout::VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+			{
+				pDevice->StaticCast<VulkanDevice>().SetImageLayout(vImage, vCurrentLayout, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels);
+				vCurrentLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			}
+			else if (usage == ImageUsage::Storage && vCurrentLayout != VkImageLayout::VK_IMAGE_LAYOUT_GENERAL)
+			{
+				pDevice->StaticCast<VulkanDevice>().SetImageLayout(vImage, vCurrentLayout, VK_IMAGE_LAYOUT_GENERAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels);
+				vCurrentLayout = VK_IMAGE_LAYOUT_GENERAL;
+			}
+
+			return vCurrentLayout;
+		}
+
 		VkAttachmentDescription VulkanImage::GetAttachmentDescription() const
 		{
 			VkAttachmentDescription vDesc = {};
@@ -326,9 +370,9 @@ namespace Flint
 			VkImageView vImageView = VK_NULL_HANDLE;
 
 			if (mType == ImageType::CubeMap || mType == ImageType::CubeMapArray)
-				vImageView = Utilities::CreateImageViews({ vImage }, Utilities::GetVulkanFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), Helpers::GetImageAspectFlags(mUsage), Helpers::GetImageViewType(mType), 1, layerNumber, { VK_COMPONENT_SWIZZLE_R, VK_COMPONENT_SWIZZLE_G, VK_COMPONENT_SWIZZLE_B, VK_COMPONENT_SWIZZLE_A })[0];
+				vImageView = Utilities::CreateImageViews({ vImage }, Utilities::GetVulkanFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), Helpers::GetImageAspectFlags(mUsage), Helpers::GetImageViewType(mType), 1, layerNumber, mMipLevels, 0, { VK_COMPONENT_SWIZZLE_R, VK_COMPONENT_SWIZZLE_G, VK_COMPONENT_SWIZZLE_B, VK_COMPONENT_SWIZZLE_A })[0];
 			else
-				vImageView = Utilities::CreateImageViews({ vImage }, Utilities::GetVulkanFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), Helpers::GetImageAspectFlags(mUsage), Helpers::GetImageViewType(mType), 1, layerNumber)[0];
+				vImageView = Utilities::CreateImageViews({ vImage }, Utilities::GetVulkanFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), Helpers::GetImageAspectFlags(mUsage), Helpers::GetImageViewType(mType), 1, layerNumber, mMipLevels, 0)[0];
 
 			return vImageView;
 		}
@@ -343,6 +387,7 @@ namespace Flint
 		{
 			VulkanOneTimeCommandBuffer vCommandBuffer(pDevice->StaticCast<VulkanDevice>());
 			SetImageLayout(vCommandBuffer, vNewLayout, mLayerCount, 0, mMipLevels);
+			vCurrentLayout = vNewLayout;
 		}
 
 		void VulkanImage::CreateImage()
@@ -413,23 +458,20 @@ namespace Flint
 			FLINT_SETUP_PROFILER();
 
 			if (mType == ImageType::CubeMap || mType == ImageType::CubeMapArray || mUsage == ImageUsage::Storage)
-				vImageView = Utilities::CreateImageViews({ vImage }, Utilities::GetVulkanFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), Helpers::GetImageAspectFlags(mUsage), Helpers::GetImageViewType(mType), mLayerCount, 0, Helpers::GetComponentMapping(mFormat))[0];
+				vImageView = Utilities::CreateImageViews({ vImage }, Utilities::GetVulkanFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), Helpers::GetImageAspectFlags(mUsage), Helpers::GetImageViewType(mType), mLayerCount, 0, mMipLevels, 0, Helpers::GetComponentMapping(mFormat))[0];
 			else
-				vImageView = Utilities::CreateImageViews({ vImage }, Utilities::GetVulkanFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), Helpers::GetImageAspectFlags(mUsage), Helpers::GetImageViewType(mType), mLayerCount)[0];
+				vImageView = Utilities::CreateImageViews({ vImage }, Utilities::GetVulkanFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), Helpers::GetImageAspectFlags(mUsage), Helpers::GetImageViewType(mType), mLayerCount, 0, mMipLevels, 0)[0];
 		}
 
-		void VulkanImage::GenerateMipMaps()
+		void VulkanImage::GenerateDefaultMipChain()
 		{
-			FLINT_SETUP_PROFILER();
-
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-			VkFormatProperties vProperties = {};
-			vkGetPhysicalDeviceFormatProperties(vDevice.GetPhysicalDevice(), Utilities::GetVulkanFormat(mFormat), &vProperties);
-
-			if (!(vProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT))
-				throw backend_error("Texture format does not support linear bitting!");
-
 			VulkanOneTimeCommandBuffer vCommandBuffer(vDevice);
+			if (vCurrentLayout != VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
+			{
+				vDevice.SetImageLayout(vCommandBuffer, vImage, vCurrentLayout, VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels);
+				vCurrentLayout = VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+			}
 
 			for (UI32 i = 0; i < mLayerCount; i++)
 			{
@@ -509,10 +551,98 @@ namespace Flint
 					0, nullptr,
 					1, &barrier);
 			}
-
-			vCurrentLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		}
-		
+
+		void VulkanImage::GenerateCubeMapMipChain()
+		{
+			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
+			VkFormatProperties vProperties = {};
+			vkGetPhysicalDeviceFormatProperties(vDevice.GetPhysicalDevice(), Utilities::GetVulkanFormat(mFormat), &vProperties);
+
+			VulkanOneTimeCommandBuffer vCommandBuffer(vDevice);
+			if (vCurrentLayout != VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
+			{
+				vDevice.SetImageLayout(vCommandBuffer, vImage, vCurrentLayout, VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels);
+				vCurrentLayout = VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+			}
+
+			VkImageMemoryBarrier barrier{};
+			barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+			barrier.image = vImage;
+			barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+			barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+			barrier.subresourceRange.aspectMask = Helpers::GetImageAspectFlags(mUsage);
+			barrier.subresourceRange.layerCount = mLayerCount;
+			barrier.subresourceRange.levelCount = 1;
+			barrier.subresourceRange.baseArrayLayer = 0;
+
+			I32 mipWidth = static_cast<I32>(mExtent.mWidth);
+			I32 mipHeight = static_cast<I32>(mExtent.mHeight);
+			I32 mipDepth = static_cast<I32>(mExtent.mDepth);
+
+			for (UI32 j = 1; j < mMipLevels; j++)
+			{
+				barrier.subresourceRange.baseMipLevel = j - 1;
+				barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+				barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+				barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+				barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+
+				vkCmdPipelineBarrier(vCommandBuffer,
+					VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0,
+					0, nullptr,
+					0, nullptr,
+					1, &barrier);
+
+				VkImageBlit blit{};
+				blit.srcOffsets[0] = { 0, 0, 0 };
+				blit.srcOffsets[1] = { mipWidth, mipHeight, mipDepth };
+				blit.srcSubresource.aspectMask = barrier.subresourceRange.aspectMask;
+				blit.srcSubresource.mipLevel = j - 1;
+				blit.srcSubresource.baseArrayLayer = 0;
+				blit.srcSubresource.layerCount = mLayerCount;
+				blit.dstOffsets[0] = { 0, 0, 0 };
+				blit.dstOffsets[1] = { mipWidth > 1 ? mipWidth / 2 : 1, mipHeight > 1 ? mipHeight / 2 : 1, mipDepth > 1 ? mipDepth / 2 : 1 };
+				blit.dstSubresource.aspectMask = barrier.subresourceRange.aspectMask;
+				blit.dstSubresource.mipLevel = j;
+				blit.dstSubresource.baseArrayLayer = 0;
+				blit.dstSubresource.layerCount = mLayerCount;
+
+				vkCmdBlitImage(vCommandBuffer,
+					vImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+					vImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+					1, &blit,
+					VK_FILTER_LINEAR);
+
+				barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+				barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+				barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+				barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+				vkCmdPipelineBarrier(vCommandBuffer,
+					VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0,
+					0, nullptr,
+					0, nullptr,
+					1, &barrier);
+
+				if (mipWidth > 1) mipWidth /= 2;
+				if (mipHeight > 1) mipHeight /= 2;
+				if (mipDepth > 1) mipDepth /= 2;
+			}
+
+			barrier.subresourceRange.baseMipLevel = mMipLevels - 1;
+			barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+			barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+			barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+			vkCmdPipelineBarrier(vCommandBuffer,
+				VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0,
+				0, nullptr,
+				0, nullptr,
+				1, &barrier);
+		}
+
 		void VulkanImage::Initialize(const void* pImageData)
 		{
 			FLINT_SETUP_PROFILER();
@@ -557,9 +687,7 @@ namespace Flint
 				vStagingBuffer.Terminate();
 			}
 
-			if (mType != ImageType::CubeMap && mType != ImageType::CubeMapArray && mUsage == ImageUsage::Graphics)
-				GenerateMipMaps();
-			else if ((mUsage & ImageUsage::Depth) == ImageUsage::Depth)
+			if ((mUsage & ImageUsage::Depth) == ImageUsage::Depth)
 			{
 				vCurrentLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;	// TODO
 			}
@@ -586,3 +714,10 @@ namespace Flint
 		}
 	}
 }
+
+/*
+vkCmdPipelineBarrier(): .pImageMemoryBarriers[0] VkImage 0x72303f0000000052[] cannot transition the layout of aspect=1 level=0 layer=1 from VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL when the previous known layout is VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL. The Vulkan spec states: If srcQueueFamilyIndex and dstQueueFamilyIndex define a queue family ownership transfer or oldLayout and newLayout define an image layout transition, oldLayout must be VK_IMAGE_LAYOUT_UNDEFINED or the current layout of the image subresources affected by the barrier (https://vulkan.lunarg.com/doc/view/1.2.182.0/windows/1.2-extensions/vkspec.html#VUID-VkImageMemoryBarrier-oldLayout-01197)
+vkCmdBlitImage(): Cannot use VkImage 0x72303f0000000052[] (layer=1 mip=1) with specific layout VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL that doesn't match the previous known layout VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL. The Vulkan spec states: dstImageLayout must specify the layout of the image subresources of dstImage specified in pRegions at the time this command is executed on a VkDevice (https://vulkan.lunarg.com/doc/view/1.2.182.0/windows/1.2-extensions/vkspec.html#VUID-vkCmdBlitImage-dstImageLayout-00226)
+In vkCmdBlitImage(), pRegions[0].srcSubresource.baseArrayLayer is 1 and .layerCount is 6, but provided VkImage 0x72303f0000000052[] has 6 array layers. The Vulkan spec states: The srcSubresource.baseArrayLayer + srcSubresource.layerCount of each element of pRegions must be less than or equal to the arrayLayers specified in VkImageCreateInfo when srcImage was created (https://vulkan.lunarg.com/doc/view/1.2.182.0/windows/1.2-extensions/vkspec.html#VUID-vkCmdBlitImage-srcSubresource-01707)
+vkCmdBlitImage(): layerCount in source and destination subresource of pRegions[0] does not match. The Vulkan spec states: The layerCount member of srcSubresource and dstSubresource must match (https://vulkan.lunarg.com/doc/view/1.2.182.0/windows/1.2-extensions/vkspec.html#VUID-VkImageBlit-layerCount-00239)
+*/

@@ -213,8 +213,11 @@ namespace Flint
 
 	void GeometryStore::Terminate()
 	{
-		pVertexBuffer->Terminate();
-		pIndexBuffer->Terminate();
+		if (pVertexBuffer)
+			pVertexBuffer->Terminate();
+
+		if (pIndexBuffer)
+			pIndexBuffer->Terminate();
 
 		bIsTerminated = true;
 	}

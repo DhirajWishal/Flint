@@ -68,7 +68,7 @@ namespace Flint
 				auto& vImage = image.second.pImage->StaticCast<VulkanImage>();
 				VkDescriptorImageInfo* pImageInfo = new VkDescriptorImageInfo();
 				pImageInfo->imageView = vImage.GetImageView(static_cast<UI32>(image.second.mViewIndex));
-				pImageInfo->imageLayout = vImage.GetImageLayout();
+				pImageInfo->imageLayout = vImage.GetImageLayout(image.second.mUsage);
 				pImageInfo->sampler = image.second.pImageSampler->StaticCast<VulkanImageSampler>().GetSampler();
 
 				vWrite.pImageInfo = pImageInfo;

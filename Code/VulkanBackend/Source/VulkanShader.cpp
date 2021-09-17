@@ -328,17 +328,21 @@ namespace Flint
 					if (resource->format == SpvReflectFormat::SPV_REFLECT_FORMAT_UNDEFINED)
 						continue;
 
+					std::string name = "";
+					if (resource->name)
+						name = resource->name;
+
 					if (resource->built_in > -1)
 					{
 						mInputAttributes[0].push_back(ShaderAttribute(
-							resource->name,
+							name,
 							resource->location,
 							ShaderAttributeDataType::BUILT_IN));
 					}
 					else
 					{
 						mInputAttributes[0].push_back(ShaderAttribute(
-							resource->name,
+							name,
 							resource->location,
 							static_cast<ShaderAttributeDataType>(
 								(resource->type_description->traits.numeric.scalar.width / 8) *
@@ -362,8 +366,12 @@ namespace Flint
 					if (resource->format == SpvReflectFormat::SPV_REFLECT_FORMAT_UNDEFINED)
 						continue;
 
+					std::string name = "";
+					if (resource->name)
+						name = resource->name;
+
 					mOutputAttributes[0].push_back(ShaderAttribute(
-						resource->name,
+						name,
 						resource->location,
 						static_cast<ShaderAttributeDataType>(
 							(resource->type_description->traits.numeric.scalar.width / 8) *
