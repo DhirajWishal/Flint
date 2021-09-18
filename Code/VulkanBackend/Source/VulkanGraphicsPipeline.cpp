@@ -608,7 +608,9 @@ namespace Flint
 
 			for (const auto vLayout : vDescriptorSetLayouts)
 				vkDestroyDescriptorSetLayout(vDevice.GetLogicalDevice(), vLayout, nullptr);
+
 			vDescriptorSetLayouts.clear();
+			pResourcePackagers.clear();
 
 			vkDestroyPipelineLayout(vDevice.GetLogicalDevice(), vPipelineLayout, nullptr);
 
@@ -618,6 +620,7 @@ namespace Flint
 			CreatePipelineLayout();
 			CreatePipelineCache();
 			CreatePipeline();
+			CreateResourcePackagers();
 		}
 
 		void VulkanGraphicsPipeline::Recreate(const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget)
@@ -630,13 +633,10 @@ namespace Flint
 			CreatePipeline();
 		}
 
-		std::vector<std::shared_ptr<ResourcePackager>> VulkanGraphicsPipeline::CreateResourcePackagers()
+		void VulkanGraphicsPipeline::CreateResourcePackagers()
 		{
-			std::vector<std::shared_ptr<ResourcePackager>> packages;
 			for (UI32 i = 0; i < vDescriptorSetLayouts.size(); i++)
-				packages.push_back(std::make_shared<VulkanResourcePackager>(i, shared_from_this(), vDescriptorSetLayouts[i]));
-
-			return packages;
+				pResourcePackagers.push_back(std::make_shared<VulkanResourcePackager>(i, shared_from_this(), vDescriptorSetLayouts[i]));
 		}
 
 		void VulkanGraphicsPipeline::Terminate()
@@ -660,6 +660,9 @@ namespace Flint
 
 			for (const auto vLayout : vDescriptorSetLayouts)
 				vkDestroyDescriptorSetLayout(vDevice.GetLogicalDevice(), vLayout, nullptr);
+
+			vDescriptorSetLayouts.clear();
+			pResourcePackagers.clear();
 
 			bIsTerminated = true;
 		}

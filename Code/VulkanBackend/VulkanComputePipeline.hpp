@@ -17,7 +17,7 @@ namespace Flint
 			~VulkanComputePipeline() { if (!bIsTerminated) Terminate(); }
 
 			virtual void ReloadShaders() override final;
-			virtual std::vector<std::shared_ptr<ResourcePackager>> CreateResourcePackagers() override final;
+			void CreateResourcePackagers() override final;
 
 			virtual void Terminate() override final;
 

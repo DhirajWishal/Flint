@@ -29,6 +29,9 @@ namespace Flint
 			for (const auto vLayout : vDescriptorSetLayouts)
 				vkDestroyDescriptorSetLayout(vDevice.GetLogicalDevice(), vLayout, nullptr);
 
+			vDescriptorSetLayouts.clear();
+			pResourcePackagers.clear();
+
 			vkDestroyPipelineLayout(vDevice.GetLogicalDevice(), vPipelineLayout, nullptr);
 
 			bShouldPrepareResources = true;
@@ -36,15 +39,13 @@ namespace Flint
 			CreatePipelineCache();
 			CreatePipelineLayout();
 			CreatePipeline();
+			CreateResourcePackagers();
 		}
 
-		std::vector<std::shared_ptr<ResourcePackager>> VulkanComputePipeline::CreateResourcePackagers()
+		void VulkanComputePipeline::CreateResourcePackagers()
 		{
-			std::vector<std::shared_ptr<ResourcePackager>> packages;
 			for (UI32 i = 0; i < vDescriptorSetLayouts.size(); i++)
-				packages.push_back(std::make_shared<VulkanResourcePackager>(i, shared_from_this(), vDescriptorSetLayouts[i]));
-
-			return packages;
+				pResourcePackagers.push_back(std::make_shared<VulkanResourcePackager>(i, shared_from_this(), vDescriptorSetLayouts[i]));
 		}
 
 		void VulkanComputePipeline::Terminate()
@@ -69,6 +70,9 @@ namespace Flint
 
 			vkDestroyPipelineLayout(vDevice.GetLogicalDevice(), vPipelineLayout, nullptr);
 			vkDestroyPipelineCache(vDevice.GetLogicalDevice(), vPipelineCache, nullptr);
+
+			vDescriptorSetLayouts.clear();
+			pResourcePackagers.clear();
 
 			bIsTerminated = true;
 		}

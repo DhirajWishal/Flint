@@ -10,6 +10,8 @@ project "FlintEditor"
 	systemversion "latest"
 	staticruntime "on"
 
+	flags { "MultiProcessorCompile" }
+
 	targetdir "$(SolutionDir)Builds/Editor/Binaries/$(ProjectName)/$(Configuration)"
 	objdir "$(SolutionDir)Builds/Editor/Intermediate/$(ProjectName)/$(Configuration)"
 

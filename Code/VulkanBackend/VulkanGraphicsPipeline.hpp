@@ -38,7 +38,7 @@ namespace Flint
 
 			virtual void ReloadShaders() override final;
 			virtual void Recreate(const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget) override final;
-			virtual std::vector<std::shared_ptr<ResourcePackager>> CreateResourcePackagers() override final;
+			virtual void CreateResourcePackagers() override final;
 			virtual void Terminate() override final;
 
 			const VkPipelineLayout GetPipelineLayout() const { return vPipelineLayout; }

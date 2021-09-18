@@ -96,7 +96,6 @@ namespace Flint
 	void ImGuiAdapter::Terminate()
 	{
 		pPipeline->Terminate();
-		pResourcePackager->Terminate();
 
 		pVertexShader->Terminate();
 		pFragmentShader->Terminate();
@@ -201,8 +200,7 @@ namespace Flint
 
 		pFontSampler = pDevice->CreateImageSampler(specification);
 
-		pResourcePackager = pPipeline->CreateResourcePackagers()[0];
-		pResourcePack = pResourcePackager->CreatePackage();
+		pResourcePack = pPipeline->CreateResourcePackage(0);
 		pResourcePack->BindResource(0, pFontSampler, pFontImage);
 	}
 

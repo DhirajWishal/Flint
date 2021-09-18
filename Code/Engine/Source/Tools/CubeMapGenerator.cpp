@@ -31,8 +31,7 @@ namespace Flint
 		ShaderCompiler computeShaderCompiler(std::filesystem::path("E:\\Flint\\Code\\Engine\\Shaders\\CubeMapGen\\Shader.comp"), ShaderCodeType::GLSL, ShaderType::Compute);
 		auto pPipeline = pDevice->CreateComputePipeline("CubeMapGen", computeShaderCompiler.CreateShader(pDevice));
 
-		auto pPackager = pPipeline->CreateResourcePackagers()[0];
-		auto pPackage = pPackager->CreatePackage();
+		auto pPackage = pPipeline->CreateResourcePackage(0);
 
 		Flint::ImageSamplerSpecification specification = {};
 		pPackage->BindResource(0, pDevice->CreateImageSampler(specification), pTexture);

@@ -39,7 +39,7 @@ namespace Flint
 		void Render(const std::shared_ptr<CommandBuffer>& pCommandBuffer);
 		void Terminate();
 
-		std::shared_ptr<ResourcePackage> CreateResourcePackage() { return pResourcePackager->CreatePackage(); }
+		std::shared_ptr<ResourcePackage> CreateResourcePackage() { return pPipeline->CreateResourcePackage(0); }
 
 	private:
 		void SetupImGui();
@@ -63,7 +63,6 @@ namespace Flint
 		std::shared_ptr<Image> pFontImage = nullptr;
 		std::shared_ptr<ImageSampler> pFontSampler = nullptr;
 
-		std::shared_ptr<ResourcePackager> pResourcePackager = nullptr;
 		std::shared_ptr<ResourcePackage> pResourcePack = nullptr;
 		std::shared_ptr<DynamicStateContainer> pDynamicStateContainer = nullptr;
 

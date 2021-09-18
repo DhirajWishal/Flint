@@ -9,6 +9,7 @@ namespace Flint
 {
 	class RenderTarget;
 	class ResourcePackager;
+	class ResourcePackage;
 
 	/**
 	 * Flint pipeline object.
@@ -35,14 +36,12 @@ namespace Flint
 		 */
 		virtual void ReloadShaders() = 0;
 
+	protected:
 		/**
 		 * Create the resource packagers.
-		 * 
-		 * @return The vector of resource package pointers.
 		 */
-		virtual std::vector<std::shared_ptr<ResourcePackager>> CreateResourcePackagers() = 0;
+		virtual void CreateResourcePackagers() = 0;
 
-	protected:
 		/**
 		 * Write the pipeline cache data to an external file.
 		 * If the file does not exist, this creates a new file. The file name is "<pipeline name>.fpc". The FPC extension is Flint Pipeline Cache.
@@ -59,8 +58,19 @@ namespace Flint
 		 */
 		std::pair<UI64, unsigned char*> ReadDataFromCacheFile() const;
 
+	public:
+		/**
+		 * Create a new resource package.
+		 * 
+		 * @param index: The set index.
+		 * @return The package.
+		 */
+		std::shared_ptr<ResourcePackage> CreateResourcePackage(const UI64 index);
+
 	protected:
 		std::string mPipelineName = "";
+		std::vector<std::shared_ptr<ResourcePackager>> pResourcePackagers = {};
+
 		bool bShouldPrepareResources = true;
 	};
 }

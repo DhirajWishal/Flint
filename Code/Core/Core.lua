@@ -10,6 +10,8 @@ project "Core"
 	cppdialect "C++17"
 	staticruntime "on"
 
+	flags { "MultiProcessorCompile" }
+
 	targetdir "$(SolutionDir)Builds/Binaries/$(Configuration)"
 	objdir "$(SolutionDir)Builds/Intermediate/$(Configuration)"
 

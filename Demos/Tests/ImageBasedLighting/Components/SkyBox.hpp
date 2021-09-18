@@ -22,7 +22,10 @@ namespace Flint
 			glm::mat4 mModelMatrix = glm::mat4(1);
 			glm::mat4 mViewMatrix = glm::mat4(1);
 			glm::mat4 mProjectionMatrix = glm::mat4(1);
+
 			float mLODBias = 0.0f;
+			float mExposure = 0.0f;
+			float mGamma = 0.0f;
 		} mMatrix;
 
 	public:
@@ -44,7 +47,6 @@ namespace Flint
 		Application* pApplication = nullptr;
 		std::shared_ptr<GraphicsPipeline> pPipeline = nullptr;
 
-		std::shared_ptr<ResourcePackager> pPackager = nullptr;
 		std::shared_ptr<ResourcePackage> pPackage = nullptr;
 
 		std::shared_ptr<Image> pImage = nullptr;

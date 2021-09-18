@@ -10,6 +10,8 @@ project "TestBase"
 	systemversion "latest"
 	staticruntime "on"
 
+	flags { "MultiProcessorCompile" }
+
 	targetdir "$(SolutionDir)Builds/Demos/Binaries/$(ProjectName)/$(Configuration)"
 	objdir "$(SolutionDir)Builds/Demos/Intermediate/$(ProjectName)/$(Configuration)"
 

@@ -10,6 +10,8 @@ project "FlintDebugger"
 	staticruntime "On"
 	systemversion "latest"
 
+	flags { "MultiProcessorCompile" }
+
 	targetdir "$(SolutionDir)Builds/Binaries/$(ProjectName)/$(Configuration)"
 	objdir "$(SolutionDir)Builds/Intermediate/$(ProjectName)/$(Configuration)"
 

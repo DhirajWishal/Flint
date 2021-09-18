@@ -10,6 +10,8 @@ project "SampleScene"
 	staticruntime "On"
 	systemversion "latest"
 
+	flags { "MultiProcessorCompile" }
+
 	targetdir "$(SolutionDir)Builds/Demos/Binaries/$(ProjectName)/$(Configuration)"
 	objdir "$(SolutionDir)Builds/Demos/Intermediate/$(ProjectName)/$(Configuration)"
 

@@ -23,8 +23,7 @@ namespace Flint
 
 		pUniformBuffer = pApplication->GetDevice()->CreateBuffer(BufferType::Uniform, sizeof(ModelViewProjection));
 
-		pPackager = pPipeline->CreateResourcePackagers()[0];
-		pPackage = pPackager->CreatePackage();
+		pPackage = pPipeline->CreateResourcePackage(0);
 		pPackage->BindResource(0, pUniformBuffer);
 		pPackage->BindResource(1, pImageSampler, pImage);
 	}
@@ -37,6 +36,8 @@ namespace Flint
 
 		ImGui::Begin("Level Of Detail");
 		ImGui::SliderFloat("LOD Bias", &mMatrix.mLODBias, 0, static_cast<float>(pImage->GetMipLevels()));
+		ImGui::SliderFloat("Exposure", &mMatrix.mExposure, 0, 10.0f);
+		ImGui::SliderFloat("Gamma", &mMatrix.mGamma, 0, 10.0f);
 		ImGui::End();
 
 		CopyToBuffer(pUniformBuffer, mMatrix);
@@ -58,8 +59,6 @@ namespace Flint
 		pUniformBuffer->Terminate();
 		pImage->Terminate();
 		pImageSampler->Terminate();
-
-		pPackager->Terminate();
 
 		mAsset.Clear();
 	}
@@ -107,7 +106,7 @@ namespace Flint
 		//ImageLoader loader(images);
 		//pImage = pApplication->GetDevice()->CreateImage(ImageType::CubeMap, ImageUsage::Graphics, loader.GetExtent(), loader.GetPixelFormat(), 6, 1, loader.GetPixelData());
 
-		CubeMapGenerator generator(pApplication->GetDevice(), "C:\\Users\\RLG Evo\\Downloads\\oberer_kuhberg_4k.hdr", 0);
+		CubeMapGenerator generator(pApplication->GetDevice(), "C:\\Users\\RLG Evo\\Downloads\\piazza_martin_lutero_4k.hdr", 0);
 		pImage = generator.GetImage();
 
 		Flint::ImageSamplerSpecification samplerSpecification = {};

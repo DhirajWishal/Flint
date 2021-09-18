@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "GraphicsCore/Pipeline.hpp"
+#include "GraphicsCore/ResourcePackager.hpp"
 
 namespace Flint
 {
@@ -41,5 +42,13 @@ namespace Flint
 
 		cacheFile.close();
 		return std::pair<UI64, unsigned char*>(size, pDataStore);
+	}
+
+	std::shared_ptr<ResourcePackage> Pipeline::CreateResourcePackage(const UI64 index)
+	{
+		if (pResourcePackagers.empty())
+			CreateResourcePackagers();
+
+		return pResourcePackagers[index]->CreatePackage();
 	}
 }
