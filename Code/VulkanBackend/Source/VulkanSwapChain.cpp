@@ -197,15 +197,15 @@ namespace Flint
 				FLINT_THROW_RUNTIME_ERROR("Submitted device and display are incompatible!");
 
 			VkSwapchainKHR vNewSwapChain = VK_NULL_HANDLE;
-			FLINT_VK_ASSERT(vkCreateSwapchainKHR(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vNewSwapChain));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateSwapchainKHR(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vNewSwapChain));
 
 			if (vSwapChain != VK_NULL_HANDLE) DestroySwapChain();
 			vSwapChain = vNewSwapChain;
 
 			vCreateInfo.minImageCount = 0;
-			FLINT_VK_ASSERT(vkGetSwapchainImagesKHR(vDevice.GetLogicalDevice(), vSwapChain, &vCreateInfo.minImageCount, nullptr));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkGetSwapchainImagesKHR(vDevice.GetLogicalDevice(), vSwapChain, &vCreateInfo.minImageCount, nullptr));
 			vImages.resize(vCreateInfo.minImageCount);
-			FLINT_VK_ASSERT(vkGetSwapchainImagesKHR(vDevice.GetLogicalDevice(), vSwapChain, &vCreateInfo.minImageCount, vImages.data()));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkGetSwapchainImagesKHR(vDevice.GetLogicalDevice(), vSwapChain, &vCreateInfo.minImageCount, vImages.data()));
 
 			vImageViews = std::move(Utilities::CreateImageViews(vImages, vCreateInfo.imageFormat, vDevice));
 		}
@@ -216,10 +216,10 @@ namespace Flint
 
 			// Terminate the image views.
 			for (auto itr = vImageViews.begin(); itr != vImageViews.end(); itr++)
-				vkDestroyImageView(vDevice.GetLogicalDevice(), *itr, nullptr);
+				vDevice.GetDeviceTable().vkDestroyImageView(vDevice.GetLogicalDevice(), *itr, nullptr);
 
 			// Terminate the Swap Chain.
-			vkDestroySwapchainKHR(vDevice.GetLogicalDevice(), vSwapChain, nullptr);
+			vDevice.GetDeviceTable().vkDestroySwapchainKHR(vDevice.GetLogicalDevice(), vSwapChain, nullptr);
 
 			vSwapChain = VK_NULL_HANDLE;
 			vImages.clear();
@@ -235,15 +235,15 @@ namespace Flint
 			vCreateInfo.pNext = VK_NULL_HANDLE;
 			vCreateInfo.flags = 0;
 
-			FLINT_VK_ASSERT(vkCreateSemaphore(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vInFlightSemaphore));
-			FLINT_VK_ASSERT(vkCreateSemaphore(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vRenderFinished));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateSemaphore(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vInFlightSemaphore));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateSemaphore(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vRenderFinished));
 		}
 
 		void VulkanSwapChain::DestroySyncObjects()
 		{
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
-			vkDestroySemaphore(vDevice.GetLogicalDevice(), vInFlightSemaphore, nullptr);
-			vkDestroySemaphore(vDevice.GetLogicalDevice(), vRenderFinished, nullptr);
+			vDevice.GetDeviceTable().vkDestroySemaphore(vDevice.GetLogicalDevice(), vInFlightSemaphore, nullptr);
+			vDevice.GetDeviceTable().vkDestroySemaphore(vDevice.GetLogicalDevice(), vRenderFinished, nullptr);
 		}
 	}
 }

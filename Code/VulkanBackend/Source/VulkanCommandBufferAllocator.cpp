@@ -20,7 +20,7 @@ namespace Flint
 			vCreateInfo.flags = VkCommandPoolCreateFlagBits::VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 			vCreateInfo.queueFamilyIndex = vDevice.GetQueue().mTransferFamily.value();
 
-			FLINT_VK_ASSERT(vkCreateCommandPool(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vCommandPool));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateCommandPool(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vCommandPool));
 		}
 
 		VulkanCommandBufferAllocator::VulkanCommandBufferAllocator(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<CommandBufferAllocator>& pParent, const UI32 bufferCount)
@@ -35,11 +35,14 @@ namespace Flint
 			vCreateInfo.flags = VkCommandPoolCreateFlagBits::VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 			vCreateInfo.queueFamilyIndex = vDevice.GetQueue().mTransferFamily.value();
 
-			FLINT_VK_ASSERT(vkCreateCommandPool(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vCommandPool));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateCommandPool(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vCommandPool));
 		}
 
 		const std::vector<std::shared_ptr<CommandBuffer>> VulkanCommandBufferAllocator::CreateCommandBuffers()
 		{
+			FLINT_SETUP_PROFILER();
+			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
+
 			VkCommandBufferAllocateInfo vAllocateInfo = {};
 			vAllocateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 			vAllocateInfo.pNext = VK_NULL_HANDLE;
@@ -51,7 +54,7 @@ namespace Flint
 				vAllocateInfo.level = VkCommandBufferLevel::VK_COMMAND_BUFFER_LEVEL_SECONDARY;
 
 			std::vector<VkCommandBuffer> vCommandBuffers(mBufferCount);
-			FLINT_VK_ASSERT(vkAllocateCommandBuffers(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), &vAllocateInfo, vCommandBuffers.data()));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkAllocateCommandBuffers(vDevice.GetLogicalDevice(), &vAllocateInfo, vCommandBuffers.data()));
 
 			pCommandBuffers.reserve(mBufferCount);
 			for (const auto vCommandBuffer : vCommandBuffers)
@@ -76,8 +79,8 @@ namespace Flint
 				FlagCommandBufferAsTerminated(i);
 			}
 
-			vkFreeCommandBuffers(vDevice.GetLogicalDevice(), vCommandPool, mBufferCount, vCommandBuffers.data());
-			vkDestroyCommandPool(vDevice.GetLogicalDevice(), vCommandPool, nullptr);
+			vDevice.GetDeviceTable().vkFreeCommandBuffers(vDevice.GetLogicalDevice(), vCommandPool, mBufferCount, vCommandBuffers.data());
+			vDevice.GetDeviceTable().vkDestroyCommandPool(vDevice.GetLogicalDevice(), vCommandPool, nullptr);
 		}
 	}
 }

@@ -24,13 +24,12 @@ namespace Flint
 		FBox3D extent = FBox3D(length, length, 1);
 
 		if (mips == 0)
-			mips = static_cast<UI32>(std::floor(std::log2(std::max(extent.mWidth, extent.mHeight))) + 1);
+			mips = Image::GetBestMipLevels(FBox2D(length));
 
 		pCubeMap = pDevice->CreateImage(ImageType::CubeMap, ImageUsage::Graphics | ImageUsage::Storage, extent, PixelFormat::R16G16B16A16_SFLOAT, 6, mips, nullptr);
 
 		ShaderCompiler computeShaderCompiler(std::filesystem::path("E:\\Flint\\Code\\Engine\\Shaders\\CubeMapGen\\Shader.comp"), ShaderCodeType::GLSL, ShaderType::Compute);
 		auto pPipeline = pDevice->CreateComputePipeline("CubeMapGen", computeShaderCompiler.CreateShader(pDevice));
-
 		auto pPackage = pPipeline->CreateResourcePackage(0);
 
 		Flint::ImageSamplerSpecification specification = {};

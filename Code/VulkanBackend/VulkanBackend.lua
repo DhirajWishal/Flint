@@ -47,7 +47,6 @@ project "VulkanBackend"
 		"GraphicsCore",
 
 		"glfw3dll",
-		"vulkan-1",
 	}
 
 	filter "configurations:Debug"

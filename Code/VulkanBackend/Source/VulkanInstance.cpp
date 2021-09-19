@@ -123,6 +123,7 @@ namespace Flint
 		{
 			FLINT_SETUP_PROFILER();
 
+			FLINT_VK_ASSERT(volkInitialize());
 			InitializeGLFW();
 
 			// Check if Vulkan is supported.
@@ -132,9 +133,8 @@ namespace Flint
 			if (enableValidation)
 				INSERT_INTO_VECTOR(mValidationLayers, "VK_LAYER_KHRONOS_validation");
 
-			VK_KHR_RAY_TRACING_PIPELINE_SPEC_VERSION;
-
 			InitializeInstance();
+			volkLoadInstance(vInstance);
 
 			if (IsValidationEnabled())
 				InitializeDebugger();

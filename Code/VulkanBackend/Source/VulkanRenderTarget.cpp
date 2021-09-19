@@ -97,7 +97,7 @@ namespace Flint
 			vCreateInfo.dependencyCount = static_cast<UI32>(vSubpassDependencies.size());
 			vCreateInfo.pDependencies = vSubpassDependencies.data();
 
-			FLINT_VK_ASSERT(vkCreateRenderPass(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vRenderPass));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateRenderPass(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vRenderPass));
 		}
 
 		void VulkanRenderTarget::CreateRenderPassWithMultipleSubpasses(std::vector<std::vector<VulkanRenderTargetAttachmentInterface*>> pSubpasses, VkPipelineBindPoint vBindPoint, const std::vector<VkSubpassDependency>& vSubpassDependencies)
@@ -180,12 +180,12 @@ namespace Flint
 			vCreateInfo.dependencyCount = static_cast<UI32>(vSubpassDependencies.size());
 			vCreateInfo.pDependencies = vSubpassDependencies.data();
 
-			FLINT_VK_ASSERT(vkCreateRenderPass(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vRenderPass));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateRenderPass(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vRenderPass));
 		}
 
 		void VulkanRenderTarget::DestroyRenderPass()
 		{
-			vkDestroyRenderPass(vDevice.GetLogicalDevice(), vRenderPass, nullptr);
+			vDevice.GetDeviceTable().vkDestroyRenderPass(vDevice.GetLogicalDevice(), vRenderPass, nullptr);
 		}
 
 		void VulkanRenderTarget::CreateFrameBuffer(std::vector<VulkanRenderTargetAttachmentInterface*> pAttachments, const FBox2D& extent, const UI32 bufferCount)
@@ -211,14 +211,14 @@ namespace Flint
 					INSERT_INTO_VECTOR(vAttachments, (*itr)->GetImageView(i));
 
 				vCreateInfo.pAttachments = vAttachments.data();
-				FLINT_VK_ASSERT(vkCreateFramebuffer(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vFrameBuffers[i]));
+				FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateFramebuffer(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vFrameBuffers[i]));
 			}
 		}
 
 		void VulkanRenderTarget::DestroyFrameBuffers()
 		{
 			for (auto itr : vFrameBuffers)
-				vkDestroyFramebuffer(vDevice.GetLogicalDevice(), itr, nullptr);
+				vDevice.GetDeviceTable().vkDestroyFramebuffer(vDevice.GetLogicalDevice(), itr, nullptr);
 
 			vFrameBuffers.clear();
 		}
@@ -237,7 +237,7 @@ namespace Flint
 			vCreateInfo.pAttachments = vImageViews.data();
 
 			VkFramebuffer vFrameBuffer = VK_NULL_HANDLE;
-			FLINT_VK_ASSERT(vkCreateFramebuffer(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vFrameBuffer));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateFramebuffer(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vFrameBuffer));
 
 			return vFrameBuffer;
 		}

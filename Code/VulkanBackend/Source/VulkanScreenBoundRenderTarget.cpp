@@ -78,7 +78,8 @@ namespace Flint
 
 		bool VulkanScreenBoundRenderTarget::PresentToDisplay()
 		{
-			VkResult vResult = vkQueuePresentKHR(pDevice->StaticCast<VulkanDevice>().GetQueue().vTransferQueue, pSwapChain->PrepareToPresent());
+			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
+			VkResult vResult = vDevice.GetDeviceTable().vkQueuePresentKHR(vDevice.GetQueue().vTransferQueue, pSwapChain->PrepareToPresent());
 			if (vResult == VK_ERROR_OUT_OF_DATE_KHR || vResult == VK_SUBOPTIMAL_KHR)
 				return false;
 			else FLINT_VK_ASSERT(vResult);

@@ -66,6 +66,7 @@ namespace Flint
 			virtual void Terminate() override final;
 
 		public:
+			VolkDeviceTable GetDeviceTable() const { return mDeviceTable; }
 			VkDevice GetLogicalDevice() const noexcept { return vLogicalDevice; }
 			VkPhysicalDevice GetPhysicalDevice() const noexcept { return vPhysicalDevice; }
 
@@ -84,6 +85,7 @@ namespace Flint
 			void TerminateLogicalDevice();
 
 		private:
+			VolkDeviceTable mDeviceTable = {};
 			VulkanQueue vQueue = {};
 
 			std::vector<const char*> mDeviceExtensions;

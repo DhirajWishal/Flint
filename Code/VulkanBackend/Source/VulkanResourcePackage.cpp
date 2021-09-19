@@ -21,6 +21,7 @@ namespace Flint
 			if (!bIsUpdated)
 				return;
 
+			VulkanDevice& vDevice = pPackager->GetPipeline()->GetDevice()->StaticCast<VulkanDevice>();
 			const std::unordered_map<UI32, ShaderResourceType> resources = pPackager->GetResources();
 			std::vector<VkWriteDescriptorSet> vWrites = {};
 
@@ -75,7 +76,7 @@ namespace Flint
 				vWrites.push_back(vWrite);
 			}
 
-			vkUpdateDescriptorSets(pPackager->GetPipeline()->GetDevice()->StaticCast<VulkanDevice>().GetLogicalDevice(), static_cast<UI32>(vWrites.size()), vWrites.data(), 0, nullptr);
+			vDevice.GetDeviceTable().vkUpdateDescriptorSets(vDevice.GetLogicalDevice(), static_cast<UI32>(vWrites.size()), vWrites.data(), 0, nullptr);
 
 			// Delete the allocated memory.
 			for (auto vWriteDelete : vWrites)

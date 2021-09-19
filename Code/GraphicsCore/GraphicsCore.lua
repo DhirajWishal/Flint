@@ -26,6 +26,7 @@ project "GraphicsCore"
 
 	includedirs {
 		"$(SolutionDir)Code/",
+		"%{IncludeDir.volk}",
 		"%{IncludeDir.Vulkan}",
 	}
 

@@ -53,18 +53,6 @@ namespace Flint
 		};
 	};
 
-	template<class Type>
-	constexpr bool operator==(const FExtent2D<Type>& lhs, const FExtent2D<Type>& rhs)
-	{
-		return lhs.X == rhs.X && lhs.Y == rhs.Y;
-	}
-
-	template<class Type>
-	constexpr bool operator!=(const FExtent2D<Type>& lhs, const FExtent2D<Type>& rhs)
-	{
-		return lhs.X != rhs.X || lhs.Y != rhs.Y;
-	}
-
 	/**
 	 * Flint extent 3D structure.
 	 *
@@ -98,18 +86,6 @@ namespace Flint
 		};
 	};
 
-	template<class Type>
-	constexpr bool operator==(const FExtent3D<Type>& lhs, const FExtent3D<Type>& rhs)
-	{
-		return lhs.X == rhs.X && lhs.Y == rhs.Y && lhs.Z == rhs.Z;
-	}
-
-	template<class Type>
-	constexpr bool operator!=(const FExtent3D<Type>& lhs, const FExtent3D<Type>& rhs)
-	{
-		return lhs.X != rhs.X || lhs.Y != rhs.Y || lhs.Z != rhs.Z;
-	}
-
 	/**
 	 * Flint color 4D structure.
 	 */
@@ -117,8 +93,7 @@ namespace Flint
 	{
 		FColor4D() = default;
 		FColor4D(float value) : mRed(value), mGreen(value), mBlue(value), mAlpha(value) {}
-		FColor4D(float red, float green, float blue, float alpha)
-			: mRed(red), mGreen(green), mBlue(blue), mAlpha(alpha) {}
+		FColor4D(float red, float green, float blue, float alpha) : mRed(red), mGreen(green), mBlue(blue), mAlpha(alpha) {}
 
 		float mRed = 0.0f, mGreen = 0.0f, mBlue = 0.0f, mAlpha = 0.0f;
 	};
@@ -126,7 +101,12 @@ namespace Flint
 	typedef FExtent2D<UI32> FBox2D;
 	typedef FExtent3D<UI32> FBox3D;
 
-	constexpr float CreateColor256(float color) { return color / 256.0f; }
-	constexpr UI64 BitShiftLeft(UI64 count) { return static_cast<UI64>(1) << count; }
-	constexpr UI64 BitShiftRight(UI64 count) { return static_cast<UI64>(1) << count; }
+	template<class Type> constexpr bool operator==(const FExtent2D<Type>& lhs, const FExtent2D<Type>& rhs) { return lhs.X == rhs.X && lhs.Y == rhs.Y; }
+	template<class Type> constexpr bool operator!=(const FExtent2D<Type>& lhs, const FExtent2D<Type>& rhs) { return lhs.X != rhs.X || lhs.Y != rhs.Y; }
+	template<class Type> constexpr bool operator==(const FExtent3D<Type>& lhs, const FExtent3D<Type>& rhs) { return lhs.X == rhs.X && lhs.Y == rhs.Y && lhs.Z == rhs.Z; }
+	template<class Type> constexpr bool operator!=(const FExtent3D<Type>& lhs, const FExtent3D<Type>& rhs) { return lhs.X != rhs.X || lhs.Y != rhs.Y || lhs.Z != rhs.Z; }
+
+	constexpr float CreateColor256(const float color) { return color / 256.0f; }
+	constexpr UI64 BitShiftLeft(const UI64 count) { return static_cast<UI64>(1) << count; }
+	constexpr UI64 BitShiftRight(const UI64 count) { return static_cast<UI64>(1) << count; }
 }

@@ -29,6 +29,7 @@ workspace "Flint"
 	IncludeDir["imgui"] = "$(SolutionDir)ThirdParty/imgui/"
 	IncludeDir["ImGuizmo"] = "$(SolutionDir)ThirdParty/ImGuizmo/"
 	IncludeDir["glm"] = "$(SolutionDir)ThirdParty/glm/"
+	IncludeDir["volk"] = "$(SolutionDir)ThirdParty/volk/"
 	IncludeDir["xxHash"] = "$(SolutionDir)ThirdParty/xxHash/"
 
 	-- Binaries

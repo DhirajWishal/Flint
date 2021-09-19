@@ -107,6 +107,15 @@ namespace Flint
 		 */
 		const UI8 GetLayerCount() const { return mLayerCount; }
 
+	public:
+		/**
+		 * Get the best mip levels for an image.
+		 * 
+		 * @param extent: The extent of the image.
+		 * @return The mip levels.
+		 */
+		static UI32 GetBestMipLevels(const FBox2D extent);
+
 	protected:
 		FBox3D mExtent = {};
 		UI32 mMipLevels = 0;

@@ -141,16 +141,20 @@ namespace Flint
 
 		void VulkanResourcePackager::Terminate()
 		{
+			VulkanDevice& vDevice = pPipeline->GetDevice()->StaticCast<VulkanDevice>();
+
 			if (vDescriptorPool)
-				vkDestroyDescriptorPool(pPipeline->GetDevice()->StaticCast<VulkanDevice>().GetLogicalDevice(), vDescriptorPool, nullptr);
+				vDevice.GetDeviceTable().vkDestroyDescriptorPool(vDevice.GetLogicalDevice(), vDescriptorPool, nullptr);
 			
 			bIsTerminated = true;
 		}
 
 		void VulkanResourcePackager::CreateDescriptorPool()
 		{
+			VulkanDevice& vDevice = pPipeline->GetDevice()->StaticCast<VulkanDevice>();
+
 			if (vDescriptorPool)
-				vkDestroyDescriptorPool(pPipeline->GetDevice()->StaticCast<VulkanDevice>().GetLogicalDevice(), vDescriptorPool, nullptr);
+				vDevice.GetDeviceTable().vkDestroyDescriptorPool(vDevice.GetLogicalDevice(), vDescriptorPool, nullptr);
 
 			VkDescriptorPoolCreateInfo vPoolCreateInfo = {};
 			vPoolCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
@@ -160,11 +164,13 @@ namespace Flint
 			vPoolCreateInfo.poolSizeCount = static_cast<UI32>(vPoolSizes.size());
 			vPoolCreateInfo.pPoolSizes = vPoolSizes.data();
 
-			FLINT_VK_ASSERT(vkCreateDescriptorPool(pPipeline->GetDevice()->StaticCast<VulkanDevice>().GetLogicalDevice(), &vPoolCreateInfo, nullptr, &vDescriptorPool));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateDescriptorPool(vDevice.GetLogicalDevice(), &vPoolCreateInfo, nullptr, &vDescriptorPool));
 		}
 
 		std::shared_ptr<VulkanResourcePackage> VulkanResourcePackager::CreateResourcePackage()
 		{
+			VulkanDevice& vDevice = pPipeline->GetDevice()->StaticCast<VulkanDevice>();
+
 			std::vector<UI32> buffers, images;
 			for (const auto binding : mResources)
 			{
@@ -190,7 +196,7 @@ namespace Flint
 				vAllocateInfo.descriptorSetCount = mDescriptorSetCount;
 				vAllocateInfo.pSetLayouts = vDescriptorSetLayouts.data();
 
-				FLINT_VK_ASSERT(vkAllocateDescriptorSets(pPipeline->GetDevice()->StaticCast<VulkanDevice>().GetLogicalDevice(), &vAllocateInfo, vDescriptorSets.data()));
+				FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkAllocateDescriptorSets(vDevice.GetLogicalDevice(), &vAllocateInfo, vDescriptorSets.data()));
 			}
 
 			// Update the existing packages.

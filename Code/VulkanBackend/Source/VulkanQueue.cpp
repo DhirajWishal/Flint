@@ -38,9 +38,11 @@ namespace Flint
 
 					// Escape from the loop if the queues were found.
 					if (IsComplete())
-						break;
+						return;
 				}
 			}
+
+			throw backend_error("A queue wasn't found with the required flags!");
 		}
 
 		bool VulkanQueue::IsComplete() const

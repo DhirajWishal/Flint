@@ -80,7 +80,7 @@ namespace Flint
 				for (auto itr = vImages.begin(); itr != vImages.end(); itr++)
 				{
 					vCreateInfo.image = *itr;
-					FLINT_VK_ASSERT(vkCreateImageView(device.GetLogicalDevice(), &vCreateInfo, nullptr, pArray));
+					FLINT_VK_ASSERT(device.GetDeviceTable().vkCreateImageView(device.GetLogicalDevice(), &vCreateInfo, nullptr, pArray));
 					pArray++;
 				}
 

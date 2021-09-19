@@ -604,15 +604,15 @@ namespace Flint
 		{
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 
-			vkDestroyPipeline(vDevice.GetLogicalDevice(), vPipeline, nullptr);
+			vDevice.GetDeviceTable().vkDestroyPipeline(vDevice.GetLogicalDevice(), vPipeline, nullptr);
 
 			for (const auto vLayout : vDescriptorSetLayouts)
-				vkDestroyDescriptorSetLayout(vDevice.GetLogicalDevice(), vLayout, nullptr);
+				vDevice.GetDeviceTable().vkDestroyDescriptorSetLayout(vDevice.GetLogicalDevice(), vLayout, nullptr);
 
 			vDescriptorSetLayouts.clear();
 			pResourcePackagers.clear();
 
-			vkDestroyPipelineLayout(vDevice.GetLogicalDevice(), vPipelineLayout, nullptr);
+			vDevice.GetDeviceTable().vkDestroyPipelineLayout(vDevice.GetLogicalDevice(), vPipelineLayout, nullptr);
 
 			bShouldPrepareResources = true;
 
@@ -645,21 +645,21 @@ namespace Flint
 
 			// Write cache data.
 			UI64 cacheSize = 0;
-			FLINT_VK_ASSERT(vkGetPipelineCacheData(vDevice.GetLogicalDevice(), vPipelineCache, &cacheSize, nullptr));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkGetPipelineCacheData(vDevice.GetLogicalDevice(), vPipelineCache, &cacheSize, nullptr));
 
 			unsigned char* pDataStore = new unsigned char[cacheSize];
-			FLINT_VK_ASSERT(vkGetPipelineCacheData(vDevice.GetLogicalDevice(), vPipelineCache, &cacheSize, pDataStore));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkGetPipelineCacheData(vDevice.GetLogicalDevice(), vPipelineCache, &cacheSize, pDataStore));
 
 			WriteDataToCacheFile(cacheSize, pDataStore);
 			delete[] pDataStore;
 
 			// Delete pipeline objects.
-			vkDestroyPipeline(vDevice.GetLogicalDevice(), vPipeline, nullptr);
-			vkDestroyPipelineLayout(vDevice.GetLogicalDevice(), vPipelineLayout, nullptr);
-			vkDestroyPipelineCache(vDevice.GetLogicalDevice(), vPipelineCache, nullptr);
+			vDevice.GetDeviceTable().vkDestroyPipeline(vDevice.GetLogicalDevice(), vPipeline, nullptr);
+			vDevice.GetDeviceTable().vkDestroyPipelineLayout(vDevice.GetLogicalDevice(), vPipelineLayout, nullptr);
+			vDevice.GetDeviceTable().vkDestroyPipelineCache(vDevice.GetLogicalDevice(), vPipelineCache, nullptr);
 
 			for (const auto vLayout : vDescriptorSetLayouts)
-				vkDestroyDescriptorSetLayout(vDevice.GetLogicalDevice(), vLayout, nullptr);
+				vDevice.GetDeviceTable().vkDestroyDescriptorSetLayout(vDevice.GetLogicalDevice(), vLayout, nullptr);
 
 			vDescriptorSetLayouts.clear();
 			pResourcePackagers.clear();
@@ -818,7 +818,8 @@ namespace Flint
 			vCreateInfo.initialDataSize = size;
 			vCreateInfo.pInitialData = data;
 
-			FLINT_VK_ASSERT(vkCreatePipelineCache(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), &vCreateInfo, nullptr, &vPipelineCache));
+			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreatePipelineCache(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vPipelineCache));
 
 			delete[] data;
 		}
@@ -827,6 +828,7 @@ namespace Flint
 		{
 			FLINT_SETUP_PROFILER();
 
+			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 			std::vector<VkPushConstantRange> vConstantRanges;
 			std::unordered_map<UI32, DescriptorSetInfo> descriptorSetInfos;
 
@@ -915,7 +917,7 @@ namespace Flint
 				vLayoutCreateInfo.pBindings = info.second.mLayoutBindings.data();
 
 				VkDescriptorSetLayout vDescriptorSetLayout = VK_NULL_HANDLE;
-				FLINT_VK_ASSERT(vkCreateDescriptorSetLayout(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), &vLayoutCreateInfo, nullptr, &vDescriptorSetLayout));
+				FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateDescriptorSetLayout(vDevice.GetLogicalDevice(), &vLayoutCreateInfo, nullptr, &vDescriptorSetLayout));
 
 				vDescriptorSetLayouts.push_back(vDescriptorSetLayout);
 			}
@@ -930,7 +932,7 @@ namespace Flint
 			vCreateInfo.setLayoutCount = static_cast<UI32>(vDescriptorSetLayouts.size());
 			vCreateInfo.pSetLayouts = vDescriptorSetLayouts.data();
 
-			FLINT_VK_ASSERT(vkCreatePipelineLayout(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), &vCreateInfo, nullptr, &vPipelineLayout));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreatePipelineLayout(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vPipelineLayout));
 		}
 
 		void VulkanGraphicsPipeline::CreatePipeline()
@@ -982,7 +984,8 @@ namespace Flint
 			vCreateInfo.basePipelineHandle = VK_NULL_HANDLE;
 			vCreateInfo.basePipelineIndex = 0;
 
-			FLINT_VK_ASSERT(vkCreateGraphicsPipelines(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), vPipelineCache, 1, &vCreateInfo, nullptr, &vPipeline));
+			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateGraphicsPipelines(vDevice.GetLogicalDevice(), vPipelineCache, 1, &vCreateInfo, nullptr, &vPipeline));
 		}
 	}
 }

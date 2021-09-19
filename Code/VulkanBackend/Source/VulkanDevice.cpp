@@ -19,6 +19,34 @@
 #include "GraphicsCore/GeometryStore.hpp"
 
 #include <set>
+#include <iostream>
+
+template<size_t Size>
+std::ostream& operator<<(std::ostream& stream, uint8_t(&arr)[Size])
+{
+	for (size_t i = 0; i < Size; i++)
+		stream << arr[i];
+
+	return stream;
+}
+
+template<size_t Size>
+std::ostream& operator<<(std::ostream& stream, uint32_t(&arr)[Size])
+{
+	for (size_t i = 0; i < Size; i++)
+		stream << arr[i] << " ";
+
+	return stream;
+}
+
+template<size_t Size>
+std::ostream& operator<<(std::ostream& stream, float(&arr)[Size])
+{
+	for (size_t i = 0; i < Size; i++)
+		stream << arr[i] << " ";
+
+	return stream;
+}
 
 namespace Flint
 {
@@ -88,7 +116,7 @@ namespace Flint
 			vCreateInfo.pNext = VK_NULL_HANDLE;
 			vCreateInfo.flags = VkFenceCreateFlagBits::VK_FENCE_CREATE_SIGNALED_BIT;
 
-			FLINT_VK_ASSERT(vkCreateFence(vLogicalDevice, &vCreateInfo, nullptr, &vSubmitFence));
+			FLINT_VK_ASSERT(GetDeviceTable().vkCreateFence(vLogicalDevice, &vCreateInfo, nullptr, &vSubmitFence));
 		}
 
 		bool VulkanDevice::IsDisplayCompatible(const std::shared_ptr<Display>& pDisplay)
@@ -187,9 +215,9 @@ namespace Flint
 				vSubmitInfos[i] = vCommandBuffer.GetSubmitInfo();
 			}
 
-			FLINT_VK_ASSERT(vkResetFences(vLogicalDevice, 1, &vSubmitFence));
-			FLINT_VK_ASSERT(vkQueueSubmit(GetQueue().vGraphicsQueue, static_cast<UI32>(vSubmitInfos.size()), vSubmitInfos.data(), vSubmitFence));
-			FLINT_VK_ASSERT(vkWaitForFences(vLogicalDevice, 1, &vSubmitFence, VK_TRUE, UI64_MAX));
+			FLINT_VK_ASSERT(GetDeviceTable().vkResetFences(vLogicalDevice, 1, &vSubmitFence));
+			FLINT_VK_ASSERT(GetDeviceTable().vkQueueSubmit(GetQueue().vGraphicsQueue, static_cast<UI32>(vSubmitInfos.size()), vSubmitInfos.data(), vSubmitFence));
+			FLINT_VK_ASSERT(GetDeviceTable().vkWaitForFences(vLogicalDevice, 1, &vSubmitFence, VK_TRUE, UI64_MAX));
 		}
 
 		void VulkanDevice::SubmitComputeCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers)
@@ -205,24 +233,24 @@ namespace Flint
 				vSubmitInfos[i] = vCommandBuffer.GetSubmitInfo();
 			}
 
-			FLINT_VK_ASSERT(vkResetFences(vLogicalDevice, 1, &vSubmitFence));
-			FLINT_VK_ASSERT(vkQueueSubmit(GetQueue().vComputeQueue, static_cast<UI32>(vSubmitInfos.size()), vSubmitInfos.data(), vSubmitFence));
-			FLINT_VK_ASSERT(vkWaitForFences(vLogicalDevice, 1, &vSubmitFence, VK_TRUE, UI64_MAX));
+			FLINT_VK_ASSERT(GetDeviceTable().vkResetFences(vLogicalDevice, 1, &vSubmitFence));
+			FLINT_VK_ASSERT(GetDeviceTable().vkQueueSubmit(GetQueue().vComputeQueue, static_cast<UI32>(vSubmitInfos.size()), vSubmitInfos.data(), vSubmitFence));
+			FLINT_VK_ASSERT(GetDeviceTable().vkWaitForFences(vLogicalDevice, 1, &vSubmitFence, VK_TRUE, UI64_MAX));
 		}
 
 		void VulkanDevice::WaitIdle()
 		{
-			FLINT_VK_ASSERT(vkDeviceWaitIdle(GetLogicalDevice()));
+			FLINT_VK_ASSERT(GetDeviceTable().vkDeviceWaitIdle(GetLogicalDevice()));
 		}
 
 		void VulkanDevice::WaitForQueue()
 		{
-			FLINT_VK_ASSERT(vkQueueWaitIdle(GetQueue().vTransferQueue));
+			FLINT_VK_ASSERT(GetDeviceTable().vkQueueWaitIdle(GetQueue().vTransferQueue));
 		}
 
 		void VulkanDevice::Terminate()
 		{
-			vkDestroyFence(vLogicalDevice, vSubmitFence, nullptr);
+			GetDeviceTable().vkDestroyFence(vLogicalDevice, vSubmitFence, nullptr);
 			TerminateLogicalDevice();
 			bIsTerminated = true;
 		}
@@ -235,7 +263,7 @@ namespace Flint
 				return VkResult::VK_ERROR_UNKNOWN;
 
 			VkMemoryRequirements vMR = {};
-			vkGetImageMemoryRequirements(GetLogicalDevice(), vImages[0], &vMR);
+			GetDeviceTable().vkGetImageMemoryRequirements(GetLogicalDevice(), vImages[0], &vMR);
 
 			VkPhysicalDeviceMemoryProperties vMP = {};
 			vkGetPhysicalDeviceMemoryProperties(GetPhysicalDevice(), &vMP);
@@ -253,11 +281,11 @@ namespace Flint
 				}
 			}
 
-			FLINT_VK_ASSERT(vkAllocateMemory(GetLogicalDevice(), &vAI, nullptr, pDeviceMemory));
+			FLINT_VK_ASSERT(GetDeviceTable().vkAllocateMemory(GetLogicalDevice(), &vAI, nullptr, pDeviceMemory));
 
 			VkResult result = VkResult::VK_ERROR_UNKNOWN;
 			for (UI32 i = 0; i < vImages.size(); i++)
-				result = vkBindImageMemory(GetLogicalDevice(), vImages[i], *pDeviceMemory, vMR.size * i);
+				result = GetDeviceTable().vkBindImageMemory(GetLogicalDevice(), vImages[i], *pDeviceMemory, vMR.size * i);
 
 			return result;
 		}
@@ -374,7 +402,7 @@ namespace Flint
 				FLINT_THROW_RUNTIME_ERROR("Unsupported layout transition!");
 			}
 
-			vkCmdPipelineBarrier(vCommandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &vMB);
+			GetDeviceTable().vkCmdPipelineBarrier(vCommandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &vMB);
 		}
 
 		void VulkanDevice::SetImageLayout(VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, UI32 layerCount, UI32 currentLayer, const UI32 mipLevels, const UI32 currentLevel) const
@@ -426,36 +454,152 @@ namespace Flint
 				FLINT_THROW_RUNTIME_ERROR("Unable to find suitable physical device!");
 
 #ifdef FLINT_DEBUG
-			printf("\n\t----------- VULKAN PHYSICAL DEVICE INFO -----------\n");
-			printf("API Version: %I32d\n", vPhysicalDeviceProperties.apiVersion);
-			printf("Driver Version: %I32d\n", vPhysicalDeviceProperties.driverVersion);
-			printf("Vendor ID: %I32d\n", vPhysicalDeviceProperties.vendorID);
-			printf("Device ID: %I32d\n", vPhysicalDeviceProperties.deviceID);
+			std::cout << "Vulkan Physical Device Information" << std::endl;
+			std::cout << "\tAPI Version: " << vPhysicalDeviceProperties.apiVersion << std::endl;
+			std::cout << "\tDriver Version: " << vPhysicalDeviceProperties.driverVersion << std::endl;
+			std::cout << "\tVendor ID: " << vPhysicalDeviceProperties.vendorID << std::endl;
+			std::cout << "\tDevice ID: " << vPhysicalDeviceProperties.deviceID << std::endl;
+			std::cout << "\tDevice Name: " << vPhysicalDeviceProperties.deviceName << std::endl;
 
 			switch (vPhysicalDeviceProperties.deviceType)
 			{
 			case VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_OTHER:
-				printf("Device Type: Other GPU\n");
+				std::cout << "\tDevice Type: Other GPU" << std::endl;
 				break;
+
 			case VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU:
-				printf("Device Type: Discrete GPU (dedicated)\n");
+				std::cout << "\tDevice Type: Discrete GPU (dedicated)" << std::endl;
 				break;
+
 			case VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU:
-				printf("Device Type: Integrated GPU (on board)\n");
+				std::cout << "\tDevice Type: Integrated GPU (on board)" << std::endl;
 				break;
+
 			case VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU:
-				printf("Device Type: Virtual GPU\n");
+				std::cout << "\tDevice Type: Virtual GPU" << std::endl;
 				break;
+
 			case VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_CPU:
-				printf("Device Type: CPU\n");
+				std::cout << "\tDevice Type: CPU" << std::endl;
 				break;
+
 			default:
-				printf("Device Type: UNIDENTIFIED\n");
+				std::cout << "\tDevice Type: UNIDENTIFIED" << std::endl;
 				break;
 			}
 
-			printf("Device Name: %hs\n", vPhysicalDeviceProperties.deviceName);
-			printf("\t---------------------------------------------------\n\n");
+			std::cout << "\tPipeline Cache UUID: ";
+			for (const auto number : vPhysicalDeviceProperties.pipelineCacheUUID)
+				std::cout << static_cast<UI32>(number);
+			std::cout << std::endl;
+
+			std::cout << "\tDevice limits:" << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxImageDimension1D: " << vPhysicalDeviceProperties.limits.maxImageDimension1D << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxImageDimension2D: " << vPhysicalDeviceProperties.limits.maxImageDimension2D << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxImageDimension3D: " << vPhysicalDeviceProperties.limits.maxImageDimension3D << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxImageDimensionCube: " << vPhysicalDeviceProperties.limits.maxImageDimensionCube << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxImageArrayLayers: " << vPhysicalDeviceProperties.limits.maxImageArrayLayers << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxTexelBufferElements: " << vPhysicalDeviceProperties.limits.maxTexelBufferElements << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxUniformBufferRange: " << vPhysicalDeviceProperties.limits.maxUniformBufferRange << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxStorageBufferRange: " << vPhysicalDeviceProperties.limits.maxStorageBufferRange << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxPushConstantsSize: " << vPhysicalDeviceProperties.limits.maxPushConstantsSize << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxMemoryAllocationCount: " << vPhysicalDeviceProperties.limits.maxMemoryAllocationCount << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxSamplerAllocationCount: " << vPhysicalDeviceProperties.limits.maxSamplerAllocationCount << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::bufferImageGranularity: " << vPhysicalDeviceProperties.limits.bufferImageGranularity << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::sparseAddressSpaceSize: " << vPhysicalDeviceProperties.limits.sparseAddressSpaceSize << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxBoundDescriptorSets: " << vPhysicalDeviceProperties.limits.maxBoundDescriptorSets << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxPerStageDescriptorSamplers: " << vPhysicalDeviceProperties.limits.maxPerStageDescriptorSamplers << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxPerStageDescriptorUniformBuffers: " << vPhysicalDeviceProperties.limits.maxPerStageDescriptorUniformBuffers << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxPerStageDescriptorStorageBuffers: " << vPhysicalDeviceProperties.limits.maxPerStageDescriptorStorageBuffers << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxPerStageDescriptorSampledImages: " << vPhysicalDeviceProperties.limits.maxPerStageDescriptorSampledImages << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxPerStageDescriptorStorageImages: " << vPhysicalDeviceProperties.limits.maxPerStageDescriptorStorageImages << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxPerStageDescriptorInputAttachments: " << vPhysicalDeviceProperties.limits.maxPerStageDescriptorInputAttachments << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxPerStageResources: " << vPhysicalDeviceProperties.limits.maxPerStageResources << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxDescriptorSetSamplers: " << vPhysicalDeviceProperties.limits.maxDescriptorSetSamplers << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxDescriptorSetUniformBuffers: " << vPhysicalDeviceProperties.limits.maxDescriptorSetUniformBuffers << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxDescriptorSetUniformBuffersDynamic: " << vPhysicalDeviceProperties.limits.maxDescriptorSetUniformBuffersDynamic << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxDescriptorSetStorageBuffers: " << vPhysicalDeviceProperties.limits.maxDescriptorSetStorageBuffers << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxDescriptorSetStorageBuffersDynamic: " << vPhysicalDeviceProperties.limits.maxDescriptorSetStorageBuffersDynamic << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxDescriptorSetSampledImages: " << vPhysicalDeviceProperties.limits.maxDescriptorSetSampledImages << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxDescriptorSetStorageImages: " << vPhysicalDeviceProperties.limits.maxDescriptorSetStorageImages << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxDescriptorSetInputAttachments: " << vPhysicalDeviceProperties.limits.maxDescriptorSetInputAttachments << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxVertexInputAttributes: " << vPhysicalDeviceProperties.limits.maxVertexInputAttributes << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxVertexInputBindings: " << vPhysicalDeviceProperties.limits.maxVertexInputBindings << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxVertexInputAttributeOffset: " << vPhysicalDeviceProperties.limits.maxVertexInputAttributeOffset << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxVertexInputBindingStride: " << vPhysicalDeviceProperties.limits.maxVertexInputBindingStride << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxVertexOutputComponents: " << vPhysicalDeviceProperties.limits.maxVertexOutputComponents << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxTessellationGenerationLevel: " << vPhysicalDeviceProperties.limits.maxTessellationGenerationLevel << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxTessellationPatchSize: " << vPhysicalDeviceProperties.limits.maxTessellationPatchSize << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxTessellationControlPerVertexInputComponents: " << vPhysicalDeviceProperties.limits.maxTessellationControlPerVertexInputComponents << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxTessellationControlPerVertexOutputComponents: " << vPhysicalDeviceProperties.limits.maxTessellationControlPerVertexOutputComponents << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxTessellationControlPerPatchOutputComponents: " << vPhysicalDeviceProperties.limits.maxTessellationControlPerPatchOutputComponents << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxTessellationControlTotalOutputComponents: " << vPhysicalDeviceProperties.limits.maxTessellationControlTotalOutputComponents << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxTessellationEvaluationInputComponents: " << vPhysicalDeviceProperties.limits.maxTessellationEvaluationInputComponents << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxTessellationEvaluationOutputComponents: " << vPhysicalDeviceProperties.limits.maxTessellationEvaluationOutputComponents << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxGeometryShaderInvocations: " << vPhysicalDeviceProperties.limits.maxGeometryShaderInvocations << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxGeometryInputComponents: " << vPhysicalDeviceProperties.limits.maxGeometryInputComponents << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxGeometryOutputComponents: " << vPhysicalDeviceProperties.limits.maxGeometryOutputComponents << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxGeometryOutputVertices: " << vPhysicalDeviceProperties.limits.maxGeometryOutputVertices << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxGeometryTotalOutputComponents: " << vPhysicalDeviceProperties.limits.maxGeometryTotalOutputComponents << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxFragmentInputComponents: " << vPhysicalDeviceProperties.limits.maxFragmentInputComponents << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxFragmentOutputAttachments: " << vPhysicalDeviceProperties.limits.maxFragmentOutputAttachments << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxFragmentDualSrcAttachments: " << vPhysicalDeviceProperties.limits.maxFragmentDualSrcAttachments << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxFragmentCombinedOutputResources: " << vPhysicalDeviceProperties.limits.maxFragmentCombinedOutputResources << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxComputeSharedMemorySize: " << vPhysicalDeviceProperties.limits.maxComputeSharedMemorySize << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxComputeWorkGroupCount: " << vPhysicalDeviceProperties.limits.maxComputeWorkGroupCount << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxComputeWorkGroupInvocations: " << vPhysicalDeviceProperties.limits.maxComputeWorkGroupInvocations << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxComputeWorkGroupSize: " << vPhysicalDeviceProperties.limits.maxComputeWorkGroupSize << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::subPixelPrecisionBits: " << vPhysicalDeviceProperties.limits.subPixelPrecisionBits << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::subTexelPrecisionBits: " << vPhysicalDeviceProperties.limits.subTexelPrecisionBits << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::mipmapPrecisionBits: " << vPhysicalDeviceProperties.limits.mipmapPrecisionBits << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxDrawIndexedIndexValue: " << vPhysicalDeviceProperties.limits.maxDrawIndexedIndexValue << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxDrawIndirectCount: " << vPhysicalDeviceProperties.limits.maxDrawIndirectCount << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxSamplerLodBias: " << vPhysicalDeviceProperties.limits.maxSamplerLodBias << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxSamplerAnisotropy: " << vPhysicalDeviceProperties.limits.maxSamplerAnisotropy << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxViewports: " << vPhysicalDeviceProperties.limits.maxViewports << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxViewportDimensions: " << vPhysicalDeviceProperties.limits.maxViewportDimensions << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::viewportBoundsRange: " << vPhysicalDeviceProperties.limits.viewportBoundsRange << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::viewportSubPixelBits: " << vPhysicalDeviceProperties.limits.viewportSubPixelBits << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::minMemoryMapAlignment: " << vPhysicalDeviceProperties.limits.minMemoryMapAlignment << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::minTexelBufferOffsetAlignment: " << vPhysicalDeviceProperties.limits.minTexelBufferOffsetAlignment << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::minUniformBufferOffsetAlignment: " << vPhysicalDeviceProperties.limits.minUniformBufferOffsetAlignment << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::minStorageBufferOffsetAlignment: " << vPhysicalDeviceProperties.limits.minStorageBufferOffsetAlignment << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::minTexelOffset: " << vPhysicalDeviceProperties.limits.minTexelOffset << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxTexelOffset: " << vPhysicalDeviceProperties.limits.maxTexelOffset << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::minTexelGatherOffset: " << vPhysicalDeviceProperties.limits.minTexelGatherOffset << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxTexelGatherOffset: " << vPhysicalDeviceProperties.limits.maxTexelGatherOffset << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::minInterpolationOffset: " << vPhysicalDeviceProperties.limits.minInterpolationOffset << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxInterpolationOffset: " << vPhysicalDeviceProperties.limits.maxInterpolationOffset << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::subPixelInterpolationOffsetBits: " << vPhysicalDeviceProperties.limits.subPixelInterpolationOffsetBits << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxFramebufferWidth: " << vPhysicalDeviceProperties.limits.maxFramebufferWidth << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxFramebufferHeight: " << vPhysicalDeviceProperties.limits.maxFramebufferHeight << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxFramebufferLayers: " << vPhysicalDeviceProperties.limits.maxFramebufferLayers << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::framebufferColorSampleCounts: " << vPhysicalDeviceProperties.limits.framebufferColorSampleCounts << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::framebufferDepthSampleCounts: " << vPhysicalDeviceProperties.limits.framebufferDepthSampleCounts << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::framebufferStencilSampleCounts: " << vPhysicalDeviceProperties.limits.framebufferStencilSampleCounts << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::framebufferNoAttachmentsSampleCounts: " << vPhysicalDeviceProperties.limits.framebufferNoAttachmentsSampleCounts << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxColorAttachments: " << vPhysicalDeviceProperties.limits.maxColorAttachments << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::sampledImageColorSampleCounts: " << vPhysicalDeviceProperties.limits.sampledImageColorSampleCounts << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::sampledImageIntegerSampleCounts: " << vPhysicalDeviceProperties.limits.sampledImageIntegerSampleCounts << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::sampledImageDepthSampleCounts: " << vPhysicalDeviceProperties.limits.sampledImageDepthSampleCounts << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::sampledImageStencilSampleCounts: " << vPhysicalDeviceProperties.limits.sampledImageStencilSampleCounts << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::storageImageSampleCounts: " << vPhysicalDeviceProperties.limits.storageImageSampleCounts << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxSampleMaskWords: " << vPhysicalDeviceProperties.limits.maxSampleMaskWords << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::timestampComputeAndGraphics: " << vPhysicalDeviceProperties.limits.timestampComputeAndGraphics << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::timestampPeriod: " << vPhysicalDeviceProperties.limits.timestampPeriod << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxClipDistances: " << vPhysicalDeviceProperties.limits.maxClipDistances << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxCullDistances: " << vPhysicalDeviceProperties.limits.maxCullDistances << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::maxCombinedClipAndCullDistances: " << vPhysicalDeviceProperties.limits.maxCombinedClipAndCullDistances << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::discreteQueuePriorities: " << vPhysicalDeviceProperties.limits.discreteQueuePriorities << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::pointSizeRange: " << vPhysicalDeviceProperties.limits.pointSizeRange << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::lineWidthRange: " << vPhysicalDeviceProperties.limits.lineWidthRange << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::pointSizeGranularity: " << vPhysicalDeviceProperties.limits.pointSizeGranularity << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::lineWidthGranularity: " << vPhysicalDeviceProperties.limits.lineWidthGranularity << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::strictLines: " << vPhysicalDeviceProperties.limits.strictLines << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::standardSampleLocations: " << vPhysicalDeviceProperties.limits.standardSampleLocations << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::optimalBufferCopyOffsetAlignment: " << vPhysicalDeviceProperties.limits.optimalBufferCopyOffsetAlignment << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::optimalBufferCopyRowPitchAlignment: " << vPhysicalDeviceProperties.limits.optimalBufferCopyRowPitchAlignment << std::endl;
+			std::cout << "\t\tVkPhysicalDeviceProperties::limits::nonCoherentAtomSize: " << vPhysicalDeviceProperties.limits.nonCoherentAtomSize << std::endl;
 
 #endif	// FLINT_DEBUG
 
@@ -518,19 +662,20 @@ namespace Flint
 
 			// Create the logical device.
 			FLINT_VK_ASSERT(vkCreateDevice(vPhysicalDevice, &vDeviceCreateInfo, nullptr, &vLogicalDevice));
+			volkLoadDeviceTable(&mDeviceTable, vLogicalDevice);
 
 			if ((mFlags & DeviceFlags::GraphicsCompatible) == DeviceFlags::GraphicsCompatible)
-				vkGetDeviceQueue(GetLogicalDevice(), vQueue.mGraphicsFamily.value(), 0, &vQueue.vGraphicsQueue);
+				GetDeviceTable().vkGetDeviceQueue(GetLogicalDevice(), vQueue.mGraphicsFamily.value(), 0, &vQueue.vGraphicsQueue);
 
 			if ((mFlags & DeviceFlags::ComputeCompatible) == DeviceFlags::ComputeCompatible)
-				vkGetDeviceQueue(GetLogicalDevice(), vQueue.mComputeFamily.value(), 0, &vQueue.vComputeQueue);
+				GetDeviceTable().vkGetDeviceQueue(GetLogicalDevice(), vQueue.mComputeFamily.value(), 0, &vQueue.vComputeQueue);
 
-			vkGetDeviceQueue(GetLogicalDevice(), vQueue.mTransferFamily.value(), 0, &vQueue.vTransferQueue);
+			GetDeviceTable().vkGetDeviceQueue(GetLogicalDevice(), vQueue.mTransferFamily.value(), 0, &vQueue.vTransferQueue);
 		}
 
 		void VulkanDevice::TerminateLogicalDevice()
 		{
-			vkDestroyDevice(vLogicalDevice, nullptr);
+			GetDeviceTable().vkDestroyDevice(vLogicalDevice, nullptr);
 		}
 	}
 }

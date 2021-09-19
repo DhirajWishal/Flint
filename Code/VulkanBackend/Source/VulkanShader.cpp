@@ -285,7 +285,7 @@ namespace Flint
 		void VulkanShader::Terminate()
 		{
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-			vkDestroyShaderModule(vDevice.GetLogicalDevice(), vModule, nullptr);
+			vDevice.GetDeviceTable().vkDestroyShaderModule(vDevice.GetLogicalDevice(), vModule, nullptr);
 
 			bIsTerminated = true;
 		}
@@ -444,7 +444,8 @@ namespace Flint
 			vCreateInfo.codeSize = mShaderCode.size();
 			vCreateInfo.pCode = mShaderCode.data();
 
-			FLINT_VK_ASSERT(vkCreateShaderModule(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), &vCreateInfo, nullptr, &vModule));
+			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateShaderModule(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vModule));
 		}
 	}
 }

@@ -17,7 +17,7 @@ namespace Flint
 			vPoolCI.pNext = VK_NULL_HANDLE;
 			vPoolCI.queueFamilyIndex = vDevice.GetQueue().mTransferFamily.value();
 
-			FLINT_VK_ASSERT(vkCreateCommandPool(vDevice.GetLogicalDevice(), &vPoolCI, nullptr, &vPool));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateCommandPool(vDevice.GetLogicalDevice(), &vPoolCI, nullptr, &vPool));
 
 			VkCommandBufferAllocateInfo vAI = {};
 			vAI.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -26,19 +26,19 @@ namespace Flint
 			vAI.commandPool = vPool;
 			vAI.commandBufferCount = 1;
 
-			FLINT_VK_ASSERT(vkAllocateCommandBuffers(vDevice.GetLogicalDevice(), &vAI, &vBuffer));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkAllocateCommandBuffers(vDevice.GetLogicalDevice(), &vAI, &vBuffer));
 
 			VkCommandBufferBeginInfo vBI = {};
 			vBI.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 			//vBI.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-			FLINT_VK_ASSERT(vkBeginCommandBuffer(vBuffer, &vBI));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkBeginCommandBuffer(vBuffer, &vBI));
 		}
 
 		VulkanOneTimeCommandBuffer::~VulkanOneTimeCommandBuffer()
 		{
 			FLINT_SETUP_PROFILER();
 
-			FLINT_VK_ASSERT(vkEndCommandBuffer(vBuffer));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkEndCommandBuffer(vBuffer));
 
 			VkSubmitInfo vSI = {};
 			vSI.sType = VkStructureType::VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -51,15 +51,15 @@ namespace Flint
 			vFCI.flags = 0;
 
 			VkFence vFence = VK_NULL_HANDLE;
-			FLINT_VK_ASSERT(vkCreateFence(vDevice.GetLogicalDevice(), &vFCI, nullptr, &vFence));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateFence(vDevice.GetLogicalDevice(), &vFCI, nullptr, &vFence));
 
-			FLINT_VK_ASSERT(vkQueueSubmit(vDevice.GetQueue().vTransferQueue, 1, &vSI, vFence));
-			FLINT_VK_ASSERT(vkWaitForFences(vDevice.GetLogicalDevice(), 1, &vFence, VK_TRUE, UINT64_MAX));
-			FLINT_VK_ASSERT(vkQueueWaitIdle(vDevice.GetQueue().vTransferQueue));
-			vkDestroyFence(vDevice.GetLogicalDevice(), vFence, nullptr);
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkQueueSubmit(vDevice.GetQueue().vTransferQueue, 1, &vSI, vFence));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkWaitForFences(vDevice.GetLogicalDevice(), 1, &vFence, VK_TRUE, UINT64_MAX));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkQueueWaitIdle(vDevice.GetQueue().vTransferQueue));
+			vDevice.GetDeviceTable().vkDestroyFence(vDevice.GetLogicalDevice(), vFence, nullptr);
 
-			vkFreeCommandBuffers(vDevice.GetLogicalDevice(), vPool, 1, vSI.pCommandBuffers);
-			vkDestroyCommandPool(vDevice.GetLogicalDevice(), vPool, nullptr);
+			vDevice.GetDeviceTable().vkFreeCommandBuffers(vDevice.GetLogicalDevice(), vPool, 1, vSI.pCommandBuffers);
+			vDevice.GetDeviceTable().vkDestroyCommandPool(vDevice.GetLogicalDevice(), vPool, nullptr);
 		}
 	}
 }

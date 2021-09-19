@@ -5,7 +5,7 @@
 
 #include "GraphicsCore/Instance.hpp"
 
-#include <vulkan/vulkan.h>
+#include <volk.h>
 #include <optional>
 
 namespace Flint
@@ -21,9 +21,9 @@ namespace Flint
 			bool IsComplete() const;
 
 		public:
-			std::optional<UI32> mGraphicsFamily;
-			std::optional<UI32> mComputeFamily;
-			std::optional<UI32> mTransferFamily;
+			std::optional<UI32> mGraphicsFamily = {};
+			std::optional<UI32> mComputeFamily = {};
+			std::optional<UI32> mTransferFamily = {};
 
 			VkQueue vGraphicsQueue = VK_NULL_HANDLE;
 			VkQueue vComputeQueue = VK_NULL_HANDLE;

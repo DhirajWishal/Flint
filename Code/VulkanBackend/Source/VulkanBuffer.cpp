@@ -113,8 +113,9 @@ namespace Flint
 			vBufferCopy.srcOffset = srcOffset;
 			vBufferCopy.dstOffset = dstOffset;
 
-			VulkanOneTimeCommandBuffer vCommandBuffer(pDevice->StaticCast<VulkanDevice>());
-			vkCmdCopyBuffer(vCommandBuffer, pSrcBuffer->StaticCast<VulkanBuffer>().vBuffer, vBuffer, 1, &vBufferCopy);
+			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
+			VulkanOneTimeCommandBuffer vCommandBuffer(vDevice);
+			vDevice.GetDeviceTable().vkCmdCopyBuffer(vCommandBuffer, pSrcBuffer->StaticCast<VulkanBuffer>().vBuffer, vBuffer, 1, &vBufferCopy);
 		}
 
 		void* VulkanBuffer::MapMemory(const UI64 size, const UI64 offset)
@@ -127,7 +128,8 @@ namespace Flint
 				throw std::range_error("Submitted size is invalid!");
 
 			void* pDataStore = nullptr;
-			FLINT_VK_ASSERT(vkMapMemory(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), vMemory, offset, size, 0, &pDataStore));
+			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkMapMemory(vDevice.GetLogicalDevice(), vMemory, offset, size, 0, &pDataStore));
 
 			return pDataStore;
 		}
@@ -136,14 +138,15 @@ namespace Flint
 		{
 			FLINT_SETUP_PROFILER();
 
-			vkUnmapMemory(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), vMemory);
+			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
+			vDevice.GetDeviceTable().vkUnmapMemory(vDevice.GetLogicalDevice(), vMemory);
 		}
 
 		void VulkanBuffer::Terminate()
 		{
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-			vkDestroyBuffer(vDevice.GetLogicalDevice(), vBuffer, nullptr);
-			vkFreeMemory(vDevice.GetLogicalDevice(), vMemory, nullptr);
+			vDevice.GetDeviceTable().vkDestroyBuffer(vDevice.GetLogicalDevice(), vBuffer, nullptr);
+			vDevice.GetDeviceTable().vkFreeMemory(vDevice.GetLogicalDevice(), vMemory, nullptr);
 
 			bIsTerminated = true;
 		}
@@ -162,7 +165,8 @@ namespace Flint
 			vCreateInfo.size = static_cast<UI32>(mSize);
 			vCreateInfo.usage = vBufferUsage;
 
-			FLINT_VK_ASSERT(vkCreateBuffer(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), &vCreateInfo, nullptr, &vBuffer));
+			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateBuffer(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vBuffer));
 		}
 
 		void VulkanBuffer::CreateBufferMemory()
@@ -172,7 +176,7 @@ namespace Flint
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 
 			VkMemoryRequirements vMR = {};
-			vkGetBufferMemoryRequirements(vDevice.GetLogicalDevice(), vBuffer, &vMR);
+			vDevice.GetDeviceTable().vkGetBufferMemoryRequirements(vDevice.GetLogicalDevice(), vBuffer, &vMR);
 
 			VkPhysicalDeviceMemoryProperties vMP = {};
 			vkGetPhysicalDeviceMemoryProperties(vDevice.GetPhysicalDevice(), &vMP);
@@ -190,8 +194,8 @@ namespace Flint
 				}
 			}
 
-			FLINT_VK_ASSERT(vkAllocateMemory(vDevice.GetLogicalDevice(), &vAI, nullptr, &vMemory));
-			FLINT_VK_ASSERT(vkBindBufferMemory(vDevice.GetLogicalDevice(), vBuffer, vMemory, 0));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkAllocateMemory(vDevice.GetLogicalDevice(), &vAI, nullptr, &vMemory));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkBindBufferMemory(vDevice.GetLogicalDevice(), vBuffer, vMemory, 0));
 		}
 	}
 }

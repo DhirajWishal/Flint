@@ -160,19 +160,21 @@ namespace Flint
 			vCreateInfo.mipmapMode = Helpers::GetMipMapMode(specification.mMipMapMode);
 			vCreateInfo.unnormalizedCoordinates = GET_VK_BOOL(specification.bEnableUnnormalizedCoordinates);
 
+			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 			if (vCreateInfo.maxAnisotropy == 0.0f)
 			{
 				VkPhysicalDeviceProperties vProperties = {};
-				vkGetPhysicalDeviceProperties(pDevice->StaticCast<VulkanDevice>().GetPhysicalDevice(), &vProperties);
+				vkGetPhysicalDeviceProperties(vDevice.GetPhysicalDevice(), &vProperties);
 				vCreateInfo.maxAnisotropy = vProperties.limits.maxSamplerAnisotropy;
 			}
 
-			FLINT_VK_ASSERT(vkCreateSampler(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), &vCreateInfo, nullptr, &vSampler));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateSampler(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vSampler));
 		}
 
 		void VulkanImageSampler::Terminate()
 		{
-			vkDestroySampler(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), vSampler, nullptr);
+			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
+			vDevice.GetDeviceTable().vkDestroySampler(vDevice.GetLogicalDevice(), vSampler, nullptr);
 
 			bIsTerminated = true;
 		}

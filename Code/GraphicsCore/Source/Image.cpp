@@ -20,4 +20,9 @@ namespace Flint
 		if (!mMipLevels)
 			throw std::invalid_argument("Image mip levels must be grater than 0!");
 	}
+	
+	UI32 Image::GetBestMipLevels(const FBox2D extent)
+	{
+		return static_cast<UI32>(std::floor(std::log2(std::max(extent.mWidth, extent.mHeight))) + 1);
+	}
 }

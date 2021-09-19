@@ -243,7 +243,7 @@ namespace Flint
 				vDevice.SetImageLayout(vCommandBuffer, vImage, vCurrentLayout, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels);
 				vCurrentLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
 
-				vkCmdCopyImageToBuffer(vCommandBuffer, vImage, vCurrentLayout, pBuffer->GetBuffer(), 1, &vCopy);
+				vDevice.GetDeviceTable().vkCmdCopyImageToBuffer(vCommandBuffer, vImage, vCurrentLayout, pBuffer->GetBuffer(), 1, &vCopy);
 
 				vDevice.SetImageLayout(vCommandBuffer, vImage, vCurrentLayout, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels);
 				vCurrentLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
@@ -255,16 +255,17 @@ namespace Flint
 		void VulkanImage::Terminate()
 		{
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-			vkDestroyImage(vDevice.GetLogicalDevice(), vImage, nullptr);
-			vkDestroyImageView(vDevice.GetLogicalDevice(), vImageView, nullptr);
-			vkFreeMemory(vDevice.GetLogicalDevice(), vImageMemory, nullptr);
+			vDevice.GetDeviceTable().vkDestroyImage(vDevice.GetLogicalDevice(), vImage, nullptr);
+			vDevice.GetDeviceTable().vkDestroyImageView(vDevice.GetLogicalDevice(), vImageView, nullptr);
+			vDevice.GetDeviceTable().vkFreeMemory(vDevice.GetLogicalDevice(), vImageMemory, nullptr);
 
 			bIsTerminated = true;
 		}
 
 		void VulkanImage::CopyFromImage(VkImage vSrcImage, VkImageLayout vSrcLayout, VkOffset3D srcOffset, VkOffset3D dstOffset, VkImageSubresourceLayers subresourceLayers)
 		{
-			VulkanOneTimeCommandBuffer vCommandBuffer{ pDevice->StaticCast<VulkanDevice>() };
+			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
+			VulkanOneTimeCommandBuffer vCommandBuffer{ vDevice };
 
 			VkImageCopy vImageCopy = {};
 			vImageCopy.extent.width = mExtent.mWidth;
@@ -274,7 +275,7 @@ namespace Flint
 			vImageCopy.dstOffset = dstOffset;
 			vImageCopy.srcSubresource = subresourceLayers;
 
-			vkCmdCopyImage(vCommandBuffer, vSrcImage, vSrcLayout, vImage, vCurrentLayout, 1, &vImageCopy);
+			vDevice.GetDeviceTable().vkCmdCopyImage(vCommandBuffer, vSrcImage, vSrcLayout, vImage, vCurrentLayout, 1, &vImageCopy);
 		}
 
 		void VulkanImage::Recreate(const FBox2D& extent)
@@ -443,7 +444,7 @@ namespace Flint
 			vCreateInfo.queueFamilyIndexCount = static_cast<UI32>(queueIndexes.size());
 			vCreateInfo.pQueueFamilyIndices = queueIndexes.data();
 
-			FLINT_VK_ASSERT(vkCreateImage(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vImage));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateImage(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vImage));
 		}
 
 		void VulkanImage::CreateImageMemory()
@@ -497,7 +498,7 @@ namespace Flint
 					barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 					barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
 
-					vkCmdPipelineBarrier(vCommandBuffer,
+					vDevice.GetDeviceTable().vkCmdPipelineBarrier(vCommandBuffer,
 						VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0,
 						0, nullptr,
 						0, nullptr,
@@ -517,7 +518,7 @@ namespace Flint
 					blit.dstSubresource.baseArrayLayer = i;
 					blit.dstSubresource.layerCount = mLayerCount - i;
 
-					vkCmdBlitImage(vCommandBuffer,
+					vDevice.GetDeviceTable().vkCmdBlitImage(vCommandBuffer,
 						vImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
 						vImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 						1, &blit,
@@ -528,7 +529,7 @@ namespace Flint
 					barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
 					barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
-					vkCmdPipelineBarrier(vCommandBuffer,
+					vDevice.GetDeviceTable().vkCmdPipelineBarrier(vCommandBuffer,
 						VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0,
 						0, nullptr,
 						0, nullptr,
@@ -545,7 +546,7 @@ namespace Flint
 				barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 				barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
-				vkCmdPipelineBarrier(vCommandBuffer,
+				vDevice.GetDeviceTable().vkCmdPipelineBarrier(vCommandBuffer,
 					VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0,
 					0, nullptr,
 					0, nullptr,
@@ -588,7 +589,7 @@ namespace Flint
 				barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 				barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
 
-				vkCmdPipelineBarrier(vCommandBuffer,
+				vDevice.GetDeviceTable().vkCmdPipelineBarrier(vCommandBuffer,
 					VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0,
 					0, nullptr,
 					0, nullptr,
@@ -608,7 +609,7 @@ namespace Flint
 				blit.dstSubresource.baseArrayLayer = 0;
 				blit.dstSubresource.layerCount = mLayerCount;
 
-				vkCmdBlitImage(vCommandBuffer,
+				vDevice.GetDeviceTable().vkCmdBlitImage(vCommandBuffer,
 					vImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
 					vImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 					1, &blit,
@@ -619,7 +620,7 @@ namespace Flint
 				barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
 				barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
-				vkCmdPipelineBarrier(vCommandBuffer,
+				vDevice.GetDeviceTable().vkCmdPipelineBarrier(vCommandBuffer,
 					VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0,
 					0, nullptr,
 					0, nullptr,
@@ -636,7 +637,7 @@ namespace Flint
 			barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 			barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
-			vkCmdPipelineBarrier(vCommandBuffer,
+			vDevice.GetDeviceTable().vkCmdPipelineBarrier(vCommandBuffer,
 				VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0,
 				0, nullptr,
 				0, nullptr,
@@ -681,7 +682,7 @@ namespace Flint
 					vCopy.imageSubresource.mipLevel = 0;
 
 					VulkanOneTimeCommandBuffer vCommandBuffer(vDevice);
-					vkCmdCopyBufferToImage(vCommandBuffer, vStagingBuffer.GetBuffer(), vImage, vCurrentLayout, 1, &vCopy);
+					vDevice.GetDeviceTable().vkCmdCopyBufferToImage(vCommandBuffer, vStagingBuffer.GetBuffer(), vImage, vCurrentLayout, 1, &vCopy);
 				}
 
 				vStagingBuffer.Terminate();
@@ -714,10 +715,3 @@ namespace Flint
 		}
 	}
 }
-
-/*
-vkCmdPipelineBarrier(): .pImageMemoryBarriers[0] VkImage 0x72303f0000000052[] cannot transition the layout of aspect=1 level=0 layer=1 from VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL when the previous known layout is VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL. The Vulkan spec states: If srcQueueFamilyIndex and dstQueueFamilyIndex define a queue family ownership transfer or oldLayout and newLayout define an image layout transition, oldLayout must be VK_IMAGE_LAYOUT_UNDEFINED or the current layout of the image subresources affected by the barrier (https://vulkan.lunarg.com/doc/view/1.2.182.0/windows/1.2-extensions/vkspec.html#VUID-VkImageMemoryBarrier-oldLayout-01197)
-vkCmdBlitImage(): Cannot use VkImage 0x72303f0000000052[] (layer=1 mip=1) with specific layout VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL that doesn't match the previous known layout VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL. The Vulkan spec states: dstImageLayout must specify the layout of the image subresources of dstImage specified in pRegions at the time this command is executed on a VkDevice (https://vulkan.lunarg.com/doc/view/1.2.182.0/windows/1.2-extensions/vkspec.html#VUID-vkCmdBlitImage-dstImageLayout-00226)
-In vkCmdBlitImage(), pRegions[0].srcSubresource.baseArrayLayer is 1 and .layerCount is 6, but provided VkImage 0x72303f0000000052[] has 6 array layers. The Vulkan spec states: The srcSubresource.baseArrayLayer + srcSubresource.layerCount of each element of pRegions must be less than or equal to the arrayLayers specified in VkImageCreateInfo when srcImage was created (https://vulkan.lunarg.com/doc/view/1.2.182.0/windows/1.2-extensions/vkspec.html#VUID-vkCmdBlitImage-srcSubresource-01707)
-vkCmdBlitImage(): layerCount in source and destination subresource of pRegions[0] does not match. The Vulkan spec states: The layerCount member of srcSubresource and dstSubresource must match (https://vulkan.lunarg.com/doc/view/1.2.182.0/windows/1.2-extensions/vkspec.html#VUID-VkImageBlit-layerCount-00239)
-*/
