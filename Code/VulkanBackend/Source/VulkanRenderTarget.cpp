@@ -51,16 +51,16 @@ namespace Flint
 
 				switch ((*itr)->GetAttachmentType())
 				{
-				case Flint::VulkanBackend::RenderTargetAttachmenType::SWAP_CHAIN:
+				case Flint::VulkanBackend::RenderTargetAttachmenType::SwapChain:
 					INSERT_INTO_VECTOR(vResolveAttachmentRef, vAR);
 					break;
 
-				case Flint::VulkanBackend::RenderTargetAttachmenType::COLOR_BUFFER:
+				case Flint::VulkanBackend::RenderTargetAttachmenType::ColorBuffer:
 					INSERT_INTO_VECTOR(vColorAttachmentRef, vAR);
 					bHasColorAttachment = true;
 					break;
 
-				case Flint::VulkanBackend::RenderTargetAttachmenType::DEPTH_BUFFER:
+				case Flint::VulkanBackend::RenderTargetAttachmenType::DepthBuffer:
 					INSERT_INTO_VECTOR(vDepthAttachmentRef, vAR);
 					break;
 
@@ -138,15 +138,15 @@ namespace Flint
 
 					switch ((*itr)->GetAttachmentType())
 					{
-					case Flint::VulkanBackend::RenderTargetAttachmenType::SWAP_CHAIN:
+					case Flint::VulkanBackend::RenderTargetAttachmenType::SwapChain:
 						INSERT_INTO_VECTOR(vResolveAttachmentRef, vAR);
 						break;
 
-					case Flint::VulkanBackend::RenderTargetAttachmenType::COLOR_BUFFER:
+					case Flint::VulkanBackend::RenderTargetAttachmenType::ColorBuffer:
 						INSERT_INTO_VECTOR(vColorAttachmentRef, vAR);
 						break;
 
-					case Flint::VulkanBackend::RenderTargetAttachmenType::DEPTH_BUFFER:
+					case Flint::VulkanBackend::RenderTargetAttachmenType::DepthBuffer:
 						INSERT_INTO_VECTOR(vDepthAttachmentRef, vAR);
 						break;
 
@@ -198,8 +198,8 @@ namespace Flint
 			vCreateInfo.pNext = VK_NULL_HANDLE;
 			vCreateInfo.layers = 1;
 			vCreateInfo.renderPass = vRenderPass;
-			vCreateInfo.width = static_cast<UI32>(extent.mWidth);
-			vCreateInfo.height = static_cast<UI32>(extent.mHeight);
+			vCreateInfo.width = extent.mWidth;
+			vCreateInfo.height = extent.mHeight;
 			vCreateInfo.attachmentCount = static_cast<UI32>(pAttachments.size());
 
 			vFrameBuffers.resize(bufferCount);
@@ -231,8 +231,8 @@ namespace Flint
 			vCreateInfo.pNext = VK_NULL_HANDLE;
 			vCreateInfo.layers = 1;
 			vCreateInfo.renderPass = vRenderPass;
-			vCreateInfo.width = static_cast<UI32>(extent.mWidth);
-			vCreateInfo.height = static_cast<UI32>(extent.mHeight);
+			vCreateInfo.width = extent.mWidth;
+			vCreateInfo.height = extent.mHeight;
 			vCreateInfo.attachmentCount = static_cast<UI32>(vImageViews.size());
 			vCreateInfo.pAttachments = vImageViews.data();
 

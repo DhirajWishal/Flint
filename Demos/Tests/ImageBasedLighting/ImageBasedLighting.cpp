@@ -11,6 +11,7 @@ namespace Flint
 
 		mSkyBox.Initialize(&mApplication);
 		pGraphicsScene->SubmitGameObject(&mSkyBox);
+
 		while (pGraphicsScene->GetDisplay()->IsOpen())
 		{
 			mApplication.PrepareNewFrame();

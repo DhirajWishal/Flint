@@ -358,7 +358,7 @@ namespace Flint
 
 		RenderTargetAttachmenType VulkanImage::GetAttachmentType() const
 		{
-			return (mUsage & ImageUsage::Depth) == ImageUsage::Depth ? RenderTargetAttachmenType::DEPTH_BUFFER : RenderTargetAttachmenType::COLOR_BUFFER;
+			return (mUsage & ImageUsage::Depth) == ImageUsage::Depth ? RenderTargetAttachmenType::DepthBuffer : RenderTargetAttachmenType::ColorBuffer;
 		}
 
 		VkFormat VulkanImage::GetImageFormat() const
@@ -653,7 +653,7 @@ namespace Flint
 			CreateImageMemory();
 			CreateImageView();
 
-			// Copy date to the device.
+			// Copy data to the device.
 			if (pImageData)
 			{
 				const UI64 size = static_cast<UI64>(mExtent.mWidth) * mExtent.mHeight * mExtent.mDepth * Utilities::GetByteDepth(mFormat) * mLayerCount;

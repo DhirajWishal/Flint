@@ -24,7 +24,7 @@ namespace Flint
 
 			VkPresentInfoKHR* PrepareToPresent();
 
-			virtual RenderTargetAttachmenType GetAttachmentType() const override final { return RenderTargetAttachmenType::SWAP_CHAIN; }
+			virtual RenderTargetAttachmenType GetAttachmentType() const override final { return RenderTargetAttachmenType::SwapChain; }
 			virtual VkFormat GetImageFormat() const override final;
 			virtual VkAttachmentDescription GetAttachmentDescription() const override final;
 			virtual VkImageLayout GetAttachmentLayout() const override final;
