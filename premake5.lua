@@ -31,12 +31,14 @@ workspace "Flint"
 	IncludeDir["glm"] = "$(SolutionDir)ThirdParty/glm/"
 	IncludeDir["volk"] = "$(SolutionDir)ThirdParty/volk/"
 	IncludeDir["xxHash"] = "$(SolutionDir)ThirdParty/xxHash/"
+	IncludeDir["tinygltf"] = "$(SolutionDir)ThirdParty/tinygltf/"
 
 	-- Binaries
 	IncludeLib["GLFW"] = "$(SolutionDir)ThirdParty/glfw/src/Release"
 	IncludeLib["Vulkan"] = "$(SolutionDir)ThirdParty/Vulkan/lib"
 	IncludeLib["SPIRV_Cross"] = "$(SolutionDir)ThirdParty/SPIRV-Cross/Release"
 	IncludeLib["Assimp"] = "$(SolutionDir)ThirdParty/Assimp/lib/Release"
+	IncludeLib["tinygltf"] = "$(SolutionDir)ThirdParty/tinygltf/Release"
 	IncludeLib["shaderc_debug"] = "$(SolutionDir)ThirdParty/shaderc/libshaderc/Debug"
 	IncludeLib["shaderc_release"] = "$(SolutionDir)ThirdParty/shaderc/libshaderc/Release"
 

@@ -10,6 +10,8 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include <tiny_gltf.h>
+
 namespace Flint
 {
 	const UI64 VertexDescriptor::Size() const

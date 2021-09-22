@@ -28,15 +28,18 @@ project "FlintEngine"
 		"$(SolutionDir)Code/",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.Assimp}",
+		"%{IncludeDir.tinygltf}",
 		"%{IncludeDir.shaderc}",
 	}
 
 	libdirs {
 		"%{IncludeLib.Assimp}",
+		"%{IncludeLib.tinygltf}",
 	}
 
 	links { 
 		"assimp-vc142-mt",
+		"tinygltf",
 		"shaderc_combined",
 		"VulkanBackend"
 	}
