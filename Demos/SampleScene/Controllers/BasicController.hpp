@@ -15,7 +15,7 @@ class BasicController final : public Flint::Controller
 public:
 	BasicController(Flint::ClientInterface* pClientInterface);
 
-	virtual void OnUpdate(const UI64 delta, const Flint::UpdateSpecification specification) override final;
+	virtual void OnUpdate(const UI64 delta, const Flint::UpdateSpecification specification) override;
 
 private:
 	void SetupMaterialPipeline();

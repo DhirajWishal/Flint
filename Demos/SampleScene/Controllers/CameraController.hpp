@@ -11,7 +11,7 @@ class CameraController final : public Flint::Controller
 public:
 	CameraController(Flint::ClientInterface* pClientInterface);
 
-	virtual void OnUpdate(const UI64 delta, const Flint::UpdateSpecification specification) override final;
+	virtual void OnUpdate(const UI64 delta, const Flint::UpdateSpecification specification) override;
 
 private:
 	void ProcessMouse(Flint::FExtent2D<float> position);

@@ -17,8 +17,8 @@ namespace Flint
 			VulkanResourcePackager(const UI32 setIndex, const std::shared_ptr<ComputePipeline>& pPipeline, const VkDescriptorSetLayout vLayout);
 			~VulkanResourcePackager() { if (!bIsTerminated) Terminate(); }
 
-			virtual std::shared_ptr<ResourcePackage> CreatePackage() override final;
-			virtual void Terminate() override final;
+			virtual std::shared_ptr<ResourcePackage> CreatePackage() override;
+			virtual void Terminate() override;
 
 		private:
 			void CreateDescriptorPool();

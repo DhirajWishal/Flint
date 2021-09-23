@@ -4,7 +4,9 @@
 #pragma once
 
 #include "Macros.hpp"
+
 #include <cstdint>
+#include <limits>
 
 typedef uint8_t								UI8;
 typedef uint16_t							UI16;

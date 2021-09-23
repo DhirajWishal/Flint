@@ -31,10 +31,10 @@ namespace Flint
 	public:
 		SkyBox() = default;
 
-		virtual void Initialize(Application* pApplication) override final;
-		virtual void Update(UI64 delta, Camera* pCamera) override final;
-		virtual void Draw(const std::shared_ptr<CommandBuffer>& pCommandBuffer) override final;
-		virtual void Terminate() override final;
+		virtual void Initialize(Application* pApplication) override;
+		virtual void Update(UI64 delta, Camera* pCamera) override;
+		virtual void Draw(const std::shared_ptr<CommandBuffer>& pCommandBuffer) override;
+		virtual void Terminate() override;
 
 	private:
 		void CreatePipeline();

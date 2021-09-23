@@ -10,5 +10,5 @@ class SampleScene final : public Flint::ClientInterface
 public:
 	SampleScene();
 
-	virtual std::shared_ptr<Flint::Controller> CreateController(const std::string_view& identifier) override final;
+	virtual std::shared_ptr<Flint::Controller> CreateController(const std::string_view& identifier) override;
 };

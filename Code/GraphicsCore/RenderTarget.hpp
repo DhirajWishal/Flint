@@ -13,26 +13,6 @@ namespace Flint
 	class GeometryStore;
 	class CommandBuffer;
 
-	using DrawInstanceMap = std::unordered_map<std::shared_ptr<GeometryStore>, std::vector<std::shared_ptr<GraphicsPipeline>>>;
-
-	/**
-	 * Draw instance storage structure.
-	 * This structure holds information about draw instances.
-	 */
-	struct DrawInstanceStorage
-	{
-		std::vector<DrawInstanceMap> mDrawMaps;
-		std::vector<std::list<std::shared_ptr<GeometryStore>>> mDrawOrder;
-	};
-
-	struct BeginFrameInfo
-	{
-		std::shared_ptr<CommandBuffer> pCommandBuffer = nullptr;
-		UI32 mFrameIndex = 0;
-
-		DrawInstanceStorage const* pDrawInstanceStorage = nullptr;
-	};
-
 	/**
 	 * Flint render target object.
 	 * This object is the base class for all the supported render targets.

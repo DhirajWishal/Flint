@@ -18,16 +18,16 @@ namespace Flint
 			VulkanSwapChain(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, UI32 imageCount, const SwapChainPresentMode presentMode);
 			~VulkanSwapChain() { if (!bIsTerminated) Terminate(); }
 
-			virtual void Recreate() override final;
-			virtual NextImageInfo AcquireNextImage() override final;
-			virtual void Terminate() override final;
+			virtual void Recreate() override;
+			virtual NextImageInfo AcquireNextImage() override;
+			virtual void Terminate() override;
 
 			VkPresentInfoKHR* PrepareToPresent();
 
 			virtual RenderTargetAttachmenType GetAttachmentType() const override final { return RenderTargetAttachmenType::SwapChain; }
-			virtual VkFormat GetImageFormat() const override final;
-			virtual VkAttachmentDescription GetAttachmentDescription() const override final;
-			virtual VkImageLayout GetAttachmentLayout() const override final;
+			virtual VkFormat GetImageFormat() const override;
+			virtual VkAttachmentDescription GetAttachmentDescription() const override;
+			virtual VkImageLayout GetAttachmentLayout() const override;
 			virtual VkImageView GetImageView(UI32 index) const override final { return vImageViews[index]; }
 
 			const VkSwapchainKHR GetSwapChain() const { return vSwapChain; }

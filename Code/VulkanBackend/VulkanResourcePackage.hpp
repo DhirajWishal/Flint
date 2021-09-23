@@ -15,7 +15,7 @@ namespace Flint
 		public:
 			VulkanResourcePackage(const std::shared_ptr<ResourcePackager>& pPackager, const std::vector<UI32>& bufferBindings, const std::vector<UI32>& imageBindings, const VkDescriptorSet& vSet);
 
-			virtual void PrepareIfNecessary() override final;
+			virtual void PrepareIfNecessary() override;
 
 			const VkDescriptorSet GetDescriptorSet() const { return vDescriptorSet; }
 

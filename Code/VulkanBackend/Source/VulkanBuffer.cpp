@@ -42,7 +42,6 @@ namespace Flint
 
 			default:
 				throw std::range_error("Invalid or Undefined buffer type!");
-				break;
 			}
 
 			switch (profile)
@@ -51,8 +50,11 @@ namespace Flint
 				break;
 
 			case Flint::BufferMemoryProfile::CPUOnly:
-			case Flint::BufferMemoryProfile::TransferFriendly:
 				vMemoryProperties = VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
+				break;
+
+			case Flint::BufferMemoryProfile::TransferFriendly:
+				vMemoryProperties = VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 				break;
 
 			case Flint::BufferMemoryProfile::DeviceOnly:
@@ -67,10 +69,10 @@ namespace Flint
 			CreateBufferMemory();
 		}
 
-		void VulkanBuffer::Resize(const UI64 size, const BufferResizeMode mode)	// TODO
+		void VulkanBuffer::Resize(const UI64 size, const BufferResizeMode mode)
 		{
 			FLINT_SETUP_PROFILER();
-			UI64 oldSize = mSize;
+			const UI64 oldSize = mSize;
 
 			if (mode == BufferResizeMode::Copy)
 			{
@@ -122,6 +124,10 @@ namespace Flint
 		{
 			FLINT_SETUP_PROFILER();
 
+			// Check if the buffer is mappable.
+			if (!(vMemoryProperties & VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT))
+				throw backend_error("Cannot map memory! The buffer's memory property isn't CPUOnly or TransferFriendly.");
+
 			if (size + offset > mSize)
 				throw std::range_error("Submitted size and offset goes beyond the buffer dimensions!");
 			else if (size <= 0)
@@ -161,7 +167,7 @@ namespace Flint
 			vCreateInfo.pNext = VK_NULL_HANDLE;
 			vCreateInfo.queueFamilyIndexCount = 0;
 			vCreateInfo.pQueueFamilyIndices = VK_NULL_HANDLE;
-			vCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+			vCreateInfo.sharingMode = VkSharingMode::VK_SHARING_MODE_EXCLUSIVE;
 			vCreateInfo.size = static_cast<UI32>(mSize);
 			vCreateInfo.usage = vBufferUsage;
 

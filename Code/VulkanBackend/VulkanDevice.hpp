@@ -17,24 +17,24 @@ namespace Flint
 			VulkanDevice(const std::shared_ptr<Instance>& pInstance, const DeviceFlags flags);
 			~VulkanDevice() { if (!bIsTerminated) Terminate(); }
 
-			virtual bool IsDisplayCompatible(const std::shared_ptr<Display>& pDisplay) override final;
-			virtual MultiSampleCount GetSupportedMultiSampleCount() const override final;
+			virtual bool IsDisplayCompatible(const std::shared_ptr<Display>& pDisplay) override;
+			virtual MultiSampleCount GetSupportedMultiSampleCount() const override;
 
-			virtual std::shared_ptr<CommandBufferAllocator> CreateCommandBufferAllocator(const UI32 bufferCount) override final;
-			virtual std::shared_ptr<CommandBufferAllocator> CreateSecondaryCommandBufferAllocator(const UI32 bufferCount, const std::shared_ptr<CommandBufferAllocator>& pParentAllocator) override final;
+			virtual std::shared_ptr<CommandBufferAllocator> CreateCommandBufferAllocator(const UI32 bufferCount) override;
+			virtual std::shared_ptr<CommandBufferAllocator> CreateSecondaryCommandBufferAllocator(const UI32 bufferCount, const std::shared_ptr<CommandBufferAllocator>& pParentAllocator) override;
 
-			virtual std::shared_ptr<ScreenBoundRenderTarget> CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode) override final;
-			virtual std::shared_ptr<OffScreenRenderTarget> CreateOffScreenRenderTarget(const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments) override final;
+			virtual std::shared_ptr<ScreenBoundRenderTarget> CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode) override;
+			virtual std::shared_ptr<OffScreenRenderTarget> CreateOffScreenRenderTarget(const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments) override;
 
-			virtual std::shared_ptr<Buffer> CreateBuffer(const BufferType type, const UI64 size, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic) override final;
+			virtual std::shared_ptr<Buffer> CreateBuffer(const BufferType type, const UI64 size, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic) override;
 
-			virtual std::shared_ptr<Image> CreateImage(const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const UI8 layers, const UI32 mipLevels, const void* pImageData, const MultiSampleCount sampleCount = MultiSampleCount::One) override final;
+			virtual std::shared_ptr<Image> CreateImage(const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const UI8 layers, const UI32 mipLevels, const void* pImageData, const MultiSampleCount sampleCount = MultiSampleCount::One) override;
 
-			virtual std::shared_ptr<ImageSampler> CreateImageSampler(const ImageSamplerSpecification& specification) override final;
+			virtual std::shared_ptr<ImageSampler> CreateImageSampler(const ImageSamplerSpecification& specification) override;
 
-			virtual std::shared_ptr<Shader> CreateShader(const ShaderType type, const std::filesystem::path& path) override final;
-			virtual std::shared_ptr<Shader> CreateShader(const ShaderType type, const std::vector<UI32>& code) override final;
-			virtual std::shared_ptr<Shader> CreateShader(const ShaderType type, const std::string& code) override final;
+			virtual std::shared_ptr<Shader> CreateShader(const ShaderType type, const std::filesystem::path& path) override;
+			virtual std::shared_ptr<Shader> CreateShader(const ShaderType type, const std::vector<UI32>& code) override;
+			virtual std::shared_ptr<Shader> CreateShader(const ShaderType type, const std::string& code) override;
 
 			virtual std::shared_ptr<GraphicsPipeline> CreateGraphicsPipeline(
 				const std::string& pipelineName,
@@ -44,7 +44,7 @@ namespace Flint
 				const std::shared_ptr<Shader>& pTessellationEvaluationShader,
 				const std::shared_ptr<Shader>& pGeometryShader,
 				const std::shared_ptr<Shader>& pFragmentShader,
-				const GraphicsPipelineSpecification& specification) override final;
+				const GraphicsPipelineSpecification& specification) override;
 			virtual std::shared_ptr<GraphicsPipeline> CreateGraphicsPipeline(
 				const std::string& pipelineName,
 				const std::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget,
@@ -53,17 +53,17 @@ namespace Flint
 				const std::shared_ptr<Shader>& pTessellationEvaluationShader,
 				const std::shared_ptr<Shader>& pGeometryShader,
 				const std::shared_ptr<Shader>& pFragmentShader,
-				const GraphicsPipelineSpecification& specification) override final;
-			virtual std::shared_ptr<ComputePipeline> CreateComputePipeline(const std::string& pipelineName, const std::shared_ptr<Shader>& pShader) override final;
+				const GraphicsPipelineSpecification& specification) override;
+			virtual std::shared_ptr<ComputePipeline> CreateComputePipeline(const std::string& pipelineName, const std::shared_ptr<Shader>& pShader) override;
 
-			virtual std::shared_ptr<GeometryStore> CreateGeometryStore(const typename TShaderAttributeMap& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic) override final;
+			virtual std::shared_ptr<GeometryStore> CreateGeometryStore(const typename TShaderAttributeMap& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic) override;
 
-			virtual void SubmitGraphicsCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers) override final;
-			virtual void SubmitComputeCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers) override final;
-			virtual void WaitIdle() override final;
-			virtual void WaitForQueue() override final;
+			virtual void SubmitGraphicsCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers) override;
+			virtual void SubmitComputeCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers) override;
+			virtual void WaitIdle() override;
+			virtual void WaitForQueue() override;
 
-			virtual void Terminate() override final;
+			virtual void Terminate() override;
 
 		public:
 			VolkDeviceTable GetDeviceTable() const { return mDeviceTable; }

@@ -18,10 +18,10 @@ namespace Flint
 			VulkanInstance(bool enableValidation);
 			~VulkanInstance() { if (!bIsTerminated) Terminate(); }
 
-			virtual std::shared_ptr<Device> CreateDevice(const DeviceFlags flags) override final;
-			virtual std::shared_ptr<Display> CreateDisplay(const FBox2D& extent, const std::string& title) override final;
+			virtual std::shared_ptr<Device> CreateDevice(const DeviceFlags flags) override;
+			virtual std::shared_ptr<Display> CreateDisplay(const FBox2D& extent, const std::string& title) override;
 
-			virtual void Terminate() override final;
+			virtual void Terminate() override;
 
 		public:
 			VkInstance GetInstance() const noexcept { return vInstance; }

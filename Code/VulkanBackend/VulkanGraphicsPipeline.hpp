@@ -36,10 +36,10 @@ namespace Flint
 				const GraphicsPipelineSpecification& specification);
 			~VulkanGraphicsPipeline() { if (!bIsTerminated) Terminate(); }
 
-			virtual void ReloadShaders() override final;
-			virtual void Recreate(const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget) override final;
-			virtual void CreateResourcePackagers() override final;
-			virtual void Terminate() override final;
+			virtual void ReloadShaders() override;
+			virtual void Recreate(const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget) override;
+			virtual void CreateResourcePackagers() override;
+			virtual void Terminate() override;
 
 			const VkPipelineLayout GetPipelineLayout() const { return vPipelineLayout; }
 			const VkPipeline GetPipeline() const { return vPipeline; }

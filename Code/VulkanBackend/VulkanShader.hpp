@@ -23,11 +23,11 @@ namespace Flint
 			VulkanShader(const std::shared_ptr<Device>& pDevice, const ShaderType type, const std::string& code);
 			~VulkanShader() { if (!bIsTerminated) Terminate(); }
 
-			virtual void Reload(const std::filesystem::path& path) override final;
-			virtual void Reload(const std::vector<UI32>& code) override final;
-			virtual void Reload(const std::string& code) override final;
+			virtual void Reload(const std::filesystem::path& path) override;
+			virtual void Reload(const std::vector<UI32>& code) override;
+			virtual void Reload(const std::string& code) override;
 
-			virtual void Terminate() override final;
+			virtual void Terminate() override;
 
 			VkPipelineShaderStageCreateInfo GetShaderStageCreateInfo() const;
 			void PerformReflection();

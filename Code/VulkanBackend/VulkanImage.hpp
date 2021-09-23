@@ -25,9 +25,9 @@ namespace Flint
 				const MultiSampleCount sampleCount = MultiSampleCount::One);
 			~VulkanImage() { if (!bIsTerminated) Terminate(); }
 
-			virtual void GenerateMipMaps() override final;
-			virtual std::shared_ptr<Buffer> CopyToBuffer() override final;
-			virtual void Terminate() override final;
+			virtual void GenerateMipMaps() override;
+			virtual std::shared_ptr<Buffer> CopyToBuffer() override;
+			virtual void Terminate() override;
 
 			void CopyFromImage(VkImage vSrcImage, VkImageLayout vSrcLayout, VkOffset3D srcOffset, VkOffset3D dstOffset, VkImageSubresourceLayers subresourceLayers);
 
@@ -35,11 +35,11 @@ namespace Flint
 			virtual void Recreate(const FBox2D& extent);
 
 			virtual VkImageLayout GetImageLayout(ImageUsage usage = ImageUsage(-1)) const;
-			virtual VkAttachmentDescription GetAttachmentDescription() const override final;
-			virtual VkImageLayout GetAttachmentLayout() const override final;
-			virtual VkImageView GetImageView(UI32 index) const override final;
-			virtual RenderTargetAttachmenType GetAttachmentType() const override final;
-			virtual VkFormat GetImageFormat() const override final;
+			virtual VkAttachmentDescription GetAttachmentDescription() const override;
+			virtual VkImageLayout GetAttachmentLayout() const override;
+			virtual VkImageView GetImageView(UI32 index) const override;
+			virtual RenderTargetAttachmenType GetAttachmentType() const override;
+			virtual VkFormat GetImageFormat() const override;
 
 		public:
 			VkImageView CreateLayerBasedImageView(UI32 layerNumber) const;

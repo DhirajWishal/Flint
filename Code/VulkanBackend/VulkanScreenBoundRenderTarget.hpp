@@ -22,10 +22,10 @@ namespace Flint
 			VulkanScreenBoundRenderTarget(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode);
 			~VulkanScreenBoundRenderTarget() { if (!bIsTerminated) Terminate(); }
 
-			virtual bool PrepareNewFrame() override final;
-			virtual bool PresentToDisplay() override final;
-			virtual void Terminate() override final;
-			virtual void Recreate() override final;
+			virtual bool PrepareNewFrame() override;
+			virtual bool PresentToDisplay() override;
+			virtual void Terminate() override;
+			virtual void Recreate() override;
 			virtual const UI32 GetImageIndex() const override final { return pSwapChain->GetImageIndex(); }
 
 			VkRenderPass GetRenderPass() const { return vRenderTarget.vRenderPass; }

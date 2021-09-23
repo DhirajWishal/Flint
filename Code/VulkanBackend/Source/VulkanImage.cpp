@@ -239,13 +239,14 @@ namespace Flint
 			{
 				VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 				VulkanOneTimeCommandBuffer vCommandBuffer(vDevice);
+				VkFormat vFormat = Utilities::GetVulkanFormat(mFormat);
 
-				vDevice.SetImageLayout(vCommandBuffer, vImage, vCurrentLayout, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels);
+				vDevice.SetImageLayout(vCommandBuffer, vImage, vCurrentLayout, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, vFormat, mLayerCount, 0, mMipLevels);
 				vCurrentLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
 
 				vDevice.GetDeviceTable().vkCmdCopyImageToBuffer(vCommandBuffer, vImage, vCurrentLayout, pBuffer->GetBuffer(), 1, &vCopy);
 
-				vDevice.SetImageLayout(vCommandBuffer, vImage, vCurrentLayout, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels);
+				vDevice.SetImageLayout(vCommandBuffer, vImage, vCurrentLayout, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, vFormat, mLayerCount, 0, mMipLevels);
 				vCurrentLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 			}
 
@@ -429,6 +430,7 @@ namespace Flint
 					throw backend_error("Texture format does not support using as storage image!");
 			}
 
+			// Prepare the queue indexes if the device if the compute and graphics queues are different.
 			std::vector<UI32> queueIndexes = {};
 			if (vDevice.IsGraphicsCompatible() && vDevice.IsComputeCompatible())
 			{
@@ -687,7 +689,6 @@ namespace Flint
 
 				vStagingBuffer.Terminate();
 			}
-
 			if ((mUsage & ImageUsage::Depth) == ImageUsage::Depth)
 			{
 				vCurrentLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;	// TODO

@@ -211,10 +211,13 @@ namespace Flint
 
 			if (indexSize == sizeof(UI8))
 				indexType = VkIndexType::VK_INDEX_TYPE_UINT8_EXT;
+
 			else if (indexSize == sizeof(UI16))
 				indexType = VkIndexType::VK_INDEX_TYPE_UINT16;
+
 			else if (indexSize == sizeof(UI32))
 				indexType = VkIndexType::VK_INDEX_TYPE_UINT32;
+
 			else
 				throw std::invalid_argument("Invalid index size submitted to bind! The valid sizes are 1, 2, and 4 bytes.");
 
@@ -384,13 +387,11 @@ namespace Flint
 				vDevice.GetDeviceTable().vkCmdSetDepthBounds(vCommandBuffer, bounds.mBounds.mWidth, bounds.mBounds.mHeight);
 			}
 
-			for (UI8 i = 0; i < 10; i++)
+			// Just taking the 5th entry would be enough as it is the compute shader's block.
+			if (!pDynamicStates->mConstantBlocks[5].IsNull())
 			{
-				if (!pDynamicStates->mConstantBlocks[i].IsNull())
-				{
-					DynamicStateContainer::ConstantData& data = pDynamicStates->mConstantBlocks[i];
-					vDevice.GetDeviceTable().vkCmdPushConstants(vCommandBuffer, pPipeline->StaticCast<VulkanComputePipeline>().GetPipelineLayout(), Utilities::GetShaderStage(ShaderType(i + 1)), static_cast<UI32>(data.mOffset), static_cast<UI32>(data.mSize), data.pData);
-				}
+				DynamicStateContainer::ConstantData& data = pDynamicStates->mConstantBlocks[5];
+				vDevice.GetDeviceTable().vkCmdPushConstants(vCommandBuffer, pPipeline->StaticCast<VulkanComputePipeline>().GetPipelineLayout(), VkShaderStageFlagBits::VK_SHADER_STAGE_COMPUTE_BIT, static_cast<UI32>(data.mOffset), static_cast<UI32>(data.mSize), data.pData);
 			}
 		}
 
@@ -426,9 +427,10 @@ namespace Flint
 			FLINT_SETUP_PROFILER();
 
 			if (!vSecondaryCommandBuffers.empty())
+			{
 				pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetDeviceTable().vkCmdExecuteCommands(vCommandBuffer, static_cast<UI32>(vSecondaryCommandBuffers.size()), vSecondaryCommandBuffers.data());
-
-			vSecondaryCommandBuffers.clear();
+				vSecondaryCommandBuffers.clear();
+			}
 		}
 
 		void VulkanCommandBuffer::EndBufferRecording()

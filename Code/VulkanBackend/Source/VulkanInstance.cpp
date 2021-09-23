@@ -58,7 +58,7 @@ namespace Flint
 				std::vector<const char*> extentions(glfwExtensions, glfwExtensions + glfwExtentionCount);
 
 				if (enableValidation)
-					INSERT_INTO_VECTOR(extentions, VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+					extentions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 
 				//if (pushDescriptorsSupported)
 				//	extentions.push_back(VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME);
@@ -131,7 +131,7 @@ namespace Flint
 				FLINT_THROW_RUNTIME_ERROR("Vulkan is not supported! Make sure that the drivers support Vulkan before using the Vulkan Backend.");
 
 			if (enableValidation)
-				INSERT_INTO_VECTOR(mValidationLayers, "VK_LAYER_KHRONOS_validation");
+				mValidationLayers.push_back("VK_LAYER_KHRONOS_validation");
 
 			InitializeInstance();
 			volkLoadInstance(vInstance);

@@ -425,7 +425,7 @@ namespace Flint
 				{
 					vPushConstantRange.size = resource->size;
 					vPushConstantRange.offset = resource->offset;
-					INSERT_INTO_VECTOR(mConstantRanges, vPushConstantRange);
+					mConstantRanges.push_back(vPushConstantRange);
 				}
 			}
 		}

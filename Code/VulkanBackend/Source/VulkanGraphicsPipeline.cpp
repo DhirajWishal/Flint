@@ -238,22 +238,22 @@ namespace Flint
 			{
 				std::vector<VkDynamicState> states;
 				if (flags & DynamicStateFlags::ViewPort)
-					INSERT_INTO_VECTOR(states, VkDynamicState::VK_DYNAMIC_STATE_VIEWPORT);
+					states.push_back(VkDynamicState::VK_DYNAMIC_STATE_VIEWPORT);
 
 				if (flags & DynamicStateFlags::Scissor)
-					INSERT_INTO_VECTOR(states, VkDynamicState::VK_DYNAMIC_STATE_SCISSOR);
+					states.push_back(VkDynamicState::VK_DYNAMIC_STATE_SCISSOR);
 
 				if (flags & DynamicStateFlags::LineWidth)
-					INSERT_INTO_VECTOR(states, VkDynamicState::VK_DYNAMIC_STATE_LINE_WIDTH);
+					states.push_back(VkDynamicState::VK_DYNAMIC_STATE_LINE_WIDTH);
 
 				if (flags & DynamicStateFlags::DepthBias)
-					INSERT_INTO_VECTOR(states, VkDynamicState::VK_DYNAMIC_STATE_DEPTH_BIAS);
+					states.push_back(VkDynamicState::VK_DYNAMIC_STATE_DEPTH_BIAS);
 
 				if (flags & DynamicStateFlags::BlendConstants)
-					INSERT_INTO_VECTOR(states, VkDynamicState::VK_DYNAMIC_STATE_BLEND_CONSTANTS);
+					states.push_back(VkDynamicState::VK_DYNAMIC_STATE_BLEND_CONSTANTS);
 
 				if (flags & DynamicStateFlags::DepthBounds)
-					INSERT_INTO_VECTOR(states, VkDynamicState::VK_DYNAMIC_STATE_DEPTH_BOUNDS);
+					states.push_back(VkDynamicState::VK_DYNAMIC_STATE_DEPTH_BOUNDS);
 
 				return states;
 			}
@@ -670,19 +670,19 @@ namespace Flint
 		void VulkanGraphicsPipeline::SetupDefaults()
 		{
 			// Resolve shader stages.
-			INSERT_INTO_VECTOR(vShaderStageCreateInfo, pVertexShader->StaticCast<VulkanShader>().GetShaderStageCreateInfo());
+			vShaderStageCreateInfo.push_back(pVertexShader->StaticCast<VulkanShader>().GetShaderStageCreateInfo());
 
 			if (pFragmentShader)
-				INSERT_INTO_VECTOR(vShaderStageCreateInfo, pFragmentShader->StaticCast<VulkanShader>().GetShaderStageCreateInfo());
+				vShaderStageCreateInfo.push_back(pFragmentShader->StaticCast<VulkanShader>().GetShaderStageCreateInfo());
 
 			if (pTessellationControlShader)
-				INSERT_INTO_VECTOR(vShaderStageCreateInfo, pTessellationControlShader->StaticCast<VulkanShader>().GetShaderStageCreateInfo());
+				vShaderStageCreateInfo.push_back(pTessellationControlShader->StaticCast<VulkanShader>().GetShaderStageCreateInfo());
 
 			if (pTessellationEvaluationShader)
-				INSERT_INTO_VECTOR(vShaderStageCreateInfo, pTessellationEvaluationShader->StaticCast<VulkanShader>().GetShaderStageCreateInfo());
+				vShaderStageCreateInfo.push_back(pTessellationEvaluationShader->StaticCast<VulkanShader>().GetShaderStageCreateInfo());
 
 			if (pGeometryShader)
-				INSERT_INTO_VECTOR(vShaderStageCreateInfo, pGeometryShader->StaticCast<VulkanShader>().GetShaderStageCreateInfo());
+				vShaderStageCreateInfo.push_back(pGeometryShader->StaticCast<VulkanShader>().GetShaderStageCreateInfo());
 
 			// Resolve vertex input state.
 			{
@@ -702,14 +702,14 @@ namespace Flint
 						vAttributeDescription.location = attribute.mLocation;
 						vAttributeDescription.format = Helpers::GetFormatFromSize(attribute.mDataType);
 
-						INSERT_INTO_VECTOR(vVertexAttributes, vAttributeDescription);
+						vVertexAttributes.push_back(vAttributeDescription);
 						vAttributeDescription.offset += static_cast<UI32>(attribute.mDataType);
 					}
 
 					vBindingDescription.binding = binding.first;
 					vBindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 					vBindingDescription.stride = vAttributeDescription.offset;
-					INSERT_INTO_VECTOR(vVertexBindings, vBindingDescription);
+					vVertexBindings.push_back(vBindingDescription);
 				}
 			}
 
@@ -747,7 +747,7 @@ namespace Flint
 				vAttachmentState.dstAlphaBlendFactor = Helpers::GetBlendFactor(attachment.mDstAlphaBlendFactor);
 				vAttachmentState.dstColorBlendFactor = Helpers::GetBlendFactor(attachment.mDstBlendFactor);
 
-				INSERT_INTO_VECTOR(vCBASS, vAttachmentState);
+				vCBASS.push_back(vAttachmentState);
 			}
 
 			vColorBlendStateCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
@@ -809,19 +809,19 @@ namespace Flint
 		{
 			FLINT_SETUP_PROFILER();
 
-			auto [size, data] = ReadDataFromCacheFile();
+			auto [size, pData] = ReadDataFromCacheFile();
 
 			VkPipelineCacheCreateInfo vCreateInfo = {};
 			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
 			vCreateInfo.pNext = VK_NULL_HANDLE;
 			vCreateInfo.flags = 0;
 			vCreateInfo.initialDataSize = size;
-			vCreateInfo.pInitialData = data;
+			vCreateInfo.pInitialData = pData;
 
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreatePipelineCache(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vPipelineCache));
 
-			delete[] data;
+			delete[] pData;
 		}
 
 		void VulkanGraphicsPipeline::CreatePipelineLayout()

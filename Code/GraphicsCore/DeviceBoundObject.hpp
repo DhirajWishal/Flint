@@ -8,9 +8,7 @@
 #include "Core/Hasher.hpp"
 
 #include <vector>
-
 #include <unordered_map>
-
 
 namespace Flint
 {
@@ -22,51 +20,51 @@ namespace Flint
 	 * This enum contains all the supported vertex attribute data types.
 	 */
 	enum class ShaderAttributeDataType : UI8 {
-		BYTE = 1,
+		BYTE							= 1,
 
-		I8 = 1,
-		UI8 = 1,
-		SI8 = 1,
-		I16 = 2,
-		UI16 = 2,
-		SI16 = 2,
-		I32 = 4,
-		UI32 = 4,
-		SI32 = 4,
-		I64 = 8,
-		UI64 = 8,
-		SI64 = 8,
+		I8								= 1,
+		UI8								= 1,
+		SI8								= 1,
+		I16								= 2,
+		UI16							= 2,
+		SI16							= 2,
+		I32								= 4,
+		UI32							= 4,
+		SI32							= 4,
+		I64								= 8,
+		UI64							= 8,
+		SI64							= 8,
 
-		FLOAT = 4,
-		F64 = 4,
-		D64 = 8,
-		CHAR = 1,
+		FLOAT							= 4,
+		F64								= 4,
+		D64								= 8,
+		CHAR							= 1,
 
-		PTR = 8,
-		VOID_PTR = 8,
+		PTR								= 8,
+		VOID_PTR						= 8,
 
-		VEC1 = 4,
-		VEC2 = 8,
-		VEC3 = 12,
-		VEC4 = 16,
-		UVEC1 = 4,
-		UVEC2 = 8,
-		UVEC3 = 12,
-		UVEC4 = 16,
-		SVEC1 = 4,
-		SVEC2 = 8,
-		SVEC3 = 12,
-		SVEC4 = 16,
-		BVEC1 = 1,
-		BVEC2 = 2,
-		BVEC3 = 3,
-		BVEC4 = 4,
+		VEC1							= 4,
+		VEC2							= 8,
+		VEC3							= 12,
+		VEC4							= 16,
+		UVEC1							= 4,
+		UVEC2							= 8,
+		UVEC3							= 12,
+		UVEC4							= 16,
+		SVEC1							= 4,
+		SVEC2							= 8,
+		SVEC3							= 12,
+		SVEC4							= 16,
+		BVEC1							= 1,
+		BVEC2							= 2,
+		BVEC3							= 3,
+		BVEC4							= 4,
 
-		MAT2 = 16,
-		MAT3 = 36,
-		MAT4 = 64,
+		MAT2							= 16,
+		MAT3							= 36,
+		MAT4							= 64,
 
-		BUILT_IN = 255
+		BUILT_IN						= 255
 	};
 
 	/**
@@ -114,10 +112,10 @@ namespace Flint
 	 * Image usage enum.
 	 */
 	enum class ImageUsage : UI8 {
-		Graphics = BitShiftLeft(0),
-		Storage = BitShiftLeft(1),
-		Depth = BitShiftLeft(2),
-		Color = BitShiftLeft(3)
+		Graphics		= BitShiftLeft(0),
+		Storage			= BitShiftLeft(1),
+		Depth			= BitShiftLeft(2),
+		Color			= BitShiftLeft(3)
 	};
 
 	/**
@@ -340,13 +338,13 @@ namespace Flint
 	 * Rasterization samples enum.
 	 */
 	enum class MultiSampleCount : UI8 {
-		One = BitShiftLeft(0),
-		Two = BitShiftLeft(1),
-		Four = BitShiftLeft(2),
-		Eight = BitShiftLeft(3),
-		Sixteen = BitShiftLeft(4),
-		ThirtyTwo = BitShiftLeft(5),
-		SixtyFour = BitShiftLeft(6),
+		One				= BitShiftLeft(0),
+		Two				= BitShiftLeft(1),
+		Four			= BitShiftLeft(2),
+		Eight			= BitShiftLeft(3),
+		Sixteen			= BitShiftLeft(4),
+		ThirtyTwo		= BitShiftLeft(5),
+		SixtyFour		= BitShiftLeft(6),
 	};
 
 	/**

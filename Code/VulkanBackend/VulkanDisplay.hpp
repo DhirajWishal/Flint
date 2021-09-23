@@ -33,13 +33,13 @@ namespace Flint
 			VulkanDisplay(const std::shared_ptr<Instance>& pInstance, const FBox2D& extent, const std::string& title);
 			~VulkanDisplay() { if (!bIsTerminated) Terminate(); }
 
-			virtual void Update() override final;
-			virtual void Terminate() override final;
+			virtual void Update() override;
+			virtual void Terminate() override;
 			virtual void ToggleResize() override final { mIsDislayResized = false; }
-			virtual UI32 FindBestBufferCount(const std::shared_ptr<Device>& pDevice, const UI32 count = 0) override final;
-			virtual PixelFormat GetBestSwapChainFormat(const std::shared_ptr<Device>& pDevice) override final;
-			virtual void SetTitle(const std::string& title) override final;
-			virtual void SetExtent(FBox2D newExtent) override final;
+			virtual UI32 FindBestBufferCount(const std::shared_ptr<Device>& pDevice, const UI32 count = 0) override;
+			virtual PixelFormat GetBestSwapChainFormat(const std::shared_ptr<Device>& pDevice) override;
+			virtual void SetTitle(const std::string& title) override;
+			virtual void SetExtent(FBox2D newExtent) override;
 
 			VkSurfaceFormatKHR ChooseSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 			VkPresentModeKHR ChoosePresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);

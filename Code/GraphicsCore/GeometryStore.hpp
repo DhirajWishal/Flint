@@ -77,7 +77,7 @@ namespace Flint
 		/**
 		 * Terminate the geometry store.
 		 */
-		virtual void Terminate() override final;
+		virtual void Terminate() override;
 
 	public:
 		/**

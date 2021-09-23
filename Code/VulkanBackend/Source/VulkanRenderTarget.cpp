@@ -45,23 +45,22 @@ namespace Flint
 				if (!(*itr))
 					continue;
 
-				INSERT_INTO_VECTOR(vDescriptions, (*itr)->GetAttachmentDescription());
-
+				vDescriptions.push_back((*itr)->GetAttachmentDescription());
 				vAR.layout = (*itr)->GetAttachmentLayout();
 
 				switch ((*itr)->GetAttachmentType())
 				{
 				case Flint::VulkanBackend::RenderTargetAttachmenType::SwapChain:
-					INSERT_INTO_VECTOR(vResolveAttachmentRef, vAR);
+					vResolveAttachmentRef.push_back(vAR);
 					break;
 
 				case Flint::VulkanBackend::RenderTargetAttachmenType::ColorBuffer:
-					INSERT_INTO_VECTOR(vColorAttachmentRef, vAR);
+					vColorAttachmentRef.push_back(vAR);
 					bHasColorAttachment = true;
 					break;
 
 				case Flint::VulkanBackend::RenderTargetAttachmenType::DepthBuffer:
-					INSERT_INTO_VECTOR(vDepthAttachmentRef, vAR);
+					vDepthAttachmentRef.push_back(vAR);
 					break;
 
 				default:
@@ -132,22 +131,21 @@ namespace Flint
 					if (!(*itr))
 						continue;
 
-					INSERT_INTO_VECTOR(vDescriptions, (*itr)->GetAttachmentDescription());
-
+					vDescriptions.push_back((*itr)->GetAttachmentDescription());
 					vAR.layout = (*itr)->GetAttachmentLayout();
 
 					switch ((*itr)->GetAttachmentType())
 					{
 					case Flint::VulkanBackend::RenderTargetAttachmenType::SwapChain:
-						INSERT_INTO_VECTOR(vResolveAttachmentRef, vAR);
+						vResolveAttachmentRef.push_back(vAR);
 						break;
 
 					case Flint::VulkanBackend::RenderTargetAttachmenType::ColorBuffer:
-						INSERT_INTO_VECTOR(vColorAttachmentRef, vAR);
+						vColorAttachmentRef.push_back(vAR);
 						break;
 
 					case Flint::VulkanBackend::RenderTargetAttachmenType::DepthBuffer:
-						INSERT_INTO_VECTOR(vDepthAttachmentRef, vAR);
+						vDepthAttachmentRef.push_back(vAR);
 						break;
 
 					default:
@@ -208,7 +206,7 @@ namespace Flint
 				std::vector<VkImageView> vAttachments;
 
 				for (auto itr = pAttachments.begin(); itr != pAttachments.end(); itr++)
-					INSERT_INTO_VECTOR(vAttachments, (*itr)->GetImageView(i));
+					vAttachments.push_back((*itr)->GetImageView(i));
 
 				vCreateInfo.pAttachments = vAttachments.data();
 				FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateFramebuffer(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vFrameBuffers[i]));

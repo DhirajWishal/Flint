@@ -19,6 +19,8 @@
 #include "GraphicsCore/GeometryStore.hpp"
 
 #include <set>
+
+#ifdef FLINT_DEBUG
 #include <iostream>
 
 template<size_t Size>
@@ -47,6 +49,8 @@ std::ostream& operator<<(std::ostream& stream, float(&arr)[Size])
 
 	return stream;
 }
+
+#endif // FLINT_DEBUG
 
 namespace Flint
 {
@@ -106,7 +110,7 @@ namespace Flint
 		VulkanDevice::VulkanDevice(const std::shared_ptr<Instance>& pInstance, const DeviceFlags flags) : Device(pInstance, flags)
 		{
 			if ((flags & DeviceFlags::GraphicsCompatible) == DeviceFlags::GraphicsCompatible)
-				INSERT_INTO_VECTOR(mDeviceExtensions, VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+				mDeviceExtensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
 
 			InitializePhysicalDevice();
 			InitializeLogicalDevice();
@@ -217,7 +221,7 @@ namespace Flint
 
 			FLINT_VK_ASSERT(GetDeviceTable().vkResetFences(vLogicalDevice, 1, &vSubmitFence));
 			FLINT_VK_ASSERT(GetDeviceTable().vkQueueSubmit(GetQueue().vGraphicsQueue, static_cast<UI32>(vSubmitInfos.size()), vSubmitInfos.data(), vSubmitFence));
-			FLINT_VK_ASSERT(GetDeviceTable().vkWaitForFences(vLogicalDevice, 1, &vSubmitFence, VK_TRUE, UI64_MAX));
+			FLINT_VK_ASSERT(GetDeviceTable().vkWaitForFences(vLogicalDevice, 1, &vSubmitFence, VK_TRUE, std::numeric_limits<UI64>::max()));
 		}
 
 		void VulkanDevice::SubmitComputeCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers)
@@ -235,7 +239,7 @@ namespace Flint
 
 			FLINT_VK_ASSERT(GetDeviceTable().vkResetFences(vLogicalDevice, 1, &vSubmitFence));
 			FLINT_VK_ASSERT(GetDeviceTable().vkQueueSubmit(GetQueue().vComputeQueue, static_cast<UI32>(vSubmitInfos.size()), vSubmitInfos.data(), vSubmitFence));
-			FLINT_VK_ASSERT(GetDeviceTable().vkWaitForFences(vLogicalDevice, 1, &vSubmitFence, VK_TRUE, UI64_MAX));
+			FLINT_VK_ASSERT(GetDeviceTable().vkWaitForFences(vLogicalDevice, 1, &vSubmitFence, VK_TRUE, std::numeric_limits<UI64>::max()));
 		}
 
 		void VulkanDevice::WaitIdle()
@@ -453,6 +457,8 @@ namespace Flint
 			if (vPhysicalDevice == VK_NULL_HANDLE)
 				FLINT_THROW_RUNTIME_ERROR("Unable to find suitable physical device!");
 
+			vSampleCount = Helpers::GetMaxUsableSamples(vPhysicalDevice);
+
 #ifdef FLINT_DEBUG
 			std::cout << "Vulkan Physical Device Information" << std::endl;
 			std::cout << "\tAPI Version: " << vPhysicalDeviceProperties.apiVersion << std::endl;
@@ -602,8 +608,6 @@ namespace Flint
 			std::cout << "\t\tVkPhysicalDeviceProperties::limits::nonCoherentAtomSize: " << vPhysicalDeviceProperties.limits.nonCoherentAtomSize << std::endl;
 
 #endif	// FLINT_DEBUG
-
-			vSampleCount = Helpers::GetMaxUsableSamples(vPhysicalDevice);
 		}
 
 		void VulkanDevice::InitializeLogicalDevice()
@@ -651,7 +655,7 @@ namespace Flint
 			vDeviceCreateInfo.enabledExtensionCount = static_cast<UI32>(mDeviceExtensions.size());
 			vDeviceCreateInfo.ppEnabledExtensionNames = mDeviceExtensions.data();
 
-			std::vector<const char*> validationLayers = instance.GetValidationLayers();
+			std::vector<const char*> validationLayers = std::move(instance.GetValidationLayers());
 			if (instance.IsValidationEnabled())
 			{
 				vDeviceCreateInfo.enabledLayerCount = static_cast<UI32>(validationLayers.size());

@@ -75,7 +75,7 @@ namespace Flint
 		{
 			NextImageInfo imageInfo = {};
 
-			VkResult result = vkAcquireNextImageKHR(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), vSwapChain, UI64_MAX, vInFlightSemaphore, VK_NULL_HANDLE, &mImageIndex);
+			VkResult result = vkAcquireNextImageKHR(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), vSwapChain, std::numeric_limits<UI64>::max(), vInFlightSemaphore, VK_NULL_HANDLE, &mImageIndex);
 			if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
 				imageInfo.bShouldRecreate = true;
 			else FLINT_VK_ASSERT(result);

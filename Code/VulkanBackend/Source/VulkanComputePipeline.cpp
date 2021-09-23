@@ -81,19 +81,19 @@ namespace Flint
 		{
 			FLINT_SETUP_PROFILER();
 
-			auto [size, data] = ReadDataFromCacheFile();
+			auto [size, pData] = ReadDataFromCacheFile();
 
 			VkPipelineCacheCreateInfo vCreateInfo = {};
 			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
 			vCreateInfo.pNext = VK_NULL_HANDLE;
 			vCreateInfo.flags = 0;
 			vCreateInfo.initialDataSize = size;
-			vCreateInfo.pInitialData = data;
+			vCreateInfo.pInitialData = pData;
 
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreatePipelineCache(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vPipelineCache));
 
-			delete[] data;
+			delete[] pData;
 		}
 
 		void VulkanComputePipeline::CreatePipelineLayout()
