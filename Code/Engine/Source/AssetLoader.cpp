@@ -62,74 +62,98 @@ namespace Flint
 			const auto pMesh = pScene->mMeshes[i];
 			const auto pMaterial = pScene->mMaterials[pMesh->mMaterialIndex];
 
-			std::vector<aiMaterialProperty*> pProperties(pMaterial->mNumProperties);
-			std::copy(pMaterial->mProperties, pMaterial->mProperties + pMaterial->mNumProperties, pProperties.begin());
-
-			Material material;
+			std::vector<aiMaterialProperty*> pProperties(pMaterial->mProperties, pMaterial->mProperties + pMaterial->mNumProperties);
+			Material material = {};
 
 			for (const auto pProperty : pProperties)
 			{
 				if (pProperty->mType == aiPropertyTypeInfo::aiPTI_Float)
 				{
-					if (pProperty->mDataLength == (sizeof(float[1])))
+					switch (pProperty->mDataLength)
 					{
-						float value = 0;
-						pMaterial->Get(pProperty->mKey.C_Str(), pProperty->mType, pProperty->mIndex, value);
+						case sizeof(float[1]) :
+						{
+							float value = 0;
+							pMaterial->Get(pProperty->mKey.C_Str(), pProperty->mType, pProperty->mIndex, value);
 
-						material.AddProperty(std::make_unique<MaterialProperties::Float>(value));
-					}
-					else if (pProperty->mDataLength == (sizeof(float[2])))
-					{
-						float value[2] = {};
-						pMaterial->Get(pProperty->mKey.C_Str(), pProperty->mType, pProperty->mIndex, value);
+							material.AddProperty(std::make_unique<MaterialProperties::Float>(value));
+						}
+						break;
 
-						material.AddProperty(std::make_unique<MaterialProperties::Float2>(value));
-					}
-					else if (pProperty->mDataLength == (sizeof(float[3])))
-					{
-						float value[3] = {};
-						pMaterial->Get(pProperty->mKey.C_Str(), pProperty->mType, pProperty->mIndex, value);
+						case sizeof(float[2]) :
+						{
+							float value[2] = {};
+							pMaterial->Get(pProperty->mKey.C_Str(), pProperty->mType, pProperty->mIndex, value);
 
-						material.AddProperty(std::make_unique<MaterialProperties::Float3>(value));
-					}
-					else if (pProperty->mDataLength == (sizeof(float[4])))
-					{
-						aiColor4D color(0.0f, 0.0f, 0.0f, 0.0f);
-						pMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, color);
+							material.AddProperty(std::make_unique<MaterialProperties::Float2>(value));
+						}
+						break;
 
-						float value[4] = { color.r, color.g, color.b, color.a };
-						material.AddProperty(std::make_unique<MaterialProperties::Float4>(value));
+						case sizeof(float[3]) :
+						{
+							float value[3] = {};
+							pMaterial->Get(pProperty->mKey.C_Str(), pProperty->mType, pProperty->mIndex, value);
+
+							material.AddProperty(std::make_unique<MaterialProperties::Float3>(value));
+						}
+						break;
+
+						case sizeof(float[4]) :
+						{
+							aiColor4D color(0.0f, 0.0f, 0.0f, 0.0f);
+							pMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, color);
+
+							float value[4] = { color.r, color.g, color.b, color.a };
+							material.AddProperty(std::make_unique<MaterialProperties::Float4>(value));
+						}
+						break;
+
+						default:
+							break;
 					}
 				}
 				else if (pProperty->mType == aiPropertyTypeInfo::aiPTI_Double)
 				{
-					if (pProperty->mDataLength == (sizeof(double[1])))
+					switch (pProperty->mDataLength)
 					{
-						double value = 0;
-						pMaterial->Get(pProperty->mKey.C_Str(), pProperty->mType, pProperty->mIndex, value);
+						case sizeof(double[1]) :
+						{
+							double value = 0;
+							pMaterial->Get(pProperty->mKey.C_Str(), pProperty->mType, pProperty->mIndex, value);
 
-						material.AddProperty(std::make_unique<MaterialProperties::Double>(value));
-					}
-					else if (pProperty->mDataLength == (sizeof(double[2])))
-					{
-						double value[2] = {};
-						pMaterial->Get(pProperty->mKey.C_Str(), pProperty->mType, pProperty->mIndex, value);
+							material.AddProperty(std::make_unique<MaterialProperties::Double>(value));
+						}
+						break;
 
-						material.AddProperty(std::make_unique<MaterialProperties::Double2>(value));
-					}
-					else if (pProperty->mDataLength == (sizeof(double[3])))
-					{
-						double value[3] = {};
-						pMaterial->Get(pProperty->mKey.C_Str(), pProperty->mType, pProperty->mIndex, value);
+						case sizeof(double[2]) :
+						{
+							double value[2] = {};
+							pMaterial->Get(pProperty->mKey.C_Str(), pProperty->mType, pProperty->mIndex, value);
 
-						material.AddProperty(std::make_unique<MaterialProperties::Double3>(value));
-					}
-					else if (pProperty->mDataLength == (sizeof(double[4])))
-					{
-						double value[4] = {};
-						pMaterial->Get(pProperty->mKey.C_Str(), pProperty->mType, pProperty->mIndex, value);
+							material.AddProperty(std::make_unique<MaterialProperties::Double2>(value));
+						}
+						break;
 
-						material.AddProperty(std::make_unique<MaterialProperties::Double4>(value));
+						case sizeof(double[3]) :
+						{
+							double value[3] = {};
+							pMaterial->Get(pProperty->mKey.C_Str(), pProperty->mType, pProperty->mIndex, value);
+
+							material.AddProperty(std::make_unique<MaterialProperties::Double3>(value));
+						}
+						break;
+
+						case sizeof(double[4]) :
+						{
+							double value[4] = {};
+							pMaterial->Get(pProperty->mKey.C_Str(), pProperty->mType, pProperty->mIndex, value);
+
+							material.AddProperty(std::make_unique<MaterialProperties::Double4>(value));
+						}
+						break;
+
+						default:
+							break;
 					}
 				}
 				else if (pProperty->mType == aiPropertyTypeInfo::aiPTI_String)
@@ -168,7 +192,7 @@ namespace Flint
 						if (pMesh->HasVertexColors(0))
 							std::copy(&pMesh->mColors[0][j].r, (&pMesh->mColors[0][j].r) + copyAmount, pBufferMemory);
 						else
-							std::fill(pBufferMemory, pBufferMemory + (attribute.mAttributeSize / sizeof(float)), 1.0f);
+							std::fill(pBufferMemory, pBufferMemory + copyAmount, 1.0f);
 						break;
 
 					case VertexAttributeType::ColorOne:
@@ -244,18 +268,18 @@ namespace Flint
 					case VertexAttributeType::BoneID:
 						//if (pMesh->HasPositions())
 						//	std::copy(&pMesh->mVertices[j].x, (&pMesh->mVertices[j].x) + copyAmount, pBufferMemory);
-						//break;
+						break;
 
 					case VertexAttributeType::BoneWeight:
 						//if (pMesh->HasPositions())
 						//	std::copy(&pMesh->mVertices[j].x, (&pMesh->mVertices[j].x) + copyAmount, pBufferMemory);
-						//break;
+						break;
 
 					default:
 						FLINT_THROW_RUNTIME_ERROR("Invalid or Undefined vertex attribute type!");
 					}
 
-					pBufferMemory = pBufferMemory + (attribute.mAttributeSize / sizeof(float));
+					pBufferMemory = pBufferMemory + copyAmount;
 				}
 			}
 
@@ -288,8 +312,7 @@ namespace Flint
 		indexData.clear();
 		pIndexStagingBuffer->UnmapMemory();
 
-		auto [vertexGeometryOffset, indexGeometryOffset] = pGeometryStore->AddGeometry(pVertexStagingBuffer, pIndexStagingBuffer);
-
+		const auto [vertexGeometryOffset, indexGeometryOffset] = pGeometryStore->AddGeometry(pVertexStagingBuffer, pIndexStagingBuffer);
 		for (auto& wireFrame : mWireFrames)
 		{
 			wireFrame.SetVertexOffset(wireFrame.GetVertexOffset() + vertexGeometryOffset);
@@ -311,7 +334,7 @@ namespace Flint
 
 			return vDescriptor;
 		}
-		
+
 		VertexDescriptor CreateSkyBoxVertexDescriptor()
 		{
 			Flint::VertexDescriptor vDescriptor = {};

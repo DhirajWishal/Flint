@@ -81,7 +81,7 @@ namespace Flint
 		{
 			FLINT_SETUP_PROFILER();
 
-			auto [size, pData] = ReadDataFromCacheFile();
+			const auto [size, pData] = ReadDataFromCacheFile();
 
 			VkPipelineCacheCreateInfo vCreateInfo = {};
 			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;

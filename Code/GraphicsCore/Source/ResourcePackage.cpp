@@ -15,25 +15,37 @@ namespace Flint
 			mImageBindings[binding] = {};
 	}
 
-	void ResourcePackage::BindResource(const UI32 binding, const std::shared_ptr<Buffer>& pBuffer, const UI64 index, const UI64 offset)
+	void ResourcePackage::BindResource(const UI32 binding, const std::shared_ptr<Buffer>& pBuffer, const UI64 offset)
 	{
 		if (mBufferBindings.find(binding) == mBufferBindings.end())
 			throw std::invalid_argument("Submitted binding is not valid!");
 
-		mBufferBindings[binding] = BufferBinding(pBuffer, index, offset);
+		mBufferBindings[binding].push_back(BufferBinding(pBuffer, offset));
 		bIsUpdated = true;
 	}
 
-	void ResourcePackage::BindResource(const UI32 binding, const std::shared_ptr<ImageSampler>& pImageSampler, const std::shared_ptr<Image>& pImage, const ImageUsage usage, const UI64 index)
+	void ResourcePackage::BindResource(const UI32 binding, const std::shared_ptr<ImageSampler>& pImageSampler, const std::shared_ptr<Image>& pImage, const ImageUsage usage)
 	{
 		if (mImageBindings.find(binding) == mImageBindings.end())
 			throw std::invalid_argument("Submitted binding is not valid!");
 
-		mImageBindings[binding] = ImageBinding(pImageSampler, pImage, usage, index);
+		mImageBindings[binding].push_back(ImageBinding(pImageSampler, pImage, usage));
 		bIsUpdated = true;
 	}
 
-	const BufferBinding ResourcePackage::GetBufferBinding(const UI32 binding) const
+	void ResourcePackage::ClearBufferResources()
+	{
+		for (auto& [binding, resources] : mBufferBindings)
+			resources.clear();
+	}
+
+	void ResourcePackage::ClearImageResources()
+	{
+		for (auto& [binding, resources] : mImageBindings)
+			resources.clear();
+	}
+
+	const std::vector<BufferBinding> ResourcePackage::GetBufferBindings(const UI32 binding) const
 	{
 		if (mBufferBindings.find(binding) == mBufferBindings.end())
 			throw std::invalid_argument("Submitted binding is not valid!");
@@ -41,7 +53,7 @@ namespace Flint
 		return mBufferBindings.at(binding);
 	}
 
-	const ImageBinding ResourcePackage::GetImageBinding(const UI32 binding) const
+	const std::vector<ImageBinding> ResourcePackage::GetImageBindings(const UI32 binding) const
 	{
 		if (mImageBindings.find(binding) == mImageBindings.end())
 			throw std::invalid_argument("Submitted binding is not valid!");

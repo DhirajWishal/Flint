@@ -16,10 +16,9 @@ namespace Flint
 	struct BufferBinding
 	{
 		BufferBinding() = default;
-		BufferBinding(const std::shared_ptr<Buffer>& pBuffer, const UI64 index, const UI64 offset) : pBuffer(pBuffer), mArrayIndex(index), mOffset(offset) {}
+		BufferBinding(const std::shared_ptr<Buffer>& pBuffer, const UI64 offset) : pBuffer(pBuffer), mOffset(offset) {}
 
 		std::shared_ptr<Buffer> pBuffer = nullptr;
-		UI64 mArrayIndex = 0;
 		UI64 mOffset = 0;
 
 		const bool operator==(const BufferBinding& other) const { return pBuffer == other.pBuffer && mOffset == other.mOffset; }
@@ -31,13 +30,12 @@ namespace Flint
 	struct ImageBinding
 	{
 		ImageBinding() = default;
-		ImageBinding(const std::shared_ptr<ImageSampler>& pImageSampler, const std::shared_ptr<Image>& pImage, const ImageUsage usage, const UI64 index)
-			: pImageSampler(pImageSampler), pImage(pImage), mUsage(usage), mArrayIndex(index) {}
+		ImageBinding(const std::shared_ptr<ImageSampler>& pImageSampler, const std::shared_ptr<Image>& pImage, const ImageUsage usage)
+			: pImageSampler(pImageSampler), pImage(pImage), mUsage(usage) {}
 
 		std::shared_ptr<ImageSampler> pImageSampler = nullptr;
 		std::shared_ptr<Image> pImage = nullptr;
 		UI64 mViewIndex = 0;
-		UI64 mArrayIndex = 0;
 		ImageUsage mUsage = ImageUsage::Graphics;
 
 		const bool operator==(const ImageBinding& other) const { return pImageSampler == other.pImageSampler && pImage == other.pImage && mViewIndex == other.mViewIndex; }
@@ -46,6 +44,8 @@ namespace Flint
 	/**
 	 * Flint resource package object.
 	 * All the resources that are to be submitted to the pipeline at draw time should be submitted to a package.
+	 *
+	 * If multiple resources are added for the same binding, we assume that the shader requires multiple of them. The index will depend on the binding order.
 	 */
 	class ResourcePackage : public FObject
 	{
@@ -69,10 +69,9 @@ namespace Flint
 		 *
 		 * @param binding: The binding to bind to.
 		 * @param pBuffer: The buffer pointer to bind.
-		 * @param index: The buffer index to bind to. Default is 0.
 		 * @param offset: The offset of the buffer to bind. Default is 0.
 		 */
-		void BindResource(const UI32 binding, const std::shared_ptr<Buffer>& pBuffer, const UI64 index = 0, const UI64 offset = 0);
+		void BindResource(const UI32 binding, const std::shared_ptr<Buffer>& pBuffer, const UI64 offset = 0);
 
 		/**
 		 * Bind resources to the package.
@@ -80,9 +79,18 @@ namespace Flint
 		 * @param binding: The binding to bind to.
 		 * @param pImageSampler: The image sampler pointer.
 		 * @param pImage: The image pointer.
-		 * @param index: The index of the image to bind to. Default is 0.
 		 */
-		void BindResource(const UI32 binding, const std::shared_ptr<ImageSampler>& pImageSampler, const std::shared_ptr<Image>& pImage, const ImageUsage usage = ImageUsage::Graphics, const UI64 index = 0);
+		void BindResource(const UI32 binding, const std::shared_ptr<ImageSampler>& pImageSampler, const std::shared_ptr<Image>& pImage, const ImageUsage usage = ImageUsage::Graphics);
+
+		/**
+		 * Clear the buffer resources.
+		 */
+		void ClearBufferResources();
+
+		/**
+		 * Clear the buffer resources.
+		 */
+		void ClearImageResources();
 
 	public:
 		/**
@@ -90,36 +98,36 @@ namespace Flint
 		 *
 		 * @return The binding map.
 		 */
-		const std::unordered_map<UI32, BufferBinding> GetBufferBindingMap() const { return mBufferBindings; }
+		const std::unordered_map<UI32, std::vector<BufferBinding>> GetBufferBindingMap() const { return mBufferBindings; }
 
 		/**
-		 * Get a buffer binding.
+		 * Get a buffer bindings.
 		 *
 		 * @param binding: The binding of the buffer binding.
-		 * @return The buffer binding.
+		 * @return The buffer bindings.
 		 */
-		const BufferBinding GetBufferBinding(const UI32 binding) const;
+		const std::vector<BufferBinding> GetBufferBindings(const UI32 binding) const;
 
 		/**
 		 * Get the image binding map.
 		 *
 		 * @return The binding map.
 		 */
-		const std::unordered_map<UI32, ImageBinding> GetImageBindingMap() const { return mImageBindings; }
+		const std::unordered_map<UI32, std::vector<ImageBinding>> GetImageBindingMap() const { return mImageBindings; }
 
 		/**
-		 * Get a image binding.
+		 * Get a image bindings.
 		 *
 		 * @param binding: The binding of the image binding.
-		 * @return The image binding.
+		 * @return The image bindings.
 		 */
-		const ImageBinding GetImageBinding(const UI32 binding) const;
+		const std::vector<ImageBinding> GetImageBindings(const UI32 binding) const;
 
 	protected:
 		std::shared_ptr<ResourcePackager> pPackager = nullptr;
 
-		std::unordered_map<UI32, BufferBinding> mBufferBindings;
-		std::unordered_map<UI32, ImageBinding> mImageBindings;
+		std::unordered_map<UI32, std::vector<BufferBinding>> mBufferBindings = {};
+		std::unordered_map<UI32, std::vector<ImageBinding>> mImageBindings = {};
 
 		bool bIsUpdated = true;
 	};

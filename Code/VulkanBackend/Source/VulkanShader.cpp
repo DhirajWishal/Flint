@@ -16,8 +16,7 @@ namespace Flint
 			std::vector<UI32> ResolvePadding(const std::vector<UI32>& code)
 			{
 				const UI64 finalCodeSize = code.size() / 4;
-				std::vector<UI32> resolvedCode(finalCodeSize);
-				std::copy(code.begin(), code.begin() + finalCodeSize, resolvedCode.data());
+				std::vector<UI32> resolvedCode(code.begin(), code.begin() + finalCodeSize);
 
 				return resolvedCode;
 			}

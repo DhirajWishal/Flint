@@ -379,13 +379,13 @@ namespace Flint
 			return vImageView;
 		}
 
-		void VulkanImage::SetImageLayout(VkCommandBuffer vCommandBuffer, VkImageLayout vNewLayout, UI32 layerCount, UI32 layerIndex, const UI32 mipLevels)
+		void VulkanImage::SetImageLayout(VkCommandBuffer vCommandBuffer, VkImageLayout vNewLayout, UI32 layerCount, UI32 layerIndex, const UI32 mipLevels) const
 		{
 			pDevice->StaticCast<VulkanDevice>().SetImageLayout(vCommandBuffer, vImage, vCurrentLayout, vNewLayout, Utilities::GetVulkanFormat(mFormat), layerCount, layerIndex, mipLevels);
 			vCurrentLayout = vNewLayout;
 		}
 
-		void VulkanImage::SetImageLayout(VkImageLayout vNewLayout)
+		void VulkanImage::SetImageLayout(VkImageLayout vNewLayout) const
 		{
 			VulkanOneTimeCommandBuffer vCommandBuffer(pDevice->StaticCast<VulkanDevice>());
 			SetImageLayout(vCommandBuffer, vNewLayout, mLayerCount, 0, mMipLevels);
