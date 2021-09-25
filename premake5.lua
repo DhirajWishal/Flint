@@ -68,6 +68,7 @@ workspace "Flint"
 	filter ""
 
 	group "Code"
+		include "Code/Audio/Audio.lua"
 		include "Code/Core/Core.lua"
 		include "Code/Debugger/Debugger.lua"
 		include "Code/Engine/Engine.lua"

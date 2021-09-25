@@ -185,7 +185,7 @@ namespace Flint
 			FLINT_SETUP_PROFILER();
 
 			ResolveShaderStage();
-			std::ifstream shaderFile(path, std::ios::ate | std::ios::binary);
+			std::ifstream shaderFile(path, std::ios::in | std::ios::ate | std::ios::binary);
 
 			if (!shaderFile.is_open())
 				FLINT_THROW_RUNTIME_ERROR("Submitted shader file path is invalid!");
@@ -228,6 +228,17 @@ namespace Flint
 
 			CreateShaderModule();
 			PerformReflection();
+		}
+
+		void VulkanShader::CreateCache(const std::filesystem::path& path) const
+		{
+			std::ofstream cacheFile(path, std::ios::out | std::ios::binary);
+
+			if (!cacheFile.is_open())
+				throw std::runtime_error("Unable to open the provided cache file!");
+
+			cacheFile.write(reinterpret_cast<const char*>(mShaderCode.data()), mShaderCode.size());
+			cacheFile.close();
 		}
 
 		void VulkanShader::Reload(const std::filesystem::path& path)
@@ -321,7 +332,7 @@ namespace Flint
 				std::vector<SpvReflectInterfaceVariable*> pInputs(variableCount);
 				Helpers::ValidateReflection(spvReflectEnumerateInputVariables(&sShaderModule, &variableCount, pInputs.data()));
 
-				mInputAttributes[0].reserve(pInputs.size());
+				mInputAttributes.reserve(pInputs.size());
 				for (auto& resource : pInputs)
 				{
 					if (resource->format == SpvReflectFormat::SPV_REFLECT_FORMAT_UNDEFINED)
@@ -333,14 +344,14 @@ namespace Flint
 
 					if (resource->built_in > -1)
 					{
-						mInputAttributes[0].push_back(ShaderAttribute(
+						mInputAttributes.push_back(ShaderAttribute(
 							name,
 							resource->location,
 							ShaderAttributeDataType::BUILT_IN));
 					}
 					else
 					{
-						mInputAttributes[0].push_back(ShaderAttribute(
+						mInputAttributes.push_back(ShaderAttribute(
 							name,
 							resource->location,
 							static_cast<ShaderAttributeDataType>(
@@ -351,7 +362,7 @@ namespace Flint
 			}
 
 			// Sort the inputs.
-			std::sort(mInputAttributes[0].begin(), mInputAttributes[0].end(), [] (const ShaderAttribute& lhs, const ShaderAttribute& rhs) { return lhs.mLocation < rhs.mLocation; });
+			std::sort(mInputAttributes.begin(), mInputAttributes.end(), [](const ShaderAttribute& lhs, const ShaderAttribute& rhs) { return lhs.mLocation < rhs.mLocation; });
 
 			// Resolve shader outputs.
 			{
@@ -360,6 +371,7 @@ namespace Flint
 				std::vector<SpvReflectInterfaceVariable*> pOutputs(variableCount);
 				Helpers::ValidateReflection(spvReflectEnumerateOutputVariables(&sShaderModule, &variableCount, pOutputs.data()));
 
+				mInputAttributes.reserve(pOutputs.size());
 				for (auto& resource : pOutputs)
 				{
 					if (resource->format == SpvReflectFormat::SPV_REFLECT_FORMAT_UNDEFINED)
@@ -369,7 +381,7 @@ namespace Flint
 					if (resource->name)
 						name = resource->name;
 
-					mOutputAttributes[0].push_back(ShaderAttribute(
+					mOutputAttributes.push_back(ShaderAttribute(
 						name,
 						resource->location,
 						static_cast<ShaderAttributeDataType>(
@@ -379,7 +391,7 @@ namespace Flint
 			}
 
 			// Sort the outputs.
-			std::sort(mOutputAttributes[0].begin(), mOutputAttributes[0].end(), [](const ShaderAttribute& lhs, const ShaderAttribute& rhs) { return lhs.mLocation < rhs.mLocation; });
+			std::sort(mOutputAttributes.begin(), mOutputAttributes.end(), [](const ShaderAttribute& lhs, const ShaderAttribute& rhs) { return lhs.mLocation < rhs.mLocation; });
 
 			// Resolve uniforms.
 			{

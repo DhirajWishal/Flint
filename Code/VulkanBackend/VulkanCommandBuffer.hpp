@@ -28,6 +28,8 @@ namespace Flint
 			virtual void BindGraphicsPipeline(const std::shared_ptr<GraphicsPipeline>& pGraphicsPipeline) override;
 			virtual void BindComputePipeline(const std::shared_ptr<ComputePipeline>& pComputePipeline) override;
 
+			virtual void BindVertexBuffer(const std::shared_ptr<Buffer>& pBuffer, const UI64 firstBinding = 0, const UI64 offset = 0) override;
+			virtual void BindIndexBuffer(const std::shared_ptr<Buffer>& pBuffer, const UI64 indexSize, const UI64 offset = 0) override;
 			virtual void BindGeometryStore(const std::shared_ptr<GeometryStore>& pGeometryStore) override;
 
 			virtual void BindResourcePackages(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::vector<std::shared_ptr<ResourcePackage>>& pResourcePackages) override;
@@ -35,7 +37,7 @@ namespace Flint
 			virtual void BindDynamicStates(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::shared_ptr<DynamicStateContainer>& pDynamicStates) override;
 			virtual void BindDynamicStates(const std::shared_ptr<ComputePipeline>& pPipeline, const std::shared_ptr<DynamicStateContainer>& pDynamicStates) override;
 
-			virtual void IssueDrawCall(const WireFrame& wireFrame, const DrawCallMode mode = DrawCallMode::Indexed) override;
+			virtual void IssueDrawCall(const WireFrame& wireFrame, const UI64 firstInstance = 0, const UI64 instanceCount = 1, const DrawCallMode mode = DrawCallMode::Indexed) override;
 			virtual void IssueComputeCall(const FBox3D& groups) override;
 			virtual void SubmitSecondaryCommandBuffer(const std::shared_ptr<CommandBuffer>& pCommandBuffer) override;
 			virtual void ExecuteSecondaryCommands() override;

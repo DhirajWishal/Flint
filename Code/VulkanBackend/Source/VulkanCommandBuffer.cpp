@@ -199,16 +199,15 @@ namespace Flint
 			pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetDeviceTable().vkCmdBindPipeline(vCommandBuffer, VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_COMPUTE, pComputePipeline->StaticCast<VulkanComputePipeline>().GetPipeline());
 		}
 
-		void VulkanCommandBuffer::BindGeometryStore(const std::shared_ptr<GeometryStore>& pGeometryStore)
+		void VulkanCommandBuffer::BindVertexBuffer(const std::shared_ptr<Buffer>& pBuffer, const UI64 firstBinding, const UI64 offset)
 		{
-			FLINT_SETUP_PROFILER();
+			VkDeviceSize offsets[1] = { offset };
+			pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetDeviceTable().vkCmdBindVertexBuffers(vCommandBuffer, static_cast<UI32>(firstBinding), 1, pBuffer->StaticCast<VulkanBuffer>().GetBufferAddress(), offsets);
+		}
 
-			auto pVertexBuffer = pGeometryStore->GetVertexBuffer();
-			auto pIndexBuffer = pGeometryStore->GetIndexBuffer();
-
-			UI64 indexSize = pGeometryStore->GetIndexSize();
+		void VulkanCommandBuffer::BindIndexBuffer(const std::shared_ptr<Buffer>& pBuffer, const UI64 indexSize, const UI64 offset)
+		{
 			VkIndexType indexType = VkIndexType::VK_INDEX_TYPE_UINT32;
-
 			if (indexSize == sizeof(UI8))
 				indexType = VkIndexType::VK_INDEX_TYPE_UINT8_EXT;
 
@@ -221,10 +220,15 @@ namespace Flint
 			else
 				throw std::invalid_argument("Invalid index size submitted to bind! The valid sizes are 1, 2, and 4 bytes.");
 
-			VkDeviceSize offsets[1] = { 0 };
-			VulkanDevice& vDevice = pAllocator->GetDevice()->StaticCast<VulkanDevice>();
-			vDevice.GetDeviceTable().vkCmdBindVertexBuffers(vCommandBuffer, 0, 1, pVertexBuffer->StaticCast<VulkanBuffer>().GetBufferAddress(), offsets);
-			vDevice.GetDeviceTable().vkCmdBindIndexBuffer(vCommandBuffer, pIndexBuffer->StaticCast<VulkanBuffer>().GetBuffer(), 0, indexType);
+			pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetDeviceTable().vkCmdBindIndexBuffer(vCommandBuffer, pBuffer->StaticCast<VulkanBuffer>().GetBuffer(), offset, indexType);
+		}
+
+		void VulkanCommandBuffer::BindGeometryStore(const std::shared_ptr<GeometryStore>& pGeometryStore)
+		{
+			FLINT_SETUP_PROFILER();
+
+			BindVertexBuffer(pGeometryStore->GetVertexBuffer());
+			BindIndexBuffer(pGeometryStore->GetIndexBuffer(), pGeometryStore->GetIndexSize());
 		}
 
 		void VulkanCommandBuffer::BindResourcePackages(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::vector<std::shared_ptr<ResourcePackage>>& pResourcePackages)
@@ -395,16 +399,16 @@ namespace Flint
 			}
 		}
 
-		void VulkanCommandBuffer::IssueDrawCall(const WireFrame& wireFrame, const DrawCallMode mode)
+		void VulkanCommandBuffer::IssueDrawCall(const WireFrame& wireFrame, const UI64 firstInstance, const UI64 instanceCount, const DrawCallMode mode)
 		{
 			FLINT_SETUP_PROFILER();
 
 			VulkanDevice& vDevice = pAllocator->GetDevice()->StaticCast<VulkanDevice>();
 			if (mode == DrawCallMode::Vertex)
-				vDevice.GetDeviceTable().vkCmdDraw(vCommandBuffer, static_cast<UI32>(wireFrame.GetVertexCount()), 1, static_cast<UI32>(wireFrame.GetVertexOffset()), 0);
+				vDevice.GetDeviceTable().vkCmdDraw(vCommandBuffer, static_cast<UI32>(wireFrame.GetVertexCount()), static_cast<UI32>(instanceCount), static_cast<UI32>(wireFrame.GetVertexOffset()), static_cast<UI32>(firstInstance));
 
 			else if (mode == DrawCallMode::Indexed)
-				vDevice.GetDeviceTable().vkCmdDrawIndexed(vCommandBuffer, static_cast<UI32>(wireFrame.GetIndexCount()), 1, static_cast<UI32>(wireFrame.GetIndexOffset()), static_cast<UI32>(wireFrame.GetVertexOffset()), 0);
+				vDevice.GetDeviceTable().vkCmdDrawIndexed(vCommandBuffer, static_cast<UI32>(wireFrame.GetIndexCount()), static_cast<UI32>(instanceCount), static_cast<UI32>(wireFrame.GetIndexOffset()), static_cast<UI32>(wireFrame.GetVertexOffset()), static_cast<UI32>(firstInstance));
 
 			else
 				throw backend_error("Invalid draw call mode!");

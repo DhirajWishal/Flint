@@ -25,7 +25,7 @@ namespace Flint
 		GraphicsScene* CreateGraphicsScene(const std::string& name, const FBox2D extent);
 		GraphicsScene* GetGraphicsScene(const std::string& name) { return &mGraphicsScenes.at(name); }
 
-		std::shared_ptr<GeometryStore> CreateGeometryStore(const std::string& name, const TShaderAttributeMap& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic);
+		std::shared_ptr<GeometryStore> CreateGeometryStore(const std::string& name, const std::vector<ShaderAttribute>& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic);
 		std::shared_ptr<GeometryStore> GetGeometryStore(const std::string& name) const { return pGeometryStores.at(name); }
 
 		std::shared_ptr<Instance> GetInstance() const { return pInstance; }

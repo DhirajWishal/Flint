@@ -63,6 +63,14 @@ namespace Flint
 		Shader(const std::shared_ptr<Device>& pDevice, const ShaderType type, const std::string& code);
 
 		/**
+		 * Create the shader code cache.
+		 * Code cache is easy to load and is much more efficient.
+		 *
+		 * @param path: The path to save the shader code. Make sure to provide the file name!
+		 */
+		virtual void CreateCache(const std::filesystem::path& path) const = 0;
+
+		/**
 		 * Reload the shader using the shader file.
 		 *
 		 * @param path: The shader file path.
@@ -97,7 +105,7 @@ namespace Flint
 		 *
 		 * @return The array of input attributes.
 		 */
-		const TShaderAttributeMap GetInputAttributes() const { return mInputAttributes; }
+		const std::vector<ShaderAttribute> GetInputAttributes() const { return mInputAttributes; }
 
 		/**
 		 * Get shader output attributes.
@@ -105,13 +113,13 @@ namespace Flint
 		 *
 		 * @return The array of output attributes.
 		 */
-		const TShaderAttributeMap GetOutputAttributes() const { return mOutputAttributes; }
+		const std::vector<ShaderAttribute> GetOutputAttributes() const { return mOutputAttributes; }
 
 	protected:
-		TShaderAttributeMap mInputAttributes;
-		TShaderAttributeMap mOutputAttributes;
-
 		TShaderResourceMap mResourceMap;
+
+		std::vector<ShaderAttribute> mInputAttributes = {};
+		std::vector<ShaderAttribute> mOutputAttributes = {};
 
 		ShaderType mType = ShaderType::Undefined;
 	};

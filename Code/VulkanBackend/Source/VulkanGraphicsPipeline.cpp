@@ -688,9 +688,8 @@ namespace Flint
 			{
 				VkVertexInputAttributeDescription vAttributeDescription = {};
 				VkVertexInputBindingDescription vBindingDescription = {};
-				const auto inputAttributes = pVertexShader->GetInputAttributes();
 
-				for (const auto binding : inputAttributes)
+				for (const auto binding : mSpecification.mVertexInputAttributeMap)
 				{
 					vAttributeDescription.binding = binding.first;
 					vAttributeDescription.offset = 0;

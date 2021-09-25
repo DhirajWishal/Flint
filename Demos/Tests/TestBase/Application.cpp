@@ -64,7 +64,7 @@ namespace Flint
 		return &mGraphicsScenes[name];
 	}
 	
-	std::shared_ptr<GeometryStore> Application::CreateGeometryStore(const std::string& name, const TShaderAttributeMap& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile)
+	std::shared_ptr<GeometryStore> Application::CreateGeometryStore(const std::string& name, const std::vector<ShaderAttribute>& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile)
 	{
 		auto pGeometryStore = pDevice->CreateGeometryStore(vertexAttributes, indexSize, profile);
 		pGeometryStores[name] = pGeometryStore;

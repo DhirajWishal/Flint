@@ -234,6 +234,7 @@ namespace Flint
 	struct GraphicsPipelineSpecification {
 		GraphicsPipelineSpecification() = default;
 
+		TShaderAttributeMap mVertexInputAttributeMap = {};
 		std::vector<ColorBlendAttachment> mColorBlendAttachments = { ColorBlendAttachment() };
 
 		float mColorBlendConstants[4] = {

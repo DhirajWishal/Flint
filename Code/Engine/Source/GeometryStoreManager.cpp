@@ -19,7 +19,7 @@ namespace Flint
 		pComponent->mWireFrames = assetLoader.GetWireFrames();
 	}
 
-	void GeometryStoreManager::CreateNewGeometryStore(const TShaderAttributeMap& inputAttributes)
+	void GeometryStoreManager::CreateNewGeometryStore(const std::vector<ShaderAttribute>& inputAttributes)
 	{
 		mGeometryStoreMap[inputAttributes] = pDefaultDevice->CreateGeometryStore(inputAttributes, sizeof(UI32));
 	}

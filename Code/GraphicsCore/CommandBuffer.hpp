@@ -13,6 +13,7 @@ namespace Flint
 	class OffScreenRenderTarget;
 	class GraphicsPipeline;
 	class ComputePipeline;
+	class Buffer;
 	class GeometryStore;
 	class ResourcePackage;
 
@@ -43,7 +44,7 @@ namespace Flint
 		/**
 		 * Protected constructor.
 		 * This constructor can only be called by the inherited class, or the command buffer allocator.
-		 * 
+		 *
 		 * @param pAllocator: The command buffer allocator which allocated this object.
 		 */
 		CommandBuffer(const std::shared_ptr<CommandBufferAllocator>& pAllocator) : pAllocator(pAllocator) {}
@@ -114,8 +115,26 @@ namespace Flint
 		virtual void BindComputePipeline(const std::shared_ptr<ComputePipeline>& pComputePipeline) = 0;
 
 		/**
+		 * Bind a vertex buffer to the command buffer.
+		 *
+		 * @param pBuffer: The buffer pointer.
+		 * @param firstBinding: The first binding of the buffer. Default is 0.
+		 * @param offset: The offset of the buffer. Default is 0.
+		 */
+		virtual void BindVertexBuffer(const std::shared_ptr<Buffer>& pBuffer, const UI64 firstBinding = 0, const UI64 offset = 0) = 0;
+
+		/**
+		 * Bind a index buffer to the command buffer.
+		 *
+		 * @param pBuffer: The buffer pointer.
+		 * @param indexSize: The size of a single index. Acceptable sizes are 1, 2 and 4.
+		 * @param offset: The offset of the buffer. Default is 0.
+		 */
+		virtual void BindIndexBuffer(const std::shared_ptr<Buffer>& pBuffer, const UI64 indexSize, const UI64 offset = 0) = 0;
+
+		/**
 		 * Bind a geometry store to the command buffer.
-		 * 
+		 *
 		 * @param pGeometryStore: The geometry store pointer.
 		 */
 		virtual void BindGeometryStore(const std::shared_ptr<GeometryStore>& pGeometryStore) = 0;
@@ -154,11 +173,13 @@ namespace Flint
 
 		/**
 		 * Issue a draw call to the command buffer.
-		 * 
+		 *
 		 * @param wireFrame: The wire frame to draw.
+		 * @param firstInstance: The first instance of the instance ID.
+		 * @param instanceCount: The number instances to draw.
 		 * @param mode: The draw call mode. Default is Indexed.
 		 */
-		virtual void IssueDrawCall(const WireFrame& wireFrame, const DrawCallMode mode = DrawCallMode::Indexed) = 0;
+		virtual void IssueDrawCall(const WireFrame& wireFrame, const UI64 firstInstance = 0, const UI64 instanceCount = 1, const DrawCallMode mode = DrawCallMode::Indexed) = 0;
 
 		/**
 		 * Issue the compute call to the command buffer.
@@ -169,7 +190,7 @@ namespace Flint
 
 		/**
 		 * Submit a secondary command buffer to be executed.
-		 * 
+		 *
 		 * @param pCommandBuffer: The command buffer pointer.
 		 */
 		virtual void SubmitSecondaryCommandBuffer(const std::shared_ptr<CommandBuffer>& pCommandBuffer) = 0;
@@ -193,7 +214,7 @@ namespace Flint
 	public:
 		/**
 		 * Get the allocator of this command buffer.
-		 * 
+		 *
 		 * @param The allocator pointer.
 		 */
 		const std::shared_ptr<CommandBufferAllocator> GetAllocator() const { return pAllocator; }
@@ -201,14 +222,14 @@ namespace Flint
 		/**
 		 * Check if the command buffer is valid.
 		 * If the allocator is terminated, all of its command buffers are marked as invalid.
-		 * 
+		 *
 		 * @return Boolean stating if the command buffer is valid.
 		 */
 		const bool IsValid() const { return !bIsTerminated; }
 
 		/**
 		 * Check if the buffer is in the recording state.
-		 * 
+		 *
 		 * @return The boolean value stating if the buffer is in the recording state or not.
 		 */
 		const bool IsRecording() const { return bIsRecording; }

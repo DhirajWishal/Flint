@@ -35,9 +35,9 @@ namespace Flint
 		 * 
 		 * @param inputAttributes: The input attributes of the geometry store.
 		 */
-		void CreateNewGeometryStore(const TShaderAttributeMap& inputAttributes);
+		void CreateNewGeometryStore(const std::vector<ShaderAttribute>& inputAttributes);
 
 	protected:
-		std::unordered_map<TShaderAttributeMap, std::shared_ptr<GeometryStore>> mGeometryStoreMap = {};
+		std::unordered_map<std::vector<ShaderAttribute>, std::shared_ptr<GeometryStore>> mGeometryStoreMap = {};
 	};
 }

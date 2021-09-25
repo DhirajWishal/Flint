@@ -6,7 +6,7 @@
 
 namespace Flint
 {
-	GeometryStore::GeometryStore(const std::shared_ptr<Device>& pDevice, const TShaderAttributeMap& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile)
+	GeometryStore::GeometryStore(const std::shared_ptr<Device>& pDevice, const std::vector<ShaderAttribute>& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile)
 		: DeviceBoundObject(pDevice), mVertexAttribtues(vertexAttributes), mIndexSize(indexSize), mMemoryProfile(profile)
 	{
 		if (mVertexAttribtues.empty())
@@ -15,9 +15,8 @@ namespace Flint
 		if (!indexSize)
 			throw std::invalid_argument("Index size should be grater than 0!");
 
-		for (const auto attributeList : vertexAttributes)
-			for (const auto attribute : attributeList.second)
-				mVertexSize += static_cast<UI8>(attribute.mDataType);
+		for (const auto attribute : vertexAttributes)
+			mVertexSize += static_cast<UI8>(attribute.mDataType);
 	}
 
 	void GeometryStore::SetData(const std::shared_ptr<Buffer>& pVertexStagingBuffer, const std::shared_ptr<Buffer>& pIndexStagingBuffer)

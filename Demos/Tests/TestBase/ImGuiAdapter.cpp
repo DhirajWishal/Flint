@@ -20,11 +20,23 @@ namespace Flint
 		this->pDevice = pDevice;
 		this->pRenderTarget = pRenderTarget;
 
-		ShaderCompiler vertexShaderCompiler(std::filesystem::path("Shaders\\ImGui\\UI.vert"), ShaderCodeType::GLSL, ShaderType::Vertex);
-		ShaderCompiler fragmentShaderCompiler(std::filesystem::path("Shaders\\ImGui\\UI.frag"), ShaderCodeType::GLSL, ShaderType::Fragment);
+		if (!std::filesystem::exists("Flint\\Shaders\\ImGui.vert.fsc"))
+		{
+			ShaderCompiler shaderCompiler(std::filesystem::path("E:\\Flint\\Demos\\Tests\\ImageBasedLighting\\Shaders\\ImGui\\UI.vert"), ShaderCodeType::GLSL, ShaderType::Vertex);
+			pVertexShader = shaderCompiler.CreateShader(pDevice);
+			pVertexShader->CreateCache("Flint\\Shaders\\ImGui.vert.fsc");
+		}
+		else
+			pVertexShader = pDevice->CreateShader(ShaderType::Vertex, std::filesystem::path("Flint\\Shaders\\ImGui.vert.fsc"));
 
-		pVertexShader = pDevice->CreateShader(ShaderType::Vertex, vertexShaderCompiler.GetShaderCode());
-		pFragmentShader = pDevice->CreateShader(ShaderType::Fragment, fragmentShaderCompiler.GetShaderCode());
+		if (!std::filesystem::exists("Flint\\Shaders\\ImGui.frag.fsc"))
+		{
+			ShaderCompiler shaderCompiler(std::filesystem::path("E:\\Flint\\Demos\\Tests\\ImageBasedLighting\\Shaders\\ImGui\\UI.frag"), ShaderCodeType::GLSL, ShaderType::Fragment);
+			pFragmentShader = shaderCompiler.CreateShader(pDevice);
+			pFragmentShader->CreateCache("Flint\\Shaders\\ImGui.frag.fsc");
+		}
+		else
+			pFragmentShader = pDevice->CreateShader(ShaderType::Fragment, std::filesystem::path("Flint\\Shaders\\ImGui.frag.fsc"));
 
 		SetupImGui();
 		SetupGeometryStore();
@@ -178,6 +190,8 @@ namespace Flint
 
 		specification.bEnableSampleShading = false;
 		specification.mMinSampleShading = 0.0f;
+
+		specification.mVertexInputAttributeMap[0] = pVertexShader->GetInputAttributes();
 
 		pPipeline = pDevice->CreateGraphicsPipeline("ImGUI", pRenderTarget, pVertexShader, nullptr, nullptr, nullptr, pFragmentShader, specification);
 	}

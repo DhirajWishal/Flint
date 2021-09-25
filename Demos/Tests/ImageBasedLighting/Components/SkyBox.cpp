@@ -65,19 +65,37 @@ namespace Flint
 
 	void SkyBox::CreatePipeline()
 	{
+		auto pDevice = pApplication->GetDevice();
+		std::shared_ptr<Shader> pVertexShader = nullptr;
+		std::shared_ptr<Shader> pFragmentShader = nullptr;
+
+		if (!std::filesystem::exists("Flint\\Shaders\\SkyBox.vert.fsc"))
+		{
+			ShaderCompiler shaderCompiler(std::filesystem::path("E:\\Flint\\Demos\\Tests\\ImageBasedLighting\\Shaders\\SkyBox\\SkyBox.vert"), ShaderCodeType::GLSL, ShaderType::Vertex);
+			pVertexShader = shaderCompiler.CreateShader(pDevice);
+			pVertexShader->CreateCache("Flint\\Shaders\\Skybox.vert.fsc");
+		}
+		else
+			pVertexShader = pDevice->CreateShader(ShaderType::Vertex, std::filesystem::path("Flint\\Shaders\\SkyBox.vert.fsc"));
+
+		if (!std::filesystem::exists("Flint\\Shaders\\SkyBox.frag.fsc"))
+		{
+			ShaderCompiler shaderCompiler(std::filesystem::path("E:\\Flint\\Demos\\Tests\\ImageBasedLighting\\Shaders\\SkyBox\\SkyBox.frag"), ShaderCodeType::GLSL, ShaderType::Fragment);
+			pFragmentShader = shaderCompiler.CreateShader(pDevice);
+			pFragmentShader->CreateCache("Flint\\Shaders\\Skybox.frag.fsc");
+		}
+		else
+			pFragmentShader = pDevice->CreateShader(ShaderType::Fragment, std::filesystem::path("Flint\\Shaders\\SkyBox.frag.fsc"));
+
 		Flint::GraphicsPipelineSpecification specification = {};
 		specification.mRasterizationSamples = pApplication->pDevice->GetSupportedMultiSampleCount();
 		specification.mFrontFace = Flint::FrontFace::Clockwise;
 		specification.mDynamicStateFlags = Flint::DynamicStateFlags::ViewPort | Flint::DynamicStateFlags::Scissor;
 
-		ShaderCompiler vertexShaderCompiler(std::filesystem::path("E:\\Flint\\Demos\\Tests\\ImageBasedLighting\\Shaders\\SkyBox\\SkyBox.vert"), ShaderCodeType::GLSL, ShaderType::Vertex);
-		ShaderCompiler fragmentShaderCompiler(std::filesystem::path("E:\\Flint\\Demos\\Tests\\ImageBasedLighting\\Shaders\\SkyBox\\SkyBox.frag"), ShaderCodeType::GLSL, ShaderType::Fragment);
-
-		auto pDevice = pApplication->GetDevice();
-		auto pVertexShader = pDevice->CreateShader(ShaderType::Vertex, vertexShaderCompiler.GetShaderCode());
+		specification.mVertexInputAttributeMap[0] = pVertexShader->GetInputAttributes();
 		pPipeline = pApplication->GetGraphicsScene("Default")->CreateGraphicsPipeline("SkyBox",
 			pVertexShader,
-			pDevice->CreateShader(ShaderType::Fragment, fragmentShaderCompiler.GetShaderCode()),
+			pFragmentShader,
 			specification);
 
 		pApplication->CreateGeometryStore("SkyBox", pVertexShader->GetInputAttributes(), sizeof(UI32));
