@@ -55,4 +55,12 @@ namespace Flint
 	{
 		stbi_image_free(pPixelData);
 	}
+
+	std::shared_ptr<Image> ImageLoader::CreateImage(const std::shared_ptr<Device>& pDevice, const ImageType type, const ImageUsage usage, const UI32 layers, const UI32 mipLevels, const MultiSampleCount sampleCount) const
+	{
+		if (mipLevels != 0)
+			return pDevice->CreateImage(type, usage, mExtent, mPixelFormat, layers, mipLevels, pPixelData, sampleCount);
+		else
+			return pDevice->CreateImage(type, usage, mExtent, mPixelFormat, layers, Image::GetBestMipLevels(mExtent), pPixelData, sampleCount);
+	}
 }

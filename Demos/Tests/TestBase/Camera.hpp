@@ -137,6 +137,20 @@ namespace Flint
 		 */
 		void SetViewMatrix(glm::mat4 mat) { viewMatrix = mat; }
 
+		/**
+		 * Set the movement bias.
+		 * 
+		 * @param bias: The bias to set.
+		 */
+		void SetMovementBias(const float bias) { mMovementBias = bias; }
+
+		/**
+		 * Get the movement bias.
+		 * 
+		 * @return The movement bias.
+		 */
+		float& GetMovementBias() { return mMovementBias; }
+
 	private:
 		glm::mat4 viewMatrix = glm::mat4(1);
 		glm::mat4 projectionMatrix = glm::mat4(1);

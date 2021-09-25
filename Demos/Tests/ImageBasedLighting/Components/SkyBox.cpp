@@ -8,8 +8,6 @@
 #include "Engine/ImageLoader.hpp"
 #include "Engine/Tools/CubeMapGenerator.hpp"
 
-#include <array>
-
 namespace Flint
 {
 	void SkyBox::Initialize(Application* pApplication)
@@ -59,6 +57,7 @@ namespace Flint
 		pUniformBuffer->Terminate();
 		pImage->Terminate();
 		pImageSampler->Terminate();
+		pPipeline->Terminate();
 
 		mAsset.Clear();
 	}
@@ -93,10 +92,7 @@ namespace Flint
 		specification.mDynamicStateFlags = Flint::DynamicStateFlags::ViewPort | Flint::DynamicStateFlags::Scissor;
 
 		specification.mVertexInputAttributeMap[0] = pVertexShader->GetInputAttributes();
-		pPipeline = pApplication->GetGraphicsScene("Default")->CreateGraphicsPipeline("SkyBox",
-			pVertexShader,
-			pFragmentShader,
-			specification);
+		pPipeline = pApplication->GetGraphicsScene("Default")->CreateGraphicsPipeline("SkyBox", pVertexShader, pFragmentShader, specification);
 
 		pApplication->CreateGeometryStore("SkyBox", pVertexShader->GetInputAttributes(), sizeof(UI32));
 
@@ -112,18 +108,6 @@ namespace Flint
 
 	void SkyBox::LoadTextures()
 	{
-		//std::vector<std::filesystem::path> images = {
-		//	"E:\\Flint\\Assets\\Textures\\SkyBox\\right.jpg",
-		//	"E:\\Flint\\Assets\\Textures\\SkyBox\\left.jpg",
-		//	"E:\\Flint\\Assets\\Textures\\SkyBox\\top.jpg",
-		//	"E:\\Flint\\Assets\\Textures\\SkyBox\\bottom.jpg",
-		//	"E:\\Flint\\Assets\\Textures\\SkyBox\\front.jpg",
-		//	"E:\\Flint\\Assets\\Textures\\SkyBox\\back.jpg"
-		//};
-		//
-		//ImageLoader loader(images);
-		//pImage = pApplication->GetDevice()->CreateImage(ImageType::CubeMap, ImageUsage::Graphics, loader.GetExtent(), loader.GetPixelFormat(), 6, 1, loader.GetPixelData());
-
 		CubeMapGenerator generator(pApplication->GetDevice(), "C:\\Users\\RLG Evo\\Downloads\\piazza_martin_lutero_4k.hdr", 0);
 		pImage = generator.GetImage();
 

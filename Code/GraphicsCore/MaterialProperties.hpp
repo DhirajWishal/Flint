@@ -22,6 +22,8 @@ namespace Flint
 			DOUBLE_2,
 			DOUBLE_3,
 			DOUBLE_4,
+
+			TEXTURE_PATH,
 		};
 
 		/**
@@ -47,7 +49,7 @@ namespace Flint
 		public:
 			/**
 			 * Constructor.
-			 * 
+			 *
 			 * @param value: The value to store.
 			 */
 			Float(const float value) : Property(MaterialType::FLOAT), mValue(value) {}
@@ -195,6 +197,48 @@ namespace Flint
 			}
 
 			double mValues[4] = {};
+		};
+
+		/**
+		 * Texture type enum.
+		 */
+		enum class TextureType : UI8 {
+			Undefined,
+			Specular,
+			Diffuse,
+			Ambient,
+			Emissive,
+			Normals,
+			Height,
+			Shininess,
+			Opacity,
+			Displacement,
+			Lightmap,
+			Reflection,
+			BaseColor,
+			NormalCamera,
+			EmissionColor,
+			Metalness,
+			DiffuseRoughness,
+			AmbientOcclusion,
+			Transmission
+		};
+
+		/**
+		 * Texture path property.
+		 */
+		class TexturePath : public Property
+		{
+		public:
+			/**
+			 * Constructor.
+			 *
+			 * @param path: The path of the texture file.
+			 */
+			TexturePath(const std::filesystem::path& path, const TextureType type) : Property(MaterialType::TEXTURE_PATH), mTexturePath(path), mType(type) {}
+
+			std::filesystem::path mTexturePath = {};
+			TextureType mType = TextureType::Undefined;
 		};
 	}
 }

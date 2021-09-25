@@ -10,14 +10,26 @@ namespace Flint
 	/**
 	 * Flint material object.
 	 */
-	class Material : public FObject
+	class Material final : public FObject
 	{
 	public:
-		Material() {}
+		Material() = default;
 
-		void AddProperty(std::unique_ptr<MaterialProperties::Property>&& pProperty) { pProperties.push_back(std::move(pProperty)); }
+		/**
+		 * Add a material property.
+		 *
+		 * @param pProperty: The property to add.
+		 */
+		void AddProperty(std::shared_ptr<MaterialProperties::Property>&& pProperty) { pProperties.push_back(std::move(pProperty)); }
+
+		/**
+		 * Get all the properties.
+		 *
+		 * @return The properties.
+		 */
+		const std::vector<std::shared_ptr<MaterialProperties::Property>> GetProperties() const { return pProperties; }
 
 	private:
-		std::vector<std::unique_ptr<MaterialProperties::Property>> pProperties = {};
+		std::vector<std::shared_ptr<MaterialProperties::Property>> pProperties = {};
 	};
 }

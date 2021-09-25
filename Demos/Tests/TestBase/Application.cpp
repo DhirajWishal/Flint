@@ -8,7 +8,14 @@ namespace Flint
 {
 	Application::Application()
 	{
+#ifdef FLINT_DEBUG
 		pInstance = CreateInstance(true);
+
+#else
+		pInstance = CreateInstance(false);
+
+#endif // FLINT_DEBUG
+
 		pDevice = pInstance->CreateDevice(DeviceFlags::External | DeviceFlags::GraphicsCompatible | DeviceFlags::ComputeCompatible);
 	}
 
@@ -57,13 +64,13 @@ namespace Flint
 		for (auto& [name, scene] : mGraphicsScenes)
 			scene.DrawFrame();
 	}
-	
+
 	GraphicsScene* Application::CreateGraphicsScene(const std::string& name, const FBox2D extent)
 	{
 		mGraphicsScenes[name] = std::move(GraphicsScene(this, extent));
 		return &mGraphicsScenes[name];
 	}
-	
+
 	std::shared_ptr<GeometryStore> Application::CreateGeometryStore(const std::string& name, const std::vector<ShaderAttribute>& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile)
 	{
 		auto pGeometryStore = pDevice->CreateGeometryStore(vertexAttributes, indexSize, profile);

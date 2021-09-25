@@ -242,7 +242,7 @@ namespace Flint
 		float mMaxLevelOfDetail = 0.0f;
 		float mMinLevelOfDetail = 0.0f;
 
-		float mMipLoadBias = 0.0f;
+		float mMipLODBias = 0.0f;
 
 		AddressMode mAddressModeU = AddressMode::Repeat;
 		AddressMode mAddressModeV = AddressMode::Repeat;

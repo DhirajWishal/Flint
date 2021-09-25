@@ -36,20 +36,21 @@ namespace Flint
 			for (const auto buffers : mBufferBindings)
 			{
 				vWrite.descriptorCount = static_cast<UI32>(buffers.second.size());
-				vWrite.dstArrayElement = -1;
+				vWrite.dstArrayElement = 0;
 				vWrite.dstBinding = buffers.first;
 				vWrite.descriptorType = Utilities::GetDescriptorType(resources.at(buffers.first));
 
+				UI64 index = 0;
 				VkDescriptorBufferInfo* pBufferInfos = new VkDescriptorBufferInfo[vWrite.descriptorCount];
 				for (const auto buffer : buffers.second)
 				{
 					if (!buffer.pBuffer)
 						throw backend_error("Requested buffer at binding location: " + std::to_string(buffers.first) + " is not submitted! Make sure that all the bindings are properly submitted.");
 
-					vWrite.dstArrayElement++;
-					pBufferInfos[vWrite.dstArrayElement].buffer = buffer.pBuffer->StaticCast<VulkanBuffer>().GetBuffer();
-					pBufferInfos[vWrite.dstArrayElement].offset = buffer.mOffset;
-					pBufferInfos[vWrite.dstArrayElement].range = VK_WHOLE_SIZE;
+					pBufferInfos[index].buffer = buffer.pBuffer->StaticCast<VulkanBuffer>().GetBuffer();
+					pBufferInfos[index].offset = buffer.mOffset;
+					pBufferInfos[index].range = VK_WHOLE_SIZE;
+					index++;
 				}
 
 				vWrite.pBufferInfo = pBufferInfos;
@@ -61,10 +62,11 @@ namespace Flint
 			for (const auto images : mImageBindings)
 			{
 				vWrite.descriptorCount = static_cast<UI32>(images.second.size());
-				vWrite.dstArrayElement = -1;
+				vWrite.dstArrayElement = 0;
 				vWrite.dstBinding = images.first;
 				vWrite.descriptorType = Utilities::GetDescriptorType(resources.at(images.first));
 
+				UI64 index = 0;
 				VkDescriptorImageInfo* pImageInfos = new VkDescriptorImageInfo[vWrite.descriptorCount];
 				for (const auto image : images.second)
 				{
@@ -75,11 +77,10 @@ namespace Flint
 						throw backend_error("Requested image sampler at binding location: " + std::to_string(images.first) + " is not submitted! Make sure that all the bindings are properly submitted.");
 
 					auto& vImage = image.pImage->StaticCast<VulkanImage>();
-
-					vWrite.dstArrayElement++;
-					pImageInfos[vWrite.dstArrayElement].imageView = vImage.GetImageView(static_cast<UI32>(image.mViewIndex));
-					pImageInfos[vWrite.dstArrayElement].imageLayout = vImage.GetImageLayout(image.mUsage);
-					pImageInfos[vWrite.dstArrayElement].sampler = image.pImageSampler->StaticCast<VulkanImageSampler>().GetSampler();
+					pImageInfos[index].imageView = vImage.GetImageView(static_cast<UI32>(image.mViewIndex));
+					pImageInfos[index].imageLayout = vImage.GetImageLayout(image.mUsage);
+					pImageInfos[index].sampler = image.pImageSampler->StaticCast<VulkanImageSampler>().GetSampler();
+					index++;
 				}
 
 				vWrite.pImageInfo = pImageInfos;

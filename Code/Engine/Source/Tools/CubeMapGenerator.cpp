@@ -24,7 +24,7 @@ namespace Flint
 		FBox3D extent = FBox3D(length, length, 1);
 
 		if (mips == 0)
-			mips = Image::GetBestMipLevels(FBox2D(length));
+			mips = Image::GetBestMipLevels(extent);
 
 		pCubeMap = pDevice->CreateImage(ImageType::CubeMap, ImageUsage::Graphics | ImageUsage::Storage, extent, PixelFormat::R16G16B16A16_SFLOAT, 6, mips, nullptr);
 

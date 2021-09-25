@@ -9,4 +9,9 @@ namespace Flint
 		: mName(name), mVertexOffset(vertexOffset), mVertexCount(vertexCount), mIndexOffset(indexOffset), mIndexCount(indexCount)
 	{
 	}
+
+	WireFrame::WireFrame(const std::string& name, UI64 vertexOffset, UI64 vertexCount, UI64 indexOffset, UI64 indexCount, const Material& material)
+		: mName(name), mVertexOffset(vertexOffset), mVertexCount(vertexCount), mIndexOffset(indexOffset), mIndexCount(indexCount), mMaterial(material)
+	{
+	}
 }

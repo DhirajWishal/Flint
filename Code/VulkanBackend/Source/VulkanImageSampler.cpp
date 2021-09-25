@@ -156,7 +156,7 @@ namespace Flint
 			vCreateInfo.maxAnisotropy = specification.mMaxAnisotrophy;
 			vCreateInfo.maxLod = specification.mMaxLevelOfDetail;
 			vCreateInfo.minLod = specification.mMinLevelOfDetail;
-			vCreateInfo.mipLodBias = specification.mMipLoadBias;
+			vCreateInfo.mipLodBias = specification.mMipLODBias;
 			vCreateInfo.mipmapMode = Helpers::GetMipMapMode(specification.mMipMapMode);
 			vCreateInfo.unnormalizedCoordinates = GET_VK_BOOL(specification.bEnableUnnormalizedCoordinates);
 

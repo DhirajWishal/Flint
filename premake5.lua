@@ -84,6 +84,7 @@ workspace "Flint"
 		group"Demos/Tests"
 			include "Demos/Tests/TestBase/TestBase.lua"
 			include "Demos/Tests/ImageBasedLighting/ImageBasedLighting.lua"
+			include "Demos/Tests/Sponza/Sponza.lua"
 		
 		group ""
 	group ""

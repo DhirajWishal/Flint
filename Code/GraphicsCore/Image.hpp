@@ -114,7 +114,7 @@ namespace Flint
 		 * @param extent: The extent of the image.
 		 * @return The mip levels.
 		 */
-		static UI32 GetBestMipLevels(const FBox2D extent);
+		static UI32 GetBestMipLevels(const FBox3D extent);
 
 	protected:
 		FBox3D mExtent = {};

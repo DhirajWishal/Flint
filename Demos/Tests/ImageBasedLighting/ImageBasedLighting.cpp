@@ -19,6 +19,8 @@ namespace Flint
 
 			mApplication.DrawGraphicsScenes();
 		}
+
+		mSkyBox.Terminate();
 	}
 }
 

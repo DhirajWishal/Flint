@@ -4,6 +4,7 @@
 #pragma once
 
 #include "Core/DataType.hpp"
+#include "Material.hpp"
 
 namespace Flint
 {
@@ -21,7 +22,7 @@ namespace Flint
 
 		/**
 		 * Construct the wire frame.
-		 * 
+		 *
 		 * @param name: The name of the wire frame.
 		 * @param vertexOffset: The vertex offset of the wire frame.
 		 * @param vertexCount: The number of vertexes in the wire frame.
@@ -29,6 +30,18 @@ namespace Flint
 		 * @param indexCount: The number of indexes in the wire frame.
 		 */
 		WireFrame(const std::string& name, UI64 vertexOffset, UI64 vertexCount, UI64 indexOffset, UI64 indexCount);
+
+		/**
+		 * Construct the wire frame.
+		 *
+		 * @param name: The name of the wire frame.
+		 * @param vertexOffset: The vertex offset of the wire frame.
+		 * @param vertexCount: The number of vertexes in the wire frame.
+		 * @param indexOffset: The index offset of the wire frame.
+		 * @param indexCount: The number of indexes in the wire frame.
+		 * @param material: The material of the wire frame.
+		 */
+		WireFrame(const std::string& name, UI64 vertexOffset, UI64 vertexCount, UI64 indexOffset, UI64 indexCount, const Material& material);
 
 	public:
 		/**
@@ -39,6 +52,13 @@ namespace Flint
 		const std::string GetName() const { return mName; }
 
 		/**
+		 * Get the material of the wire frame.
+		 * 
+		 * @return Material reference.
+		 */
+		const Material GetMaterial() const { return mMaterial; }
+
+		/**
 		 * Get the vertex offset of the wire frame.
 		 *
 		 * @return The vertex offset.
@@ -47,7 +67,7 @@ namespace Flint
 
 		/**
 		 * Set the vertex offset.
-		 * 
+		 *
 		 * @param offset: The offset to set.
 		 */
 		void SetVertexOffset(const UI64 offset) { mVertexOffset = offset; }
@@ -82,6 +102,7 @@ namespace Flint
 
 	private:
 		std::string mName = "";
+		Material mMaterial = {};
 
 		UI64 mVertexOffset = 0, mVertexCount = 0;
 		UI64 mIndexOffset = 0, mIndexCount = 0;

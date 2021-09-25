@@ -12,8 +12,96 @@
 
 #include <tiny_gltf.h>
 
+#ifdef FLINT_PLATFORM_WINDOWS
+constexpr const char* LineEnding = "\\";
+
+#else
+constexpr const char* LineEnding = "/";
+
+#endif // FLINT_PLATFORM_WINDOWS
+
 namespace Flint
 {
+	namespace Helpers
+	{
+		MaterialProperties::TextureType GetTextureType(aiTextureType type)
+		{
+			switch (type)
+			{
+			case aiTextureType_DIFFUSE:
+				return MaterialProperties::TextureType::Diffuse;
+
+			case aiTextureType_SPECULAR:
+				return MaterialProperties::TextureType::Specular;
+
+			case aiTextureType_AMBIENT:
+				return MaterialProperties::TextureType::Ambient;
+
+			case aiTextureType_EMISSIVE:
+				return MaterialProperties::TextureType::Emissive;
+
+			case aiTextureType_HEIGHT:
+				return MaterialProperties::TextureType::Height;
+
+			case aiTextureType_NORMALS:
+				return MaterialProperties::TextureType::Normals;
+
+			case aiTextureType_SHININESS:
+				return MaterialProperties::TextureType::Shininess;
+
+			case aiTextureType_OPACITY:
+				return MaterialProperties::TextureType::Opacity;
+
+			case aiTextureType_DISPLACEMENT:
+				return MaterialProperties::TextureType::Displacement;
+
+			case aiTextureType_LIGHTMAP:
+				return MaterialProperties::TextureType::Lightmap;
+
+			case aiTextureType_REFLECTION:
+				return MaterialProperties::TextureType::Reflection;
+
+			case aiTextureType_BASE_COLOR:
+				return MaterialProperties::TextureType::BaseColor;
+
+			case aiTextureType_NORMAL_CAMERA:
+				return MaterialProperties::TextureType::NormalCamera;
+
+			case aiTextureType_EMISSION_COLOR:
+				return MaterialProperties::TextureType::EmissionColor;
+
+			case aiTextureType_METALNESS:
+				return MaterialProperties::TextureType::Metalness;
+
+			case aiTextureType_DIFFUSE_ROUGHNESS:
+				return MaterialProperties::TextureType::DiffuseRoughness;
+
+			case aiTextureType_AMBIENT_OCCLUSION:
+				return MaterialProperties::TextureType::AmbientOcclusion;
+
+			case aiTextureType_TRANSMISSION:
+				return MaterialProperties::TextureType::Transmission;
+
+			default:
+				return MaterialProperties::TextureType::Undefined;
+			}
+
+			return MaterialProperties::TextureType::Undefined;
+		}
+
+		void GetTextures(Material& material, const std::string basePath, const aiMaterial* pMaterial, const aiTextureType type)
+		{
+			const UI32 count = pMaterial->GetTextureCount(type);
+			for (UI32 i = 0; i < count; i++)
+			{
+				aiString path = {};
+
+				if (pMaterial->GetTexture(type, i, &path) == aiReturn::aiReturn_SUCCESS)
+					material.AddProperty(std::make_shared<MaterialProperties::TexturePath>(basePath + path.C_Str(), GetTextureType(type)));
+			}
+		}
+	}
+
 	const UI64 VertexDescriptor::Size() const
 	{
 		UI64 size = 0;
@@ -65,6 +153,7 @@ namespace Flint
 			std::vector<aiMaterialProperty*> pProperties(pMaterial->mProperties, pMaterial->mProperties + pMaterial->mNumProperties);
 			Material material = {};
 
+			// Setup properties.
 			for (const auto pProperty : pProperties)
 			{
 				if (pProperty->mType == aiPropertyTypeInfo::aiPTI_Float)
@@ -76,7 +165,7 @@ namespace Flint
 							float value = 0;
 							pMaterial->Get(pProperty->mKey.C_Str(), pProperty->mType, pProperty->mIndex, value);
 
-							material.AddProperty(std::make_unique<MaterialProperties::Float>(value));
+							material.AddProperty(std::make_shared<MaterialProperties::Float>(value));
 						}
 						break;
 
@@ -85,7 +174,7 @@ namespace Flint
 							float value[2] = {};
 							pMaterial->Get(pProperty->mKey.C_Str(), pProperty->mType, pProperty->mIndex, value);
 
-							material.AddProperty(std::make_unique<MaterialProperties::Float2>(value));
+							material.AddProperty(std::make_shared<MaterialProperties::Float2>(value));
 						}
 						break;
 
@@ -94,7 +183,7 @@ namespace Flint
 							float value[3] = {};
 							pMaterial->Get(pProperty->mKey.C_Str(), pProperty->mType, pProperty->mIndex, value);
 
-							material.AddProperty(std::make_unique<MaterialProperties::Float3>(value));
+							material.AddProperty(std::make_shared<MaterialProperties::Float3>(value));
 						}
 						break;
 
@@ -104,7 +193,7 @@ namespace Flint
 							pMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, color);
 
 							float value[4] = { color.r, color.g, color.b, color.a };
-							material.AddProperty(std::make_unique<MaterialProperties::Float4>(value));
+							material.AddProperty(std::make_shared<MaterialProperties::Float4>(value));
 						}
 						break;
 
@@ -121,7 +210,7 @@ namespace Flint
 							double value = 0;
 							pMaterial->Get(pProperty->mKey.C_Str(), pProperty->mType, pProperty->mIndex, value);
 
-							material.AddProperty(std::make_unique<MaterialProperties::Double>(value));
+							material.AddProperty(std::make_shared<MaterialProperties::Double>(value));
 						}
 						break;
 
@@ -130,7 +219,7 @@ namespace Flint
 							double value[2] = {};
 							pMaterial->Get(pProperty->mKey.C_Str(), pProperty->mType, pProperty->mIndex, value);
 
-							material.AddProperty(std::make_unique<MaterialProperties::Double2>(value));
+							material.AddProperty(std::make_shared<MaterialProperties::Double2>(value));
 						}
 						break;
 
@@ -139,7 +228,7 @@ namespace Flint
 							double value[3] = {};
 							pMaterial->Get(pProperty->mKey.C_Str(), pProperty->mType, pProperty->mIndex, value);
 
-							material.AddProperty(std::make_unique<MaterialProperties::Double3>(value));
+							material.AddProperty(std::make_shared<MaterialProperties::Double3>(value));
 						}
 						break;
 
@@ -148,7 +237,7 @@ namespace Flint
 							double value[4] = {};
 							pMaterial->Get(pProperty->mKey.C_Str(), pProperty->mType, pProperty->mIndex, value);
 
-							material.AddProperty(std::make_unique<MaterialProperties::Double4>(value));
+							material.AddProperty(std::make_shared<MaterialProperties::Double4>(value));
 						}
 						break;
 
@@ -156,17 +245,14 @@ namespace Flint
 							break;
 					}
 				}
-				else if (pProperty->mType == aiPropertyTypeInfo::aiPTI_String)
-				{
-					if (std::string(pProperty->mKey.C_Str()) == _AI_MATKEY_TEXTURE_BASE)
-					{
-						aiString path;
-						aiReturn result = pMaterial->Get(AI_MATKEY_TEXTURE_DIFFUSE(pProperty->mIndex), path);
+			}
 
-						if (path.length > 0)
-							std::filesystem::path texturePath = path.C_Str();
-					}
-				}
+			// Load the textures.
+			{
+				const auto basePath = assetPath.parent_path().string() + LineEnding;
+
+				for (UI32 i = 0; i < AI_TEXTURE_TYPE_MAX; i++)
+					Helpers::GetTextures(material, basePath, pMaterial, static_cast<aiTextureType>(i));
 			}
 
 			// Load vertexes.
@@ -292,7 +378,7 @@ namespace Flint
 					indexes.push_back(face.mIndices[k]);
 			}
 
-			mWireFrames[i] = std::move(WireFrame(pMesh->mName.C_Str(), vertexOffset, pMesh->mNumVertices, indexOffset, indexes.size()));
+			mWireFrames[i] = std::move(WireFrame(pMesh->mName.C_Str(), vertexOffset, pMesh->mNumVertices, indexOffset, indexes.size(), std::move(material)));
 
 			vertexOffset += pMesh->mNumVertices;
 			indexOffset += indexes.size();
