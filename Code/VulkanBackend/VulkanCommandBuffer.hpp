@@ -49,9 +49,6 @@ namespace Flint
 		public:
 			const VkCommandBuffer GetVulkanCommandBuffer() const { return vCommandBuffer; }
 			const VkSubmitInfo GetSubmitInfo();
-			void ResetFence();
-
-			const VkFence GetInFlightFence() const { return vInFlightFence; }
 
 		private:
 			std::vector<VkCommandBuffer> vSecondaryCommandBuffers = {};
@@ -61,7 +58,6 @@ namespace Flint
 
 			VkSubmitInfo vSubmitInfo = {};
 
-			VkFence vInFlightFence = VK_NULL_HANDLE;
 			VkCommandBuffer vCommandBuffer = VK_NULL_HANDLE;
 
 			VkSemaphoreWaitFlags vWaitStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;

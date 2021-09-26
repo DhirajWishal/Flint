@@ -10,4 +10,7 @@ layout (binding = 1) uniform sampler2D image;
 void main()
 {    
     FragColor = texture(image, TexCoords, bias);
+
+    if (FragColor.a < 1.0f) 
+        discard;
 }

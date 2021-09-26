@@ -22,19 +22,6 @@ namespace Flint
 		{
 			FLINT_SETUP_PROFILER();
 
-			VkSemaphoreCreateInfo vSemaphoreCreateInfo = {};
-			vSemaphoreCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-			vSemaphoreCreateInfo.pNext = VK_NULL_HANDLE;
-			vSemaphoreCreateInfo.flags = 0;
-
-			VkFenceCreateInfo vFenceCreateInfo = {};
-			vFenceCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-			vFenceCreateInfo.pNext = VK_NULL_HANDLE;
-			vFenceCreateInfo.flags = VkFenceCreateFlagBits::VK_FENCE_CREATE_SIGNALED_BIT;
-
-			VulkanDevice& vDevice = pAllocator->GetDevice()->StaticCast<VulkanDevice>();
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateFence(vDevice.GetLogicalDevice(), &vFenceCreateInfo, nullptr, &vInFlightFence));
-
 			vSubmitInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_SUBMIT_INFO;
 			vSubmitInfo.pNext = VK_NULL_HANDLE;
 			vSubmitInfo.commandBufferCount = 1;
@@ -53,7 +40,6 @@ namespace Flint
 			vBeginInfo.pInheritanceInfo = VK_NULL_HANDLE;
 
 			VulkanDevice& vDevice = pAllocator->GetDevice()->StaticCast<VulkanDevice>();
-			//FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkWaitForFences(vDevice.GetLogicalDevice(), 1, &vInFlightFence, VK_TRUE, UI64_MAX));
 			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkBeginCommandBuffer(vCommandBuffer, &vBeginInfo));
 
 			vInFlightSemaphores.clear();
@@ -73,7 +59,6 @@ namespace Flint
 			vBeginInfo.pInheritanceInfo = pRenderTarget->StaticCast<VulkanScreenBoundRenderTarget>().GetVulkanInheritanceInfo();
 
 			VulkanDevice& vDevice = pAllocator->GetDevice()->StaticCast<VulkanDevice>();
-			//FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkWaitForFences(vDevice.GetLogicalDevice(), 1, &vInFlightFence, VK_TRUE, UI64_MAX));
 			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkBeginCommandBuffer(vCommandBuffer, &vBeginInfo));
 
 			bIsRecording = true;
@@ -90,7 +75,6 @@ namespace Flint
 			vBeginInfo.pInheritanceInfo = pRenderTarget->StaticCast<VulkanOffScreenRenderTarget>().GetVulkanInheritanceInfo();
 
 			VulkanDevice& vDevice = pAllocator->GetDevice()->StaticCast<VulkanDevice>();
-			//FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkWaitForFences(vDevice.GetLogicalDevice(), 1, &vInFlightFence, VK_TRUE, UI64_MAX));
 			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkBeginCommandBuffer(vCommandBuffer, &vBeginInfo));
 
 			bIsRecording = true;
@@ -447,9 +431,6 @@ namespace Flint
 
 		void VulkanCommandBuffer::Terminate()
 		{
-			VulkanDevice& vDevice = pAllocator->GetDevice()->StaticCast<VulkanDevice>();
-			vDevice.GetDeviceTable().vkDestroyFence(vDevice.GetLogicalDevice(), vInFlightFence, nullptr);
-
 			bIsTerminated = true;
 		}
 
@@ -460,15 +441,7 @@ namespace Flint
 			vSubmitInfo.waitSemaphoreCount = static_cast<UI32>(vInFlightSemaphores.size());
 			vSubmitInfo.pWaitSemaphores = vInFlightSemaphores.data();
 
-			VulkanDevice& vDevice = pAllocator->GetDevice()->StaticCast<VulkanDevice>();
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkResetFences(vDevice.GetLogicalDevice(), 1, &vInFlightFence));
 			return vSubmitInfo;
-		}
-
-		void VulkanCommandBuffer::ResetFence()
-		{
-			VulkanDevice& vDevice = pAllocator->GetDevice()->StaticCast<VulkanDevice>();
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkResetFences(vDevice.GetLogicalDevice(), 1, &vInFlightFence));
 		}
 	}
 }

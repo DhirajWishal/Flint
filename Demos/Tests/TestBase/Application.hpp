@@ -21,6 +21,7 @@ namespace Flint
 		void PrepareNewFrame();
 		void UpdateGraphicsScenes();
 		void DrawGraphicsScenes();
+		void Cleanup();
 
 		GraphicsScene* CreateGraphicsScene(const std::string& name, const FBox2D extent);
 		GraphicsScene* GetGraphicsScene(const std::string& name) { return &mGraphicsScenes.at(name); }

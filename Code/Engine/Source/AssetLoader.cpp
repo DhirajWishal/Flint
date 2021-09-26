@@ -100,6 +100,16 @@ namespace Flint
 					material.AddProperty(std::make_shared<MaterialProperties::TexturePath>(basePath + path.C_Str(), GetTextureType(type)));
 			}
 		}
+
+		void GetColors(const char* pKey, const UI32 type, const UI32 index, Material& material, const aiMaterial* pMaterial)
+		{
+			aiColor4D color(0.0f, 0.0f, 0.0f, 0.0f);
+			if (pMaterial->Get(pKey, type, index, color) == aiReturn::aiReturn_SUCCESS)
+			{
+				float value[4] = { color.r, color.g, color.b, color.a };
+				material.AddProperty(std::make_shared<MaterialProperties::Float4>(value));
+			}
+		}
 	}
 
 	const UI64 VertexDescriptor::Size() const
@@ -150,101 +160,17 @@ namespace Flint
 			const auto pMesh = pScene->mMeshes[i];
 			const auto pMaterial = pScene->mMaterials[pMesh->mMaterialIndex];
 
-			std::vector<aiMaterialProperty*> pProperties(pMaterial->mProperties, pMaterial->mProperties + pMaterial->mNumProperties);
+			//std::vector<aiMaterialProperty*> pProperties(pMaterial->mProperties, pMaterial->mProperties + pMaterial->mNumProperties);
 			Material material = {};
 
-			// Setup properties.
-			for (const auto pProperty : pProperties)
+			// Load colors.
 			{
-				if (pProperty->mType == aiPropertyTypeInfo::aiPTI_Float)
-				{
-					switch (pProperty->mDataLength)
-					{
-						case sizeof(float[1]) :
-						{
-							float value = 0;
-							pMaterial->Get(pProperty->mKey.C_Str(), pProperty->mType, pProperty->mIndex, value);
-
-							material.AddProperty(std::make_shared<MaterialProperties::Float>(value));
-						}
-						break;
-
-						case sizeof(float[2]) :
-						{
-							float value[2] = {};
-							pMaterial->Get(pProperty->mKey.C_Str(), pProperty->mType, pProperty->mIndex, value);
-
-							material.AddProperty(std::make_shared<MaterialProperties::Float2>(value));
-						}
-						break;
-
-						case sizeof(float[3]) :
-						{
-							float value[3] = {};
-							pMaterial->Get(pProperty->mKey.C_Str(), pProperty->mType, pProperty->mIndex, value);
-
-							material.AddProperty(std::make_shared<MaterialProperties::Float3>(value));
-						}
-						break;
-
-						case sizeof(float[4]) :
-						{
-							aiColor4D color(0.0f, 0.0f, 0.0f, 0.0f);
-							pMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, color);
-
-							float value[4] = { color.r, color.g, color.b, color.a };
-							material.AddProperty(std::make_shared<MaterialProperties::Float4>(value));
-						}
-						break;
-
-						default:
-							break;
-					}
-				}
-				else if (pProperty->mType == aiPropertyTypeInfo::aiPTI_Double)
-				{
-					switch (pProperty->mDataLength)
-					{
-						case sizeof(double[1]) :
-						{
-							double value = 0;
-							pMaterial->Get(pProperty->mKey.C_Str(), pProperty->mType, pProperty->mIndex, value);
-
-							material.AddProperty(std::make_shared<MaterialProperties::Double>(value));
-						}
-						break;
-
-						case sizeof(double[2]) :
-						{
-							double value[2] = {};
-							pMaterial->Get(pProperty->mKey.C_Str(), pProperty->mType, pProperty->mIndex, value);
-
-							material.AddProperty(std::make_shared<MaterialProperties::Double2>(value));
-						}
-						break;
-
-						case sizeof(double[3]) :
-						{
-							double value[3] = {};
-							pMaterial->Get(pProperty->mKey.C_Str(), pProperty->mType, pProperty->mIndex, value);
-
-							material.AddProperty(std::make_shared<MaterialProperties::Double3>(value));
-						}
-						break;
-
-						case sizeof(double[4]) :
-						{
-							double value[4] = {};
-							pMaterial->Get(pProperty->mKey.C_Str(), pProperty->mType, pProperty->mIndex, value);
-
-							material.AddProperty(std::make_shared<MaterialProperties::Double4>(value));
-						}
-						break;
-
-						default:
-							break;
-					}
-				}
+				Helpers::GetColors(AI_MATKEY_COLOR_DIFFUSE, material, pMaterial);
+				Helpers::GetColors(AI_MATKEY_COLOR_AMBIENT, material, pMaterial);
+				Helpers::GetColors(AI_MATKEY_COLOR_SPECULAR, material, pMaterial);
+				Helpers::GetColors(AI_MATKEY_COLOR_EMISSIVE, material, pMaterial);
+				Helpers::GetColors(AI_MATKEY_COLOR_TRANSPARENT, material, pMaterial);
+				Helpers::GetColors(AI_MATKEY_COLOR_REFLECTIVE, material, pMaterial);
 			}
 
 			// Load the textures.

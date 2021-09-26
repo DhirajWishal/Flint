@@ -15,6 +15,7 @@
 #include "VulkanBackend/VulkanShader.hpp"
 #include "VulkanBackend/VulkanGraphicsPipeline.hpp"
 #include "VulkanBackend/VulkanComputePipeline.hpp"
+#include "VulkanBackend/VulkanSynchronizationPrimitive.hpp"
 
 #include "GraphicsCore/GeometryStore.hpp"
 
@@ -114,13 +115,6 @@ namespace Flint
 
 			InitializePhysicalDevice();
 			InitializeLogicalDevice();
-
-			VkFenceCreateInfo vCreateInfo = {};
-			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-			vCreateInfo.pNext = VK_NULL_HANDLE;
-			vCreateInfo.flags = VkFenceCreateFlagBits::VK_FENCE_CREATE_SIGNALED_BIT;
-
-			FLINT_VK_ASSERT(GetDeviceTable().vkCreateFence(vLogicalDevice, &vCreateInfo, nullptr, &vSubmitFence));
 		}
 
 		bool VulkanDevice::IsDisplayCompatible(const std::shared_ptr<Display>& pDisplay)
@@ -206,25 +200,12 @@ namespace Flint
 			return std::make_shared<GeometryStore>(shared_from_this(), vertexAttributes, indexSize, profile);
 		}
 
-		void VulkanDevice::SubmitGraphicsCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers)
+		std::shared_ptr<SynchronizationPrimitive> VulkanDevice::CreateSynchronizationPrimitive()
 		{
-			const UI64 bufferCount = pCommandBuffers.size();
-
-			std::vector<VkSubmitInfo> vSubmitInfos(bufferCount);
-			for (UI64 i = 0; i < bufferCount; i++)
-			{
-				auto& vCommandBuffer = pCommandBuffers[i]->StaticCast<VulkanCommandBuffer>();
-
-				vCommandBuffer.ResetFence();
-				vSubmitInfos[i] = vCommandBuffer.GetSubmitInfo();
-			}
-
-			FLINT_VK_ASSERT(GetDeviceTable().vkResetFences(vLogicalDevice, 1, &vSubmitFence));
-			FLINT_VK_ASSERT(GetDeviceTable().vkQueueSubmit(GetQueue().vGraphicsQueue, static_cast<UI32>(vSubmitInfos.size()), vSubmitInfos.data(), vSubmitFence));
-			FLINT_VK_ASSERT(GetDeviceTable().vkWaitForFences(vLogicalDevice, 1, &vSubmitFence, VK_TRUE, std::numeric_limits<UI64>::max()));
+			return std::make_shared<VulkanSynchronizationPrimitive>(shared_from_this());
 		}
 
-		void VulkanDevice::SubmitComputeCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers)
+		void VulkanDevice::SubmitGraphicsCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers, const std::shared_ptr<SynchronizationPrimitive>& pPrimitive)
 		{
 			const UI64 bufferCount = pCommandBuffers.size();
 
@@ -232,14 +213,40 @@ namespace Flint
 			for (UI64 i = 0; i < bufferCount; i++)
 			{
 				auto& vCommandBuffer = pCommandBuffers[i]->StaticCast<VulkanCommandBuffer>();
-
-				vCommandBuffer.ResetFence();
 				vSubmitInfos[i] = vCommandBuffer.GetSubmitInfo();
 			}
 
-			FLINT_VK_ASSERT(GetDeviceTable().vkResetFences(vLogicalDevice, 1, &vSubmitFence));
-			FLINT_VK_ASSERT(GetDeviceTable().vkQueueSubmit(GetQueue().vComputeQueue, static_cast<UI32>(vSubmitInfos.size()), vSubmitInfos.data(), vSubmitFence));
-			FLINT_VK_ASSERT(GetDeviceTable().vkWaitForFences(vLogicalDevice, 1, &vSubmitFence, VK_TRUE, std::numeric_limits<UI64>::max()));
+			VkFence vFence = VK_NULL_HANDLE;
+			if (pPrimitive)
+			{
+				VulkanSynchronizationPrimitive& vPrimitive = pPrimitive->StaticCast<VulkanSynchronizationPrimitive>();
+				vPrimitive.Reset();
+				vFence = vPrimitive.GetFence();
+			}
+
+			FLINT_VK_ASSERT(GetDeviceTable().vkQueueSubmit(GetQueue().vGraphicsQueue, static_cast<UI32>(vSubmitInfos.size()), vSubmitInfos.data(), vFence));
+		}
+
+		void VulkanDevice::SubmitComputeCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers, const std::shared_ptr<SynchronizationPrimitive>& pPrimitive)
+		{
+			const UI64 bufferCount = pCommandBuffers.size();
+
+			std::vector<VkSubmitInfo> vSubmitInfos(bufferCount);
+			for (UI64 i = 0; i < bufferCount; i++)
+			{
+				auto& vCommandBuffer = pCommandBuffers[i]->StaticCast<VulkanCommandBuffer>();
+				vSubmitInfos[i] = vCommandBuffer.GetSubmitInfo();
+			}
+
+			VkFence vFence = VK_NULL_HANDLE;
+			if (pPrimitive)
+			{
+				VulkanSynchronizationPrimitive& vPrimitive = pPrimitive->StaticCast<VulkanSynchronizationPrimitive>();
+				vPrimitive.Reset();
+				vFence = vPrimitive.GetFence();
+			}
+
+			FLINT_VK_ASSERT(GetDeviceTable().vkQueueSubmit(GetQueue().vComputeQueue, static_cast<UI32>(vSubmitInfos.size()), vSubmitInfos.data(), vFence));
 		}
 
 		void VulkanDevice::WaitIdle()
@@ -254,7 +261,6 @@ namespace Flint
 
 		void VulkanDevice::Terminate()
 		{
-			GetDeviceTable().vkDestroyFence(vLogicalDevice, vSubmitFence, nullptr);
 			TerminateLogicalDevice();
 			bIsTerminated = true;
 		}
@@ -683,3 +689,9 @@ namespace Flint
 		}
 	}
 }
+
+/*
+Calling vkBeginCommandBuffer() on active VkCommandBuffer 0x21eb3e73d38[] before it has completed. You must check command buffer fence before this call. The Vulkan spec states: commandBuffer must not be in the recording or pending state (https://vulkan.lunarg.com/doc/view/1.2.182.0/windows/1.2-extensions/vkspec.html#VUID-vkBeginCommandBuffer-commandBuffer-00049)
+Cannot free VkBuffer 0xa971e50000001aa2[] that is in use by a command buffer. The Vulkan spec states: All submitted commands that refer to buffer, either directly or via a VkBufferView, must have completed execution (https://vulkan.lunarg.com/doc/view/1.2.182.0/windows/1.2-extensions/vkspec.html#VUID-vkDestroyBuffer-buffer-00922)
+VkFence 0xfab64d0000000002[] is in use. The Vulkan spec states: Each element of pFences must not be currently associated with any queue command that has not yet completed execution on that queue (https://vulkan.lunarg.com/doc/view/1.2.182.0/windows/1.2-extensions/vkspec.html#VUID-vkResetFences-pFences-01123)
+*/

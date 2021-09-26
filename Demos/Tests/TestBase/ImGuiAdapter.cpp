@@ -232,10 +232,13 @@ namespace Flint
 		std::shared_ptr<Buffer> pVertexBuffer = nullptr;
 		std::shared_ptr<Buffer> pIndexBuffer = nullptr;
 
+		bool bShouldWaitIdle = false;
 		if (pGeometryStore->GetVertexCount() != pDrawData->TotalVtxCount)
 		{
 			pVertexBuffer = pDevice->CreateBuffer(BufferType::Staging, vertexSize);
 			pVertexData = static_cast<ImDrawVert*>(pVertexBuffer->MapMemory(vertexSize));
+
+			bShouldWaitIdle = true;
 		}
 		else
 			pVertexData = static_cast<ImDrawVert*>(pGeometryStore->MapVertexBuffer());
@@ -244,6 +247,8 @@ namespace Flint
 		{
 			pIndexBuffer = pDevice->CreateBuffer(BufferType::Staging, indexSize);
 			pIndexData = static_cast<ImDrawIdx*>(pIndexBuffer->MapMemory(indexSize));
+
+			bShouldWaitIdle = true;
 		}
 		else
 			pIndexData = static_cast<ImDrawIdx*>(pGeometryStore->MapIndexBuffer());
@@ -263,6 +268,9 @@ namespace Flint
 
 		if (pIndexBuffer)
 			pIndexBuffer->UnmapMemory();
+
+		if (bShouldWaitIdle)
+			pDevice->WaitForQueue();
 
 		pGeometryStore->SetData(pVertexBuffer, pIndexBuffer);
 

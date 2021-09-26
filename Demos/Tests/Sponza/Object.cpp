@@ -34,7 +34,6 @@ namespace Flint
 
 		ImGui::Begin("Settings");
 		ImGui::SliderFloat("Bias", &mMatrix.mMipBias, 0, 10);
-		ImGui::SliderFloat("Movement Bias", &pCamera->GetMovementBias(), 0.005f, 1.0f);
 		ImGui::End();
 
 		CopyToBuffer(pUniformBuffer, mMatrix);

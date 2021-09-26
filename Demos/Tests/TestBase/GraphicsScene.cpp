@@ -34,6 +34,10 @@ namespace Flint
 		pCommandBuffers = pAllocator->CreateCommandBuffers();
 		pSecondaryCommandBuffers = pSecondaryAllocator->CreateCommandBuffers();
 
+		pSynchronizationPrimtives.reserve(pSecondaryCommandBuffers.size());
+		for (UI64 i = 0; i < pCommandBuffers.size(); i++)
+			pSynchronizationPrimtives.push_back(pDevice->CreateSynchronizationPrimitive());
+
 		mImGuiAdapter.Initialize(pDevice, pRenderTarget);
 		mCamera.SetAspectRatio(pDisplay->GetExtent());
 	}
@@ -63,7 +67,7 @@ namespace Flint
 
 		return pGraphicsPipelines.at(name);
 	}
-	
+
 	void GraphicsScene::SubmitAssetsToDraw(const std::string& name, const std::shared_ptr<GraphicsPipeline>& pPipeline, const Asset& asset)
 	{
 		mDrawData[name] = DrawDataContainer(pPipeline, asset);
@@ -80,6 +84,10 @@ namespace Flint
 		ImGuiIO& io = ImGui::GetIO();
 		io.DeltaTime = delta / 1000.0f;
 
+		ImGui::Begin("Statistics");
+		ImGui::Text("Frame time: %.4f ms", io.DeltaTime / 1000.0f);
+		ImGui::End();
+
 		auto extent = pDisplay->GetExtent();
 		if (!extent.IsZero())
 			io.DisplaySize = ImVec2(static_cast<float>(extent.mWidth), static_cast<float>(extent.mHeight));
@@ -89,11 +97,13 @@ namespace Flint
 
 		if (pDisplay->GetMouseButtonEvent(MouseButton::Left).IsPressed() || pDisplay->GetMouseButtonEvent(MouseButton::Left).IsOnRepeat())
 			io.MouseDown[0] = true;
+
 		else if (pDisplay->GetMouseButtonEvent(MouseButton::Left).IsReleased())
 			io.MouseDown[0] = false;
 
 		if (pDisplay->GetMouseButtonEvent(MouseButton::Right).IsPressed() || pDisplay->GetMouseButtonEvent(MouseButton::Right).IsOnRepeat())
 			io.MouseDown[1] = true;
+
 		else if (pDisplay->GetMouseButtonEvent(MouseButton::Right).IsReleased())
 			io.MouseDown[1] = false;
 
@@ -131,6 +141,8 @@ namespace Flint
 			return;
 		}
 
+		auto pSynchronizationPrimtive = pSynchronizationPrimtives[pRenderTarget->GetImageIndex()];
+		pSynchronizationPrimtive->Wait();
 		auto pCommandBuffer = pAllocator->GetCommandBuffer(pRenderTarget->GetImageIndex());
 		auto pSecondaryCommandBuffer = pSecondaryAllocator->GetCommandBuffer(pRenderTarget->GetImageIndex());
 
@@ -152,12 +164,12 @@ namespace Flint
 		pCommandBuffer->UnbindRenderTarget();
 		pCommandBuffer->EndBufferRecording();
 
-		pRenderTarget->GetDevice()->SubmitGraphicsCommandBuffers({ pCommandBuffer });
+		pRenderTarget->GetDevice()->SubmitGraphicsCommandBuffers({ pCommandBuffer }, pSynchronizationPrimtive);
 
 		if (!pRenderTarget->PresentToDisplay())
 			pRenderTarget->Recreate();
 
 		pRenderTarget->IncrementFrameIndex();
-		pRenderTarget->GetDevice()->WaitForQueue();
+		//pRenderTarget->GetDevice()->WaitForQueue();
 	}
 }

@@ -84,6 +84,7 @@ namespace Flint
 		ImGui::InputFloat3("Up ", &mUp.x);
 		ImGui::InputFloat("Pitch ", &mPitch);
 		ImGui::InputFloat("Yaw ", &mYaw);
+		ImGui::SliderFloat("Movement Bias", &mMovementBias, 0.005f, 1.0f);
 		ImGui::End();
 	}
 

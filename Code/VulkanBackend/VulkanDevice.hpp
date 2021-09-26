@@ -58,8 +58,10 @@ namespace Flint
 
 			virtual std::shared_ptr<GeometryStore> CreateGeometryStore(const typename std::vector<ShaderAttribute>& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic) override;
 
-			virtual void SubmitGraphicsCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers) override;
-			virtual void SubmitComputeCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers) override;
+			virtual std::shared_ptr<SynchronizationPrimitive> CreateSynchronizationPrimitive() override;
+
+			virtual void SubmitGraphicsCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers, const std::shared_ptr<SynchronizationPrimitive>& pPrimitive = nullptr) override;
+			virtual void SubmitComputeCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers, const std::shared_ptr<SynchronizationPrimitive>& pPrimitive = nullptr) override;
 			virtual void WaitIdle() override;
 			virtual void WaitForQueue() override;
 
@@ -94,8 +96,6 @@ namespace Flint
 			VkPhysicalDevice vPhysicalDevice = VK_NULL_HANDLE;
 
 			VkSampleCountFlags vSampleCount = VkSampleCountFlagBits::VK_SAMPLE_COUNT_64_BIT;
-
-			VkFence vSubmitFence = VK_NULL_HANDLE;
 		};
 	}
 }

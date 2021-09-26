@@ -65,6 +65,11 @@ namespace Flint
 			scene.DrawFrame();
 	}
 
+	void Application::Cleanup()
+	{
+		pDevice->WaitIdle();
+	}
+
 	GraphicsScene* Application::CreateGraphicsScene(const std::string& name, const FBox2D extent)
 	{
 		mGraphicsScenes[name] = std::move(GraphicsScene(this, extent));

@@ -13,6 +13,7 @@ namespace Flint
 
 	class CommandBufferAllocator;
 	class CommandBuffer;
+	class SynchronizationPrimitive;
 
 	class RenderTarget;
 	class ScreenBoundRenderTarget;
@@ -255,20 +256,29 @@ namespace Flint
 		 */
 		virtual std::shared_ptr<GeometryStore> CreateGeometryStore(const std::vector<ShaderAttribute>& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic) = 0;
 
+		/**
+		 * Create a new synchronization primitive.
+		 *
+		 * @return The primitive pointer.
+		 */
+		virtual std::shared_ptr<SynchronizationPrimitive> CreateSynchronizationPrimitive() = 0;
+
 	public:
 		/**
 		 * Submit graphics command buffers to the device.
 		 *
 		 * @param pCommandBuffers: The command buffer pointers.
+		 * @param pPrimitive: The synchronization primitive to be flagged upon completion. Default is nullptr.
 		 */
-		virtual void SubmitGraphicsCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers) = 0;
+		virtual void SubmitGraphicsCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers, const std::shared_ptr<SynchronizationPrimitive>& pPrimitive = nullptr) = 0;
 
 		/**
 		 * Submit compute command buffers to the device.
 		 *
 		 * @param pCommandBuffers: The command buffer pointers.
+		 * @param pPrimitive: The synchronization primitive to be flagged upon completion. Default is nullptr.
 		 */
-		virtual void SubmitComputeCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers) = 0;
+		virtual void SubmitComputeCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers, const std::shared_ptr<SynchronizationPrimitive>& pPrimitive = nullptr) = 0;
 
 		/**
 		 * Wait till the device finish execution.

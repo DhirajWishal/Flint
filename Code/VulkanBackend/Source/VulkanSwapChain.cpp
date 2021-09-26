@@ -51,7 +51,7 @@ namespace Flint
 			vPresentInfo.swapchainCount = 1;
 			vPresentInfo.pSwapchains = &vSwapChain;
 			vPresentInfo.waitSemaphoreCount = 1;
-			vPresentInfo.pWaitSemaphores = &vRenderFinished;
+			vPresentInfo.pWaitSemaphores = &vRenderFinishedSemaphore;
 			vPresentInfo.pImageIndices = &mImageIndex;
 		}
 
@@ -75,9 +75,10 @@ namespace Flint
 		{
 			NextImageInfo imageInfo = {};
 
-			VkResult result = vkAcquireNextImageKHR(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), vSwapChain, std::numeric_limits<UI64>::max(), vInFlightSemaphore, VK_NULL_HANDLE, &mImageIndex);
-			if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
+			VkResult result = pDevice->StaticCast<VulkanDevice>().GetDeviceTable().vkAcquireNextImageKHR(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), vSwapChain, std::numeric_limits<UI64>::max(), vInFlightSemaphore, VK_NULL_HANDLE, &mImageIndex);
+			if (result == VkResult::VK_ERROR_OUT_OF_DATE_KHR || result == VkResult::VK_SUBOPTIMAL_KHR)
 				imageInfo.bShouldRecreate = true;
+
 			else FLINT_VK_ASSERT(result);
 
 			imageInfo.mIndex = mImageIndex;
@@ -236,14 +237,15 @@ namespace Flint
 			vCreateInfo.flags = 0;
 
 			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateSemaphore(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vInFlightSemaphore));
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateSemaphore(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vRenderFinished));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateSemaphore(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vRenderFinishedSemaphore));
+
 		}
 
 		void VulkanSwapChain::DestroySyncObjects()
 		{
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 			vDevice.GetDeviceTable().vkDestroySemaphore(vDevice.GetLogicalDevice(), vInFlightSemaphore, nullptr);
-			vDevice.GetDeviceTable().vkDestroySemaphore(vDevice.GetLogicalDevice(), vRenderFinished, nullptr);
+			vDevice.GetDeviceTable().vkDestroySemaphore(vDevice.GetLogicalDevice(), vRenderFinishedSemaphore, nullptr);
 		}
 	}
 }

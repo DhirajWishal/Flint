@@ -35,7 +35,7 @@ namespace Flint
 			const UI32* GetImageIndexPtr() const { return &mImageIndex; }
 
 			const VkSemaphore GetInFlightSemaphore() const { return vInFlightSemaphore; }
-			const VkSemaphore GetRenderFinishedSemaphore() const { return vRenderFinished; }
+			const VkSemaphore GetRenderFinishedSemaphore() const { return vRenderFinishedSemaphore; }
 
 		private:
 			void CreateSwapChain();
@@ -51,7 +51,7 @@ namespace Flint
 			VkSwapchainKHR vSwapChain = VK_NULL_HANDLE;
 
 			VkSemaphore vInFlightSemaphore = VK_NULL_HANDLE;
-			VkSemaphore vRenderFinished = VK_NULL_HANDLE;
+			VkSemaphore vRenderFinishedSemaphore = VK_NULL_HANDLE;
 
 			VkPresentInfoKHR vPresentInfo = {};
 		};

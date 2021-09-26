@@ -9,6 +9,7 @@
 
 #include "GraphicsCore/ScreenBoundRenderTarget.hpp"
 #include "GraphicsCore/GraphicsPipeline.hpp"
+#include "GraphicsCore/SynchronizationPrimitive.hpp"
 #include "Engine/Asset.hpp"
 #include "GameObject.hpp"
 
@@ -56,6 +57,7 @@ namespace Flint
 
 		std::shared_ptr<CommandBufferAllocator> pSecondaryAllocator = nullptr;
 		std::vector<std::shared_ptr<CommandBuffer>> pSecondaryCommandBuffers = {};
+		std::vector<std::shared_ptr<SynchronizationPrimitive>> pSynchronizationPrimtives = {};
 
 		std::unordered_map<std::string, std::shared_ptr<GraphicsPipeline>> pGraphicsPipelines = {};
 		std::unordered_map<std::string, DrawDataContainer> mDrawData = {};
