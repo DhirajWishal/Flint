@@ -104,7 +104,7 @@ namespace Flint
 			bIsTerminated = true;
 		}
 		
-		const VkCommandBufferInheritanceInfo* VulkanOffScreenRenderTarget::GetVulkanInheritanceInfo()
+		const VkCommandBufferInheritanceInfo* VulkanOffScreenRenderTarget::GetVulkanInheritanceInfo() const
 		{
 			vInheritInfo.framebuffer = vRenderTarget.vFrameBuffers[mFrameIndex];
 			return &vInheritInfo;

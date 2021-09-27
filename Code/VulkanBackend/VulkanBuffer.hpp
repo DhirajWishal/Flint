@@ -17,7 +17,7 @@ namespace Flint
 			~VulkanBuffer() { if (!bIsTerminated) Terminate(); }
 
 			virtual void Resize(const UI64 size, const BufferResizeMode mode) override;
-			virtual void CopyFromBuffer(const std::shared_ptr<Buffer>& pSrcBuffer, const UI64 size, const UI64 srcOffset, const UI64 dstOffset) override;
+			virtual void CopyFromBuffer(const Buffer* pSrcBuffer, const UI64 size, const UI64 srcOffset, const UI64 dstOffset) override;
 			virtual void* MapMemory(const UI64 size, const UI64 offset = 0) override;
 			virtual void UnmapMemory() override;
 			virtual void Terminate() override;

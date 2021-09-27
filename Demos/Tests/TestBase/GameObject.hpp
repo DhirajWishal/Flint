@@ -15,7 +15,7 @@ namespace Flint
 
 		virtual void Initialize(Application* pApplication) = 0;
 		virtual void Update(UI64 delta, Camera* pCamera) = 0;
-		virtual void Draw(const std::shared_ptr<CommandBuffer>& pCommandBuffer) = 0;
+		virtual void Draw(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 index) = 0;
 		virtual void Terminate() = 0;
 
 	protected:

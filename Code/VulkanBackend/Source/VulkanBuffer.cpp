@@ -78,7 +78,7 @@ namespace Flint
 			{
 				// Create a stagging buffer to copy data to.
 				std::shared_ptr<Buffer> pStagingBuffer = pDevice->CreateBuffer(BufferType::Staging, oldSize);
-				pStagingBuffer->CopyFromBuffer(this->shared_from_this(), oldSize, 0, 0);
+				pStagingBuffer->CopyFromBuffer(this, oldSize, 0, 0);
 
 				// Terminate the existing buffer and get the new size.
 				Terminate();
@@ -89,7 +89,7 @@ namespace Flint
 				CreateBufferMemory();
 
 				// Copy buffer content.
-				CopyFromBuffer(pStagingBuffer, oldSize, 0, 0);
+				CopyFromBuffer(pStagingBuffer.get(), oldSize, 0, 0);
 				pStagingBuffer->Terminate();
 			}
 			else if (mode == BufferResizeMode::Clear)
@@ -106,7 +106,7 @@ namespace Flint
 				throw std::invalid_argument("Buffer copy mode is invalid or undefined!");
 		}
 
-		void VulkanBuffer::CopyFromBuffer(const std::shared_ptr<Buffer>& pSrcBuffer, const UI64 size, const UI64 srcOffset, const UI64 dstOffset)
+		void VulkanBuffer::CopyFromBuffer(const Buffer* pSrcBuffer, const UI64 size, const UI64 srcOffset, const UI64 dstOffset)
 		{
 			OPTICK_EVENT();
 

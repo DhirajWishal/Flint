@@ -19,7 +19,7 @@ namespace Flint
 		class VulkanScreenBoundRenderTarget final : public ScreenBoundRenderTarget, public std::enable_shared_from_this<VulkanScreenBoundRenderTarget>
 		{
 		public:
-			VulkanScreenBoundRenderTarget(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode);
+			VulkanScreenBoundRenderTarget(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor = FColor4D(0.0f));
 			~VulkanScreenBoundRenderTarget() { if (!bIsTerminated) Terminate(); }
 
 			virtual bool PrepareNewFrame() override;
@@ -33,17 +33,17 @@ namespace Flint
 
 			const VulkanSwapChain* GetSwapChain() const { return pSwapChain.get(); }
 
-			const UI32 GetClearScreenValueCount() const { return static_cast<UI32>(mAttachments.size()); }
+			const UI32 GetClearScreenValueCount() const { return static_cast<UI32>(vClearValues.size()); }
 			const VkClearValue* GetClearScreenValues() const { return vClearValues.data(); }
 
-			const VkCommandBufferInheritanceInfo* GetVulkanInheritanceInfo();
+			const VkCommandBufferInheritanceInfo* GetVulkanInheritanceInfo() const;
 
 		private:
 			VulkanRenderTarget vRenderTarget;
 
 			std::vector<VkSubpassDependency> vDependencies{ 2 };
 			std::atomic<VkCommandBufferInheritanceInfo> vInheritanceInfo = {};
-			VkCommandBufferInheritanceInfo vInheritInfo = {};
+			mutable VkCommandBufferInheritanceInfo vInheritInfo = {};
 
 			std::vector<VkClearValue> vClearValues = {};
 

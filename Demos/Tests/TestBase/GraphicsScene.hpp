@@ -43,6 +43,10 @@ namespace Flint
 		void DrawFrame();
 
 	public:
+		std::vector<RenderTargetAttachment> CreateAttachmentsColorDepth(const std::shared_ptr<Display>& pDisplay);
+		std::vector<RenderTargetAttachment> CreateAttachmentsDepth(const std::shared_ptr<Display>& pDisplay);
+
+	public:
 		Camera mCamera = {};
 		std::chrono::steady_clock mClock = {};
 		std::chrono::time_point<std::chrono::steady_clock> mOldTimePoint = {};

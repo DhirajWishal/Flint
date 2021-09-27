@@ -110,6 +110,8 @@ namespace Flint
 
 		VulkanDevice::VulkanDevice(const std::shared_ptr<Instance>& pInstance, const DeviceFlags flags) : Device(pInstance, flags)
 		{
+			OPTICK_EVENT();
+
 			if ((flags & DeviceFlags::GraphicsCompatible) == DeviceFlags::GraphicsCompatible)
 				mDeviceExtensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
 
@@ -117,8 +119,10 @@ namespace Flint
 			InitializeLogicalDevice();
 		}
 
-		bool VulkanDevice::IsDisplayCompatible(const std::shared_ptr<Display>& pDisplay)
+		bool VulkanDevice::IsDisplayCompatible(const Display* pDisplay)
 		{
+			OPTICK_EVENT();
+
 			const VulkanDisplay& vDisplay = pDisplay->StaticCast<VulkanDisplay>();
 			VkBool32 isSupported = VK_FALSE;
 			FLINT_VK_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(GetPhysicalDevice(), GetQueue().mGraphicsFamily.value(), vDisplay.GetSurface(), &isSupported));
@@ -140,9 +144,9 @@ namespace Flint
 			return std::make_shared<VulkanCommandBufferAllocator>(shared_from_this(), pParentAllocator, bufferCount);
 		}
 
-		std::shared_ptr<ScreenBoundRenderTarget> VulkanDevice::CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode)
+		std::shared_ptr<ScreenBoundRenderTarget> VulkanDevice::CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor)
 		{
-			return  std::make_shared<VulkanScreenBoundRenderTarget>(shared_from_this(), pDisplay, extent, bufferCount, imageAttachments, presentMode);
+			return  std::make_shared<VulkanScreenBoundRenderTarget>(shared_from_this(), pDisplay, extent, bufferCount, imageAttachments, presentMode, swapChainClearColor);
 		}
 
 		std::shared_ptr<OffScreenRenderTarget> VulkanDevice::CreateOffScreenRenderTarget(const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments)
@@ -205,8 +209,9 @@ namespace Flint
 			return std::make_shared<VulkanSynchronizationPrimitive>(shared_from_this());
 		}
 
-		void VulkanDevice::SubmitGraphicsCommandBuffer(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const std::shared_ptr<SynchronizationPrimitive>& pPrimitive)
+		void VulkanDevice::SubmitGraphicsCommandBuffer(const CommandBuffer* pCommandBuffer, SynchronizationPrimitive* pPrimitive)
 		{
+			OPTICK_EVENT();
 			auto& vCommandBuffer = pCommandBuffer->StaticCast<VulkanCommandBuffer>();
 
 			VkFence vFence = VK_NULL_HANDLE;
@@ -220,8 +225,9 @@ namespace Flint
 			FLINT_VK_ASSERT(GetDeviceTable().vkQueueSubmit(GetQueue().vGraphicsQueue, 1, vCommandBuffer.GetSubmitInfoAddress(), vFence));
 		}
 
-		void VulkanDevice::SubmitGraphicsCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers, const std::shared_ptr<SynchronizationPrimitive>& pPrimitive)
+		void VulkanDevice::SubmitGraphicsCommandBuffers(const std::vector<CommandBuffer*>& pCommandBuffers, SynchronizationPrimitive* pPrimitive)
 		{
+			OPTICK_EVENT();
 			const UI64 bufferCount = pCommandBuffers.size();
 
 			std::vector<VkSubmitInfo> vSubmitInfos(bufferCount);
@@ -242,8 +248,9 @@ namespace Flint
 			FLINT_VK_ASSERT(GetDeviceTable().vkQueueSubmit(GetQueue().vGraphicsQueue, static_cast<UI32>(vSubmitInfos.size()), vSubmitInfos.data(), vFence));
 		}
 
-		void VulkanDevice::SubmitComputeCommandBuffer(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const std::shared_ptr<SynchronizationPrimitive>& pPrimitive)
+		void VulkanDevice::SubmitComputeCommandBuffer(const CommandBuffer* pCommandBuffer, SynchronizationPrimitive* pPrimitive)
 		{
+			OPTICK_EVENT();
 			auto& vCommandBuffer = pCommandBuffer->StaticCast<VulkanCommandBuffer>();
 
 			VkFence vFence = VK_NULL_HANDLE;
@@ -257,8 +264,9 @@ namespace Flint
 			FLINT_VK_ASSERT(GetDeviceTable().vkQueueSubmit(GetQueue().vGraphicsQueue, 1, vCommandBuffer.GetSubmitInfoAddress(), vFence));
 		}
 
-		void VulkanDevice::SubmitComputeCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers, const std::shared_ptr<SynchronizationPrimitive>& pPrimitive)
+		void VulkanDevice::SubmitComputeCommandBuffers(const std::vector<CommandBuffer*>& pCommandBuffers, SynchronizationPrimitive* pPrimitive)
 		{
+			OPTICK_EVENT();
 			const UI64 bufferCount = pCommandBuffers.size();
 
 			std::vector<VkSubmitInfo> vSubmitInfos(bufferCount);
@@ -281,11 +289,15 @@ namespace Flint
 
 		void VulkanDevice::WaitIdle()
 		{
+			OPTICK_EVENT();
+
 			FLINT_VK_ASSERT(GetDeviceTable().vkDeviceWaitIdle(GetLogicalDevice()));
 		}
 
 		void VulkanDevice::WaitForQueue()
 		{
+			OPTICK_EVENT();
+
 			FLINT_VK_ASSERT(GetDeviceTable().vkQueueWaitIdle(GetQueue().vTransferQueue));
 		}
 

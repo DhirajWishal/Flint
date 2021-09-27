@@ -7,6 +7,7 @@
 #include "Engine/ShaderCompiler.hpp"
 
 #include <iostream>
+#include <optick.h>
 
 namespace Flint
 {
@@ -17,6 +18,8 @@ namespace Flint
 
 	void ImGuiAdapter::Initialize(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<ScreenBoundRenderTarget>& pRenderTarget)
 	{
+		OPTICK_EVENT();
+
 		this->pDevice = pDevice;
 		this->pRenderTarget = pRenderTarget;
 
@@ -44,8 +47,10 @@ namespace Flint
 		SetupImage();
 	}
 
-	void ImGuiAdapter::Render(const std::shared_ptr<CommandBuffer>& pCommandBuffer)
+	void ImGuiAdapter::Render(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 index)
 	{
+		OPTICK_EVENT();
+
 		UpdateGeometryStore();
 
 		ImGuiIO& io = ImGui::GetIO();
@@ -69,8 +74,8 @@ namespace Flint
 
 		if (pDrawData->CmdListsCount)
 		{
-			pCommandBuffer->BindGeometryStore(pGeometryStore);
-			pCommandBuffer->BindGraphicsPipeline(pPipeline);
+			pCommandBuffer->BindGeometryStore(pGeometryStore.get());
+			pCommandBuffer->BindGraphicsPipeline(pPipeline.get());
 
 			UI64 vertexOffset = 0, indexOffset = 0;
 			for (I32 i = 0; i < pDrawData->CmdListsCount; i++)
@@ -89,12 +94,12 @@ namespace Flint
 					if (pCommand.TextureId != nullptr)
 					{
 						const ImGuiTextureContainer* pContainer = reinterpret_cast<ImGuiTextureContainer*>(pCommand.TextureId);
-						pCommandBuffer->BindResourcePackages(pPipeline, { pContainer->pResourcePackage });
+						pCommandBuffer->BindResourcePackage(pPipeline.get(), pContainer->pResourcePackage.get());
 					}
 					else
-						pCommandBuffer->BindResourcePackages(pPipeline, { pResourcePack });
+						pCommandBuffer->BindResourcePackage(pPipeline.get(), pResourcePacks[index].get());
 
-					pCommandBuffer->BindDynamicStates(pPipeline, pDynamicStateContainer);
+					pCommandBuffer->BindDynamicStates(pPipeline.get(), pDynamicStateContainer.get());
 					pCommandBuffer->IssueDrawCall(WireFrame("", vertexOffset, 0, indexOffset, pCommand.ElemCount));
 
 					indexOffset += pCommand.ElemCount;
@@ -120,26 +125,28 @@ namespace Flint
 
 	void ImGuiAdapter::SetupImGui()
 	{
+		OPTICK_EVENT();
+
 		ImGui::CreateContext();
 		ImGuiStyle& style = ImGui::GetStyle();
 
-		style.Colors[ImGuiCol_TitleBg]					= ImVec4(CreateColor256(34), CreateColor256(40), CreateColor256(49), 0.75f);	
-		style.Colors[ImGuiCol_WindowBg]					= ImVec4(CreateColor256(34), CreateColor256(40), CreateColor256(49), 0.25f);
-		style.Colors[ImGuiCol_MenuBarBg]				= ImVec4(CreateColor256(34), CreateColor256(40), CreateColor256(49), 0.25f);
+		style.Colors[ImGuiCol_TitleBg] = ImVec4(CreateColor256(34), CreateColor256(40), CreateColor256(49), 0.75f);
+		style.Colors[ImGuiCol_WindowBg] = ImVec4(CreateColor256(34), CreateColor256(40), CreateColor256(49), 0.25f);
+		style.Colors[ImGuiCol_MenuBarBg] = ImVec4(CreateColor256(34), CreateColor256(40), CreateColor256(49), 0.25f);
 
-		style.Colors[ImGuiCol_TitleBgActive]			= ImVec4(CreateColor256(57), CreateColor256(62), CreateColor256(70), 0.8f);	
-		style.Colors[ImGuiCol_Header]					= ImVec4(CreateColor256(57), CreateColor256(62), CreateColor256(70), 0.6f);
-		style.Colors[ImGuiCol_TabActive]				= ImVec4(CreateColor256(57), CreateColor256(62), CreateColor256(70), 0.25f);
-		style.Colors[ImGuiCol_TabUnfocusedActive]		= ImVec4(CreateColor256(57), CreateColor256(62), CreateColor256(70), 0.25f);
+		style.Colors[ImGuiCol_TitleBgActive] = ImVec4(CreateColor256(57), CreateColor256(62), CreateColor256(70), 0.8f);
+		style.Colors[ImGuiCol_Header] = ImVec4(CreateColor256(57), CreateColor256(62), CreateColor256(70), 0.6f);
+		style.Colors[ImGuiCol_TabActive] = ImVec4(CreateColor256(57), CreateColor256(62), CreateColor256(70), 0.25f);
+		style.Colors[ImGuiCol_TabUnfocusedActive] = ImVec4(CreateColor256(57), CreateColor256(62), CreateColor256(70), 0.25f);
 
-		style.Colors[ImGuiCol_TabHovered]				= ImVec4(CreateColor256(0), CreateColor256(173), CreateColor256(181), 1.0f);
-		style.Colors[ImGuiCol_HeaderHovered]			= ImVec4(CreateColor256(0), CreateColor256(173), CreateColor256(181), 0.5f);
+		style.Colors[ImGuiCol_TabHovered] = ImVec4(CreateColor256(0), CreateColor256(173), CreateColor256(181), 1.0f);
+		style.Colors[ImGuiCol_HeaderHovered] = ImVec4(CreateColor256(0), CreateColor256(173), CreateColor256(181), 0.5f);
 
-		style.ChildRounding		= 6.0f;
-		style.FrameRounding		= 3.0f;
-		style.PopupRounding		= 3.0f;
-		style.TabRounding		= 3.0f;
-		style.WindowRounding	= 3.0f;
+		style.ChildRounding = 6.0f;
+		style.FrameRounding = 3.0f;
+		style.PopupRounding = 3.0f;
+		style.TabRounding = 3.0f;
+		style.WindowRounding = 3.0f;
 
 		ImGuiIO& io = ImGui::GetIO();
 		io.DisplaySize = ImVec2(static_cast<float>(pRenderTarget->GetExtent().mWidth), static_cast<float>(pRenderTarget->GetExtent().mHeight));
@@ -166,14 +173,18 @@ namespace Flint
 
 	void ImGuiAdapter::SetupGeometryStore()
 	{
+		OPTICK_EVENT();
+
 		pGeometryStore = pDevice->CreateGeometryStore(pVertexShader->GetInputAttributes(), sizeof(UI16), BufferMemoryProfile::TransferFriendly);
 	}
 
 	void ImGuiAdapter::SetupPipeline()
 	{
+		OPTICK_EVENT();
+
 		GraphicsPipelineSpecification specification = {};
-		specification.mRasterizationSamples = pDevice->GetSupportedMultiSampleCount();
-		//specification.mRasterizationSamples = MultiSampleCount::One;
+		//specification.mRasterizationSamples = pDevice->GetSupportedMultiSampleCount();
+		specification.mRasterizationSamples = MultiSampleCount::One;
 		specification.mDynamicStateFlags = DynamicStateFlags::ViewPort | DynamicStateFlags::Scissor;
 		specification.mCullMode = CullMode::None;
 		specification.mColorBlendAttachments[0].mEnableBlend = true;
@@ -198,28 +209,36 @@ namespace Flint
 
 	void ImGuiAdapter::SetupImage()
 	{
+		OPTICK_EVENT();
+
 		ImGuiIO& imGuiIO = ImGui::GetIO();
 
 		unsigned char* pFontImageData = nullptr;
 		int width = 0, height = 0, bitsPerPixel = 0;
 
 		imGuiIO.Fonts->GetTexDataAsRGBA32(&pFontImageData, &width, &height, &bitsPerPixel);
-		pFontImage = pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Graphics, FBox3D(width, height, 1), PixelFormat::R8G8B8A8_SRGB, 1, 1, pFontImageData);
+		for (UI64 i = 0; i < pRenderTarget->GetBufferCount(); i++)
+		{
+			pFontImage = pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Graphics, FBox3D(width, height, 1), PixelFormat::R8G8B8A8_SRGB, 1, 1, pFontImageData);
 
-		ImageSamplerSpecification specification = {};
-		specification.mBorderColor = BorderColor::OpaqueWhiteFLOAT;
-		specification.mAddressModeU = AddressMode::ClampToEdge;
-		specification.mAddressModeV = AddressMode::ClampToEdge;
-		specification.mAddressModeW = AddressMode::ClampToEdge;
+			ImageSamplerSpecification specification = {};
+			specification.mBorderColor = BorderColor::OpaqueWhiteFLOAT;
+			specification.mAddressModeU = AddressMode::ClampToEdge;
+			specification.mAddressModeV = AddressMode::ClampToEdge;
+			specification.mAddressModeW = AddressMode::ClampToEdge;
 
-		pFontSampler = pDevice->CreateImageSampler(specification);
+			pFontSampler = pDevice->CreateImageSampler(specification);
 
-		pResourcePack = pPipeline->CreateResourcePackage(0);
-		pResourcePack->BindResource(0, pFontSampler, pFontImage);
+			auto pResourcePack = pPipeline->CreateResourcePackage(0);
+			pResourcePack->BindResource(0, pFontSampler, pFontImage);
+			pResourcePacks.push_back(pResourcePack);
+		}
 	}
 
 	void ImGuiAdapter::UpdateGeometryStore()
 	{
+		OPTICK_EVENT();
+
 		ImDrawData* pDrawData = ImGui::GetDrawData();
 
 		if (!pDrawData)
@@ -272,7 +291,7 @@ namespace Flint
 		if (bShouldWaitIdle)
 			pDevice->WaitForQueue();
 
-		pGeometryStore->SetData(pVertexBuffer, pIndexBuffer);
+		pGeometryStore->SetData(pVertexBuffer.get(), pIndexBuffer.get());
 
 		if (pVertexBuffer)
 			pVertexBuffer->Terminate();

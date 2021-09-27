@@ -48,7 +48,7 @@ namespace Flint
 			bIsRecording = true;
 		}
 
-		void VulkanCommandBuffer::BeginBufferRecording(const std::shared_ptr<ScreenBoundRenderTarget> pRenderTarget)
+		void VulkanCommandBuffer::BeginBufferRecording(const ScreenBoundRenderTarget* pRenderTarget)
 		{
 			OPTICK_EVENT();
 
@@ -64,7 +64,7 @@ namespace Flint
 			bIsRecording = true;
 		}
 
-		void VulkanCommandBuffer::BeginBufferRecording(const std::shared_ptr<OffScreenRenderTarget> pRenderTarget)
+		void VulkanCommandBuffer::BeginBufferRecording(const OffScreenRenderTarget* pRenderTarget)
 		{
 			OPTICK_EVENT();
 
@@ -80,11 +80,11 @@ namespace Flint
 			bIsRecording = true;
 		}
 
-		void VulkanCommandBuffer::BindRenderTarget(const std::shared_ptr<ScreenBoundRenderTarget>& pRenderTarget)
+		void VulkanCommandBuffer::BindRenderTarget(const ScreenBoundRenderTarget* pRenderTarget)
 		{
 			OPTICK_EVENT();
 
-			VulkanScreenBoundRenderTarget& vRenderTarget = pRenderTarget->StaticCast<VulkanScreenBoundRenderTarget>();
+			VulkanScreenBoundRenderTarget const& vRenderTarget = pRenderTarget->StaticCast<VulkanScreenBoundRenderTarget>();
 
 			vInFlightSemaphores.push_back(vRenderTarget.GetSwapChain()->GetInFlightSemaphore());
 			vRenderFinishedSemaphores.push_back(vRenderTarget.GetSwapChain()->GetRenderFinishedSemaphore());
@@ -102,11 +102,11 @@ namespace Flint
 			pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetDeviceTable().vkCmdBeginRenderPass(vCommandBuffer, &vBeginInfo, VkSubpassContents::VK_SUBPASS_CONTENTS_INLINE);
 		}
 
-		void VulkanCommandBuffer::BindRenderTargetSecondary(const std::shared_ptr<ScreenBoundRenderTarget>& pRenderTarget)
+		void VulkanCommandBuffer::BindRenderTargetSecondary(const ScreenBoundRenderTarget* pRenderTarget)
 		{
 			OPTICK_EVENT();
 
-			VulkanScreenBoundRenderTarget& vRenderTarget = pRenderTarget->StaticCast<VulkanScreenBoundRenderTarget>();
+			VulkanScreenBoundRenderTarget const& vRenderTarget = pRenderTarget->StaticCast<VulkanScreenBoundRenderTarget>();
 
 			vInFlightSemaphores.push_back(vRenderTarget.GetSwapChain()->GetInFlightSemaphore());
 			vRenderFinishedSemaphores.push_back(vRenderTarget.GetSwapChain()->GetRenderFinishedSemaphore());
@@ -124,11 +124,11 @@ namespace Flint
 			pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetDeviceTable().vkCmdBeginRenderPass(vCommandBuffer, &vBeginInfo, VkSubpassContents::VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 		}
 
-		void VulkanCommandBuffer::BindRenderTarget(const std::shared_ptr<OffScreenRenderTarget>& pRenderTarget)
+		void VulkanCommandBuffer::BindRenderTarget(const OffScreenRenderTarget* pRenderTarget)
 		{
 			OPTICK_EVENT();
 
-			VulkanOffScreenRenderTarget& vRenderTarget = pRenderTarget->StaticCast<VulkanOffScreenRenderTarget>();
+			VulkanOffScreenRenderTarget const& vRenderTarget = pRenderTarget->StaticCast<VulkanOffScreenRenderTarget>();
 
 			VkRenderPassBeginInfo vBeginInfo = {};
 			vBeginInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -143,11 +143,11 @@ namespace Flint
 			pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetDeviceTable().vkCmdBeginRenderPass(vCommandBuffer, &vBeginInfo, VkSubpassContents::VK_SUBPASS_CONTENTS_INLINE);
 		}
 
-		void VulkanCommandBuffer::BindRenderTargetSecondary(const std::shared_ptr<OffScreenRenderTarget>& pRenderTarget)
+		void VulkanCommandBuffer::BindRenderTargetSecondary(const OffScreenRenderTarget* pRenderTarget)
 		{
 			OPTICK_EVENT();
 
-			VulkanOffScreenRenderTarget& vRenderTarget = pRenderTarget->StaticCast<VulkanOffScreenRenderTarget>();
+			VulkanOffScreenRenderTarget const& vRenderTarget = pRenderTarget->StaticCast<VulkanOffScreenRenderTarget>();
 
 			VkRenderPassBeginInfo vBeginInfo = {};
 			vBeginInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -169,27 +169,27 @@ namespace Flint
 			pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetDeviceTable().vkCmdEndRenderPass(vCommandBuffer);
 		}
 
-		void VulkanCommandBuffer::BindGraphicsPipeline(const std::shared_ptr<GraphicsPipeline>& pGraphicsPipeline)
+		void VulkanCommandBuffer::BindGraphicsPipeline(const GraphicsPipeline* pGraphicsPipeline)
 		{
 			OPTICK_EVENT();
 
 			pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetDeviceTable().vkCmdBindPipeline(vCommandBuffer, VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_GRAPHICS, pGraphicsPipeline->StaticCast<VulkanGraphicsPipeline>().GetPipeline());
 		}
 
-		void VulkanCommandBuffer::BindComputePipeline(const std::shared_ptr<ComputePipeline>& pComputePipeline)
+		void VulkanCommandBuffer::BindComputePipeline(const ComputePipeline* pComputePipeline)
 		{
 			OPTICK_EVENT();
 
 			pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetDeviceTable().vkCmdBindPipeline(vCommandBuffer, VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_COMPUTE, pComputePipeline->StaticCast<VulkanComputePipeline>().GetPipeline());
 		}
 
-		void VulkanCommandBuffer::BindVertexBuffer(const std::shared_ptr<Buffer>& pBuffer, const UI64 firstBinding, const UI64 offset)
+		void VulkanCommandBuffer::BindVertexBuffer(const Buffer* pBuffer, const UI64 firstBinding, const UI64 offset)
 		{
 			VkDeviceSize offsets[1] = { offset };
 			pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetDeviceTable().vkCmdBindVertexBuffers(vCommandBuffer, static_cast<UI32>(firstBinding), 1, pBuffer->StaticCast<VulkanBuffer>().GetBufferAddress(), offsets);
 		}
 
-		void VulkanCommandBuffer::BindIndexBuffer(const std::shared_ptr<Buffer>& pBuffer, const UI64 indexSize, const UI64 offset)
+		void VulkanCommandBuffer::BindIndexBuffer(const Buffer* pBuffer, const UI64 indexSize, const UI64 offset)
 		{
 			VkIndexType indexType = VkIndexType::VK_INDEX_TYPE_UINT32;
 			if (indexSize == sizeof(UI8))
@@ -207,15 +207,15 @@ namespace Flint
 			pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetDeviceTable().vkCmdBindIndexBuffer(vCommandBuffer, pBuffer->StaticCast<VulkanBuffer>().GetBuffer(), offset, indexType);
 		}
 
-		void VulkanCommandBuffer::BindGeometryStore(const std::shared_ptr<GeometryStore>& pGeometryStore)
+		void VulkanCommandBuffer::BindGeometryStore(const GeometryStore* pGeometryStore)
 		{
 			OPTICK_EVENT();
 
-			BindVertexBuffer(pGeometryStore->GetVertexBuffer());
-			BindIndexBuffer(pGeometryStore->GetIndexBuffer(), pGeometryStore->GetIndexSize());
+			BindVertexBuffer(pGeometryStore->GetVertexBuffer().get());
+			BindIndexBuffer(pGeometryStore->GetIndexBuffer().get(), pGeometryStore->GetIndexSize());
 		}
 
-		void VulkanCommandBuffer::BindResourcePackage(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::shared_ptr<ResourcePackage>& pResourcePackage)
+		void VulkanCommandBuffer::BindResourcePackage(const GraphicsPipeline* pPipeline, ResourcePackage* pResourcePackage)
 		{
 			auto& vPackage = pResourcePackage->StaticCast<VulkanResourcePackage>();
 			vPackage.PrepareIfNecessary();
@@ -223,7 +223,7 @@ namespace Flint
 			pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetDeviceTable().vkCmdBindDescriptorSets(vCommandBuffer, VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_GRAPHICS, pPipeline->StaticCast<VulkanGraphicsPipeline>().GetPipelineLayout(), 0, 1, vPackage.GetDescriptorSetAddress(), 0, nullptr);
 		}
 
-		void VulkanCommandBuffer::BindResourcePackages(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::vector<std::shared_ptr<ResourcePackage>>& pResourcePackages)
+		void VulkanCommandBuffer::BindResourcePackages(const GraphicsPipeline* pPipeline, const std::vector<ResourcePackage*>& pResourcePackages)
 		{
 			if (pResourcePackages.empty())
 				return;
@@ -239,7 +239,7 @@ namespace Flint
 			pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetDeviceTable().vkCmdBindDescriptorSets(vCommandBuffer, VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_GRAPHICS, pPipeline->StaticCast<VulkanGraphicsPipeline>().GetPipelineLayout(), 0, static_cast<UI32>(vDescriptorSets.size()), vDescriptorSets.data(), 0, nullptr);
 		}
 
-		void VulkanCommandBuffer::BindResourcePackage(const std::shared_ptr<ComputePipeline>& pPipeline, const std::shared_ptr<ResourcePackage>& pResourcePackage)
+		void VulkanCommandBuffer::BindResourcePackage(const ComputePipeline* pPipeline, ResourcePackage* pResourcePackage)
 		{
 			auto& vPackage = pResourcePackage->StaticCast<VulkanResourcePackage>();
 			vPackage.PrepareIfNecessary();
@@ -247,7 +247,7 @@ namespace Flint
 			pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetDeviceTable().vkCmdBindDescriptorSets(vCommandBuffer, VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_COMPUTE, pPipeline->StaticCast<VulkanComputePipeline>().GetPipelineLayout(), 0, 1, vPackage.GetDescriptorSetAddress(), 0, nullptr);
 		}
 
-		void VulkanCommandBuffer::BindResourcePackages(const std::shared_ptr<ComputePipeline>& pPipeline, const std::vector<std::shared_ptr<ResourcePackage>>& pResourcePackages)
+		void VulkanCommandBuffer::BindResourcePackages(const ComputePipeline* pPipeline, const std::vector<ResourcePackage*>& pResourcePackages)
 		{
 			if (pResourcePackages.empty())
 				return;
@@ -263,7 +263,7 @@ namespace Flint
 			pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetDeviceTable().vkCmdBindDescriptorSets(vCommandBuffer, VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_COMPUTE, pPipeline->StaticCast<VulkanComputePipeline>().GetPipelineLayout(), 0, static_cast<UI32>(vDescriptorSets.size()), vDescriptorSets.data(), 0, nullptr);
 		}
 
-		void VulkanCommandBuffer::BindDynamicStates(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::shared_ptr<DynamicStateContainer>& pDynamicStates)
+		void VulkanCommandBuffer::BindDynamicStates(const GraphicsPipeline* pPipeline, const DynamicStateContainer* pDynamicStates)
 		{
 			OPTICK_EVENT();
 
@@ -274,7 +274,7 @@ namespace Flint
 			DynamicStateFlags flags = pDynamicStates->mFlags;
 			if (flags & DynamicStateFlags::ViewPort)
 			{
-				DynamicStateContainer::ViewPort& viewPort = pDynamicStates->mViewPort;
+				DynamicStateContainer::ViewPort const& viewPort = pDynamicStates->mViewPort;
 
 				VkViewport vVP = {};
 				vVP.width = viewPort.mExtent.mWidth;
@@ -289,7 +289,7 @@ namespace Flint
 
 			if (flags & DynamicStateFlags::Scissor)
 			{
-				DynamicStateContainer::Scissor& scissor = pDynamicStates->mScissor;
+				DynamicStateContainer::Scissor const& scissor = pDynamicStates->mScissor;
 
 				VkRect2D vR2D = {};
 				vR2D.extent.width = scissor.mExtent.mWidth;
@@ -307,7 +307,7 @@ namespace Flint
 
 			if (flags & DynamicStateFlags::DepthBias)
 			{
-				DynamicStateContainer::DepthBias& depthBias = pDynamicStates->mDepthBias;
+				DynamicStateContainer::DepthBias const& depthBias = pDynamicStates->mDepthBias;
 				vDevice.GetDeviceTable().vkCmdSetDepthBias(vCommandBuffer, depthBias.mDepthBiasFactor, depthBias.mDepthClampFactor, depthBias.mDepthSlopeFactor);
 			}
 
@@ -318,7 +318,7 @@ namespace Flint
 
 			if (flags & DynamicStateFlags::DepthBounds)
 			{
-				DynamicStateContainer::DepthBounds& bounds = pDynamicStates->mDepthBounds;
+				DynamicStateContainer::DepthBounds const& bounds = pDynamicStates->mDepthBounds;
 				vDevice.GetDeviceTable().vkCmdSetDepthBounds(vCommandBuffer, bounds.mBounds.mWidth, bounds.mBounds.mHeight);
 			}
 
@@ -326,13 +326,13 @@ namespace Flint
 			{
 				if (!pDynamicStates->mConstantBlocks[i].IsNull())
 				{
-					DynamicStateContainer::ConstantData& data = pDynamicStates->mConstantBlocks[i];
+					DynamicStateContainer::ConstantData const& data = pDynamicStates->mConstantBlocks[i];
 					vDevice.GetDeviceTable().vkCmdPushConstants(vCommandBuffer, pPipeline->StaticCast<VulkanGraphicsPipeline>().GetPipelineLayout(), Utilities::GetShaderStage(ShaderType(i + 1)), static_cast<UI32>(data.mOffset), static_cast<UI32>(data.mSize), data.pData);
 				}
 			}
 		}
 
-		void VulkanCommandBuffer::BindDynamicStates(const std::shared_ptr<ComputePipeline>& pPipeline, const std::shared_ptr<DynamicStateContainer>& pDynamicStates)
+		void VulkanCommandBuffer::BindDynamicStates(const ComputePipeline* pPipeline, const DynamicStateContainer* pDynamicStates)
 		{
 			OPTICK_EVENT();
 
@@ -343,7 +343,7 @@ namespace Flint
 			DynamicStateFlags flags = pDynamicStates->mFlags;
 			if (flags & DynamicStateFlags::ViewPort)
 			{
-				DynamicStateContainer::ViewPort& viewPort = pDynamicStates->mViewPort;
+				DynamicStateContainer::ViewPort const& viewPort = pDynamicStates->mViewPort;
 
 				VkViewport vVP = {};
 				vVP.width = viewPort.mExtent.mWidth;
@@ -358,7 +358,7 @@ namespace Flint
 
 			if (flags & DynamicStateFlags::Scissor)
 			{
-				DynamicStateContainer::Scissor& scissor = pDynamicStates->mScissor;
+				DynamicStateContainer::Scissor const& scissor = pDynamicStates->mScissor;
 
 				VkRect2D vR2D = {};
 				vR2D.extent.width = scissor.mExtent.mWidth;
@@ -376,7 +376,7 @@ namespace Flint
 
 			if (flags & DynamicStateFlags::DepthBias)
 			{
-				DynamicStateContainer::DepthBias& depthBias = pDynamicStates->mDepthBias;
+				DynamicStateContainer::DepthBias const& depthBias = pDynamicStates->mDepthBias;
 				vDevice.GetDeviceTable().vkCmdSetDepthBias(vCommandBuffer, depthBias.mDepthBiasFactor, depthBias.mDepthClampFactor, depthBias.mDepthSlopeFactor);
 			}
 
@@ -387,14 +387,14 @@ namespace Flint
 
 			if (flags & DynamicStateFlags::DepthBounds)
 			{
-				DynamicStateContainer::DepthBounds& bounds = pDynamicStates->mDepthBounds;
+				DynamicStateContainer::DepthBounds const& bounds = pDynamicStates->mDepthBounds;
 				vDevice.GetDeviceTable().vkCmdSetDepthBounds(vCommandBuffer, bounds.mBounds.mWidth, bounds.mBounds.mHeight);
 			}
 
 			// Just taking the 5th entry would be enough as it is the compute shader's block.
 			if (!pDynamicStates->mConstantBlocks[5].IsNull())
 			{
-				DynamicStateContainer::ConstantData& data = pDynamicStates->mConstantBlocks[5];
+				DynamicStateContainer::ConstantData const& data = pDynamicStates->mConstantBlocks[5];
 				vDevice.GetDeviceTable().vkCmdPushConstants(vCommandBuffer, pPipeline->StaticCast<VulkanComputePipeline>().GetPipelineLayout(), VkShaderStageFlagBits::VK_SHADER_STAGE_COMPUTE_BIT, static_cast<UI32>(data.mOffset), static_cast<UI32>(data.mSize), data.pData);
 			}
 		}
@@ -465,7 +465,7 @@ namespace Flint
 			bIsTerminated = true;
 		}
 
-		const VkSubmitInfo VulkanCommandBuffer::GetSubmitInfo()
+		const VkSubmitInfo VulkanCommandBuffer::GetSubmitInfo() const
 		{
 			vSubmitInfo.signalSemaphoreCount = static_cast<UI32>(vRenderFinishedSemaphores.size());
 			vSubmitInfo.pSignalSemaphores = vRenderFinishedSemaphores.data();
@@ -475,7 +475,7 @@ namespace Flint
 			return vSubmitInfo;
 		}
 		
-		const VkSubmitInfo* VulkanCommandBuffer::GetSubmitInfoAddress()
+		const VkSubmitInfo* VulkanCommandBuffer::GetSubmitInfoAddress() const
 		{
 			vSubmitInfo.signalSemaphoreCount = static_cast<UI32>(vRenderFinishedSemaphores.size());
 			vSubmitInfo.pSignalSemaphores = vRenderFinishedSemaphores.data();

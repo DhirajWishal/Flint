@@ -5,10 +5,14 @@
 
 #include "TestBase/GraphicsScene.hpp"
 
+#include <optick.h>
+
 namespace Flint
 {
 	Sponza::Sponza()
 	{
+		OPTICK_EVENT();
+
 		pGraphicsScene = mApplication.CreateGraphicsScene("Default", FBox2D(-1));
 
 		mObject.Initialize(&mApplication);

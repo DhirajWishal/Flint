@@ -25,14 +25,14 @@ namespace Flint
 			const UI32 GetClearScreenValueCount() const { return static_cast<UI32>(mAttachments.size()); }
 			const VkClearValue* GetClearScreenValues() const { return vClearValues.data(); }
 
-			const VkCommandBufferInheritanceInfo* GetVulkanInheritanceInfo();
+			const VkCommandBufferInheritanceInfo* GetVulkanInheritanceInfo() const;
 
 		protected:
 			VulkanRenderTarget vRenderTarget;
 
 			std::vector<VkSubpassDependency> vDependencies{ 2 };
 			std::shared_ptr<OffScreenRenderTarget> pThisRenderTarget = nullptr;
-			VkCommandBufferInheritanceInfo vInheritInfo = {};
+			mutable VkCommandBufferInheritanceInfo vInheritInfo = {};
 
 			std::vector<VkClearValue> vClearValues = {};
 		};

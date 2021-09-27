@@ -45,6 +45,7 @@ project "Sponza"
 		"%{IncludeDir.ImGuizmo}",
 		"%{IncludeDir.imgui}",
 		"%{IncludeDir.glm}",
+		"%{IncludeDir.optick}",
 	}
 
 	libdirs {

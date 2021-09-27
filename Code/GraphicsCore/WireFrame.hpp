@@ -59,6 +59,13 @@ namespace Flint
 		const Material GetMaterial() const { return mMaterial; }
 
 		/**
+		 * Get the material of the wire frame.
+		 *
+		 * @return Material reference.
+		 */
+		Material& GetMaterial() { return mMaterial; }
+
+		/**
 		 * Get the vertex offset of the wire frame.
 		 *
 		 * @return The vertex offset.

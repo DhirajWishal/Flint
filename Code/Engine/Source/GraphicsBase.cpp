@@ -75,14 +75,14 @@ namespace Flint
 
 		std::vector<RenderTargetAttachment> attachments(2);
 		attachments[0] = RenderTargetAttachment(
-			pDefaultDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Color, imageExtent, pDisplay->GetBestSwapChainFormat(pDefaultDevice), 1, 1, nullptr, sampleCount),
+			pDefaultDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Color, imageExtent, pDisplay->GetBestSwapChainFormat(pDefaultDevice.get()), 1, 1, nullptr, sampleCount),
 			FColor4D(CreateColor256(32.0f), CreateColor256(32.0f), CreateColor256(32.0f), 1.0f));
 
 		attachments[1] = RenderTargetAttachment(
 			pDefaultDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Depth, imageExtent, PixelFormat::D24_UNORMAL_S8_UINT, 1, 1, nullptr, sampleCount),
 			DepthClearValues(1.0f, 0));
 
-		std::shared_ptr<ScreenBoundRenderTarget> pRenderTarget = pDefaultDevice->CreateScreenBoundRenderTarget(pDisplay, extent, pDisplay->FindBestBufferCount(pDefaultDevice), attachments, SwapChainPresentMode::MailBox);
+		std::shared_ptr<ScreenBoundRenderTarget> pRenderTarget = pDefaultDevice->CreateScreenBoundRenderTarget(pDisplay, extent, pDisplay->FindBestBufferCount(pDefaultDevice.get()), attachments, SwapChainPresentMode::MailBox);
 		pScreenBoundRenderTargets["Default"] = pRenderTarget;
 		
 		return pRenderTarget;

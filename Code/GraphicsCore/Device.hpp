@@ -85,7 +85,7 @@ namespace Flint
 		 * @param pDisplay: The display to check.
 		 * @return Boolean value stating if compatible or not.
 		 */
-		virtual bool IsDisplayCompatible(const std::shared_ptr<Display>& pDisplay) = 0;
+		virtual bool IsDisplayCompatible(const Display* pDisplay) = 0;
 
 		/**
 		 * Create a new command buffer allocator.
@@ -115,7 +115,7 @@ namespace Flint
 		 * @param presentMode: The swap chain present mode.
 		 * @return The screen bound render target object.
 		 */
-		virtual std::shared_ptr<ScreenBoundRenderTarget> CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode) = 0;
+		virtual std::shared_ptr<ScreenBoundRenderTarget> CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor = FColor4D(0.0f)) = 0;
 
 		/**
 		 * Create a new off screen render target.
@@ -270,7 +270,7 @@ namespace Flint
 		 * @param pCommandBuffer: The command buffer pointer.
 		 * @param pPrimitive: The synchronization primitive to be flagged upon completion. Default is nullptr.
 		 */
-		virtual void SubmitGraphicsCommandBuffer(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const std::shared_ptr<SynchronizationPrimitive>& pPrimitive = nullptr) = 0;
+		virtual void SubmitGraphicsCommandBuffer(const CommandBuffer* pCommandBuffer, SynchronizationPrimitive* pPrimitive = nullptr) = 0;
 
 		/**
 		 * Submit graphics command buffers to the device.
@@ -278,7 +278,7 @@ namespace Flint
 		 * @param pCommandBuffers: The command buffer pointers.
 		 * @param pPrimitive: The synchronization primitive to be flagged upon completion. Default is nullptr.
 		 */
-		virtual void SubmitGraphicsCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers, const std::shared_ptr<SynchronizationPrimitive>& pPrimitive = nullptr) = 0;
+		virtual void SubmitGraphicsCommandBuffers(const std::vector<CommandBuffer*>& pCommandBuffers, SynchronizationPrimitive* pPrimitive = nullptr) = 0;
 
 		/**
 		 * Submit a compute command buffer to the device.
@@ -286,7 +286,7 @@ namespace Flint
 		 * @param pCommandBuffers: The command buffer pointer.
 		 * @param pPrimitive: The synchronization primitive to be flagged upon completion. Default is nullptr.
 		 */
-		virtual void SubmitComputeCommandBuffer(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const std::shared_ptr<SynchronizationPrimitive>& pPrimitive = nullptr) = 0;
+		virtual void SubmitComputeCommandBuffer(const CommandBuffer* pCommandBuffer, SynchronizationPrimitive* pPrimitive = nullptr) = 0;
 
 		/**
 		 * Submit compute command buffers to the device.
@@ -294,7 +294,7 @@ namespace Flint
 		 * @param pCommandBuffers: The command buffer pointers.
 		 * @param pPrimitive: The synchronization primitive to be flagged upon completion. Default is nullptr.
 		 */
-		virtual void SubmitComputeCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers, const std::shared_ptr<SynchronizationPrimitive>& pPrimitive = nullptr) = 0;
+		virtual void SubmitComputeCommandBuffers(const std::vector<CommandBuffer*>& pCommandBuffers, SynchronizationPrimitive* pPrimitive = nullptr) = 0;
 
 		/**
 		 * Wait till the device finish execution.

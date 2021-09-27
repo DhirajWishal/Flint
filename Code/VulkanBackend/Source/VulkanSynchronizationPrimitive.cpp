@@ -10,24 +10,29 @@ namespace Flint
 		VulkanSynchronizationPrimitive::VulkanSynchronizationPrimitive(const std::shared_ptr<Device>& pDevice)
 			: SynchronizationPrimitive(pDevice)
 		{
-			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
+			OPTICK_EVENT();
 
 			VkFenceCreateInfo vCreateInfo = {};
 			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
 			vCreateInfo.pNext = VK_NULL_HANDLE;
 			vCreateInfo.flags = VkFenceCreateFlagBits::VK_FENCE_CREATE_SIGNALED_BIT;
 
+			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateFence(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vFence));
 		}
 
 		void VulkanSynchronizationPrimitive::Wait(const UI64 timeout)
 		{
+			OPTICK_EVENT();
+
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkWaitForFences(vDevice.GetLogicalDevice(), 1, &vFence, VK_TRUE, timeout));
 		}
 
 		void VulkanSynchronizationPrimitive::Reset()
 		{
+			OPTICK_EVENT();
+
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkResetFences(vDevice.GetLogicalDevice(), 1, &vFence));
 		}

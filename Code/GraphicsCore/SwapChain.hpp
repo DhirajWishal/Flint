@@ -45,9 +45,10 @@ namespace Flint
 		/**
 		 * Acquire the next swap chain image.
 		 *
+		 * @param frameIndex: The frame index.
 		 * @return The next image info structure.
 		 */
-		virtual NextImageInfo AcquireNextImage() = 0;
+		virtual NextImageInfo AcquireNextImage(const UI32 frameIndex) = 0;
 
 	public:
 		/**
@@ -100,7 +101,7 @@ namespace Flint
 		/**
 		 * Check if the swap chain should recreate.
 		 * This occurs if the display is resized or due to some other issue. In that case, the swap chain should be created, and all the attached render targets.
-		 * 
+		 *
 		 * @return The boolean value.
 		 */
 		const bool ShouldRecreate() const { return bShouldRecreate; }

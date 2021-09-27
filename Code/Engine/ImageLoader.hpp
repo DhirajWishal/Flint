@@ -4,6 +4,7 @@
 #pragma once
 
 #include "GraphicsCore/Image.hpp"
+#include "GraphicsCore/MaterialProperties.hpp"
 
 namespace Flint
 {
@@ -44,6 +45,15 @@ namespace Flint
 		 * @return The image pointer.
 		 */
 		std::shared_ptr<Image> CreateImage(const std::shared_ptr<Device>& pDevice, const ImageType type, const ImageUsage usage, const UI32 layers, const UI32 mipLevels, const MultiSampleCount sampleCount = MultiSampleCount::One) const;
+
+		/**
+		 * Get the image as texture data.
+		 * This will transfer ownership.
+		 * 
+		 * @param type: The type of the image.
+		 * @return The texture data.
+		 */
+		MaterialProperties::TextureData GetAsTextureData(const MaterialProperties::TextureType type);
 
 	public:
 		/**

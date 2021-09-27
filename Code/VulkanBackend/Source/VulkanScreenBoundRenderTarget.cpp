@@ -12,7 +12,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanScreenBoundRenderTarget::VulkanScreenBoundRenderTarget(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode)
+		VulkanScreenBoundRenderTarget::VulkanScreenBoundRenderTarget(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor)
 			: ScreenBoundRenderTarget(pDevice, pDisplay, extent, bufferCount, imageAttachments, presentMode), vRenderTarget(pDevice->StaticCast<VulkanDevice>())
 		{
 			OPTICK_EVENT();
@@ -37,6 +37,8 @@ namespace Flint
 
 			std::vector<VulkanRenderTargetAttachmentInterface*> pAttachmentInferfaces;
 			pAttachmentInferfaces.reserve(mAttachments.size() + 1);
+
+			bool bIsColorPresent = false;
 			for (const auto attachment : mAttachments)
 			{
 				pAttachmentInferfaces.push_back(&attachment.pImage->StaticCast<VulkanImage>());
@@ -48,6 +50,8 @@ namespace Flint
 					vClearValue.color.float32[1] = attachment.mClearColor.mGreen;
 					vClearValue.color.float32[2] = attachment.mClearColor.mBlue;
 					vClearValue.color.float32[3] = attachment.mClearColor.mAlpha;
+
+					bIsColorPresent = true;
 				}
 				else if ((attachment.pImage->GetUsage() & ImageUsage::Depth) == ImageUsage::Depth)
 				{
@@ -61,6 +65,18 @@ namespace Flint
 			}
 
 			pAttachmentInferfaces.push_back(pSwapChain.get());
+			if (!bIsColorPresent)
+			{
+				pSwapChain->ToggleClear();
+
+				VkClearValue vClearValue = {};
+				vClearValue.color.float32[0] = swapChainClearColor.mRed;
+				vClearValue.color.float32[1] = swapChainClearColor.mGreen;
+				vClearValue.color.float32[2] = swapChainClearColor.mBlue;
+				vClearValue.color.float32[3] = swapChainClearColor.mAlpha;
+
+				vClearValues.push_back(vClearValue);
+			}
 
 			vRenderTarget.CreateRenderPass(pAttachmentInferfaces, VK_PIPELINE_BIND_POINT_GRAPHICS, vDependencies);
 			vRenderTarget.CreateFrameBuffer(pAttachmentInferfaces, extent, bufferCount);
@@ -72,12 +88,16 @@ namespace Flint
 
 		bool VulkanScreenBoundRenderTarget::PrepareNewFrame()
 		{
-			auto nextImage = pSwapChain->AcquireNextImage();
+			OPTICK_EVENT();
+
+			auto nextImage = pSwapChain->AcquireNextImage(mFrameIndex);
 			return !nextImage.bShouldRecreate;
 		}
 
 		bool VulkanScreenBoundRenderTarget::PresentToDisplay()
 		{
+			OPTICK_EVENT();
+
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 			VkResult vResult = vDevice.GetDeviceTable().vkQueuePresentKHR(vDevice.GetQueue().vTransferQueue, pSwapChain->PrepareToPresent());
 			if (vResult == VK_ERROR_OUT_OF_DATE_KHR || vResult == VK_SUBOPTIMAL_KHR)
@@ -135,7 +155,7 @@ namespace Flint
 			bShouldRecreateResources = true;
 		}
 
-		const VkCommandBufferInheritanceInfo* VulkanScreenBoundRenderTarget::GetVulkanInheritanceInfo()
+		const VkCommandBufferInheritanceInfo* VulkanScreenBoundRenderTarget::GetVulkanInheritanceInfo() const
 		{
 			vInheritInfo.framebuffer = GetFramebuffer();
 			return &vInheritInfo;

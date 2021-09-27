@@ -57,6 +57,7 @@ project "TestBase"
 		"%{IncludeDir.ImGuizmo}",
 		"%{IncludeDir.imgui}",
 		"%{IncludeDir.glm}",
+		"%{IncludeDir.optick}",
 	}
 
 	libdirs {

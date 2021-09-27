@@ -19,7 +19,7 @@ namespace Flint
 			~VulkanSwapChain() { if (!bIsTerminated) Terminate(); }
 
 			virtual void Recreate() override;
-			virtual NextImageInfo AcquireNextImage() override;
+			virtual NextImageInfo AcquireNextImage(const UI32 frameIndex) override;
 			virtual void Terminate() override;
 
 			VkPresentInfoKHR* PrepareToPresent();
@@ -34,8 +34,10 @@ namespace Flint
 			const VkSwapchainKHR* GetSwapChainPtr() const { return &vSwapChain; }
 			const UI32* GetImageIndexPtr() const { return &mImageIndex; }
 
-			const VkSemaphore GetInFlightSemaphore() const { return vInFlightSemaphore; }
-			const VkSemaphore GetRenderFinishedSemaphore() const { return vRenderFinishedSemaphore; }
+			const VkSemaphore GetInFlightSemaphore() const { return vCurrentInFlightSemaphore; }
+			const VkSemaphore GetRenderFinishedSemaphore() const { return vCurrentRenderFinishedSemaphore; }
+
+			void ToggleClear() { bShouldClear = true; }
 
 		private:
 			void CreateSwapChain();
@@ -50,10 +52,14 @@ namespace Flint
 
 			VkSwapchainKHR vSwapChain = VK_NULL_HANDLE;
 
-			VkSemaphore vInFlightSemaphore = VK_NULL_HANDLE;
-			VkSemaphore vRenderFinishedSemaphore = VK_NULL_HANDLE;
+			VkSemaphore vCurrentInFlightSemaphore = VK_NULL_HANDLE;
+			VkSemaphore vCurrentRenderFinishedSemaphore = VK_NULL_HANDLE;
+
+			std::vector< VkSemaphore> vInFlightSemaphores = {};
+			std::vector< VkSemaphore> vRenderFinishedSemaphores = {};
 
 			VkPresentInfoKHR vPresentInfo = {};
+			bool bShouldClear = false;
 		};
 	}
 }

@@ -4,10 +4,14 @@
 #include "Application.hpp"
 #include "GraphicsScene.hpp"
 
+#include <optick.h>
+
 namespace Flint
 {
 	Application::Application()
 	{
+		OPTICK_EVENT();
+
 #ifdef FLINT_DEBUG
 		pInstance = CreateInstance(true);
 
@@ -27,6 +31,8 @@ namespace Flint
 
 	void Application::PrepareNewFrame()
 	{
+		OPTICK_EVENT();
+
 		NewProfilerFrame();
 
 		ImGui::NewFrame();
@@ -54,12 +60,16 @@ namespace Flint
 
 	void Application::UpdateGraphicsScenes()
 	{
+		OPTICK_EVENT();
+
 		for (auto& [name, scene] : mGraphicsScenes)
 			scene.Update();
 	}
 
 	void Application::DrawGraphicsScenes()
 	{
+		OPTICK_EVENT();
+
 		ImGui::End();
 		ImGui::Render();
 
@@ -74,12 +84,16 @@ namespace Flint
 
 	GraphicsScene* Application::CreateGraphicsScene(const std::string& name, const FBox2D extent)
 	{
+		OPTICK_EVENT();
+
 		mGraphicsScenes[name] = std::move(GraphicsScene(this, extent));
 		return &mGraphicsScenes[name];
 	}
 
 	std::shared_ptr<GeometryStore> Application::CreateGeometryStore(const std::string& name, const std::vector<ShaderAttribute>& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile)
 	{
+		OPTICK_EVENT();
+
 		auto pGeometryStore = pDevice->CreateGeometryStore(vertexAttributes, indexSize, profile);
 		pGeometryStores[name] = pGeometryStore;
 

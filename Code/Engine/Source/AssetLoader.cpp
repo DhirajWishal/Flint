@@ -6,9 +6,14 @@
 #include "GraphicsCore/Device.hpp"
 #include "GraphicsCore/Material.hpp"
 
+#include "Engine/ImageLoader.hpp"
+
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+
+#include <future>
+#include <optick.h>
 
 #ifdef FLINT_PLATFORM_WINDOWS
 constexpr const char* LineEnding = "\\";
@@ -89,13 +94,20 @@ namespace Flint
 
 		void GetTextures(Material& material, const std::string basePath, const aiMaterial* pMaterial, const aiTextureType type)
 		{
+			OPTICK_EVENT();
+
 			const UI32 count = pMaterial->GetTextureCount(type);
 			for (UI32 i = 0; i < count; i++)
 			{
 				aiString path = {};
 
 				if (pMaterial->GetTexture(type, i, &path) == aiReturn::aiReturn_SUCCESS)
-					material.AddProperty(std::make_shared<MaterialProperties::TexturePath>(basePath + path.C_Str(), GetTextureType(type)));
+				{
+					OPTICK_EVENT();
+
+					ImageLoader loader(basePath + path.C_Str());
+					material.AddProperty(std::make_shared<MaterialProperties::TextureData>(loader.GetAsTextureData(GetTextureType(type))));
+				}
 			}
 		}
 
@@ -108,65 +120,22 @@ namespace Flint
 				material.AddProperty(std::make_shared<MaterialProperties::Float4>(value));
 			}
 		}
-	}
 
-	const UI64 VertexDescriptor::Size() const
-	{
-		UI64 size = 0;
-		for (const auto attribute : mAttributes)
-			size += attribute.mAttributeSize;
+		std::mutex mAssetMutex = {};
 
-		return size;
-	}
-
-	AssetLoader::AssetLoader(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::filesystem::path& assetPath, const VertexDescriptor& vertexDescriptor)
-		: pGeometryStore(pGeometryStore), mDescriptor(vertexDescriptor)
-	{
-		// Validate the geometry store and vertex descriptor.
-		if (pGeometryStore->GetVertexSize() != vertexDescriptor.Size())
-			throw std::invalid_argument("The vertex sizes mismatch! Make sure that the geometry store's vertex size and the vertex descriptor's sizes match.");
-
-		Assimp::Importer importer = {};
-		const aiScene* pScene = importer.ReadFile(assetPath.string(),
-			aiProcess_CalcTangentSpace |
-			aiProcess_JoinIdenticalVertices |
-			aiProcess_Triangulate |
-			aiProcess_SortByPType |
-			aiProcess_GenUVCoords |
-			aiProcess_FlipUVs);
-
-		// Check if the scene could be loaded.
-		if (!pScene)
-			throw std::invalid_argument("Provided asset could not be loaded!");
-
-		const UI64 vertexSize = vertexDescriptor.Size();
-		UI64 vertexCount = 0;
-
-		for (UI32 i = 0; i < pScene->mNumMeshes; i++)
-			vertexCount += pScene->mMeshes[i]->mNumVertices;
-
-		mWireFrames.resize(pScene->mNumMeshes);
-
-		std::shared_ptr<Flint::Buffer> pVertexStagingBuffer = pGeometryStore->GetDevice()->CreateBuffer(Flint::BufferType::Staging, vertexSize * vertexCount);
-		float* pBufferMemory = static_cast<float*>(pVertexStagingBuffer->MapMemory(vertexSize * vertexCount));
-
-		// Load the mesh data.
-		UI64 vertexOffset = 0, indexOffset = 0;
-		std::vector<std::vector<UI32>> indexData{ pScene->mNumMeshes };
-		for (UI32 i = 0; i < pScene->mNumMeshes; i++)
+		void LoadWireFrame(
+			const aiMesh* pMesh,
+			const aiMaterial* pMaterial,
+			const std::string_view& basePath,
+			const VertexDescriptor vertexDescriptor,
+			float* pBufferMemory,
+			UI64 vertexOffset,
+			UI64* pIndexOffset,
+			std::vector<std::vector<UI32>>* pIndexes,
+			std::vector<WireFrame>* pWireFrames)
 		{
-			const auto pMesh = pScene->mMeshes[i];
-			const auto pMaterial = pScene->mMaterials[pMesh->mMaterialIndex];
-
-			/* TODO
-			pMesh->HasPositions();
-			pMesh->HasVertexColors(0);
-			pMesh->HasTextureCoords(0);
-			pMesh->HasNormals();
-			pMesh->HasBones();
-			pMesh->HasFaces();
-			pMesh->HasTangentsAndBitangents();
-			*/
+			OPTICK_THREAD("Wire Frame Loader");
+			OPTICK_EVENT();
 
 			//std::vector<aiMaterialProperty*> pProperties(pMaterial->mProperties, pMaterial->mProperties + pMaterial->mNumProperties);
 			Material material = {};
@@ -183,10 +152,8 @@ namespace Flint
 
 			// Load the textures.
 			{
-				const auto basePath = assetPath.parent_path().string() + LineEnding;
-
 				for (UI32 i = 0; i < AI_TEXTURE_TYPE_MAX; i++)
-					Helpers::GetTextures(material, basePath, pMaterial, static_cast<aiTextureType>(i));
+					Helpers::GetTextures(material, basePath.data(), pMaterial, static_cast<aiTextureType>(i));
 			}
 
 			// Load vertexes.
@@ -312,17 +279,102 @@ namespace Flint
 					indexes.push_back(face.mIndices[k]);
 			}
 
-			mWireFrames[i] = std::move(WireFrame(pMesh->mName.C_Str(), vertexOffset, pMesh->mNumVertices, indexOffset, indexes.size(), std::move(material)));
+			const UI64 indexCount = indexes.size();
+			{
+				std::lock_guard<std::mutex> lockGuard(mAssetMutex);
 
-			vertexOffset += pMesh->mNumVertices;
-			indexOffset += indexes.size();
+				pIndexes->push_back(std::move(indexes));
+				pWireFrames->push_back(std::move(WireFrame(pMesh->mName.C_Str(), vertexOffset, pMesh->mNumVertices, *pIndexOffset, indexCount, std::move(material))));
 
-			indexData[i] = std::move(indexes);
+				(*pIndexOffset) += indexCount;
+			}
+		}
+	}
+
+	const UI64 VertexDescriptor::Size() const
+	{
+		UI64 size = 0;
+		for (const auto attribute : mAttributes)
+			size += attribute.mAttributeSize;
+
+		return size;
+	}
+
+	AssetLoader::AssetLoader(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::filesystem::path& assetPath, const VertexDescriptor& vertexDescriptor)
+		: pGeometryStore(pGeometryStore), mDescriptor(vertexDescriptor)
+	{
+		// Validate the geometry store and vertex descriptor.
+		if (pGeometryStore->GetVertexSize() != vertexDescriptor.Size())
+			throw std::invalid_argument("The vertex sizes mismatch! Make sure that the geometry store's vertex size and the vertex descriptor's sizes match.");
+
+		Assimp::Importer importer = {};
+		const aiScene* pScene = importer.ReadFile(assetPath.string(),
+			aiProcess_CalcTangentSpace |
+			aiProcess_JoinIdenticalVertices |
+			aiProcess_Triangulate |
+			aiProcess_SortByPType |
+			aiProcess_GenUVCoords |
+			aiProcess_FlipUVs);
+
+		// Check if the scene could be loaded.
+		if (!pScene)
+			throw std::invalid_argument("Provided asset could not be loaded!");
+
+		const UI64 vertexSize = vertexDescriptor.Size();
+		UI64 vertexCount = 0;
+
+		for (UI32 i = 0; i < pScene->mNumMeshes; i++)
+			vertexCount += pScene->mMeshes[i]->mNumVertices;
+
+		mWireFrames.reserve(pScene->mNumMeshes);
+
+		auto pDevice = pGeometryStore->GetDevice();
+		std::shared_ptr<Flint::Buffer> pVertexStagingBuffer = pDevice->CreateBuffer(Flint::BufferType::Staging, vertexSize * vertexCount);
+		float* pBufferMemory = static_cast<float*>(pVertexStagingBuffer->MapMemory(vertexSize * vertexCount));
+
+		// Load the mesh data.
+		UI64 vertexOffset = 0, indexOffset = 0;
+		std::vector<std::vector<UI32>> indexData{ pScene->mNumMeshes };
+
+		{
+			std::vector<std::future<void>> futures;
+			futures.reserve(pScene->mNumMeshes);
+
+			for (UI32 i = 0; i < pScene->mNumMeshes; i++)
+			{
+				const auto pMesh = pScene->mMeshes[i];
+				const auto pMaterial = pScene->mMaterials[pMesh->mMaterialIndex];
+
+				/* TODO
+				pMesh->HasPositions();
+				pMesh->HasVertexColors(0);
+				pMesh->HasTextureCoords(0);
+				pMesh->HasNormals();
+				pMesh->HasBones();
+				pMesh->HasFaces();
+				pMesh->HasTangentsAndBitangents();
+				*/
+
+				futures.push_back(std::async(
+					std::launch::async,
+					Helpers::LoadWireFrame,
+					pMesh,
+					pMaterial,
+					assetPath.parent_path().string() + LineEnding,
+					vertexDescriptor,
+					pBufferMemory + (vertexOffset * (vertexDescriptor.Size() / sizeof(float))),
+					vertexOffset,
+					&indexOffset,
+					&indexData,
+					&mWireFrames));
+
+				vertexOffset += pMesh->mNumVertices;
+			}
 		}
 
 		pVertexStagingBuffer->UnmapMemory();
 
-		std::shared_ptr<Flint::Buffer> pIndexStagingBuffer = pGeometryStore->GetDevice()->CreateBuffer(Flint::BufferType::Staging, indexOffset * sizeof(UI32));
+		std::shared_ptr<Flint::Buffer> pIndexStagingBuffer = pDevice->CreateBuffer(Flint::BufferType::Staging, indexOffset * sizeof(UI32));
 		UI32* pIndexMemory = static_cast<UI32*>(pIndexStagingBuffer->MapMemory(indexOffset * sizeof(UI32)));
 
 		UI64 offset = 0;
@@ -332,7 +384,8 @@ namespace Flint
 		indexData.clear();
 		pIndexStagingBuffer->UnmapMemory();
 
-		const auto [vertexGeometryOffset, indexGeometryOffset] = pGeometryStore->AddGeometry(pVertexStagingBuffer, pIndexStagingBuffer);
+		const auto [vertexGeometryOffset, indexGeometryOffset] = pGeometryStore->AddGeometry(pVertexStagingBuffer.get(), pIndexStagingBuffer.get());
+
 		for (auto& wireFrame : mWireFrames)
 		{
 			wireFrame.SetVertexOffset(wireFrame.GetVertexOffset() + vertexGeometryOffset);

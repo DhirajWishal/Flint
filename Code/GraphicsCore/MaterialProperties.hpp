@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Core/FObject.hpp"
+#include "Image.hpp"
 
 namespace Flint
 {
@@ -24,6 +24,8 @@ namespace Flint
 			DOUBLE_4,
 
 			TEXTURE_PATH,
+			TEXTURE_IMAGE,
+			TEXTURE_DATA,
 		};
 
 		/**
@@ -227,17 +229,73 @@ namespace Flint
 		/**
 		 * Texture path property.
 		 */
-		class TexturePath : public Property
+		class TexturePath final : public Property
 		{
 		public:
 			/**
 			 * Constructor.
 			 *
 			 * @param path: The path of the texture file.
+			 * @param type: The texture type.
 			 */
 			TexturePath(const std::filesystem::path& path, const TextureType type) : Property(MaterialType::TEXTURE_PATH), mTexturePath(path), mType(type) {}
 
 			std::filesystem::path mTexturePath = {};
+			TextureType mType = TextureType::Undefined;
+		};
+
+		/**
+		 * Texture image property.
+		 * This object stores information about a single texture image.
+		 */
+		class TextureImage final : public Property
+		{
+		public:
+			/**
+			 * Constructor.
+			 *
+			 * @param pImage: The image pointer.
+			 * @param type: The texture type.
+			 */
+			TextureImage(const std::shared_ptr<Image>& pImage, const TextureType type) : Property(MaterialType::TEXTURE_IMAGE), pImage(pImage), mType(type) {}
+
+			std::shared_ptr<Image> pImage = nullptr;
+			TextureType mType = TextureType::Undefined;
+		};
+
+		/**
+		 * Texture data property.
+		 */
+		class TextureData final : public Property
+		{
+		public:
+			/**
+			 * Constructor.
+			 *
+			 * @param pData: The data pointer.
+			 * @param extent: The image extent.
+			 * @param format: The image format.
+			 * @param type: The texture type.
+			 */
+			TextureData(unsigned char* pData, const FBox3D extent, const PixelFormat format, const TextureType type) : Property(MaterialType::TEXTURE_DATA), pPixelData(pData), mExtent(extent), mPixelFormat(format), mType(type) {}
+
+			/**
+			 * Create the image using the loaded data.
+			 *
+			 * @param pDevice: The device pointer.
+			 * @param type: The image type.
+			 * @param usage: The image usage.
+			 * @param layers: The image layers.
+			 * @param mipLevels: The number of mip levels to use. If set to 0, the best mip level is set.
+			 * @param sampleCount: The multi sample count. Default is One.
+			 * @return The image pointer.
+			 */
+			std::shared_ptr<Image> CreateImage(const std::shared_ptr<Device>& pDevice, const ImageType type, const ImageUsage usage, const UI32 layers, const UI32 mipLevels, const MultiSampleCount sampleCount = MultiSampleCount::One);
+
+		public:
+			FBox3D mExtent = {};
+			unsigned char* pPixelData = nullptr;
+			PixelFormat mPixelFormat = PixelFormat::Undefined;
 			TextureType mType = TextureType::Undefined;
 		};
 	}

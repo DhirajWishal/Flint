@@ -9,11 +9,14 @@
 #include "Engine/Tools/CubeMapGenerator.hpp"
 
 #include <glm/gtx/transform.hpp>
+#include <optick.h>
 
 namespace Flint
 {
 	void Object::Initialize(Application* pApplication)
 	{
+		OPTICK_EVENT();
+
 		this->pApplication = pApplication;
 
 		pDynamicStates = std::make_shared<DynamicStateContainer>();
@@ -28,6 +31,8 @@ namespace Flint
 
 	void Object::Update(UI64 delta, Camera* pCamera)
 	{
+		OPTICK_EVENT();
+
 		auto mat = pCamera->GetMatrix();
 		mMatrix.mViewMatrix = mat.mViewMatrix;
 		mMatrix.mProjectionMatrix = mat.mProjectionMatrix;
@@ -39,20 +44,22 @@ namespace Flint
 		CopyToBuffer(pUniformBuffer, mMatrix);
 	}
 
-	void Object::Draw(const std::shared_ptr<CommandBuffer>& pCommandBuffer)
+	void Object::Draw(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 index)
 	{
-		pCommandBuffer->BindGraphicsPipeline(pPipeline);
-		pCommandBuffer->BindGeometryStore(mAsset.GetGeometryStore());
-		pCommandBuffer->BindDynamicStates(pPipeline, pDynamicStates);
+		OPTICK_EVENT();
+
+		pCommandBuffer->BindGraphicsPipeline(pPipeline.get());
+		pCommandBuffer->BindGeometryStore(mAsset.GetGeometryStore().get());
+		pCommandBuffer->BindDynamicStates(pPipeline.get(), pDynamicStates.get());
 
 		const UI64 count = mAsset.GetWireFrames().size();
 		auto& wireFrames = mAsset.GetWireFrames();
 		for (UI64 i = 0; i < count; i++)
 		{
 			auto& wireFrame = wireFrames[i];
-			auto& pPackage = pPackages[i];
+			auto& pPackage = pPackageSets[index][i];
 
-			pCommandBuffer->BindResourcePackage(pPipeline, pPackage);
+			pCommandBuffer->BindResourcePackage(pPipeline.get(), pPackage.get());
 			pCommandBuffer->IssueDrawCall(wireFrame);
 		}
 	}
@@ -61,13 +68,15 @@ namespace Flint
 	{
 		pUniformBuffer->Terminate();
 		pPipeline->Terminate();
-		pPackages.clear();
+		pPackageSets.clear();
 
 		mAsset.Clear();
 	}
 
 	void Object::CreatePipeline()
 	{
+		OPTICK_EVENT();
+
 		auto pDevice = pApplication->GetDevice();
 		std::shared_ptr<Shader> pVertexShader = nullptr;
 		std::shared_ptr<Shader> pFragmentShader = nullptr;
@@ -91,7 +100,8 @@ namespace Flint
 			pFragmentShader = pDevice->CreateShader(ShaderType::Fragment, std::filesystem::path("Flint\\Shaders\\Object.frag.fsc"));
 
 		Flint::GraphicsPipelineSpecification specification = {};
-		specification.mRasterizationSamples = pApplication->pDevice->GetSupportedMultiSampleCount();
+		specification.mRasterizationSamples = MultiSampleCount::One;
+		//specification.mRasterizationSamples = pApplication->pDevice->GetSupportedMultiSampleCount();
 		specification.mDynamicStateFlags = Flint::DynamicStateFlags::ViewPort | Flint::DynamicStateFlags::Scissor;
 
 		specification.mVertexInputAttributeMap[0] = pVertexShader->GetInputAttributes();
@@ -106,6 +116,8 @@ namespace Flint
 
 	void Object::LoadAsset()
 	{
+		OPTICK_EVENT();
+
 		Flint::VertexDescriptor vDescriptor = {};
 		vDescriptor.mAttributes.push_back(Flint::VertexAttribute(sizeof(float) * 3, Flint::InputAttributeType::Position));
 		//vDescriptor.mAttributes.push_back(Flint::VertexAttribute(sizeof(float) * 3, Flint::InputAttributeType::ColorZero));
@@ -116,34 +128,43 @@ namespace Flint
 
 	void Object::LoadTextures()
 	{
-		pPackages.reserve(mAsset.GetWireFrames().size());
+		OPTICK_EVENT();
+
+		const UI64 size = pApplication->GetGraphicsScene("Default")->pRenderTarget->GetBufferCount();
+		pPackageSets.resize(size);
+
 		for (auto& wireFrame : mAsset.GetWireFrames())
 		{
 			const Material material = wireFrame.GetMaterial();
-			auto pPackage = pPipeline->CreateResourcePackage(0);
-			pPackage->BindResource(0, pUniformBuffer);
 
 			for (const auto pProperty : material.GetProperties())
 			{
-				if (pProperty->GetType() == MaterialProperties::MaterialType::TEXTURE_PATH)
+				if (pProperty->GetType() == MaterialProperties::MaterialType::TEXTURE_DATA)
 				{
-					auto pTexturePath = std::static_pointer_cast<MaterialProperties::TexturePath>(pProperty);
+					auto pTexturePath = std::static_pointer_cast<MaterialProperties::TextureData>(pProperty);
 					if (pTexturePath->mType != MaterialProperties::TextureType::Diffuse)
 						continue;
 
-					ImageLoader loader(pTexturePath->mTexturePath);
-					auto pImage = loader.CreateImage(pApplication->GetDevice(), ImageType::TwoDimension, ImageUsage::Graphics, 1, 1);
+					auto pImage = pTexturePath->CreateImage(pApplication->GetDevice(), ImageType::TwoDimension, ImageUsage::Graphics, 1, 1);
 
 					Flint::ImageSamplerSpecification samplerSpecification = {};
 					samplerSpecification.mMaxLevelOfDetail = static_cast<float>(pImage->GetMipLevels());
 					samplerSpecification.mBorderColor = BorderColor::TransparentBlackFLOAT;
-					pPackage->BindResource(1, pApplication->GetDevice()->CreateImageSampler(samplerSpecification), pImage);
+					auto pSampler = pApplication->GetDevice()->CreateImageSampler(samplerSpecification);
+
+					for (UI64 i = 0; i < size; i++)
+					{
+						auto pPackage = pPipeline->CreateResourcePackage(0);
+						pPackage->BindResource(0, pUniformBuffer);
+						pPackage->BindResource(1, pSampler, pImage);
+						pPackage->PrepareIfNecessary();
+
+						pPackageSets[i].push_back(std::move(pPackage));
+					}
 
 					break;
 				}
 			}
-
-			pPackages.push_back(pPackage);
 		}
 	}
 }

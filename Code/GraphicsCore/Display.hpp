@@ -217,7 +217,7 @@ namespace Flint
 		 * @param count: The count that needs to be checked. Default is 0.
 		 * @return The best buffer count integer.
 		 */
-		virtual UI32 FindBestBufferCount(const std::shared_ptr<Device>& pDevice, const UI32 count = 0) = 0;
+		virtual UI32 FindBestBufferCount(const Device* pDevice, const UI32 count = 0) = 0;
 
 		/**
 		 * Get the best swap chain format.
@@ -225,7 +225,7 @@ namespace Flint
 		 * @param pDevice: The device pointer.
 		 * @return The swap chain image format.
 		 */
-		virtual PixelFormat GetBestSwapChainFormat(const std::shared_ptr<Device>& pDevice) = 0;
+		virtual PixelFormat GetBestSwapChainFormat(const Device* pDevice) = 0;
 
 		/**
 		 * Terminate the device object.

@@ -55,13 +55,13 @@ namespace Flint
 		auto pCommandBuffer = pCommandBuffers.front();
 		pCommandBuffer->BeginBufferRecording();
 
-		pCommandBuffer->BindComputePipeline(pPipeline);
-		pCommandBuffer->BindResourcePackages(pPipeline, { pPackage });
+		pCommandBuffer->BindComputePipeline(pPipeline.get());
+		pCommandBuffer->BindResourcePackage(pPipeline.get(), pPackage.get());
 		pCommandBuffer->IssueComputeCall(FBox3D(length / 32, length / 32, 6));
 
 		pCommandBuffer->EndBufferRecording();
 
-		pDevice->SubmitComputeCommandBuffers({ pCommandBuffer });
+		pDevice->SubmitComputeCommandBuffer(pCommandBuffer.get());
 		pCubeMap->GenerateMipMaps();
 	}
 }

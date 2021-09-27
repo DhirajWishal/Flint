@@ -30,7 +30,7 @@ namespace Flint
 
 		virtual void Initialize(Application* pApplication) override;
 		virtual void Update(UI64 delta, Camera* pCamera) override;
-		virtual void Draw(const std::shared_ptr<CommandBuffer>& pCommandBuffer) override;
+		virtual void Draw(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 index) override;
 		virtual void Terminate() override;
 
 	private:
@@ -40,7 +40,7 @@ namespace Flint
 
 	private:
 		Asset mAsset = {};
-		std::vector<std::shared_ptr<ResourcePackage>> pPackages = {};
+		std::vector<std::vector<std::shared_ptr<ResourcePackage>>> pPackageSets = {};
 
 		Application* pApplication = nullptr;
 		std::shared_ptr<GraphicsPipeline> pPipeline = nullptr;

@@ -160,7 +160,7 @@ namespace Flint
 			bIsTerminated = true;
 		}
 
-		UI32 VulkanDisplay::FindBestBufferCount(const std::shared_ptr<Device>& pDevice, const UI32 count)
+		UI32 VulkanDisplay::FindBestBufferCount(const Device* pDevice, const UI32 count)
 		{
 			OPTICK_EVENT();
 
@@ -180,7 +180,7 @@ namespace Flint
 			return count;
 		}
 
-		PixelFormat VulkanDisplay::GetBestSwapChainFormat(const std::shared_ptr<Device>& pDevice)
+		PixelFormat VulkanDisplay::GetBestSwapChainFormat(const Device* pDevice)
 		{
 			SwapChainSupportDetails vSupport = SwapChainSupportDetails::Query(pDevice->StaticCast<VulkanDevice>().GetPhysicalDevice(), GetSurface());
 			VkSurfaceFormatKHR surfaceFormat = ChooseSurfaceFormat(vSupport.mFormats);
@@ -244,7 +244,7 @@ namespace Flint
 			return actualExtent;
 		}
 
-		VkSurfaceCapabilitiesKHR VulkanDisplay::GetSurfaceCapabilities(VulkanDevice& device) const
+		VkSurfaceCapabilitiesKHR VulkanDisplay::GetSurfaceCapabilities(VulkanDevice const& device) const
 		{
 			VkSurfaceCapabilitiesKHR vCapabilities = {};
 			vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device.GetPhysicalDevice(), GetSurface(), &vCapabilities);

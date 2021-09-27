@@ -40,7 +40,7 @@ namespace Flint
 		 * @param pVertexStagingBuffer: The stagging buffer containing all the vertex information.
 		 * @param pIndexStagingBuffer: The stagging buffer containing all the index information.
 		 */
-		void SetData(const std::shared_ptr<Buffer>& pVertexStagingBuffer, const std::shared_ptr<Buffer>& pIndexStagingBuffer);
+		void SetData(const Buffer* pVertexStagingBuffer, const Buffer* pIndexStagingBuffer);
 
 		/**
 		 * Add a geometry to the store.
@@ -61,7 +61,7 @@ namespace Flint
 		 * @param pIndexStagingBuffer: The index data stored stagging buffer.
 		 * @return The pair of offsets (vertex offset, index offset) in which the geometry is stored.
 		 */
-		std::pair<UI64, UI64> AddGeometry(const std::shared_ptr<Buffer>& pVertexStagingBuffer, const std::shared_ptr<Buffer>& pIndexStagingBuffer);
+		std::pair<UI64, UI64> AddGeometry(const Buffer* pVertexStagingBuffer, const Buffer* pIndexStagingBuffer);
 
 		/**
 		 * Remove a geometry from the store.

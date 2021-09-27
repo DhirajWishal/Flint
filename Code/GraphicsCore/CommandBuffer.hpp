@@ -62,7 +62,7 @@ namespace Flint
 		 *
 		 * @param pRenderTarget: The render target to which the commands are bound to.
 		 */
-		virtual void BeginBufferRecording(const std::shared_ptr<ScreenBoundRenderTarget> pRenderTarget) = 0;
+		virtual void BeginBufferRecording(const ScreenBoundRenderTarget* pRenderTarget) = 0;
 
 		/**
 		 * Begin secondary command buffer recording.
@@ -70,49 +70,49 @@ namespace Flint
 		 *
 		 * @param pRenderTarget: The render target to which the commands are bound to.
 		 */
-		virtual void BeginBufferRecording(const std::shared_ptr<OffScreenRenderTarget> pRenderTarget) = 0;
+		virtual void BeginBufferRecording(const OffScreenRenderTarget* pRenderTarget) = 0;
 
 		/**
 		 * Bind a render target to the command buffer.
 		 *
 		 * @param pRenderTarget: The render target pointer.
 		 */
-		virtual void BindRenderTarget(const std::shared_ptr<ScreenBoundRenderTarget>& pRenderTarget) = 0;
+		virtual void BindRenderTarget(const ScreenBoundRenderTarget* pRenderTarget) = 0;
 
 		/**
 		 * Bind a render target to the current command buffer as secondary.
 		 *
 		 * @param pRenderTarget: The render target pointer.
 		 */
-		virtual void BindRenderTargetSecondary(const std::shared_ptr<ScreenBoundRenderTarget>& pRenderTarget) = 0;
+		virtual void BindRenderTargetSecondary(const ScreenBoundRenderTarget* pRenderTarget) = 0;
 
 		/**
 		 * Bind a render target to the command buffer.
 		 *
 		 * @param pRenderTarget: The render target pointer.
 		 */
-		virtual void BindRenderTarget(const std::shared_ptr<OffScreenRenderTarget>& pRenderTarget) = 0;
+		virtual void BindRenderTarget(const OffScreenRenderTarget* pRenderTarget) = 0;
 
 		/**
 		 * Bind a render target to the current command buffer as secondary.
 		 *
 		 * @param pRenderTarget: The render target pointer.
 		 */
-		virtual void BindRenderTargetSecondary(const std::shared_ptr<OffScreenRenderTarget>& pRenderTarget) = 0;
+		virtual void BindRenderTargetSecondary(const OffScreenRenderTarget* pRenderTarget) = 0;
 
 		/**
 		 * Bind a graphics pipeline to the command buffer.
 		 *
 		 * @param pGraphicsPipeline: The graphics pipeline pointer.
 		 */
-		virtual void BindGraphicsPipeline(const std::shared_ptr<GraphicsPipeline>& pGraphicsPipeline) = 0;
+		virtual void BindGraphicsPipeline(const GraphicsPipeline* pGraphicsPipeline) = 0;
 
 		/**
 		 * Bind a compute pipeline to the command buffer.
 		 *
 		 * @param pComputePipeline: The compute pipeline pointer.
 		 */
-		virtual void BindComputePipeline(const std::shared_ptr<ComputePipeline>& pComputePipeline) = 0;
+		virtual void BindComputePipeline(const ComputePipeline* pComputePipeline) = 0;
 
 		/**
 		 * Bind a vertex buffer to the command buffer.
@@ -121,7 +121,7 @@ namespace Flint
 		 * @param firstBinding: The first binding of the buffer. Default is 0.
 		 * @param offset: The offset of the buffer. Default is 0.
 		 */
-		virtual void BindVertexBuffer(const std::shared_ptr<Buffer>& pBuffer, const UI64 firstBinding = 0, const UI64 offset = 0) = 0;
+		virtual void BindVertexBuffer(const Buffer* pBuffer, const UI64 firstBinding = 0, const UI64 offset = 0) = 0;
 
 		/**
 		 * Bind a index buffer to the command buffer.
@@ -130,14 +130,14 @@ namespace Flint
 		 * @param indexSize: The size of a single index. Acceptable sizes are 1, 2 and 4.
 		 * @param offset: The offset of the buffer. Default is 0.
 		 */
-		virtual void BindIndexBuffer(const std::shared_ptr<Buffer>& pBuffer, const UI64 indexSize, const UI64 offset = 0) = 0;
+		virtual void BindIndexBuffer(const Buffer* pBuffer, const UI64 indexSize, const UI64 offset = 0) = 0;
 
 		/**
 		 * Bind a geometry store to the command buffer.
 		 *
 		 * @param pGeometryStore: The geometry store pointer.
 		 */
-		virtual void BindGeometryStore(const std::shared_ptr<GeometryStore>& pGeometryStore) = 0;
+		virtual void BindGeometryStore(const GeometryStore* pGeometryStore) = 0;
 
 		/**
 		 * Bind a draw resources to the command buffer.
@@ -145,7 +145,7 @@ namespace Flint
 		 * @param pPipeline: The pipeline pointer.
 		 * @param pResourcePackage: The resource package to bind.
 		 */
-		virtual void BindResourcePackage(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::shared_ptr<ResourcePackage>& pResourcePackage) = 0;
+		virtual void BindResourcePackage(const GraphicsPipeline* pPipeline, ResourcePackage* pResourcePackage) = 0;
 
 		/**
 		 * Bind draw resources to the command buffer.
@@ -153,7 +153,7 @@ namespace Flint
 		 * @param pPipeline: The pipeline pointer.
 		 * @param pResourcePackages: The resource packages to bind.
 		 */
-		virtual void BindResourcePackages(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::vector<std::shared_ptr<ResourcePackage>>& pResourcePackages) = 0;
+		virtual void BindResourcePackages(const GraphicsPipeline* pPipeline, const std::vector<ResourcePackage*>& pResourcePackages) = 0;
 
 		/**
 		 * Bind an instance resource to the command buffer.
@@ -161,7 +161,7 @@ namespace Flint
 		 * @param pPipeline: The pipeline pointer.
 		 * @param pResourcePackage: The resource package to bind.
 		 */
-		virtual void BindResourcePackage(const std::shared_ptr<ComputePipeline>& pPipeline, const std::shared_ptr<ResourcePackage>& pResourcePackage) = 0;
+		virtual void BindResourcePackage(const ComputePipeline* pPipeline, ResourcePackage* pResourcePackage) = 0;
 
 		/**
 		 * Bind draw resources to the command buffer.
@@ -169,7 +169,7 @@ namespace Flint
 		 * @param pPipeline: The pipeline pointer.
 		 * @param pResourcePackages: The resource packages to bind.
 		 */
-		virtual void BindResourcePackages(const std::shared_ptr<ComputePipeline>& pPipeline, const std::vector<std::shared_ptr<ResourcePackage>>& pResourcePackages) = 0;
+		virtual void BindResourcePackages(const ComputePipeline* pPipeline, const std::vector<ResourcePackage*>& pResourcePackages) = 0;
 
 		/**
 		 * Bind dynamic states to the command buffer.
@@ -177,7 +177,7 @@ namespace Flint
 		 * @param pPipeline: The pipeline to which the dynamic states are bound to.
 		 * @param pDynamicStates: The dynamic states to bind.
 		 */
-		virtual void BindDynamicStates(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::shared_ptr<DynamicStateContainer>& pDynamicStates) = 0;
+		virtual void BindDynamicStates(const GraphicsPipeline* pPipeline, const DynamicStateContainer* pDynamicStates) = 0;
 
 		/**
 		 * Bind dynamic states to the command buffer.
@@ -185,7 +185,7 @@ namespace Flint
 		 * @param pPipeline: The pipeline to which the dynamic states are bound to.
 		 * @param pDynamicStates: The dynamic states to bind.
 		 */
-		virtual void BindDynamicStates(const std::shared_ptr<ComputePipeline>& pPipeline, const std::shared_ptr<DynamicStateContainer>& pDynamicStates) = 0;
+		virtual void BindDynamicStates(const ComputePipeline* pPipeline, const DynamicStateContainer* pDynamicStates) = 0;
 
 		/**
 		 * Issue a draw call to the command buffer.

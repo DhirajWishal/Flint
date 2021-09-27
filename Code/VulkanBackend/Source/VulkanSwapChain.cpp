@@ -51,7 +51,7 @@ namespace Flint
 			vPresentInfo.swapchainCount = 1;
 			vPresentInfo.pSwapchains = &vSwapChain;
 			vPresentInfo.waitSemaphoreCount = 1;
-			vPresentInfo.pWaitSemaphores = &vRenderFinishedSemaphore;
+			vPresentInfo.pWaitSemaphores = &vCurrentRenderFinishedSemaphore;
 			vPresentInfo.pImageIndices = &mImageIndex;
 		}
 
@@ -71,16 +71,20 @@ namespace Flint
 			mImageIndex = 0;
 		}
 
-		NextImageInfo VulkanSwapChain::AcquireNextImage()
+		NextImageInfo VulkanSwapChain::AcquireNextImage(const UI32 frameIndex)
 		{
+			OPTICK_EVENT();
+
 			NextImageInfo imageInfo = {};
 
-			VkResult result = pDevice->StaticCast<VulkanDevice>().GetDeviceTable().vkAcquireNextImageKHR(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), vSwapChain, std::numeric_limits<UI64>::max(), vInFlightSemaphore, VK_NULL_HANDLE, &mImageIndex);
+			vCurrentInFlightSemaphore = vInFlightSemaphores[frameIndex];
+			VkResult result = pDevice->StaticCast<VulkanDevice>().GetDeviceTable().vkAcquireNextImageKHR(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), vSwapChain, std::numeric_limits<UI64>::max(), vCurrentInFlightSemaphore, VK_NULL_HANDLE, &mImageIndex);
 			if (result == VkResult::VK_ERROR_OUT_OF_DATE_KHR || result == VkResult::VK_SUBOPTIMAL_KHR)
 				imageInfo.bShouldRecreate = true;
 
 			else FLINT_VK_ASSERT(result);
 
+			vCurrentRenderFinishedSemaphore = vRenderFinishedSemaphores[mImageIndex];
 			imageInfo.mIndex = mImageIndex;
 			return imageInfo;
 		}
@@ -105,13 +109,14 @@ namespace Flint
 
 		VkAttachmentDescription VulkanSwapChain::GetAttachmentDescription() const
 		{
+			bShouldClear;
 			VkAttachmentDescription vDesc = {};
 			vDesc.flags = 0;
 			vDesc.format = GetImageFormat();
 			vDesc.samples = VK_SAMPLE_COUNT_1_BIT;
 			vDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 			vDesc.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-			vDesc.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+			vDesc.loadOp = bShouldClear ? VkAttachmentLoadOp::VK_ATTACHMENT_LOAD_OP_CLEAR : VkAttachmentLoadOp::VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 			vDesc.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
 			vDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 			vDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -194,7 +199,7 @@ namespace Flint
 			vCreateInfo.clipped = VK_TRUE;
 			vCreateInfo.oldSwapchain = vSwapChain;
 
-			if (!vDevice.IsDisplayCompatible(pDisplay))
+			if (!vDevice.IsDisplayCompatible(pDisplay.get()))
 				FLINT_THROW_RUNTIME_ERROR("Submitted device and display are incompatible!");
 
 			VkSwapchainKHR vNewSwapChain = VK_NULL_HANDLE;
@@ -229,6 +234,8 @@ namespace Flint
 
 		void VulkanSwapChain::CreateSyncObjects()
 		{
+			OPTICK_EVENT();
+
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 
 			VkSemaphoreCreateInfo vCreateInfo = {};
@@ -236,16 +243,30 @@ namespace Flint
 			vCreateInfo.pNext = VK_NULL_HANDLE;
 			vCreateInfo.flags = 0;
 
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateSemaphore(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vInFlightSemaphore));
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateSemaphore(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vRenderFinishedSemaphore));
+			vInFlightSemaphores.reserve(vImages.size());
+			vRenderFinishedSemaphores.reserve(vImages.size());
 
+			for (UI64 i = 0; i < vImages.size(); i++)
+			{
+				VkSemaphore vSemaphore = VK_NULL_HANDLE;
+
+				FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateSemaphore(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vSemaphore));
+				vInFlightSemaphores.push_back(vSemaphore);
+
+				FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateSemaphore(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vSemaphore));
+				vRenderFinishedSemaphores.push_back(vSemaphore);
+			}
 		}
 
 		void VulkanSwapChain::DestroySyncObjects()
 		{
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
-			vDevice.GetDeviceTable().vkDestroySemaphore(vDevice.GetLogicalDevice(), vInFlightSemaphore, nullptr);
-			vDevice.GetDeviceTable().vkDestroySemaphore(vDevice.GetLogicalDevice(), vRenderFinishedSemaphore, nullptr);
+
+			for (UI64 i = 0; i < vInFlightSemaphores.size(); i++)
+			{
+				vDevice.GetDeviceTable().vkDestroySemaphore(vDevice.GetLogicalDevice(), vInFlightSemaphores[i], nullptr);
+				vDevice.GetDeviceTable().vkDestroySemaphore(vDevice.GetLogicalDevice(), vRenderFinishedSemaphores[i], nullptr);
+			}
 		}
 	}
 }

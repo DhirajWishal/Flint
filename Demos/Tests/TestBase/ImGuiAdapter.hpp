@@ -36,7 +36,7 @@ namespace Flint
 
 		void Initialize(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<ScreenBoundRenderTarget>& pRenderTarget);
 
-		void Render(const std::shared_ptr<CommandBuffer>& pCommandBuffer);
+		void Render(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 index);
 		void Terminate();
 
 		std::shared_ptr<ResourcePackage> CreateResourcePackage() { return pPipeline->CreateResourcePackage(0); }
@@ -64,6 +64,7 @@ namespace Flint
 		std::shared_ptr<ImageSampler> pFontSampler = nullptr;
 
 		std::shared_ptr<ResourcePackage> pResourcePack = nullptr;
+		std::vector<std::shared_ptr<ResourcePackage>> pResourcePacks = {};
 		std::shared_ptr<DynamicStateContainer> pDynamicStateContainer = nullptr;
 
 		ImDrawVert* pVertexData = nullptr;

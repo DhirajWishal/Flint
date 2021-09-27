@@ -395,6 +395,7 @@ namespace Flint
 	struct RenderTargetAttachment
 	{
 		RenderTargetAttachment() = default;
+		RenderTargetAttachment(const FColor4D& clearColor) : pImage(pImage), mClearColor(clearColor) {}
 		RenderTargetAttachment(const std::shared_ptr<Image>& pImage, const FColor4D& clearColor) : pImage(pImage), mClearColor(clearColor) {}
 		RenderTargetAttachment(const std::shared_ptr<Image>& pImage, const DepthClearValues& depthValue) : pImage(pImage), mDepthClearValue(depthValue) {}
 

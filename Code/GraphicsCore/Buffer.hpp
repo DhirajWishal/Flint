@@ -50,7 +50,7 @@ namespace Flint
 		 * @param srcOffet: The source buffer offset.
 		 * @param dstOffset: The destination (this) buffer offset.
 		 */
-		virtual void CopyFromBuffer(const std::shared_ptr<Buffer>& pSrcBuffer, const UI64 size, const UI64 srcOffset, const UI64 dstOffset) = 0;
+		virtual void CopyFromBuffer(const Buffer* pSrcBuffer, const UI64 size, const UI64 srcOffset, const UI64 dstOffset) = 0;
 
 		/**
 		 * Map the buffer memory to the local address space.
