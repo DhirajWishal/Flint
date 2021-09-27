@@ -8,6 +8,8 @@
 #include <volk.h>
 #include <vector>
 
+#include <optick.h>
+
 namespace Flint
 {
 	namespace VulkanBackend

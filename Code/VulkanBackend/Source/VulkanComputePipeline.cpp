@@ -79,7 +79,7 @@ namespace Flint
 
 		void VulkanComputePipeline::CreatePipelineCache()
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			const auto [size, pData] = ReadDataFromCacheFile();
 
@@ -98,7 +98,7 @@ namespace Flint
 
 		void VulkanComputePipeline::CreatePipelineLayout()
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 			std::vector<VkPushConstantRange> vConstantRanges;

@@ -15,7 +15,7 @@ namespace Flint
 		VulkanScreenBoundRenderTarget::VulkanScreenBoundRenderTarget(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode)
 			: ScreenBoundRenderTarget(pDevice, pDisplay, extent, bufferCount, imageAttachments, presentMode), vRenderTarget(pDevice->StaticCast<VulkanDevice>())
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			pSwapChain = std::make_unique<VulkanSwapChain>(pDevice, pDisplay, bufferCount, presentMode);
 
@@ -97,7 +97,7 @@ namespace Flint
 
 		void VulkanScreenBoundRenderTarget::Recreate()
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			FBox2D newExtent = pDisplay->GetExtent();
 			if (newExtent.IsZero())

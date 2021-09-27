@@ -60,7 +60,10 @@ namespace Flint
 
 			virtual std::shared_ptr<SynchronizationPrimitive> CreateSynchronizationPrimitive() override;
 
+
+			virtual void SubmitGraphicsCommandBuffer(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const std::shared_ptr<SynchronizationPrimitive>& pPrimitive = nullptr) override;
 			virtual void SubmitGraphicsCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers, const std::shared_ptr<SynchronizationPrimitive>& pPrimitive = nullptr) override;
+			virtual void SubmitComputeCommandBuffer(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const std::shared_ptr<SynchronizationPrimitive>& pPrimitive = nullptr) override;
 			virtual void SubmitComputeCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers, const std::shared_ptr<SynchronizationPrimitive>& pPrimitive = nullptr) override;
 			virtual void WaitIdle() override;
 			virtual void WaitForQueue() override;

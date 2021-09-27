@@ -265,12 +265,28 @@ namespace Flint
 
 	public:
 		/**
+		 * Submit a graphics command buffer to the device.
+		 *
+		 * @param pCommandBuffer: The command buffer pointer.
+		 * @param pPrimitive: The synchronization primitive to be flagged upon completion. Default is nullptr.
+		 */
+		virtual void SubmitGraphicsCommandBuffer(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const std::shared_ptr<SynchronizationPrimitive>& pPrimitive = nullptr) = 0;
+
+		/**
 		 * Submit graphics command buffers to the device.
 		 *
 		 * @param pCommandBuffers: The command buffer pointers.
 		 * @param pPrimitive: The synchronization primitive to be flagged upon completion. Default is nullptr.
 		 */
 		virtual void SubmitGraphicsCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers, const std::shared_ptr<SynchronizationPrimitive>& pPrimitive = nullptr) = 0;
+
+		/**
+		 * Submit a compute command buffer to the device.
+		 *
+		 * @param pCommandBuffers: The command buffer pointer.
+		 * @param pPrimitive: The synchronization primitive to be flagged upon completion. Default is nullptr.
+		 */
+		virtual void SubmitComputeCommandBuffer(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const std::shared_ptr<SynchronizationPrimitive>& pPrimitive = nullptr) = 0;
 
 		/**
 		 * Submit compute command buffers to the device.

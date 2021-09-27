@@ -182,7 +182,7 @@ namespace Flint
 		VulkanShader::VulkanShader(const std::shared_ptr<Device>& pDevice, const ShaderType type, const std::filesystem::path& path)
 			: Shader(pDevice, type, path)
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			ResolveShaderStage();
 			std::ifstream shaderFile(path, std::ios::in | std::ios::ate | std::ios::binary);
@@ -204,7 +204,7 @@ namespace Flint
 		VulkanShader::VulkanShader(const std::shared_ptr<Device>& pDevice, const ShaderType type, const std::vector<UI32>& code)
 			: Shader(pDevice, type, code), mShaderCode(code)
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			ResolveShaderStage();
 
@@ -219,7 +219,7 @@ namespace Flint
 		VulkanShader::VulkanShader(const std::shared_ptr<Device>& pDevice, const ShaderType type, const std::string& code)
 			: Shader(pDevice, type, code)
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			ResolveShaderStage();
 
@@ -243,7 +243,7 @@ namespace Flint
 
 		void VulkanShader::Reload(const std::filesystem::path& path)
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 			Terminate();
 			bIsTerminated = false;
 
@@ -266,7 +266,7 @@ namespace Flint
 
 		void VulkanShader::Reload(const std::vector<UI32>& code)
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 			Terminate();
 			bIsTerminated = false;
 
@@ -279,7 +279,7 @@ namespace Flint
 
 		void VulkanShader::Reload(const std::string& code)
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 			Terminate();
 			bIsTerminated = false;
 
@@ -316,7 +316,7 @@ namespace Flint
 
 		void VulkanShader::PerformReflection()
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			SpvReflectShaderModule sShaderModule = {};
 			UI32 variableCount = 0;

@@ -199,7 +199,7 @@ namespace Flint
 
 		void VulkanImage::GenerateMipMaps()
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			if (mMipLevels == 1)
 				return;
@@ -394,7 +394,7 @@ namespace Flint
 
 		void VulkanImage::CreateImage()
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 			vCurrentLayout = VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED;
@@ -451,14 +451,14 @@ namespace Flint
 
 		void VulkanImage::CreateImageMemory()
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			FLINT_VK_ASSERT(pDevice->StaticCast<VulkanDevice>().CreateImageMemory({ vImage }, VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &vImageMemory));
 		}
 
 		void VulkanImage::CreateImageView()
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			if (mType == ImageType::CubeMap || mType == ImageType::CubeMapArray || mUsage == ImageUsage::Storage)
 				vImageView = Utilities::CreateImageViews({ vImage }, Utilities::GetVulkanFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), Helpers::GetImageAspectFlags(mUsage), Helpers::GetImageViewType(mType), mLayerCount, 0, mMipLevels, 0, Helpers::GetComponentMapping(mFormat))[0];
@@ -648,7 +648,7 @@ namespace Flint
 
 		void VulkanImage::Initialize(const void* pImageData)
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 
 			CreateImage();

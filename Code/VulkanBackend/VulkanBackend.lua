@@ -36,6 +36,7 @@ project "VulkanBackend"
 		"%{IncludeDir.volk}",
 		"%{IncludeDir.Vulkan}",
 		"%{IncludeDir.GLFW}",
+		"%{IncludeDir.optick}",
 	}
 
 	libdirs {

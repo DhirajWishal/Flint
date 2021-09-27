@@ -20,7 +20,7 @@ namespace Flint
 
 		void VulkanRenderTarget::CreateRenderPass(std::vector<VulkanRenderTargetAttachmentInterface*> pAttachments, VkPipelineBindPoint vBindPoint, const std::vector<VkSubpassDependency>& vSubpassDependencies)
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			std::vector<VkAttachmentDescription> vDescriptions;
 
@@ -101,7 +101,7 @@ namespace Flint
 
 		void VulkanRenderTarget::CreateRenderPassWithMultipleSubpasses(std::vector<std::vector<VulkanRenderTargetAttachmentInterface*>> pSubpasses, VkPipelineBindPoint vBindPoint, const std::vector<VkSubpassDependency>& vSubpassDependencies)
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			std::vector<VkAttachmentDescription> vDescriptions;
 			std::vector<VkSubpassDescription> vSubpassDescriptions;
@@ -188,7 +188,7 @@ namespace Flint
 
 		void VulkanRenderTarget::CreateFrameBuffer(std::vector<VulkanRenderTargetAttachmentInterface*> pAttachments, const FBox2D& extent, const UI32 bufferCount)
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			VkFramebufferCreateInfo vCreateInfo = {};
 			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;

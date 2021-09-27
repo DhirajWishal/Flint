@@ -22,6 +22,7 @@ namespace Flint
 
 			mApplication.DrawGraphicsScenes();
 		}
+
 		mApplication.Cleanup();
 		mObject.Terminate();
 	}

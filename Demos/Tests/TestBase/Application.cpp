@@ -27,6 +27,8 @@ namespace Flint
 
 	void Application::PrepareNewFrame()
 	{
+		NewProfilerFrame();
+
 		ImGui::NewFrame();
 
 		const ImGuiViewport* viewport = ImGui::GetMainViewport();

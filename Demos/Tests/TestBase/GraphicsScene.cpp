@@ -141,10 +141,12 @@ namespace Flint
 			return;
 		}
 
-		auto pSynchronizationPrimtive = pSynchronizationPrimtives[pRenderTarget->GetImageIndex()];
+		const UI32 index = pRenderTarget->GetImageIndex();
+		auto pSynchronizationPrimtive = pSynchronizationPrimtives[index];
 		pSynchronizationPrimtive->Wait();
-		auto pCommandBuffer = pAllocator->GetCommandBuffer(pRenderTarget->GetImageIndex());
-		auto pSecondaryCommandBuffer = pSecondaryAllocator->GetCommandBuffer(pRenderTarget->GetImageIndex());
+
+		auto pCommandBuffer = pAllocator->GetCommandBuffer(index);
+		auto pSecondaryCommandBuffer = pSecondaryAllocator->GetCommandBuffer(index);
 
 		pCommandBuffer->BeginBufferRecording();
 		pCommandBuffer->BindRenderTargetSecondary(pRenderTarget);
@@ -164,7 +166,7 @@ namespace Flint
 		pCommandBuffer->UnbindRenderTarget();
 		pCommandBuffer->EndBufferRecording();
 
-		pRenderTarget->GetDevice()->SubmitGraphicsCommandBuffers({ pCommandBuffer }, pSynchronizationPrimtive);
+		pRenderTarget->GetDevice()->SubmitGraphicsCommandBuffer(pCommandBuffer, pSynchronizationPrimtive);
 
 		if (!pRenderTarget->PresentToDisplay())
 			pRenderTarget->Recreate();

@@ -205,6 +205,21 @@ namespace Flint
 			return std::make_shared<VulkanSynchronizationPrimitive>(shared_from_this());
 		}
 
+		void VulkanDevice::SubmitGraphicsCommandBuffer(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const std::shared_ptr<SynchronizationPrimitive>& pPrimitive)
+		{
+			auto& vCommandBuffer = pCommandBuffer->StaticCast<VulkanCommandBuffer>();
+
+			VkFence vFence = VK_NULL_HANDLE;
+			if (pPrimitive)
+			{
+				VulkanSynchronizationPrimitive& vPrimitive = pPrimitive->StaticCast<VulkanSynchronizationPrimitive>();
+				vPrimitive.Reset();
+				vFence = vPrimitive.GetFence();
+			}
+
+			FLINT_VK_ASSERT(GetDeviceTable().vkQueueSubmit(GetQueue().vGraphicsQueue, 1, vCommandBuffer.GetSubmitInfoAddress(), vFence));
+		}
+
 		void VulkanDevice::SubmitGraphicsCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers, const std::shared_ptr<SynchronizationPrimitive>& pPrimitive)
 		{
 			const UI64 bufferCount = pCommandBuffers.size();
@@ -225,6 +240,21 @@ namespace Flint
 			}
 
 			FLINT_VK_ASSERT(GetDeviceTable().vkQueueSubmit(GetQueue().vGraphicsQueue, static_cast<UI32>(vSubmitInfos.size()), vSubmitInfos.data(), vFence));
+		}
+
+		void VulkanDevice::SubmitComputeCommandBuffer(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const std::shared_ptr<SynchronizationPrimitive>& pPrimitive)
+		{
+			auto& vCommandBuffer = pCommandBuffer->StaticCast<VulkanCommandBuffer>();
+
+			VkFence vFence = VK_NULL_HANDLE;
+			if (pPrimitive)
+			{
+				VulkanSynchronizationPrimitive& vPrimitive = pPrimitive->StaticCast<VulkanSynchronizationPrimitive>();
+				vPrimitive.Reset();
+				vFence = vPrimitive.GetFence();
+			}
+
+			FLINT_VK_ASSERT(GetDeviceTable().vkQueueSubmit(GetQueue().vGraphicsQueue, 1, vCommandBuffer.GetSubmitInfoAddress(), vFence));
 		}
 
 		void VulkanDevice::SubmitComputeCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& pCommandBuffers, const std::shared_ptr<SynchronizationPrimitive>& pPrimitive)
@@ -267,7 +297,7 @@ namespace Flint
 
 		VkResult VulkanDevice::CreateImageMemory(const std::vector<VkImage>& vImages, VkMemoryPropertyFlags vMemoryflags, VkDeviceMemory* pDeviceMemory) const
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			if (!vImages.size())
 				return VkResult::VK_ERROR_UNKNOWN;
@@ -302,7 +332,7 @@ namespace Flint
 
 		void VulkanDevice::SetImageLayout(VkCommandBuffer vCommandBuffer, VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, UI32 layerCount, UI32 currentLayer, const UI32 mipLevels, const UI32 currentLevel) const
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			VkImageMemoryBarrier vMB = {};
 			vMB.sType = VkStructureType::VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -417,7 +447,7 @@ namespace Flint
 
 		void VulkanDevice::SetImageLayout(VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, UI32 layerCount, UI32 currentLayer, const UI32 mipLevels, const UI32 currentLevel) const
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			VulkanOneTimeCommandBuffer vCommandBuffer(*this);
 			SetImageLayout(vCommandBuffer, vImage, vOldLayout, vNewLayout, vFormat, layerCount, currentLayer, mipLevels, currentLevel);
@@ -425,7 +455,7 @@ namespace Flint
 
 		void VulkanDevice::InitializePhysicalDevice()
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			VulkanInstance& instance = pInstance->StaticCast<VulkanInstance>();
 
@@ -618,7 +648,7 @@ namespace Flint
 
 		void VulkanDevice::InitializeLogicalDevice()
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			VulkanInstance& instance = pInstance->StaticCast<VulkanInstance>();
 

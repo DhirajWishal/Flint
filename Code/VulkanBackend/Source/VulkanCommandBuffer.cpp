@@ -20,7 +20,7 @@ namespace Flint
 		VulkanCommandBuffer::VulkanCommandBuffer(const std::shared_ptr<CommandBufferAllocator>& pAllocator, VkCommandBuffer vCommandBuffer)
 			: CommandBuffer(pAllocator), vCommandBuffer(vCommandBuffer)
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			vSubmitInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_SUBMIT_INFO;
 			vSubmitInfo.pNext = VK_NULL_HANDLE;
@@ -31,7 +31,7 @@ namespace Flint
 
 		void VulkanCommandBuffer::BeginBufferRecording()
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			VkCommandBufferBeginInfo vBeginInfo = {};
 			vBeginInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -50,7 +50,7 @@ namespace Flint
 
 		void VulkanCommandBuffer::BeginBufferRecording(const std::shared_ptr<ScreenBoundRenderTarget> pRenderTarget)
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			VkCommandBufferBeginInfo vBeginInfo = {};
 			vBeginInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -66,7 +66,7 @@ namespace Flint
 
 		void VulkanCommandBuffer::BeginBufferRecording(const std::shared_ptr<OffScreenRenderTarget> pRenderTarget)
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			VkCommandBufferBeginInfo vBeginInfo = {};
 			vBeginInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -82,7 +82,7 @@ namespace Flint
 
 		void VulkanCommandBuffer::BindRenderTarget(const std::shared_ptr<ScreenBoundRenderTarget>& pRenderTarget)
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			VulkanScreenBoundRenderTarget& vRenderTarget = pRenderTarget->StaticCast<VulkanScreenBoundRenderTarget>();
 
@@ -104,7 +104,7 @@ namespace Flint
 
 		void VulkanCommandBuffer::BindRenderTargetSecondary(const std::shared_ptr<ScreenBoundRenderTarget>& pRenderTarget)
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			VulkanScreenBoundRenderTarget& vRenderTarget = pRenderTarget->StaticCast<VulkanScreenBoundRenderTarget>();
 
@@ -126,7 +126,7 @@ namespace Flint
 
 		void VulkanCommandBuffer::BindRenderTarget(const std::shared_ptr<OffScreenRenderTarget>& pRenderTarget)
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			VulkanOffScreenRenderTarget& vRenderTarget = pRenderTarget->StaticCast<VulkanOffScreenRenderTarget>();
 
@@ -145,7 +145,7 @@ namespace Flint
 
 		void VulkanCommandBuffer::BindRenderTargetSecondary(const std::shared_ptr<OffScreenRenderTarget>& pRenderTarget)
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			VulkanOffScreenRenderTarget& vRenderTarget = pRenderTarget->StaticCast<VulkanOffScreenRenderTarget>();
 
@@ -164,21 +164,21 @@ namespace Flint
 
 		void VulkanCommandBuffer::UnbindRenderTarget()
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetDeviceTable().vkCmdEndRenderPass(vCommandBuffer);
 		}
 
 		void VulkanCommandBuffer::BindGraphicsPipeline(const std::shared_ptr<GraphicsPipeline>& pGraphicsPipeline)
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetDeviceTable().vkCmdBindPipeline(vCommandBuffer, VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_GRAPHICS, pGraphicsPipeline->StaticCast<VulkanGraphicsPipeline>().GetPipeline());
 		}
 
 		void VulkanCommandBuffer::BindComputePipeline(const std::shared_ptr<ComputePipeline>& pComputePipeline)
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetDeviceTable().vkCmdBindPipeline(vCommandBuffer, VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_COMPUTE, pComputePipeline->StaticCast<VulkanComputePipeline>().GetPipeline());
 		}
@@ -209,10 +209,18 @@ namespace Flint
 
 		void VulkanCommandBuffer::BindGeometryStore(const std::shared_ptr<GeometryStore>& pGeometryStore)
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			BindVertexBuffer(pGeometryStore->GetVertexBuffer());
 			BindIndexBuffer(pGeometryStore->GetIndexBuffer(), pGeometryStore->GetIndexSize());
+		}
+
+		void VulkanCommandBuffer::BindResourcePackage(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::shared_ptr<ResourcePackage>& pResourcePackage)
+		{
+			auto& vPackage = pResourcePackage->StaticCast<VulkanResourcePackage>();
+			vPackage.PrepareIfNecessary();
+
+			pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetDeviceTable().vkCmdBindDescriptorSets(vCommandBuffer, VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_GRAPHICS, pPipeline->StaticCast<VulkanGraphicsPipeline>().GetPipelineLayout(), 0, 1, vPackage.GetDescriptorSetAddress(), 0, nullptr);
 		}
 
 		void VulkanCommandBuffer::BindResourcePackages(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::vector<std::shared_ptr<ResourcePackage>>& pResourcePackages)
@@ -229,6 +237,14 @@ namespace Flint
 			}
 
 			pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetDeviceTable().vkCmdBindDescriptorSets(vCommandBuffer, VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_GRAPHICS, pPipeline->StaticCast<VulkanGraphicsPipeline>().GetPipelineLayout(), 0, static_cast<UI32>(vDescriptorSets.size()), vDescriptorSets.data(), 0, nullptr);
+		}
+
+		void VulkanCommandBuffer::BindResourcePackage(const std::shared_ptr<ComputePipeline>& pPipeline, const std::shared_ptr<ResourcePackage>& pResourcePackage)
+		{
+			auto& vPackage = pResourcePackage->StaticCast<VulkanResourcePackage>();
+			vPackage.PrepareIfNecessary();
+
+			pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetDeviceTable().vkCmdBindDescriptorSets(vCommandBuffer, VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_COMPUTE, pPipeline->StaticCast<VulkanComputePipeline>().GetPipelineLayout(), 0, 1, vPackage.GetDescriptorSetAddress(), 0, nullptr);
 		}
 
 		void VulkanCommandBuffer::BindResourcePackages(const std::shared_ptr<ComputePipeline>& pPipeline, const std::vector<std::shared_ptr<ResourcePackage>>& pResourcePackages)
@@ -249,7 +265,7 @@ namespace Flint
 
 		void VulkanCommandBuffer::BindDynamicStates(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::shared_ptr<DynamicStateContainer>& pDynamicStates)
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			if (!pDynamicStates)
 				return;
@@ -318,7 +334,7 @@ namespace Flint
 
 		void VulkanCommandBuffer::BindDynamicStates(const std::shared_ptr<ComputePipeline>& pPipeline, const std::shared_ptr<DynamicStateContainer>& pDynamicStates)
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			if (!pDynamicStates)
 				return;
@@ -383,16 +399,31 @@ namespace Flint
 			}
 		}
 
-		void VulkanCommandBuffer::IssueDrawCall(const WireFrame& wireFrame, const UI64 firstInstance, const UI64 instanceCount, const DrawCallMode mode)
+		void VulkanCommandBuffer::IssueDrawCall(WireFrame& wireFrame, const UI64 firstInstance, const UI64 instanceCount, const DrawCallMode mode)
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			VulkanDevice& vDevice = pAllocator->GetDevice()->StaticCast<VulkanDevice>();
-			if (mode == DrawCallMode::Vertex)
+			if (mode == DrawCallMode::Indexed)
+				vDevice.GetDeviceTable().vkCmdDrawIndexed(vCommandBuffer, static_cast<UI32>(wireFrame.GetIndexCount()), static_cast<UI32>(instanceCount), static_cast<UI32>(wireFrame.GetIndexOffset()), static_cast<UI32>(wireFrame.GetVertexOffset()), static_cast<UI32>(firstInstance));
+
+			else if (mode == DrawCallMode::Vertex)
 				vDevice.GetDeviceTable().vkCmdDraw(vCommandBuffer, static_cast<UI32>(wireFrame.GetVertexCount()), static_cast<UI32>(instanceCount), static_cast<UI32>(wireFrame.GetVertexOffset()), static_cast<UI32>(firstInstance));
 
-			else if (mode == DrawCallMode::Indexed)
+			else
+				throw backend_error("Invalid draw call mode!");
+		}
+
+		void VulkanCommandBuffer::IssueDrawCall(WireFrame&& wireFrame, const UI64 firstInstance, const UI64 instanceCount, const DrawCallMode mode)
+		{
+			OPTICK_EVENT();
+
+			VulkanDevice& vDevice = pAllocator->GetDevice()->StaticCast<VulkanDevice>();
+			if (mode == DrawCallMode::Indexed)
 				vDevice.GetDeviceTable().vkCmdDrawIndexed(vCommandBuffer, static_cast<UI32>(wireFrame.GetIndexCount()), static_cast<UI32>(instanceCount), static_cast<UI32>(wireFrame.GetIndexOffset()), static_cast<UI32>(wireFrame.GetVertexOffset()), static_cast<UI32>(firstInstance));
+
+			else if (mode == DrawCallMode::Vertex)
+				vDevice.GetDeviceTable().vkCmdDraw(vCommandBuffer, static_cast<UI32>(wireFrame.GetVertexCount()), static_cast<UI32>(instanceCount), static_cast<UI32>(wireFrame.GetVertexOffset()), static_cast<UI32>(firstInstance));
 
 			else
 				throw backend_error("Invalid draw call mode!");
@@ -400,7 +431,7 @@ namespace Flint
 
 		void VulkanCommandBuffer::IssueComputeCall(const FBox3D& groups)
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetDeviceTable().vkCmdDispatch(vCommandBuffer, groups.X, groups.Y, groups.Z);
 		}
@@ -412,7 +443,7 @@ namespace Flint
 
 		void VulkanCommandBuffer::ExecuteSecondaryCommands()
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			if (!vSecondaryCommandBuffers.empty())
 			{
@@ -423,7 +454,7 @@ namespace Flint
 
 		void VulkanCommandBuffer::EndBufferRecording()
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			FLINT_VK_ASSERT(pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetDeviceTable().vkEndCommandBuffer(vCommandBuffer));
 			bIsRecording = false;
@@ -442,6 +473,16 @@ namespace Flint
 			vSubmitInfo.pWaitSemaphores = vInFlightSemaphores.data();
 
 			return vSubmitInfo;
+		}
+		
+		const VkSubmitInfo* VulkanCommandBuffer::GetSubmitInfoAddress()
+		{
+			vSubmitInfo.signalSemaphoreCount = static_cast<UI32>(vRenderFinishedSemaphores.size());
+			vSubmitInfo.pSignalSemaphores = vRenderFinishedSemaphores.data();
+			vSubmitInfo.waitSemaphoreCount = static_cast<UI32>(vInFlightSemaphores.size());
+			vSubmitInfo.pWaitSemaphores = vInFlightSemaphores.data();
+
+			return &vSubmitInfo;
 		}
 	}
 }

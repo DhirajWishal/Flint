@@ -28,6 +28,7 @@ project "GraphicsCore"
 		"$(SolutionDir)Code/",
 		"%{IncludeDir.volk}",
 		"%{IncludeDir.Vulkan}",
+		"%{IncludeDir.optick}",
 	}
 
 	libdirs {

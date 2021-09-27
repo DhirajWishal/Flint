@@ -102,6 +102,10 @@ namespace Flint
 	};
 
 #endif // !FLINT_RELEASE
-}
 
-#define FLINT_SETUP_PROFILER()	::Flint::Profiler __profiler{ __FUNCSIG__ }
+	/**
+	 * Set a new profiler frame.
+	 * This should be done once per frame if optick is to be used.
+	 */
+	void NewProfilerFrame();
+}

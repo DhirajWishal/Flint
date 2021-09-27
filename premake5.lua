@@ -31,7 +31,7 @@ workspace "Flint"
 	IncludeDir["glm"] = "$(SolutionDir)ThirdParty/glm/"
 	IncludeDir["volk"] = "$(SolutionDir)ThirdParty/volk/"
 	IncludeDir["xxHash"] = "$(SolutionDir)ThirdParty/xxHash/"
-	IncludeDir["tinygltf"] = "$(SolutionDir)ThirdParty/tinygltf/"
+	IncludeDir["optick"] = "$(SolutionDir)ThirdParty/optick/src"
 
 	-- Binaries
 	IncludeLib["GLFW"] = "$(SolutionDir)ThirdParty/glfw/src/Release"
@@ -53,7 +53,7 @@ workspace "Flint"
 		runtime "Release"
 
 	filter "configurations:Release"
-		defines { "FLINT_RELEASE" }
+		defines { "FLINT_RELEASE", "USE_OPTICK=0" }
 		optimize "On"
 		runtime "Release"
 
@@ -75,6 +75,11 @@ workspace "Flint"
 		include "Code/GraphicsCore/GraphicsCore.lua"
 		include "Code/VulkanBackend/VulkanBackend.lua"
 
+		group "Code/ThirdParty"
+			include "Code/optick/optick.lua"
+
+		group ""
+
 	group "Editor"
 		include "Editor/Editor.lua"
 
@@ -85,6 +90,7 @@ workspace "Flint"
 			include "Demos/Tests/TestBase/TestBase.lua"
 			include "Demos/Tests/ImageBasedLighting/ImageBasedLighting.lua"
 			include "Demos/Tests/Sponza/Sponza.lua"
+			include "Demos/Tests/SmartShaders/SmartShaders.lua"
 		
 		group ""
 	group ""

@@ -40,7 +40,7 @@ namespace Flint
 		VulkanSwapChain::VulkanSwapChain(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, UI32 imageCount, const SwapChainPresentMode presentMode)
 			: SwapChain(pDevice, pDisplay, imageCount, presentMode)
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			CreateSwapChain();
 			CreateSyncObjects();
@@ -57,7 +57,7 @@ namespace Flint
 
 		void VulkanSwapChain::Recreate()
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			mExtent = pDisplay->GetExtent();
 
@@ -126,7 +126,7 @@ namespace Flint
 
 		void VulkanSwapChain::CreateSwapChain()
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 			auto& vDisplay = pDisplay->StaticCast<VulkanDisplay>();

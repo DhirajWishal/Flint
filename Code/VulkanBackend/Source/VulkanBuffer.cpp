@@ -11,7 +11,7 @@ namespace Flint
 		VulkanBuffer::VulkanBuffer(const std::shared_ptr<Device>& pDevice, const BufferType type, const UI64 size, const BufferMemoryProfile profile)
 			: Buffer(pDevice, type, size, profile)
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			switch (type)
 			{
@@ -71,7 +71,7 @@ namespace Flint
 
 		void VulkanBuffer::Resize(const UI64 size, const BufferResizeMode mode)
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 			const UI64 oldSize = mSize;
 
 			if (mode == BufferResizeMode::Copy)
@@ -108,7 +108,7 @@ namespace Flint
 
 		void VulkanBuffer::CopyFromBuffer(const std::shared_ptr<Buffer>& pSrcBuffer, const UI64 size, const UI64 srcOffset, const UI64 dstOffset)
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			VkBufferCopy vBufferCopy = {};
 			vBufferCopy.size = size;
@@ -122,7 +122,7 @@ namespace Flint
 
 		void* VulkanBuffer::MapMemory(const UI64 size, const UI64 offset)
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			// Check if the buffer is mappable.
 			if (!(vMemoryProperties & VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT))
@@ -142,7 +142,7 @@ namespace Flint
 
 		void VulkanBuffer::UnmapMemory()
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 			vDevice.GetDeviceTable().vkUnmapMemory(vDevice.GetLogicalDevice(), vMemory);
@@ -159,7 +159,7 @@ namespace Flint
 
 		void VulkanBuffer::CreateBuffer()
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			VkBufferCreateInfo vCreateInfo = {};
 			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -177,7 +177,7 @@ namespace Flint
 
 		void VulkanBuffer::CreateBufferMemory()
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 

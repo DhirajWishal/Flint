@@ -22,17 +22,21 @@ project "Core"
 		"**.lua",
 		"**.txt",
 		"**.md",
+
 	}
 
 	includedirs {
 		"$(SolutionDir)Code/",
 		"%{IncludeDir.xxHash}",
+		"%{IncludeDir.optick}",
+		"%{IncludeDir.Vulkan}",
 	}
 
 	libdirs {
 	}
 
 	links { 
+		"optick"
 	}
 
 	filter "configurations:Debug"

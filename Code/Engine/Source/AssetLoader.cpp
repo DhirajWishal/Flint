@@ -10,8 +10,6 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-#include <tiny_gltf.h>
-
 #ifdef FLINT_PLATFORM_WINDOWS
 constexpr const char* LineEnding = "\\";
 
@@ -160,6 +158,16 @@ namespace Flint
 			const auto pMesh = pScene->mMeshes[i];
 			const auto pMaterial = pScene->mMaterials[pMesh->mMaterialIndex];
 
+			/* TODO
+			pMesh->HasPositions();
+			pMesh->HasVertexColors(0);
+			pMesh->HasTextureCoords(0);
+			pMesh->HasNormals();
+			pMesh->HasBones();
+			pMesh->HasFaces();
+			pMesh->HasTangentsAndBitangents();
+			*/
+
 			//std::vector<aiMaterialProperty*> pProperties(pMaterial->mProperties, pMaterial->mProperties + pMaterial->mNumProperties);
 			Material material = {};
 
@@ -190,99 +198,99 @@ namespace Flint
 
 					switch (attribute.mType)
 					{
-					case VertexAttributeType::Position:
+					case InputAttributeType::Position:
 						if (pMesh->HasPositions())
 							std::copy(&pMesh->mVertices[j].x, (&pMesh->mVertices[j].x) + copyAmount, pBufferMemory);
 						break;
 
-					case VertexAttributeType::Normal:
+					case InputAttributeType::Normal:
 						if (pMesh->HasNormals())
 							std::copy(&pMesh->mNormals[j].x, (&pMesh->mNormals[j].x) + copyAmount, pBufferMemory);
 						break;
 
-					case VertexAttributeType::ColorZero:
+					case InputAttributeType::ColorZero:
 						if (pMesh->HasVertexColors(0))
 							std::copy(&pMesh->mColors[0][j].r, (&pMesh->mColors[0][j].r) + copyAmount, pBufferMemory);
 						else
 							std::fill(pBufferMemory, pBufferMemory + copyAmount, 1.0f);
 						break;
 
-					case VertexAttributeType::ColorOne:
+					case InputAttributeType::ColorOne:
 						if (pMesh->HasVertexColors(1))
 							std::copy(&pMesh->mColors[1][j].r, (&pMesh->mColors[1][j].r) + copyAmount, pBufferMemory);
 						break;
 
-					case VertexAttributeType::ColorTwo:
+					case InputAttributeType::ColorTwo:
 						if (pMesh->HasVertexColors(2))
 							std::copy(&pMesh->mColors[2][j].r, (&pMesh->mColors[1][j].r) + copyAmount, pBufferMemory);
 						break;
 
-					case VertexAttributeType::ColorThree:
+					case InputAttributeType::ColorThree:
 						if (pMesh->HasVertexColors(3))
 							std::copy(&pMesh->mColors[3][j].r, (&pMesh->mColors[2][j].r) + copyAmount, pBufferMemory);
 						break;
 
-					case VertexAttributeType::TextureCoordinatesZero:
+					case InputAttributeType::TextureCoordinatesZero:
 						if (pMesh->HasTextureCoords(0))
 							std::copy(&pMesh->mTextureCoords[0][j].x, (&pMesh->mTextureCoords[0][j].x) + copyAmount, pBufferMemory);
 						break;
 
-					case VertexAttributeType::TextureCoordinatesOne:
+					case InputAttributeType::TextureCoordinatesOne:
 						if (pMesh->HasTextureCoords(1))
 							std::copy(&pMesh->mTextureCoords[1][j].x, (&pMesh->mTextureCoords[1][j].x) + copyAmount, pBufferMemory);
 						break;
 
-					case VertexAttributeType::TextureCoordinatesTwo:
+					case InputAttributeType::TextureCoordinatesTwo:
 						if (pMesh->HasTextureCoords(2))
 							std::copy(&pMesh->mTextureCoords[2][j].x, (&pMesh->mTextureCoords[2][j].x) + copyAmount, pBufferMemory);
 						break;
 
-					case VertexAttributeType::TextureCoordinatesThree:
+					case InputAttributeType::TextureCoordinatesThree:
 						if (pMesh->HasTextureCoords(3))
 							std::copy(&pMesh->mTextureCoords[3][j].x, (&pMesh->mTextureCoords[3][j].x) + copyAmount, pBufferMemory);
 						break;
 
-					case VertexAttributeType::TextureCoordinatesFour:
+					case InputAttributeType::TextureCoordinatesFour:
 						if (pMesh->HasTextureCoords(4))
 							std::copy(&pMesh->mTextureCoords[4][j].x, (&pMesh->mTextureCoords[4][j].x) + copyAmount, pBufferMemory);
 						break;
 
-					case VertexAttributeType::TextureCoordinatesFive:
+					case InputAttributeType::TextureCoordinatesFive:
 						if (pMesh->HasTextureCoords(5))
 							std::copy(&pMesh->mTextureCoords[5][j].x, (&pMesh->mTextureCoords[5][j].x) + copyAmount, pBufferMemory);
 						break;
 
-					case VertexAttributeType::TextureCoordinatesSix:
+					case InputAttributeType::TextureCoordinatesSix:
 						if (pMesh->HasTextureCoords(6))
 							std::copy(&pMesh->mTextureCoords[6][j].x, (&pMesh->mTextureCoords[6][j].x) + copyAmount, pBufferMemory);
 						break;
 
-					case VertexAttributeType::TextureCoordinatesSeven:
+					case InputAttributeType::TextureCoordinatesSeven:
 						if (pMesh->HasTextureCoords(7))
 							std::copy(&pMesh->mTextureCoords[7][j].x, (&pMesh->mTextureCoords[7][j].x) + copyAmount, pBufferMemory);
 						break;
 
-					case VertexAttributeType::UVCoordinates:
+					case InputAttributeType::UVCoordinates:
 						if (pMesh->HasTextureCoords(0))
 							std::copy(&pMesh->mTextureCoords[0][j].x, (&pMesh->mTextureCoords[0][j].x) + copyAmount, pBufferMemory);
 						break;
 
-					case VertexAttributeType::Tangent:
+					case InputAttributeType::Tangent:
 						if (pMesh->HasTangentsAndBitangents())
 							std::copy(&pMesh->mTangents[j].x, (&pMesh->mTangents[j].x) + copyAmount, pBufferMemory);
 						break;
 
-					case VertexAttributeType::Bitangent:
+					case InputAttributeType::Bitangent:
 						if (pMesh->HasTangentsAndBitangents())
 							std::copy(&pMesh->mBitangents[j].x, (&pMesh->mBitangents[j].x) + copyAmount, pBufferMemory);
 						break;
 
-					case VertexAttributeType::BoneID:
+					case InputAttributeType::BoneID:
 						//if (pMesh->HasPositions())
 						//	std::copy(&pMesh->mVertices[j].x, (&pMesh->mVertices[j].x) + copyAmount, pBufferMemory);
 						break;
 
-					case VertexAttributeType::BoneWeight:
+					case InputAttributeType::BoneWeight:
 						//if (pMesh->HasPositions())
 						//	std::copy(&pMesh->mVertices[j].x, (&pMesh->mVertices[j].x) + copyAmount, pBufferMemory);
 						break;
@@ -340,9 +348,9 @@ namespace Flint
 		VertexDescriptor CreateDefaultVertexDescriptor()
 		{
 			Flint::VertexDescriptor vDescriptor = {};
-			vDescriptor.mAttributes.push_back(Flint::VertexAttribute(sizeof(float) * 3, Flint::VertexAttributeType::Position));
-			vDescriptor.mAttributes.push_back(Flint::VertexAttribute(sizeof(float) * 3, Flint::VertexAttributeType::ColorZero));
-			vDescriptor.mAttributes.push_back(Flint::VertexAttribute(sizeof(float) * 2, Flint::VertexAttributeType::TextureCoordinatesZero));
+			vDescriptor.mAttributes.push_back(Flint::VertexAttribute(sizeof(float) * 3, Flint::InputAttributeType::Position));
+			vDescriptor.mAttributes.push_back(Flint::VertexAttribute(sizeof(float) * 3, Flint::InputAttributeType::ColorZero));
+			vDescriptor.mAttributes.push_back(Flint::VertexAttribute(sizeof(float) * 2, Flint::InputAttributeType::TextureCoordinatesZero));
 
 			return vDescriptor;
 		}
@@ -350,8 +358,8 @@ namespace Flint
 		VertexDescriptor CreateSkyBoxVertexDescriptor()
 		{
 			Flint::VertexDescriptor vDescriptor = {};
-			vDescriptor.mAttributes.push_back(Flint::VertexAttribute(sizeof(float) * 3, Flint::VertexAttributeType::Position));
-			vDescriptor.mAttributes.push_back(Flint::VertexAttribute(sizeof(float) * 2, Flint::VertexAttributeType::TextureCoordinatesZero));
+			vDescriptor.mAttributes.push_back(Flint::VertexAttribute(sizeof(float) * 3, Flint::InputAttributeType::Position));
+			vDescriptor.mAttributes.push_back(Flint::VertexAttribute(sizeof(float) * 2, Flint::InputAttributeType::TextureCoordinatesZero));
 
 			return vDescriptor;
 		}

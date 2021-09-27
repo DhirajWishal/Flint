@@ -40,10 +40,6 @@ os.system("cd \"Demos/ThirdParty/imgui\" && git checkout docking")
 print("\nSetting up gdown ...")
 os.system("cd \"ThirdParty/gdown\" && python setup.py install")
 
-# Build tinygltf
-print("\nBuilding tinygltf ...")
-os.system("cd \"ThirdParty/tinygltf\" && cmake CMakeLists.txt && cmake --build . --config Release")
-
 if input("\nDownload assets from the remote data store? (y/n) ").lower() == "y":
     os.system("cd Script && python DownloadAssets.py")
 else:

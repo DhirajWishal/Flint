@@ -121,7 +121,7 @@ namespace Flint
 
 		VulkanInstance::VulkanInstance(bool enableValidation) : Instance(enableValidation)
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			FLINT_VK_ASSERT(volkInitialize());
 			InitializeGLFW();
@@ -175,7 +175,7 @@ namespace Flint
 
 		void VulkanInstance::InitializeInstance()
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			// Check if the validation layers are supported.
 			if (mEnableValidation && !Helpers::CheckValidationLayerSupport(mValidationLayers))

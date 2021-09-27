@@ -559,7 +559,7 @@ namespace Flint
 				pFragmentShader,
 				specification)
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			vRenderPass = pScreenBoundRenderTarget->StaticCast<VulkanScreenBoundRenderTarget>().GetRenderPass();
 
@@ -590,7 +590,7 @@ namespace Flint
 				pFragmentShader,
 				specification)
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			vRenderPass = pOffScreenRenderTarget->StaticCast<VulkanOffScreenRenderTarget>().GetRenderPass();
 
@@ -625,7 +625,7 @@ namespace Flint
 
 		void VulkanGraphicsPipeline::Recreate(const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget)
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			vRenderPass = pScreenBoundRenderTarget->StaticCast<VulkanScreenBoundRenderTarget>().GetRenderPass();
 
@@ -806,7 +806,7 @@ namespace Flint
 
 		void VulkanGraphicsPipeline::CreatePipelineCache()
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			const auto [size, pData] = ReadDataFromCacheFile();
 
@@ -825,7 +825,7 @@ namespace Flint
 
 		void VulkanGraphicsPipeline::CreatePipelineLayout()
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 			std::vector<VkPushConstantRange> vConstantRanges;
@@ -936,7 +936,7 @@ namespace Flint
 
 		void VulkanGraphicsPipeline::CreatePipeline()
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			// Resolve viewport state.
 			VkRect2D vR2D = {};

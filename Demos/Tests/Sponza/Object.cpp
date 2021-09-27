@@ -52,7 +52,7 @@ namespace Flint
 			auto& wireFrame = wireFrames[i];
 			auto& pPackage = pPackages[i];
 
-			pCommandBuffer->BindResourcePackages(pPipeline, { pPackage });
+			pCommandBuffer->BindResourcePackage(pPipeline, pPackage);
 			pCommandBuffer->IssueDrawCall(wireFrame);
 		}
 	}
@@ -106,7 +106,12 @@ namespace Flint
 
 	void Object::LoadAsset()
 	{
-		mAsset = Asset("E:\\Projects\\Lighter\\Assets\\2.0\\Sponza\\glTF\\Sponza.gltf", pApplication->GetGeometryStore("Object"), Defaults::CreateDefaultVertexDescriptor());
+		Flint::VertexDescriptor vDescriptor = {};
+		vDescriptor.mAttributes.push_back(Flint::VertexAttribute(sizeof(float) * 3, Flint::InputAttributeType::Position));
+		//vDescriptor.mAttributes.push_back(Flint::VertexAttribute(sizeof(float) * 3, Flint::InputAttributeType::ColorZero));
+		vDescriptor.mAttributes.push_back(Flint::VertexAttribute(sizeof(float) * 2, Flint::InputAttributeType::TextureCoordinatesZero));
+
+		mAsset = Asset("E:\\Projects\\Lighter\\Assets\\2.0\\Sponza\\glTF\\Sponza.gltf", pApplication->GetGeometryStore("Object"), vDescriptor);
 	}
 
 	void Object::LoadTextures()

@@ -15,7 +15,7 @@ namespace Flint
 		VulkanOffScreenRenderTarget::VulkanOffScreenRenderTarget(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments)
 			: OffScreenRenderTarget(pDevice, extent, bufferCount, imageAttachments), vRenderTarget(pDevice->StaticCast<VulkanDevice>())
 		{
-			FLINT_SETUP_PROFILER();
+			OPTICK_EVENT();
 
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 

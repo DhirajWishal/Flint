@@ -140,6 +140,14 @@ namespace Flint
 		virtual void BindGeometryStore(const std::shared_ptr<GeometryStore>& pGeometryStore) = 0;
 
 		/**
+		 * Bind a draw resources to the command buffer.
+		 *
+		 * @param pPipeline: The pipeline pointer.
+		 * @param pResourcePackage: The resource package to bind.
+		 */
+		virtual void BindResourcePackage(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::shared_ptr<ResourcePackage>& pResourcePackage) = 0;
+
+		/**
 		 * Bind draw resources to the command buffer.
 		 *
 		 * @param pPipeline: The pipeline pointer.
@@ -148,7 +156,15 @@ namespace Flint
 		virtual void BindResourcePackages(const std::shared_ptr<GraphicsPipeline>& pPipeline, const std::vector<std::shared_ptr<ResourcePackage>>& pResourcePackages) = 0;
 
 		/**
-		 * Bind instance resources to the command buffer.
+		 * Bind an instance resource to the command buffer.
+		 *
+		 * @param pPipeline: The pipeline pointer.
+		 * @param pResourcePackage: The resource package to bind.
+		 */
+		virtual void BindResourcePackage(const std::shared_ptr<ComputePipeline>& pPipeline, const std::shared_ptr<ResourcePackage>& pResourcePackage) = 0;
+
+		/**
+		 * Bind draw resources to the command buffer.
 		 *
 		 * @param pPipeline: The pipeline pointer.
 		 * @param pResourcePackages: The resource packages to bind.
@@ -179,7 +195,17 @@ namespace Flint
 		 * @param instanceCount: The number instances to draw.
 		 * @param mode: The draw call mode. Default is Indexed.
 		 */
-		virtual void IssueDrawCall(const WireFrame& wireFrame, const UI64 firstInstance = 0, const UI64 instanceCount = 1, const DrawCallMode mode = DrawCallMode::Indexed) = 0;
+		virtual void IssueDrawCall(WireFrame& wireFrame, const UI64 firstInstance = 0, const UI64 instanceCount = 1, const DrawCallMode mode = DrawCallMode::Indexed) = 0;
+
+		/**
+		 * Issue a draw call to the command buffer.
+		 *
+		 * @param wireFrame: The wire frame to draw.
+		 * @param firstInstance: The first instance of the instance ID.
+		 * @param instanceCount: The number instances to draw.
+		 * @param mode: The draw call mode. Default is Indexed.
+		 */
+		virtual void IssueDrawCall(WireFrame&& wireFrame, const UI64 firstInstance = 0, const UI64 instanceCount = 1, const DrawCallMode mode = DrawCallMode::Indexed) = 0;
 
 		/**
 		 * Issue the compute call to the command buffer.
