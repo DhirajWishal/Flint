@@ -292,6 +292,11 @@ namespace Flint
 			 */
 			std::shared_ptr<Image> CreateImage(const std::shared_ptr<Device>& pDevice, const ImageType type, const ImageUsage usage, const UI32 layers, const UI32 mipLevels, const MultiSampleCount sampleCount = MultiSampleCount::One);
 
+			/**
+			 * Clear texture data.
+			 */
+			void Clear();
+
 		public:
 			FBox3D mExtent = {};
 			unsigned char* pPixelData = nullptr;

@@ -104,9 +104,7 @@ namespace Flint
 				if (pMaterial->GetTexture(type, i, &path) == aiReturn::aiReturn_SUCCESS)
 				{
 					OPTICK_EVENT();
-
-					ImageLoader loader(basePath + path.C_Str());
-					material.AddProperty(std::make_shared<MaterialProperties::TextureData>(loader.GetAsTextureData(GetTextureType(type))));
+					material.AddProperty(std::make_shared<MaterialProperties::TexturePath>(basePath + path.C_Str(), GetTextureType(type)));
 				}
 			}
 		}
@@ -340,6 +338,9 @@ namespace Flint
 			std::vector<std::future<void>> futures;
 			futures.reserve(pScene->mNumMeshes);
 
+			const UI64 vertexFloatCount = vertexDescriptor.Size() / sizeof(float);
+			const auto basePath = assetPath.parent_path().string() + LineEnding;
+
 			for (UI32 i = 0; i < pScene->mNumMeshes; i++)
 			{
 				const auto pMesh = pScene->mMeshes[i];
@@ -360,9 +361,9 @@ namespace Flint
 					Helpers::LoadWireFrame,
 					pMesh,
 					pMaterial,
-					assetPath.parent_path().string() + LineEnding,
+					basePath,
 					vertexDescriptor,
-					pBufferMemory + (vertexOffset * (vertexDescriptor.Size() / sizeof(float))),
+					pBufferMemory + (vertexOffset * vertexFloatCount),
 					vertexOffset,
 					&indexOffset,
 					&indexData,
@@ -385,7 +386,6 @@ namespace Flint
 		pIndexStagingBuffer->UnmapMemory();
 
 		const auto [vertexGeometryOffset, indexGeometryOffset] = pGeometryStore->AddGeometry(pVertexStagingBuffer.get(), pIndexStagingBuffer.get());
-
 		for (auto& wireFrame : mWireFrames)
 		{
 			wireFrame.SetVertexOffset(wireFrame.GetVertexOffset() + vertexGeometryOffset);

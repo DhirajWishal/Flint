@@ -14,6 +14,8 @@ namespace Flint
 	class ImageLoader
 	{
 	public:
+		ImageLoader() = default;
+
 		/**
 		 * Construct the loader by loading the image.
 		 *
@@ -27,6 +29,9 @@ namespace Flint
 		 * @param assetFiles: The image files to load.
 		 */
 		ImageLoader(const std::vector<std::filesystem::path>& assetFiles);
+
+		ImageLoader(const ImageLoader&) = default;
+		ImageLoader(ImageLoader&& other);
 
 		/**
 		 * Default destructor.
@@ -54,6 +59,10 @@ namespace Flint
 		 * @return The texture data.
 		 */
 		MaterialProperties::TextureData GetAsTextureData(const MaterialProperties::TextureType type);
+
+	public:
+		ImageLoader& operator=(const ImageLoader&) = default;
+		ImageLoader& operator=(ImageLoader && other);
 
 	public:
 		/**

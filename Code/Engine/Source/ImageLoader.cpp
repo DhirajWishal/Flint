@@ -51,6 +51,11 @@ namespace Flint
 		mPixelFormat = PixelFormat::R8G8B8A8_SRGB;
 	}
 
+	ImageLoader::ImageLoader(ImageLoader&& other) : pPixelData(other.pPixelData), mExtent(other.mExtent), mPixelFormat(other.mPixelFormat)
+	{
+		other.pPixelData = nullptr;
+	}
+
 	ImageLoader::~ImageLoader()
 	{
 		if (pPixelData)
@@ -71,5 +76,15 @@ namespace Flint
 		pPixelData = nullptr;
 
 		return data;
+	}
+
+	ImageLoader& ImageLoader::operator=(ImageLoader&& other)
+	{
+		pPixelData = other.pPixelData;
+		mExtent = other.mExtent;
+		mPixelFormat = other.mPixelFormat;
+
+		other.pPixelData = nullptr;
+		return *this;
 	}
 }

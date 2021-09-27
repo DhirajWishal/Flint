@@ -15,5 +15,10 @@ namespace Flint
 			else
 				return pDevice->CreateImage(type, usage, mExtent, mPixelFormat, layers, Image::GetBestMipLevels(mExtent), pPixelData, sampleCount);
 		}
+		
+		void TextureData::Clear()
+		{
+			free(pPixelData);
+		}
 	}
 }

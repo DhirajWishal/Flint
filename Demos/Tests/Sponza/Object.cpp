@@ -10,6 +10,7 @@
 
 #include <glm/gtx/transform.hpp>
 #include <optick.h>
+#include <future>
 
 namespace Flint
 {
@@ -22,6 +23,7 @@ namespace Flint
 		pDynamicStates = std::make_shared<DynamicStateContainer>();
 		pUniformBuffer = pApplication->GetDevice()->CreateBuffer(BufferType::Uniform, sizeof(ModelViewProjection));
 
+		//pApplication->GetGraphicsScene("Default")->mCamera.SetCameraRange(0.01f, 2048.0f);
 		mMatrix.mModelMatrix = glm::scale(mMatrix.mModelMatrix, glm::vec3(0.005f));
 
 		CreatePipeline();
@@ -126,9 +128,42 @@ namespace Flint
 		mAsset = Asset("E:\\Projects\\Lighter\\Assets\\2.0\\Sponza\\glTF\\Sponza.gltf", pApplication->GetGeometryStore("Object"), vDescriptor);
 	}
 
+	std::mutex mImageLocker = {};
+
 	void Object::LoadTextures()
 	{
 		OPTICK_EVENT();
+
+		std::unordered_map<std::shared_ptr<MaterialProperties::TexturePath>, ImageLoader> loaderMap = {};
+
+		{
+			std::vector<std::future<void>> futures;
+			for (auto& wireFrame : mAsset.GetWireFrames())
+			{
+				Material& material = wireFrame.GetMaterial();
+
+				for (const auto pProperty : material.GetProperties())
+				{
+					if (pProperty->GetType() == MaterialProperties::MaterialType::TEXTURE_PATH)
+					{
+						auto pTexturePath = std::static_pointer_cast<MaterialProperties::TexturePath>(pProperty);
+						if (pTexturePath->mType != MaterialProperties::TextureType::Diffuse)
+							continue;
+
+						futures.push_back(std::async(std::launch::async, [](const std::shared_ptr<MaterialProperties::TexturePath>& pTexturePath,
+							std::unordered_map<std::shared_ptr<MaterialProperties::TexturePath>, ImageLoader>* pLoaderMap)
+							{
+								ImageLoader loader(pTexturePath->mTexturePath);
+
+								std::lock_guard<std::mutex> guard(mImageLocker);
+								pLoaderMap->insert({ pTexturePath, std::move(loader) });
+							}, pTexturePath, &loaderMap));
+
+						break;
+					}
+				}
+			}
+		}
 
 		const UI64 size = pApplication->GetGraphicsScene("Default")->pRenderTarget->GetBufferCount();
 		pPackageSets.resize(size);
@@ -139,17 +174,18 @@ namespace Flint
 
 			for (const auto pProperty : material.GetProperties())
 			{
-				if (pProperty->GetType() == MaterialProperties::MaterialType::TEXTURE_DATA)
+				if (pProperty->GetType() == MaterialProperties::MaterialType::TEXTURE_PATH)
 				{
-					auto pTexturePath = std::static_pointer_cast<MaterialProperties::TextureData>(pProperty);
+					auto pTexturePath = std::static_pointer_cast<MaterialProperties::TexturePath>(pProperty);
 					if (pTexturePath->mType != MaterialProperties::TextureType::Diffuse)
 						continue;
 
-					auto pImage = pTexturePath->CreateImage(pApplication->GetDevice(), ImageType::TwoDimension, ImageUsage::Graphics, 1, 1);
+					auto& loader = loaderMap[pTexturePath];
+					auto pImage = loader.CreateImage(pApplication->GetDevice(), ImageType::TwoDimension, ImageUsage::Graphics, 1, 1);
 
 					Flint::ImageSamplerSpecification samplerSpecification = {};
 					samplerSpecification.mMaxLevelOfDetail = static_cast<float>(pImage->GetMipLevels());
-					samplerSpecification.mBorderColor = BorderColor::TransparentBlackFLOAT;
+					samplerSpecification.mBorderColor = BorderColor::OpaqueBlackINT;
 					auto pSampler = pApplication->GetDevice()->CreateImageSampler(samplerSpecification);
 
 					for (UI64 i = 0; i < size; i++)
@@ -161,8 +197,6 @@ namespace Flint
 
 						pPackageSets[i].push_back(std::move(pPackage));
 					}
-
-					break;
 				}
 			}
 		}
