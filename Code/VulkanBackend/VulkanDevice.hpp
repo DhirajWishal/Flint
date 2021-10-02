@@ -7,6 +7,8 @@
 #include "VulkanInstance.hpp"
 #include "VulkanQueue.hpp"
 
+#include <vk_mem_alloc.h>
+
 namespace Flint
 {
 	namespace VulkanBackend
@@ -60,7 +62,6 @@ namespace Flint
 
 			virtual std::shared_ptr<SynchronizationPrimitive> CreateSynchronizationPrimitive() override;
 
-
 			virtual void SubmitGraphicsCommandBuffer(const CommandBuffer* pCommandBuffer, SynchronizationPrimitive* pPrimitive = nullptr) override;
 			virtual void SubmitGraphicsCommandBuffers(const std::vector<CommandBuffer*>& pCommandBuffers, SynchronizationPrimitive* pPrimitive = nullptr) override;
 			virtual void SubmitComputeCommandBuffer(const CommandBuffer* pCommandBuffer, SynchronizationPrimitive* pPrimitive = nullptr) override;
@@ -83,11 +84,18 @@ namespace Flint
 			void SetImageLayout(VkCommandBuffer vCommandBuffer, VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, UI32 layerCount = 1, UI32 currentLayer = 0, const UI32 mipLevels = 1, const UI32 currentLevel = 0) const;
 			void SetImageLayout(VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, UI32 layerCount = 1, UI32 currentLayer = 0, const UI32 mipLevels = 1, const UI32 currentLevel = 0) const;
 
+			const VmaAllocator GetVmaAllocator() const { return mVmaAllocator; }
+
 		private:
 			void InitializePhysicalDevice();
 
 			void InitializeLogicalDevice();
 			void TerminateLogicalDevice();
+
+			VmaVulkanFunctions GetVulkanFunctions() const;
+
+			void CreateVmaAllocator();
+			void DestroyVmaAllocator();
 
 		private:
 			VolkDeviceTable mDeviceTable = {};
@@ -97,6 +105,8 @@ namespace Flint
 
 			VkDevice vLogicalDevice = VK_NULL_HANDLE;
 			VkPhysicalDevice vPhysicalDevice = VK_NULL_HANDLE;
+
+			VmaAllocator mVmaAllocator = VK_NULL_HANDLE;
 
 			VkSampleCountFlags vSampleCount = VkSampleCountFlagBits::VK_SAMPLE_COUNT_64_BIT;
 		};

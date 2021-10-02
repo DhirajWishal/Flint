@@ -32,6 +32,7 @@ workspace "Flint"
 	IncludeDir["volk"] = "$(SolutionDir)ThirdParty/volk/"
 	IncludeDir["xxHash"] = "$(SolutionDir)ThirdParty/xxHash/"
 	IncludeDir["optick"] = "$(SolutionDir)ThirdParty/optick/src"
+	IncludeDir["vma"] = "$(SolutionDir)ThirdParty/VulkanMemoryAllocator/include"
 
 	-- Binaries
 	IncludeLib["GLFW"] = "$(SolutionDir)ThirdParty/glfw/src/Release"

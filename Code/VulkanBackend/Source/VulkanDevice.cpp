@@ -304,6 +304,10 @@ namespace Flint
 		void VulkanDevice::Terminate()
 		{
 			TerminateLogicalDevice();
+
+			// Destroy the VMA allocator.
+			DestroyVmaAllocator();
+
 			bIsTerminated = true;
 		}
 
@@ -723,17 +727,62 @@ namespace Flint
 				GetDeviceTable().vkGetDeviceQueue(GetLogicalDevice(), vQueue.mComputeFamily.value(), 0, &vQueue.vComputeQueue);
 
 			GetDeviceTable().vkGetDeviceQueue(GetLogicalDevice(), vQueue.mTransferFamily.value(), 0, &vQueue.vTransferQueue);
+
+			// Create the VMA allocator.
+			CreateVmaAllocator();
 		}
 
 		void VulkanDevice::TerminateLogicalDevice()
 		{
 			GetDeviceTable().vkDestroyDevice(vLogicalDevice, nullptr);
 		}
+
+		VmaVulkanFunctions VulkanDevice::GetVulkanFunctions() const
+		{
+			VmaVulkanFunctions functions = {};
+			functions.vkAllocateMemory = GetDeviceTable().vkAllocateMemory;
+			functions.vkBindBufferMemory = GetDeviceTable().vkBindBufferMemory;
+			functions.vkBindBufferMemory2KHR = GetDeviceTable().vkBindBufferMemory2KHR;
+			functions.vkBindImageMemory = GetDeviceTable().vkBindImageMemory;
+			functions.vkBindImageMemory2KHR = GetDeviceTable().vkBindImageMemory2KHR;
+			functions.vkCmdCopyBuffer = GetDeviceTable().vkCmdCopyBuffer;
+			functions.vkCreateBuffer = GetDeviceTable().vkCreateBuffer;
+			functions.vkCreateImage = GetDeviceTable().vkCreateImage;
+			functions.vkDestroyBuffer = GetDeviceTable().vkDestroyBuffer;
+			functions.vkDestroyImage = GetDeviceTable().vkDestroyImage;
+			functions.vkFlushMappedMemoryRanges = GetDeviceTable().vkFlushMappedMemoryRanges;
+			functions.vkFreeMemory = GetDeviceTable().vkFreeMemory;
+			functions.vkGetBufferMemoryRequirements = GetDeviceTable().vkGetBufferMemoryRequirements;
+			functions.vkGetBufferMemoryRequirements2KHR = GetDeviceTable().vkGetBufferMemoryRequirements2KHR;
+			functions.vkGetImageMemoryRequirements = GetDeviceTable().vkGetImageMemoryRequirements;
+			functions.vkGetImageMemoryRequirements2KHR = GetDeviceTable().vkGetImageMemoryRequirements2KHR;
+			functions.vkGetPhysicalDeviceMemoryProperties = vkGetPhysicalDeviceMemoryProperties;
+			functions.vkGetPhysicalDeviceMemoryProperties2KHR = vkGetPhysicalDeviceMemoryProperties2KHR;
+			functions.vkGetPhysicalDeviceProperties = vkGetPhysicalDeviceProperties;
+			functions.vkInvalidateMappedMemoryRanges = GetDeviceTable().vkInvalidateMappedMemoryRanges;
+			functions.vkMapMemory = GetDeviceTable().vkMapMemory;
+			functions.vkUnmapMemory = GetDeviceTable().vkUnmapMemory;
+
+			return functions;
+		}
+
+		void VulkanDevice::CreateVmaAllocator()
+		{
+			VmaAllocatorCreateInfo vmaCreateInfo = {};
+			vmaCreateInfo.instance = pInstance->StaticCast<VulkanInstance>().GetInstance();
+			vmaCreateInfo.physicalDevice = GetPhysicalDevice();
+			vmaCreateInfo.device = GetLogicalDevice();
+			vmaCreateInfo.vulkanApiVersion = VK_VERSION_1_2;
+
+			VmaVulkanFunctions functions = GetVulkanFunctions();
+			vmaCreateInfo.pVulkanFunctions = &functions;
+
+			FLINT_VK_ASSERT(vmaCreateAllocator(&vmaCreateInfo, &mVmaAllocator));
+		}
+
+		void VulkanDevice::DestroyVmaAllocator()
+		{
+			vmaDestroyAllocator(mVmaAllocator);
+		}
 	}
 }
-
-/*
-Calling vkBeginCommandBuffer() on active VkCommandBuffer 0x21eb3e73d38[] before it has completed. You must check command buffer fence before this call. The Vulkan spec states: commandBuffer must not be in the recording or pending state (https://vulkan.lunarg.com/doc/view/1.2.182.0/windows/1.2-extensions/vkspec.html#VUID-vkBeginCommandBuffer-commandBuffer-00049)
-Cannot free VkBuffer 0xa971e50000001aa2[] that is in use by a command buffer. The Vulkan spec states: All submitted commands that refer to buffer, either directly or via a VkBufferView, must have completed execution (https://vulkan.lunarg.com/doc/view/1.2.182.0/windows/1.2-extensions/vkspec.html#VUID-vkDestroyBuffer-buffer-00922)
-VkFence 0xfab64d0000000002[] is in use. The Vulkan spec states: Each element of pFences must not be currently associated with any queue command that has not yet completed execution on that queue (https://vulkan.lunarg.com/doc/view/1.2.182.0/windows/1.2-extensions/vkspec.html#VUID-vkResetFences-pFences-01123)
-*/

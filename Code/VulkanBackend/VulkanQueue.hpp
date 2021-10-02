@@ -9,7 +9,6 @@
 #include <optional>
 
 #include <optick.h>
-
 namespace Flint
 {
 	namespace VulkanBackend
