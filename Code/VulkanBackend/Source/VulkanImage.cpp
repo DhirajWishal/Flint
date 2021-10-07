@@ -256,9 +256,8 @@ namespace Flint
 		void VulkanImage::Terminate()
 		{
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-			vDevice.GetDeviceTable().vkDestroyImage(vDevice.GetLogicalDevice(), vImage, nullptr);
 			vDevice.GetDeviceTable().vkDestroyImageView(vDevice.GetLogicalDevice(), vImageView, nullptr);
-			vDevice.GetDeviceTable().vkFreeMemory(vDevice.GetLogicalDevice(), vImageMemory, nullptr);
+			vmaDestroyImage(vDevice.GetVmaAllocator(), vImage, vmaAllocation);
 
 			bIsTerminated = true;
 		}
@@ -446,14 +445,11 @@ namespace Flint
 			vCreateInfo.queueFamilyIndexCount = static_cast<UI32>(queueIndexes.size());
 			vCreateInfo.pQueueFamilyIndices = queueIndexes.data();
 
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateImage(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vImage));
-		}
+			//FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateImage(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vImage));
 
-		void VulkanImage::CreateImageMemory()
-		{
-			OPTICK_EVENT();
-
-			FLINT_VK_ASSERT(pDevice->StaticCast<VulkanDevice>().CreateImageMemory({ vImage }, VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &vImageMemory));
+			VmaAllocationCreateInfo vmaAllocationCreateInfo = {};
+			vmaAllocationCreateInfo.usage = VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY;
+			vmaCreateImage(vDevice.GetVmaAllocator(), &vCreateInfo, &vmaAllocationCreateInfo, &vImage, &vmaAllocation, nullptr);
 		}
 
 		void VulkanImage::CreateImageView()
@@ -652,7 +648,6 @@ namespace Flint
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 
 			CreateImage();
-			CreateImageMemory();
 			CreateImageView();
 
 			// Copy data to the device.

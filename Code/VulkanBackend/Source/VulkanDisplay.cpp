@@ -98,12 +98,12 @@ namespace Flint
 		{
 			OPTICK_EVENT();
 
-			GLFWmonitor* monitor = glfwGetPrimaryMonitor();
-			const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+			GLFWmonitor* pMonitor = glfwGetPrimaryMonitor();
+			const GLFWvidmode* pMode = glfwGetVideoMode(pMonitor);
 
 			if (!extent.IsZero())
 			{
-				if (extent.mWidth > static_cast<UI32>(mode->width) || extent.mHeight > static_cast<UI32>(mode->height))
+				if (extent.mWidth > static_cast<UI32>(pMode->width) || extent.mHeight > static_cast<UI32>(pMode->height))
 				{
 					pWindow = glfwCreateWindow(1280, 720, title.c_str(), nullptr, nullptr);
 					glfwMaximizeWindow(pWindow);
@@ -119,14 +119,14 @@ namespace Flint
 			}
 			else
 			{
-				glfwWindowHint(GLFW_RED_BITS, mode->redBits);
-				glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
-				glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
-				glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+				glfwWindowHint(GLFW_RED_BITS, pMode->redBits);
+				glfwWindowHint(GLFW_GREEN_BITS, pMode->greenBits);
+				glfwWindowHint(GLFW_BLUE_BITS, pMode->blueBits);
+				glfwWindowHint(GLFW_REFRESH_RATE, pMode->refreshRate);
 
-				pWindow = glfwCreateWindow(mode->width, mode->height, title.c_str(), monitor, NULL);
-				mExtent.mWidth = mode->width;
-				mExtent.mHeight = mode->height;
+				pWindow = glfwCreateWindow(pMode->width, pMode->height, title.c_str(), pMonitor, NULL);
+				mExtent.mWidth = pMode->width;
+				mExtent.mHeight = pMode->height;
 			}
 
 			if (!pWindow)

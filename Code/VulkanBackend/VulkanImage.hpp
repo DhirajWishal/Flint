@@ -50,7 +50,6 @@ namespace Flint
 
 		private:
 			void CreateImage();
-			void CreateImageMemory();
 			void CreateImageView();
 
 			void GenerateDefaultMipChain();
@@ -60,8 +59,9 @@ namespace Flint
 
 		private:
 			VkImage vImage = VK_NULL_HANDLE;
-			VkDeviceMemory vImageMemory = VK_NULL_HANDLE;
 			VkImageView vImageView = VK_NULL_HANDLE;
+
+			VmaAllocation vmaAllocation = {};
 
 			mutable VkImageLayout vCurrentLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 		};

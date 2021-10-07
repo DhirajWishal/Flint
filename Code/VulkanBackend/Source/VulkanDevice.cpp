@@ -6,7 +6,6 @@
 #include "VulkanBackend/VulkanOneTimeCommandBuffer.hpp"
 #include "VulkanBackend/VulkanCommandBuffer.hpp"
 #include "VulkanBackend/VulkanCommandBufferAllocator.hpp"
-#include "VulkanBackend/VulkanSwapChain.hpp"
 #include "VulkanBackend/VulkanScreenBoundRenderTarget.hpp"
 #include "VulkanBackend/VulkanOffScreenRenderTarget.hpp"
 #include "VulkanBackend/VulkanBuffer.hpp"
@@ -123,7 +122,7 @@ namespace Flint
 		{
 			OPTICK_EVENT();
 
-			const VulkanDisplay& vDisplay = pDisplay->StaticCast<VulkanDisplay>();
+			VulkanDisplay const& vDisplay = pDisplay->StaticCast<VulkanDisplay>();
 			VkBool32 isSupported = VK_FALSE;
 			FLINT_VK_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(GetPhysicalDevice(), GetQueue().mGraphicsFamily.value(), vDisplay.GetSurface(), &isSupported));
 			return isSupported == VK_TRUE;
@@ -742,9 +741,9 @@ namespace Flint
 			VmaVulkanFunctions functions = {};
 			functions.vkAllocateMemory = GetDeviceTable().vkAllocateMemory;
 			functions.vkBindBufferMemory = GetDeviceTable().vkBindBufferMemory;
-			functions.vkBindBufferMemory2KHR = GetDeviceTable().vkBindBufferMemory2KHR;
+			functions.vkBindBufferMemory2KHR = GetDeviceTable().vkBindBufferMemory2;
 			functions.vkBindImageMemory = GetDeviceTable().vkBindImageMemory;
-			functions.vkBindImageMemory2KHR = GetDeviceTable().vkBindImageMemory2KHR;
+			functions.vkBindImageMemory2KHR = GetDeviceTable().vkBindImageMemory2;
 			functions.vkCmdCopyBuffer = GetDeviceTable().vkCmdCopyBuffer;
 			functions.vkCreateBuffer = GetDeviceTable().vkCreateBuffer;
 			functions.vkCreateImage = GetDeviceTable().vkCreateImage;
@@ -753,11 +752,11 @@ namespace Flint
 			functions.vkFlushMappedMemoryRanges = GetDeviceTable().vkFlushMappedMemoryRanges;
 			functions.vkFreeMemory = GetDeviceTable().vkFreeMemory;
 			functions.vkGetBufferMemoryRequirements = GetDeviceTable().vkGetBufferMemoryRequirements;
-			functions.vkGetBufferMemoryRequirements2KHR = GetDeviceTable().vkGetBufferMemoryRequirements2KHR;
+			functions.vkGetBufferMemoryRequirements2KHR = GetDeviceTable().vkGetBufferMemoryRequirements2;
 			functions.vkGetImageMemoryRequirements = GetDeviceTable().vkGetImageMemoryRequirements;
-			functions.vkGetImageMemoryRequirements2KHR = GetDeviceTable().vkGetImageMemoryRequirements2KHR;
+			functions.vkGetImageMemoryRequirements2KHR = GetDeviceTable().vkGetImageMemoryRequirements2;
 			functions.vkGetPhysicalDeviceMemoryProperties = vkGetPhysicalDeviceMemoryProperties;
-			functions.vkGetPhysicalDeviceMemoryProperties2KHR = vkGetPhysicalDeviceMemoryProperties2KHR;
+			functions.vkGetPhysicalDeviceMemoryProperties2KHR = vkGetPhysicalDeviceMemoryProperties2;
 			functions.vkGetPhysicalDeviceProperties = vkGetPhysicalDeviceProperties;
 			functions.vkInvalidateMappedMemoryRanges = GetDeviceTable().vkInvalidateMappedMemoryRanges;
 			functions.vkMapMemory = GetDeviceTable().vkMapMemory;
@@ -772,7 +771,7 @@ namespace Flint
 			vmaCreateInfo.instance = pInstance->StaticCast<VulkanInstance>().GetInstance();
 			vmaCreateInfo.physicalDevice = GetPhysicalDevice();
 			vmaCreateInfo.device = GetLogicalDevice();
-			vmaCreateInfo.vulkanApiVersion = VK_VERSION_1_2;
+			vmaCreateInfo.vulkanApiVersion = VK_API_VERSION_1_2;
 
 			VmaVulkanFunctions functions = GetVulkanFunctions();
 			vmaCreateInfo.pVulkanFunctions = &functions;

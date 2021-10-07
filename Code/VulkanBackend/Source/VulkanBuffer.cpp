@@ -17,27 +17,32 @@ namespace Flint
 			{
 			case Flint::BufferType::Staging:
 				vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT;
-				vMemoryProperties = VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
+
+				vmaMemoryUsage = VmaMemoryUsage::VMA_MEMORY_USAGE_CPU_TO_GPU;
 				break;
 
 			case Flint::BufferType::Vertex:
 				vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-				vMemoryProperties = VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+
+				vmaMemoryUsage = VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY;
 				break;
 
 			case Flint::BufferType::Index:
 				vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
-				vMemoryProperties = VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+
+				vmaMemoryUsage = VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY;
 				break;
 
 			case Flint::BufferType::Uniform:
 				vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
-				vMemoryProperties = VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
+
+				vmaMemoryUsage = VmaMemoryUsage::VMA_MEMORY_USAGE_CPU_TO_GPU;
 				break;
 
 			case Flint::BufferType::Storage:
 				vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
-				vMemoryProperties = VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
+
+				vmaMemoryUsage = VmaMemoryUsage::VMA_MEMORY_USAGE_CPU_TO_GPU;
 				break;
 
 			default:
@@ -50,15 +55,15 @@ namespace Flint
 				break;
 
 			case Flint::BufferMemoryProfile::CPUOnly:
-				vMemoryProperties = VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
+				vmaMemoryUsage = VmaMemoryUsage::VMA_MEMORY_USAGE_CPU_ONLY;
 				break;
 
 			case Flint::BufferMemoryProfile::TransferFriendly:
-				vMemoryProperties = VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+				vmaMemoryUsage = VmaMemoryUsage::VMA_MEMORY_USAGE_CPU_TO_GPU;
 				break;
 
 			case Flint::BufferMemoryProfile::DeviceOnly:
-				vMemoryProperties = VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+				vmaMemoryUsage = VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY;
 				break;
 
 			default:
@@ -66,7 +71,6 @@ namespace Flint
 			}
 
 			CreateBuffer();
-			CreateBufferMemory();
 		}
 
 		void VulkanBuffer::Resize(const UI64 size, const BufferResizeMode mode)
@@ -86,7 +90,6 @@ namespace Flint
 
 				// Create the new buffer.
 				CreateBuffer();
-				CreateBufferMemory();
 
 				// Copy buffer content.
 				CopyFromBuffer(pStagingBuffer.get(), oldSize, 0, 0);
@@ -100,7 +103,6 @@ namespace Flint
 
 				// Create the new buffer.
 				CreateBuffer();
-				CreateBufferMemory();
 			}
 			else
 				throw std::invalid_argument("Buffer copy mode is invalid or undefined!");
@@ -124,18 +126,16 @@ namespace Flint
 		{
 			OPTICK_EVENT();
 
-			// Check if the buffer is mappable.
-			if (!(vMemoryProperties & VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT))
-				throw backend_error("Cannot map memory! The buffer's memory property isn't CPUOnly or TransferFriendly.");
-
 			if (size + offset > mSize)
 				throw std::range_error("Submitted size and offset goes beyond the buffer dimensions!");
+
 			else if (size <= 0)
 				throw std::range_error("Submitted size is invalid!");
 
 			void* pDataStore = nullptr;
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkMapMemory(vDevice.GetLogicalDevice(), vMemory, offset, size, 0, &pDataStore));
+			FLINT_VK_ASSERT(vmaMapMemory(vDevice.GetVmaAllocator(), vmaAllocation, &pDataStore));
+
 
 			return pDataStore;
 		}
@@ -145,14 +145,13 @@ namespace Flint
 			OPTICK_EVENT();
 
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-			vDevice.GetDeviceTable().vkUnmapMemory(vDevice.GetLogicalDevice(), vMemory);
+			vmaUnmapMemory(vDevice.GetVmaAllocator(), vmaAllocation);
 		}
 
 		void VulkanBuffer::Terminate()
 		{
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-			vDevice.GetDeviceTable().vkDestroyBuffer(vDevice.GetLogicalDevice(), vBuffer, nullptr);
-			vDevice.GetDeviceTable().vkFreeMemory(vDevice.GetLogicalDevice(), vMemory, nullptr);
+			vmaDestroyBuffer(vDevice.GetVmaAllocator(), vBuffer, vmaAllocation);
 
 			bIsTerminated = true;
 		}
@@ -171,37 +170,10 @@ namespace Flint
 			vCreateInfo.size = static_cast<UI32>(mSize);
 			vCreateInfo.usage = vBufferUsage;
 
-			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateBuffer(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vBuffer));
-		}
+			VmaAllocationCreateInfo vmaAllocationCreateInfo = {};
+			vmaAllocationCreateInfo.usage = vmaMemoryUsage;
 
-		void VulkanBuffer::CreateBufferMemory()
-		{
-			OPTICK_EVENT();
-
-			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-
-			VkMemoryRequirements vMR = {};
-			vDevice.GetDeviceTable().vkGetBufferMemoryRequirements(vDevice.GetLogicalDevice(), vBuffer, &vMR);
-
-			VkPhysicalDeviceMemoryProperties vMP = {};
-			vkGetPhysicalDeviceMemoryProperties(vDevice.GetPhysicalDevice(), &vMP);
-
-			VkMemoryAllocateInfo vAI = {};
-			vAI.sType = VkStructureType::VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-			vAI.allocationSize = vMR.size;
-
-			for (UI32 i = 0; i < vMP.memoryTypeCount; i++)
-			{
-				if ((vMR.memoryTypeBits & (1 << i)) && (vMP.memoryTypes[i].propertyFlags & vMemoryProperties) == vMemoryProperties)
-				{
-					vAI.memoryTypeIndex = i;
-					break;
-				}
-			}
-
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkAllocateMemory(vDevice.GetLogicalDevice(), &vAI, nullptr, &vMemory));
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkBindBufferMemory(vDevice.GetLogicalDevice(), vBuffer, vMemory, 0));
+			FLINT_VK_ASSERT(vmaCreateBuffer(pDevice->StaticCast<VulkanDevice>().GetVmaAllocator(), &vCreateInfo, &vmaAllocationCreateInfo, &vBuffer, &vmaAllocation, nullptr));
 		}
 	}
 }

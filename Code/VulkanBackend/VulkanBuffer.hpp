@@ -24,18 +24,16 @@ namespace Flint
 
 			VkBuffer GetBuffer() const { return vBuffer; }
 			const VkBuffer* GetBufferAddress() const { return &vBuffer; }
-			VkDeviceMemory GetMemory() const { return vMemory; }
 
 		private:
 			void CreateBuffer();
-			void CreateBufferMemory();
 
 		private:
 			VkBuffer vBuffer = VK_NULL_HANDLE;
-			VkDeviceMemory vMemory = VK_NULL_HANDLE;
+			VmaAllocation vmaAllocation = {};
 
 			VkBufferUsageFlags vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_FLAG_BITS_MAX_ENUM;
-			VkMemoryPropertyFlags vMemoryProperties = VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_FLAG_BITS_MAX_ENUM;
+			VmaMemoryUsage vmaMemoryUsage = VmaMemoryUsage::VMA_MEMORY_USAGE_MAX_ENUM;
 		};
 	}
 }
