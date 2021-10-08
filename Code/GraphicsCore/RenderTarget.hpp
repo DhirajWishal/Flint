@@ -30,10 +30,10 @@ namespace Flint
 		/**
 		 * Default constructor.
 		 *
-		 * @param pDevice: The device pointer.
-		 * @param extent: The render target extent.
-		 * @param bufferCount: The frame buffer count.
-		 * @param imageAttachments: The image attachments used by the render target.
+		 * @param pDevice The device pointer.
+		 * @param extent The render target extent.
+		 * @param bufferCount The frame buffer count.
+		 * @param imageAttachments The image attachments used by the render target.
 		 */
 		RenderTarget(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments);
 

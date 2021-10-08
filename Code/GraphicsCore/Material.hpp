@@ -18,7 +18,7 @@ namespace Flint
 		/**
 		 * Add a material property.
 		 *
-		 * @param pProperty: The property to add.
+		 * @param pProperty The property to add.
 		 */
 		void AddProperty(std::shared_ptr<MaterialProperties::Property>&& pProperty) { pProperties.push_back(std::move(pProperty)); }
 

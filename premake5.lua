@@ -92,6 +92,7 @@ workspace "Flint"
 			include "Demos/Tests/ImageBasedLighting/ImageBasedLighting.lua"
 			include "Demos/Tests/Sponza/Sponza.lua"
 			include "Demos/Tests/SmartShaders/SmartShaders.lua"
+			include "Demos/Tests/ScreenSpaceReflections/ScreenSpaceReflections.lua"
 		
 		group ""
 	group ""

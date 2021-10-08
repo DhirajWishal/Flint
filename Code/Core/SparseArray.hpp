@@ -21,7 +21,7 @@ namespace Flint
 		/**
 		 * Add a new element to the array.
 		 *
-		 * @param data: The data to add.
+		 * @param data The data to add.
 		 * @return The data index.
 		 */
 		const UI32 push_back(const Type& data)
@@ -33,7 +33,7 @@ namespace Flint
 		/**
 		 * Add a new element to the array.
 		 *
-		 * @param data: The data to add.
+		 * @param data The data to add.
 		 * @return The data index.
 		 */
 		const UI32 push_back(Type&& data)
@@ -45,7 +45,7 @@ namespace Flint
 		/**
 		 * Get data from a given index.
 		 *
-		 * @param index: The index position of the data to access.
+		 * @param index The index position of the data to access.
 		 * @return The type reference.
 		 */
 		Type& at(const UI32 index) { return mEntries[index]; }
@@ -53,7 +53,7 @@ namespace Flint
 		/**
 		 * Get data from a given index.
 		 *
-		 * @param index: The index position of the data to access.
+		 * @param index The index position of the data to access.
 		 * @return The const type.
 		 */
 		const Type at(const UI32 index) const { return mEntries[index]; }
@@ -62,7 +62,7 @@ namespace Flint
 		 * Remove an element form the array.
 		 * This does not necessarily remove the entry from the array, but will call its destructor.
 		 *
-		 * @param index: The index of the element to remove.
+		 * @param index The index of the element to remove.
 		 */
 		void remove(const UI32 index) { std::_Destroy_in_place(at(index)); }
 
@@ -119,7 +119,7 @@ namespace Flint
 		/**
 		 * Subscript operator.
 		 * 
-		 * @param index: The index of the element.
+		 * @param index The index of the element.
 		 * @return The element.
 		 */
 		Type& operator[](const UI32 index)
@@ -130,7 +130,7 @@ namespace Flint
 		/**
 		 * Subscript operator.
 		 *
-		 * @param index: The index of the element.
+		 * @param index The index of the element.
 		 * @return The element.
 		 */
 		const Type operator[](const UI32 index) const

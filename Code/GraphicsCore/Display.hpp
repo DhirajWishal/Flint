@@ -127,16 +127,16 @@ namespace Flint
 		/**
 		 * Construct the button event using its action and special character.
 		 *
-		 * @param action: The action of the event.
-		 * @param special: The special character of the event.
+		 * @param action The action of the event.
+		 * @param special The special character of the event.
 		 */
 		ButtonEvent(EventAction action, SpecialCharacter special) : mAction(action), mSpecialCharacter(special) {}
 
 		/**
 		 * Activate the event.
 		 *
-		 * @param action: The action of the event.
-		 * @param special: The special character of th event.
+		 * @param action The action of the event.
+		 * @param special The special character of th event.
 		 */
 		void Activate(EventAction action, SpecialCharacter special) { mAction = action, mSpecialCharacter = special; }
 
@@ -196,10 +196,10 @@ namespace Flint
 		/**
 		 * Default constructor.
 		 *
-		 * @param pInstance: The instance pointer.
-		 * @param extent: The display extent. If set to (0, 0), the window will be opened in full screen mode. If supplied with an exponentially large number, the window will open in
+		 * @param pInstance The instance pointer.
+		 * @param extent The display extent. If set to (0, 0), the window will be opened in full screen mode. If supplied with an exponentially large number, the window will open in
 		 *				  maximized mode.
-		 * @param title: The display title.
+		 * @param title The display title.
 		 */
 		Display(const std::shared_ptr<Instance>& pInstance, const FBox2D& extent, const std::string& title);
 
@@ -213,8 +213,8 @@ namespace Flint
 		 * Find the best buffer count for the swap chain.
 		 * If 0 is passed (by default), the minimum supported buffer count is given. If UI32_MAX is give, the maximum supported is given.
 		 *
-		 * @param device: The device object to check with.
-		 * @param count: The count that needs to be checked. Default is 0.
+		 * @param device The device object to check with.
+		 * @param count The count that needs to be checked. Default is 0.
 		 * @return The best buffer count integer.
 		 */
 		virtual UI32 FindBestBufferCount(const Device* pDevice, const UI32 count = 0) = 0;
@@ -222,7 +222,7 @@ namespace Flint
 		/**
 		 * Get the best swap chain format.
 		 * 
-		 * @param pDevice: The device pointer.
+		 * @param pDevice The device pointer.
 		 * @return The swap chain image format.
 		 */
 		virtual PixelFormat GetBestSwapChainFormat(const Device* pDevice) = 0;
@@ -263,14 +263,14 @@ namespace Flint
 		/**
 		 * Set a new window title.
 		 *
-		 * @param title: The window title to set.
+		 * @param title The window title to set.
 		 */
 		virtual void SetTitle(const std::string& title) = 0;
 
 		/**
 		 * Set a new extent to the window.
 		 *
-		 * @param newExtent: The new extent to set.
+		 * @param newExtent The new extent to set.
 		 */
 		virtual void SetExtent(FBox2D newExtent) = 0;
 
@@ -284,7 +284,7 @@ namespace Flint
 		/**
 		 * Get a key event from the event store.
 		 *
-		 * @param key: The key code.
+		 * @param key The key code.
 		 * @return The button event.
 		 */
 		const ButtonEvent GetKeyEvent(KeyCode key) const { return mKeyEvents[static_cast<UI8>(key)]; }
@@ -292,7 +292,7 @@ namespace Flint
 		/**
 		 * Get a mouse button event from the event store.
 		 *
-		 * @param button: The mouse button code.
+		 * @param button The mouse button code.
 		 * @return The button event.
 		 */
 		const ButtonEvent GetMouseButtonEvent(MouseButton button) const { return mMouseButtonEvents[static_cast<UI8>(button)]; }

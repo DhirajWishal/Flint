@@ -25,18 +25,18 @@ namespace Flint
 		/**
 		 * Compile the shader by loading the code from a file.
 		 * 
-		 * @param shaderFile: The shader file to compile.
-		 * @param codeType: The shader file type. Currently only supports GLSL.
-		 * @param shaderType: The type of the shader.
+		 * @param shaderFile The shader file to compile.
+		 * @param codeType The shader file type. Currently only supports GLSL.
+		 * @param shaderType The type of the shader.
 		 */
 		ShaderCompiler(const std::filesystem::path& shaderFile, const ShaderCodeType codeType, const ShaderType shaderType);
 
 		/**
 		 * Compile the shader using a high level shader code.
 		 *
-		 * @param shaderCode: The shader code to compile.
-		 * @param codeType: The shader file type. Currently only supports GLSL.
-		 * @param shaderType: The type of the shader.
+		 * @param shaderCode The shader code to compile.
+		 * @param codeType The shader file type. Currently only supports GLSL.
+		 * @param shaderType The type of the shader.
 		 */
 		ShaderCompiler(const std::string& shaderCode, const ShaderCodeType codeType, const ShaderType shaderType);
 
@@ -50,7 +50,7 @@ namespace Flint
 		/**
 		 * Create the shader object using the shader code.
 		 * 
-		 * @param pDevice: The device pointer.
+		 * @param pDevice The device pointer.
 		 * @return The shader pointer.
 		 */
 		std::shared_ptr<Shader> CreateShader(const std::shared_ptr<Device>& pDevice) const;

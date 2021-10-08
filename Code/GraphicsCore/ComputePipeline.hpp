@@ -22,9 +22,9 @@ namespace Flint
 		/**
 		 * Default constructor.
 		 *
-		 * @param pDevice: The device pointer.
-		 * @param pipelineName: The name of the pipeline.
-		 * @param pComputeShader: The compute shader pointer.
+		 * @param pDevice The device pointer.
+		 * @param pipelineName The name of the pipeline.
+		 * @param pComputeShader The compute shader pointer.
 		 */
 		ComputePipeline(const std::shared_ptr<Device>& pDevice, const std::string& pipelineName, const std::shared_ptr<Shader>& pComputeShader);
 

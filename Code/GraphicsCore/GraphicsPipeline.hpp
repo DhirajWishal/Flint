@@ -197,8 +197,8 @@ namespace Flint
 	/**
 	 * Color write mask bitwise OR operator.
 	 *
-	 * @param lhs: The left hand side argument.
-	 * @param rhs: The right hand side argument.
+	 * @param lhs The left hand side argument.
+	 * @param rhs The right hand side argument.
 	 * @return The OR performed color write mask.
 	 */
 	constexpr ColorWriteMask operator|(const ColorWriteMask& lhs, const ColorWriteMask& rhs) { return static_cast<ColorWriteMask>(static_cast<UI8>(lhs) | static_cast<UI8>(rhs)); }
@@ -206,8 +206,8 @@ namespace Flint
 	/**
 	 * Color write mask bitwise And operator.
 	 *
-	 * @param lhs: The left hand side argument.
-	 * @param rhs: The right hand side argument.
+	 * @param lhs The left hand side argument.
+	 * @param rhs The right hand side argument.
 	 * @return The And performed color write mask.
 	 */
 	constexpr ColorWriteMask operator&(const ColorWriteMask& lhs, const ColorWriteMask& rhs) { return static_cast<ColorWriteMask>(static_cast<UI8>(lhs) & static_cast<UI8>(rhs)); }
@@ -287,15 +287,15 @@ namespace Flint
 		/**
 		 * Construct the pipeline using a screen bound render target.
 		 *
-		 * @param pDevice: The device pointer.
-		 * @param pipelineName: The name of the pipeline.
-		 * @param pScreenBoundRenderTarget: The screen bound render target pointer.
-		 * @param pVertexShader: The vertex shader pointer.
-		 * @param pTessellationControlShader: The tessellation control shader (optional).
-		 * @param pTessellationEvaluationShader: The tessellation evaluation shader (optional).
-		 * @param pGeometryShader: The geometry shader (optional).
-		 * @param pFragmentShader: The fragment shader (optional).
-		 * @param specification: The pipeline specification.
+		 * @param pDevice The device pointer.
+		 * @param pipelineName The name of the pipeline.
+		 * @param pScreenBoundRenderTarget The screen bound render target pointer.
+		 * @param pVertexShader The vertex shader pointer.
+		 * @param pTessellationControlShader The tessellation control shader (optional).
+		 * @param pTessellationEvaluationShader The tessellation evaluation shader (optional).
+		 * @param pGeometryShader The geometry shader (optional).
+		 * @param pFragmentShader The fragment shader (optional).
+		 * @param specification The pipeline specification.
 		 */
 		GraphicsPipeline(
 			const std::shared_ptr<Device>& pDevice,
@@ -311,15 +311,15 @@ namespace Flint
 		/**
 		 * Construct the pipeline using an off screen render target.
 		 *
-		 * @param pDevice: The device pointer.
-		 * @param pipelineName: The name of the pipeline.
-		 * @param pOffScreenRenderTarget: The off screen render target pointer.
-		 * @param pVertexShader: The vertex shader pointer.
-		 * @param pTessellationControlShader: The tessellation control shader (optional).
-		 * @param pTessellationEvaluationShader: The tessellation evaluation shader (optional).
-		 * @param pGeometryShader: The geometry shader (optional).
-		 * @param pFragmentShader: The fragment shader (optional).
-		 * @param specification: The pipeline specification.
+		 * @param pDevice The device pointer.
+		 * @param pipelineName The name of the pipeline.
+		 * @param pOffScreenRenderTarget The off screen render target pointer.
+		 * @param pVertexShader The vertex shader pointer.
+		 * @param pTessellationControlShader The tessellation control shader (optional).
+		 * @param pTessellationEvaluationShader The tessellation evaluation shader (optional).
+		 * @param pGeometryShader The geometry shader (optional).
+		 * @param pFragmentShader The fragment shader (optional).
+		 * @param specification The pipeline specification.
 		 */
 		GraphicsPipeline(
 			const std::shared_ptr<Device>& pDevice,
@@ -336,7 +336,7 @@ namespace Flint
 		 * Recreate the graphics pipeline.
 		 * This is needed once the render target is resized.
 		 *
-		 * @param pScreenBoundRenderTarget: The screen bound render target pointer.
+		 * @param pScreenBoundRenderTarget The screen bound render target pointer.
 		 */
 		virtual void Recreate(const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget) = 0;
 

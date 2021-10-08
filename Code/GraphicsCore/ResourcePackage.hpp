@@ -53,9 +53,9 @@ namespace Flint
 		/**
 		 * Construct the package.
 		 *
-		 * @param pPackager: The packager to which this is bound to.
-		 * @param bufferBindings: The buffer bindings.
-		 * @param imageBindings: The image bindings.
+		 * @param pPackager The packager to which this is bound to.
+		 * @param bufferBindings The buffer bindings.
+		 * @param imageBindings The image bindings.
 		 */
 		ResourcePackage(const std::shared_ptr<ResourcePackager>& pPackager, const std::vector<UI32>& bufferBindings, const std::vector<UI32>& imageBindings);
 
@@ -67,18 +67,18 @@ namespace Flint
 		/**
 		 * Bind resources to the package.
 		 *
-		 * @param binding: The binding to bind to.
-		 * @param pBuffer: The buffer pointer to bind.
-		 * @param offset: The offset of the buffer to bind. Default is 0.
+		 * @param binding The binding to bind to.
+		 * @param pBuffer The buffer pointer to bind.
+		 * @param offset The offset of the buffer to bind. Default is 0.
 		 */
 		void BindResource(const UI32 binding, const std::shared_ptr<Buffer>& pBuffer, const UI64 offset = 0);
 
 		/**
 		 * Bind resources to the package.
 		 *
-		 * @param binding: The binding to bind to.
-		 * @param pImageSampler: The image sampler pointer.
-		 * @param pImage: The image pointer.
+		 * @param binding The binding to bind to.
+		 * @param pImageSampler The image sampler pointer.
+		 * @param pImage The image pointer.
 		 */
 		void BindResource(const UI32 binding, const std::shared_ptr<ImageSampler>& pImageSampler, const std::shared_ptr<Image>& pImage, const ImageUsage usage = ImageUsage::Graphics);
 
@@ -103,7 +103,7 @@ namespace Flint
 		/**
 		 * Get a buffer bindings.
 		 *
-		 * @param binding: The binding of the buffer binding.
+		 * @param binding The binding of the buffer binding.
 		 * @return The buffer bindings.
 		 */
 		const std::vector<BufferBinding> GetBufferBindings(const UI32 binding) const;
@@ -118,7 +118,7 @@ namespace Flint
 		/**
 		 * Get a image bindings.
 		 *
-		 * @param binding: The binding of the image binding.
+		 * @param binding The binding of the image binding.
 		 * @return The image bindings.
 		 */
 		const std::vector<ImageBinding> GetImageBindings(const UI32 binding) const;

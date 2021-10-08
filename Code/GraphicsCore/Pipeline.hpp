@@ -23,8 +23,8 @@ namespace Flint
 		/**
 		 * Default constructor.
 		 *
-		 * @param pDevice: The device pointer.
-		 * @param pipelineName: The name of the pipeline. This name is given to the pipeline cache object created upon destruction. Make sure that this name is unique.
+		 * @param pDevice The device pointer.
+		 * @param pipelineName The name of the pipeline. This name is given to the pipeline cache object created upon destruction. Make sure that this name is unique.
 		 *	If you wish to not save cache externally, keep this field empty ("").
 		 */
 		Pipeline(const std::shared_ptr<Device>& pDevice, const std::string& pipelineName) : DeviceBoundObject(pDevice), mPipelineName(pipelineName) {}
@@ -46,8 +46,8 @@ namespace Flint
 		 * Write the pipeline cache data to an external file.
 		 * If the file does not exist, this creates a new file. The file name is "<pipeline name>.fpc". The FPC extension is Flint Pipeline Cache.
 		 *
-		 * @param size: The size of the data block.
-		 * @param pData: The data to be written.
+		 * @param size The size of the data block.
+		 * @param pData The data to be written.
 		 */
 		void WriteDataToCacheFile(const UI64 size, unsigned char* pData) const;
 
@@ -62,7 +62,7 @@ namespace Flint
 		/**
 		 * Create a new resource package.
 		 * 
-		 * @param index: The set index.
+		 * @param index The set index.
 		 * @return The package.
 		 */
 		std::shared_ptr<ResourcePackage> CreateResourcePackage(const UI64 index);

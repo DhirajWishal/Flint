@@ -21,17 +21,17 @@ namespace Flint
 		/**
 		 * Construct a primary command buffer allocator.
 		 * 
-		 * @param pDevice: The device pointer.
-		 * @param bufferCount: The number of buffers to allocate.
+		 * @param pDevice The device pointer.
+		 * @param bufferCount The number of buffers to allocate.
 		 */
 		CommandBufferAllocator(const std::shared_ptr<Device>& pDevice, const UI32 bufferCount);
 
 		/**
 		 * Construct a secondary command buffer allocator.
 		 *
-		 * @param pDevice: The device pointer.
-		 * @param pParent: The parent command buffer allocator.
-		 * @param bufferCount: The number of buffers to allocate.
+		 * @param pDevice The device pointer.
+		 * @param pParent The parent command buffer allocator.
+		 * @param bufferCount The number of buffers to allocate.
 		 */
 		CommandBufferAllocator(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<CommandBufferAllocator>& pParent, const UI32 bufferCount);
 
@@ -74,7 +74,7 @@ namespace Flint
 		/**
 		 * Get a command buffer from the allocator.
 		 * 
-		 * @param index: The index of the command buffer.
+		 * @param index The index of the command buffer.
 		 * @return The command buffer pointer.
 		 */
 		const std::shared_ptr<CommandBuffer> GetCommandBuffer(const UI64 index) const { return pCommandBuffers[index]; }
@@ -83,7 +83,7 @@ namespace Flint
 		/**
 		 * Flag the command buffer as terminated.
 		 * 
-		 * @param index: The command buffer index.
+		 * @param index The command buffer index.
 		 */
 		void FlagCommandBufferAsTerminated(UI32 index) { pCommandBuffers[index]->Terminate(); }
 

@@ -50,7 +50,7 @@ namespace Flint
 		/**
 		 * Handle mouse position.
 		 *
-		 * @param position: The mouse position.
+		 * @param position The mouse position.
 		 */
 		void MousePosition(FExtent2D<float> position);
 
@@ -75,7 +75,7 @@ namespace Flint
 		/**
 		 * Set the camera aspect ratio.
 		 *
-		 * @param extent: The display extent.
+		 * @param extent The display extent.
 		 */
 		void SetAspectRatio(FBox2D extent);
 
@@ -90,7 +90,7 @@ namespace Flint
 		/**
 		 * Set the camera position.
 		 *
-		 * @param position: The camera position.
+		 * @param position The camera position.
 		 */
 		void SetPosition(glm::vec3 position) { mPosition = position; }
 
@@ -111,8 +111,8 @@ namespace Flint
 		/**
 		 * Set the camera's range (far and near plane).
 		 *
-		 * @param near: The near plane.
-		 * @param far: The far plane.
+		 * @param near The near plane.
+		 * @param far The far plane.
 		 */
 		void SetCameraRange(float near, float far) { mCameraNear = near, mCameraFar = far; }
 
@@ -133,7 +133,7 @@ namespace Flint
 		/**
 		 * Set the camera view matrix.
 		 *
-		 * @param mat: The matrix to set.
+		 * @param mat The matrix to set.
 		 */
 		void SetViewMatrix(glm::mat4 mat) { viewMatrix = mat; }
 

@@ -36,9 +36,9 @@ namespace Flint
 		 * Construct the shader using a shader asset file.
 		 * This asset file is recommended to be a SPIRV binary.
 		 *
-		 * @param pDevice: The device pointer.
-		 * @param type: The shader type.
-		 * @param path: The file path to the asset file.
+		 * @param pDevice The device pointer.
+		 * @param type The shader type.
+		 * @param path The file path to the asset file.
 		 */
 		Shader(const std::shared_ptr<Device>& pDevice, const ShaderType type, const std::filesystem::path& path);
 
@@ -46,9 +46,9 @@ namespace Flint
 		 * Construct the shader using a shader code.
 		 * This code can be of any type.
 		 *
-		 * @param pDevice: The device pointer.
-		 * @param type: The shader type.
-		 * @param code: The shader code as a vector of UI32.
+		 * @param pDevice The device pointer.
+		 * @param type The shader type.
+		 * @param code The shader code as a vector of UI32.
 		 */
 		Shader(const std::shared_ptr<Device>& pDevice, const ShaderType type, const std::vector<UI32>& code);
 
@@ -56,9 +56,9 @@ namespace Flint
 		 * Construct the shader using a shader code.
 		 * This code can be of any type.
 		 *
-		 * @param pDevice: The device pointer.
-		 * @param type: The shader type.
-		 * @param code: The shader code as a string.
+		 * @param pDevice The device pointer.
+		 * @param type The shader type.
+		 * @param code The shader code as a string.
 		 */
 		Shader(const std::shared_ptr<Device>& pDevice, const ShaderType type, const std::string& code);
 
@@ -66,28 +66,28 @@ namespace Flint
 		 * Create the shader code cache.
 		 * Code cache is easy to load and is much more efficient.
 		 *
-		 * @param path: The path to save the shader code. Make sure to provide the file name!
+		 * @param path The path to save the shader code. Make sure to provide the file name!
 		 */
 		virtual void CreateCache(const std::filesystem::path& path) const = 0;
 
 		/**
 		 * Reload the shader using the shader file.
 		 *
-		 * @param path: The shader file path.
+		 * @param path The shader file path.
 		 */
 		virtual void Reload(const std::filesystem::path& path) = 0;
 
 		/**
 		 * Reload the shader using the shader code vector.
 		 *
-		 * @param code: The shader code.
+		 * @param code The shader code.
 		 */
 		virtual void Reload(const std::vector<UI32>& code) = 0;
 
 		/**
 		 * Reload the shader using the shader code string.
 		 *
-		 * @param code: The shader code.
+		 * @param code The shader code.
 		 */
 		virtual void Reload(const std::string& code) = 0;
 

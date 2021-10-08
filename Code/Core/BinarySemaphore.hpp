@@ -19,7 +19,7 @@ namespace Flint
 		/**
 		 * Copy constructor.
 		 *
-		 * @param other: The other semaphore.
+		 * @param other The other semaphore.
 		 */
 		BinarySemaphore(const BinarySemaphore& other);
 

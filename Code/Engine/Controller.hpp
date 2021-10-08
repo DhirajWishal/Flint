@@ -29,8 +29,8 @@ namespace Flint
 		/**
 		 * Construct the controller.
 		 * 
-		 * @param identifier: The controller identifier.
-		 * @param pClientInterface: The client interface pointer which created the controller.
+		 * @param identifier The controller identifier.
+		 * @param pClientInterface The client interface pointer which created the controller.
 		 */
 		Controller(const std::string_view& identifier, ClientInterface* pClientInterface) : mIdentifier(identifier), pClientInterface(pClientInterface) {}
 
@@ -44,8 +44,8 @@ namespace Flint
 		/**
 		 * On update function.
 		 * 
-		 * @param specification: The update specification.
-		 * @param delta: The time delta.
+		 * @param specification The update specification.
+		 * @param delta The time delta.
 		 */
 		virtual void OnUpdate(const UI64 delta, const UpdateSpecification specification) = 0;
 

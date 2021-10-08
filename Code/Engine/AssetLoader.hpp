@@ -76,9 +76,9 @@ namespace Flint
 		/**
 		 * Construct the loader.
 		 *
-		 * @param pGeometryStore: The geometry store pointer to store the geometry data to.
-		 * @param assetPath: The asset file to load.
-		 * @param vertexDescriptor: The vertex descriptor describing the vertex attributes and loading order.
+		 * @param pGeometryStore The geometry store pointer to store the geometry data to.
+		 * @param assetPath The asset file to load.
+		 * @param vertexDescriptor The vertex descriptor describing the vertex attributes and loading order.
 		 */
 		AssetLoader(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::filesystem::path& assetPath, const VertexDescriptor& vertexDescriptor);
 

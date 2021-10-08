@@ -46,23 +46,23 @@ namespace Flint
 		/**
 		 * Store a component in the store.
 		 *
-		 * @param identifier: The component identifier.
-		 * @param data: The data to be stored.
+		 * @param identifier The component identifier.
+		 * @param data The data to be stored.
 		 */
 		void Store(ComponentIdentifier identifier, const Type& data) { mComponents[identifier] = data; }
 
 		/**
 		 * Store a component in the store.
 		 *
-		 * @param identifier: The component identifier.
-		 * @param data: The data to be stored.
+		 * @param identifier The component identifier.
+		 * @param data The data to be stored.
 		 */
 		void Store(ComponentIdentifier identifier, Type&& data) { mComponents[identifier] = std::move(data); }
 
 		/**
 		 * Load a component from the store.
 		 *
-		 * @param identifier: THe component's identifier.
+		 * @param identifier THe component's identifier.
 		 * @return The type reference.
 		 */
 		Type& Load(ComponentIdentifier identifier) { return mComponents.At(identifier); }
@@ -70,7 +70,7 @@ namespace Flint
 		/**
 		 * Load a component from the store.
 		 *
-		 * @param identifier: THe component's identifier.
+		 * @param identifier THe component's identifier.
 		 * @return The const type.
 		 */
 		const Type Load(ComponentIdentifier identifier) const { return mComponents.At(identifier); }
@@ -78,14 +78,14 @@ namespace Flint
 		/**
 		 * Remove an component from the store.
 		 *
-		 * @param identifier: The identifier of the component to remove.
+		 * @param identifier The identifier of the component to remove.
 		 */
 		void Remove(ComponentIdentifier identifier) { mComponents.Remove(identifier); }
 
 		/**
 		 * Check if a component is present.
 		 *
-		 * @param identifier: The identifier of the component.
+		 * @param identifier The identifier of the component.
 		 * @return The boolean value.
 		 */
 		const bool IsPresent(ComponentIdentifier identifier) const { return mComponents.Find(identifier) != mComponents.end(); }

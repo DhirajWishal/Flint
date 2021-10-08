@@ -17,8 +17,8 @@ namespace Flint
 		/**
 		 * Default constructor.
 		 *
-		 * @param pDevice: The device pointer.
-		 * @param specification: The sampler specification.
+		 * @param pDevice The device pointer.
+		 * @param specification The sampler specification.
 		 */
 		ImageSampler(const std::shared_ptr<Device>& pDevice, const ImageSamplerSpecification& specification) : DeviceBoundObject(pDevice), mSpecification(specification) {}
 

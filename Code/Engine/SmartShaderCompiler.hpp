@@ -22,25 +22,25 @@ namespace Flint
 		/**
 		 * Add a given input attribute type.
 		 *
-		 * @param type: The attribute type.
-		 * @param location: The location in the shader layout.
+		 * @param type The attribute type.
+		 * @param location The location in the shader layout.
 		 */
 		void AddInput(const InputAttributeType type, const UI32 location);
 
 		/**
 		 * Add a given output attribute type.
 		 *
-		 * @param type: The attribute type.
-		 * @param location: The location in the shader layout.
+		 * @param type The attribute type.
+		 * @param location The location in the shader layout.
 		 */
 		void AddOutput(const InputAttributeType type, const UI32 location);
 
 		/**
 		 * Add a uniform to the shader.
 		 *
-		 * @param type: The shader type.
-		 * @param setIndex: The set index of the uniform.
-		 * @param binding: The resource binding.
+		 * @param type The shader type.
+		 * @param setIndex The set index of the uniform.
+		 * @param binding The resource binding.
 		 */
 		void AddUniform(const ShaderResourceType type, const UI32 setIndex, const UI32 binding);
 

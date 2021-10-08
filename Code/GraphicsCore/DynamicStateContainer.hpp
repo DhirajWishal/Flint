@@ -24,8 +24,8 @@ namespace Flint
 	/**
 	 * Bitwise OR operator for the dynamic state flags.
 	 *
-	 * @param lhs: The lhs argument.
-	 * @param rhs: The rhs argument.
+	 * @param lhs The lhs argument.
+	 * @param rhs The rhs argument.
 	 * @return The result.
 	 */
 	constexpr DynamicStateFlags operator|(const DynamicStateFlags& lhs, const DynamicStateFlags& rhs)
@@ -36,8 +36,8 @@ namespace Flint
 	/**
 	 * Bitwise And operator for the dynamic state flags.
 	 *
-	 * @param lhs: The lhs argument.
-	 * @param rhs: The rhs argument.
+	 * @param lhs The lhs argument.
+	 * @param rhs The rhs argument.
 	 * @return The result.
 	 */
 	constexpr bool operator&(const DynamicStateFlags& lhs, const DynamicStateFlags& rhs)
@@ -176,8 +176,8 @@ namespace Flint
 		/**
 		 * Set a viewport to the container.
 		 *
-		 * @param extent: The extent of the viewport.
-		 * @param depth: The viewport depth.
+		 * @param extent The extent of the viewport.
+		 * @param depth The viewport depth.
 		 * @pram offset: The viewport offset.
 		 */
 		void SetViewPort(const FExtent2D<float>& extent, const FExtent2D<float>& depth, const FExtent2D<float>& offset);
@@ -185,48 +185,48 @@ namespace Flint
 		/**
 		 * Set a scissor to the container.
 		 *
-		 * @param extent: The scissor extent.
-		 * @param offset: The scissor offset.
+		 * @param extent The scissor extent.
+		 * @param offset The scissor offset.
 		 */
 		void SetScissor(const FBox2D& extent, const FBox2D& offset);
 
 		/**
 		 * Set a line width to the container.
 		 *
-		 * @param width: The line width in float.
+		 * @param width The line width in float.
 		 */
 		void SetLineWidth(const float width);
 
 		/**
 		 * Set depth bias to the container.
 		 *
-		 * @param biasFactor: The depth bias factor.
-		 * @param clampFactor: The depth bias clamp factor.
-		 * @param slopeFacror: The depth bias slope factor.
+		 * @param biasFactor The depth bias factor.
+		 * @param clampFactor The depth bias clamp factor.
+		 * @param slopeFacror The depth bias slope factor.
 		 */
 		void SetDepthBias(const float biasFactor, const float clampFactor, const float slopeFactor);
 
 		/**
 		 * Set blend constants to the container.
 		 *
-		 * @param constants: The static float[4] constants.
+		 * @param constants The static float[4] constants.
 		 */
 		void SetBlendConstants(const float(&constants)[4]);
 
 		/**
 		 * Set depth bounds to the container.
 		 *
-		 * @param bounds: The depth bounds.
+		 * @param bounds The depth bounds.
 		 */
 		void SetDepthBounds(const FExtent2D<float>& bounds);
 
 		/**
 		 * Set constant data which is to be submitted to shaders.
 		 *
-		 * @param shaderType: The shader type to which the data is submitted to.
-		 * @param pData: The data pointer.
-		 * @param size: The size to be passed.
-		 * @param offset: The offset of the data. Default is 0.
+		 * @param shaderType The shader type to which the data is submitted to.
+		 * @param pData The data pointer.
+		 * @param size The size to be passed.
+		 * @param offset The offset of the data. Default is 0.
 		 */
 		void SetConstantData(const ShaderType shaderType, void* pData, const UI64 size, const UI64 offset = 0);
 

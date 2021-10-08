@@ -18,9 +18,9 @@ namespace Flint
 			/**
 			 * Construct the component.
 			 * 
-			 * @param pGraphicsDevice: The graphics device pointer.
-			 * @param extent: The extent of the display.
-			 * @param title: The title of the display.
+			 * @param pGraphicsDevice The graphics device pointer.
+			 * @param extent The extent of the display.
+			 * @param title The title of the display.
 			 */
 			ScreenBoundScene(GraphicsDevice* pGraphicsDevice, const FBox2D extent, const std::string& title);
 

@@ -73,8 +73,8 @@ namespace Flint
 		/**
 		 * Create a new component.
 		 * 
-		 * @param identifier: The component identifier string.
-		 * @param args: The component's constructor arguments.
+		 * @param identifier The component identifier string.
+		 * @param args The component's constructor arguments.
 		 * @return The component handle.
 		 */
 		template<class Type, class... Args>
@@ -90,7 +90,7 @@ namespace Flint
 		/**
 		 * Get a component from the store.
 		 * 
-		 * @param identifier: The component identifier.
+		 * @param identifier The component identifier.
 		 * @return The type pointer.
 		 */
 		template<class Type>

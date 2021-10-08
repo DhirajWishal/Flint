@@ -22,10 +22,10 @@ namespace Flint
 		/**
 		 * Load static geometry to a static model.
 		 * 
-		 * @param staticModel: The static model to load the static data to.
-		 * @param asset: The asset file to load.
-		 * @param pShader: The shader to which the asset is drawn to.
-		 * @param vertexDescriptor: The vertex descriptor specifying what to load.
+		 * @param staticModel The static model to load the static data to.
+		 * @param asset The asset file to load.
+		 * @param pShader The shader to which the asset is drawn to.
+		 * @param vertexDescriptor The vertex descriptor specifying what to load.
 		 */
 		void LoadStaticGeometry(ComponentHandle<Components::StaticModel>& staticModel, const std::filesystem::path& asset, const std::shared_ptr<Shader> pShader, const VertexDescriptor& vertexDescriptor);
 
@@ -33,7 +33,7 @@ namespace Flint
 		/**
 		 * Create a new geometry store.
 		 * 
-		 * @param inputAttributes: The input attributes of the geometry store.
+		 * @param inputAttributes The input attributes of the geometry store.
 		 */
 		void CreateNewGeometryStore(const std::vector<ShaderAttribute>& inputAttributes);
 

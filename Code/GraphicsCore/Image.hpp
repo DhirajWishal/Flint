@@ -17,15 +17,15 @@ namespace Flint
 		/**
 		 * Construct the image.
 		 *
-		 * @param pDevice: The device pointer.
-		 * @param type: The image type.
-		 * @param usage: The image usage.
-		 * @param extent: The image extent.
-		 * @param format: The image format.
-		 * @param layers: The number of layers in the image.
-		 * @param mipLevels: The mip levels.
-		 * @param pImageData: The image data pointer to load data from.
-		 * @param sampleCount: The multi sample count to use.
+		 * @param pDevice The device pointer.
+		 * @param type The image type.
+		 * @param usage The image usage.
+		 * @param extent The image extent.
+		 * @param format The image format.
+		 * @param layers The number of layers in the image.
+		 * @param mipLevels The mip levels.
+		 * @param pImageData The image data pointer to load data from.
+		 * @param sampleCount The multi sample count to use.
 		 */
 		Image(const std::shared_ptr<Device>& pDevice, const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const UI8 layers, const UI32 mipLevels, const void* pImageData, const MultiSampleCount sampleCount = MultiSampleCount::One);
 
@@ -45,7 +45,7 @@ namespace Flint
 		 * Get the value of a single pixel.
 		 *
 		 * @tparam Type: The type of the pixel.
-		 * @param position: The position of the pixel.
+		 * @param position The position of the pixel.
 		 * @return The pixel data.
 		 */
 		template<class Type>
@@ -111,7 +111,7 @@ namespace Flint
 		/**
 		 * Get the best mip levels for an image.
 		 * 
-		 * @param extent: The extent of the image.
+		 * @param extent The extent of the image.
 		 * @return The mip levels.
 		 */
 		static UI32 GetBestMipLevels(const FBox3D extent);

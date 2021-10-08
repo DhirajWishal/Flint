@@ -23,10 +23,10 @@ namespace Flint
 		/**
 		 * Construct the geometry store.
 		 *
-		 * @param pDevice: The device pointer.
-		 * @param vertexAttributes: The vertex attributes of the geometry.
-		 * @param indexSize: The size of a single index in bytes.
-		 * @param profile: The memory profile of the buffer. Default is BufferMemoryProfile::Automatic.
+		 * @param pDevice The device pointer.
+		 * @param vertexAttributes The vertex attributes of the geometry.
+		 * @param indexSize The size of a single index in bytes.
+		 * @param profile The memory profile of the buffer. Default is BufferMemoryProfile::Automatic.
 		 */
 		GeometryStore(const std::shared_ptr<Device>& pDevice, const std::vector<ShaderAttribute>& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic);
 		~GeometryStore() { if (!bIsTerminated) Terminate(); }
@@ -37,18 +37,18 @@ namespace Flint
 		/**
 		 * Set data to the geometry store.
 		 *
-		 * @param pVertexStagingBuffer: The stagging buffer containing all the vertex information.
-		 * @param pIndexStagingBuffer: The stagging buffer containing all the index information.
+		 * @param pVertexStagingBuffer The stagging buffer containing all the vertex information.
+		 * @param pIndexStagingBuffer The stagging buffer containing all the index information.
 		 */
 		void SetData(const Buffer* pVertexStagingBuffer, const Buffer* pIndexStagingBuffer);
 
 		/**
 		 * Add a geometry to the store.
 		 *
-		 * @param vertexCount: The number of vertexes to add.
-		 * @param pVertexData: The vertex data pointer.
-		 * @param indexCount: The number of indexes to add.
-		 * @param pIndexData: The index data to add.
+		 * @param vertexCount The number of vertexes to add.
+		 * @param pVertexData The vertex data pointer.
+		 * @param indexCount The number of indexes to add.
+		 * @param pIndexData The index data to add.
 		 * @return The pair of offsets (vertex offset, index offset) in which the geometry is stored.
 		 */
 		std::pair<UI64, UI64> AddGeometry(UI64 vertexCount, const void* pVertexData, UI64 indexCount, const void* pIndexData);
@@ -57,8 +57,8 @@ namespace Flint
 		 * Add geometry to the store using buffers.
 		 * This method is preferred over the other adding method.
 		 *
-		 * @param pVertexStagingBuffer: The vertex data stored stagging buffer.
-		 * @param pIndexStagingBuffer: The index data stored stagging buffer.
+		 * @param pVertexStagingBuffer The vertex data stored stagging buffer.
+		 * @param pIndexStagingBuffer The index data stored stagging buffer.
 		 * @return The pair of offsets (vertex offset, index offset) in which the geometry is stored.
 		 */
 		std::pair<UI64, UI64> AddGeometry(const Buffer* pVertexStagingBuffer, const Buffer* pIndexStagingBuffer);
@@ -66,10 +66,10 @@ namespace Flint
 		/**
 		 * Remove a geometry from the store.
 		 *
-		 * @param vertexOffset: The vertex offset in the buffer.
-		 * @param vertexCount: The number of vertexes to remove.
-		 * @param indexOffset: The index offset in the buffer.
-		 * @param indexCount: The number of indexes to remove.
+		 * @param vertexOffset The vertex offset in the buffer.
+		 * @param vertexCount The number of vertexes to remove.
+		 * @param indexOffset The index offset in the buffer.
+		 * @param indexCount The number of indexes to remove.
 		 */
 		void RemoveGeometry(UI64 vertexOffset, UI64 vertexCount, UI64 indexOffset, UI64 indexCount);
 

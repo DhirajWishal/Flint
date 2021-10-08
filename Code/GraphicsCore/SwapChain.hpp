@@ -29,10 +29,10 @@ namespace Flint
 		/**
 		 * Construct the swap chain.
 		 *
-		 * @param pDevice: The device pointer.
-		 * @param pDisplay: The display pointer.
-		 * @param imageCount: The image count of the swap chain.
-		 * @param presntMode: The swap chain present mode. If the requested present mode is not supported, an exception is thrown.
+		 * @param pDevice The device pointer.
+		 * @param pDisplay The display pointer.
+		 * @param imageCount The image count of the swap chain.
+		 * @param presentMode The swap chain present mode. If the requested present mode is not supported, an exception is thrown.
 		 */
 		SwapChain(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, UI32 imageCount, const SwapChainPresentMode presentMode);
 
@@ -45,7 +45,7 @@ namespace Flint
 		/**
 		 * Acquire the next swap chain image.
 		 *
-		 * @param frameIndex: The frame index.
+		 * @param frameIndex The frame index.
 		 * @return The next image info structure.
 		 */
 		virtual NextImageInfo AcquireNextImage(const UI32 frameIndex) = 0;

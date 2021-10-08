@@ -27,7 +27,7 @@ namespace Flint
 		 * Acquire the semaphore.
 		 * This will wait until the atomic counter reaches the count value.
 		 *
-		 * @param count: The count to wait until.
+		 * @param count The count to wait until.
 		 */
 		void Acquire(std::atomic<UI64> count);
 
@@ -35,7 +35,7 @@ namespace Flint
 		 * Try and acquire the semaphore.
 		 * This works the same as Acquire, but will return false if could not acquire.
 		 *
-		 * @param count: The count to wait for.
+		 * @param count The count to wait for.
 		 * @return Whether or not it acquired.
 		 */
 		bool TryAcquire(std::atomic<UI64> count);

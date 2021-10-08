@@ -22,17 +22,17 @@ namespace Flint
 		/**
 		 * Construct the asset using the wire frame and geometry store.
 		 * 
-		 * @param wireFrame: The wire frames.
-		 * @param pGeometryStore: The geometry store pointer.
+		 * @param wireFrames The wire frames.
+		 * @param pGeometryStore The geometry store pointer.
 		 */
 		Asset(const std::vector<WireFrame>& wireFrames, const std::shared_ptr<GeometryStore>& pGeometryStore);
 
 		/**
 		 * Load the asset from a file.
 		 * 
-		 * @param assetFile: The asset file path.
-		 * @param pGeometryStore: The geometry store pointer.
-		 * @param vertexDescriptor: The vertex descriptor stating the vertex data to load.
+		 * @param assetFile The asset file path.
+		 * @param pGeometryStore The geometry store pointer.
+		 * @param vertexDescriptor The vertex descriptor stating the vertex data to load.
 		 */
 		Asset(const std::filesystem::path& assetFile, const std::shared_ptr<GeometryStore>& pGeometryStore, const VertexDescriptor& vertexDescriptor);
 

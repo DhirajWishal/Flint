@@ -19,14 +19,14 @@ namespace Flint
 		/**
 		 * Construct the packager.
 		 *
-		 * @param pPipeline: The graphics pipeline pointer.
+		 * @param pPipeline The graphics pipeline pointer.
 		 */
 		ResourcePackager(const UI32 setIndex, const std::shared_ptr<GraphicsPipeline>& pPipeline);
 
 		/**
 		 * Construct the packager.
 		 *
-		 * @param pPipeline: The compute pipeline pointer.
+		 * @param pPipeline The compute pipeline pointer.
 		 */
 		ResourcePackager(const UI32 setIndex, const std::shared_ptr<ComputePipeline>& pPipeline);
 

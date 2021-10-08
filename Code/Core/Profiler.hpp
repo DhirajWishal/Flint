@@ -85,14 +85,14 @@ namespace Flint
 		/**
 		 * Write a profile content to the file.
 		 *
-		 * @param profiler: The profiler object.
+		 * @param profiler The profiler object.
 		 */
 		void WriteContent(const Profiler& profiler);
 
 		/**
 		 * Set profile context from another profiler to this.
 		 *
-		 * @param other: The other profile logger.
+		 * @param other The other profile logger.
 		 */
 		void SetInstanceContext(const ProfileLogger& other);
 

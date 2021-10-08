@@ -121,8 +121,8 @@ namespace Flint
 	/**
 	 * Bitwise OR operator for the image usage.
 	 *
-	 * @param lhs: The left hand side argument.
-	 * @param rhs: The right hand side argument.
+	 * @param lhs The left hand side argument.
+	 * @param rhs The right hand side argument.
 	 * @return The OR-ed value.
 	 */
 	constexpr ImageUsage operator|(const ImageUsage& lhs, const ImageUsage& rhs) { return static_cast<ImageUsage>(static_cast<UI8>(lhs) | static_cast<UI8>(rhs)); }
@@ -130,8 +130,8 @@ namespace Flint
 	/**
 	 * Bitwise And operator for the image usage.
 	 *
-	 * @param lhs: The left hand side argument.
-	 * @param rhs: The right hand side argument.
+	 * @param lhs The left hand side argument.
+	 * @param rhs The right hand side argument.
 	 * @return The And-ed value.
 	 */
 	constexpr ImageUsage operator&(const ImageUsage& lhs, const ImageUsage& rhs) { return static_cast<ImageUsage>(static_cast<UI8>(lhs) & static_cast<UI8>(rhs)); }
@@ -350,8 +350,8 @@ namespace Flint
 	/**
 	 * Rasterization samples bitwise OR operator.
 	 *
-	 * @param lhs: The left hand side argument.
-	 * @param rhs: The right hand side argument.
+	 * @param lhs The left hand side argument.
+	 * @param rhs The right hand side argument.
 	 * @return The OR performed samples.
 	 */
 	constexpr MultiSampleCount operator|(const MultiSampleCount& lhs, const MultiSampleCount& rhs) { return static_cast<MultiSampleCount>(static_cast<UI8>(lhs) | static_cast<UI8>(rhs)); }
@@ -359,8 +359,8 @@ namespace Flint
 	/**
 	 * Rasterization samples bitwise And operator.
 	 *
-	 * @param lhs: The left hand side argument.
-	 * @param rhs: The right hand side argument.
+	 * @param lhs The left hand side argument.
+	 * @param rhs The right hand side argument.
 	 * @return The And performed samples.
 	 */
 	constexpr MultiSampleCount operator&(const MultiSampleCount& lhs, const MultiSampleCount& rhs) { return static_cast<MultiSampleCount>(static_cast<UI8>(lhs) & static_cast<UI8>(rhs)); }
@@ -417,7 +417,7 @@ namespace Flint
 		/**
 		 * Default constructor.
 		 *
-		 * @param pDevice: The device pointer.
+		 * @param pDevice The device pointer.
 		 */
 		DeviceBoundObject(const std::shared_ptr<Device>& pDevice);
 

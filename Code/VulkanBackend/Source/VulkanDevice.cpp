@@ -6,6 +6,7 @@
 #include "VulkanBackend/VulkanOneTimeCommandBuffer.hpp"
 #include "VulkanBackend/VulkanCommandBuffer.hpp"
 #include "VulkanBackend/VulkanCommandBufferAllocator.hpp"
+#include "VulkanBackend/VulkanSwapChain.hpp"
 #include "VulkanBackend/VulkanScreenBoundRenderTarget.hpp"
 #include "VulkanBackend/VulkanOffScreenRenderTarget.hpp"
 #include "VulkanBackend/VulkanBuffer.hpp"
@@ -141,6 +142,11 @@ namespace Flint
 		std::shared_ptr<CommandBufferAllocator> VulkanDevice::CreateSecondaryCommandBufferAllocator(const UI32 bufferCount, const std::shared_ptr<CommandBufferAllocator>& pParentAllocator)
 		{
 			return std::make_shared<VulkanCommandBufferAllocator>(shared_from_this(), pParentAllocator, bufferCount);
+		}
+
+		std::shared_ptr<SwapChain> VulkanDevice::CreateSwapChain(const std::shared_ptr<Display>& pDisplay, UI32 imageCount, const SwapChainPresentMode presentMode)
+		{
+			return std::make_shared<VulkanSwapChain>(shared_from_this(), pDisplay, imageCount, presentMode);
 		}
 
 		std::shared_ptr<ScreenBoundRenderTarget> VulkanDevice::CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor)
@@ -696,6 +702,7 @@ namespace Flint
 			vFeatures.samplerAnisotropy = VK_TRUE;
 			vFeatures.sampleRateShading = VK_TRUE; // Enable sample shading feature for the device
 			vFeatures.fillModeNonSolid = VK_TRUE;
+			vFeatures.logicOp = VK_TRUE;
 
 			// Device create info.
 			VkDeviceCreateInfo vDeviceCreateInfo = {};

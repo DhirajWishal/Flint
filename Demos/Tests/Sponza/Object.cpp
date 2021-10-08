@@ -79,7 +79,7 @@ namespace Flint
 	{
 		OPTICK_EVENT();
 
-		auto pDevice = pApplication->GetDevice();
+		const auto pDevice = pApplication->GetDevice();
 		std::shared_ptr<Shader> pVertexShader = nullptr;
 		std::shared_ptr<Shader> pFragmentShader = nullptr;
 
@@ -105,13 +105,21 @@ namespace Flint
 		specification.mRasterizationSamples = MultiSampleCount::One;
 		//specification.mRasterizationSamples = pApplication->pDevice->GetSupportedMultiSampleCount();
 		specification.mDynamicStateFlags = Flint::DynamicStateFlags::ViewPort | Flint::DynamicStateFlags::Scissor;
+		specification.bEnableColorBlendLogic = false;
+		specification.mColorBlendLogic = ColorBlendLogic::OR;
+		//specification.mColorBlendAttachments.push_back(ColorBlendAttachment());
+
+		specification.mColorBlendConstants[0] = 1.0f;
+		specification.mColorBlendConstants[1] = 1.0f;
+		specification.mColorBlendConstants[2] = 1.0f;
+		specification.mColorBlendConstants[3] = 1.0f;
 
 		specification.mVertexInputAttributeMap[0] = pVertexShader->GetInputAttributes();
 		pPipeline = pApplication->GetGraphicsScene("Default")->CreateGraphicsPipeline("Object", pVertexShader, pFragmentShader, specification);
 
 		pApplication->CreateGeometryStore("Object", pVertexShader->GetInputAttributes(), sizeof(UI32));
 
-		auto windowExtent = pApplication->GetGraphicsScene("Default")->GetDisplay()->GetExtent();
+		const auto windowExtent = pApplication->GetGraphicsScene("Default")->GetDisplay()->GetExtent();
 		pDynamicStates->SetViewPort(Flint::FExtent2D<float>{static_cast<float>(windowExtent.mWidth), static_cast<float>(windowExtent.mHeight)}, Flint::FExtent2D<float>(0.0f, 1.0f), { 0.0f, 0.0f });
 		pDynamicStates->SetScissor(windowExtent, { 0, 0 });
 	}

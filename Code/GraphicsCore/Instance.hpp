@@ -17,14 +17,14 @@ namespace Flint
 		/**
 		 * Default constructor.
 		 *
-		 * @param enableValidation: Whether or not to enable backend validation.
+		 * @param enableValidation Whether or not to enable backend validation.
 		 */
 		Instance(bool enableValidation);
 
 		/**
 		 * Create a new device object.
 		 *
-		 * @param flags: The device flags.
+		 * @param flags The device flags.
 		 * @return The created device object.
 		 */
 		virtual std::shared_ptr<Device> CreateDevice(const DeviceFlags flags) = 0;
@@ -32,8 +32,8 @@ namespace Flint
 		/**
 		 * Create a new display object.
 		 *
-		 * @param extent: The display extent.
-		 * @param title: The display title.
+		 * @param extent The display extent.
+		 * @param title The display title.
 		 */
 		virtual std::shared_ptr<Display> CreateDisplay(const FBox2D& extent, const std::string& title) = 0;
 
@@ -57,7 +57,7 @@ namespace Flint
 	/**
 	 * Create a new instance object.
 	 *
-	 * @param enableValidation: Whether or not to enable validation. We recommend using validation only in debug stage as it uses more resources.
+	 * @param enableValidation Whether or not to enable validation. We recommend using validation only in debug stage as it uses more resources.
 	 * @return The instance object reference.
 	 */
 	std::shared_ptr<Instance> CreateInstance(bool enableValidation);

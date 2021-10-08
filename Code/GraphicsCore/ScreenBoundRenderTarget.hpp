@@ -22,12 +22,12 @@ namespace Flint
 		/**
 		 * Default constructor.
 		 *
-		 * @param pDevice: The device pointer.
-		 * @param pDisplay: The display pointer.
-		 * @param extent: The screen bound render target extent.
-		 * @param bufferCount: The frame buffer count.
-		 * @param presentMode: The image present mode to the display.
-		 * @param swapChainClearColor: The clear colors used for the swap chain. If a color buffer/ attachment is present, this field can be ignored. If not this will be used. 
+		 * @param pDevice The device pointer.
+		 * @param pDisplay The display pointer.
+		 * @param extent The screen bound render target extent.
+		 * @param bufferCount The frame buffer count.
+		 * @param presentMode The image present mode to the display.
+		 * @param swapChainClearColor The clear colors used for the swap chain. If a color buffer/ attachment is present, this field can be ignored. If not this will be used. 
 		 *			Default is FColor4D(0.0f).
 		 */
 		ScreenBoundRenderTarget(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor = FColor4D(0.0f));

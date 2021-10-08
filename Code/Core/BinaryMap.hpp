@@ -27,7 +27,7 @@ namespace Flint
 		/**
 		 * Find the lower bound key iterator.
 		 *
-		 * @param key: The key to be searched for.
+		 * @param key The key to be searched for.
 		 * @return The position iterator.
 		 */
 		typename Iterator Find(const Key& key)
@@ -53,7 +53,7 @@ namespace Flint
 		/**
 		 * Find the lower bound key iterator.
 		 *
-		 * @param key: The key to be searched for.
+		 * @param key The key to be searched for.
 		 * @return The position iterator.
 		 */
 		typename ConstIterator Find(const Key& key) const
@@ -79,7 +79,7 @@ namespace Flint
 		/**
 		 * Get a particular value at a given position.
 		 *
-		 * @param key: The key to search for.
+		 * @param key The key to search for.
 		 * @return The value reference.
 		 */
 		Value& At(const Key& key)
@@ -97,7 +97,7 @@ namespace Flint
 		/**
 		 * Get a particular value at a given position.
 		 *
-		 * @param key: The key to search for.
+		 * @param key The key to search for.
 		 * @return The value reference.
 		 */
 		const Value At(const Key& key) const
@@ -112,8 +112,8 @@ namespace Flint
 		/**
 		 * Insert a key value pair into the map.
 		 *
-		 * @param key: The key of the value.
-		 * @param value: The value to insert.
+		 * @param key The key of the value.
+		 * @param value The value to insert.
 		 */
 		void Insert(const Key& key, const Value& value)
 		{
@@ -123,7 +123,7 @@ namespace Flint
 		/**
 		 * Remove a given entry using its key.
 		 *
-		 * @param key: The key to remove.
+		 * @param key The key to remove.
 		 */
 		void Remove(const Key& key)
 		{
@@ -179,7 +179,7 @@ namespace Flint
 		/**
 		 * Subscript operator overload.
 		 *
-		 * @param key: The key to search.
+		 * @param key The key to search.
 		 * @return The value reference.
 		 */
 		Value& operator[](const Key& key)

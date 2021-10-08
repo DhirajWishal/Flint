@@ -15,6 +15,7 @@ namespace Flint
 	class CommandBuffer;
 	class SynchronizationPrimitive;
 
+	class SwapChain;
 	class RenderTarget;
 	class ScreenBoundRenderTarget;
 	class OffScreenRenderTarget;
@@ -74,15 +75,15 @@ namespace Flint
 		/**
 		 * Default constructor.
 		 *
-		 * @param pInstance: The instance pointer.
-		 * @param flags: The device flags.
+		 * @param pInstance The instance pointer.
+		 * @param flags The device flags.
 		 */
 		Device(const std::shared_ptr<Instance>& pInstance, const DeviceFlags flags);
 
 		/**
 		 * Check if the display is compatible with the device.
 		 *
-		 * @param pDisplay: The display to check.
+		 * @param pDisplay The display to check.
 		 * @return Boolean value stating if compatible or not.
 		 */
 		virtual bool IsDisplayCompatible(const Display* pDisplay) = 0;
@@ -90,7 +91,7 @@ namespace Flint
 		/**
 		 * Create a new command buffer allocator.
 		 *
-		 * @param bufferCount: The number of buffers the allocator should create.
+		 * @param bufferCount The number of buffers the allocator should create.
 		 * @return The allocator pointer.
 		 */
 		virtual std::shared_ptr<CommandBufferAllocator> CreateCommandBufferAllocator(const UI32 bufferCount) = 0;
@@ -98,21 +99,32 @@ namespace Flint
 		/**
 		 * Create a new secondary command buffer allocator.
 		 *
-		 * @param bufferCount: The number of buffers the allocator should create.
-		 * @param pParentAllocator: The parent command buffer allocator pointer.
+		 * @param bufferCount The number of buffers the allocator should create.
+		 * @param pParentAllocator The parent command buffer allocator pointer.
 		 * @return The command buffer allocator pointer.
 		 */
 		virtual std::shared_ptr<CommandBufferAllocator> CreateSecondaryCommandBufferAllocator(const UI32 bufferCount, const std::shared_ptr<CommandBufferAllocator>& pParentAllocator) = 0;
 
 		/**
+		 * Create a new swap chain.
+		 *
+		 * @param pDisplay The display pointer to which the swap chain is attached to.
+		 * @param imageCount The number of images in the swap chain.
+		 * @param presentMode The swap chain present mode.
+		 * @return The swap chain pointer.
+		 */
+		virtual std::shared_ptr<SwapChain> CreateSwapChain(const std::shared_ptr<Display>& pDisplay, UI32 imageCount, const SwapChainPresentMode presentMode) = 0;
+
+		/**
 		 * Create a new screen bound render target.
 		 * Screen bound render targets render frames to the display. This display must be compatible with the device object.
 		 *
-		 * @param display: The display object.
-		 * @param extent: The extent of the render target.
-		 * @param bufferCount: The buffer count of the frame buffer.
-		 * @param imageAttachments: The image attachments to use.
-		 * @param presentMode: The swap chain present mode.
+		 * @param pDisplay The display object.
+		 * @param extent The extent of the render target.
+		 * @param bufferCount The buffer count of the frame buffer.
+		 * @param imageAttachments The image attachments to use.
+		 * @param presentMode The swap chain present mode.
+		 * @param swapChainClearColor The swap chain's clear color.
 		 * @return The screen bound render target object.
 		 */
 		virtual std::shared_ptr<ScreenBoundRenderTarget> CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor = FColor4D(0.0f)) = 0;
@@ -121,9 +133,9 @@ namespace Flint
 		 * Create a new off screen render target.
 		 * Off screen render targets are used to perform calculations or other off screen operations required.
 		 *
-		 * @param extent: The render target extent.
-		 * @param bufferCount: The number of buffers to use.
-		 * @param imageAttachments: The image attachments which the render target uses.
+		 * @param extent The render target extent.
+		 * @param bufferCount The number of buffers to use.
+		 * @param imageAttachments The image attachments which the render target uses.
 		 * @return The render target pointer.
 		 */
 		virtual std::shared_ptr<OffScreenRenderTarget> CreateOffScreenRenderTarget(const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments) = 0;
@@ -131,9 +143,9 @@ namespace Flint
 		/**
 		 * Create a new buffer.
 		 *
-		 * @param type: The buffer type.
-		 * @param size: The buffer size.
-		 * @param profile: The memory profile of the buffer. Default is BufferMemoryProfile::Automatic.
+		 * @param type The buffer type.
+		 * @param size The buffer size.
+		 * @param profile The memory profile of the buffer. Default is BufferMemoryProfile::Automatic.
 		 * @return The buffer object.
 		 */
 		virtual std::shared_ptr<Buffer> CreateBuffer(const BufferType type, const UI64 size, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic) = 0;
@@ -141,14 +153,14 @@ namespace Flint
 		/**
 		 * Create a new image.
 		 *
-		 * @param type: The image type.
-		 * @param usage: The image usage.
-		 * @param extent: The image extent.
-		 * @param format: The image format.
-		 * @param layers: The number of layers in the image.
-		 * @param mipLevels: The mip levels of the image.
-		 * @param pImageData: The image data pointer to load data from.
-		 * @param sampleCount: The image multi sample count.
+		 * @param type The image type.
+		 * @param usage The image usage.
+		 * @param extent The image extent.
+		 * @param format The image format.
+		 * @param layers The number of layers in the image.
+		 * @param mipLevels The mip levels of the image.
+		 * @param pImageData The image data pointer to load data from.
+		 * @param sampleCount The image multi sample count.
 		 * @return The newly created image.
 		 */
 		virtual std::shared_ptr<Image> CreateImage(const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const UI8 layers, const UI32 mipLevels, const void* pImageData, const MultiSampleCount sampleCount = MultiSampleCount::One) = 0;
@@ -156,7 +168,7 @@ namespace Flint
 		/**
 		 * Create a new image sampler.
 		 *
-		 * @param specification: The sampler specification.
+		 * @param specification The sampler specification.
 		 * @return The newly created sampler.
 		 */
 		virtual std::shared_ptr<ImageSampler> CreateImageSampler(const ImageSamplerSpecification& specification) = 0;
@@ -165,8 +177,8 @@ namespace Flint
 		 * Create a new shader.
 		 * Vertex shaders are used to perform computations per vertex in the graphics pipeline.
 		 *
-		 * @param type: The type of the shader.
-		 * @param path: The shade code path.
+		 * @param type The type of the shader.
+		 * @param path The shade code path.
 		 * @return The vertex shader object.
 		 */
 		virtual std::shared_ptr<Shader> CreateShader(const ShaderType type, const std::filesystem::path& path) = 0;
@@ -175,8 +187,8 @@ namespace Flint
 		 * Create a new shader.
 		 * Vertex shaders are used to perform computations per vertex in the graphics pipeline.
 		 *
-		 * @param type: The type of the shader.
-		 * @param code: The shade code.
+		 * @param type The type of the shader.
+		 * @param code The shade code.
 		 * @return The vertex shader object.
 		 */
 		virtual std::shared_ptr<Shader> CreateShader(const ShaderType type, const std::vector<UI32>& code) = 0;
@@ -185,8 +197,8 @@ namespace Flint
 		 * Create a new shader.
 		 * Vertex shaders are used to perform computations per vertex in the graphics pipeline.
 		 *
-		 * @param type: The type of the shader.
-		 * @param code: The shade code.
+		 * @param type The type of the shader.
+		 * @param code The shade code.
 		 * @return The vertex shader object.
 		 */
 		virtual std::shared_ptr<Shader> CreateShader(const ShaderType type, const std::string& code) = 0;
@@ -194,14 +206,14 @@ namespace Flint
 		/**
 		 * Create a new graphics pipeline bound to a screen bound render target.
 		 *
-		 * @param pipelineName: The unique name of the pipeline.
-		 * @param pScreenBoundRenderTarget: The screen bound render target pointer.
-		 * @param pVertexShader: The vertex shader pointer.
-		 * @param pTessellationControlShader: The tessellation control shader pointer.
-		 * @param pTessellationEvaluationShader: The tessellation evaluation shader pointer.
-		 * @param pGeometryShader: The geometry shader pointer.
-		 * @param pFragmentShader: The fragment shader pointer.
-		 * @param specification: The pipeline specification.
+		 * @param pipelineName The unique name of the pipeline.
+		 * @param pScreenBoundRenderTarget The screen bound render target pointer.
+		 * @param pVertexShader The vertex shader pointer.
+		 * @param pTessellationControlShader The tessellation control shader pointer.
+		 * @param pTessellationEvaluationShader The tessellation evaluation shader pointer.
+		 * @param pGeometryShader The geometry shader pointer.
+		 * @param pFragmentShader The fragment shader pointer.
+		 * @param specification The pipeline specification.
 		 * @return The pipeline pointer.
 		 */
 		virtual std::shared_ptr<GraphicsPipeline> CreateGraphicsPipeline(
@@ -217,14 +229,14 @@ namespace Flint
 		/**
 		 * Create a new graphics pipeline bound to a off screen render target.
 		 *
-		 * @param pipelineName: The unique name of the pipeline.
-		 * @param pOffScreenRenderTarget: The off screen render target pointer.
-		 * @param pVertexShader: The vertex shader pointer.
-		 * @param pTessellationControlShader: The tessellation control shader pointer.
-		 * @param pTessellationEvaluationShader: The tessellation evaluation shader pointer.
-		 * @param pGeometryShader: The geometry shader pointer.
-		 * @param pFragmentShader: The fragment shader pointer.
-		 * @param specification: The pipeline specification.
+		 * @param pipelineName The unique name of the pipeline.
+		 * @param pOffScreenRenderTarget The off screen render target pointer.
+		 * @param pVertexShader The vertex shader pointer.
+		 * @param pTessellationControlShader The tessellation control shader pointer.
+		 * @param pTessellationEvaluationShader The tessellation evaluation shader pointer.
+		 * @param pGeometryShader The geometry shader pointer.
+		 * @param pFragmentShader The fragment shader pointer.
+		 * @param specification The pipeline specification.
 		 * @return The pipeline pointer.
 		 */
 		virtual std::shared_ptr<GraphicsPipeline> CreateGraphicsPipeline(
@@ -240,8 +252,8 @@ namespace Flint
 		/**
 		 * Create a new compute pipeline.
 		 *
-		 * @param pipelineName: The unique name of the pipeline.
-		 * @param pShader: The compute shader pointer.
+		 * @param pipelineName The unique name of the pipeline.
+		 * @param pShader The compute shader pointer.
 		 * @return The pipeline pointer.
 		 */
 		virtual std::shared_ptr<ComputePipeline> CreateComputePipeline(const std::string& pipelineName, const std::shared_ptr<Shader>& pShader) = 0;
@@ -249,9 +261,9 @@ namespace Flint
 		/**
 		 * Create a new geometry store.
 		 *
-		 * @param vertexAttributes: The vertex attributes of the store.
-		 * @param indexSize: The size of a single index.
-		 * @param profile: The memory profile of the geometry store. Default is BufferMemoryProfile::Automatic.
+		 * @param vertexAttributes The vertex attributes of the store.
+		 * @param indexSize The size of a single index.
+		 * @param profile The memory profile of the geometry store. Default is BufferMemoryProfile::Automatic.
 		 * @return The newly created geometry store pointer.
 		 */
 		virtual std::shared_ptr<GeometryStore> CreateGeometryStore(const std::vector<ShaderAttribute>& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic) = 0;
@@ -267,32 +279,32 @@ namespace Flint
 		/**
 		 * Submit a graphics command buffer to the device.
 		 *
-		 * @param pCommandBuffer: The command buffer pointer.
-		 * @param pPrimitive: The synchronization primitive to be flagged upon completion. Default is nullptr.
+		 * @param pCommandBuffer The command buffer pointer.
+		 * @param pPrimitive The synchronization primitive to be flagged upon completion. Default is nullptr.
 		 */
 		virtual void SubmitGraphicsCommandBuffer(const CommandBuffer* pCommandBuffer, SynchronizationPrimitive* pPrimitive = nullptr) = 0;
 
 		/**
 		 * Submit graphics command buffers to the device.
 		 *
-		 * @param pCommandBuffers: The command buffer pointers.
-		 * @param pPrimitive: The synchronization primitive to be flagged upon completion. Default is nullptr.
+		 * @param pCommandBuffers The command buffer pointers.
+		 * @param pPrimitive The synchronization primitive to be flagged upon completion. Default is nullptr.
 		 */
 		virtual void SubmitGraphicsCommandBuffers(const std::vector<CommandBuffer*>& pCommandBuffers, SynchronizationPrimitive* pPrimitive = nullptr) = 0;
 
 		/**
 		 * Submit a compute command buffer to the device.
 		 *
-		 * @param pCommandBuffers: The command buffer pointer.
-		 * @param pPrimitive: The synchronization primitive to be flagged upon completion. Default is nullptr.
+		 * @param pCommandBuffer The command buffer pointer.
+		 * @param pPrimitive The synchronization primitive to be flagged upon completion. Default is nullptr.
 		 */
 		virtual void SubmitComputeCommandBuffer(const CommandBuffer* pCommandBuffer, SynchronizationPrimitive* pPrimitive = nullptr) = 0;
 
 		/**
 		 * Submit compute command buffers to the device.
 		 *
-		 * @param pCommandBuffers: The command buffer pointers.
-		 * @param pPrimitive: The synchronization primitive to be flagged upon completion. Default is nullptr.
+		 * @param pCommandBuffers The command buffer pointers.
+		 * @param pPrimitive The synchronization primitive to be flagged upon completion. Default is nullptr.
 		 */
 		virtual void SubmitComputeCommandBuffers(const std::vector<CommandBuffer*>& pCommandBuffers, SynchronizationPrimitive* pPrimitive = nullptr) = 0;
 
@@ -328,6 +340,13 @@ namespace Flint
 		const bool IsComputeCompatible() const { return (mFlags & DeviceFlags::ComputeCompatible) == DeviceFlags::ComputeCompatible; }
 
 	public:
+		/**
+		 * Get the current instance.
+		 *
+		 * @return The instance pointer.
+		 */
+		std::shared_ptr<Instance> GetInstance() const { return pInstance; }
+
 		/**
 		 * Get the supported rasterization samples.
 		 *

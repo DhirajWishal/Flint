@@ -29,7 +29,7 @@ namespace Flint
 		/**
 		 * Create a new controller.
 		 *
-		 * @param identifier: The controller identifier.
+		 * @param identifier The controller identifier.
 		 * @return The created controller pointer.
 		 */
 		virtual std::shared_ptr<Controller> CreateController(const std::string_view& identifier) = 0;
@@ -73,7 +73,7 @@ namespace Flint
 		 * Register an identifier.
 		 * If a class is not registered, the client will not be able to use the controller.
 		 *
-		 * @param identifier: The class identifier.
+		 * @param identifier The class identifier.
 		 */
 		void RegisterIdentifier(const std::string& identifier);
 
