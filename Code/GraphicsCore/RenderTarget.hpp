@@ -53,6 +53,14 @@ namespace Flint
 		const std::vector<RenderTargetAttachment> GetAttachments() const { return mAttachments; }
 
 		/**
+		 * Get a single attachment from the attachments.
+		 *
+		 * @param index The index of the attachment.
+		 * @return The attachment.
+		 */
+		const RenderTargetAttachment GetAttachment(const UI64 index) const { return mAttachments[index]; }
+
+		/**
 		 * Get the current frame index.
 		 *
 		 * @return The frame index.

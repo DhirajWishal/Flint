@@ -16,7 +16,7 @@ namespace Flint
 	 * Then there are nodes. Each processing node acts as a render stage. Each of these nodes can request a command buffer allocator and can use
 	 * multi threading to bind resources, and perform a certain task. The processing pipeline can contain multiple nodes for rendering.
 	 */
-	class ProcessingPipeline
+	class ProcessingPipeline final
 	{
 	public:
 		/**
@@ -25,11 +25,12 @@ namespace Flint
 		 * @param pDevice The device pointer.
 		 * @param frameExtent The size of the frame.
 		 * @param displayTitle The title of the display.
-		 * @param pipelineCount The pipeline count to use.
+		 * @param pipelineCount The pipeline count to use. If set to 0, the best supported is set.
 		 * @param msaaCount The number of MSAA samples to use. If the MSAA count is greater than One, a color buffer is used.
 		 * @param forceColorBuffer Force to use a color buffer. Default is false.
+		 * @param forceDepthBuffer Whether or not to use a depth buffer. Default is false.
 		 */
-		ProcessingPipeline(const std::shared_ptr<Device>& pDevice, const FBox2D frameExtent, const std::string& displayTitle, const UI32 pipelineCount, const MultiSampleCount msaaCount, const bool forceColorBuffer = false);
+		ProcessingPipeline(const std::shared_ptr<Device>& pDevice, const FBox2D frameExtent, const std::string& displayTitle, const UI32 pipelineCount, const MultiSampleCount msaaCount, const bool forceColorBuffer = false, const bool forceDepthBuffer = false);
 
 		/**
 		 * Destructor.
@@ -46,10 +47,11 @@ namespace Flint
 		template<class Type, class... Args>
 		std::shared_ptr<Type> CreateProcessingNode(const Args&... args)
 		{
-			static_assert(std::is_base_of_v<Type, ProcessingNode>, "'Type' should be derived from ProcessingNode!");
+			static_assert(!std::is_base_of_v<Type, ProcessingNode>, "'Type' should be derived from 'ProcessingNode'!");
 
-			pProcessingNodes.push_back(std::make_shared<Type>(this, args...));
-			return pProcessingNodes.back();
+			auto pNode = std::make_shared<Type>(this, args...);
+			pProcessingNodes.push_back(pNode);
+			return pNode;
 		}
 
 		/**
@@ -66,6 +68,27 @@ namespace Flint
 		MultiSampleCount GetMultiSampleCount() const { return mMultiSampleCount; }
 
 		/**
+		 * Get the extent of the pipeline.
+		 *
+		 * @return The extent.
+		 */
+		FBox2D GetExtent() const { return pScreenBoundRenderTarget->GetExtent(); }
+
+		/**
+		 * Get the buffer count of the pipeline.
+		 *
+		 * @return The buffer count.
+		 */
+		UI32 GetBufferCount() const { return pScreenBoundRenderTarget->GetBufferCount(); }
+
+		/**
+		 * Get the device to which the pipeline is bound to.
+		 *
+		 * @return The device pointer.
+		 */
+		std::shared_ptr<Device> GetDevice() const { return pScreenBoundRenderTarget->GetDevice(); }
+
+		/**
 		 * Get the display pointer.
 		 *
 		 * @reutrn The display pointer.
@@ -80,12 +103,27 @@ namespace Flint
 		bool IsColorImagePresent() const { return bContainsColorBuffer; }
 
 		/**
+		 * Check if the depth image is present.
+		 *
+		 * @return The boolean value.
+		 */
+		bool IsDepthImagePresent() const { return bContainsDepthBuffer; }
+
+		/**
 		 * Get the color image from the pipeline.
 		 * If the color image is not present, it returns a nullptr.
 		 *
 		 * @return The color image pointer.
 		 */
 		std::shared_ptr<Image> GetColorBuffer() const;
+
+		/**
+		 * Get the depth image from the pipeline.
+		 * If the depth image is not present, it returns a nullptr.
+		 *
+		 * @return The depth image pointer.
+		 */
+		std::shared_ptr<Image> GetDepthBuffer() const;
 
 		/**
 		 * Get the screen bound render target pointer.
@@ -136,22 +174,18 @@ namespace Flint
 		 */
 		std::vector<std::shared_ptr<ProcessingNode>> GetProcessingNodes() const { return pProcessingNodes; }
 
-	public:
-		/**
-		 * This class cannot be copied.
-		 */
-		FLINT_ENABLE_NO_COPY(ProcessingPipeline);
-
-	protected:
+	private:
 		std::vector<std::shared_ptr<ProcessingNode>> pProcessingNodes;
+		std::vector<std::shared_ptr<CommandBuffer>> pCommandBuffers;
 
 		std::shared_ptr<Display> pDisplay = nullptr;
 
 		std::shared_ptr<ScreenBoundRenderTarget> pScreenBoundRenderTarget = nullptr;
 		std::shared_ptr<CommandBufferAllocator> pCommandBufferAllocator = nullptr;
-		std::vector<std::shared_ptr<CommandBuffer>> pCommandBuffers;
 
 		MultiSampleCount mMultiSampleCount = MultiSampleCount::One;
+
 		bool bContainsColorBuffer = false;
+		bool bContainsDepthBuffer = false;
 	};
 }

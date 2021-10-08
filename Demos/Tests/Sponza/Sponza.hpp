@@ -6,6 +6,8 @@
 #include "TestBase/Application.hpp"
 #include "Object.hpp"
 
+#include "Engine/ProcessingPipeline/ProcessingPipeline.hpp"
+
 namespace Flint
 {
 	class Sponza
@@ -17,5 +19,6 @@ namespace Flint
 		GraphicsScene* pGraphicsScene = nullptr;
 
 		Object mObject = {};
+		std::unique_ptr<ProcessingPipeline> pProcessingPipeline = nullptr;
 	};
 }

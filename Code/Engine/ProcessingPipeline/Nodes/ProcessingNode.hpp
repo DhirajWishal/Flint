@@ -4,6 +4,7 @@
 #pragma once
 
 #include "GraphicsCore/CommandBuffer.hpp"
+#include "GraphicsCore/Display.hpp"
 
 namespace Flint
 {
@@ -33,10 +34,46 @@ namespace Flint
 		 */
 		virtual void Process(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 frameIndex, const UI32 imageIndex) = 0;
 
+	public:
+		/**
+		 * Get the set multi sample count.
+		 *
+		 * @return The multi sample count.
+		 */
+		MultiSampleCount GetMultiSampleCount() const;
+
+		/**
+		 * Get the extent of the pipeline.
+		 *
+		 * @return The extent.
+		 */
+		FBox2D GetExtent() const;
+
+		/**
+		 * Get the buffer count of the pipeline.
+		 *
+		 * @return The buffer count.
+		 */
+		UI32 GetBufferCount() const;
+
+		/**
+		 * Get the device to which the pipeline is bound to.
+		 *
+		 * @return The device pointer.
+		 */
+		std::shared_ptr<Device> GetDevice() const;
+
+		/**
+		 * Get the display pointer.
+		 *
+		 * @reutrn The display pointer.
+		 */
+		std::shared_ptr<Display> GetDisplay() const;
+
 	protected:
 		ProcessingPipeline* pProcessingPipeline = nullptr;
 
 		std::shared_ptr<CommandBufferAllocator> pCommandBufferAllocator = nullptr;
-		std::vector<std::shared_ptr<CommandBuffer>> pCommandBuffers;
+		std::vector<std::shared_ptr<CommandBuffer>> pCommandBuffers = {};
 	};
 }
