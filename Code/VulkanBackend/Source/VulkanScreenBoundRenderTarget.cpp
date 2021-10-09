@@ -17,7 +17,7 @@ namespace Flint
 		{
 			OPTICK_EVENT();
 
-			pSwapChain = std::make_unique<VulkanSwapChain>(pDevice, pDisplay, bufferCount, presentMode);
+			pSwapChain = std::make_shared<VulkanSwapChain>(pDevice, pDisplay, bufferCount, presentMode);
 
 			vDependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
 			vDependencies[0].dstSubpass = 0;
@@ -64,10 +64,11 @@ namespace Flint
 				vClearValues.push_back(vClearValue);
 			}
 
-			pAttachmentInferfaces.push_back(pSwapChain.get());
+			auto& vSwapChain = pSwapChain->StaticCast<VulkanSwapChain>();
+			pAttachmentInferfaces.push_back(&vSwapChain);
 			if (!bIsColorPresent)
 			{
-				pSwapChain->ToggleClear();
+				vSwapChain.ToggleClear();
 
 				VkClearValue vClearValue = {};
 				vClearValue.color.float32[0] = swapChainClearColor.mRed;
@@ -99,7 +100,7 @@ namespace Flint
 			OPTICK_EVENT();
 
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-			VkResult vResult = vDevice.GetDeviceTable().vkQueuePresentKHR(vDevice.GetQueue().vTransferQueue, pSwapChain->PrepareToPresent());
+			VkResult vResult = vDevice.GetDeviceTable().vkQueuePresentKHR(vDevice.GetQueue().vTransferQueue, pSwapChain->StaticCast<VulkanSwapChain>().PrepareToPresent());
 			if (vResult == VK_ERROR_OUT_OF_DATE_KHR || vResult == VK_SUBOPTIMAL_KHR)
 				return false;
 			else FLINT_VK_ASSERT(vResult);
@@ -144,7 +145,7 @@ namespace Flint
 			}
 
 			pSwapChain->Recreate();
-			pAttachmentInferfaces.push_back(pSwapChain.get());
+			pAttachmentInferfaces.push_back(&pSwapChain->StaticCast<VulkanSwapChain>());
 
 			vRenderTarget.CreateRenderPass(pAttachmentInferfaces, VK_PIPELINE_BIND_POINT_GRAPHICS, vDependencies);
 			vRenderTarget.CreateFrameBuffer(pAttachmentInferfaces, mExtent, mBufferCount);

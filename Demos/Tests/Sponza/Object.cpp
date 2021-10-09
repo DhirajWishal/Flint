@@ -14,6 +14,20 @@
 
 namespace Flint
 {
+	Object::Object(Application* pApplication, std::shared_ptr<OffScreenPass> pOffScreenPass)
+		: pApplication(pApplication), pOffScreenPass(pOffScreenPass)
+	{
+		pDynamicStates = std::make_shared<DynamicStateContainer>();
+		pUniformBuffer = pApplication->GetDevice()->CreateBuffer(BufferType::Uniform, sizeof(ModelViewProjection));
+
+		//pApplication->GetGraphicsScene("Default")->mCamera.SetCameraRange(0.01f, 2048.0f);
+		mMatrix.mModelMatrix = glm::scale(mMatrix.mModelMatrix, glm::vec3(0.005f));
+
+		CreatePipeline();
+		LoadAsset();
+		LoadTextures();
+	}
+
 	void Object::Initialize(Application* pApplication)
 	{
 		OPTICK_EVENT();
@@ -102,8 +116,7 @@ namespace Flint
 			pFragmentShader = pDevice->CreateShader(ShaderType::Fragment, std::filesystem::path("Flint\\Shaders\\Object.frag.fsc"));
 
 		Flint::GraphicsPipelineSpecification specification = {};
-		specification.mRasterizationSamples = MultiSampleCount::One;
-		//specification.mRasterizationSamples = pApplication->pDevice->GetSupportedMultiSampleCount();
+		specification.mRasterizationSamples = pOffScreenPass->GetMultiSampleCount();
 		specification.mDynamicStateFlags = Flint::DynamicStateFlags::ViewPort | Flint::DynamicStateFlags::Scissor;
 		specification.bEnableColorBlendLogic = false;
 		specification.mColorBlendLogic = ColorBlendLogic::OR;
@@ -115,11 +128,12 @@ namespace Flint
 		specification.mColorBlendConstants[3] = 1.0f;
 
 		specification.mVertexInputAttributeMap[0] = pVertexShader->GetInputAttributes();
-		pPipeline = pApplication->GetGraphicsScene("Default")->CreateGraphicsPipeline("Object", pVertexShader, pFragmentShader, specification);
+		pPipeline = pDevice->CreateGraphicsPipeline("Object", pOffScreenPass->GetRenderTarget(), pVertexShader, nullptr, nullptr, nullptr, pFragmentShader, specification);
+		//pPipeline = pApplication->GetGraphicsScene("Default")->CreateGraphicsPipeline("Object", pVertexShader, pFragmentShader, specification);
 
 		pApplication->CreateGeometryStore("Object", pVertexShader->GetInputAttributes(), sizeof(UI32));
 
-		const auto windowExtent = pApplication->GetGraphicsScene("Default")->GetDisplay()->GetExtent();
+		const auto windowExtent = pOffScreenPass->GetExtent();
 		pDynamicStates->SetViewPort(Flint::FExtent2D<float>{static_cast<float>(windowExtent.mWidth), static_cast<float>(windowExtent.mHeight)}, Flint::FExtent2D<float>(0.0f, 1.0f), { 0.0f, 0.0f });
 		pDynamicStates->SetScissor(windowExtent, { 0, 0 });
 	}
@@ -173,7 +187,7 @@ namespace Flint
 			}
 		}
 
-		const UI64 size = pApplication->GetGraphicsScene("Default")->pRenderTarget->GetBufferCount();
+		const UI64 size = pOffScreenPass->GetBufferCount();
 		pPackageSets.resize(size);
 
 		for (auto& wireFrame : mAsset.GetWireFrames())

@@ -39,6 +39,8 @@ namespace Flint
 
 			void ToggleClear() { bShouldClear = true; }
 
+			void CopyFromImage(VkCommandBuffer vCommandBuffer, const VkImage vSrcImage, const VkImageLayout vSrcLayout, VkOffset3D srcOffset, VkOffset3D dstOffset, const UI32 index, const VkImageSubresourceLayers vSrcSubresourceLayer);
+
 		private:
 			void CreateSwapChain();
 			void DestroySwapChain();

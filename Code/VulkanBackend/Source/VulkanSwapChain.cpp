@@ -129,6 +129,31 @@ namespace Flint
 			return VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 		}
 
+		void VulkanSwapChain::CopyFromImage(VkCommandBuffer vCommandBuffer, const VkImage vSrcImage, const VkImageLayout vSrcLayout, VkOffset3D srcOffset, VkOffset3D dstOffset, const UI32 index, const VkImageSubresourceLayers vSrcSubresourceLayer)
+		{
+			VkImageCopy vImageCopy = {};
+			vImageCopy.extent.width = mExtent.mWidth;
+			vImageCopy.extent.height = mExtent.mHeight;
+			vImageCopy.extent.depth = 1;
+			vImageCopy.srcOffset = srcOffset;
+			vImageCopy.dstOffset = dstOffset;
+			vImageCopy.srcSubresource = vSrcSubresourceLayer;
+
+			vImageCopy.dstSubresource.aspectMask = VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
+			vImageCopy.dstSubresource.baseArrayLayer = 0;
+			vImageCopy.dstSubresource.layerCount = 1;
+			vImageCopy.dstSubresource.mipLevel = 0;
+
+			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
+			const auto vImage = vImages[index];
+			const auto vFormat = Utilities::GetVulkanFormat(mPixelForamt);
+
+			vDevice.SetImageLayout(vCommandBuffer, vImage, VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED, VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, vFormat);
+			vDevice.GetDeviceTable().vkCmdCopyImage(vCommandBuffer, vSrcImage, vSrcLayout, vImage, VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &vImageCopy);
+			vDevice.SetImageLayout(vCommandBuffer, vImage, VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VkImageLayout::VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, vFormat);
+			//vDevice.SetImageLayout(vCommandBuffer, vImage, VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VkImageLayout::VK_IMAGE_LAYOUT_GENERAL, vFormat);
+		}
+
 		void VulkanSwapChain::CreateSwapChain()
 		{
 			OPTICK_EVENT();
@@ -176,7 +201,7 @@ namespace Flint
 			vCreateInfo.imageColorSpace = surfaceFormat.colorSpace;
 			vCreateInfo.imageExtent = { static_cast<UI32>(mExtent.mWidth), static_cast<UI32>(mExtent.mHeight) };
 			vCreateInfo.imageArrayLayers = 1;
-			vCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+			vCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
 			vCreateInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
 			vCreateInfo.queueFamilyIndexCount = 0;
 			vCreateInfo.pQueueFamilyIndices = nullptr;

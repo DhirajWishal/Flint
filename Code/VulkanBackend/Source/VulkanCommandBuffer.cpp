@@ -8,6 +8,7 @@
 #include "VulkanBackend/VulkanGraphicsPipeline.hpp"
 #include "VulkanBackend/VulkanComputePipeline.hpp"
 #include "VulkanBackend/VulkanBuffer.hpp"
+#include "VulkanBackend/VulkanImage.hpp"
 #include "VulkanBackend/VulkanUtilities.hpp"
 #include "VulkanBackend/VulkanResourcePackage.hpp"
 
@@ -86,8 +87,9 @@ namespace Flint
 
 			VulkanScreenBoundRenderTarget const& vRenderTarget = pRenderTarget->StaticCast<VulkanScreenBoundRenderTarget>();
 
-			vInFlightSemaphores.push_back(vRenderTarget.GetSwapChain()->GetInFlightSemaphore());
-			vRenderFinishedSemaphores.push_back(vRenderTarget.GetSwapChain()->GetRenderFinishedSemaphore());
+			auto const& vSwapChain = std::static_pointer_cast<VulkanSwapChain>(vRenderTarget.GetSwapChain());
+			vInFlightSemaphores.push_back(vSwapChain->GetInFlightSemaphore());
+			vRenderFinishedSemaphores.push_back(vSwapChain->GetRenderFinishedSemaphore());
 
 			VkRenderPassBeginInfo vBeginInfo = {};
 			vBeginInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -108,8 +110,9 @@ namespace Flint
 
 			VulkanScreenBoundRenderTarget const& vRenderTarget = pRenderTarget->StaticCast<VulkanScreenBoundRenderTarget>();
 
-			vInFlightSemaphores.push_back(vRenderTarget.GetSwapChain()->GetInFlightSemaphore());
-			vRenderFinishedSemaphores.push_back(vRenderTarget.GetSwapChain()->GetRenderFinishedSemaphore());
+			auto const& vSwapChain = std::static_pointer_cast<VulkanSwapChain>(vRenderTarget.GetSwapChain());
+			vInFlightSemaphores.push_back(vSwapChain->GetInFlightSemaphore());
+			vRenderFinishedSemaphores.push_back(vSwapChain->GetRenderFinishedSemaphore());
 
 			VkRenderPassBeginInfo vBeginInfo = {};
 			vBeginInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -436,6 +439,76 @@ namespace Flint
 			pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetDeviceTable().vkCmdDispatch(vCommandBuffer, groups.X, groups.Y, groups.Z);
 		}
 
+		void VulkanCommandBuffer::CopyImage(const Image* pSourceImage, const FBox3D sourceOffset, Image* pDestinationImage, const FBox3D destinationOffset)
+		{
+			OPTICK_EVENT();
+
+			// Return if either one of images are null.
+			if (!pSourceImage || !pDestinationImage)
+				throw backend_error("One or more of the submitted images are null!");
+
+			auto const& vSourceImage = pSourceImage->StaticCast<VulkanImage>();
+			auto& vDestinationImage = pDestinationImage->StaticCast<VulkanImage>();
+
+			VkOffset3D vSourceOffset = {};
+			vSourceOffset.x = sourceOffset.X;
+			vSourceOffset.y = sourceOffset.Y;
+			vSourceOffset.z = sourceOffset.Z;
+
+			VkOffset3D vDestinationOffset = {};
+			vDestinationOffset.x = destinationOffset.X;
+			vDestinationOffset.y = destinationOffset.Y;
+			vDestinationOffset.z = destinationOffset.Z;
+
+			VkImageSubresourceLayers vLayers = {};
+			vLayers.baseArrayLayer = 0;
+			vLayers.layerCount = vSourceImage.GetLayerCount();
+			vLayers.mipLevel = vSourceImage.GetMipLevels();
+			vLayers.aspectMask = vSourceImage.GetAspectFlags();
+
+			const auto vOldDstLayout = vDestinationImage.GetImageLayout();
+			const auto vOldSrcLayout = vSourceImage.GetImageLayout();
+
+			vDestinationImage.SetImageLayoutManual(vCommandBuffer, VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+			vSourceImage.SetImageLayoutManual(vCommandBuffer, VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+
+			vDestinationImage.CopyFromImage(vCommandBuffer, vSourceImage.GetImage(), vSourceImage.GetImageLayout(), vSourceOffset, vDestinationOffset, vLayers);
+
+			vDestinationImage.SetImageLayoutManual(vCommandBuffer, vOldDstLayout);
+			vSourceImage.SetImageLayoutManual(vCommandBuffer, vOldSrcLayout);
+		}
+
+		void VulkanCommandBuffer::CopyToSwapChainImage(const Image* pSourceImage, const FBox3D sourceOffset, SwapChain* pSwapChain, const UI32 imageIndex, const FBox3D destinationOffset)
+		{
+			OPTICK_EVENT();
+
+			auto const& vSourceImage = pSourceImage->StaticCast<VulkanImage>();
+			auto& vSwapChain = pSwapChain->StaticCast<VulkanSwapChain>();
+
+			VkOffset3D vSourceOffset = {};
+			vSourceOffset.x = sourceOffset.X;
+			vSourceOffset.y = sourceOffset.Y;
+			vSourceOffset.z = sourceOffset.Z;
+
+			VkOffset3D vDestinationOffset = {};
+			vDestinationOffset.x = destinationOffset.X;
+			vDestinationOffset.y = destinationOffset.Y;
+			vDestinationOffset.z = destinationOffset.Z;
+
+			VkImageSubresourceLayers vLayers = {};
+			vLayers.baseArrayLayer = 0;
+			vLayers.layerCount = vSourceImage.GetLayerCount();
+			vLayers.mipLevel = 0;
+			//vLayers.mipLevel = vSourceImage.GetMipLevels();
+			vLayers.aspectMask = vSourceImage.GetAspectFlags();
+
+			const auto vOldSrcLayout = vSourceImage.GetImageLayout();
+
+			vSourceImage.SetImageLayoutManual(vCommandBuffer, VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+			vSwapChain.CopyFromImage(vCommandBuffer, vSourceImage.GetImage(), vSourceImage.GetImageLayout(), vSourceOffset, vDestinationOffset, imageIndex, vLayers);
+			vSourceImage.SetImageLayoutManual(vCommandBuffer, vOldSrcLayout);
+		}
+
 		void VulkanCommandBuffer::SubmitSecondaryCommandBuffer(const std::shared_ptr<CommandBuffer>& pCommandBuffer)
 		{
 			vSecondaryCommandBuffers.push_back(pCommandBuffer->StaticCast<VulkanCommandBuffer>().GetVulkanCommandBuffer());
@@ -474,7 +547,7 @@ namespace Flint
 
 			return vSubmitInfo;
 		}
-		
+
 		const VkSubmitInfo* VulkanCommandBuffer::GetSubmitInfoAddress() const
 		{
 			vSubmitInfo.signalSemaphoreCount = static_cast<UI32>(vRenderFinishedSemaphores.size());

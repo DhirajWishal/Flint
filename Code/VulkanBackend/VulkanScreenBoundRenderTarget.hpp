@@ -31,7 +31,7 @@ namespace Flint
 			VkRenderPass GetRenderPass() const { return vRenderTarget.vRenderPass; }
 			const VkFramebuffer GetFramebuffer() const { return vRenderTarget.vFrameBuffers[GetImageIndex()]; }
 
-			const VulkanSwapChain* GetSwapChain() const { return pSwapChain.get(); }
+			const VulkanSwapChain* GetVulkanSwapChain() const { return static_cast<const VulkanSwapChain*>(pSwapChain.get()); }
 
 			const UI32 GetClearScreenValueCount() const { return static_cast<UI32>(vClearValues.size()); }
 			const VkClearValue* GetClearScreenValues() const { return vClearValues.data(); }
@@ -46,8 +46,6 @@ namespace Flint
 			mutable VkCommandBufferInheritanceInfo vInheritInfo = {};
 
 			std::vector<VkClearValue> vClearValues = {};
-
-			std::unique_ptr<VulkanSwapChain> pSwapChain = nullptr;
 
 			bool bShouldSkip = false;
 		};

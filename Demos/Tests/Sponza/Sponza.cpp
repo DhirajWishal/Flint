@@ -4,7 +4,7 @@
 #include "Sponza.hpp"
 
 #include "TestBase/GraphicsScene.hpp"
-#include "TestBase/Nodes/OffScreenPass.hpp"
+#include "TestBase/Nodes/FXAAPass.hpp"
 
 #include <optick.h>
 
@@ -14,29 +14,32 @@ namespace Flint
 	{
 		OPTICK_EVENT();
 
-		pGraphicsScene = mApplication.CreateGraphicsScene("Default", FBox2D(-1));
-
 		// Create the processing pipeline.
-		pProcessingPipeline = std::make_unique<ProcessingPipeline>(mApplication.GetDevice(), FBox2D(-1), "Flint: Sponza Test", 0, MultiSampleCount::One);
+		pProcessingPipeline = std::make_unique<DefaultProcessingPipeline>(mApplication.GetDevice(), FBox2D(-1), "Flint: Sponza Test", 0, MultiSampleCount::One);
 		auto pRenderTarget = pProcessingPipeline->CreateProcessingNode<OffScreenPass>();
+		pRenderTarget->CreateGameObject<Object>(&mApplication, pRenderTarget);
 
-		mObject.Initialize(&mApplication);
-		pGraphicsScene->SubmitGameObject(&mObject);
-		pGraphicsScene->mCamera.SetMovementBias(0.05f);
-
-		while (pGraphicsScene->GetDisplay()->IsOpen())
+		pProcessingPipeline->CreateProcessingNode<FXAAPass>(pRenderTarget.get());
+		while (pProcessingPipeline->GetDisplay()->IsOpen())
 		{
+			// Prepare the new frame.
 			mApplication.PrepareNewFrame();
-			mApplication.UpdateGraphicsScenes();
 
-			mApplication.DrawGraphicsScenes();
+			// Update the pipeline.
+			const UI64 delta = pProcessingPipeline->Update();
+
+			// Update all the game objects.
+			for (auto const& pGameObjects : pRenderTarget->GetGameObjects())
+				pGameObjects->Update(delta, &pProcessingPipeline->GetCamera());
+
+			// End the frame.
+			mApplication.EndFrame();
 
 			// Execute the processing pipeline.
 			pProcessingPipeline->Execute();
 		}
 
 		mApplication.Cleanup();
-		mObject.Terminate();
 	}
 }
 

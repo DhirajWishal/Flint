@@ -4,6 +4,8 @@
 #pragma once
 
 #include "Engine/ProcessingPipeline/Nodes/ProcessingNode.hpp"
+#include "GraphicsCore/OffScreenRenderTarget.hpp"
+#include "TestBase/GameObject.hpp"
 
 namespace Flint
 {
@@ -11,7 +13,7 @@ namespace Flint
 	 * Off screen pass object.
 	 * This object renders object to an off screen render target.
 	 */
-	class OffScreenPass : public ProcessingNode
+	class OffScreenPass final : public ProcessingNode
 	{
 	public:
 		/**
@@ -32,11 +34,47 @@ namespace Flint
 
 	public:
 		/**
+		 * Create a new game object and add it to the list.
+		 *
+		 * @param args The constructor arguments.
+		 * @return The created game object pointer.
+		 */
+		template<class Type, class... Args>
+		std::shared_ptr<Type> CreateGameObject(const Args&...  args)
+		{
+			std::shared_ptr<Type> pGameObject = std::make_shared<Type>(args...);
+			pGameObjects.emplace_back(pGameObject);
+			return pGameObject;
+		}
+
+	public:
+		/**
 		 * Get the off screen render target.
 		 *
 		 * @return The render target pointer.
 		 */
 		std::shared_ptr<OffScreenRenderTarget> GetRenderTarget() const { return pOffScreenRenderTarget; }
+
+		/**
+		 * Get the created game objects.
+		 *
+		 * @return The vector of game objects.
+		 */
+		std::vector<std::shared_ptr<GameObject>> GetGameObjects() const { return pGameObjects; }
+
+		/**
+		 * Get the color image of the off screen render pass.
+		 *
+		 * @return The color image.
+		 */
+		std::shared_ptr<Image> GetColorImage() const { return pOffScreenRenderTarget->GetAttachment(0).pImage; }
+
+		/**
+		 * Get the depth image of the off screen render pass.
+		 *
+		 * @return The depth image.
+		 */
+		std::shared_ptr<Image> GetDepthImage() const { return pOffScreenRenderTarget->GetAttachment(1).pImage; }
 
 	private:
 		/**
@@ -47,6 +85,7 @@ namespace Flint
 		std::vector<RenderTargetAttachment> CreateAttachments() const;
 
 	private:
+		std::vector<std::shared_ptr<GameObject>> pGameObjects = {};
 		std::shared_ptr<OffScreenRenderTarget> pOffScreenRenderTarget = nullptr;
 	};
 }

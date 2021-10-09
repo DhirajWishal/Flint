@@ -4,9 +4,8 @@
 #pragma once
 
 #include "TestBase/Application.hpp"
+#include "TestBase/DefaultProcessingPipeline.hpp"
 #include "Object.hpp"
-
-#include "Engine/ProcessingPipeline/ProcessingPipeline.hpp"
 
 namespace Flint
 {
@@ -16,9 +15,6 @@ namespace Flint
 		Sponza();
 
 		Application mApplication = {};
-		GraphicsScene* pGraphicsScene = nullptr;
-
-		Object mObject = {};
-		std::unique_ptr<ProcessingPipeline> pProcessingPipeline = nullptr;
+		std::unique_ptr<DefaultProcessingPipeline> pProcessingPipeline = nullptr;
 	};
 }

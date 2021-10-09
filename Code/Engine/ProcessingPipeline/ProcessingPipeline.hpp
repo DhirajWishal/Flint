@@ -15,8 +15,10 @@ namespace Flint
 	 * The processing pipeline comprises of multiple command pipelines. These command pipelines are used to pass commands to the GPU device.
 	 * Then there are nodes. Each processing node acts as a render stage. Each of these nodes can request a command buffer allocator and can use
 	 * multi threading to bind resources, and perform a certain task. The processing pipeline can contain multiple nodes for rendering.
+	 *
+	 * The client application can derive from this object to extend the features of this object.
 	 */
-	class ProcessingPipeline final
+	class ProcessingPipeline
 	{
 	public:
 		/**
@@ -35,7 +37,7 @@ namespace Flint
 		/**
 		 * Destructor.
 		 */
-		~ProcessingPipeline();
+		virtual ~ProcessingPipeline();
 
 		/**
 		 * Create a new processing node.
@@ -56,8 +58,9 @@ namespace Flint
 
 		/**
 		 * Execute everything in the current pipeline.
+		 * This method can also be overridden by the client.
 		 */
-		void Execute();
+		virtual void Execute();
 
 	public:
 		/**
@@ -168,15 +171,30 @@ namespace Flint
 		std::shared_ptr<CommandBuffer> GetCommandBufferInFlight() const { return pCommandBuffers[GetCurrentFrameIndex()]; }
 
 		/**
+		 * Get the synchronization primitives of the pipeline.
+		 *
+		 * @return The vector of synchronization primitives.
+		 */
+		std::vector<std::shared_ptr<SynchronizationPrimitive>> GetSynchronizationPrimitives() const { return pSynchronizationPrimitives; }
+
+		/**
+		 * Get the synchronization primitive that is in flight.
+		 *
+		 * @return The synchronization primitive.
+		 */
+		std::shared_ptr<SynchronizationPrimitive> GetInFlightSynchronizationPrimitive() const { return pSynchronizationPrimitives[GetCurrentFrameIndex()]; }
+
+		/**
 		 * Get all the processing nodes in the pipeline.
 		 *
 		 * @return The processing node vector.
 		 */
 		std::vector<std::shared_ptr<ProcessingNode>> GetProcessingNodes() const { return pProcessingNodes; }
 
-	private:
-		std::vector<std::shared_ptr<ProcessingNode>> pProcessingNodes;
-		std::vector<std::shared_ptr<CommandBuffer>> pCommandBuffers;
+	protected:
+		std::vector<std::shared_ptr<ProcessingNode>> pProcessingNodes = {};
+		std::vector<std::shared_ptr<CommandBuffer>> pCommandBuffers = {};
+		std::vector<std::shared_ptr<SynchronizationPrimitive>> pSynchronizationPrimitives = {};
 
 		std::shared_ptr<Display> pDisplay = nullptr;
 

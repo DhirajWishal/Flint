@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "TestBase/GameObject.hpp"
+#include "TestBase/Nodes/OffScreenPass.hpp"
 #include "Engine/Asset.hpp"
 #include "GraphicsCore/ResourcePackager.hpp"
 
@@ -27,6 +27,7 @@ namespace Flint
 
 	public:
 		Object() = default;
+		Object(Application* pApplication, std::shared_ptr<OffScreenPass> pOffScreenPass);
 
 		virtual void Initialize(Application* pApplication) override;
 		virtual void Update(UI64 delta, Camera* pCamera) override;
@@ -43,6 +44,7 @@ namespace Flint
 		std::vector<std::vector<std::shared_ptr<ResourcePackage>>> pPackageSets = {};
 
 		Application* pApplication = nullptr;
+		std::shared_ptr<OffScreenPass> pOffScreenPass = nullptr;
 		std::shared_ptr<GraphicsPipeline> pPipeline = nullptr;
 
 		std::shared_ptr<Buffer> pUniformBuffer = nullptr;

@@ -407,6 +407,10 @@ namespace Flint
 				vMB.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
 				break;
 
+			case VK_IMAGE_LAYOUT_PRESENT_SRC_KHR:
+				//vMB.srcAccessMask = VK_ACCESS_;
+				break;
+
 			case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
 				sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
 				vMB.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
@@ -425,6 +429,7 @@ namespace Flint
 			{
 			case VK_IMAGE_LAYOUT_UNDEFINED:
 			case VK_IMAGE_LAYOUT_GENERAL:
+			case VK_IMAGE_LAYOUT_PRESENT_SRC_KHR:
 				destinationStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
 				break;
 

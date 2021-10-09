@@ -9,6 +9,7 @@
 
 namespace Flint
 {
+	class SwapChain;
 	class ScreenBoundRenderTarget;
 	class OffScreenRenderTarget;
 	class GraphicsPipeline;
@@ -213,6 +214,27 @@ namespace Flint
 		 * @param groups The compute groups.
 		 */
 		virtual void IssueComputeCall(const FBox3D& groups) = 0;
+
+		/**
+		 * Copy image data from one image to another.
+		 *
+		 * @param pSourceImage The source image pointer.
+		 * @param sourceOffset The source offset of the image to copy from.
+		 * @param pDestinationImage The destination image pointer.
+		 * @param destinationOffset The destination offset of the image to copy to.
+		 */
+		virtual void CopyImage(const Image* pSourceImage, const FBox3D sourceOffset, Image* pDestinationImage, const FBox3D destinationOffset) = 0;
+
+		/**
+		 * Copy an image to a swap chain image.
+		 *
+		 * @param pSourceImage The source image pointer.
+		 * @param sourceOffset The offset of the source image to copy.
+		 * @param pSwapChain The swap chain pointer.
+		 * @param imageIndex The image index in the swap chain to which the copy is made.
+		 * @param destinationOffset The swap chain image offset to copy data to.
+		 */
+		virtual void CopyToSwapChainImage(const Image* pSourceImage, const FBox3D sourceOffset, SwapChain* pSwapChain, const UI32 imageIndex, const FBox3D destinationOffset) = 0;
 
 		/**
 		 * Submit a secondary command buffer to be executed.

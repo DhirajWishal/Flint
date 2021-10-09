@@ -7,6 +7,8 @@
 
 namespace Flint
 {
+	class ImageView;
+
 	/**
 	 * Flint image object.
 	 * This object is used to store information about a single image. This can have multiple levels of the same image.
@@ -63,6 +65,17 @@ namespace Flint
 
 			return pixel;
 		}
+
+		/**
+		 * Create a new image view.
+		 *
+		 * @param baseLayerIndex The base layer index to start covering from.
+		 * @param layerCount The number of layers for the image view to cover.
+		 * @param baseMipLevel The base mip level to start from.
+		 * @param mipLevels The mip levels to cover.
+		 * @param usage The image usage.
+		 */
+		virtual std::shared_ptr<ImageView> CreateImageView(const UI32 baseLayerIndex, const UI32 layerCount, const UI32 baseMipLevel, const UI32 mipLevels, const ImageUsage usage) = 0;
 
 	public:
 		/**

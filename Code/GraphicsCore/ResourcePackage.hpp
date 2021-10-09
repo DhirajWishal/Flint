@@ -5,6 +5,7 @@
 
 #include "Buffer.hpp"
 #include "ImageSampler.hpp"
+#include "ImageView.hpp"
 
 namespace Flint
 {
@@ -30,11 +31,12 @@ namespace Flint
 	struct ImageBinding
 	{
 		ImageBinding() = default;
-		ImageBinding(const std::shared_ptr<ImageSampler>& pImageSampler, const std::shared_ptr<Image>& pImage, const ImageUsage usage)
-			: pImageSampler(pImageSampler), pImage(pImage), mUsage(usage) {}
+		ImageBinding(const std::shared_ptr<ImageSampler>& pImageSampler, const std::shared_ptr<ImageView>& pImage, const ImageUsage usage)
+			: pImageSampler(pImageSampler), pImageView(pImage), mUsage(usage) {}
 
 		std::shared_ptr<ImageSampler> pImageSampler = nullptr;
 		std::shared_ptr<Image> pImage = nullptr;
+		std::shared_ptr<ImageView> pImageView = nullptr;
 		UI64 mViewIndex = 0;
 		ImageUsage mUsage = ImageUsage::Graphics;
 

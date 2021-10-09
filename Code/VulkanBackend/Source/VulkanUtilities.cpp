@@ -463,6 +463,25 @@ namespace Flint
 				return VkSampleCountFlagBits::VK_SAMPLE_COUNT_FLAG_BITS_MAX_ENUM;
 			}
 
+			VkImageAspectFlags GetImageAspectFlags(const ImageUsage usage)
+			{
+				if ((usage & ImageUsage::Depth) == ImageUsage::Depth)
+					return VkImageAspectFlagBits::VK_IMAGE_ASPECT_DEPTH_BIT;
+
+				VkImageAspectFlags vFlags = 0;
+
+				if ((usage & ImageUsage::Graphics) == ImageUsage::Graphics)
+					vFlags |= VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
+
+				if ((usage & ImageUsage::Storage) == ImageUsage::Storage)
+					vFlags |= VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
+
+				if ((usage & ImageUsage::Color) == ImageUsage::Color)
+					vFlags |= VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
+
+				return vFlags;
+			}
+
 			void AddPushConstantRangesToVector(std::vector<VkPushConstantRange>& ranges, const VulkanShader& shader)
 			{
 				std::vector<VkPushConstantRange> tempRanges = shader.GetPushConstantRanges();

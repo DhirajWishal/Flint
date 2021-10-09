@@ -12,6 +12,7 @@ namespace Flint
 	{
 	public:
 		GameObject() = default;
+		GameObject(Application* pApplication) {}
 
 		virtual void Initialize(Application* pApplication) = 0;
 		virtual void Update(UI64 delta, Camera* pCamera) = 0;

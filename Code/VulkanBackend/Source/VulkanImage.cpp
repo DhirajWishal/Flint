@@ -5,6 +5,7 @@
 #include "VulkanBackend/VulkanUtilities.hpp"
 #include "VulkanBackend/VulkanBuffer.hpp"
 #include "VulkanBackend/VulkanOneTimeCommandBuffer.hpp"
+#include "VulkanBackend/VulkanImageView.hpp"
 
 namespace Flint
 {
@@ -91,25 +92,6 @@ namespace Flint
 				}
 
 				return VkImageViewType::VK_IMAGE_VIEW_TYPE_2D;
-			}
-
-			VkImageAspectFlags GetImageAspectFlags(const ImageUsage usage)
-			{
-				if ((usage & ImageUsage::Depth) == ImageUsage::Depth)
-					return VkImageAspectFlagBits::VK_IMAGE_ASPECT_DEPTH_BIT;
-
-				VkImageAspectFlags vFlags = 0;
-
-				if ((usage & ImageUsage::Graphics) == ImageUsage::Graphics)
-					vFlags |= VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
-
-				if ((usage & ImageUsage::Storage) == ImageUsage::Storage)
-					vFlags |= VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
-
-				if ((usage & ImageUsage::Color) == ImageUsage::Color)
-					vFlags |= VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
-
-				return vFlags;
 			}
 
 			VkComponentMapping GetComponentMapping(const PixelFormat format)
@@ -231,7 +213,7 @@ namespace Flint
 			vCopy.imageExtent.width = mExtent.mWidth;
 			vCopy.imageExtent.height = mExtent.mHeight;
 			vCopy.imageExtent.depth = mExtent.mDepth;
-			vCopy.imageSubresource.aspectMask = Helpers::GetImageAspectFlags(mUsage);
+			vCopy.imageSubresource.aspectMask = Utilities::GetImageAspectFlags(mUsage);
 			vCopy.imageSubresource.baseArrayLayer = 0;
 			vCopy.imageSubresource.layerCount = mLayerCount;
 			vCopy.imageSubresource.mipLevel = 0;	// TODO
@@ -262,10 +244,14 @@ namespace Flint
 			bIsTerminated = true;
 		}
 
-		void VulkanImage::CopyFromImage(VkImage vSrcImage, VkImageLayout vSrcLayout, VkOffset3D srcOffset, VkOffset3D dstOffset, VkImageSubresourceLayers subresourceLayers)
+		std::shared_ptr<ImageView> VulkanImage::CreateImageView(const UI32 baseLayerIndex, const UI32 layerCount, const UI32 baseMipLevel, const UI32 mipLevels, const ImageUsage usage)
+		{
+			return std::make_shared<VulkanImageView>(pDevice, shared_from_this(), baseLayerIndex, layerCount, baseMipLevel, mipLevels, usage);
+		}
+
+		void VulkanImage::CopyFromImage(VkCommandBuffer vCommandBuffer, VkImage vSrcImage, VkImageLayout vSrcLayout, VkOffset3D srcOffset, VkOffset3D dstOffset, VkImageSubresourceLayers subresourceLayers)
 		{
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-			VulkanOneTimeCommandBuffer vCommandBuffer{ vDevice };
 
 			VkImageCopy vImageCopy = {};
 			vImageCopy.extent.width = mExtent.mWidth;
@@ -276,6 +262,14 @@ namespace Flint
 			vImageCopy.srcSubresource = subresourceLayers;
 
 			vDevice.GetDeviceTable().vkCmdCopyImage(vCommandBuffer, vSrcImage, vSrcLayout, vImage, vCurrentLayout, 1, &vImageCopy);
+		}
+
+		void VulkanImage::CopyFromImage(VkImage vSrcImage, VkImageLayout vSrcLayout, VkOffset3D srcOffset, VkOffset3D dstOffset, VkImageSubresourceLayers subresourceLayers)
+		{
+			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
+			VulkanOneTimeCommandBuffer vCommandBuffer{ vDevice };
+
+			CopyFromImage(vCommandBuffer, vSrcImage, vSrcLayout, srcOffset, dstOffset, subresourceLayers);
 		}
 
 		void VulkanImage::Recreate(const FBox2D& extent)
@@ -366,14 +360,29 @@ namespace Flint
 			return Utilities::GetVulkanFormat(mFormat);
 		}
 
+		VkImageViewType VulkanImage::GetImageViewType() const
+		{
+			return Helpers::GetImageViewType(mType);
+		}
+
+		VkImageAspectFlags VulkanImage::GetAspectFlags() const
+		{
+			return Utilities::GetImageAspectFlags(mUsage);
+		}
+
+		VkComponentMapping VulkanImage::GetComponentMapping() const
+		{
+			return Helpers::GetComponentMapping(mFormat);
+		}
+
 		VkImageView VulkanImage::CreateLayerBasedImageView(UI32 layerNumber) const
 		{
 			VkImageView vImageView = VK_NULL_HANDLE;
 
 			if (mType == ImageType::CubeMap || mType == ImageType::CubeMapArray)
-				vImageView = Utilities::CreateImageViews({ vImage }, Utilities::GetVulkanFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), Helpers::GetImageAspectFlags(mUsage), Helpers::GetImageViewType(mType), 1, layerNumber, mMipLevels, 0, { VK_COMPONENT_SWIZZLE_R, VK_COMPONENT_SWIZZLE_G, VK_COMPONENT_SWIZZLE_B, VK_COMPONENT_SWIZZLE_A })[0];
+				vImageView = Utilities::CreateImageViews({ vImage }, Utilities::GetVulkanFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), Utilities::GetImageAspectFlags(mUsage), Helpers::GetImageViewType(mType), 1, layerNumber, mMipLevels, 0, { VK_COMPONENT_SWIZZLE_R, VK_COMPONENT_SWIZZLE_G, VK_COMPONENT_SWIZZLE_B, VK_COMPONENT_SWIZZLE_A })[0];
 			else
-				vImageView = Utilities::CreateImageViews({ vImage }, Utilities::GetVulkanFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), Helpers::GetImageAspectFlags(mUsage), Helpers::GetImageViewType(mType), 1, layerNumber, mMipLevels, 0)[0];
+				vImageView = Utilities::CreateImageViews({ vImage }, Utilities::GetVulkanFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), Utilities::GetImageAspectFlags(mUsage), Helpers::GetImageViewType(mType), 1, layerNumber, mMipLevels, 0)[0];
 
 			return vImageView;
 		}
@@ -387,6 +396,11 @@ namespace Flint
 		void VulkanImage::SetImageLayout(VkImageLayout vNewLayout) const
 		{
 			VulkanOneTimeCommandBuffer vCommandBuffer(pDevice->StaticCast<VulkanDevice>());
+			SetImageLayoutManual(vCommandBuffer, vNewLayout);
+		}
+
+		void VulkanImage::SetImageLayoutManual(VkCommandBuffer vCommandBuffer, VkImageLayout vNewLayout) const
+		{
 			SetImageLayout(vCommandBuffer, vNewLayout, mLayerCount, 0, mMipLevels);
 			vCurrentLayout = vNewLayout;
 		}
@@ -457,9 +471,9 @@ namespace Flint
 			OPTICK_EVENT();
 
 			if (mType == ImageType::CubeMap || mType == ImageType::CubeMapArray || mUsage == ImageUsage::Storage)
-				vImageView = Utilities::CreateImageViews({ vImage }, Utilities::GetVulkanFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), Helpers::GetImageAspectFlags(mUsage), Helpers::GetImageViewType(mType), mLayerCount, 0, mMipLevels, 0, Helpers::GetComponentMapping(mFormat))[0];
+				vImageView = Utilities::CreateImageViews({ vImage }, Utilities::GetVulkanFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), Utilities::GetImageAspectFlags(mUsage), Helpers::GetImageViewType(mType), mLayerCount, 0, mMipLevels, 0, Helpers::GetComponentMapping(mFormat))[0];
 			else
-				vImageView = Utilities::CreateImageViews({ vImage }, Utilities::GetVulkanFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), Helpers::GetImageAspectFlags(mUsage), Helpers::GetImageViewType(mType), mLayerCount, 0, mMipLevels, 0)[0];
+				vImageView = Utilities::CreateImageViews({ vImage }, Utilities::GetVulkanFormat(mFormat), pDevice->StaticCast<VulkanDevice>(), Utilities::GetImageAspectFlags(mUsage), Helpers::GetImageViewType(mType), mLayerCount, 0, mMipLevels, 0)[0];
 		}
 
 		void VulkanImage::GenerateDefaultMipChain()
@@ -479,7 +493,7 @@ namespace Flint
 				barrier.image = vImage;
 				barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
 				barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-				barrier.subresourceRange.aspectMask = Helpers::GetImageAspectFlags(mUsage);
+				barrier.subresourceRange.aspectMask = Utilities::GetImageAspectFlags(mUsage);
 				barrier.subresourceRange.layerCount = mLayerCount - i;
 				barrier.subresourceRange.levelCount = 1;
 				barrier.subresourceRange.baseArrayLayer = i;
@@ -570,7 +584,7 @@ namespace Flint
 			barrier.image = vImage;
 			barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
 			barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-			barrier.subresourceRange.aspectMask = Helpers::GetImageAspectFlags(mUsage);
+			barrier.subresourceRange.aspectMask = Utilities::GetImageAspectFlags(mUsage);
 			barrier.subresourceRange.layerCount = mLayerCount;
 			barrier.subresourceRange.levelCount = 1;
 			barrier.subresourceRange.baseArrayLayer = 0;
@@ -673,7 +687,7 @@ namespace Flint
 					vCopy.imageExtent.width = mExtent.mWidth;
 					vCopy.imageExtent.height = mExtent.mHeight;
 					vCopy.imageExtent.depth = mExtent.mDepth;
-					vCopy.imageSubresource.aspectMask = Helpers::GetImageAspectFlags(mUsage);
+					vCopy.imageSubresource.aspectMask = Utilities::GetImageAspectFlags(mUsage);
 					vCopy.imageSubresource.baseArrayLayer = 0;
 					vCopy.imageSubresource.layerCount = mLayerCount;
 					vCopy.imageSubresource.mipLevel = 0;

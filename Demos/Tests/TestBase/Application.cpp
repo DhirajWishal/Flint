@@ -25,8 +25,6 @@ namespace Flint
 
 	Application::~Application()
 	{
-		for (auto& [name, scene] : mGraphicsScenes)
-			scene.Terminate();
 	}
 
 	void Application::PrepareNewFrame()
@@ -61,33 +59,19 @@ namespace Flint
 	void Application::UpdateGraphicsScenes()
 	{
 		OPTICK_EVENT();
-
-		for (auto& [name, scene] : mGraphicsScenes)
-			scene.Update();
 	}
 
-	void Application::DrawGraphicsScenes()
+	void Application::EndFrame()
 	{
 		OPTICK_EVENT();
 
 		ImGui::End();
 		ImGui::Render();
-
-		for (auto& [name, scene] : mGraphicsScenes)
-			scene.DrawFrame();
 	}
 
 	void Application::Cleanup()
 	{
 		pDevice->WaitIdle();
-	}
-
-	GraphicsScene* Application::CreateGraphicsScene(const std::string& name, const FBox2D extent)
-	{
-		OPTICK_EVENT();
-
-		mGraphicsScenes[name] = std::move(GraphicsScene(this, extent));
-		return &mGraphicsScenes[name];
 	}
 
 	std::shared_ptr<GeometryStore> Application::CreateGeometryStore(const std::string& name, const std::vector<ShaderAttribute>& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile)

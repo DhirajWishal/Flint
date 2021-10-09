@@ -27,7 +27,7 @@ namespace Flint
 	/**
 	 * Flint extent 2D structure.
 	 *
-	 * @tparam Type: The type of the struct.
+	 * @tparam Type The type of the struct.
 	 */
 	template<class Type>
 	struct FExtent2D
@@ -58,7 +58,7 @@ namespace Flint
 	/**
 	 * Flint extent 3D structure.
 	 *
-	 * @tparam Type: The type of the struct.
+	 * @tparam Type The type of the struct.
 	 */
 	template<class Type>
 	struct FExtent3D

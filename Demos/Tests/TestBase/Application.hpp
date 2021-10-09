@@ -20,11 +20,8 @@ namespace Flint
 
 		void PrepareNewFrame();
 		void UpdateGraphicsScenes();
-		void DrawGraphicsScenes();
+		void EndFrame();
 		void Cleanup();
-
-		GraphicsScene* CreateGraphicsScene(const std::string& name, const FBox2D extent);
-		GraphicsScene* GetGraphicsScene(const std::string& name) { return &mGraphicsScenes.at(name); }
 
 		std::shared_ptr<GeometryStore> CreateGeometryStore(const std::string& name, const std::vector<ShaderAttribute>& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic);
 		std::shared_ptr<GeometryStore> GetGeometryStore(const std::string& name) const { return pGeometryStores.at(name); }
@@ -35,7 +32,6 @@ namespace Flint
 		std::shared_ptr<Instance> pInstance = nullptr;
 		std::shared_ptr<Device> pDevice = nullptr;
 
-		std::unordered_map<std::string, GraphicsScene> mGraphicsScenes;
 		std::unordered_map<std::string, std::shared_ptr<GeometryStore>> pGeometryStores;
 
 		ImGuiDockNodeFlags mDockspaceFlags = ImGuiDockNodeFlags_None | ImGuiDockNodeFlags_PassthruCentralNode;
