@@ -34,14 +34,8 @@ namespace Flint
 		pAntiAliasedImage = pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Storage, pOffScreenImage->GetExtent(), pOffScreenImage->GetFormat(), pOffScreenImage->GetLayerCount(), pOffScreenImage->GetMipLevels(), nullptr);
 
 		// Bind the resources.
-		ImageSamplerSpecification samplerSpecification = {};
-
-		pResourcePackage->BindResource(1, pAntiAliasedImage, pAntiAliasedImage->CreateImageView(0, pAntiAliasedImage->GetLayerCount(), 0, pAntiAliasedImage->GetMipLevels(), ImageUsage::Storage), pDevice->CreateImageSampler(samplerSpecification), ImageUsage::Storage);
-
-		//samplerSpecification.mAddressModeU = AddressMode::ClampToBorder;
-		//samplerSpecification.mAddressModeV = AddressMode::ClampToBorder;
-		//samplerSpecification.mAddressModeW = AddressMode::ClampToBorder;
-		pResourcePackage->BindResource(0, pOffScreenImage, pOffScreenImage->CreateImageView(0, pOffScreenImage->GetLayerCount(), 0, pOffScreenImage->GetMipLevels(), ImageUsage::Graphics), pDevice->CreateImageSampler(samplerSpecification));
+		pResourcePackage->BindResource(0, pOffScreenImage, pOffScreenImage->CreateImageView(0, pOffScreenImage->GetLayerCount(), 0, pOffScreenImage->GetMipLevels(), ImageUsage::Graphics), pDevice->CreateImageSampler(ImageSamplerSpecification()));
+		pResourcePackage->BindResource(1, pAntiAliasedImage, pAntiAliasedImage->CreateImageView(0, pAntiAliasedImage->GetLayerCount(), 0, pAntiAliasedImage->GetMipLevels(), ImageUsage::Storage), pDevice->CreateImageSampler(ImageSamplerSpecification()), ImageUsage::Storage);
 	}
 
 	void FXAAPass::Process(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 frameIndex, const UI32 imageIndex)
@@ -49,19 +43,44 @@ namespace Flint
 		pCommandBuffer->BindRenderTarget(pProcessingPipeline->GetScreenBoundRenderTarget().get());
 		pCommandBuffer->UnbindRenderTarget();
 
-		pCommandBuffer->BindComputePipeline(pComputePipeline.get());
-		pCommandBuffer->BindResourcePackage(pComputePipeline.get(), pResourcePackage.get());
+		// Compute FXAA if enabled.
+		if (bEnableFXAA)
+		{
+			pCommandBuffer->BindComputePipeline(pComputePipeline.get());
+			pCommandBuffer->BindResourcePackage(pComputePipeline.get(), pResourcePackage.get());
 
-		const auto workGroup = FBox3D(pAntiAliasedImage->GetExtent().mWidth / 32, pAntiAliasedImage->GetExtent().mHeight / 32, 1);
-		pCommandBuffer->IssueComputeCall(workGroup);
+			const auto workGroup = FBox3D(pAntiAliasedImage->GetExtent().mWidth / 32, pAntiAliasedImage->GetExtent().mHeight / 32, 1);
+			pCommandBuffer->IssueComputeCall(workGroup);
 
-		// Get the color image of the processing pipeline.
-		const auto pColorImage = pProcessingPipeline->GetColorBuffer();
+			// Get the color image of the processing pipeline.
+			const auto pColorImage = pProcessingPipeline->GetColorBuffer();
 
-		// If the color image is present, copy the color image from the off screen pass to it. Else copy the image to the swap chain.
-		if (pColorImage)
-			pCommandBuffer->CopyImage(pAntiAliasedImage.get(), 0, pColorImage.get(), 0);
+			// If the color image is present, copy the color image from the off screen pass to it. Else copy the image to the swap chain.
+			if (pColorImage)
+				pCommandBuffer->CopyImage(pAntiAliasedImage.get(), 0, pColorImage.get(), 0);
+			else
+				pCommandBuffer->CopyToSwapChainImage(pAntiAliasedImage.get(), 0, pProcessingPipeline->GetScreenBoundRenderTarget()->GetSwapChain().get(), imageIndex, 0);
+		}
+
+		// If not just copy the off screen image.
 		else
-			pCommandBuffer->CopyToSwapChainImage(pAntiAliasedImage.get(), 0, pProcessingPipeline->GetScreenBoundRenderTarget()->GetSwapChain().get(), imageIndex, 0);
+		{
+			// Get the color image of the processing pipeline.
+			const auto pColorImage = pProcessingPipeline->GetColorBuffer();
+			const auto pOffScreenImage = pOffScreenPass->GetColorImage();
+
+			// If the color image is present, copy the color image from the off screen pass to it. Else copy the image to the swap chain.
+			if (pColorImage)
+				pCommandBuffer->CopyImage(pOffScreenImage.get(), 0, pColorImage.get(), 0);
+			else
+				pCommandBuffer->CopyToSwapChainImage(pOffScreenImage.get(), 0, pProcessingPipeline->GetScreenBoundRenderTarget()->GetSwapChain().get(), imageIndex, 0);
+		}
+	}
+
+	void FXAAPass::DrawUi()
+	{
+		ImGui::Begin("FXAA");
+		ImGui::Checkbox("Enable/ Disable", &bEnableFXAA);
+		ImGui::End();
 	}
 }

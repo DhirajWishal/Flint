@@ -19,11 +19,12 @@ namespace Flint
 		auto pRenderTarget = pProcessingPipeline->CreateProcessingNode<OffScreenPass>();
 		pRenderTarget->CreateGameObject<Object>(&mApplication, pRenderTarget);
 
-		pProcessingPipeline->CreateProcessingNode<FXAAPass>(pRenderTarget.get());
+		auto pRenderTargetFXAA = pProcessingPipeline->CreateProcessingNode<FXAAPass>(pRenderTarget.get());
 		while (pProcessingPipeline->GetDisplay()->IsOpen())
 		{
 			// Prepare the new frame.
 			mApplication.PrepareNewFrame();
+			pRenderTargetFXAA->DrawUi();
 
 			// Update the pipeline.
 			const UI64 delta = pProcessingPipeline->Update();

@@ -377,17 +377,13 @@ namespace Flint
 			vMB.subresourceRange.levelCount = mipLevels;
 			vMB.subresourceRange.layerCount = layerCount;
 			vMB.subresourceRange.baseArrayLayer = currentLayer;
-			vMB.srcAccessMask = 0; // TODO
-			vMB.dstAccessMask = 0; // TODO
-
-			VkPipelineStageFlags sourceStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
-			VkPipelineStageFlags destinationStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
+			vMB.srcAccessMask = 0;
+			vMB.dstAccessMask = 0;
 
 			switch (vOldLayout)
 			{
 			case VK_IMAGE_LAYOUT_GENERAL:
 			case VK_IMAGE_LAYOUT_UNDEFINED:
-				sourceStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
 				vMB.srcAccessMask = 0;
 				break;
 
@@ -412,12 +408,10 @@ namespace Flint
 				break;
 
 			case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
-				sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
 				vMB.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 				break;
 
 			case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
-				destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
 				vMB.srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
 				break;
 
@@ -425,16 +419,15 @@ namespace Flint
 				FLINT_THROW_RUNTIME_ERROR("Unsupported layout transition!");
 			}
 
+
 			switch (vNewLayout)
 			{
 			case VK_IMAGE_LAYOUT_UNDEFINED:
 			case VK_IMAGE_LAYOUT_GENERAL:
 			case VK_IMAGE_LAYOUT_PRESENT_SRC_KHR:
-				destinationStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
 				break;
 
 			case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
-				destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
 				vMB.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 				break;
 
@@ -443,24 +436,15 @@ namespace Flint
 				break;
 
 			case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
-				destinationStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 				vMB.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 				break;
 
 			case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
-				destinationStage = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 				vMB.dstAccessMask = vMB.dstAccessMask | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 				break;
 
 			case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
-				if (vMB.srcAccessMask == 0)
-				{
-					vMB.srcAccessMask = VK_ACCESS_HOST_WRITE_BIT | VK_ACCESS_TRANSFER_WRITE_BIT;
-					destinationStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
-				}
-				else
-					destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-
+				vMB.srcAccessMask = VK_ACCESS_HOST_WRITE_BIT | VK_ACCESS_TRANSFER_WRITE_BIT;
 				vMB.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 				break;
 
@@ -468,6 +452,8 @@ namespace Flint
 				FLINT_THROW_RUNTIME_ERROR("Unsupported layout transition!");
 			}
 
+			const VkPipelineStageFlags sourceStage = Utilities::GetPipelineStageFlags(vMB.srcAccessMask);
+			const VkPipelineStageFlags destinationStage = Utilities::GetPipelineStageFlags(vMB.dstAccessMask);
 			GetDeviceTable().vkCmdPipelineBarrier(vCommandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &vMB);
 		}
 
@@ -708,6 +694,8 @@ namespace Flint
 			vFeatures.sampleRateShading = VK_TRUE; // Enable sample shading feature for the device
 			vFeatures.fillModeNonSolid = VK_TRUE;
 			vFeatures.logicOp = VK_TRUE;
+			vFeatures.geometryShader = VK_TRUE;
+			vFeatures.tessellationShader = VK_TRUE;
 
 			// Device create info.
 			VkDeviceCreateInfo vDeviceCreateInfo = {};

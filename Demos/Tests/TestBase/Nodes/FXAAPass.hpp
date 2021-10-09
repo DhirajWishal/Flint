@@ -32,11 +32,19 @@ namespace Flint
 		 */
 		virtual void Process(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 frameIndex, const UI32 imageIndex) override;
 
+	public:
+		/**
+		 * Draw the UI for the FXAA pass.
+		 */
+		void DrawUi();
+
 	private:
 		std::shared_ptr<ComputePipeline> pComputePipeline = nullptr;
 		std::shared_ptr<ResourcePackage> pResourcePackage = nullptr;
 		std::shared_ptr<Image> pAntiAliasedImage = nullptr;
 
 		OffScreenPass* pOffScreenPass = nullptr;
+
+		bool bEnableFXAA = true;
 	};
 }

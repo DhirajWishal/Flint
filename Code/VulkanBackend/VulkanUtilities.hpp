@@ -32,6 +32,9 @@ namespace Flint
 			VkSampleCountFlagBits GetSampleCount(MultiSampleCount count);
 			VkImageAspectFlags GetImageAspectFlags(const ImageUsage usage);
 
+			VkAccessFlags GetAccessFlags(VkImageLayout layout);
+			VkPipelineStageFlags GetPipelineStageFlags(VkAccessFlags flags);
+
 			void AddPushConstantRangesToVector(std::vector<VkPushConstantRange>& ranges, const VulkanShader& shader);
 			void AddResourcesToMap(TShaderResourceMap& resources, const VulkanShader& shader);
 		}
