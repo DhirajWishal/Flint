@@ -122,7 +122,7 @@ namespace Flint
 
 		// Compile the shader.
 		if (codeType == ShaderCodeType::GLSL)
-			result = compiler.CompileGlslToSpv(shaderCode, Helpers::GetShaderKindGLSL(shaderType), "", options);
+			result = compiler.CompileGlslToSpv(shaderCode, Helpers::GetShaderKindGLSL(shaderType), shaderFile.string().c_str(), options);
 		//else if (codeType == ShaderCodeType::HLSL)
 		//	result = compiler.CompileGlslToSpv(shaderCode, Helpers::GetShaderKindHLSL(shaderType), shaderFile.filename().string().c_str());
 		else
@@ -130,7 +130,10 @@ namespace Flint
 
 		// Check the compilation result.
 		if (result.GetCompilationStatus() != shaderc_compilation_status::shaderc_compilation_status_success)
+		{
+			std::cerr << result.GetErrorMessage() << std::endl;
 			throw std::range_error("Shader compilation failed!");
+		}
 
 		// Insert the compiled shader code.
 		mShaderCode.resize(std::distance(result.begin(), result.end()) * sizeof(UI32));
@@ -155,13 +158,16 @@ namespace Flint
 
 		// Check the compilation result.
 		if (result.GetCompilationStatus() != shaderc_compilation_status::shaderc_compilation_status_success)
+		{
+			std::cerr << result.GetErrorMessage() << std::endl;
 			throw std::range_error("Shader compilation failed!");
+		}
 
 		// Insert the compiled shader code.
 		mShaderCode.resize(std::distance(result.begin(), result.end()) * sizeof(UI32));
 		std::copy(reinterpret_cast<const unsigned char*>(result.begin()), reinterpret_cast<const unsigned char*>(result.end()), reinterpret_cast<unsigned char*>(mShaderCode.data()));
 	}
-	
+
 	std::shared_ptr<Shader> ShaderCompiler::CreateShader(const std::shared_ptr<Device>& pDevice) const
 	{
 		return pDevice->CreateShader(mType, GetShaderCode());

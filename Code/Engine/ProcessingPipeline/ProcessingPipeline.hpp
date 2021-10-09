@@ -18,7 +18,7 @@ namespace Flint
 	 *
 	 * The client application can derive from this object to extend the features of this object.
 	 */
-	class ProcessingPipeline
+	class ProcessingPipeline : public FObject
 	{
 	public:
 		/**

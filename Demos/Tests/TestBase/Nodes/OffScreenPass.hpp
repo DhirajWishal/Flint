@@ -64,6 +64,13 @@ namespace Flint
 		std::vector<std::shared_ptr<GameObject>> GetGameObjects() const { return pGameObjects; }
 
 		/**
+		 * Get all the render target attachments.
+		 *
+		 * @return The attachment vector.
+		 */
+		std::vector<RenderTargetAttachment> GetImageAttachments() const { return pOffScreenRenderTarget->GetAttachments(); }
+
+		/**
 		 * Get the color image of the off screen render pass.
 		 *
 		 * @return The color image.

@@ -120,7 +120,7 @@ namespace Flint
 		specification.mDynamicStateFlags = Flint::DynamicStateFlags::ViewPort | Flint::DynamicStateFlags::Scissor;
 		specification.bEnableColorBlendLogic = false;
 		specification.mColorBlendLogic = ColorBlendLogic::OR;
-		//specification.mColorBlendAttachments.push_back(ColorBlendAttachment());
+		specification.mColorBlendAttachments.resize(3);
 
 		specification.mColorBlendConstants[0] = 1.0f;
 		specification.mColorBlendConstants[1] = 1.0f;
@@ -144,7 +144,7 @@ namespace Flint
 
 		Flint::VertexDescriptor vDescriptor = {};
 		vDescriptor.mAttributes.push_back(Flint::VertexAttribute(sizeof(float) * 3, Flint::InputAttributeType::Position));
-		//vDescriptor.mAttributes.push_back(Flint::VertexAttribute(sizeof(float) * 3, Flint::InputAttributeType::ColorZero));
+		vDescriptor.mAttributes.push_back(Flint::VertexAttribute(sizeof(float) * 3, Flint::InputAttributeType::Normal));
 		vDescriptor.mAttributes.push_back(Flint::VertexAttribute(sizeof(float) * 2, Flint::InputAttributeType::TextureCoordinatesZero));
 
 		mAsset = Asset("E:\\Projects\\Lighter\\Assets\\2.0\\Sponza\\glTF\\Sponza.gltf", pApplication->GetGeometryStore("Object"), vDescriptor);

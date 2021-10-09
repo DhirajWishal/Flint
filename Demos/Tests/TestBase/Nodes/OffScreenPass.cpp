@@ -30,7 +30,7 @@ namespace Flint
 			pGameObject->Draw(pCommandBuffer, frameIndex);
 
 		// Render the UI components.
-		mImGuiAdapter.Render(pCommandBuffer, frameIndex);
+		//mImGuiAdapter.Render(pCommandBuffer, frameIndex);
 
 		pCommandBuffer->UnbindRenderTarget();
 		//pCommandBuffer->CopyImage(pOffScreenRenderTarget->GetAttachment(0).pImage.get(), 0, pProcessingPipeline->GetColorBuffer().get(), 0);
@@ -44,12 +44,27 @@ namespace Flint
 		const FBox3D extent = FBox3D(frameExtent.mWidth, frameExtent.mHeight, 1);
 
 		std::vector<RenderTargetAttachment> attachments = {};
-		attachments.reserve(2);
 
-		// Create the color image.
+		// Create the color image 0.
 		attachments.emplace_back(
 			RenderTargetAttachment(
 				pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Color | ImageUsage::Storage | ImageUsage::Graphics, extent, pDisplay->GetBestSwapChainFormat(pDevice.get()), 1, 1, nullptr),
+				FColor4D(CreateColor256(32.0f), CreateColor256(32.0f), CreateColor256(32.0f), 1.0f)
+			)
+		);
+
+		// Create the color image 1.
+		attachments.emplace_back(
+			RenderTargetAttachment(
+				pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Color | ImageUsage::Storage | ImageUsage::Graphics, extent, PixelFormat::R8G8B8A8_UNORMAL, 1, 1, nullptr),
+				FColor4D(CreateColor256(32.0f), CreateColor256(32.0f), CreateColor256(32.0f), 1.0f)
+			)
+		);
+
+		// Create the color image 2.
+		attachments.emplace_back(
+			RenderTargetAttachment(
+				pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Color | ImageUsage::Storage | ImageUsage::Graphics, extent, PixelFormat::R8G8B8A8_UNORMAL, 1, 1, nullptr),
 				FColor4D(CreateColor256(32.0f), CreateColor256(32.0f), CreateColor256(32.0f), 1.0f)
 			)
 		);
