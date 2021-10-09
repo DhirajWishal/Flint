@@ -33,14 +33,17 @@ namespace Flint
 		ImageBinding() = default;
 		ImageBinding(const std::shared_ptr<ImageSampler>& pImageSampler, const std::shared_ptr<ImageView>& pImage, const ImageUsage usage)
 			: pImageSampler(pImageSampler), pImageView(pImage), mUsage(usage) {}
+		ImageBinding(const std::shared_ptr<Image>& pImage, const std::shared_ptr<ImageView>& pImageView, const std::shared_ptr<ImageSampler>& pImageSampler, const ImageUsage usage)
+			: pImage(pImage), pImageView(pImageView), pImageSampler(pImageSampler), mUsage(usage) {}
 
-		std::shared_ptr<ImageSampler> pImageSampler = nullptr;
 		std::shared_ptr<Image> pImage = nullptr;
 		std::shared_ptr<ImageView> pImageView = nullptr;
+		std::shared_ptr<ImageSampler> pImageSampler = nullptr;
+
 		UI64 mViewIndex = 0;
 		ImageUsage mUsage = ImageUsage::Graphics;
 
-		const bool operator==(const ImageBinding& other) const { return pImageSampler == other.pImageSampler && pImage == other.pImage && mViewIndex == other.mViewIndex; }
+		const bool operator==(const ImageBinding& other) const { return pImage == other.pImage && pImageView == other.pImageView && pImageSampler == other.pImageSampler && mViewIndex == other.mViewIndex; }
 	};
 
 	/**
@@ -79,10 +82,12 @@ namespace Flint
 		 * Bind resources to the package.
 		 *
 		 * @param binding The binding to bind to.
-		 * @param pImageSampler The image sampler pointer.
 		 * @param pImage The image pointer.
+		 * @param pImageView The image view pointer.
+		 * @param pImageSampler The image sampler pointer.
+		 * @param usage The image usage. This determines what the image usage would be upon binging to the pipeline. Default is Graphics.
 		 */
-		void BindResource(const UI32 binding, const std::shared_ptr<ImageSampler>& pImageSampler, const std::shared_ptr<Image>& pImage, const ImageUsage usage = ImageUsage::Graphics);
+		void BindResource(const UI32 binding, const std::shared_ptr<Image>& pImage, const std::shared_ptr<ImageView>& pImageView, const std::shared_ptr<ImageSampler>& pImageSampler, const ImageUsage usage = ImageUsage::Graphics);
 
 		/**
 		 * Clear the buffer resources.

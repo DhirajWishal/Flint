@@ -235,6 +235,11 @@ namespace Flint
 			return pBuffer;
 		}
 
+		std::shared_ptr<ImageView> VulkanImage::CreateImageView(const UI32 baseLayerIndex, const UI32 layerCount, const UI32 baseMipLevel, const UI32 mipLevels, const ImageUsage usage)
+		{
+			return std::make_shared<VulkanImageView>(pDevice, shared_from_this(), baseLayerIndex, layerCount, baseMipLevel, mipLevels, usage);
+		}
+
 		void VulkanImage::Terminate()
 		{
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
@@ -242,11 +247,6 @@ namespace Flint
 			vmaDestroyImage(vDevice.GetVmaAllocator(), vImage, vmaAllocation);
 
 			bIsTerminated = true;
-		}
-
-		std::shared_ptr<ImageView> VulkanImage::CreateImageView(const UI32 baseLayerIndex, const UI32 layerCount, const UI32 baseMipLevel, const UI32 mipLevels, const ImageUsage usage)
-		{
-			return std::make_shared<VulkanImageView>(pDevice, shared_from_this(), baseLayerIndex, layerCount, baseMipLevel, mipLevels, usage);
 		}
 
 		void VulkanImage::CopyFromImage(VkCommandBuffer vCommandBuffer, VkImage vSrcImage, VkImageLayout vSrcLayout, VkOffset3D srcOffset, VkOffset3D dstOffset, VkImageSubresourceLayers subresourceLayers)

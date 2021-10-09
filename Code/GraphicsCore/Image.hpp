@@ -44,6 +44,17 @@ namespace Flint
 		virtual std::shared_ptr<Buffer> CopyToBuffer() = 0;
 
 		/**
+		 * Create a new image view.
+		 *
+		 * @param baseLayerIndex The base layer index to start covering from.
+		 * @param layerCount The number of layers for the image view to cover.
+		 * @param baseMipLevel The base mip level to start from.
+		 * @param mipLevels The mip levels to cover.
+		 * @param usage The image usage.
+		 */
+		virtual std::shared_ptr<ImageView> CreateImageView(const UI32 baseLayerIndex, const UI32 layerCount, const UI32 baseMipLevel, const UI32 mipLevels, const ImageUsage usage) = 0;
+
+		/**
 		 * Get the value of a single pixel.
 		 *
 		 * @tparam Type: The type of the pixel.
@@ -65,17 +76,6 @@ namespace Flint
 
 			return pixel;
 		}
-
-		/**
-		 * Create a new image view.
-		 *
-		 * @param baseLayerIndex The base layer index to start covering from.
-		 * @param layerCount The number of layers for the image view to cover.
-		 * @param baseMipLevel The base mip level to start from.
-		 * @param mipLevels The mip levels to cover.
-		 * @param usage The image usage.
-		 */
-		virtual std::shared_ptr<ImageView> CreateImageView(const UI32 baseLayerIndex, const UI32 layerCount, const UI32 baseMipLevel, const UI32 mipLevels, const ImageUsage usage) = 0;
 
 	public:
 		/**
@@ -123,7 +123,7 @@ namespace Flint
 	public:
 		/**
 		 * Get the best mip levels for an image.
-		 * 
+		 *
 		 * @param extent The extent of the image.
 		 * @return The mip levels.
 		 */

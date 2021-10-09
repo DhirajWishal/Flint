@@ -42,12 +42,12 @@ namespace Flint
 		auto pPackage = pPipeline->CreateResourcePackage(0);
 
 		Flint::ImageSamplerSpecification specification = {};
-		pPackage->BindResource(0, pDevice->CreateImageSampler(specification), pTexture);
+		pPackage->BindResource(0, pTexture, pTexture->CreateImageView(0, pTexture->GetLayerCount(), 0, pTexture->GetMipLevels(), ImageUsage::Graphics), pDevice->CreateImageSampler(specification));
 
 		specification.mAddressModeU = AddressMode::ClampToEdge;
 		specification.mAddressModeV = AddressMode::ClampToEdge;
 		specification.mAddressModeW = AddressMode::ClampToEdge;
-		pPackage->BindResource(1, pDevice->CreateImageSampler(specification), pCubeMap, ImageUsage::Storage);
+		pPackage->BindResource(1, pCubeMap, pCubeMap->CreateImageView(0, pCubeMap->GetLayerCount(), 0, pCubeMap->GetMipLevels(), ImageUsage::Graphics), pDevice->CreateImageSampler(specification), ImageUsage::Storage);
 
 		auto pAllocator = pDevice->CreateCommandBufferAllocator(1);
 		auto pCommandBuffers = pAllocator->CreateCommandBuffers();

@@ -35,6 +35,7 @@ namespace Flint
 		ImGuiAdapter();
 
 		void Initialize(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<ScreenBoundRenderTarget>& pRenderTarget);
+		void Initialize(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<OffScreenRenderTarget>& pRenderTarget);
 
 		void Render(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 index);
 		void Terminate();
@@ -44,14 +45,15 @@ namespace Flint
 	private:
 		void SetupImGui();
 		void SetupGeometryStore();
-		void SetupPipeline();
+		void SetupPipeline(const std::shared_ptr<ScreenBoundRenderTarget>& pRenderTarget);
+		void SetupPipeline(const std::shared_ptr<OffScreenRenderTarget>& pRenderTarget);
 		void SetupImage();
 
 		void UpdateGeometryStore();
 
 	public:
 		std::shared_ptr<Device> pDevice = nullptr;
-		std::shared_ptr<ScreenBoundRenderTarget> pRenderTarget = nullptr;
+		std::shared_ptr<RenderTarget> pRenderTarget = nullptr;
 
 		std::shared_ptr<GraphicsPipeline> pPipeline = nullptr;
 

@@ -34,8 +34,14 @@ namespace Flint
 		pAntiAliasedImage = pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Storage, pOffScreenImage->GetExtent(), pOffScreenImage->GetFormat(), pOffScreenImage->GetLayerCount(), pOffScreenImage->GetMipLevels(), nullptr);
 
 		// Bind the resources.
-		pResourcePackage->BindResource(0, pDevice->CreateImageSampler(ImageSamplerSpecification()), pOffScreenImage);
-		pResourcePackage->BindResource(1, pDevice->CreateImageSampler(ImageSamplerSpecification()), pAntiAliasedImage, ImageUsage::Storage);
+		ImageSamplerSpecification samplerSpecification = {};
+
+		pResourcePackage->BindResource(1, pAntiAliasedImage, pAntiAliasedImage->CreateImageView(0, pAntiAliasedImage->GetLayerCount(), 0, pAntiAliasedImage->GetMipLevels(), ImageUsage::Storage), pDevice->CreateImageSampler(samplerSpecification), ImageUsage::Storage);
+
+		//samplerSpecification.mAddressModeU = AddressMode::ClampToBorder;
+		//samplerSpecification.mAddressModeV = AddressMode::ClampToBorder;
+		//samplerSpecification.mAddressModeW = AddressMode::ClampToBorder;
+		pResourcePackage->BindResource(0, pOffScreenImage, pOffScreenImage->CreateImageView(0, pOffScreenImage->GetLayerCount(), 0, pOffScreenImage->GetMipLevels(), ImageUsage::Graphics), pDevice->CreateImageSampler(samplerSpecification));
 	}
 
 	void FXAAPass::Process(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 frameIndex, const UI32 imageIndex)
@@ -45,7 +51,9 @@ namespace Flint
 
 		pCommandBuffer->BindComputePipeline(pComputePipeline.get());
 		pCommandBuffer->BindResourcePackage(pComputePipeline.get(), pResourcePackage.get());
-		pCommandBuffer->IssueComputeCall(FBox3D(pAntiAliasedImage->GetExtent().mWidth / 32, pAntiAliasedImage->GetExtent().mHeight / 32, 1));
+
+		const auto workGroup = FBox3D(pAntiAliasedImage->GetExtent().mWidth / 32, pAntiAliasedImage->GetExtent().mHeight / 32, 1);
+		pCommandBuffer->IssueComputeCall(workGroup);
 
 		// Get the color image of the processing pipeline.
 		const auto pColorImage = pProcessingPipeline->GetColorBuffer();

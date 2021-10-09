@@ -20,6 +20,7 @@ namespace Flint
 			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 			vCreateInfo.flags = 0;
 			vCreateInfo.pNext = VK_NULL_HANDLE;
+			vCreateInfo.image = vImage.GetImage();
 			vCreateInfo.viewType = vImage.GetImageViewType();
 			vCreateInfo.format = vImage.GetImageFormat();
 			vCreateInfo.components = vImage.GetComponentMapping();

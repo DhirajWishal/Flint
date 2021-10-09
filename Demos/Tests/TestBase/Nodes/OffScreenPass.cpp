@@ -17,6 +17,7 @@ namespace Flint
 		const auto frameExtent = GetExtent();
 
 		pOffScreenRenderTarget = pDevice->CreateOffScreenRenderTarget(frameExtent, GetBufferCount(), CreateAttachments());
+		mImGuiAdapter.Initialize(pDevice, pOffScreenRenderTarget);
 	}
 
 	void OffScreenPass::Process(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 frameIndex, const UI32 imageIndex)
@@ -27,6 +28,9 @@ namespace Flint
 		// Draw all the game objects.
 		for (auto const& pGameObject : pGameObjects)
 			pGameObject->Draw(pCommandBuffer, frameIndex);
+
+		// Render the UI components.
+		mImGuiAdapter.Render(pCommandBuffer, frameIndex);
 
 		pCommandBuffer->UnbindRenderTarget();
 		//pCommandBuffer->CopyImage(pOffScreenRenderTarget->GetAttachment(0).pImage.get(), 0, pProcessingPipeline->GetColorBuffer().get(), 0);

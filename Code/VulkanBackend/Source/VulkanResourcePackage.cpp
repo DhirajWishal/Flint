@@ -5,6 +5,7 @@
 #include "VulkanBackend/VulkanResourcePackager.hpp"
 #include "VulkanBackend/VulkanBuffer.hpp"
 #include "VulkanBackend/VulkanImage.hpp"
+#include "VulkanBackend/VulkanImageView.hpp"
 #include "VulkanBackend/VulkanImageSampler.hpp"
 
 namespace Flint
@@ -77,7 +78,7 @@ namespace Flint
 						throw backend_error("Requested image sampler at binding location: " + std::to_string(images.first) + " is not submitted! Make sure that all the bindings are properly submitted.");
 
 					auto& vImage = image.pImage->StaticCast<VulkanImage>();
-					pImageInfos[index].imageView = vImage.GetImageView(static_cast<UI32>(image.mViewIndex));
+					pImageInfos[index].imageView = image.pImageView->StaticCast<VulkanImageView>().GetImageView();
 					pImageInfos[index].imageLayout = vImage.GetImageLayout(image.mUsage);
 					pImageInfos[index].sampler = image.pImageSampler->StaticCast<VulkanImageSampler>().GetSampler();
 					index++;

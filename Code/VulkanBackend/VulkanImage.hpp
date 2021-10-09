@@ -27,9 +27,8 @@ namespace Flint
 
 			virtual void GenerateMipMaps() override;
 			virtual std::shared_ptr<Buffer> CopyToBuffer() override;
-			virtual void Terminate() override;
-
 			virtual std::shared_ptr<ImageView> CreateImageView(const UI32 baseLayerIndex, const UI32 layerCount, const UI32 baseMipLevel, const UI32 mipLevels, const ImageUsage usage) override;
+			virtual void Terminate() override;
 
 			void CopyFromImage(VkCommandBuffer vCommandBuffer, VkImage vSrcImage, VkImageLayout vSrcLayout, VkOffset3D srcOffset, VkOffset3D dstOffset, VkImageSubresourceLayers subresourceLayers);
 			void CopyFromImage(VkImage vSrcImage, VkImageLayout vSrcLayout, VkOffset3D srcOffset, VkOffset3D dstOffset, VkImageSubresourceLayers subresourceLayers);

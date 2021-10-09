@@ -5,12 +5,13 @@
 
 #include "optick.h"
 
+#include <imgui.h>
+
 namespace Flint
 {
 	DefaultProcessingPipeline::DefaultProcessingPipeline(const std::shared_ptr<Device>& pDevice, const FBox2D frameExtent, const std::string& displayTitle, const UI32 pipelineCount, const MultiSampleCount msaaCount, const bool forceColorBuffer, const bool forceDepthBuffer)
 		: ProcessingPipeline(pDevice, frameExtent, displayTitle, pipelineCount, msaaCount, forceColorBuffer, forceDepthBuffer)
 	{
-		mImGuiAdapter.Initialize(pDevice, pScreenBoundRenderTarget);
 		mCamera.SetAspectRatio(pDisplay->GetExtent());
 	}
 

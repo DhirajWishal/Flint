@@ -24,12 +24,12 @@ namespace Flint
 		bIsUpdated = true;
 	}
 
-	void ResourcePackage::BindResource(const UI32 binding, const std::shared_ptr<ImageSampler>& pImageSampler, const std::shared_ptr<Image>& pImage, const ImageUsage usage)
+	void ResourcePackage::BindResource(const UI32 binding, const std::shared_ptr<Image>& pImage, const std::shared_ptr<ImageView>& pImageView, const std::shared_ptr<ImageSampler>& pImageSampler, const ImageUsage usage)
 	{
 		if (mImageBindings.find(binding) == mImageBindings.end())
 			throw std::invalid_argument("Submitted binding is not valid!");
 
-		mImageBindings[binding].push_back(ImageBinding(pImageSampler, pImage, usage));
+		mImageBindings[binding].push_back(ImageBinding(pImage, pImageView, pImageSampler, usage));
 		bIsUpdated = true;
 	}
 

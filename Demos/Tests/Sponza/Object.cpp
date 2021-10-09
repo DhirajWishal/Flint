@@ -214,7 +214,7 @@ namespace Flint
 					{
 						auto pPackage = pPipeline->CreateResourcePackage(0);
 						pPackage->BindResource(0, pUniformBuffer);
-						pPackage->BindResource(1, pSampler, pImage);
+						pPackage->BindResource(1, pImage, pImage->CreateImageView(0, pImage->GetLayerCount(), 0, pImage->GetMipLevels(), ImageUsage::Graphics), pSampler);
 						pPackage->PrepareIfNecessary();
 
 						pPackageSets[i].push_back(std::move(pPackage));

@@ -1,11 +1,13 @@
 #version 450 core
 
 layout(binding = 0) uniform sampler2D sceneFrame;
-layout(binding = 1, rgba8) writeonly uniform image2D outputImage;
+layout(binding = 1, rgba8) restrict writeonly uniform image2D outputImage;
 
 layout(local_size_x=32, local_size_y=32, local_size_z=1) in;
 void main(void)
 {
-	const ivec2 index = ivec2(gl_GlobalInvocationID.x, gl_GlobalInvocationID.y);
-	imageStore(outputImage, index, texture(sceneFrame, index));
+	const ivec2 index = ivec2(gl_GlobalInvocationID);
+	const vec2 uv = vec2(index) / vec2(textureSize(sceneFrame, 0).xy);
+
+	imageStore(outputImage, index, texture(sceneFrame, uv));
 }

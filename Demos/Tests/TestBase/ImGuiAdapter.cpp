@@ -43,7 +43,38 @@ namespace Flint
 
 		SetupImGui();
 		SetupGeometryStore();
-		SetupPipeline();
+		SetupPipeline(pRenderTarget);
+		SetupImage();
+	}
+
+	void ImGuiAdapter::Initialize(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<OffScreenRenderTarget>& pRenderTarget)
+	{
+		OPTICK_EVENT();
+
+		this->pDevice = pDevice;
+		this->pRenderTarget = pRenderTarget;
+
+		if (!std::filesystem::exists("Flint\\Shaders\\ImGui.vert.fsc"))
+		{
+			ShaderCompiler shaderCompiler(std::filesystem::path("E:\\Flint\\Demos\\Tests\\ImageBasedLighting\\Shaders\\ImGui\\UI.vert"), ShaderCodeType::GLSL, ShaderType::Vertex);
+			pVertexShader = shaderCompiler.CreateShader(pDevice);
+			pVertexShader->CreateCache("Flint\\Shaders\\ImGui.vert.fsc");
+		}
+		else
+			pVertexShader = pDevice->CreateShader(ShaderType::Vertex, std::filesystem::path("Flint\\Shaders\\ImGui.vert.fsc"));
+
+		if (!std::filesystem::exists("Flint\\Shaders\\ImGui.frag.fsc"))
+		{
+			ShaderCompiler shaderCompiler(std::filesystem::path("E:\\Flint\\Demos\\Tests\\ImageBasedLighting\\Shaders\\ImGui\\UI.frag"), ShaderCodeType::GLSL, ShaderType::Fragment);
+			pFragmentShader = shaderCompiler.CreateShader(pDevice);
+			pFragmentShader->CreateCache("Flint\\Shaders\\ImGui.frag.fsc");
+		}
+		else
+			pFragmentShader = pDevice->CreateShader(ShaderType::Fragment, std::filesystem::path("Flint\\Shaders\\ImGui.frag.fsc"));
+
+		SetupImGui();
+		SetupGeometryStore();
+		SetupPipeline(pRenderTarget);
 		SetupImage();
 	}
 
@@ -108,6 +139,63 @@ namespace Flint
 				vertexOffset += pCommandList->VtxBuffer.Size;
 			}
 		}
+	}
+
+	void ImGuiAdapter::SetupPipeline(const std::shared_ptr<ScreenBoundRenderTarget>& pRenderTarget)
+	{
+		OPTICK_EVENT();
+
+		GraphicsPipelineSpecification specification = {};
+		specification.mRasterizationSamples = MultiSampleCount::One;
+		specification.mDynamicStateFlags = DynamicStateFlags::ViewPort | DynamicStateFlags::Scissor;
+		specification.mCullMode = CullMode::None;
+		specification.mColorBlendAttachments[0].mEnableBlend = true;
+		specification.mColorBlendAttachments[0].mSrcBlendFactor = ColorBlendFactor::SourceAlpha;
+		specification.mColorBlendAttachments[0].mDstBlendFactor = ColorBlendFactor::OneMinusSourceAlpha;
+		specification.mColorBlendAttachments[0].mSrcAlphaBlendFactor = ColorBlendFactor::OneMinusSourceAlpha;
+		specification.mColorBlendAttachments[0].mDstAlphaBlendFactor = ColorBlendFactor::Zero;
+		specification.mDepthCompareLogic = DepthCompareLogic::LessOrEqual;
+
+		specification.mColorBlendConstants[0] = 0.0f;
+		specification.mColorBlendConstants[1] = 0.0f;
+		specification.mColorBlendConstants[2] = 0.0f;
+		specification.mColorBlendConstants[3] = 0.0f;
+
+		specification.bEnableSampleShading = false;
+		specification.mMinSampleShading = 0.0f;
+
+		specification.mVertexInputAttributeMap[0] = pVertexShader->GetInputAttributes();
+
+		pPipeline = pDevice->CreateGraphicsPipeline("ImGUI", pRenderTarget, pVertexShader, nullptr, nullptr, nullptr, pFragmentShader, specification);
+	}
+
+	void ImGuiAdapter::SetupPipeline(const std::shared_ptr<OffScreenRenderTarget>& pRenderTarget)
+	{
+		OPTICK_EVENT();
+
+		GraphicsPipelineSpecification specification = {};
+		//specification.mRasterizationSamples = pDevice->GetSupportedMultiSampleCount();
+		specification.mRasterizationSamples = MultiSampleCount::One;
+		specification.mDynamicStateFlags = DynamicStateFlags::ViewPort | DynamicStateFlags::Scissor;
+		specification.mCullMode = CullMode::None;
+		specification.mColorBlendAttachments[0].mEnableBlend = true;
+		specification.mColorBlendAttachments[0].mSrcBlendFactor = ColorBlendFactor::SourceAlpha;
+		specification.mColorBlendAttachments[0].mDstBlendFactor = ColorBlendFactor::OneMinusSourceAlpha;
+		specification.mColorBlendAttachments[0].mSrcAlphaBlendFactor = ColorBlendFactor::OneMinusSourceAlpha;
+		specification.mColorBlendAttachments[0].mDstAlphaBlendFactor = ColorBlendFactor::Zero;
+		specification.mDepthCompareLogic = DepthCompareLogic::LessOrEqual;
+
+		specification.mColorBlendConstants[0] = 0.0f;
+		specification.mColorBlendConstants[1] = 0.0f;
+		specification.mColorBlendConstants[2] = 0.0f;
+		specification.mColorBlendConstants[3] = 0.0f;
+
+		specification.bEnableSampleShading = false;
+		specification.mMinSampleShading = 0.0f;
+
+		specification.mVertexInputAttributeMap[0] = pVertexShader->GetInputAttributes();
+
+		pPipeline = pDevice->CreateGraphicsPipeline("ImGUI", pRenderTarget, pVertexShader, nullptr, nullptr, nullptr, pFragmentShader, specification);
 	}
 
 	void ImGuiAdapter::Terminate()
@@ -178,35 +266,6 @@ namespace Flint
 		pGeometryStore = pDevice->CreateGeometryStore(pVertexShader->GetInputAttributes(), sizeof(UI16), BufferMemoryProfile::TransferFriendly);
 	}
 
-	void ImGuiAdapter::SetupPipeline()
-	{
-		OPTICK_EVENT();
-
-		GraphicsPipelineSpecification specification = {};
-		//specification.mRasterizationSamples = pDevice->GetSupportedMultiSampleCount();
-		specification.mRasterizationSamples = MultiSampleCount::One;
-		specification.mDynamicStateFlags = DynamicStateFlags::ViewPort | DynamicStateFlags::Scissor;
-		specification.mCullMode = CullMode::None;
-		specification.mColorBlendAttachments[0].mEnableBlend = true;
-		specification.mColorBlendAttachments[0].mSrcBlendFactor = ColorBlendFactor::SourceAlpha;
-		specification.mColorBlendAttachments[0].mDstBlendFactor = ColorBlendFactor::OneMinusSourceAlpha;
-		specification.mColorBlendAttachments[0].mSrcAlphaBlendFactor = ColorBlendFactor::OneMinusSourceAlpha;
-		specification.mColorBlendAttachments[0].mDstAlphaBlendFactor = ColorBlendFactor::Zero;
-		specification.mDepthCompareLogic = DepthCompareLogic::LessOrEqual;
-
-		specification.mColorBlendConstants[0] = 0.0f;
-		specification.mColorBlendConstants[1] = 0.0f;
-		specification.mColorBlendConstants[2] = 0.0f;
-		specification.mColorBlendConstants[3] = 0.0f;
-
-		specification.bEnableSampleShading = false;
-		specification.mMinSampleShading = 0.0f;
-
-		specification.mVertexInputAttributeMap[0] = pVertexShader->GetInputAttributes();
-
-		pPipeline = pDevice->CreateGraphicsPipeline("ImGUI", pRenderTarget, pVertexShader, nullptr, nullptr, nullptr, pFragmentShader, specification);
-	}
-
 	void ImGuiAdapter::SetupImage()
 	{
 		OPTICK_EVENT();
@@ -230,7 +289,7 @@ namespace Flint
 			pFontSampler = pDevice->CreateImageSampler(specification);
 
 			auto pResourcePack = pPipeline->CreateResourcePackage(0);
-			pResourcePack->BindResource(0, pFontSampler, pFontImage);
+			pResourcePack->BindResource(0, pFontImage, pFontImage->CreateImageView(0, pFontImage->GetLayerCount(), 0, pFontImage->GetMipLevels(), ImageUsage::Graphics), pFontSampler);
 			pResourcePacks.push_back(pResourcePack);
 		}
 	}

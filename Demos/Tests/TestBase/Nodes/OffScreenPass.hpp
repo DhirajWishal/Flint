@@ -6,6 +6,7 @@
 #include "Engine/ProcessingPipeline/Nodes/ProcessingNode.hpp"
 #include "GraphicsCore/OffScreenRenderTarget.hpp"
 #include "TestBase/GameObject.hpp"
+#include "TestBase/ImGuiAdapter.hpp"
 
 namespace Flint
 {
@@ -85,6 +86,8 @@ namespace Flint
 		std::vector<RenderTargetAttachment> CreateAttachments() const;
 
 	private:
+		ImGuiAdapter mImGuiAdapter = {};
+
 		std::vector<std::shared_ptr<GameObject>> pGameObjects = {};
 		std::shared_ptr<OffScreenRenderTarget> pOffScreenRenderTarget = nullptr;
 	};

@@ -5,7 +5,6 @@
 
 #include "Engine/ProcessingPipeline/ProcessingPipeline.hpp"
 #include "Camera.hpp"
-#include "ImGuiAdapter.hpp"
 
 namespace Flint
 {
@@ -49,6 +48,5 @@ namespace Flint
 		std::chrono::time_point<std::chrono::steady_clock> mOldTimePoint = {};
 
 		Camera mCamera = {};
-		ImGuiAdapter mImGuiAdapter = {};
 	};
 }
