@@ -54,17 +54,17 @@ namespace Flint
 		);
 
 		// Create the color image 1.
-		attachments.emplace_back(
-			RenderTargetAttachment(
-				pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Color | ImageUsage::Storage | ImageUsage::Graphics, extent, PixelFormat::R8G8B8A8_UNORMAL, 1, 1, nullptr),
-				FColor4D(CreateColor256(32.0f), CreateColor256(32.0f), CreateColor256(32.0f), 1.0f)
-			)
-		);
+		//attachments.emplace_back(
+		//	RenderTargetAttachment(
+		//		pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Color | ImageUsage::Storage | ImageUsage::Graphics, extent, PixelFormat::R16G16B16A16_SFLOAT, 1, 1, nullptr),
+		//		FColor4D(CreateColor256(32.0f), CreateColor256(32.0f), CreateColor256(32.0f), 1.0f)
+		//	)
+		//);
 
 		// Create the color image 2.
 		attachments.emplace_back(
 			RenderTargetAttachment(
-				pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Color | ImageUsage::Storage | ImageUsage::Graphics, extent, PixelFormat::R8G8B8A8_UNORMAL, 1, 1, nullptr),
+				pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Color | ImageUsage::Storage | ImageUsage::Graphics, extent, PixelFormat::R16G16B16A16_SFLOAT, 1, 1, nullptr),
 				FColor4D(CreateColor256(32.0f), CreateColor256(32.0f), CreateColor256(32.0f), 1.0f)
 			)
 		);
@@ -72,7 +72,7 @@ namespace Flint
 		// Create the depth image.
 		attachments.emplace_back(
 			RenderTargetAttachment(
-				pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Depth, extent, PixelFormat::D24_UNORMAL_S8_UINT, 1, 1, nullptr),
+				pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Depth | ImageUsage::Graphics, extent, PixelFormat::D16_SINT, 1, 1, nullptr),
 				DepthClearValues(1.0f, 0)
 			)
 		);

@@ -4,10 +4,9 @@ layout (location = 0) in vec3 inPosition;
 layout (location = 1) in vec3 inNormal;
 layout (location = 2) in vec2 inTextureCoordinates;
 
-layout (location = 0) out vec4 outPosition;
-layout (location = 1) out vec3 outNormal;
-layout (location = 2) out vec2 outTexCoordinate;
-layout (location = 3) out float bias;
+layout (location = 0) out vec3 outNormal;
+layout (location = 1) out vec2 outTexCoordinate;
+layout (location = 2) out float bias;
 
 layout (binding = 0) uniform UBO 
 {
@@ -19,10 +18,9 @@ layout (binding = 0) uniform UBO
 
 void main()
 {
-    outPosition = Ubo.projection * Ubo.view * Ubo.model * vec4(inPosition, 1.0f);;
     outNormal = inNormal;
     outTexCoordinate = inTextureCoordinates;
     bias = Ubo.mipBias;
 
-    gl_Position = outPosition;
+    gl_Position = Ubo.projection * Ubo.view * Ubo.model * vec4(inPosition, 1.0f);
 }  

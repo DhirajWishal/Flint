@@ -20,7 +20,7 @@ namespace Flint
 		{
 			ShaderCompiler compiler(std::filesystem::path("Shaders/SSR/ScreenSpaceReflections.comp"), ShaderCodeType::GLSL, ShaderType::Compute);
 			pShader = compiler.CreateShader(pDevice);
-			//pShader->CreateCache("Flint/Shaders/ScreenSpaceReflections.comp.fsc");
+			pShader->CreateCache("Flint/Shaders/ScreenSpaceReflections.comp.fsc");
 		}
 		else
 			pShader = pDevice->CreateShader(ShaderType::Compute, std::filesystem::path("Flint/Shaders/ScreenSpaceReflections.comp.fsc"));
@@ -48,7 +48,7 @@ namespace Flint
 			pResourcePackage->BindResource(1, pOffScreenImage, pOffScreenImage->CreateImageView(0, pOffScreenImage->GetLayerCount(), 0, pOffScreenImage->GetMipLevels(), ImageUsage::Graphics), pDevice->CreateImageSampler(ImageSamplerSpecification()));
 
 			pOffScreenImage = pOffScreenPass->GetImageAttachments()[2].pImage;
-			pResourcePackage->BindResource(2, pOffScreenImage, pOffScreenImage->CreateImageView(0, pOffScreenImage->GetLayerCount(), 0, pOffScreenImage->GetMipLevels(), ImageUsage::Graphics), pDevice->CreateImageSampler(ImageSamplerSpecification()));
+			pResourcePackage->BindResource(2, pOffScreenImage, pOffScreenImage->CreateImageView(0, pOffScreenImage->GetLayerCount(), 0, pOffScreenImage->GetMipLevels(), ImageUsage::Depth), pDevice->CreateImageSampler(ImageSamplerSpecification()));
 
 			pResourcePackage->BindResource(3, pOutputImage, pOutputImage->CreateImageView(0, pOutputImage->GetLayerCount(), 0, pOutputImage->GetMipLevels(), ImageUsage::Storage), pDevice->CreateImageSampler(ImageSamplerSpecification()), ImageUsage::Storage);
 
@@ -56,14 +56,14 @@ namespace Flint
 
 			pResourcePackages.emplace_back(pResourcePackage);
 		}
-
-		pLensData = static_cast<LensProjection*>(pLensProjection->MapMemory(pLensProjection->GetSize()));
-		pLensData->mMatrix = pProcessingPipeline->StaticCast<DefaultProcessingPipeline>().GetCamera().GetMatrix().mProjectionMatrix;
-		pLensProjection->UnmapMemory();
 	}
 
 	void ScreenSpaceReflectionPass::Process(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 frameIndex, const UI32 imageIndex)
 	{
+		pLensData = static_cast<LensProjection*>(pLensProjection->MapMemory(pLensProjection->GetSize()));
+		pLensData->mMatrix = pProcessingPipeline->StaticCast<DefaultProcessingPipeline>().GetCamera().GetMatrix().mProjectionMatrix;
+		pLensProjection->UnmapMemory();
+
 		pCommandBuffer->BindRenderTarget(pProcessingPipeline->GetScreenBoundRenderTarget().get());
 		pCommandBuffer->UnbindRenderTarget();
 

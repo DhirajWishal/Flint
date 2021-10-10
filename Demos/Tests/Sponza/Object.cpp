@@ -120,7 +120,7 @@ namespace Flint
 		specification.mDynamicStateFlags = Flint::DynamicStateFlags::ViewPort | Flint::DynamicStateFlags::Scissor;
 		specification.bEnableColorBlendLogic = false;
 		specification.mColorBlendLogic = ColorBlendLogic::OR;
-		specification.mColorBlendAttachments.resize(3);
+		specification.mColorBlendAttachments.resize(2);
 
 		specification.mColorBlendConstants[0] = 1.0f;
 		specification.mColorBlendConstants[1] = 1.0f;
