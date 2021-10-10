@@ -463,7 +463,7 @@ namespace Flint
 			VkImageSubresourceLayers vLayers = {};
 			vLayers.baseArrayLayer = 0;
 			vLayers.layerCount = vSourceImage.GetLayerCount();
-			vLayers.mipLevel = vSourceImage.GetMipLevels();
+			vLayers.mipLevel = 0; // TODO
 			vLayers.aspectMask = vSourceImage.GetAspectFlags();
 
 			const auto vOldDstLayout = vDestinationImage.GetImageLayout();
@@ -531,6 +531,13 @@ namespace Flint
 
 			FLINT_VK_ASSERT(pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetDeviceTable().vkEndCommandBuffer(vCommandBuffer));
 			bIsRecording = false;
+		}
+
+		void VulkanCommandBuffer::IncludeSwapChain(SwapChain* pSwapChain)
+		{
+			auto const& vSwapChain = pSwapChain->StaticCast<VulkanSwapChain>();
+			vInFlightSemaphores.push_back(vSwapChain.GetInFlightSemaphore());
+			vRenderFinishedSemaphores.push_back(vSwapChain.GetRenderFinishedSemaphore());
 		}
 
 		void VulkanCommandBuffer::Terminate()

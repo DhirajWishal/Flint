@@ -51,6 +51,8 @@ namespace Flint
 
 			virtual void EndBufferRecording() override;
 
+			virtual void IncludeSwapChain(SwapChain* pSwapChain) override;
+
 			virtual void Terminate() override;
 
 		public:

@@ -260,6 +260,10 @@ namespace Flint
 			vImageCopy.srcOffset = srcOffset;
 			vImageCopy.dstOffset = dstOffset;
 			vImageCopy.srcSubresource = subresourceLayers;
+			vImageCopy.dstSubresource.layerCount = mLayerCount;
+			vImageCopy.dstSubresource.aspectMask = GetAspectFlags();
+			vImageCopy.dstSubresource.baseArrayLayer = 0;
+			vImageCopy.dstSubresource.mipLevel = 0; // TODO
 
 			vDevice.GetDeviceTable().vkCmdCopyImage(vCommandBuffer, vSrcImage, vSrcLayout, vImage, vCurrentLayout, 1, &vImageCopy);
 		}
@@ -314,10 +318,6 @@ namespace Flint
 			vDesc.format = GetImageFormat();
 			vDesc.samples = Utilities::GetSampleCount(mMultiSampleCount);
 			vDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-			vDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-			vDesc.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-			vDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-			vDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 
 			if ((mUsage & ImageUsage::Graphics) == ImageUsage::Graphics)
 				vDesc.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -330,6 +330,48 @@ namespace Flint
 
 			else
 				vDesc.finalLayout = vCurrentLayout;
+
+			vDesc.loadOp = VkAttachmentLoadOp::VK_ATTACHMENT_LOAD_OP_CLEAR;
+			vDesc.storeOp = VkAttachmentStoreOp::VK_ATTACHMENT_STORE_OP_STORE;
+			vDesc.stencilLoadOp = VkAttachmentLoadOp::VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+			vDesc.stencilStoreOp = VkAttachmentStoreOp::VK_ATTACHMENT_STORE_OP_DONT_CARE;
+
+			if (mImageRenderingTargetSpecification == ImageRenderTargetSpecification(0))
+				return vDesc;
+
+			// Resolve load operation.
+			if (mImageRenderingTargetSpecification & ImageRenderTargetSpecification::LoadOnLoad)
+				vDesc.loadOp = VkAttachmentLoadOp::VK_ATTACHMENT_LOAD_OP_LOAD;
+
+			else if (mImageRenderingTargetSpecification & ImageRenderTargetSpecification::ClearOnLoad)
+				vDesc.loadOp = VkAttachmentLoadOp::VK_ATTACHMENT_LOAD_OP_CLEAR;
+
+			else if (mImageRenderingTargetSpecification & ImageRenderTargetSpecification::DiscardLoad)
+				vDesc.loadOp = VkAttachmentLoadOp::VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+
+			// Resolve store operation.
+			if (mImageRenderingTargetSpecification & ImageRenderTargetSpecification::StoreOnStore)
+				vDesc.storeOp = VkAttachmentStoreOp::VK_ATTACHMENT_STORE_OP_STORE;
+
+			else if (mImageRenderingTargetSpecification & ImageRenderTargetSpecification::DiscardStore)
+				vDesc.storeOp = VkAttachmentStoreOp::VK_ATTACHMENT_STORE_OP_DONT_CARE;
+
+			// Resolve stencil load operation.
+			if (mImageRenderingTargetSpecification & ImageRenderTargetSpecification::StencilLoadOnLoad)
+				vDesc.stencilLoadOp = VkAttachmentLoadOp::VK_ATTACHMENT_LOAD_OP_LOAD;
+
+			else if (mImageRenderingTargetSpecification & ImageRenderTargetSpecification::StencilClearOnLoad)
+				vDesc.stencilLoadOp = VkAttachmentLoadOp::VK_ATTACHMENT_LOAD_OP_CLEAR;
+
+			else if (mImageRenderingTargetSpecification & ImageRenderTargetSpecification::StencilDiscardLoad)
+				vDesc.stencilLoadOp = VkAttachmentLoadOp::VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+
+			// Resolve stencil store operation.
+			if (mImageRenderingTargetSpecification & ImageRenderTargetSpecification::StencilStoreOnStore)
+				vDesc.stencilStoreOp = VkAttachmentStoreOp::VK_ATTACHMENT_STORE_OP_STORE;
+
+			else if (mImageRenderingTargetSpecification & ImageRenderTargetSpecification::StencilDiscardStore)
+				vDesc.stencilStoreOp = VkAttachmentStoreOp::VK_ATTACHMENT_STORE_OP_DONT_CARE;
 
 			return vDesc;
 		}

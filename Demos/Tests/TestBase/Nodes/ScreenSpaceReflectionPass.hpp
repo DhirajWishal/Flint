@@ -17,6 +17,8 @@ namespace Flint
 		struct LensProjection
 		{
 			glm::mat4 mMatrix = glm::mat4(1.0f);
+			float mContribution = 0.3f;
+			float mMinRayStep = 30.0f;
 		} *pLensData;
 
 	public:
@@ -32,11 +34,20 @@ namespace Flint
 		 * Process function override.
 		 * This function will perform the SSR operation.
 		 *
+		 * @param pPreviousNode The node that was executed before this.
 		 * @param pCommandBuffer The current command buffer pointer.
 		 * @param frameIndex The current frame index.
 		 * @param imageIndex The current image index.
 		 */
-		virtual void Process(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 frameIndex, const UI32 imageIndex) override;
+		virtual void Process(ProcessingNode* pPreviousNode, const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 frameIndex, const UI32 imageIndex) override;
+
+	public:
+		/**
+		 * Get the output image.
+		 *
+		 * @return The output image.
+		 */
+		std::shared_ptr<Image> GetOutputImage() const { return pOutputImage; }
 
 	private:
 		std::shared_ptr<ComputePipeline> pComputePipeline = nullptr;

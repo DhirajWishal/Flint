@@ -28,11 +28,12 @@ namespace Flint
 		 * Process the node.
 		 * This is used to perform whatever the process the node does.
 		 *
+		 * @param pPreviousNode The node that was executed before this.
 		 * @param pCommandBuffer The current command buffer pointer.
 		 * @param frameIndex The current frame index.
 		 * @param imageIndex The current image index.
 		 */
-		virtual void Process(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 frameIndex, const UI32 imageIndex) = 0;
+		virtual void Process(ProcessingNode* pPreviousNode, const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 frameIndex, const UI32 imageIndex) = 0;
 
 	public:
 		/**

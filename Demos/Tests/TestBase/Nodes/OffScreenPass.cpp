@@ -5,11 +5,15 @@
 #include "Engine/ProcessingPipeline/ProcessingPipeline.hpp"
 #include "GraphicsCore/CommandBufferAllocator.hpp"
 
+#include <optick.h>
+
 namespace Flint
 {
 	OffScreenPass::OffScreenPass(ProcessingPipeline* pProcessingPipeline)
 		: ProcessingNode(pProcessingPipeline)
 	{
+		OPTICK_EVENT();
+
 		//pCommandBufferAllocator = pProcessingPipeline->GetCommandBufferAllocator()->CreateChildAllocator();
 		//pCommandBuffers = pCommandBufferAllocator->CreateCommandBuffers();
 
@@ -17,11 +21,12 @@ namespace Flint
 		const auto frameExtent = GetExtent();
 
 		pOffScreenRenderTarget = pDevice->CreateOffScreenRenderTarget(frameExtent, GetBufferCount(), CreateAttachments());
-		mImGuiAdapter.Initialize(pDevice, pOffScreenRenderTarget);
 	}
 
-	void OffScreenPass::Process(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 frameIndex, const UI32 imageIndex)
+	void OffScreenPass::Process(ProcessingNode* pPreviousNode, const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 frameIndex, const UI32 imageIndex)
 	{
+		OPTICK_EVENT();
+
 		//auto pSecondaryCommandBuffer = pCommandBuffers[frameIndex];
 		pCommandBuffer->BindRenderTarget(pOffScreenRenderTarget.get());
 
@@ -29,15 +34,14 @@ namespace Flint
 		for (auto const& pGameObject : pGameObjects)
 			pGameObject->Draw(pCommandBuffer, frameIndex);
 
-		// Render the UI components.
-		//mImGuiAdapter.Render(pCommandBuffer, frameIndex);
-
 		pCommandBuffer->UnbindRenderTarget();
 		//pCommandBuffer->CopyImage(pOffScreenRenderTarget->GetAttachment(0).pImage.get(), 0, pProcessingPipeline->GetColorBuffer().get(), 0);
 	}
 
 	std::vector<RenderTargetAttachment> OffScreenPass::CreateAttachments() const
 	{
+		OPTICK_EVENT();
+
 		const auto pDevice = GetDevice();
 		const auto pDisplay = GetDisplay();
 		const auto frameExtent = GetExtent();

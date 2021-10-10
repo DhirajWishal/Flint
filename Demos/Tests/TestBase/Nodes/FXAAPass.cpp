@@ -2,18 +2,21 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "FXAAPass.hpp"
+#include "ScreenSpaceReflectionPass.hpp"
 #include "Engine/ProcessingPipeline/ProcessingPipeline.hpp"
 #include "Engine/ShaderCompiler.hpp"
 #include "GraphicsCore/ResourcePackage.hpp"
 
+#include <optick.h>
+
 namespace Flint
 {
-	FXAAPass::FXAAPass(ProcessingPipeline* pProcessingPipeline, OffScreenPass* pOffScreenPass)
-		: ProcessingNode(pProcessingPipeline), pOffScreenPass(pOffScreenPass)
+	FXAAPass::FXAAPass(ProcessingPipeline* pProcessingPipeline, const OffScreenPass* pOffScreenPass)
+		: ProcessingNode(pProcessingPipeline)
 	{
-		const auto pDevice = GetDevice();
-		const auto pOffScreenImage = pOffScreenPass->GetColorImage();
+		OPTICK_EVENT();
 
+		const auto pDevice = GetDevice();
 		std::shared_ptr<Shader> pShader = nullptr;
 
 		// Check if we have to compile the source. If so compile.
@@ -31,54 +34,40 @@ namespace Flint
 		pResourcePackage = pComputePipeline->CreateResourcePackage(0);
 
 		// Create the anti aliasing image.
+		const auto pOffScreenImage = pOffScreenPass->GetColorImage();
 		pAntiAliasedImage = pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Storage, pOffScreenImage->GetExtent(), pOffScreenImage->GetFormat(), pOffScreenImage->GetLayerCount(), pOffScreenImage->GetMipLevels(), nullptr);
+		pScreenSpaceReflectionImage = pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Graphics, pOffScreenImage->GetExtent(), pOffScreenImage->GetFormat(), pOffScreenImage->GetLayerCount(), pOffScreenImage->GetMipLevels(), nullptr);
 
 		// Bind the resources.
-		pResourcePackage->BindResource(0, pOffScreenImage, pOffScreenImage->CreateImageView(0, pOffScreenImage->GetLayerCount(), 0, pOffScreenImage->GetMipLevels(), ImageUsage::Graphics), pDevice->CreateImageSampler(ImageSamplerSpecification()));
+		pResourcePackage->BindResource(0, pScreenSpaceReflectionImage, pScreenSpaceReflectionImage->CreateImageView(0, pScreenSpaceReflectionImage->GetLayerCount(), 0, pScreenSpaceReflectionImage->GetMipLevels(), ImageUsage::Graphics), pDevice->CreateImageSampler(ImageSamplerSpecification()));
 		pResourcePackage->BindResource(1, pAntiAliasedImage, pAntiAliasedImage->CreateImageView(0, pAntiAliasedImage->GetLayerCount(), 0, pAntiAliasedImage->GetMipLevels(), ImageUsage::Storage), pDevice->CreateImageSampler(ImageSamplerSpecification()), ImageUsage::Storage);
 	}
 
-	void FXAAPass::Process(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 frameIndex, const UI32 imageIndex)
+	void FXAAPass::Process(ProcessingNode* pPreviousNode, const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 frameIndex, const UI32 imageIndex)
 	{
-		pCommandBuffer->BindRenderTarget(pProcessingPipeline->GetScreenBoundRenderTarget().get());
-		pCommandBuffer->UnbindRenderTarget();
+		OPTICK_EVENT();
 
 		// Compute FXAA if enabled.
 		if (bEnableFXAA)
 		{
+			pCommandBuffer->CopyImage(pPreviousNode->StaticCast<ScreenSpaceReflectionPass>().GetOutputImage().get(), 0, pScreenSpaceReflectionImage.get(), 0);
+
 			pCommandBuffer->BindComputePipeline(pComputePipeline.get());
 			pCommandBuffer->BindResourcePackage(pComputePipeline.get(), pResourcePackage.get());
-
-			const auto workGroup = FBox3D(pAntiAliasedImage->GetExtent().mWidth / 32, pAntiAliasedImage->GetExtent().mHeight / 32, 1);
-			pCommandBuffer->IssueComputeCall(workGroup);
-
-			// Get the color image of the processing pipeline.
-			const auto pColorImage = pProcessingPipeline->GetColorBuffer();
-
-			// If the color image is present, copy the color image from the off screen pass to it. Else copy the image to the swap chain.
-			if (pColorImage)
-				pCommandBuffer->CopyImage(pAntiAliasedImage.get(), 0, pColorImage.get(), 0);
-			else
-				pCommandBuffer->CopyToSwapChainImage(pAntiAliasedImage.get(), 0, pProcessingPipeline->GetScreenBoundRenderTarget()->GetSwapChain().get(), imageIndex, 0);
+			pCommandBuffer->IssueComputeCall(FBox3D(pAntiAliasedImage->GetExtent().mWidth / 32, pAntiAliasedImage->GetExtent().mHeight / 32, 1));
 		}
 
-		// If not just copy the off screen image.
+		// Else copy to the anti aliased image.
 		else
 		{
-			// Get the color image of the processing pipeline.
-			const auto pColorImage = pProcessingPipeline->GetColorBuffer();
-			const auto pOffScreenImage = pOffScreenPass->GetColorImage();
-
-			// If the color image is present, copy the color image from the off screen pass to it. Else copy the image to the swap chain.
-			if (pColorImage)
-				pCommandBuffer->CopyImage(pOffScreenImage.get(), 0, pColorImage.get(), 0);
-			else
-				pCommandBuffer->CopyToSwapChainImage(pOffScreenImage.get(), 0, pProcessingPipeline->GetScreenBoundRenderTarget()->GetSwapChain().get(), imageIndex, 0);
+			pCommandBuffer->CopyImage(pPreviousNode->StaticCast<ScreenSpaceReflectionPass>().GetOutputImage().get(), 0, pAntiAliasedImage.get(), 0);
 		}
 	}
 
 	void FXAAPass::DrawUi()
 	{
+		OPTICK_EVENT();
+
 		ImGui::Begin("FXAA");
 		ImGui::Checkbox("Enable/ Disable", &bEnableFXAA);
 		ImGui::End();

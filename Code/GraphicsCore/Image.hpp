@@ -10,9 +10,85 @@ namespace Flint
 	class ImageView;
 
 	/**
-	 * Flint image object.
-	 * This object is used to store information about a single image. This can have multiple levels of the same image.
+	 * Loading operation enum.
 	 */
+	enum class LoadOperation : UI8 {
+		Store,
+		Load,
+		DontCare
+	};
+
+	/**
+	 * Image render target specifications.
+	 * This enum contains a list of flags which can be used to define how the image should behave when used as an render target attachment.
+	 *
+	 * If not set to anything, meaning 0, the default will be set. But if you wish to set to any other, make sure to follow the following guide lines.
+	 * The operations can be divided into two main sections.
+	 * 1. Color image section.
+	 * 2. Stencil image section.
+	 *
+	 * These sections contain two more sub sections,
+	 * 1. Load operation.
+	 * 2. Store operation.
+	 *
+	 * The user cannot define two flags within the same sub section. In that case the lowest (first) flag will be used.
+	 */
+	enum class ImageRenderTargetSpecification : UI16 {
+		// Color image section.
+		// Defines that we load data upon attachment load.
+		LoadOnLoad = BitShiftLeft(0),
+
+		// Defines that we clear the image attachment upon load. Make sure to have a clear value.
+		ClearOnLoad = BitShiftLeft(1),
+
+		// Defines that we do not care about the previous content of the image.
+		DiscardLoad = BitShiftLeft(2),
+
+		// Defines that we store the data upon attachment store.
+		StoreOnStore = BitShiftLeft(3),
+
+		// Defines that we dont care about the storing operation.
+		DiscardStore = BitShiftLeft(4),
+
+		// Stencil image section.
+		// Defines that we load data upon stencil load.
+		StencilLoadOnLoad = BitShiftLeft(5),
+
+		// Defines that we clear the image stencil upon load. Make sure to have a clear value.
+		StencilClearOnLoad = BitShiftLeft(6),
+
+		// Defines that we do not care about the previous content of the stencil.
+		StencilDiscardLoad = BitShiftLeft(7),
+
+		// Defines that we store the data upon stencil store.
+		StencilStoreOnStore = BitShiftLeft(8),
+
+		// Defines that we dont care about the storing operation.
+		StencilDiscardStore = BitShiftLeft(9),
+	};
+
+	constexpr bool operator&(const ImageRenderTargetSpecification lhs, const ImageRenderTargetSpecification rhs) { return static_cast<UI16>(lhs) & static_cast<UI16>(rhs); }
+	constexpr ImageRenderTargetSpecification operator|(const ImageRenderTargetSpecification lhs, const ImageRenderTargetSpecification rhs) { return static_cast<ImageRenderTargetSpecification>(static_cast<UI16>(lhs) | static_cast<UI16>(rhs)); }
+
+	/**
+	 * Image render target specification structure.
+	 * This structure is used to specify how the image behaves when used as an render target attachment.
+	 *
+	 * If the image is not intended to use as a render target attachment, or uses the default attachment specification, editing this structure is not necessary.
+	 */
+	 //struct ImageRenderingTargetSpecification
+	 //{
+	 //	LoadOperation mLoadOperation = LoadOperation::DontCare;
+	 //	LoadOperation mStencilLoadOperation = LoadOperation::DontCare;
+	 //
+	 //	bool bShouldStoreOnStore = false;
+	 //	bool bShouldStoreOnStencilStore = false;
+	 //};
+
+	 /**
+	  * Flint image object.
+	  * This object is used to store information about a single image. This can have multiple levels of the same image.
+	  */
 	class Image : public DeviceBoundObject
 	{
 	public:
@@ -120,6 +196,20 @@ namespace Flint
 		 */
 		const UI8 GetLayerCount() const { return mLayerCount; }
 
+		/**
+		 * Get the image render target specification structure.
+		 *
+		 * @return The image render target specification structure.
+		 */
+		ImageRenderTargetSpecification& GetImageRenderTargetSpecification() { return mImageRenderingTargetSpecification; }
+
+		/**
+		 * Get the image render target specification structure.
+		 *
+		 * @return The image render target specification structure.
+		 */
+		const ImageRenderTargetSpecification GetImageRenderTargetSpecification() const { return mImageRenderingTargetSpecification; }
+
 	public:
 		/**
 		 * Get the best mip levels for an image.
@@ -137,5 +227,7 @@ namespace Flint
 		PixelFormat mFormat = PixelFormat::Undefined;
 		MultiSampleCount mMultiSampleCount = MultiSampleCount::One;
 		UI8 mLayerCount = 1;
+
+		ImageRenderTargetSpecification mImageRenderingTargetSpecification = ImageRenderTargetSpecification(0);
 	};
 }

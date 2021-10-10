@@ -259,11 +259,20 @@ namespace Flint
 		 */
 		virtual void EndBufferRecording() = 0;
 
+		/**
+		 * Include a swap chain to the command buffers.
+		 * Swap chain synchronization is done when the command buffer is submitted to draw. This means that there isn't another way to synchronize swap chains explicitly.
+		 * This function provides a way to attach an external swap chain to the command buffer so that it too can be submitted and signaled.
+		 *
+		 * @param pSwapChain The swap chain to include.
+		 */
+		virtual void IncludeSwapChain(SwapChain* pSwapChain) = 0;
+
 	public:
 		/**
 		 * Get the allocator of this command buffer.
 		 *
-		 * @param The allocator pointer.
+		 * @return The allocator pointer.
 		 */
 		const std::shared_ptr<CommandBufferAllocator> GetAllocator() const { return pAllocator; }
 

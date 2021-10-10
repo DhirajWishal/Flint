@@ -7,11 +7,15 @@
 #include "Engine/ShaderCompiler.hpp"
 #include "GraphicsCore/ResourcePackage.hpp"
 
+#include <optick.h>
+
 namespace Flint
 {
 	ScreenSpaceReflectionPass::ScreenSpaceReflectionPass(ProcessingPipeline* pProcessingPipeline, OffScreenPass* pOffScreenPass)
 		: ProcessingNode(pProcessingPipeline), pOffScreenPass(pOffScreenPass)
 	{
+		OPTICK_EVENT();
+
 		const auto pDevice = GetDevice();
 		std::shared_ptr<Shader> pShader = nullptr;
 
@@ -58,28 +62,24 @@ namespace Flint
 		}
 	}
 
-	void ScreenSpaceReflectionPass::Process(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 frameIndex, const UI32 imageIndex)
+	void ScreenSpaceReflectionPass::Process(ProcessingNode* pPreviousNode, const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 frameIndex, const UI32 imageIndex)
 	{
+		OPTICK_EVENT();
+
 		pLensData = static_cast<LensProjection*>(pLensProjection->MapMemory(pLensProjection->GetSize()));
 		pLensData->mMatrix = pProcessingPipeline->StaticCast<DefaultProcessingPipeline>().GetCamera().GetMatrix().mProjectionMatrix;
-		pLensProjection->UnmapMemory();
 
-		pCommandBuffer->BindRenderTarget(pProcessingPipeline->GetScreenBoundRenderTarget().get());
-		pCommandBuffer->UnbindRenderTarget();
+		ImGui::Begin("Screen Space Reflections");
+		ImGui::SliderFloat("Contribution", &pLensData->mContribution, 0.1f, 1.0f);
+		ImGui::SliderFloat("Min Ray Step", &pLensData->mMinRayStep, 0.1f, 40.0f);
+		ImGui::End();
+
+		pLensProjection->UnmapMemory();
 
 		pCommandBuffer->BindComputePipeline(pComputePipeline.get());
 		pCommandBuffer->BindResourcePackage(pComputePipeline.get(), pResourcePackages[frameIndex].get());
 
 		const auto workGroup = FBox3D(pOutputImage->GetExtent().mWidth / 32, pOutputImage->GetExtent().mHeight / 32, 1);
 		pCommandBuffer->IssueComputeCall(workGroup);
-
-		// Get the color image of the processing pipeline.
-		const auto pColorImage = pProcessingPipeline->GetColorBuffer();
-
-		// If the color image is present, copy the color image from the off screen pass to it. Else copy the image to the swap chain.
-		if (pColorImage)
-			pCommandBuffer->CopyImage(pOutputImage.get(), 0, pColorImage.get(), 0);
-		else
-			pCommandBuffer->CopyToSwapChainImage(pOutputImage.get(), 0, pProcessingPipeline->GetScreenBoundRenderTarget()->GetSwapChain().get(), imageIndex, 0);
 	}
 }

@@ -20,17 +20,18 @@ namespace Flint
 		 * @param pProcessingPipeline The processing pipeline pointer.
 		 * @param pOffScreenPass The off screen pass pointer.
 		 */
-		FXAAPass(ProcessingPipeline* pProcessingPipeline, OffScreenPass* pOffScreenPass);
+		FXAAPass(ProcessingPipeline* pProcessingPipeline, const OffScreenPass* pOffScreenPass);
 
 		/**
 		 * Process function override.
 		 * This function will perform the FXAA operation.
 		 *
+		 * @param pPreviousNode The node that was executed before this.
 		 * @param pCommandBuffer The current command buffer pointer.
 		 * @param frameIndex The current frame index.
 		 * @param imageIndex The current image index.
 		 */
-		virtual void Process(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 frameIndex, const UI32 imageIndex) override;
+		virtual void Process(ProcessingNode* pPreviousNode, const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 frameIndex, const UI32 imageIndex) override;
 
 	public:
 		/**
@@ -38,12 +39,19 @@ namespace Flint
 		 */
 		void DrawUi();
 
+	public:
+		/**
+		 * Get the anti aliased image.
+		 *
+		 * @return The image.
+		 */
+		std::shared_ptr<Image> GetAntiAliasedImage() const { return pAntiAliasedImage; }
+
 	private:
 		std::shared_ptr<ComputePipeline> pComputePipeline = nullptr;
 		std::shared_ptr<ResourcePackage> pResourcePackage = nullptr;
 		std::shared_ptr<Image> pAntiAliasedImage = nullptr;
-
-		OffScreenPass* pOffScreenPass = nullptr;
+		std::shared_ptr<Image> pScreenSpaceReflectionImage = nullptr;
 
 		bool bEnableFXAA = true;
 	};

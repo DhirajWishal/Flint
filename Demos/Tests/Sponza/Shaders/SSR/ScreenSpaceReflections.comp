@@ -6,18 +6,18 @@ layout(binding = 2) uniform sampler2D inDepthImage;
 
 layout(binding = 3, rgba8) restrict writeonly uniform image2D outImage;
 
-layout(binding = 4) uniform ProjectionMatrix 
+layout(binding = 4) uniform Uniform 
 {
 	mat4 matrix;
-} lensProjection;
-
-const float contribution = 0.35f;
+    float contribution;
+    float minRayStep;
+} uniformBlock;
 
 vec3 CalcViewPositionFromDepth(in vec2 TexCoord)
 {
     vec3 rawPosition = vec3(TexCoord, texture(inDepthImage, TexCoord).r);
     vec4 ScreenSpacePosition = vec4(rawPosition * 2 - 1, 1);
-    vec4 ViewPosition = inverse(lensProjection.matrix) * ScreenSpacePosition;
+    vec4 ViewPosition = inverse(uniformBlock.matrix) * ScreenSpacePosition;
     return ViewPosition.xyz / ViewPosition.w;
 }
 
@@ -29,7 +29,7 @@ vec2 RayCast(vec3 dir, inout vec3 hitCoord, out float dDepth)
     {
         hitCoord += dir; 
 
-        vec4 projectedCoord = lensProjection.matrix * vec4(hitCoord, 1.0);
+        vec4 projectedCoord = uniformBlock.matrix * vec4(hitCoord, 1.0);
         projectedCoord.xy /= projectedCoord.w;
         projectedCoord.xy = projectedCoord.xy * 0.5 + 0.5; 
 
@@ -62,8 +62,8 @@ void main()
     vec3 hitPos = View_Pos.xyz;
     float minRayStep = 30.0f;
     float dDepth; 
-    vec2 coords = RayCast(reflected * max(minRayStep, -View_Pos.z), hitPos, dDepth); 
+    vec2 coords = RayCast(reflected * max(uniformBlock.minRayStep, -View_Pos.z), hitPos, dDepth); 
 
-    vec4 finalColor = texture(inSceneImage, coords) * contribution; 
+    vec4 finalColor = texture(inSceneImage, coords) * uniformBlock.contribution; 
     imageStore(outImage, index, clamp(texture(inSceneImage, uv) + finalColor, vec4(0.0f), vec4(1.0f)));
 }

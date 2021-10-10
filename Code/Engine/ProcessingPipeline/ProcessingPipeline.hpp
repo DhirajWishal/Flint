@@ -192,6 +192,16 @@ namespace Flint
 		std::vector<std::shared_ptr<ProcessingNode>> GetProcessingNodes() const { return pProcessingNodes; }
 
 	protected:
+		/**
+		 * Process all the attached nodes.
+		 *
+		 * @param pCommandBuffer The command buffer which will be passed to them.
+		 * @param frameIndex The current frame index.
+		 * @param imageIndex The current swap chain image index.
+		 */
+		void ProcessNodes(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 frameIndex, const UI32 imageIndex);
+
+	protected:
 		std::vector<std::shared_ptr<ProcessingNode>> pProcessingNodes = {};
 		std::vector<std::shared_ptr<CommandBuffer>> pCommandBuffers = {};
 		std::vector<std::shared_ptr<SynchronizationPrimitive>> pSynchronizationPrimitives = {};

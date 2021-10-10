@@ -66,7 +66,7 @@ namespace Flint
 		OPTICK_EVENT();
 
 		ImGui::End();
-		ImGui::Render();
+		//ImGui::Render();
 	}
 
 	void Application::Cleanup()

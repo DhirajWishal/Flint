@@ -6,6 +6,7 @@
 #include "TestBase/GraphicsScene.hpp"
 #include "TestBase/Nodes/FXAAPass.hpp"
 #include "TestBase/Nodes/ScreenSpaceReflectionPass.hpp"
+#include "TestBase/Nodes/ImGuiPass.hpp"
 
 #include <optick.h>
 
@@ -17,16 +18,20 @@ namespace Flint
 
 		// Create the processing pipeline.
 		pProcessingPipeline = std::make_unique<DefaultProcessingPipeline>(mApplication.GetDevice(), FBox2D(-1), "Flint: Sponza Test", 0, MultiSampleCount::One);
-		auto pRenderTarget = pProcessingPipeline->CreateProcessingNode<OffScreenPass>();
+
+		// Create all the render passes.
+		const auto pRenderTarget = pProcessingPipeline->CreateProcessingNode<OffScreenPass>();
+		const auto pRenderTargetSSR = pProcessingPipeline->CreateProcessingNode<ScreenSpaceReflectionPass>(pRenderTarget.get());
+		const auto pRenderTargetFXAA = pProcessingPipeline->CreateProcessingNode<FXAAPass>(pRenderTarget.get());
+		const auto pRenderTargetImGui = pProcessingPipeline->CreateProcessingNode<ImGuiPass>();
+
 		pRenderTarget->CreateGameObject<Object>(&mApplication, pRenderTarget);
 
-		//auto pRenderTargetFXAA = pProcessingPipeline->CreateProcessingNode<FXAAPass>(pRenderTarget.get());
-		auto pRenderTargetSSR = pProcessingPipeline->CreateProcessingNode<ScreenSpaceReflectionPass>(pRenderTarget.get());
 		while (pProcessingPipeline->GetDisplay()->IsOpen())
 		{
 			// Prepare the new frame.
 			mApplication.PrepareNewFrame();
-			//pRenderTargetFXAA->DrawUi();
+			pRenderTargetFXAA->DrawUi();
 
 			// Update the pipeline.
 			const UI64 delta = pProcessingPipeline->Update();

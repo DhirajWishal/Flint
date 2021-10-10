@@ -6,7 +6,6 @@
 #include "Engine/ProcessingPipeline/Nodes/ProcessingNode.hpp"
 #include "GraphicsCore/OffScreenRenderTarget.hpp"
 #include "TestBase/GameObject.hpp"
-#include "TestBase/ImGuiAdapter.hpp"
 
 namespace Flint
 {
@@ -27,11 +26,12 @@ namespace Flint
 		/**
 		 * Process function override.
 		 *
+		 * @param pPreviousNode The node that was executed before this.
 		 * @param pCommandBuffer The command buffer pointer.
 		 * @param frameIndex The frame index.
 		 * @param imageIndex THe current image index.
 		 */
-		virtual void Process(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 frameIndex, const UI32 imageIndex) override;
+		virtual void Process(ProcessingNode* pPreviousNode, const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 frameIndex, const UI32 imageIndex) override;
 
 	public:
 		/**
@@ -93,8 +93,6 @@ namespace Flint
 		std::vector<RenderTargetAttachment> CreateAttachments() const;
 
 	private:
-		ImGuiAdapter mImGuiAdapter = {};
-
 		std::vector<std::shared_ptr<GameObject>> pGameObjects = {};
 		std::shared_ptr<OffScreenRenderTarget> pOffScreenRenderTarget = nullptr;
 	};

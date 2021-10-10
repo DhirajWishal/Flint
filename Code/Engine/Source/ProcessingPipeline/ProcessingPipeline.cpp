@@ -91,8 +91,7 @@ namespace Flint
 		pCommandBuffer->BeginBufferRecording();
 
 		// Process all the nodes.
-		for (auto const& pNode : pProcessingNodes)
-			pNode->Process(pCommandBuffer, frameIndex, imageIndex);
+		ProcessNodes(pCommandBuffer, frameIndex, imageIndex);
 
 		// Execute and end the buffer recording.
 		pCommandBuffer->ExecuteSecondaryCommands();
@@ -130,5 +129,15 @@ namespace Flint
 
 		// Return the first image.
 		return pScreenBoundRenderTarget->GetAttachments().front().pImage;
+	}
+
+	void ProcessingPipeline::ProcessNodes(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 frameIndex, const UI32 imageIndex)
+	{
+		ProcessingNode* pPreviousNode = nullptr;
+		for (auto const& pNode : pProcessingNodes)
+		{
+			pNode->Process(pPreviousNode, pCommandBuffer, frameIndex, imageIndex);
+			pPreviousNode = pNode.get();
+		}
 	}
 }
