@@ -34,30 +34,24 @@ namespace Flint
 
 	class GeometryStore;
 
+	class Query;
+
 	/**
 	 * Device flags enum.
 	 * This determines the device characteristics.
 	 */
 	enum class DeviceFlags : UI8 {
-		/**
-		 * This flag states to use external device (GPU) if available over integrated.
-		 */
+		// This flag states to use external device (GPU) if available over integrated.
 		External = BitShiftLeft(0),
 
-		/**
-		 * This flag states to use only the integrated device if available. If an integrated one doesn't exist but an external one exists, it will automatically select the external device.
-		 */
-		 Intergrated = BitShiftLeft(1),
+		// This flag states to use only the integrated device if available. If an integrated one doesn't exist but an external one exists, it will automatically select the external device.
+		Integrated = BitShiftLeft(1),
 
-		 /**
-		  * State that the device is used for graphics. This is a must if graphics needs to be enabled.
-		  */
-		  GraphicsCompatible = BitShiftLeft(2),
+		// State that the device is used for graphics. This is a must if graphics needs to be enabled.
+		GraphicsCompatible = BitShiftLeft(2),
 
-		  /**
-		   * This states the device is used for compute.
-		   */
-		   ComputeCompatible = BitShiftLeft(3)
+		// This states the device is used for compute.
+		ComputeCompatible = BitShiftLeft(3)
 	};
 
 	constexpr DeviceFlags operator|(const DeviceFlags& lhs, const DeviceFlags& rhs) { return DeviceFlags(static_cast<UI8>(lhs) | static_cast<UI8>(rhs)); }
@@ -274,6 +268,15 @@ namespace Flint
 		 * @return The primitive pointer.
 		 */
 		virtual std::shared_ptr<SynchronizationPrimitive> CreateSynchronizationPrimitive() = 0;
+
+		/**
+		 * Create a new query object.
+		 *
+		 * @param usage The query usage.
+		 * @param queryCount The number of query primitives.
+		 * @return The query pointer.
+		 */
+		virtual std::shared_ptr<Query> CreateQuery(const QueryUsage usage, const UI32 queryCount) = 0;
 
 	public:
 		/**

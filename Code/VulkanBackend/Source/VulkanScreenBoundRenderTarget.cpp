@@ -50,6 +50,7 @@ namespace Flint
 					vClearValue.color.float32[1] = attachment.mClearColor.mGreen;
 					vClearValue.color.float32[2] = attachment.mClearColor.mBlue;
 					vClearValue.color.float32[3] = attachment.mClearColor.mAlpha;
+					vClearAspectFlags.push_back(VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT);
 
 					bIsColorPresent = true;
 				}
@@ -57,6 +58,7 @@ namespace Flint
 				{
 					vClearValue.depthStencil.depth = attachment.mDepthClearValue.mDepth;
 					vClearValue.depthStencil.stencil = attachment.mDepthClearValue.mStencil;
+					vClearAspectFlags.push_back(VkImageAspectFlagBits::VK_IMAGE_ASPECT_DEPTH_BIT);
 				}
 				else
 					throw backend_error("Invalid attachment type! The image usage should contain either Color or Depth.");
@@ -76,6 +78,7 @@ namespace Flint
 				vClearValue.color.float32[2] = swapChainClearColor.mBlue;
 				vClearValue.color.float32[3] = swapChainClearColor.mAlpha;
 
+				vClearAspectFlags.push_back(VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT);
 				vClearValues.push_back(vClearValue);
 			}
 

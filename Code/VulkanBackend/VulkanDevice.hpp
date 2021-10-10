@@ -63,6 +63,7 @@ namespace Flint
 			virtual std::shared_ptr<GeometryStore> CreateGeometryStore(const typename std::vector<ShaderAttribute>& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic) override;
 
 			virtual std::shared_ptr<SynchronizationPrimitive> CreateSynchronizationPrimitive() override;
+			virtual std::shared_ptr<Query> CreateQuery(const QueryUsage usage, const UI32 queryCount) override;
 
 			virtual void SubmitGraphicsCommandBuffer(const CommandBuffer* pCommandBuffer, SynchronizationPrimitive* pPrimitive = nullptr) override;
 			virtual void SubmitGraphicsCommandBuffers(const std::vector<CommandBuffer*>& pCommandBuffers, SynchronizationPrimitive* pPrimitive = nullptr) override;

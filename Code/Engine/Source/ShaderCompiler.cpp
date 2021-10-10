@@ -150,7 +150,7 @@ namespace Flint
 
 		// Compile the shader.
 		if (codeType == ShaderCodeType::GLSL)
-			result = compiler.CompileGlslToSpv(shaderCode, Helpers::GetShaderKindGLSL(shaderType), "", options);
+			result = compiler.CompileGlslToSpv(shaderCode, Helpers::GetShaderKindGLSL(shaderType), "Source", options);
 		//else if (codeType == ShaderCodeType::HLSL)
 		//	result = compiler.CompileGlslToSpv(shaderCode, Helpers::GetShaderKindHLSL(shaderType), shaderFile.filename().string().c_str());
 		else

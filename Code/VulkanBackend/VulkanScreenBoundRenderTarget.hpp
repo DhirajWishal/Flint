@@ -36,6 +36,9 @@ namespace Flint
 			const UI32 GetClearScreenValueCount() const { return static_cast<UI32>(vClearValues.size()); }
 			const VkClearValue* GetClearScreenValues() const { return vClearValues.data(); }
 
+			std::vector<VkClearValue> GetClearScreenValueVector() const { return vClearValues; }
+			std::vector<VkImageAspectFlags> GetClearAspectFlags() const { return vClearAspectFlags; }
+
 			const VkCommandBufferInheritanceInfo* GetVulkanInheritanceInfo() const;
 
 		private:
@@ -46,6 +49,7 @@ namespace Flint
 			mutable VkCommandBufferInheritanceInfo vInheritInfo = {};
 
 			std::vector<VkClearValue> vClearValues = {};
+			std::vector<VkImageAspectFlags> vClearAspectFlags = {};
 
 			bool bShouldSkip = false;
 		};

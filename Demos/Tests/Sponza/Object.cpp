@@ -7,6 +7,7 @@
 #include "Engine/ShaderCompiler.hpp"
 #include "Engine/ImageLoader.hpp"
 #include "Engine/Tools/CubeMapGenerator.hpp"
+#include "GraphicsCore/Query.hpp"
 
 #include <glm/gtx/transform.hpp>
 #include <optick.h>
@@ -24,6 +25,7 @@ namespace Flint
 		mMatrix.mModelMatrix = glm::scale(mMatrix.mModelMatrix, glm::vec3(0.005f));
 
 		CreatePipeline();
+		CreateOcclusionPipeline();
 		LoadAsset();
 		LoadTextures();
 	}
@@ -41,6 +43,7 @@ namespace Flint
 		mMatrix.mModelMatrix = glm::scale(mMatrix.mModelMatrix, glm::vec3(0.005f));
 
 		CreatePipeline();
+		CreateOcclusionPipeline();
 		LoadAsset();
 		LoadTextures();
 	}
@@ -68,16 +71,62 @@ namespace Flint
 		pCommandBuffer->BindGeometryStore(mAsset.GetGeometryStore().get());
 		pCommandBuffer->BindDynamicStates(pPipeline.get(), pDynamicStates.get());
 
+		UI64 drawCount = 0;
 		const UI64 count = mAsset.GetWireFrames().size();
 		auto& wireFrames = mAsset.GetWireFrames();
+		auto const& samples = mDrawSamples[index];
 		for (UI64 i = 0; i < count; i++)
 		{
+			if (samples[i] == 0)
+				continue;
+
 			auto& wireFrame = wireFrames[i];
 			auto& pPackage = pPackageSets[index][i];
 
 			pCommandBuffer->BindResourcePackage(pPipeline.get(), pPackage.get());
 			pCommandBuffer->IssueDrawCall(wireFrame);
+			drawCount++;
 		}
+
+		ImGui::Begin("Occlusion Culling");
+		ImGui::Text("Count: %u / %u", drawCount, count);
+		ImGui::Checkbox("Pause Occlusion Culling", &bShouldFreezeOcclusion);
+		ImGui::End();
+	}
+
+	void Object::OcclusionPass(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 index)
+	{
+		OPTICK_EVENT();
+
+		pCommandBuffer->BindGraphicsPipeline(pOcclusionPipeline.get());
+		pCommandBuffer->BindGeometryStore(mAsset.GetGeometryStore().get());
+		pCommandBuffer->BindDynamicStates(pOcclusionPipeline.get(), pDynamicStates.get());
+		pCommandBuffer->BindResourcePackage(pOcclusionPipeline.get(), pOcclusionPackageSets[index].get());
+
+		const auto pQuery = pOcclusionQueries[index];
+
+		const UI64 count = mAsset.GetWireFrames().size();
+		auto& wireFrames = mAsset.GetWireFrames();
+		for (UI64 i = 0; i < count; i++)
+		{
+			auto& wireFrame = wireFrames[i];
+
+			pCommandBuffer->BeginQuery(pQuery.get(), static_cast<UI32>(i));
+			pCommandBuffer->IssueDrawCall(wireFrame);
+			pCommandBuffer->EndQuery(pQuery.get(), static_cast<UI32>(i));
+		}
+	}
+
+	void Object::ResetOcclusionQuery(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 index, const bool isFirstUse)
+	{
+		const auto pQuery = pOcclusionQueries[index];
+		if (!isFirstUse && !bShouldFreezeOcclusion)
+		{
+			auto& samples = mDrawSamples[index];
+			pQuery->RequestQueryData(0, pQuery->GetQueryCount(), sizeof(UI64) * samples.size(), samples.data(), sizeof(UI64), QueryDataMode::UI64Result | QueryDataMode::WaitForResult);
+		}
+
+		pCommandBuffer->ResetQuery(pQuery.get(), 0, pQuery->GetQueryCount());
 	}
 
 	void Object::Terminate()
@@ -138,6 +187,42 @@ namespace Flint
 		pDynamicStates->SetScissor(windowExtent, { 0, 0 });
 	}
 
+	void Object::CreateOcclusionPipeline()
+	{
+		OPTICK_EVENT();
+
+		const auto pDevice = pApplication->GetDevice();
+		std::shared_ptr<Shader> pVertexShader = nullptr;
+		std::shared_ptr<Shader> pFragmentShader = nullptr;
+
+		if (!std::filesystem::exists("Flint\\Shaders\\Occlusion.vert.fsc"))
+		{
+			ShaderCompiler shaderCompiler(std::filesystem::path("E:\\Flint\\Demos\\Tests\\Sponza\\Shaders\\Object\\Occlusion.vert"), ShaderCodeType::GLSL, ShaderType::Vertex);
+			pVertexShader = shaderCompiler.CreateShader(pDevice);
+			pVertexShader->CreateCache("Flint\\Shaders\\Occlusion.vert.fsc");
+		}
+		else
+			pVertexShader = pDevice->CreateShader(ShaderType::Vertex, std::filesystem::path("Flint\\Shaders\\Occlusion.vert.fsc"));
+
+		if (!std::filesystem::exists("Flint\\Shaders\\Occlusion.frag.fsc"))
+		{
+			ShaderCompiler shaderCompiler(std::filesystem::path("E:\\Flint\\Demos\\Tests\\Sponza\\Shaders\\Object\\Occlusion.frag"), ShaderCodeType::GLSL, ShaderType::Fragment);
+			pFragmentShader = shaderCompiler.CreateShader(pDevice);
+			pFragmentShader->CreateCache("Flint\\Shaders\\Occlusion.frag.fsc");
+		}
+		else
+			pFragmentShader = pDevice->CreateShader(ShaderType::Fragment, std::filesystem::path("Flint\\Shaders\\Occlusion.frag.fsc"));
+
+		Flint::GraphicsPipelineSpecification specification = {};
+		specification.mRasterizationSamples = pOffScreenPass->GetMultiSampleCount();
+		specification.mDynamicStateFlags = Flint::DynamicStateFlags::ViewPort | Flint::DynamicStateFlags::Scissor;
+		specification.mColorBlendAttachments.resize(2);
+
+		specification.mVertexInputAttributeMap[0] = pVertexShader->GetInputAttributes();
+		pOcclusionPipeline = pDevice->CreateGraphicsPipeline("Occlusion", pOffScreenPass->GetRenderTarget(), pVertexShader, nullptr, nullptr, nullptr, pFragmentShader, specification);
+		//pPipeline = pApplication->GetGraphicsScene("Default")->CreateGraphicsPipeline("Object", pVertexShader, pFragmentShader, specification);
+	}
+
 	void Object::LoadAsset()
 	{
 		OPTICK_EVENT();
@@ -148,6 +233,16 @@ namespace Flint
 		vDescriptor.mAttributes.push_back(Flint::VertexAttribute(sizeof(float) * 2, Flint::InputAttributeType::TextureCoordinatesZero));
 
 		mAsset = Asset("E:\\Projects\\Lighter\\Assets\\2.0\\Sponza\\glTF\\Sponza.gltf", pApplication->GetGeometryStore("Object"), vDescriptor);
+
+		mDrawSamples.reserve(pOffScreenPass->GetRenderTarget()->GetBufferCount());
+		pOcclusionQueries.reserve(pOffScreenPass->GetRenderTarget()->GetBufferCount());
+
+		const auto size = mAsset.GetWireFrames().size();
+		for (UI32 i = 0; i < pOffScreenPass->GetRenderTarget()->GetBufferCount(); i++)
+		{
+			mDrawSamples.push_back(std::vector<UI64>(size));
+			pOcclusionQueries.push_back(pApplication->GetDevice()->CreateQuery(QueryUsage::Occlusion, static_cast<UI32>(size)));
+		}
 	}
 
 	std::mutex mImageLocker = {};
@@ -221,6 +316,10 @@ namespace Flint
 					}
 				}
 			}
+
+			auto pPackage = pOcclusionPipeline->CreateResourcePackage(0);
+			pPackage->BindResource(0, pUniformBuffer);
+			pOcclusionPackageSets.push_back(pPackage);
 		}
 	}
 }

@@ -6,6 +6,13 @@
 
 namespace Flint
 {
+	ProcessingNode::ProcessingNode(ProcessingPipeline* pProcessingPipeline)
+		: pProcessingPipeline(pProcessingPipeline)
+	{
+		if (!pProcessingPipeline)
+			throw std::invalid_argument("Processing Pipeline pointer should not be null!");
+	}
+
 	MultiSampleCount ProcessingNode::GetMultiSampleCount() const
 	{
 		return pProcessingPipeline->GetMultiSampleCount();

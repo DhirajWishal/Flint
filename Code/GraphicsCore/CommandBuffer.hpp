@@ -17,6 +17,7 @@ namespace Flint
 	class Buffer;
 	class GeometryStore;
 	class ResourcePackage;
+	class Query;
 
 	class CommandBufferAllocator;
 
@@ -100,6 +101,20 @@ namespace Flint
 		 * @param pRenderTarget The render target pointer.
 		 */
 		virtual void BindRenderTargetSecondary(const OffScreenRenderTarget* pRenderTarget) = 0;
+
+		/**
+		 * Clear a render target data to its default.
+		 *
+		 * @param pRenderTarget The render target pointer.
+		 */
+		virtual void ClearRenderTarget(const ScreenBoundRenderTarget* pRenderTarget) = 0;
+
+		/**
+		 * Clear a render target data to its default.
+		 *
+		 * @param pRenderTarget The render target pointer.
+		 */
+		virtual void ClearRenderTarget(const OffScreenRenderTarget* pRenderTarget) = 0;
 
 		/**
 		 * Bind a graphics pipeline to the command buffer.
@@ -267,6 +282,33 @@ namespace Flint
 		 * @param pSwapChain The swap chain to include.
 		 */
 		virtual void IncludeSwapChain(SwapChain* pSwapChain) = 0;
+
+		/**
+		 * Begin a query recording.
+		 *
+		 * @param pQuery The query to begin recording.
+		 * @param index The index of the query primitive.
+		 * @param requirePrecision Toggle if we need high precision. Default is false.
+		 */
+		virtual void BeginQuery(const Query* pQuery, const UI32 index, const bool requirePrecision = false) = 0;
+
+		/**
+		 * End a query recording.
+		 *
+		 * @param pQuery The query to end recording.
+		 * @param index The index of the query primitive.
+		 */
+		virtual void EndQuery(const Query* pQuery, const UI32 index) = 0;
+
+		/**
+		 * Reset a query recordings.
+		 * Since a query can contain multiple query primitives, we reset all of them starting from a position to n number of primitives.
+		 *
+		 * @param pQuery The query pointer.
+		 * @param beginIndex The begin query primitive index.
+		 * @param count The number of query primitives to reset.
+		 */
+		virtual void ResetQuery(const Query* pQuery, const UI32 beginIndex, const UI32 count) = 0;
 
 	public:
 		/**

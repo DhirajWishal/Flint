@@ -11,6 +11,7 @@
 #include "VulkanBackend/VulkanImage.hpp"
 #include "VulkanBackend/VulkanUtilities.hpp"
 #include "VulkanBackend/VulkanResourcePackage.hpp"
+#include "VulkanBackend/VulkanQuery.hpp"
 
 #include "GraphicsCore/GeometryStore.hpp"
 
@@ -163,6 +164,78 @@ namespace Flint
 			vBeginInfo.renderArea.extent.height = vRenderTarget.GetExtent().mHeight;
 
 			pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetDeviceTable().vkCmdBeginRenderPass(vCommandBuffer, &vBeginInfo, VkSubpassContents::VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+		}
+
+		void VulkanCommandBuffer::ClearRenderTarget(const ScreenBoundRenderTarget* pRenderTarget)
+		{
+			OPTICK_EVENT();
+
+			auto& vRenderTarget = pRenderTarget->StaticCast<VulkanScreenBoundRenderTarget>();
+			std::vector<VkClearAttachment> vClearAttachments(vRenderTarget.GetClearScreenValueCount());
+			const auto vClearColors = vRenderTarget.GetClearScreenValueVector();
+			const auto vClearAspects = vRenderTarget.GetClearAspectFlags();
+
+			VkClearAttachment vAttachment = {};
+			for (UI64 i = 0; i < vClearAttachments.size(); i++)
+			{
+				vAttachment.aspectMask = vClearAspects[i];
+				vAttachment.clearValue = vClearColors[i];
+
+				if (vAttachment.aspectMask == VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT)
+				{
+					vClearAttachments[i] = vAttachment;
+					vAttachment.colorAttachment++;
+				}
+				else
+				{
+					UI32 temp = vAttachment.colorAttachment;
+					vAttachment.colorAttachment = 0;
+					vClearAttachments[i] = vAttachment;
+					vAttachment.colorAttachment = temp;
+				}
+			}
+
+			VkClearRect vClearRect = {};
+			vClearRect.layerCount = 1;
+			vClearRect.rect.offset = { 0, 0 };
+			vClearRect.rect.extent = { vRenderTarget.GetExtent().mWidth, vRenderTarget.GetExtent().mHeight };
+
+			pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetDeviceTable().vkCmdClearAttachments(vCommandBuffer, static_cast<UI32>(vClearAttachments.size()), vClearAttachments.data(), 1, &vClearRect);
+		}
+
+		void VulkanCommandBuffer::ClearRenderTarget(const OffScreenRenderTarget* pRenderTarget)
+		{
+			auto& vRenderTarget = pRenderTarget->StaticCast<VulkanOffScreenRenderTarget>();
+			std::vector<VkClearAttachment> vClearAttachments(vRenderTarget.GetClearScreenValueCount());
+			const auto vClearColors = vRenderTarget.GetClearScreenValueVector();
+			const auto vClearAspects = vRenderTarget.GetClearAspectFlags();
+
+			VkClearAttachment vAttachment = {};
+			for (UI64 i = 0; i < vClearAttachments.size(); i++)
+			{
+				vAttachment.aspectMask = vClearAspects[i];
+				vAttachment.clearValue = vClearColors[i];
+
+				if (vAttachment.aspectMask == VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT)
+				{
+					vClearAttachments[i] = vAttachment;
+					vAttachment.colorAttachment++;
+				}
+				else
+				{
+					UI32 temp = vAttachment.colorAttachment;
+					vAttachment.colorAttachment = 0;
+					vClearAttachments[i] = vAttachment;
+					vAttachment.colorAttachment = temp;
+				}
+			}
+
+			VkClearRect vClearRect = {};
+			vClearRect.layerCount = 1;
+			vClearRect.rect.offset = { 0, 0 };
+			vClearRect.rect.extent = { vRenderTarget.GetExtent().mWidth, vRenderTarget.GetExtent().mHeight };
+
+			pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetDeviceTable().vkCmdClearAttachments(vCommandBuffer, static_cast<UI32>(vClearAttachments.size()), vClearAttachments.data(), 1, &vClearRect);
 		}
 
 		void VulkanCommandBuffer::UnbindRenderTarget()
@@ -538,6 +611,28 @@ namespace Flint
 			auto const& vSwapChain = pSwapChain->StaticCast<VulkanSwapChain>();
 			vInFlightSemaphores.push_back(vSwapChain.GetInFlightSemaphore());
 			vRenderFinishedSemaphores.push_back(vSwapChain.GetRenderFinishedSemaphore());
+		}
+
+		void VulkanCommandBuffer::BeginQuery(const Query* pQuery, const UI32 index, const bool requirePrecision)
+		{
+			OPTICK_EVENT();
+
+			auto const& vQuery = pQuery->StaticCast<VulkanQuery>();
+			pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetDeviceTable().vkCmdBeginQuery(vCommandBuffer, vQuery.GetQuery(), index, requirePrecision ? VkQueryControlFlagBits::VK_QUERY_CONTROL_PRECISE_BIT : 0);
+		}
+
+		void VulkanCommandBuffer::EndQuery(const Query* pQuery, const UI32 index)
+		{
+			OPTICK_EVENT();
+
+			auto const& vQuery = pQuery->StaticCast<VulkanQuery>();
+			pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetDeviceTable().vkCmdEndQuery(vCommandBuffer, vQuery.GetQuery(), index);
+		}
+
+		void VulkanCommandBuffer::ResetQuery(const Query* pQuery, const UI32 beginIndex, const UI32 count)
+		{
+			auto const& vQuery = pQuery->StaticCast<VulkanQuery>();
+			pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetDeviceTable().vkCmdResetQueryPool(vCommandBuffer, vQuery.GetQuery(), beginIndex, count);
 		}
 
 		void VulkanCommandBuffer::Terminate()

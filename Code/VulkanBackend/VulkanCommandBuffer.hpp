@@ -24,6 +24,8 @@ namespace Flint
 			virtual void BindRenderTargetSecondary(const ScreenBoundRenderTarget* pRenderTarget) override;
 			virtual void BindRenderTarget(const OffScreenRenderTarget* pRenderTarget) override;
 			virtual void BindRenderTargetSecondary(const OffScreenRenderTarget* pRenderTarget) override;
+			virtual void ClearRenderTarget(const ScreenBoundRenderTarget* pRenderTarget) override;
+			virtual void ClearRenderTarget(const OffScreenRenderTarget* pRenderTarget) override;
 			virtual void UnbindRenderTarget() override;
 			virtual void BindGraphicsPipeline(const GraphicsPipeline* pGraphicsPipeline) override;
 			virtual void BindComputePipeline(const ComputePipeline* pComputePipeline) override;
@@ -52,6 +54,10 @@ namespace Flint
 			virtual void EndBufferRecording() override;
 
 			virtual void IncludeSwapChain(SwapChain* pSwapChain) override;
+
+			virtual void BeginQuery(const Query* pQuery, const UI32 index, const bool requirePrecision = false) override;
+			virtual void EndQuery(const Query* pQuery, const UI32 index) override;
+			virtual void ResetQuery(const Query* pQuery, const UI32 beginIndex, const UI32 count) override;
 
 			virtual void Terminate() override;
 

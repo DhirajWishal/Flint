@@ -32,23 +32,31 @@ namespace Flint
 		virtual void Initialize(Application* pApplication) override;
 		virtual void Update(UI64 delta, Camera* pCamera) override;
 		virtual void Draw(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 index) override;
+		virtual void OcclusionPass(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 index) override;
+		virtual void ResetOcclusionQuery(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 index, const bool isFirstUse) override;
 		virtual void Terminate() override;
 
 	private:
 		void CreatePipeline();
+		void CreateOcclusionPipeline();
 		void LoadAsset();
 		void LoadTextures();
 
 	private:
 		Asset mAsset = {};
 		std::vector<std::vector<std::shared_ptr<ResourcePackage>>> pPackageSets = {};
+		std::vector<std::shared_ptr<ResourcePackage>> pOcclusionPackageSets = {};
+		std::vector<std::shared_ptr<Query>> pOcclusionQueries = {};
+		std::vector<std::vector<UI64>> mDrawSamples = {};
 
 		Application* pApplication = nullptr;
 		std::shared_ptr<OffScreenPass> pOffScreenPass = nullptr;
 		std::shared_ptr<GraphicsPipeline> pPipeline = nullptr;
+		std::shared_ptr<GraphicsPipeline> pOcclusionPipeline = nullptr;
 
 		std::shared_ptr<Buffer> pUniformBuffer = nullptr;
 
 		std::shared_ptr<DynamicStateContainer> pDynamicStates = nullptr;
+		bool bShouldFreezeOcclusion = false;
 	};
 }

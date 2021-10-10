@@ -24,12 +24,10 @@ namespace Flint
 		{
 			ShaderCompiler compiler(std::filesystem::path("Shaders/SSR/ScreenSpaceReflections.comp"), ShaderCodeType::GLSL, ShaderType::Compute);
 			pShader = compiler.CreateShader(pDevice);
-			pShader->CreateCache("Flint/Shaders/ScreenSpaceReflections.comp.fsc");
+			//pShader->CreateCache("Flint/Shaders/ScreenSpaceReflections.comp.fsc");
 		}
 		else
 			pShader = pDevice->CreateShader(ShaderType::Compute, std::filesystem::path("Flint/Shaders/ScreenSpaceReflections.comp.fsc"));
-
-		//pShader = pDevice->CreateShader(ShaderType::Compute, std::filesystem::path("Shaders/SSR/comp.spv"));
 
 		// Create the compute pipeline.
 		pComputePipeline = pDevice->CreateComputePipeline("SSRPipeline", pShader);
@@ -60,26 +58,37 @@ namespace Flint
 
 			pResourcePackages.emplace_back(pResourcePackage);
 		}
+
+		pLensData = static_cast<LensProjection*>(pLensProjection->MapMemory(pLensProjection->GetSize()));
+	}
+
+	ScreenSpaceReflectionPass::~ScreenSpaceReflectionPass()
+	{
+		pLensProjection->UnmapMemory();
 	}
 
 	void ScreenSpaceReflectionPass::Process(ProcessingNode* pPreviousNode, const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 frameIndex, const UI32 imageIndex)
 	{
 		OPTICK_EVENT();
 
-		pLensData = static_cast<LensProjection*>(pLensProjection->MapMemory(pLensProjection->GetSize()));
 		pLensData->mMatrix = pProcessingPipeline->StaticCast<DefaultProcessingPipeline>().GetCamera().GetMatrix().mProjectionMatrix;
 
 		ImGui::Begin("Screen Space Reflections");
 		ImGui::SliderFloat("Contribution", &pLensData->mContribution, 0.1f, 1.0f);
 		ImGui::SliderFloat("Min Ray Step", &pLensData->mMinRayStep, 0.1f, 40.0f);
+		ImGui::Checkbox("Enable/ Disable", &bIsEnabled);
 		ImGui::End();
 
-		pLensProjection->UnmapMemory();
+		// Compute if enabled.
+		if (bIsEnabled)
+		{
+			pCommandBuffer->BindComputePipeline(pComputePipeline.get());
+			pCommandBuffer->BindResourcePackage(pComputePipeline.get(), pResourcePackages[frameIndex].get());
+			pCommandBuffer->IssueComputeCall(FBox3D(pOutputImage->GetExtent().mWidth / 32, pOutputImage->GetExtent().mHeight / 32, 1));
+		}
 
-		pCommandBuffer->BindComputePipeline(pComputePipeline.get());
-		pCommandBuffer->BindResourcePackage(pComputePipeline.get(), pResourcePackages[frameIndex].get());
-
-		const auto workGroup = FBox3D(pOutputImage->GetExtent().mWidth / 32, pOutputImage->GetExtent().mHeight / 32, 1);
-		pCommandBuffer->IssueComputeCall(workGroup);
+		// Just copy if disabled.
+		else
+			pCommandBuffer->CopyImage(pOffScreenPass->GetColorImage().get(), 0, pOutputImage.get(), 0);
 	}
 }

@@ -73,6 +73,8 @@ namespace Flint
 		{
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 			vDevice.GetDeviceTable().vkDestroyImageView(vDevice.GetLogicalDevice(), vImageView, nullptr);
+
+			bIsTerminated = true;
 		}
 	}
 }

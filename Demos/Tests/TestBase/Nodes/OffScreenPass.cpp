@@ -4,6 +4,7 @@
 #include "OffScreenPass.hpp"
 #include "Engine/ProcessingPipeline/ProcessingPipeline.hpp"
 #include "GraphicsCore/CommandBufferAllocator.hpp"
+#include "GraphicsCore/Query.hpp"
 
 #include <optick.h>
 
@@ -21,14 +22,28 @@ namespace Flint
 		const auto frameExtent = GetExtent();
 
 		pOffScreenRenderTarget = pDevice->CreateOffScreenRenderTarget(frameExtent, GetBufferCount(), CreateAttachments());
+		bIsFirstPass.resize(GetBufferCount(), true);
 	}
 
 	void OffScreenPass::Process(ProcessingNode* pPreviousNode, const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 frameIndex, const UI32 imageIndex)
 	{
 		OPTICK_EVENT();
 
+		// Reset the occlusion queries.
+		for (auto const& pGameObject : pGameObjects)
+			pGameObject->ResetOcclusionQuery(pCommandBuffer, frameIndex, bIsFirstPass[frameIndex]);
+
+		bIsFirstPass[frameIndex] = false;
+
 		//auto pSecondaryCommandBuffer = pCommandBuffers[frameIndex];
 		pCommandBuffer->BindRenderTarget(pOffScreenRenderTarget.get());
+
+		// Occlusion pass.
+		UI32 index = 0;
+		for (auto const& pGameObject : pGameObjects)
+			pGameObject->OcclusionPass(pCommandBuffer, frameIndex);
+
+		pCommandBuffer->ClearRenderTarget(pOffScreenRenderTarget.get());
 
 		// Draw all the game objects.
 		for (auto const& pGameObject : pGameObjects)

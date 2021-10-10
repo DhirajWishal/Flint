@@ -22,7 +22,7 @@ namespace Flint
 		 *
 		 * @param pProcessingPipeline The processing pipeline pointer.
 		 */
-		ProcessingNode(ProcessingPipeline* pProcessingPipeline) : pProcessingPipeline(pProcessingPipeline) {}
+		ProcessingNode(ProcessingPipeline* pProcessingPipeline);
 
 		/**
 		 * Process the node.
@@ -73,8 +73,5 @@ namespace Flint
 
 	protected:
 		ProcessingPipeline* pProcessingPipeline = nullptr;
-
-		std::shared_ptr<CommandBufferAllocator> pCommandBufferAllocator = nullptr;
-		std::vector<std::shared_ptr<CommandBuffer>> pCommandBuffers = {};
 	};
 }

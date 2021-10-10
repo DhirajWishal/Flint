@@ -31,6 +31,11 @@ namespace Flint
 		ScreenSpaceReflectionPass(ProcessingPipeline* pProcessingPipeline, OffScreenPass* pOffScreenPass);
 
 		/**
+		 * Destructor.
+		 */
+		~ScreenSpaceReflectionPass();
+
+		/**
 		 * Process function override.
 		 * This function will perform the SSR operation.
 		 *
@@ -56,5 +61,6 @@ namespace Flint
 		std::shared_ptr<Buffer> pLensProjection = nullptr;
 
 		OffScreenPass* pOffScreenPass = nullptr;
+		bool bIsEnabled = true;
 	};
 }

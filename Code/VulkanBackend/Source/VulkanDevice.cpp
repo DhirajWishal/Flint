@@ -16,6 +16,7 @@
 #include "VulkanBackend/VulkanGraphicsPipeline.hpp"
 #include "VulkanBackend/VulkanComputePipeline.hpp"
 #include "VulkanBackend/VulkanSynchronizationPrimitive.hpp"
+#include "VulkanBackend/VulkanQuery.hpp"
 
 #include "GraphicsCore/GeometryStore.hpp"
 
@@ -212,6 +213,11 @@ namespace Flint
 		std::shared_ptr<SynchronizationPrimitive> VulkanDevice::CreateSynchronizationPrimitive()
 		{
 			return std::make_shared<VulkanSynchronizationPrimitive>(shared_from_this());
+		}
+
+		std::shared_ptr<Query> VulkanDevice::CreateQuery(const QueryUsage usage, const UI32 queryCount)
+		{
+			return std::make_shared<VulkanQuery>(shared_from_this(), usage, queryCount);
 		}
 
 		void VulkanDevice::SubmitGraphicsCommandBuffer(const CommandBuffer* pCommandBuffer, SynchronizationPrimitive* pPrimitive)
@@ -494,7 +500,7 @@ namespace Flint
 
 					if (vPhysicalDeviceProperties.deviceType == VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU && (mFlags & DeviceFlags::External) == DeviceFlags::External)
 						vPhysicalDevice = device;
-					else if (vPhysicalDeviceProperties.deviceType == VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU && (mFlags & DeviceFlags::Intergrated) == DeviceFlags::Intergrated)
+					else if (vPhysicalDeviceProperties.deviceType == VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU && (mFlags & DeviceFlags::Integrated) == DeviceFlags::Integrated)
 						vPhysicalDevice = device;
 					else
 						vPhysicalDevice = device;

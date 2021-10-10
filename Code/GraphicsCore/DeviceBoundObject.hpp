@@ -406,6 +406,20 @@ namespace Flint
 	};
 
 	/**
+	 * Query usage enum.
+	 * This specify what the query is used for.
+	 */
+	enum class QueryUsage : UI8 {
+		Occlusion,
+		PipelineStatistics,
+		Timestamp,
+		TransformFeedbackStream,
+		Performance,
+		AccelerationStructureCompactedSize,
+		AccelerationStructureSerializationSize
+	};
+
+	/**
 	 * Flint device bound object.
 	 * This object is the base class for all the resources in Flint which are based on a device.
 	 */

@@ -17,6 +17,8 @@ namespace Flint
 		virtual void Initialize(Application* pApplication) = 0;
 		virtual void Update(UI64 delta, Camera* pCamera) = 0;
 		virtual void Draw(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 index) = 0;
+		virtual void OcclusionPass(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 index) = 0;
+		virtual void ResetOcclusionQuery(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 index, const bool isFirstUse) = 0;
 		virtual void Terminate() = 0;
 
 	protected:

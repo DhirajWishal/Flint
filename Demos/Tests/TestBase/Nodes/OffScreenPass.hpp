@@ -94,6 +94,7 @@ namespace Flint
 
 	private:
 		std::vector<std::shared_ptr<GameObject>> pGameObjects = {};
+		std::vector<bool> bIsFirstPass = {};
 		std::shared_ptr<OffScreenRenderTarget> pOffScreenRenderTarget = nullptr;
 	};
 }
