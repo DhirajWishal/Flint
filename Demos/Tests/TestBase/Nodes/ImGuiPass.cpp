@@ -19,6 +19,12 @@ namespace Flint
 
 		pOffScreenRenderTarget = pDevice->CreateOffScreenRenderTarget(frameExtent, GetBufferCount(), CreateAttachments());
 		mImGuiAdapter.Initialize(pDevice, pOffScreenRenderTarget);
+
+		mTextureContainer.pResourcePackage = mImGuiAdapter.CreateResourcePackage();
+
+		auto pColorImage = pOffScreenRenderTarget->GetAttachment(0).pImage;
+		mTextureContainer.pResourcePackage->BindResource(0, pColorImage, pColorImage->CreateImageView(0, pColorImage->GetLayerCount(), 0, pColorImage->GetMipLevels(), ImageUsage::Graphics), pDevice->CreateImageSampler(ImageSamplerSpecification()));
+		mTextureContainer.mExtent = ImVec2(static_cast<float>(pColorImage->GetExtent().mWidth), static_cast<float>(pColorImage->GetExtent().mHeight));
 	}
 
 	void ImGuiPass::Process(ProcessingNode* pPreviousNode, const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 frameIndex, const UI32 imageIndex)
@@ -28,7 +34,6 @@ namespace Flint
 		pCommandBuffer->CopyImage(pPreviousNode->StaticCast<FXAAPass>().GetAntiAliasedImage().get(), 0, pOffScreenRenderTarget->GetAttachment(0).pImage.get(), 0);
 		pCommandBuffer->BindRenderTarget(pOffScreenRenderTarget.get());
 
-		ImGui::Render();
 		mImGuiAdapter.Render(pCommandBuffer, frameIndex);
 		pCommandBuffer->UnbindRenderTarget();
 
@@ -59,7 +64,7 @@ namespace Flint
 		auto pColorImage = pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Color | ImageUsage::Storage | ImageUsage::Graphics, extent, pDisplay->GetBestSwapChainFormat(pDevice.get()), 1, 1, nullptr);
 
 		auto& imageSpec = pColorImage->GetImageRenderTargetSpecification();
-		imageSpec = imageSpec | ImageRenderTargetSpecification::LoadOnLoad;
+		imageSpec = imageSpec | ImageRenderTargetSpecification::DiscardLoad;
 
 		// Create the color image.
 		attachments.emplace_back(

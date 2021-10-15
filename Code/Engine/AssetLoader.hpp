@@ -79,8 +79,9 @@ namespace Flint
 		 * @param pGeometryStore The geometry store pointer to store the geometry data to.
 		 * @param assetPath The asset file to load.
 		 * @param vertexDescriptor The vertex descriptor describing the vertex attributes and loading order.
+		 * @param useMultiThreading Use multi threading to load the assets.
 		 */
-		AssetLoader(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::filesystem::path& assetPath, const VertexDescriptor& vertexDescriptor);
+		AssetLoader(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::filesystem::path& assetPath, const VertexDescriptor& vertexDescriptor, const bool useMultiThreading = true);
 
 		/**
 		 * Get the loaded wire frames.

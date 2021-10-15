@@ -6,7 +6,6 @@
 #include "GraphicsCore/ResourcePackager.hpp"
 #include "Engine/ShaderCompiler.hpp"
 
-#include <iostream>
 #include <optick.h>
 
 namespace Flint
@@ -25,7 +24,7 @@ namespace Flint
 
 		if (!std::filesystem::exists("Flint\\Shaders\\ImGui.vert.fsc"))
 		{
-			ShaderCompiler shaderCompiler(std::filesystem::path("E:\\Flint\\Demos\\Tests\\ImageBasedLighting\\Shaders\\ImGui\\UI.vert"), ShaderCodeType::GLSL, ShaderType::Vertex);
+			ShaderCompiler shaderCompiler(std::filesystem::path("Shaders\\ImGui\\UI.vert"), ShaderCodeType::GLSL, ShaderType::Vertex);
 			pVertexShader = shaderCompiler.CreateShader(pDevice);
 			pVertexShader->CreateCache("Flint\\Shaders\\ImGui.vert.fsc");
 		}
@@ -34,7 +33,7 @@ namespace Flint
 
 		if (!std::filesystem::exists("Flint\\Shaders\\ImGui.frag.fsc"))
 		{
-			ShaderCompiler shaderCompiler(std::filesystem::path("E:\\Flint\\Demos\\Tests\\ImageBasedLighting\\Shaders\\ImGui\\UI.frag"), ShaderCodeType::GLSL, ShaderType::Fragment);
+			ShaderCompiler shaderCompiler(std::filesystem::path("Shaders\\ImGui\\UI.frag"), ShaderCodeType::GLSL, ShaderType::Fragment);
 			pFragmentShader = shaderCompiler.CreateShader(pDevice);
 			pFragmentShader->CreateCache("Flint\\Shaders\\ImGui.frag.fsc");
 		}
@@ -56,7 +55,7 @@ namespace Flint
 
 		if (!std::filesystem::exists("Flint\\Shaders\\ImGui.vert.fsc"))
 		{
-			ShaderCompiler shaderCompiler(std::filesystem::path("E:\\Flint\\Demos\\Tests\\ImageBasedLighting\\Shaders\\ImGui\\UI.vert"), ShaderCodeType::GLSL, ShaderType::Vertex);
+			ShaderCompiler shaderCompiler(std::filesystem::path("Shaders\\ImGui\\UI.vert"), ShaderCodeType::GLSL, ShaderType::Vertex);
 			pVertexShader = shaderCompiler.CreateShader(pDevice);
 			pVertexShader->CreateCache("Flint\\Shaders\\ImGui.vert.fsc");
 		}
@@ -65,7 +64,7 @@ namespace Flint
 
 		if (!std::filesystem::exists("Flint\\Shaders\\ImGui.frag.fsc"))
 		{
-			ShaderCompiler shaderCompiler(std::filesystem::path("E:\\Flint\\Demos\\Tests\\ImageBasedLighting\\Shaders\\ImGui\\UI.frag"), ShaderCodeType::GLSL, ShaderType::Fragment);
+			ShaderCompiler shaderCompiler(std::filesystem::path("Shaders\\ImGui\\UI.frag"), ShaderCodeType::GLSL, ShaderType::Fragment);
 			pFragmentShader = shaderCompiler.CreateShader(pDevice);
 			pFragmentShader->CreateCache("Flint\\Shaders\\ImGui.frag.fsc");
 		}
@@ -82,6 +81,7 @@ namespace Flint
 	{
 		OPTICK_EVENT();
 
+		ImGui::Render();
 		UpdateGeometryStore();
 
 		ImGuiIO& io = ImGui::GetIO();
@@ -111,11 +111,11 @@ namespace Flint
 			UI64 vertexOffset = 0, indexOffset = 0;
 			for (I32 i = 0; i < pDrawData->CmdListsCount; i++)
 			{
-				auto pCommandList = pDrawData->CmdLists[i];
+				const auto pCommandList = pDrawData->CmdLists[i];
 
 				for (I32 j = 0; j < pCommandList->CmdBuffer.Size; j++)
 				{
-					auto& pCommand = pCommandList->CmdBuffer[j];
+					auto const& pCommand = pCommandList->CmdBuffer[j];
 
 					pDynamicStateContainer->SetScissor(
 						FBox2D(static_cast<UI32>(pCommand.ClipRect.z - pCommand.ClipRect.x), static_cast<UI32>(pCommand.ClipRect.w - pCommand.ClipRect.y)),
@@ -124,7 +124,7 @@ namespace Flint
 					// Handle the texture.
 					if (pCommand.TextureId != nullptr)
 					{
-						const ImGuiTextureContainer* pContainer = reinterpret_cast<ImGuiTextureContainer*>(pCommand.TextureId);
+						const ImGuiTextureContainer* pContainer = static_cast<ImGuiTextureContainer*>(pCommand.TextureId);
 						pCommandBuffer->BindResourcePackage(pPipeline.get(), pContainer->pResourcePackage.get());
 					}
 					else
@@ -303,7 +303,7 @@ namespace Flint
 		if (!pDrawData)
 			return;
 
-		UI64 vertexSize = pDrawData->TotalVtxCount * sizeof(ImDrawVert), indexSize = pDrawData->TotalIdxCount * sizeof(ImDrawIdx);
+		const UI64 vertexSize = pDrawData->TotalVtxCount * sizeof(ImDrawVert), indexSize = pDrawData->TotalIdxCount * sizeof(ImDrawIdx);
 		if ((vertexSize == 0) || (indexSize == 0))
 			return;
 
@@ -334,8 +334,8 @@ namespace Flint
 		for (I32 i = 0; i < pDrawData->CmdListsCount; i++) {
 			const ImDrawList* pCommandList = pDrawData->CmdLists[i];
 
-			std::copy(pCommandList->VtxBuffer.Data, pCommandList->VtxBuffer.Data + pCommandList->VtxBuffer.Size, pVertexData);
-			std::copy(pCommandList->IdxBuffer.Data, pCommandList->IdxBuffer.Data + pCommandList->IdxBuffer.Size, pIndexData);
+			std::copy_n(pCommandList->VtxBuffer.Data, pCommandList->VtxBuffer.Size, pVertexData);
+			std::copy_n(pCommandList->IdxBuffer.Data, pCommandList->IdxBuffer.Size, pIndexData);
 
 			pVertexData += pCommandList->VtxBuffer.Size;
 			pIndexData += pCommandList->IdxBuffer.Size;

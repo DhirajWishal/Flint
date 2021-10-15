@@ -52,7 +52,7 @@ namespace Flint
 	{
 		OPTICK_EVENT();
 
-		auto mat = pCamera->GetMatrix();
+		const auto mat = pCamera->GetMatrix();
 		mMatrix.mViewMatrix = mat.mViewMatrix;
 		mMatrix.mProjectionMatrix = mat.mProjectionMatrix;
 
@@ -77,7 +77,7 @@ namespace Flint
 		auto const& samples = mDrawSamples[index];
 		for (UI64 i = 0; i < count; i++)
 		{
-			if (samples[i] == 0)
+			if (samples[i] == 0 && !bSkipCulling)
 				continue;
 
 			auto& wireFrame = wireFrames[i];
@@ -91,12 +91,17 @@ namespace Flint
 		ImGui::Begin("Occlusion Culling");
 		ImGui::Text("Count: %u / %u", drawCount, count);
 		ImGui::Checkbox("Pause Occlusion Culling", &bShouldFreezeOcclusion);
+		ImGui::Checkbox("Skip Occlusion Culling", &bSkipCulling);
 		ImGui::End();
 	}
 
 	void Object::OcclusionPass(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 index)
 	{
 		OPTICK_EVENT();
+
+		// Return if we need to skip culling.
+		if (bSkipCulling)
+			return;
 
 		pCommandBuffer->BindGraphicsPipeline(pOcclusionPipeline.get());
 		pCommandBuffer->BindGeometryStore(mAsset.GetGeometryStore().get());
@@ -120,7 +125,7 @@ namespace Flint
 	void Object::ResetOcclusionQuery(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 index, const bool isFirstUse)
 	{
 		const auto pQuery = pOcclusionQueries[index];
-		if (!isFirstUse && !bShouldFreezeOcclusion)
+		if (!isFirstUse && !bShouldFreezeOcclusion && !bSkipCulling)
 		{
 			auto& samples = mDrawSamples[index];
 			pQuery->RequestQueryData(0, pQuery->GetQueryCount(), sizeof(UI64) * samples.size(), samples.data(), sizeof(UI64), QueryDataMode::UI64Result | QueryDataMode::WaitForResult);
@@ -148,7 +153,7 @@ namespace Flint
 
 		if (!std::filesystem::exists("Flint\\Shaders\\Object.vert.fsc"))
 		{
-			ShaderCompiler shaderCompiler(std::filesystem::path("E:\\Flint\\Demos\\Tests\\Sponza\\Shaders\\Object\\Object.vert"), ShaderCodeType::GLSL, ShaderType::Vertex);
+			ShaderCompiler shaderCompiler(std::filesystem::path("Shaders\\Object\\Object.vert"), ShaderCodeType::GLSL, ShaderType::Vertex);
 			pVertexShader = shaderCompiler.CreateShader(pDevice);
 			pVertexShader->CreateCache("Flint\\Shaders\\Object.vert.fsc");
 		}
@@ -157,7 +162,7 @@ namespace Flint
 
 		if (!std::filesystem::exists("Flint\\Shaders\\Object.frag.fsc"))
 		{
-			ShaderCompiler shaderCompiler(std::filesystem::path("E:\\Flint\\Demos\\Tests\\Sponza\\Shaders\\Object\\Object.frag"), ShaderCodeType::GLSL, ShaderType::Fragment);
+			ShaderCompiler shaderCompiler(std::filesystem::path("Shaders\\Object\\Object.frag"), ShaderCodeType::GLSL, ShaderType::Fragment);
 			pFragmentShader = shaderCompiler.CreateShader(pDevice);
 			pFragmentShader->CreateCache("Flint\\Shaders\\Object.frag.fsc");
 		}
@@ -167,19 +172,10 @@ namespace Flint
 		Flint::GraphicsPipelineSpecification specification = {};
 		specification.mRasterizationSamples = pOffScreenPass->GetMultiSampleCount();
 		specification.mDynamicStateFlags = Flint::DynamicStateFlags::ViewPort | Flint::DynamicStateFlags::Scissor;
-		specification.bEnableColorBlendLogic = false;
-		specification.mColorBlendLogic = ColorBlendLogic::OR;
 		specification.mColorBlendAttachments.resize(2);
-
-		specification.mColorBlendConstants[0] = 1.0f;
-		specification.mColorBlendConstants[1] = 1.0f;
-		specification.mColorBlendConstants[2] = 1.0f;
-		specification.mColorBlendConstants[3] = 1.0f;
 
 		specification.mVertexInputAttributeMap[0] = pVertexShader->GetInputAttributes();
 		pPipeline = pDevice->CreateGraphicsPipeline("Object", pOffScreenPass->GetRenderTarget(), pVertexShader, nullptr, nullptr, nullptr, pFragmentShader, specification);
-		//pPipeline = pApplication->GetGraphicsScene("Default")->CreateGraphicsPipeline("Object", pVertexShader, pFragmentShader, specification);
-
 		pApplication->CreateGeometryStore("Object", pVertexShader->GetInputAttributes(), sizeof(UI32));
 
 		const auto windowExtent = pOffScreenPass->GetExtent();
@@ -197,7 +193,7 @@ namespace Flint
 
 		if (!std::filesystem::exists("Flint\\Shaders\\Occlusion.vert.fsc"))
 		{
-			ShaderCompiler shaderCompiler(std::filesystem::path("E:\\Flint\\Demos\\Tests\\Sponza\\Shaders\\Object\\Occlusion.vert"), ShaderCodeType::GLSL, ShaderType::Vertex);
+			ShaderCompiler shaderCompiler(std::filesystem::path("Shaders\\Object\\Occlusion.vert"), ShaderCodeType::GLSL, ShaderType::Vertex);
 			pVertexShader = shaderCompiler.CreateShader(pDevice);
 			pVertexShader->CreateCache("Flint\\Shaders\\Occlusion.vert.fsc");
 		}
@@ -206,7 +202,7 @@ namespace Flint
 
 		if (!std::filesystem::exists("Flint\\Shaders\\Occlusion.frag.fsc"))
 		{
-			ShaderCompiler shaderCompiler(std::filesystem::path("E:\\Flint\\Demos\\Tests\\Sponza\\Shaders\\Object\\Occlusion.frag"), ShaderCodeType::GLSL, ShaderType::Fragment);
+			ShaderCompiler shaderCompiler(std::filesystem::path("Shaders\\Object\\Occlusion.frag"), ShaderCodeType::GLSL, ShaderType::Fragment);
 			pFragmentShader = shaderCompiler.CreateShader(pDevice);
 			pFragmentShader->CreateCache("Flint\\Shaders\\Occlusion.frag.fsc");
 		}
@@ -220,7 +216,6 @@ namespace Flint
 
 		specification.mVertexInputAttributeMap[0] = pVertexShader->GetInputAttributes();
 		pOcclusionPipeline = pDevice->CreateGraphicsPipeline("Occlusion", pOffScreenPass->GetRenderTarget(), pVertexShader, nullptr, nullptr, nullptr, pFragmentShader, specification);
-		//pPipeline = pApplication->GetGraphicsScene("Default")->CreateGraphicsPipeline("Object", pVertexShader, pFragmentShader, specification);
 	}
 
 	void Object::LoadAsset()
@@ -228,9 +223,9 @@ namespace Flint
 		OPTICK_EVENT();
 
 		Flint::VertexDescriptor vDescriptor = {};
-		vDescriptor.mAttributes.push_back(Flint::VertexAttribute(sizeof(float) * 3, Flint::InputAttributeType::Position));
-		vDescriptor.mAttributes.push_back(Flint::VertexAttribute(sizeof(float) * 3, Flint::InputAttributeType::Normal));
-		vDescriptor.mAttributes.push_back(Flint::VertexAttribute(sizeof(float) * 2, Flint::InputAttributeType::TextureCoordinatesZero));
+		vDescriptor.mAttributes.emplace_back(Flint::VertexAttribute(sizeof(glm::vec3), Flint::InputAttributeType::Position));
+		vDescriptor.mAttributes.emplace_back(Flint::VertexAttribute(sizeof(glm::vec3), Flint::InputAttributeType::Normal));
+		vDescriptor.mAttributes.emplace_back(Flint::VertexAttribute(sizeof(glm::vec2), Flint::InputAttributeType::TextureCoordinatesZero));
 
 		mAsset = Asset("E:\\Projects\\Lighter\\Assets\\2.0\\Sponza\\glTF\\Sponza.gltf", pApplication->GetGeometryStore("Object"), vDescriptor);
 
@@ -240,7 +235,7 @@ namespace Flint
 		const auto size = mAsset.GetWireFrames().size();
 		for (UI32 i = 0; i < pOffScreenPass->GetRenderTarget()->GetBufferCount(); i++)
 		{
-			mDrawSamples.push_back(std::vector<UI64>(size));
+			mDrawSamples.emplace_back(std::vector<UI64>(size));
 			pOcclusionQueries.push_back(pApplication->GetDevice()->CreateQuery(QueryUsage::Occlusion, static_cast<UI32>(size)));
 		}
 	}
@@ -284,6 +279,7 @@ namespace Flint
 
 		const UI64 size = pOffScreenPass->GetBufferCount();
 		pPackageSets.resize(size);
+		pOcclusionPackageSets.reserve(size);
 
 		for (auto& wireFrame : mAsset.GetWireFrames())
 		{
@@ -299,6 +295,7 @@ namespace Flint
 
 					auto& loader = loaderMap[pTexturePath];
 					auto pImage = loader.CreateImage(pApplication->GetDevice(), ImageType::TwoDimension, ImageUsage::Graphics, 1, 1);
+					auto pImageView = pImage->CreateImageView(0, pImage->GetLayerCount(), 0, pImage->GetMipLevels(), ImageUsage::Graphics);
 
 					Flint::ImageSamplerSpecification samplerSpecification = {};
 					samplerSpecification.mMaxLevelOfDetail = static_cast<float>(pImage->GetMipLevels());
@@ -309,7 +306,7 @@ namespace Flint
 					{
 						auto pPackage = pPipeline->CreateResourcePackage(0);
 						pPackage->BindResource(0, pUniformBuffer);
-						pPackage->BindResource(1, pImage, pImage->CreateImageView(0, pImage->GetLayerCount(), 0, pImage->GetMipLevels(), ImageUsage::Graphics), pSampler);
+						pPackage->BindResource(1, pImage, pImageView, pSampler);
 						pPackage->PrepareIfNecessary();
 
 						pPackageSets[i].push_back(std::move(pPackage));

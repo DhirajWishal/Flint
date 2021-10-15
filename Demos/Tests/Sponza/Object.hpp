@@ -58,5 +58,6 @@ namespace Flint
 
 		std::shared_ptr<DynamicStateContainer> pDynamicStates = nullptr;
 		bool bShouldFreezeOcclusion = false;
+		bool bSkipCulling = false;
 	};
 }

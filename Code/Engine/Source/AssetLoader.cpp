@@ -119,8 +119,6 @@ namespace Flint
 			}
 		}
 
-		std::mutex mAssetMutex = {};
-
 		void LoadWireFrame(
 			const aiMesh* pMesh,
 			const aiMaterial* pMaterial,
@@ -128,9 +126,8 @@ namespace Flint
 			const VertexDescriptor vertexDescriptor,
 			float* pBufferMemory,
 			UI64 vertexOffset,
-			UI64* pIndexOffset,
-			std::vector<std::vector<UI32>>* pIndexes,
-			std::vector<WireFrame>* pWireFrames)
+			std::vector<UI32>* pIndexes,
+			WireFrame* pWireFrame)
 		{
 			OPTICK_THREAD("Wire Frame Loader");
 			OPTICK_EVENT();
@@ -176,8 +173,6 @@ namespace Flint
 					case InputAttributeType::ColorZero:
 						if (pMesh->HasVertexColors(0))
 							std::copy(&pMesh->mColors[0][j].r, (&pMesh->mColors[0][j].r) + copyAmount, pBufferMemory);
-						else
-							std::fill(pBufferMemory, pBufferMemory + copyAmount, 1.0f);
 						break;
 
 					case InputAttributeType::ColorOne:
@@ -269,23 +264,15 @@ namespace Flint
 			}
 
 			aiFace face = {};
-			std::vector<UI32> indexes;
 			for (UI32 j = 0; j < pMesh->mNumFaces; j++)
 			{
 				face = pMesh->mFaces[j];
 				for (UI32 k = 0; k < face.mNumIndices; k++)
-					indexes.push_back(face.mIndices[k]);
+					pIndexes->push_back(face.mIndices[k]);
 			}
 
-			const UI64 indexCount = indexes.size();
-			{
-				std::lock_guard<std::mutex> lockGuard(mAssetMutex);
-
-				pIndexes->push_back(std::move(indexes));
-				pWireFrames->push_back(std::move(WireFrame(pMesh->mName.C_Str(), vertexOffset, pMesh->mNumVertices, *pIndexOffset, indexCount, std::move(material))));
-
-				(*pIndexOffset) += indexCount;
-			}
+			const UI64 indexCount = pIndexes->size();
+			(*pWireFrame) = WireFrame(pMesh->mName.C_Str(), vertexOffset, pMesh->mNumVertices, 0, indexCount, material);
 		}
 	}
 
@@ -298,7 +285,7 @@ namespace Flint
 		return size;
 	}
 
-	AssetLoader::AssetLoader(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::filesystem::path& assetPath, const VertexDescriptor& vertexDescriptor)
+	AssetLoader::AssetLoader(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::filesystem::path& assetPath, const VertexDescriptor& vertexDescriptor, const bool useMultiThreading)
 		: pGeometryStore(pGeometryStore), mDescriptor(vertexDescriptor)
 	{
 		// Validate the geometry store and vertex descriptor.
@@ -310,6 +297,8 @@ namespace Flint
 			aiProcess_CalcTangentSpace |
 			aiProcess_JoinIdenticalVertices |
 			aiProcess_Triangulate |
+			//aiProcess_OptimizeMeshes |
+			//aiProcess_OptimizeGraph |
 			aiProcess_SortByPType |
 			aiProcess_GenUVCoords |
 			aiProcess_FlipUVs);
@@ -321,17 +310,15 @@ namespace Flint
 		const UI64 vertexSize = vertexDescriptor.Size();
 		UI64 vertexCount = 0;
 
+		mWireFrames.resize(pScene->mNumMeshes);
 		for (UI32 i = 0; i < pScene->mNumMeshes; i++)
 			vertexCount += pScene->mMeshes[i]->mNumVertices;
 
-		mWireFrames.reserve(pScene->mNumMeshes);
-
-		auto pDevice = pGeometryStore->GetDevice();
-		std::shared_ptr<Flint::Buffer> pVertexStagingBuffer = pDevice->CreateBuffer(Flint::BufferType::Staging, vertexSize * vertexCount);
-		float* pBufferMemory = static_cast<float*>(pVertexStagingBuffer->MapMemory(vertexSize * vertexCount));
+		const auto pDevice = pGeometryStore->GetDevice();
+		const auto pVertexStagingBuffer = pDevice->CreateBuffer(Flint::BufferType::Staging, vertexSize * vertexCount);
+		const auto pBufferMemory = static_cast<float*>(pVertexStagingBuffer->MapMemory(vertexSize * vertexCount));
 
 		// Load the mesh data.
-		UI64 vertexOffset = 0, indexOffset = 0;
 		std::vector<std::vector<UI32>> indexData{ pScene->mNumMeshes };
 
 		{
@@ -341,33 +328,16 @@ namespace Flint
 			const UI64 vertexFloatCount = vertexDescriptor.Size() / sizeof(float);
 			const auto basePath = assetPath.parent_path().string() + LineEnding;
 
+			UI64 vertexOffset = 0;
 			for (UI32 i = 0; i < pScene->mNumMeshes; i++)
 			{
 				const auto pMesh = pScene->mMeshes[i];
 				const auto pMaterial = pScene->mMaterials[pMesh->mMaterialIndex];
 
-				/* TODO
-				pMesh->HasPositions();
-				pMesh->HasVertexColors(0);
-				pMesh->HasTextureCoords(0);
-				pMesh->HasNormals();
-				pMesh->HasBones();
-				pMesh->HasFaces();
-				pMesh->HasTangentsAndBitangents();
-				*/
-
-				futures.push_back(std::async(
-					std::launch::async,
-					Helpers::LoadWireFrame,
-					pMesh,
-					pMaterial,
-					basePath,
-					vertexDescriptor,
-					pBufferMemory + (vertexOffset * vertexFloatCount),
-					vertexOffset,
-					&indexOffset,
-					&indexData,
-					&mWireFrames));
+				if (useMultiThreading)
+					futures.push_back(std::async(std::launch::async, Helpers::LoadWireFrame, pMesh, pMaterial, basePath, vertexDescriptor, pBufferMemory + (vertexOffset * vertexFloatCount), vertexOffset, &indexData[i], &mWireFrames[i]));
+				else
+					Helpers::LoadWireFrame(pMesh, pMaterial, basePath, vertexDescriptor, pBufferMemory + (vertexOffset * vertexFloatCount), vertexOffset, &indexData[i], &mWireFrames[i]);
 
 				vertexOffset += pMesh->mNumVertices;
 			}
@@ -375,21 +345,30 @@ namespace Flint
 
 		pVertexStagingBuffer->UnmapMemory();
 
-		std::shared_ptr<Flint::Buffer> pIndexStagingBuffer = pDevice->CreateBuffer(Flint::BufferType::Staging, indexOffset * sizeof(UI32));
-		UI32* pIndexMemory = static_cast<UI32*>(pIndexStagingBuffer->MapMemory(indexOffset * sizeof(UI32)));
+		UI64 indexCount = 0;
+		for (auto& indexes : indexData)
+			indexCount += indexes.size();
+
+		const auto pIndexStagingBuffer = pDevice->CreateBuffer(Flint::BufferType::Staging, indexCount * sizeof(UI32));
+		const auto pIndexMemory = static_cast<UI32*>(pIndexStagingBuffer->MapMemory(indexCount * sizeof(UI32)));
 
 		UI64 offset = 0;
-		for (auto itr = indexData.begin(); itr != indexData.end(); itr++)
-			std::copy(itr->begin(), itr->end(), pIndexMemory + offset), offset += itr->size();
+		for (auto& indexes : indexData)
+		{
+			std::copy(indexes.begin(), indexes.end(), pIndexMemory + offset);
+			offset += indexes.size();
+		}
 
 		indexData.clear();
 		pIndexStagingBuffer->UnmapMemory();
 
 		const auto [vertexGeometryOffset, indexGeometryOffset] = pGeometryStore->AddGeometry(pVertexStagingBuffer.get(), pIndexStagingBuffer.get());
+		UI64 indexOffset = 0;
 		for (auto& wireFrame : mWireFrames)
 		{
 			wireFrame.SetVertexOffset(wireFrame.GetVertexOffset() + vertexGeometryOffset);
-			wireFrame.SetIndexOffset(wireFrame.GetIndexOffset() + indexGeometryOffset);
+			wireFrame.SetIndexOffset(indexOffset + indexGeometryOffset);
+			indexOffset += wireFrame.GetIndexCount();
 		}
 
 		pVertexStagingBuffer->Terminate();
@@ -401,9 +380,9 @@ namespace Flint
 		VertexDescriptor CreateDefaultVertexDescriptor()
 		{
 			Flint::VertexDescriptor vDescriptor = {};
-			vDescriptor.mAttributes.push_back(Flint::VertexAttribute(sizeof(float) * 3, Flint::InputAttributeType::Position));
-			vDescriptor.mAttributes.push_back(Flint::VertexAttribute(sizeof(float) * 3, Flint::InputAttributeType::ColorZero));
-			vDescriptor.mAttributes.push_back(Flint::VertexAttribute(sizeof(float) * 2, Flint::InputAttributeType::TextureCoordinatesZero));
+			vDescriptor.mAttributes.emplace_back(Flint::VertexAttribute(sizeof(float) * 3, Flint::InputAttributeType::Position));
+			vDescriptor.mAttributes.emplace_back(Flint::VertexAttribute(sizeof(float) * 3, Flint::InputAttributeType::ColorZero));
+			vDescriptor.mAttributes.emplace_back(Flint::VertexAttribute(sizeof(float) * 2, Flint::InputAttributeType::TextureCoordinatesZero));
 
 			return vDescriptor;
 		}
@@ -411,8 +390,8 @@ namespace Flint
 		VertexDescriptor CreateSkyBoxVertexDescriptor()
 		{
 			Flint::VertexDescriptor vDescriptor = {};
-			vDescriptor.mAttributes.push_back(Flint::VertexAttribute(sizeof(float) * 3, Flint::InputAttributeType::Position));
-			vDescriptor.mAttributes.push_back(Flint::VertexAttribute(sizeof(float) * 2, Flint::InputAttributeType::TextureCoordinatesZero));
+			vDescriptor.mAttributes.emplace_back(Flint::VertexAttribute(sizeof(float) * 3, Flint::InputAttributeType::Position));
+			vDescriptor.mAttributes.emplace_back(Flint::VertexAttribute(sizeof(float) * 2, Flint::InputAttributeType::TextureCoordinatesZero));
 
 			return vDescriptor;
 		}

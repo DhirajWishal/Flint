@@ -24,7 +24,7 @@ namespace Flint
 		{
 			ShaderCompiler compiler(std::filesystem::path("Shaders/SSR/ScreenSpaceReflections.comp"), ShaderCodeType::GLSL, ShaderType::Compute);
 			pShader = compiler.CreateShader(pDevice);
-			//pShader->CreateCache("Flint/Shaders/ScreenSpaceReflections.comp.fsc");
+			pShader->CreateCache("Flint/Shaders/ScreenSpaceReflections.comp.fsc");
 		}
 		else
 			pShader = pDevice->CreateShader(ShaderType::Compute, std::filesystem::path("Flint/Shaders/ScreenSpaceReflections.comp.fsc"));

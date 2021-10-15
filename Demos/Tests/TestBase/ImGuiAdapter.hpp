@@ -16,7 +16,11 @@ namespace Flint
 {
 	struct ImGuiTextureContainer
 	{
+		ImGuiTextureContainer() = default;
+		ImGuiTextureContainer(std::shared_ptr<ResourcePackage> pPackage, const ImVec2 extent) : pResourcePackage(pPackage), mExtent(extent) {}
+
 		std::shared_ptr<ResourcePackage> pResourcePackage = nullptr;
+		ImVec2 mExtent = {};
 	};
 
 	/**

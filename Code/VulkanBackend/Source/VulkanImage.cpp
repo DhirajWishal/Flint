@@ -299,12 +299,12 @@ namespace Flint
 
 			if (usage == ImageUsage::Graphics && vCurrentLayout != VkImageLayout::VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
 			{
-				pDevice->StaticCast<VulkanDevice>().SetImageLayout(vImage, vCurrentLayout, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels);
+				pDevice->StaticCast<VulkanDevice>().SetImageLayout(vImage, VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels, 0, GetAspectFlags());
 				vCurrentLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 			}
 			else if (usage == ImageUsage::Storage && vCurrentLayout != VkImageLayout::VK_IMAGE_LAYOUT_GENERAL)
 			{
-				pDevice->StaticCast<VulkanDevice>().SetImageLayout(vImage, vCurrentLayout, VK_IMAGE_LAYOUT_GENERAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels);
+				pDevice->StaticCast<VulkanDevice>().SetImageLayout(vImage, VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels, 0, GetAspectFlags());
 				vCurrentLayout = VK_IMAGE_LAYOUT_GENERAL;
 			}
 

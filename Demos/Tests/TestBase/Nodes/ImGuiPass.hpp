@@ -45,5 +45,6 @@ namespace Flint
 	private:
 		ImGuiAdapter mImGuiAdapter = {};
 		std::shared_ptr<OffScreenRenderTarget> pOffScreenRenderTarget = nullptr;
+		ImGuiTextureContainer mTextureContainer = {};
 	};
 }

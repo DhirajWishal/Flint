@@ -91,7 +91,7 @@ namespace Flint
 		// Create the depth image.
 		attachments.emplace_back(
 			RenderTargetAttachment(
-				pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Depth | ImageUsage::Graphics, extent, PixelFormat::D16_SINT, 1, 1, nullptr),
+				pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Depth | ImageUsage::Graphics, extent, PixelFormat::D32_SFLOAT_S8_UINT, 1, 1, nullptr),
 				DepthClearValues(1.0f, 0)
 			)
 		);

@@ -357,7 +357,7 @@ namespace Flint
 			return result;
 		}
 
-		void VulkanDevice::SetImageLayout(VkCommandBuffer vCommandBuffer, VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, UI32 layerCount, UI32 currentLayer, const UI32 mipLevels, const UI32 currentLevel) const
+		void VulkanDevice::SetImageLayout(VkCommandBuffer vCommandBuffer, VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, UI32 layerCount, UI32 currentLayer, const UI32 mipLevels, const UI32 currentLevel, VkImageAspectFlags vAspects) const
 		{
 			OPTICK_EVENT();
 
@@ -369,15 +369,29 @@ namespace Flint
 			vMB.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
 			vMB.image = vImage;
 
-			if (vNewLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
+			vMB.subresourceRange.aspectMask = vAspects;
+			if (vAspects == VkImageAspectFlagBits::VK_IMAGE_ASPECT_FLAG_BITS_MAX_ENUM)
 			{
-				vMB.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+				if (vOldLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL ||
+					vOldLayout == VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL ||
+					vOldLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL ||
+					vNewLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL ||
+					vNewLayout == VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL ||
+					vNewLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL)
+				{
+					vMB.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
 
+					if (Utilities::HasStencilComponent(vFormat))
+						vMB.subresourceRange.aspectMask |= VK_IMAGE_ASPECT_STENCIL_BIT;
+				}
+				else
+					vMB.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			}
+			else
+			{
 				if (Utilities::HasStencilComponent(vFormat))
 					vMB.subresourceRange.aspectMask |= VK_IMAGE_ASPECT_STENCIL_BIT;
 			}
-			else
-				vMB.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 
 			vMB.subresourceRange.baseMipLevel = currentLevel;
 			vMB.subresourceRange.levelCount = mipLevels;
@@ -429,7 +443,6 @@ namespace Flint
 				FLINT_THROW_RUNTIME_ERROR("Unsupported layout transition!");
 			}
 
-
 			switch (vNewLayout)
 			{
 			case VK_IMAGE_LAYOUT_UNDEFINED:
@@ -454,7 +467,7 @@ namespace Flint
 				break;
 
 			case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
-				vMB.srcAccessMask = VK_ACCESS_HOST_WRITE_BIT | VK_ACCESS_TRANSFER_WRITE_BIT;
+				vMB.srcAccessMask |= VK_ACCESS_HOST_WRITE_BIT | VK_ACCESS_TRANSFER_WRITE_BIT;
 				vMB.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 				break;
 
@@ -467,12 +480,12 @@ namespace Flint
 			GetDeviceTable().vkCmdPipelineBarrier(vCommandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &vMB);
 		}
 
-		void VulkanDevice::SetImageLayout(VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, UI32 layerCount, UI32 currentLayer, const UI32 mipLevels, const UI32 currentLevel) const
+		void VulkanDevice::SetImageLayout(VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, UI32 layerCount, UI32 currentLayer, const UI32 mipLevels, const UI32 currentLevel, VkImageAspectFlags vAspects) const
 		{
 			OPTICK_EVENT();
 
 			VulkanOneTimeCommandBuffer vCommandBuffer(*this);
-			SetImageLayout(vCommandBuffer, vImage, vOldLayout, vNewLayout, vFormat, layerCount, currentLayer, mipLevels, currentLevel);
+			SetImageLayout(vCommandBuffer, vImage, vOldLayout, vNewLayout, vFormat, layerCount, currentLayer, mipLevels, currentLevel, vAspects);
 		}
 
 		void VulkanDevice::InitializePhysicalDevice()

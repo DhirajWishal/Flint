@@ -10,10 +10,10 @@ namespace Flint
 	{
 	}
 
-	Asset::Asset(const std::filesystem::path& assetFile, const std::shared_ptr<GeometryStore>& pGeometryStore, const VertexDescriptor& vertexDescriptor)
+	Asset::Asset(const std::filesystem::path& assetFile, const std::shared_ptr<GeometryStore>& pGeometryStore, const VertexDescriptor& vertexDescriptor, const bool useMultiThreading)
 		: pGeometryStore(pGeometryStore)
 	{
-		AssetLoader loader(pGeometryStore, assetFile, vertexDescriptor);
+		AssetLoader loader(pGeometryStore, assetFile, vertexDescriptor, useMultiThreading);
 		mWireFrames = loader.GetWireFrames();
 	}
 	
