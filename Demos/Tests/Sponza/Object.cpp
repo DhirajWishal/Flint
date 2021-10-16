@@ -4,9 +4,9 @@
 #include "Object.hpp"
 
 #include "TestBase/GraphicsScene.hpp"
-#include "Engine/ShaderCompiler.hpp"
-#include "Engine/ImageLoader.hpp"
-#include "Engine/Tools/CubeMapGenerator.hpp"
+#include "Graphics/ShaderCompiler.hpp"
+#include "Graphics/ImageLoader.hpp"
+#include "Graphics/Tools/CubeMapGenerator.hpp"
 #include "GraphicsCore/Query.hpp"
 
 #include <glm/gtx/transform.hpp>

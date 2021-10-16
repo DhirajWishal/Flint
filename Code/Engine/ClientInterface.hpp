@@ -4,7 +4,7 @@
 #pragma once
 
 #include "Controller.hpp"
-#include "GeometryStoreManager.hpp"
+#include "Graphics/GeometryStoreManager.hpp"
 
 namespace Flint
 {

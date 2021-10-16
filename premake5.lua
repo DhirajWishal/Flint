@@ -10,12 +10,7 @@ workspace "Flint"
 		"Release",
 	}
 
-	platforms {
-		"Windows",
-		"Linux"
-	}
-
-	startproject "Flint"
+	startproject "FlintEngine"
 
 	IncludeDir = {}
 	IncludeLib = {}
@@ -58,12 +53,10 @@ workspace "Flint"
 		optimize "On"
 		runtime "Release"
 
-	filter "platforms:Windows"
-		system "windows"
+	filter "system:windows"
 		defines { "FLINT_PLATFORM_WINDOWS" }
 
-	filter "platforms:Linux"
-		system "linux"
+	filter "system:linux"
 		defines { "FLINT_PLATFORM_LINUX" }
 
 	filter ""
@@ -71,9 +64,11 @@ workspace "Flint"
 	group "Code"
 		include "Code/Audio/Audio.lua"
 		include "Code/Core/Core.lua"
-		include "Code/Debugger/Debugger.lua"
 		include "Code/Engine/Engine.lua"
+		include "Code/Engine/Engine.lua"
+		include "Code/Graphics/Graphics.lua"
 		include "Code/GraphicsCore/GraphicsCore.lua"
+		include "Code/Maths/Maths.lua"
 		include "Code/VulkanBackend/VulkanBackend.lua"
 
 		group "Code/ThirdParty"

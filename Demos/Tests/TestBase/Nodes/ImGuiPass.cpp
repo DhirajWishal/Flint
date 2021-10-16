@@ -3,7 +3,7 @@
 
 #include "ImGuiPass.hpp"
 #include "FXAAPass.hpp"
-#include "Engine/ProcessingPipeline/ProcessingPipeline.hpp"
+#include "Graphics/ProcessingPipeline/ProcessingPipeline.hpp"
 
 #include <optick.h>
 

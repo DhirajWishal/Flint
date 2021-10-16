@@ -1,9 +1,9 @@
 -- Copyright 2021 Dhiraj Wishal
 -- SPDX-License-Identifier: Apache-2.0
 
----------- Audio project description ----------
+---------- Flint Audio project description ----------
 
-project "Audio"
+project "FlintAudio"
 	language "C++"
 	kind "StaticLib"
 	systemversion "latest"
@@ -32,7 +32,7 @@ project "Audio"
 	}
 
 	links { 
-		"Core",
+		"FlintCore",
 	}
 
 	filter "configurations:Debug"

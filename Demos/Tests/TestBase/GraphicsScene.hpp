@@ -10,7 +10,7 @@
 #include "GraphicsCore/ScreenBoundRenderTarget.hpp"
 #include "GraphicsCore/GraphicsPipeline.hpp"
 #include "GraphicsCore/SynchronizationPrimitive.hpp"
-#include "Engine/Asset.hpp"
+#include "Graphics/Asset.hpp"
 #include "GameObject.hpp"
 
 namespace Flint

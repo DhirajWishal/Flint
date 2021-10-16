@@ -1,9 +1,9 @@
 -- Copyright 2021 Dhiraj Wishal
 -- SPDX-License-Identifier: Apache-2.0
 
----------- Flint Engine project description ----------
+---------- Flint Maths project description ----------
 
-project "FlintEngine"
+project "FlintMaths"
 	language "C++"
 	kind "StaticLib"
 	systemversion "latest"
@@ -22,20 +22,18 @@ project "FlintEngine"
 		"**.lua",
 		"**.txt",
 		"**.md",
+
 	}
 
 	includedirs {
 		"$(SolutionDir)Code/",
-		"%{IncludeDir.glm}",
-		"%{IncludeDir.optick}",
 	}
 
 	libdirs {
 	}
 
 	links { 
-		"FlintGraphics",
-		"FlintMaths"
+		"FlintCore"
 	}
 
 	filter "configurations:Debug"

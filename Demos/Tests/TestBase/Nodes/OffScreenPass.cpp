@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "OffScreenPass.hpp"
-#include "Engine/ProcessingPipeline/ProcessingPipeline.hpp"
+#include "Graphics/ProcessingPipeline/ProcessingPipeline.hpp"
 #include "GraphicsCore/CommandBufferAllocator.hpp"
 #include "GraphicsCore/Query.hpp"
 

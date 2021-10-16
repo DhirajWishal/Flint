@@ -3,8 +3,8 @@
 
 #include "FXAAPass.hpp"
 #include "ScreenSpaceReflectionPass.hpp"
-#include "Engine/ProcessingPipeline/ProcessingPipeline.hpp"
-#include "Engine/ShaderCompiler.hpp"
+#include "Graphics/ProcessingPipeline/ProcessingPipeline.hpp"
+#include "Graphics/ShaderCompiler.hpp"
 #include "GraphicsCore/ResourcePackage.hpp"
 
 #include <optick.h>

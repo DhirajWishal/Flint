@@ -1,9 +1,9 @@
 -- Copyright 2021 Dhiraj Wishal
 -- SPDX-License-Identifier: Apache-2.0
 
----------- Core project description ----------
+---------- Flint Core project description ----------
 
-project "Core"
+project "FlintCore"
 	language "C++"
 	kind "StaticLib"
 	systemversion "latest"
@@ -29,7 +29,6 @@ project "Core"
 		"$(SolutionDir)Code/",
 		"%{IncludeDir.xxHash}",
 		"%{IncludeDir.optick}",
-		"%{IncludeDir.Vulkan}",
 	}
 
 	libdirs {

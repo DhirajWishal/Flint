@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Engine/ProcessingPipeline/Nodes/ProcessingNode.hpp"
+#include "Graphics/ProcessingPipeline/Nodes/ProcessingNode.hpp"
 #include "GraphicsCore/OffScreenRenderTarget.hpp"
 #include "TestBase/GameObject.hpp"
 

@@ -35,7 +35,7 @@ project "GraphicsCore"
 	}
 
 	links { 
-		"Core",
+		"FlintCore",
 	}
 
 	filter "configurations:Debug"

@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Engine/ProcessingPipeline/ProcessingPipeline.hpp"
+#include "Graphics/ProcessingPipeline/ProcessingPipeline.hpp"
 #include "Camera.hpp"
 
 namespace Flint
