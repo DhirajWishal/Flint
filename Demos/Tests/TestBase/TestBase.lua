@@ -12,16 +12,10 @@ project "TestBase"
 
 	flags { "MultiProcessorCompile" }
 
-	targetdir "$(SolutionDir)Builds/Demos/Binaries/$(ProjectName)/$(Configuration)"
-	objdir "$(SolutionDir)Builds/Demos/Intermediate/$(ProjectName)/$(Configuration)"
+	targetdir "%{wks.location}/Builds/Demos/Binaries/%{prj.name}/%{cfg.longname}"
+	objdir "%{wks.location}/Builds/Demos/Intermediate/%{prj.name}/%{cfg.longname}"
 
-	defines { "FLINT_SOLUTION_DIR=$(SolutionDir)" }
-
-	postbuildcommands {
-		"{Copy} \"$(SolutionDir)ThirdParty/glfw/src/Release/glfw3.dll\" \"%{cfg.targetdir}\"",
-		"{Copy} \"$(SolutionDir)ThirdParty/Runtime/vulkan-1.dll\" \"%{cfg.targetdir}\"",
-		"{Copy} \"$(SolutionDir)ThirdParty/Assimp/bin/Release/assimp-vc142-mt.dll\" \"%{cfg.targetdir}\"",
-	}
+	defines { "FLINT_SOLUTION_DIR=%{wks.location}/" }
 
 	files {
 		"**.txt",
@@ -38,22 +32,22 @@ project "TestBase"
 		"**.tese",
 		"**.geom",
 
-		"$(SolutionDir)ThirdParty/imgui/imgui.cpp",
-		"$(SolutionDir)ThirdParty/imgui/imgui_demo.cpp",
-		"$(SolutionDir)ThirdParty/imgui/imgui_draw.cpp",
-		"$(SolutionDir)ThirdParty/imgui/imgui_tables.cpp",
-		"$(SolutionDir)ThirdParty/imgui/imgui_widgets.cpp",
+		"%{wks.location}/ThirdParty/imgui/imgui.cpp",
+		"%{wks.location}/ThirdParty/imgui/imgui_demo.cpp",
+		"%{wks.location}/ThirdParty/imgui/imgui_draw.cpp",
+		"%{wks.location}/ThirdParty/imgui/imgui_tables.cpp",
+		"%{wks.location}/ThirdParty/imgui/imgui_widgets.cpp",
 
-		"$(SolutionDir)ThirdParty/ImGuizmo/GraphEditor.cpp",
-		"$(SolutionDir)ThirdParty/ImGuizmo/ImCurveEdit.cpp",
-		"$(SolutionDir)ThirdParty/ImGuizmo/ImGradient.cpp",
-		"$(SolutionDir)ThirdParty/ImGuizmo/ImGuizmo.cpp",
-		"$(SolutionDir)ThirdParty/ImGuizmo/ImSequencer.cpp",
+		"%{wks.location}/ThirdParty/ImGuizmo/GraphEditor.cpp",
+		"%{wks.location}/ThirdParty/ImGuizmo/ImCurveEdit.cpp",
+		"%{wks.location}/ThirdParty/ImGuizmo/ImGradient.cpp",
+		"%{wks.location}/ThirdParty/ImGuizmo/ImGuizmo.cpp",
+		"%{wks.location}/ThirdParty/ImGuizmo/ImSequencer.cpp",
 	}
 
 	includedirs {
-		"$(SolutionDir)Code",
-		"$(SolutionDir)Demos/Tests",
+		"%{wks.location}/Code",
+		"%{wks.location}/Demos/Tests",
 		"%{IncludeDir.ImGuizmo}",
 		"%{IncludeDir.imgui}",
 		"%{IncludeDir.glm}",
@@ -67,13 +61,27 @@ project "TestBase"
 		"FlintEngine",
 	}
 
-	filter "configurations:Debug"
+	filter "toolset:msc"
+		postbuildcommands {
+			"{Copy} \"%{wks.location}/ThirdParty/glfw/src/Release/glfw3.dll\" \"%{cfg.targetdir}\"",
+			"{Copy} \"%{wks.location}/ThirdParty/Runtime/vulkan-1.dll\" \"%{cfg.targetdir}\"",
+			"{Copy} \"%{wks.location}/ThirdParty/Assimp/bin/Release/assimp-vc142-mt.dll\" \"%{cfg.targetdir}\"",
+		}
+
+	filter "toolset:clang or gcc"
+		postbuildcommands {
+			"{Copy} \"%{wks.location}/ThirdParty/glfw/src/Release/glibglfw.so\" \"%{cfg.targetdir}\"",
+			--"{Copy} \"%{wks.location}/ThirdParty/Runtime/vulkan-1.dll\" \"%{cfg.targetdir}\"",
+			"{Copy} \"%{wks.location}/ThirdParty/Assimp/bin/libassimp.so\" \"%{cfg.targetdir}\"",
+		}
+
+	filter { "toolset:msc", "configurations:Debug" }
 	    buildoptions "/MTd"
 
-	filter "configurations:PreRelease"
+	filter { "toolset:msc", "configurations:PreRelease" }
 	    buildoptions "/MT"
 
-	filter "configurations:Release"
+	filter { "toolset:msc", "configurations:Release" }
 	    buildoptions "/MT"
 
 	filter ""

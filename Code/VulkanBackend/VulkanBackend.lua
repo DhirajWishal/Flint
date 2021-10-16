@@ -12,8 +12,8 @@ project "VulkanBackend"
 
 	flags { "MultiProcessorCompile" }
 
-	targetdir "$(SolutionDir)Builds/Binaries/$(Configuration)"
-	objdir "$(SolutionDir)Builds/Intermediate/$(Configuration)"
+	targetdir "%{wks.location}/Builds/Binaries/%{cfg.longname}"
+	objdir "%{wks.location}/Builds/Intermediate/%{cfg.longname}"
 
 	files {
 		"**.txt",
@@ -23,16 +23,16 @@ project "VulkanBackend"
 		"**.txt",
 		"**.md",
 
-		"$(SolutionDir)ThirdParty/SPIRV-Reflect/spirv_reflect.c",
-		"$(SolutionDir)ThirdParty/SPIRV-Reflect/spirv_reflect.h",
+		"%{wks.location}/ThirdParty/SPIRV-Reflect/spirv_reflect.c",
+		"%{wks.location}/ThirdParty/SPIRV-Reflect/spirv_reflect.h",
 
-		"$(SolutionDir)ThirdParty/volk/volk.c",
-		"$(SolutionDir)ThirdParty/volk/volk.h",
+		"%{wks.location}/ThirdParty/volk/volk.c",
+		"%{wks.location}/ThirdParty/volk/volk.h",
 	}
 
 	includedirs {
-		"$(SolutionDir)Code/",
-		"$(SolutionDir)ThirdParty/SPIRV-Reflect",
+		"%{wks.location}/Code/",
+		"%{wks.location}/ThirdParty/SPIRV-Reflect",
 		"%{IncludeDir.volk}",
 		"%{IncludeDir.Vulkan}",
 		"%{IncludeDir.GLFW}",
@@ -51,13 +51,13 @@ project "VulkanBackend"
 		"glfw3dll",
 	}
 
-	filter "configurations:Debug"
+	filter { "toolset:msc", "configurations:Debug" }
 	    buildoptions "/MTd"
 
-	filter "configurations:PreRelease"
+	filter { "toolset:msc", "configurations:PreRelease" }
 	    buildoptions "/MT"
 
-	filter "configurations:Release"
+	filter { "toolset:msc", "configurations:Release" }
 	    buildoptions "/MT"
 
 	filter ""

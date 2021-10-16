@@ -47,7 +47,7 @@ namespace Flint
 }
 
 #ifndef FLINT_RELEASE
-#	define FLINT_THROW_RUNTIME_ERROR(...)								throw ::Flint::runtime_error_extended(__VA_ARGS__, "\nFile:\t\t" __FILE__ "\nFunction:\t" __FUNCSIG__ "\nLine:\t\t" TO_STRING(__LINE__))
+#	define FLINT_THROW_RUNTIME_ERROR(...)								throw ::Flint::runtime_error_extended(__VA_ARGS__, __FILE__)
 #	define FLINT_ASSERT(expression, condition, error)					if (expression != condition) error
 #	define FLINT_ASSERT_DISCARDABLE(expression, condition, error)		if (expression != condition) error;
 

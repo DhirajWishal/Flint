@@ -12,8 +12,8 @@ project "FlintGraphics"
 
 	flags { "MultiProcessorCompile" }
 
-	targetdir "$(SolutionDir)Builds/Binaries/$(Configuration)"
-	objdir "$(SolutionDir)Builds/Intermediate/$(Configuration)"
+	targetdir "%{wks.location}/Builds/Binaries/%{cfg.longname}"
+	objdir "%{wks.location}/Builds/Intermediate/%{cfg.longname}"
 
 	files {
 		"**.txt",
@@ -25,7 +25,7 @@ project "FlintGraphics"
 	}
 
 	includedirs {
-		"$(SolutionDir)Code/",
+		"%{wks.location}/Code/",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.Assimp}",
 		"%{IncludeDir.optick}",
@@ -41,16 +41,16 @@ project "FlintGraphics"
 		"shaderc_combined",
 		"VulkanBackend"
 	}
-
-	filter "configurations:Debug"
+	
+	filter { "toolset:msc", "configurations:Debug" }
 		libdirs { "%{IncludeLib.shaderc_debug}" }
 	    buildoptions "/MTd"
 
-	filter "configurations:PreRelease"
+	filter { "toolset:msc", "configurations:PreRelease" }
 		libdirs { "%{IncludeLib.shaderc_release}" }
 	    buildoptions "/MT"
 
-	filter "configurations:Release"
+	filter { "toolset:msc", "configurations:Release" }
 		libdirs { "%{IncludeLib.shaderc_release}" }
 	    buildoptions "/MT"
 

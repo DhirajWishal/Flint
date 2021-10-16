@@ -12,8 +12,8 @@ project "FlintCore"
 
 	flags { "MultiProcessorCompile" }
 
-	targetdir "$(SolutionDir)Builds/Binaries/$(Configuration)"
-	objdir "$(SolutionDir)Builds/Intermediate/$(Configuration)"
+	targetdir "%{wks.location}/Builds/Binaries/%{cfg.longname}"
+	objdir "%{wks.location}/Builds/Intermediate/%{cfg.longname}"
 
 	files {
 		"**.txt",
@@ -26,7 +26,7 @@ project "FlintCore"
 	}
 
 	includedirs {
-		"$(SolutionDir)Code/",
+		"%{wks.location}/Code/",
 		"%{IncludeDir.xxHash}",
 		"%{IncludeDir.optick}",
 	}
@@ -38,13 +38,13 @@ project "FlintCore"
 		"optick"
 	}
 
-	filter "configurations:Debug"
+	filter { "toolset:msc", "configurations:Debug" }
 	    buildoptions "/MTd"
 
-	filter "configurations:PreRelease"
+	filter { "toolset:msc", "configurations:PreRelease" }
 	    buildoptions "/MT"
 
-	filter "configurations:Release"
+	filter { "toolset:msc", "configurations:Release" }
 	    buildoptions "/MT"
 
 	filter ""

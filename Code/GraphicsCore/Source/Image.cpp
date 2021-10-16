@@ -3,6 +3,8 @@
 
 #include "GraphicsCore/Image.hpp"
 
+#include <cmath>
+
 namespace Flint
 {	
 	Image::Image(const std::shared_ptr<Device>& pDevice, const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const UI8 layers, const UI32 mipLevels, const void* pImageData, const MultiSampleCount sampleCount)

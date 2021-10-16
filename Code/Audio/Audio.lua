@@ -12,8 +12,8 @@ project "FlintAudio"
 
 	flags { "MultiProcessorCompile" }
 
-	targetdir "$(SolutionDir)Builds/Binaries/$(Configuration)"
-	objdir "$(SolutionDir)Builds/Intermediate/$(Configuration)"
+	targetdir "$(SolutionDir)Builds/Binaries/%{cfg.longname}"
+	objdir "$(SolutionDir)Builds/Intermediate/%{cfg.longname}"
 
 	files {
 		"**.txt",
@@ -35,13 +35,13 @@ project "FlintAudio"
 		"FlintCore",
 	}
 
-	filter "configurations:Debug"
+	filter { "toolset:msc", "configurations:Debug" }
 	    buildoptions "/MTd"
 
-	filter "configurations:PreRelease"
+	filter { "toolset:msc", "configurations:PreRelease" }
 	    buildoptions "/MT"
 
-	filter "configurations:Release"
+	filter { "toolset:msc", "configurations:Release" }
 	    buildoptions "/MT"
 
 	filter ""

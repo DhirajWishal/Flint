@@ -12,8 +12,8 @@ project "FlintEngine"
 
 	flags { "MultiProcessorCompile" }
 
-	targetdir "$(SolutionDir)Builds/Binaries/$(Configuration)"
-	objdir "$(SolutionDir)Builds/Intermediate/$(Configuration)"
+	targetdir "%{wks.location}/Builds/Binaries/%{cfg.longname}"
+	objdir "%{wks.location}/Builds/Intermediate/%{cfg.longname}"
 
 	files {
 		"**.txt",
@@ -25,7 +25,7 @@ project "FlintEngine"
 	}
 
 	includedirs {
-		"$(SolutionDir)Code/",
+		"%{wks.location}/Code/",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.optick}",
 	}
@@ -37,13 +37,13 @@ project "FlintEngine"
 		"FlintGraphics",
 	}
 
-	filter "configurations:Debug"
+	filter { "toolset:msc", "configurations:Debug" }
 	    buildoptions "/MTd"
 
-	filter "configurations:PreRelease"
+	filter { "toolset:msc", "configurations:PreRelease" }
 	    buildoptions "/MT"
 
-	filter "configurations:Release"
+	filter { "toolset:msc", "configurations:Release" }
 	    buildoptions "/MT"
 
 	filter ""

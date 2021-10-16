@@ -4,6 +4,7 @@
 #pragma once
 
 #include "DataType.hpp"
+#include <vector>
 
 namespace Flint
 {
@@ -30,14 +31,14 @@ namespace Flint
 		 * @param key The key to be searched for.
 		 * @return The position iterator.
 		 */
-		typename Iterator Find(const Key& key)
+		Iterator Find(const Key& key)
 		{
-			Iterator begin = mEntries.begin(), iterator = {};
+			Iterator begin = mEntries.begin();
 			UI64 count = mEntries.size(), step = 0;
 
 			while (count > 0)
 			{
-				iterator = begin;
+				auto iterator = begin;
 				step = count / 2;
 				std::advance(iterator, step);
 
@@ -56,14 +57,14 @@ namespace Flint
 		 * @param key The key to be searched for.
 		 * @return The position iterator.
 		 */
-		typename ConstIterator Find(const Key& key) const
+		ConstIterator Find(const Key& key) const
 		{
-			ConstIterator begin = mEntries.begin(), iterator = {};
+			ConstIterator begin = mEntries.begin();
 			UI64 count = mEntries.size(), step = 0;
 
 			while (count > 0)
 			{
-				iterator = begin;
+				auto iterator = begin;
 				step = count / 2;
 				std::advance(iterator, step);
 
@@ -138,28 +139,28 @@ namespace Flint
 		 *
 		 * @return The iterator.
 		 */
-		typename Iterator begin() { return mEntries.begin(); }
+		Iterator begin() { return mEntries.begin(); }
 
 		/**
 		 * Begin iterator function.
 		 *
 		 * @return The iterator.
 		 */
-		typename ConstIterator begin() const { return mEntries.begin(); }
+		ConstIterator begin() const { return mEntries.begin(); }
 
 		/**
 		 * End iterator function.
 		 *
 		 * @return The iterator.
 		 */
-		typename Iterator end() { return mEntries.end(); }
+		Iterator end() { return mEntries.end(); }
 
 		/**
 		 * End iterator function.
 		 *
 		 * @return The iterator.
 		 */
-		typename ConstIterator end() const { return mEntries.end(); }
+		ConstIterator end() const { return mEntries.end(); }
 
 		/**
 		 * Get the size of the map.

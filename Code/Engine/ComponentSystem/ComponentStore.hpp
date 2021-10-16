@@ -103,28 +103,28 @@ namespace Flint
 		 * 
 		 * @return The iterator.
 		 */
-		typename Iterator begin() { return mComponents.begin(); }
+		Iterator begin() { return mComponents.begin(); }
 
 		/**
 		 * Get the begin iterator.
 		 *
 		 * @return The iterator.
 		 */
-		typename ConstIterator begin() const { return mComponents.begin(); }
+		ConstIterator begin() const { return mComponents.begin(); }
 
 		/**
 		 * Get the end iterator.
 		 *
 		 * @return The iterator.
 		 */
-		typename Iterator end() { return mComponents.end(); }
+		Iterator end() { return mComponents.end(); }
 
 		/**
 		 * Get the end iterator.
 		 *
 		 * @return The iterator.
 		 */
-		typename ConstIterator end() const { return mComponents.end(); }
+		ConstIterator end() const { return mComponents.end(); }
 
 	private:
 		BinaryMap<ComponentIdentifier, Type> mComponents = {};

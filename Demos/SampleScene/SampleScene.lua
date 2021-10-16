@@ -12,15 +12,15 @@ project "SampleScene"
 
 	flags { "MultiProcessorCompile" }
 
-	targetdir "$(SolutionDir)Builds/Demos/Binaries/$(ProjectName)/$(Configuration)"
-	objdir "$(SolutionDir)Builds/Demos/Intermediate/$(ProjectName)/$(Configuration)"
+	targetdir "%{wks.location}/Builds/Demos/Binaries/%{prj.name}/%{cfg.longname}"
+	objdir "%{wks.location}/Builds/Demos/Intermediate/%{prj.name}/%{cfg.longname}"
 
-	defines { "FLINT_SOLUTION_DIR=$(SolutionDir)" }
+	defines { "FLINT_SOLUTION_DIR=%{wks.location}/" }
 
 	postbuildcommands {
-		"{COPY} \"$(SolutionDir)ThirdParty/glfw/src/Release/glfw3.dll\" \"%{cfg.targetdir}\"",
-		"{COPY} \"$(SolutionDir)ThirdParty/Runtime/vulkan-1.dll\" \"%{cfg.targetdir}\"",
-		"{COPY} \"$(SolutionDir)ThirdParty/Assimp/bin/Release/assimp-vc142-mt.dll\" \"%{cfg.targetdir}\"",
+		"{COPY} \"%{wks.location}/ThirdParty/glfw/src/Release/glfw3.dll\" \"%{cfg.targetdir}\"",
+		"{COPY} \"%{wks.location}/ThirdParty/Runtime/vulkan-1.dll\" \"%{cfg.targetdir}\"",
+		"{COPY} \"%{wks.location}/ThirdParty/Assimp/bin/Release/assimp-vc142-mt.dll\" \"%{cfg.targetdir}\"",
 	}
 
 	files {
@@ -33,8 +33,8 @@ project "SampleScene"
 	}
 
 	includedirs {
-		"$(SolutionDir)Code",
-		"$(SolutionDir)Demos/SampleScene",
+		"%{wks.location}/Code",
+		"%{wks.location}/Demos/SampleScene",
 		"%{IncludeDir.glm}",
 	}
 
@@ -45,13 +45,13 @@ project "SampleScene"
 		"FlintEngine",
 	}
 
-	filter "configurations:Debug"
+	filter { "toolset:msc", "configurations:Debug" }
 	    buildoptions "/MTd"
 
-	filter "configurations:PreRelease"
+	filter { "toolset:msc", "configurations:PreRelease" }
 	    buildoptions "/MT"
 
-	filter "configurations:Release"
+	filter { "toolset:msc", "configurations:Release" }
 	    buildoptions "/MT"
 
 	filter ""

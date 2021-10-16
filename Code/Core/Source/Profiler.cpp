@@ -14,7 +14,7 @@ namespace Flint
 #ifndef FLINT_RELEASE
 	Profiler::Profiler(std::string_view functionSignature) : mFunctionSignature(functionSignature), mStart(std::chrono::high_resolution_clock::now())
 	{
-		OPTICK_EVENT();
+		//OPTICK_EVENT();
 	}
 
 	Profiler::~Profiler()
