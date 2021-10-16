@@ -35,7 +35,6 @@ project "FlintEngine"
 
 	links { 
 		"FlintGraphics",
-		"FlintMaths"
 	}
 
 	filter "configurations:Debug"

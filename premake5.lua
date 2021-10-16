@@ -28,6 +28,7 @@ workspace "Flint"
 	IncludeDir["xxHash"] = "$(SolutionDir)ThirdParty/xxHash/"
 	IncludeDir["optick"] = "$(SolutionDir)ThirdParty/optick/src"
 	IncludeDir["vma"] = "$(SolutionDir)ThirdParty/VulkanMemoryAllocator/include"
+	IncludeDir["benchmark"] = "$(SolutionDir)ThirdParty/benchmark/include"
 
 	-- Binaries
 	IncludeLib["GLFW"] = "$(SolutionDir)ThirdParty/glfw/src/Release"
@@ -37,6 +38,7 @@ workspace "Flint"
 	IncludeLib["tinygltf"] = "$(SolutionDir)ThirdParty/tinygltf/Release"
 	IncludeLib["shaderc_debug"] = "$(SolutionDir)ThirdParty/shaderc/libshaderc/Debug"
 	IncludeLib["shaderc_release"] = "$(SolutionDir)ThirdParty/shaderc/libshaderc/Release"
+	IncludeLib["benchmark"] = "$(SolutionDir)ThirdParty/benchmark/build/src/Release"
 
 	filter "configurations:Debug"
 		defines { "FLINT_DEBUG" }
@@ -68,7 +70,6 @@ workspace "Flint"
 		include "Code/Engine/Engine.lua"
 		include "Code/Graphics/Graphics.lua"
 		include "Code/GraphicsCore/GraphicsCore.lua"
-		include "Code/Maths/Maths.lua"
 		include "Code/VulkanBackend/VulkanBackend.lua"
 
 		group "Code/ThirdParty"

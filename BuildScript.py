@@ -36,6 +36,10 @@ os.system("cd \"ThirdParty/Assimp\" && cmake CMakeLists.txt -DBUILD_SHARED_LIBS=
 print("\nSetting up imgui ...")
 os.system("cd \"Demos/ThirdParty/imgui\" && git checkout docking")
 
+# Setup google benchmark
+print("\nSetting up Google Benchmark ...")
+os.system("cd \"ThirdParty/benchmark\" && cmake -E make_directory \"build\" && cmake -E chdir \"build\" cmake -DBENCHMARK_DOWNLOAD_DEPENDENCIES=on -DCMAKE_BUILD_TYPE=Release ../ && cmake --build \"build\" --config Release")
+
 # Setup gdown
 print("\nSetting up gdown ...")
 os.system("cd \"ThirdParty/gdown\" && python setup.py install")
