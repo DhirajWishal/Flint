@@ -3,35 +3,53 @@
 
 #pragma once
 
-#include "Core/DataType.hpp"
+#include "Vector3F.hpp"
 
 namespace Flint
 {
 	/**
-	 * Flint vector 2 F (float) class.
+	 * Flint vector 4 F (float) class.
 	 */
-	class Vector2F final
+	class Vector4F final
 	{
 	public:
 		/**
 		 * Default constructor.
 		 */
-		Vector2F() = default;
+		Vector4F() = default;
 
 		/**
 		 * Constructor.
 		 *
 		 * @param value The value to set.
 		 */
-		constexpr Vector2F(float value) { mStorage[0] = value; mStorage[1] = value; }
+		constexpr Vector4F(float value) { mStorage[0] = value; mStorage[1] = value; mStorage[2] = value; }
 
 		/**
 		 * Constructor.
 		 *
 		 * @param x The x argument.
 		 * @param y The y argument.
+		 * @param z The z argument.
+		 * @param w The w argument.
 		 */
-		constexpr Vector2F(float x, float y) { mStorage[0] = x; mStorage[1] = y; }
+		constexpr Vector4F(float x, float y, float z, float w) { mStorage[0] = x; mStorage[1] = y; mStorage[2] = z; mStorage[3] = w; }
+
+		/**
+		 * Constructor.
+		 *
+		 * @param x The first Vector2F.
+		 * @param y The second Vector2F.
+		 */
+		constexpr Vector4F(const Vector2F x, const Vector2F y) { mStorage[0] = x[0]; mStorage[1] = x[1]; mStorage[2] = y[0]; mStorage[3] = y[1]; }
+
+		/**
+		 * Constructor.
+		 *
+		 * @param vec3 The Vector2F.
+		 * @param w The w argument.
+		 */
+		constexpr Vector4F(const Vector3F vec3, float w) { mStorage[0] = vec3[0]; mStorage[1] = vec3[1]; mStorage[2] = vec3[2]; mStorage[3] = w; }
 
 		/**
 		 * Decompose the vector.
@@ -110,7 +128,7 @@ namespace Flint
 		 * @param other The other vector.
 		 * @return The resulting vector.
 		 */
-		Vector2F operator+(const Vector2F& other) const;
+		Vector4F operator+(const Vector4F& other) const;
 
 		/**
 		 * Subtract operator.
@@ -118,7 +136,7 @@ namespace Flint
 		 * @param other The other vector.
 		 * @return The resulting vector.
 		 */
-		Vector2F operator-(const Vector2F& other) const;
+		Vector4F operator-(const Vector4F& other) const;
 
 		/**
 		 * Multiply operator.
@@ -126,7 +144,7 @@ namespace Flint
 		 * @param other The other vector.
 		 * @return The resulting vector.
 		 */
-		Vector2F operator*(const Vector2F& other) const;
+		Vector4F operator*(const Vector4F& other) const;
 
 		/**
 		 * Divide operator.
@@ -134,7 +152,7 @@ namespace Flint
 		 * @param other The other vector.
 		 * @return The resulting vector.
 		 */
-		Vector2F operator/(const Vector2F& other) const;
+		Vector4F operator/(const Vector4F& other) const;
 
 		/**
 		 * Add assignment operator.
@@ -142,7 +160,7 @@ namespace Flint
 		 * @param other The other vector.
 		 * @return The resulting vector.
 		 */
-		Vector2F& operator+=(const Vector2F& other);
+		Vector4F& operator+=(const Vector4F& other);
 
 		/**
 		 * Subtract assignment operator.
@@ -150,7 +168,7 @@ namespace Flint
 		 * @param other The other vector.
 		 * @return The resulting vector.
 		 */
-		Vector2F& operator-=(const Vector2F& other);
+		Vector4F& operator-=(const Vector4F& other);
 
 		/**
 		 * Multiply assignment operator.
@@ -158,7 +176,7 @@ namespace Flint
 		 * @param other The other vector.
 		 * @return The resulting vector.
 		 */
-		Vector2F& operator*=(const Vector2F& other);
+		Vector4F& operator*=(const Vector4F& other);
 
 		/**
 		 * Divide assignment operator.
@@ -166,7 +184,7 @@ namespace Flint
 		 * @param other The other vector.
 		 * @return The resulting vector.
 		 */
-		Vector2F& operator/=(const Vector2F& other);
+		Vector4F& operator/=(const Vector4F& other);
 
 		/**
 		 * Is equal to operator.
@@ -174,7 +192,7 @@ namespace Flint
 		 * @param other The other vector.
 		 * @return The resulting vector
 		 */
-		Vector2F operator==(const Vector2F& other) const;
+		Vector4F operator==(const Vector4F& other) const;
 
 		/**
 		 * Is not equal to operator.
@@ -182,7 +200,7 @@ namespace Flint
 		 * @param other The other vector.
 		 * @return The resulting vector
 		 */
-		Vector2F operator!=(const Vector2F& other) const;
+		Vector4F operator!=(const Vector4F& other) const;
 
 		/**
 		 * Is less than operator.
@@ -190,7 +208,7 @@ namespace Flint
 		 * @param other The other vector.
 		 * @return The resulting vector
 		 */
-		Vector2F operator<(const Vector2F& other) const;
+		Vector4F operator<(const Vector4F& other) const;
 
 		/**
 		 * Is less than or equal to operator.
@@ -198,7 +216,7 @@ namespace Flint
 		 * @param other The other vector.
 		 * @return The resulting vector
 		 */
-		Vector2F operator<=(const Vector2F& other) const;
+		Vector4F operator<=(const Vector4F& other) const;
 
 		/**
 		 * Is greater than operator.
@@ -206,7 +224,7 @@ namespace Flint
 		 * @param other The other vector.
 		 * @return The resulting vector
 		 */
-		Vector2F operator>(const Vector2F& other) const;
+		Vector4F operator>(const Vector4F& other) const;
 
 		/**
 		 * Is greater than or equal to operator.
@@ -214,7 +232,7 @@ namespace Flint
 		 * @param other The other vector.
 		 * @return The resulting vector
 		 */
-		Vector2F operator>=(const Vector2F& other) const;
+		Vector4F operator>=(const Vector4F& other) const;
 
 		/**
 		 * Logical AND operator.
@@ -222,7 +240,7 @@ namespace Flint
 		 * @param other The other vector.
 		 * @return The resulting vector.
 		 */
-		Vector2F operator&&(const Vector2F& other) const;
+		Vector4F operator&&(const Vector4F& other) const;
 
 		/**
 		 * Logical OR operator.
@@ -230,23 +248,22 @@ namespace Flint
 		 * @param other The other vector.
 		 * @return The resulting vector.
 		 */
-		Vector2F operator||(const Vector2F& other) const;
+		Vector4F operator||(const Vector4F& other) const;
 
 		/**
 		 * Logical XOR operator.
-		 * Note: This will first cast the float value to a integer before performing the operation.
 		 *
 		 * @param other The other vector.
 		 * @return The resulting vector.
 		 */
-		Vector2F operator^(const Vector2F& other) const;
+		Vector4F operator^(const Vector4F& other) const;
 
 		/**
 		 * Logical NOT operator.
 		 *
 		 * @return The resulting vector.
 		 */
-		Vector2F operator!() const;
+		Vector4F operator!() const;
 
 	public:
 		/**
@@ -256,7 +273,7 @@ namespace Flint
 		 * @param rhs The right hand side argument.
 		 * @return The resulting vector.
 		 */
-		static Vector2F Power(const Vector2F lhs, const Vector2F rhs);
+		static Vector4F Power(const Vector4F lhs, const Vector4F rhs);
 
 		/**
 		 * Compute the square root of a vector.
@@ -264,7 +281,7 @@ namespace Flint
 		 * @param vec The vector to get the square root of.
 		 * @return The resulting vector.
 		 */
-		static Vector2F SquareRoot(const Vector2F vec);
+		static Vector4F SquareRoot(const Vector4F vec);
 
 		/**
 		 * Compute the radian sin of a vector.
@@ -272,7 +289,7 @@ namespace Flint
 		 * @param vec The vector to get the sin of.
 		 * @return The resulting vector.
 		 */
-		static Vector2F SinRad(const Vector2F vec);
+		static Vector4F SinRad(const Vector4F vec);
 
 		/**
 		 * Compute the radian cos of a vector.
@@ -280,7 +297,7 @@ namespace Flint
 		 * @param vec The vector to get the cos of.
 		 * @return The resulting vector.
 		 */
-		static Vector2F CosRad(const Vector2F vec);
+		static Vector4F CosRad(const Vector4F vec);
 
 		/**
 		 * Compute the radian tan of a vector.
@@ -288,7 +305,7 @@ namespace Flint
 		 * @param vec The vector to get the tan of.
 		 * @return The resulting vector.
 		 */
-		static Vector2F TanRad(const Vector2F vec);
+		static Vector4F TanRad(const Vector4F vec);
 
 		/**
 		 * Compute the degree sin of a vector.
@@ -296,7 +313,7 @@ namespace Flint
 		 * @param vec The vector to get the sin of.
 		 * @return The resulting vector.
 		 */
-		static Vector2F SinDeg(const Vector2F vec);
+		static Vector4F SinDeg(const Vector4F vec);
 
 		/**
 		 * Compute the degree cos of a vector.
@@ -304,7 +321,7 @@ namespace Flint
 		 * @param vec The vector to get the cos of.
 		 * @return The resulting vector.
 		 */
-		static Vector2F CosDeg(const Vector2F vec);
+		static Vector4F CosDeg(const Vector4F vec);
 
 		/**
 		 * Compute the degree tan of a vector.
@@ -312,7 +329,7 @@ namespace Flint
 		 * @param vec The vector to get the tan of.
 		 * @return The resulting vector.
 		 */
-		static Vector2F TanDeg(const Vector2F vec);
+		static Vector4F TanDeg(const Vector4F vec);
 
 		/**
 		 * Compute the inverse radian sin of a vector.
@@ -320,7 +337,7 @@ namespace Flint
 		 * @param vec The vector to get the sin of.
 		 * @return The resulting vector.
 		 */
-		static Vector2F InverseSinRad(const Vector2F vec);
+		static Vector4F InverseSinRad(const Vector4F vec);
 
 		/**
 		 * Compute the inverse radian cos of a vector.
@@ -328,7 +345,7 @@ namespace Flint
 		 * @param vec The vector to get the cos of.
 		 * @return The resulting vector.
 		 */
-		static Vector2F InverseCosRad(const Vector2F vec);
+		static Vector4F InverseCosRad(const Vector4F vec);
 
 		/**
 		 * Compute the inverse radian tan of a vector.
@@ -336,7 +353,7 @@ namespace Flint
 		 * @param vec The vector to get the tan of.
 		 * @return The resulting vector.
 		 */
-		static Vector2F InverseTanRad(const Vector2F vec);
+		static Vector4F InverseTanRad(const Vector4F vec);
 
 		/**
 		 * Compute the hypotenuse of a right angled triangle using two vectors.
@@ -345,9 +362,9 @@ namespace Flint
 		 * @param rhs The right hand side argument.
 		 * @return The resulting vector.
 		 */
-		static Vector2F Hypotenuse(const Vector2F lhs, const Vector2F rhs);
+		static Vector4F Hypotenuse(const Vector4F lhs, const Vector4F rhs);
 
 	private:
-		float mStorage[2] = {};
+		float mStorage[4] = {};
 	};
 }
