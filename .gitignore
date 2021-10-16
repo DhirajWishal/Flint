@@ -338,3 +338,7 @@ Demos/**/*.json
 *.vcxproj
 *.vcxproj.filters
 *.vcxproj.user
+
+Makefile
+Demos/**/Makefile
+Code/**/Makefile
