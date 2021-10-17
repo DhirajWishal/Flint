@@ -29,14 +29,14 @@ namespace Flint
 		pCubeMap = pDevice->CreateImage(ImageType::CubeMap, ImageUsage::Graphics | ImageUsage::Storage, extent, PixelFormat::R16G16B16A16_SFLOAT, 6, mips, nullptr);
 
 		std::shared_ptr<Shader> pShader = nullptr;
-		if (!std::filesystem::exists("Flint\\Shaders\\CubeMapGen.fsc"))
+		if (!std::filesystem::exists(NormalizePath("Flint\\Shaders\\CubeMapGen.fsc")))
 		{
-			ShaderCompiler shaderCompiler(std::filesystem::path("E:\\Flint\\Code\\Engine\\Shaders\\CubeMapGen\\Shader.comp"), ShaderCodeType::GLSL, ShaderType::Compute);
+			ShaderCompiler shaderCompiler(std::filesystem::path(NormalizePath("E:\\Flint\\Code\\Engine\\Shaders\\CubeMapGen\\Shader.comp")), ShaderCodeType::GLSL, ShaderType::Compute);
 			pShader = shaderCompiler.CreateShader(pDevice);
-			pShader->CreateCache("Flint\\Shaders\\CubeMapGen.fsc");
+			pShader->CreateCache(NormalizePath("Flint\\Shaders\\CubeMapGen.fsc"));
 		}
 		else
-			pShader = pDevice->CreateShader(ShaderType::Compute, std::filesystem::path("Flint\\Shaders\\CubeMapGen.fsc"));
+			pShader = pDevice->CreateShader(ShaderType::Compute, std::filesystem::path(NormalizePath("Flint\\Shaders\\CubeMapGen.fsc")));
 
 		auto pPipeline = pDevice->CreateComputePipeline("CubeMapGen", pShader);
 		auto pPackage = pPipeline->CreateResourcePackage(0);

@@ -22,23 +22,23 @@ namespace Flint
 		this->pDevice = pDevice;
 		this->pRenderTarget = pRenderTarget;
 
-		if (!std::filesystem::exists("Flint\\Shaders\\ImGui.vert.fsc"))
+		if (!std::filesystem::exists(NormalizePath("Flint\\Shaders\\ImGui.vert.fsc")))
 		{
-			ShaderCompiler shaderCompiler(std::filesystem::path("Shaders\\ImGui\\UI.vert"), ShaderCodeType::GLSL, ShaderType::Vertex);
+			ShaderCompiler shaderCompiler(std::filesystem::path(NormalizePath("Shaders\\ImGui\\UI.vert")), ShaderCodeType::GLSL, ShaderType::Vertex);
 			pVertexShader = shaderCompiler.CreateShader(pDevice);
-			pVertexShader->CreateCache("Flint\\Shaders\\ImGui.vert.fsc");
+			pVertexShader->CreateCache(NormalizePath("Flint\\Shaders\\ImGui.vert.fsc"));
 		}
 		else
-			pVertexShader = pDevice->CreateShader(ShaderType::Vertex, std::filesystem::path("Flint\\Shaders\\ImGui.vert.fsc"));
+			pVertexShader = pDevice->CreateShader(ShaderType::Vertex, std::filesystem::path(NormalizePath("Flint\\Shaders\\ImGui.vert.fsc")));
 
-		if (!std::filesystem::exists("Flint\\Shaders\\ImGui.frag.fsc"))
+		if (!std::filesystem::exists(NormalizePath("Flint\\Shaders\\ImGui.frag.fsc")))
 		{
-			ShaderCompiler shaderCompiler(std::filesystem::path("Shaders\\ImGui\\UI.frag"), ShaderCodeType::GLSL, ShaderType::Fragment);
+			ShaderCompiler shaderCompiler(std::filesystem::path(NormalizePath("Shaders\\ImGui\\UI.frag")), ShaderCodeType::GLSL, ShaderType::Fragment);
 			pFragmentShader = shaderCompiler.CreateShader(pDevice);
-			pFragmentShader->CreateCache("Flint\\Shaders\\ImGui.frag.fsc");
+			pFragmentShader->CreateCache(NormalizePath("Flint\\Shaders\\ImGui.frag.fsc"));
 		}
 		else
-			pFragmentShader = pDevice->CreateShader(ShaderType::Fragment, std::filesystem::path("Flint\\Shaders\\ImGui.frag.fsc"));
+			pFragmentShader = pDevice->CreateShader(ShaderType::Fragment, std::filesystem::path(NormalizePath("Flint\\Shaders\\ImGui.frag.fsc")));
 
 		SetupImGui();
 		SetupGeometryStore();
@@ -53,23 +53,23 @@ namespace Flint
 		this->pDevice = pDevice;
 		this->pRenderTarget = pRenderTarget;
 
-		if (!std::filesystem::exists("Flint\\Shaders\\ImGui.vert.fsc"))
+		if (!std::filesystem::exists(NormalizePath("Flint\\Shaders\\ImGui.vert.fsc")))
 		{
-			ShaderCompiler shaderCompiler(std::filesystem::path("Shaders\\ImGui\\UI.vert"), ShaderCodeType::GLSL, ShaderType::Vertex);
+			ShaderCompiler shaderCompiler(std::filesystem::path(NormalizePath("Shaders\\ImGui\\UI.vert")), ShaderCodeType::GLSL, ShaderType::Vertex);
 			pVertexShader = shaderCompiler.CreateShader(pDevice);
-			pVertexShader->CreateCache("Flint\\Shaders\\ImGui.vert.fsc");
+			pVertexShader->CreateCache(NormalizePath("Flint\\Shaders\\ImGui.vert.fsc"));
 		}
 		else
-			pVertexShader = pDevice->CreateShader(ShaderType::Vertex, std::filesystem::path("Flint\\Shaders\\ImGui.vert.fsc"));
+			pVertexShader = pDevice->CreateShader(ShaderType::Vertex, std::filesystem::path(NormalizePath("Flint\\Shaders\\ImGui.vert.fsc")));
 
-		if (!std::filesystem::exists("Flint\\Shaders\\ImGui.frag.fsc"))
+		if (!std::filesystem::exists(NormalizePath("Flint\\Shaders\\ImGui.frag.fsc")))
 		{
-			ShaderCompiler shaderCompiler(std::filesystem::path("Shaders\\ImGui\\UI.frag"), ShaderCodeType::GLSL, ShaderType::Fragment);
+			ShaderCompiler shaderCompiler(std::filesystem::path(NormalizePath("Shaders\\ImGui\\UI.frag")), ShaderCodeType::GLSL, ShaderType::Fragment);
 			pFragmentShader = shaderCompiler.CreateShader(pDevice);
-			pFragmentShader->CreateCache("Flint\\Shaders\\ImGui.frag.fsc");
+			pFragmentShader->CreateCache(NormalizePath("Flint\\Shaders\\ImGui.frag.fsc"));
 		}
 		else
-			pFragmentShader = pDevice->CreateShader(ShaderType::Fragment, std::filesystem::path("Flint\\Shaders\\ImGui.frag.fsc"));
+			pFragmentShader = pDevice->CreateShader(ShaderType::Fragment, std::filesystem::path(NormalizePath("Flint\\Shaders\\ImGui.frag.fsc")));
 
 		SetupImGui();
 		SetupGeometryStore();
@@ -240,18 +240,18 @@ namespace Flint
 		io.DisplaySize = ImVec2(static_cast<float>(pRenderTarget->GetExtent().mWidth), static_cast<float>(pRenderTarget->GetExtent().mHeight));
 		io.DisplayFramebufferScale = ImVec2(16.0f, 9.0f);
 
-		io.Fonts->AddFontFromFileTTF("Fonts/simvoni-font/Simvoni-d9vV6.otf", 12.0f);
-		io.Fonts->AddFontFromFileTTF("Fonts/simvoni-font/Simvoni-d9vV6.otf", 8.0f);
-		io.Fonts->AddFontFromFileTTF("Fonts/simvoni-font/Simvoni-d9vV6.otf", 10.0f);
-		io.Fonts->AddFontFromFileTTF("Fonts/simvoni-font/Simvoni-d9vV6.otf", 14.0f);
-		io.Fonts->AddFontFromFileTTF("Fonts/simvoni-font/Simvoni-d9vV6.otf", 16.0f);
+		io.Fonts->AddFontFromFileTTF(NormalizePath("Fonts/simvoni-font/Simvoni-d9vV6.otf").string().c_str(), 12.0f);
+		io.Fonts->AddFontFromFileTTF(NormalizePath("Fonts/simvoni-font/Simvoni-d9vV6.otf").string().c_str(), 8.0f);
+		io.Fonts->AddFontFromFileTTF(NormalizePath("Fonts/simvoni-font/Simvoni-d9vV6.otf").string().c_str(), 10.0f);
+		io.Fonts->AddFontFromFileTTF(NormalizePath("Fonts/simvoni-font/Simvoni-d9vV6.otf").string().c_str(), 14.0f);
+		io.Fonts->AddFontFromFileTTF(NormalizePath("Fonts/simvoni-font/Simvoni-d9vV6.otf").string().c_str(), 16.0f);
 
-		io.Fonts->AddFontFromFileTTF("Fonts/azonix-font/Azonix-1VB0.otf", 10.0f);
-		io.Fonts->AddFontFromFileTTF("Fonts/a-atomic-md-font/AtomicMd-OVJ4A.otf", 10.0f);
-		io.Fonts->AddFontFromFileTTF("Fonts/josefin-sans-font/JosefinSansRegular-x3LYV.ttf", 12.0f);
-		io.Fonts->AddFontFromFileTTF("Fonts/salma-alfasans-font/SalmaalfasansLight-d9MJx.otf", 12.0f);
-		io.Fonts->AddFontFromFileTTF("Fonts/swansea-font/Swansea-q3pd.ttf", 6.0f);
-		io.Fonts->AddFontFromFileTTF("Fonts/rawengulk-font/RawengulkBold-r8o9.otf", 13.0f);
+		io.Fonts->AddFontFromFileTTF(NormalizePath("Fonts/azonix-font/Azonix-1VB0.otf").string().c_str(), 10.0f);
+		io.Fonts->AddFontFromFileTTF(NormalizePath("Fonts/a-atomic-md-font/AtomicMd-OVJ4A.otf").string().c_str(), 10.0f);
+		io.Fonts->AddFontFromFileTTF(NormalizePath("Fonts/josefin-sans-font/JosefinSansRegular-x3LYV.ttf").string().c_str(), 12.0f);
+		io.Fonts->AddFontFromFileTTF(NormalizePath("Fonts/salma-alfasans-font/SalmaalfasansLight-d9MJx.otf").string().c_str(), 12.0f);
+		io.Fonts->AddFontFromFileTTF(NormalizePath("Fonts/swansea-font/Swansea-q3pd.ttf").string().c_str(), 6.0f);
+		io.Fonts->AddFontFromFileTTF(NormalizePath("Fonts/rawengulk-font/RawengulkBold-r8o9.otf").string().c_str(), 13.0f);
 
 		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
 		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls

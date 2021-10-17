@@ -20,14 +20,14 @@ namespace Flint
 		std::shared_ptr<Shader> pShader = nullptr;
 
 		// Check if we have to compile the source. If so compile.
-		if (!std::filesystem::exists("Flint/Shaders/fxaa.comp.fsc"))
+		if (!std::filesystem::exists(NormalizePath("Flint/Shaders/fxaa.comp.fsc")))
 		{
-			ShaderCompiler compiler(std::filesystem::path("Shaders/FXAA/fxaa.comp"), ShaderCodeType::GLSL, ShaderType::Compute);
+			ShaderCompiler compiler(std::filesystem::path(NormalizePath("Shaders/FXAA/fxaa.comp")), ShaderCodeType::GLSL, ShaderType::Compute);
 			pShader = compiler.CreateShader(pDevice);
-			pShader->CreateCache("Flint/Shaders/fxaa.comp.fsc");
+			pShader->CreateCache(NormalizePath("Flint/Shaders/fxaa.comp.fsc"));
 		}
 		else
-			pShader = pDevice->CreateShader(ShaderType::Compute, std::filesystem::path("Flint/Shaders/fxaa.comp.fsc"));
+			pShader = pDevice->CreateShader(ShaderType::Compute, std::filesystem::path(NormalizePath("Flint/Shaders/fxaa.comp.fsc")));
 
 		// Create the compute pipeline.
 		pComputePipeline = pDevice->CreateComputePipeline("FXAAPipeline", pShader);

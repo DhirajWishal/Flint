@@ -151,23 +151,23 @@ namespace Flint
 		std::shared_ptr<Shader> pVertexShader = nullptr;
 		std::shared_ptr<Shader> pFragmentShader = nullptr;
 
-		if (!std::filesystem::exists("Flint\\Shaders\\Object.vert.fsc"))
+		if (!std::filesystem::exists(NormalizePath("Flint\\Shaders\\Object.vert.fsc")))
 		{
-			ShaderCompiler shaderCompiler(std::filesystem::path("Shaders\\Object\\Object.vert"), ShaderCodeType::GLSL, ShaderType::Vertex);
+			ShaderCompiler shaderCompiler(std::filesystem::path(NormalizePath("Shaders\\Object\\Object.vert")), ShaderCodeType::GLSL, ShaderType::Vertex);
 			pVertexShader = shaderCompiler.CreateShader(pDevice);
-			pVertexShader->CreateCache("Flint\\Shaders\\Object.vert.fsc");
+			pVertexShader->CreateCache(NormalizePath("Flint\\Shaders\\Object.vert.fsc"));
 		}
 		else
-			pVertexShader = pDevice->CreateShader(ShaderType::Vertex, std::filesystem::path("Flint\\Shaders\\Object.vert.fsc"));
+			pVertexShader = pDevice->CreateShader(ShaderType::Vertex, std::filesystem::path(NormalizePath("Flint\\Shaders\\Object.vert.fsc")));
 
-		if (!std::filesystem::exists("Flint\\Shaders\\Object.frag.fsc"))
+		if (!std::filesystem::exists(NormalizePath("Flint\\Shaders\\Object.frag.fsc")))
 		{
-			ShaderCompiler shaderCompiler(std::filesystem::path("Shaders\\Object\\Object.frag"), ShaderCodeType::GLSL, ShaderType::Fragment);
+			ShaderCompiler shaderCompiler(std::filesystem::path(NormalizePath("Shaders\\Object\\Object.frag")), ShaderCodeType::GLSL, ShaderType::Fragment);
 			pFragmentShader = shaderCompiler.CreateShader(pDevice);
-			pFragmentShader->CreateCache("Flint\\Shaders\\Object.frag.fsc");
+			pFragmentShader->CreateCache(NormalizePath("Flint\\Shaders\\Object.frag.fsc"));
 		}
 		else
-			pFragmentShader = pDevice->CreateShader(ShaderType::Fragment, std::filesystem::path("Flint\\Shaders\\Object.frag.fsc"));
+			pFragmentShader = pDevice->CreateShader(ShaderType::Fragment, std::filesystem::path(NormalizePath("Flint\\Shaders\\Object.frag.fsc")));
 
 		Flint::GraphicsPipelineSpecification specification = {};
 		specification.mRasterizationSamples = pOffScreenPass->GetMultiSampleCount();
@@ -191,23 +191,23 @@ namespace Flint
 		std::shared_ptr<Shader> pVertexShader = nullptr;
 		std::shared_ptr<Shader> pFragmentShader = nullptr;
 
-		if (!std::filesystem::exists("Flint\\Shaders\\Occlusion.vert.fsc"))
+		if (!std::filesystem::exists(NormalizePath("Flint\\Shaders\\Occlusion.vert.fsc")))
 		{
-			ShaderCompiler shaderCompiler(std::filesystem::path("Shaders\\Object\\Occlusion.vert"), ShaderCodeType::GLSL, ShaderType::Vertex);
+			ShaderCompiler shaderCompiler(std::filesystem::path(NormalizePath("Shaders\\Object\\Occlusion.vert")), ShaderCodeType::GLSL, ShaderType::Vertex);
 			pVertexShader = shaderCompiler.CreateShader(pDevice);
-			pVertexShader->CreateCache("Flint\\Shaders\\Occlusion.vert.fsc");
+			pVertexShader->CreateCache(NormalizePath("Flint\\Shaders\\Occlusion.vert.fsc"));
 		}
 		else
-			pVertexShader = pDevice->CreateShader(ShaderType::Vertex, std::filesystem::path("Flint\\Shaders\\Occlusion.vert.fsc"));
+			pVertexShader = pDevice->CreateShader(ShaderType::Vertex, std::filesystem::path(NormalizePath("Flint\\Shaders\\Occlusion.vert.fsc")));
 
-		if (!std::filesystem::exists("Flint\\Shaders\\Occlusion.frag.fsc"))
+		if (!std::filesystem::exists(NormalizePath("Flint\\Shaders\\Occlusion.frag.fsc")))
 		{
-			ShaderCompiler shaderCompiler(std::filesystem::path("Shaders\\Object\\Occlusion.frag"), ShaderCodeType::GLSL, ShaderType::Fragment);
+			ShaderCompiler shaderCompiler(std::filesystem::path(NormalizePath("Shaders\\Object\\Occlusion.frag")), ShaderCodeType::GLSL, ShaderType::Fragment);
 			pFragmentShader = shaderCompiler.CreateShader(pDevice);
-			pFragmentShader->CreateCache("Flint\\Shaders\\Occlusion.frag.fsc");
+			pFragmentShader->CreateCache(NormalizePath("Flint\\Shaders\\Occlusion.frag.fsc"));
 		}
 		else
-			pFragmentShader = pDevice->CreateShader(ShaderType::Fragment, std::filesystem::path("Flint\\Shaders\\Occlusion.frag.fsc"));
+			pFragmentShader = pDevice->CreateShader(ShaderType::Fragment, std::filesystem::path(NormalizePath("Flint\\Shaders\\Occlusion.frag.fsc")));
 
 		Flint::GraphicsPipelineSpecification specification = {};
 		specification.mRasterizationSamples = pOffScreenPass->GetMultiSampleCount();

@@ -20,14 +20,14 @@ namespace Flint
 		std::shared_ptr<Shader> pShader = nullptr;
 
 		// Check if we have to compile the source. If so compile.
-		if (!std::filesystem::exists("Flint/Shaders/ScreenSpaceReflections.comp.fsc"))
+		if (!std::filesystem::exists(NormalizePath("Flint/Shaders/ScreenSpaceReflections.comp.fsc")))
 		{
-			ShaderCompiler compiler(std::filesystem::path("Shaders/SSR/ScreenSpaceReflections.comp"), ShaderCodeType::GLSL, ShaderType::Compute);
+			ShaderCompiler compiler(std::filesystem::path(NormalizePath("Shaders/SSR/ScreenSpaceReflections.comp")), ShaderCodeType::GLSL, ShaderType::Compute);
 			pShader = compiler.CreateShader(pDevice);
-			pShader->CreateCache("Flint/Shaders/ScreenSpaceReflections.comp.fsc");
+			pShader->CreateCache(NormalizePath("Flint/Shaders/ScreenSpaceReflections.comp.fsc"));
 		}
 		else
-			pShader = pDevice->CreateShader(ShaderType::Compute, std::filesystem::path("Flint/Shaders/ScreenSpaceReflections.comp.fsc"));
+			pShader = pDevice->CreateShader(ShaderType::Compute, std::filesystem::path(NormalizePath("Flint/Shaders/ScreenSpaceReflections.comp.fsc")));
 
 		// Create the compute pipeline.
 		pComputePipeline = pDevice->CreateComputePipeline("SSRPipeline", pShader);
