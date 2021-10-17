@@ -12,8 +12,9 @@ project "Sponza"
 
 	flags { "MultiProcessorCompile" }
 
-	targetdir "%{wks.location}/Builds/Demos/Binaries/%{prj.name}/%{cfg.longname}"
+	targetdir "%{DebugDirectory}"
 	objdir "%{wks.location}/Builds/Demos/Intermediate/%{prj.name}/%{cfg.longname}"
+	debugdir "%{DebugDirectory}"
 
 	defines { "FLINT_SOLUTION_DIR=%{wks.location}/" }
 

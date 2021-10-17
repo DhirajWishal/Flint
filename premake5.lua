@@ -12,6 +12,8 @@ workspace "Flint"
 
 	startproject "FlintEngine"
 
+	DebugDirectory = "%{wks.location}/Workspace"
+
 	IncludeDir = {}
 	IncludeLib = {}
 
@@ -62,6 +64,8 @@ workspace "Flint"
 		defines { "FLINT_PLATFORM_LINUX" }
 
 	filter ""
+
+	include "Workspace/Workspace.lua"
 
 	group "Code"
 		include "Code/Audio/Audio.lua"
