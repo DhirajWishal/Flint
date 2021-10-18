@@ -36,7 +36,7 @@ project "FlintGraphics"
 	}
 
 	links { 
-		"assimp-vc142-mt",
+		"%{Binary.Assimp}",
 		"VulkanBackend"
 	}
 	

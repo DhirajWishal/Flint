@@ -47,8 +47,7 @@ project "VulkanBackend"
 
 	links { 
 		"GraphicsCore",
-
-		"glfw3dll",
+		"%{Binary.GLFW}",
 	}
 
 	filter { "toolset:msc", "configurations:Debug" }

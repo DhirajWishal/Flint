@@ -44,10 +44,21 @@ project "Sponza"
 	}
 
 	libdirs {
+	    "%{IncludeLib.GLFW}",
+	    "%{IncludeLib.Assimp}",
 	}
 
 	links {
+	    "optick",
 		"TestBase",
+		"FlintEngine",
+		"FlintGraphics",
+		"FlintCore",
+		"GraphicsCore",
+		"VulkanBackend",
+
+		"%{Binary.GLFW}",
+		--"%{Binary.Assimp}",
 	}
 
 	filter "toolset:msc"

@@ -14,10 +14,8 @@ workspace "Flint"
 
 	DebugDirectory = "%{wks.location}/Workspace"
 
-	IncludeDir = {}
-	IncludeLib = {}
-
 	-- Libraries
+	IncludeDir = {}
 	IncludeDir["GLFW"] = "%{wks.location}/ThirdParty/glfw/include"
 	IncludeDir["Vulkan"] = "%{wks.location}/ThirdParty/Vulkan/include"
 	IncludeDir["SPIRV_Cross"] = "%{wks.location}/ThirdParty/SPIRV-Cross/include"
@@ -31,13 +29,11 @@ workspace "Flint"
 	IncludeDir["vma"] = "%{wks.location}/ThirdParty/VulkanMemoryAllocator/include"
 	IncludeDir["benchmark"] = "%{wks.location}/ThirdParty/benchmark/include"
 
+	-- Binary includes directories
+	IncludeLib = {}
+
 	-- Binaries
-	IncludeLib["GLFW"] = "%{wks.location}/ThirdParty/glfw/src/Release"
-	IncludeLib["Vulkan"] = "%{wks.location}/ThirdParty/Vulkan/lib"
-	IncludeLib["SPIRV_Cross"] = "%{wks.location}/ThirdParty/SPIRV-Cross/Release"
-	IncludeLib["Assimp"] = "%{wks.location}/ThirdParty/Assimp/lib/Release"
-	IncludeLib["tinygltf"] = "%{wks.location}/ThirdParty/tinygltf/Release"
-	IncludeLib["benchmark"] = "%{wks.location}/ThirdParty/benchmark/build/src/Release"
+	Binary = {}
 
 	filter "configurations:Debug"
 		defines { "FLINT_DEBUG" }
@@ -57,8 +53,28 @@ workspace "Flint"
 	filter "system:windows"
 		defines { "FLINT_PLATFORM_WINDOWS" }
 
+		IncludeLib["GLFW"] = "%{wks.location}/ThirdParty/glfw/src/Release"
+        IncludeLib["Vulkan"] = "%{wks.location}/ThirdParty/Vulkan/lib"
+        IncludeLib["SPIRV_Cross"] = "%{wks.location}/ThirdParty/SPIRV-Cross/Release"
+        IncludeLib["Assimp"] = "%{wks.location}/ThirdParty/Assimp/lib/Release"
+        IncludeLib["benchmark"] = "%{wks.location}/ThirdParty/benchmark/build/src/Release"
+
+		Binary["GLFW"] = "glfw3dll"
+        Binary["Vulkan"] = "vulkan-1"
+        Binary["Assimp"] = "assimp-vc142-mt"
+        Binary["benchmark"] = "benchmark"
+
 	filter "system:linux"
 		defines { "FLINT_PLATFORM_LINUX" }
+
+		IncludeLib["GLFW"] = "%{wks.location}/ThirdParty/glfw/src"
+        IncludeLib["Assimp"] = "%{wks.location}/ThirdParty/Assimp/lib"
+        IncludeLib["benchmark"] = "%{wks.location}/ThirdParty/benchmark/build/src"
+
+		Binary["GLFW"] = "libglfw3"
+        Binary["Vulkan"] = "vulkan-1"
+        Binary["Assimp"] = "libassimp"
+        Binary["benchmark"] = "libbenchmark"
 
 	filter ""
 
