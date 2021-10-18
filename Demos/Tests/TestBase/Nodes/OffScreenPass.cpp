@@ -30,7 +30,7 @@ namespace Flint
 		OPTICK_EVENT();
 
 		// Reset the occlusion queries.
-		for (auto const& pGameObject : pGameObjects)
+		for (const auto& pGameObject : pGameObjects)
 			pGameObject->ResetOcclusionQuery(pCommandBuffer, frameIndex, bIsFirstPass[frameIndex]);
 
 		bIsFirstPass[frameIndex] = false;
@@ -40,13 +40,13 @@ namespace Flint
 
 		// Occlusion pass.
 		UI32 index = 0;
-		for (auto const& pGameObject : pGameObjects)
+		for (const auto& pGameObject : pGameObjects)
 			pGameObject->OcclusionPass(pCommandBuffer, frameIndex);
 
 		pCommandBuffer->ClearRenderTarget(pOffScreenRenderTarget.get());
 
 		// Draw all the game objects.
-		for (auto const& pGameObject : pGameObjects)
+		for (const auto& pGameObject : pGameObjects)
 			pGameObject->Draw(pCommandBuffer, frameIndex);
 
 		pCommandBuffer->UnbindRenderTarget();

@@ -52,7 +52,7 @@ namespace Flint
 			}
 		}
 
-		void DumpToFile(std::string const& code, std::string const& fileName)
+		void DumpToFile(const std::string& code, const std::string& fileName)
 		{
 			std::fstream file(fileName, std::ios::out | std::ios::binary);
 

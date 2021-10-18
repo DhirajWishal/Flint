@@ -188,9 +188,9 @@ namespace Flint
 			std::ifstream shaderFile(path, std::ios::in | std::ios::ate | std::ios::binary);
 
 			if (!shaderFile.is_open())
-				FLINT_THROW_RUNTIME_ERROR("Submitted shader file path is invalid!");
+				throw std::runtime_error("Submitted shader file path is invalid!");
 
-			UI64 codeSize = shaderFile.tellg();
+			const UI64 codeSize = shaderFile.tellg();
 			shaderFile.seekg(0);
 
 			mShaderCode.resize(codeSize);
@@ -251,9 +251,9 @@ namespace Flint
 			std::ifstream shaderFile(path, std::ios::ate | std::ios::binary);
 
 			if (!shaderFile.is_open())
-				FLINT_THROW_RUNTIME_ERROR("Submitted shader file path is invalid!");
+				throw std::runtime_error("Submitted shader file path is invalid!");
 
-			UI64 codeSize = shaderFile.tellg();
+			const UI64 codeSize = shaderFile.tellg();
 			shaderFile.seekg(0);
 
 			mShaderCode.resize(codeSize);
@@ -294,7 +294,7 @@ namespace Flint
 
 		void VulkanShader::Terminate()
 		{
-			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
+			const VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 			vDevice.GetDeviceTable().vkDestroyShaderModule(vDevice.GetLogicalDevice(), vModule, nullptr);
 
 			bIsTerminated = true;

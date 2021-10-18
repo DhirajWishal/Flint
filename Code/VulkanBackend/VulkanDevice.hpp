@@ -98,7 +98,7 @@ namespace Flint
 			VmaVulkanFunctions GetVulkanFunctions() const;
 
 			void CreateVmaAllocator();
-			void DestroyVmaAllocator();
+			void DestroyVmaAllocator() const;
 
 		private:
 			VolkDeviceTable mDeviceTable = {};

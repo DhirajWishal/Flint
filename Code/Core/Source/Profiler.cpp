@@ -26,7 +26,7 @@ namespace Flint
 	AtomicProfileControlBlock::AtomicProfileControlBlock(const std::filesystem::path& filePath) : mProfileFile(filePath)
 	{
 		if (!mProfileFile.is_open())
-			FLINT_THROW_RUNTIME_ERROR("Failed to open the profile logger!");
+			throw std::runtime_error("Failed to open the profile logger!");
 
 		mProfileFile << "{\"otherData\": {},\"traceEvents\":[";
 		mProfileFile.flush();

@@ -225,7 +225,7 @@ namespace Flint
 			vCreateInfo.oldSwapchain = vSwapChain;
 
 			if (!vDevice.IsDisplayCompatible(pDisplay.get()))
-				FLINT_THROW_RUNTIME_ERROR("Submitted device and display are incompatible!");
+				throw std::runtime_error("Submitted device and display are incompatible!");
 
 			VkSwapchainKHR vNewSwapChain = VK_NULL_HANDLE;
 			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateSwapchainKHR(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vNewSwapChain));

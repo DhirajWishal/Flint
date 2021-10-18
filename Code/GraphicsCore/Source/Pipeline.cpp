@@ -4,6 +4,15 @@
 #include "GraphicsCore/Pipeline.hpp"
 #include "GraphicsCore/ResourcePackager.hpp"
 
+#if defined FLINT_PLATFORM_WINDOWS
+constexpr const char* CacheDirectory = "\\Flint\\Cache\\";
+
+#elif defined FLINT_PLATFORM_LINUX
+constexpr const char* CacheDirectory = "/Flint/Cache/";
+
+#endif // defined FLINT_PLATFORM_WINDOWS
+
+
 namespace Flint
 {
 	void Pipeline::WriteDataToCacheFile(const UI64 size, unsigned char* pData) const
@@ -12,10 +21,10 @@ namespace Flint
 		if (mPipelineName.empty())
 			return;
 
-		std::ofstream cacheFile(std::filesystem::current_path().string() + FLINT_CACHE_DIRECTORY "\\" + mPipelineName + ".fpc", std::ios::binary);
+		std::ofstream cacheFile(std::filesystem::current_path().string() + CacheDirectory + mPipelineName + ".fpc", std::ios::out | std::ios::binary);
 
 		if (!cacheFile.is_open())
-			FLINT_THROW_RUNTIME_ERROR("Failed to write cache data!");
+			throw std::runtime_error("Failed to write cache data!");
 
 		cacheFile.write(reinterpret_cast<char*>(pData), size);
 		cacheFile.flush();
@@ -28,7 +37,7 @@ namespace Flint
 		if (mPipelineName.empty())
 			return std::pair<UI64, unsigned char*>(0, nullptr);
 
-		std::ifstream cacheFile(std::filesystem::current_path().string() + FLINT_CACHE_DIRECTORY "\\" + mPipelineName + ".fpc", std::ios::ate | std::ios::binary);
+		std::ifstream cacheFile(std::filesystem::current_path().string() + CacheDirectory + mPipelineName + ".fpc", std::ios::in | std::ios::ate | std::ios::binary);
 
 		// If file does not exist, return without an issue.
 		if (!cacheFile.is_open())

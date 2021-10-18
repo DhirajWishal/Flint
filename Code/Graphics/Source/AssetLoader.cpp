@@ -256,7 +256,7 @@ namespace Flint
 						break;
 
 					default:
-						FLINT_THROW_RUNTIME_ERROR("Invalid or Undefined vertex attribute type!");
+						throw std::runtime_error("Invalid or Undefined vertex attribute type!");
 					}
 
 					pBufferMemory = pBufferMemory + copyAmount;

@@ -130,7 +130,7 @@ namespace Flint
 			}
 
 			if (!pWindow)
-				FLINT_THROW_RUNTIME_ERROR("Failed to create display!");
+				throw std::runtime_error("Failed to create display!");
 
 			glfwSetWindowUserPointer(pWindow, this);
 			glfwSetKeyCallback(pWindow, _Callbacks::KeyCallback);
@@ -197,7 +197,7 @@ namespace Flint
 		void VulkanDisplay::SetExtent(FBox2D newExtent)
 		{
 			if (newExtent.IsZero())
-				FLINT_THROW_RUNTIME_ERROR("Window extent should be grater than 0!");
+				throw std::runtime_error("Window extent should be grater than 0!");
 
 			glfwSetWindowSize(pWindow, static_cast<int>(newExtent.mWidth), static_cast<int>(newExtent.mHeight));
 			mExtent = newExtent;

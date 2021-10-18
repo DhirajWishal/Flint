@@ -41,7 +41,7 @@ namespace Flint
 				case VkResult::VK_ERROR_SURFACE_LOST_KHR:							throw backend_error(BackendErrorDisplayLost);
 				case VkResult::VK_ERROR_NATIVE_WINDOW_IN_USE_KHR:					throw backend_error(BackendErrorDisplayInUse);
 				case VkResult::VK_SUBOPTIMAL_KHR:									throw backend_error(BackendErrorRenderTargetSuboptimal);
-				case VkResult::VK_ERROR_OUT_OF_DATE_KHR:							throw backend_error(BackendErrorRenderTrargetOutOfDate);
+				case VkResult::VK_ERROR_OUT_OF_DATE_KHR:							throw backend_error(BackendErrorRenderTargetOutOfDate);
 				case VkResult::VK_ERROR_INCOMPATIBLE_DISPLAY_KHR:					throw backend_error(BackendErrorIncompatibleDisplay);
 				case VkResult::VK_ERROR_VALIDATION_FAILED_EXT:						throw backend_error(BackendErrorValidationFailed);
 				case VkResult::VK_ERROR_INVALID_SHADER_NV:							throw backend_error(BackendErrorInvalidShader);
@@ -49,7 +49,7 @@ namespace Flint
 				case VkResult::VK_ERROR_FULL_SCREEN_EXCLUSIVE_MODE_LOST_EXT:		throw backend_error(BackendErrorFullScreenModeLost);
 				case VkResult::VK_THREAD_IDLE_KHR:									throw backend_error(BackendErrorDeviceThreadIdle);
 				case VkResult::VK_THREAD_DONE_KHR:									throw backend_error(BackendErrorDeviceThreadDone);
-				case VkResult::VK_OPERATION_DEFERRED_KHR:							throw backend_error(BackendErrorOperationDiferred);
+				case VkResult::VK_OPERATION_DEFERRED_KHR:							throw backend_error(BackendErrorOperationDeferred);
 				case VkResult::VK_OPERATION_NOT_DEFERRED_KHR:						throw backend_error(BackendErrorOperationNotDeferred);
 				case VkResult::VK_PIPELINE_COMPILE_REQUIRED_EXT:					throw backend_error(BackendErrorPipelineCompilationRequired);
 				default:															throw backend_error(BackendErrorUnknown);
@@ -100,7 +100,7 @@ namespace Flint
 						return format;
 				}
 
-				FLINT_THROW_RUNTIME_ERROR("Unable to find suitable format!");
+				throw std::runtime_error("Unable to find suitable format!");
 				return VkFormat();
 			}
 
@@ -201,7 +201,7 @@ namespace Flint
 					return VkShaderStageFlagBits::VK_SHADER_STAGE_MISS_BIT_KHR;
 
 				default:
-					FLINT_THROW_RUNTIME_ERROR("Invalid or Undefined shader type!");
+					throw std::runtime_error("Invalid or Undefined shader type!");
 				}
 
 				return VkShaderStageFlagBits::VK_SHADER_STAGE_ALL;

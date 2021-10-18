@@ -21,7 +21,7 @@ namespace Flint
 			void GLFWErrorCallback(int code, const char* message)
 			{
 				if (code != GLFW_NO_ERROR)
-					FLINT_THROW_RUNTIME_ERROR(message);
+					throw std::runtime_error(message);
 			}
 
 			bool CheckValidationLayerSupport(std::vector<const char*> layers)
@@ -53,13 +53,13 @@ namespace Flint
 
 			std::vector<const char*> GetRequiredInstanceExtensions(bool enableValidation)
 			{
-				UI32 glfwExtentionCount = 0;
+				UI32 glfwExtensionCount = 0;
 				const char** glfwExtensions = nullptr;
-				glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtentionCount);
-				std::vector<const char*> extentions(glfwExtensions, glfwExtensions + glfwExtentionCount);
+				glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+				std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 
 				if (enableValidation)
-					extentions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+					extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 
 				//if (pushDescriptorsSupported)
 				//	extentions.push_back(VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME);
@@ -72,7 +72,7 @@ namespace Flint
 				//
 				//extentions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
 
-				return extentions;
+				return extensions;
 			}
 
 			static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(
@@ -129,7 +129,7 @@ namespace Flint
 
 			// Check if Vulkan is supported.
 			if (glfwVulkanSupported() != GLFW_TRUE)
-				FLINT_THROW_RUNTIME_ERROR("Vulkan is not supported! Make sure that the drivers support Vulkan before using the Vulkan Backend.");
+				throw std::runtime_error("Vulkan is not supported! Make sure that the drivers support Vulkan before using the Vulkan Backend.");
 
 			if (enableValidation)
 				mValidationLayers.push_back("VK_LAYER_KHRONOS_validation");
@@ -180,7 +180,7 @@ namespace Flint
 
 			// Check if the validation layers are supported.
 			if (mEnableValidation && !Helpers::CheckValidationLayerSupport(mValidationLayers))
-				FLINT_THROW_RUNTIME_ERROR("Validation layers requested but not available!");
+				throw std::runtime_error("Validation layers requested but not available!");
 
 			// Application info.
 			VkApplicationInfo appInfo = {};

@@ -74,7 +74,7 @@ namespace Flint
 		UI64 drawCount = 0;
 		const UI64 count = mAsset.GetWireFrames().size();
 		auto& wireFrames = mAsset.GetWireFrames();
-		auto const& samples = mDrawSamples[index];
+		const auto& samples = mDrawSamples[index];
 		for (UI64 i = 0; i < count; i++)
 		{
 			if (samples[i] == 0 && !bSkipCulling)
@@ -138,6 +138,7 @@ namespace Flint
 	{
 		pUniformBuffer->Terminate();
 		pPipeline->Terminate();
+		pOcclusionPipeline->Terminate();
 		pPackageSets.clear();
 
 		mAsset.Clear();
@@ -181,6 +182,9 @@ namespace Flint
 		const auto windowExtent = pOffScreenPass->GetExtent();
 		pDynamicStates->SetViewPort(Flint::FExtent2D<float>{static_cast<float>(windowExtent.mWidth), static_cast<float>(windowExtent.mHeight)}, Flint::FExtent2D<float>(0.0f, 1.0f), { 0.0f, 0.0f });
 		pDynamicStates->SetScissor(windowExtent, { 0, 0 });
+
+		pVertexShader->Terminate();
+		pFragmentShader->Terminate();
 	}
 
 	void Object::CreateOcclusionPipeline()
@@ -216,6 +220,9 @@ namespace Flint
 
 		specification.mVertexInputAttributeMap[0] = pVertexShader->GetInputAttributes();
 		pOcclusionPipeline = pDevice->CreateGraphicsPipeline("Occlusion", pOffScreenPass->GetRenderTarget(), pVertexShader, nullptr, nullptr, nullptr, pFragmentShader, specification);
+
+		pVertexShader->Terminate();
+		pFragmentShader->Terminate();
 	}
 
 	void Object::LoadAsset()

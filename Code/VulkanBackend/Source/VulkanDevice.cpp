@@ -26,7 +26,7 @@
 #include <iostream>
 
 template<size_t Size>
-std::ostream& operator<<(std::ostream& stream, uint8_t(&arr)[Size])
+static std::ostream& operator<<(std::ostream& stream, uint8_t(&arr)[Size])
 {
 	for (size_t i = 0; i < Size; i++)
 		stream << arr[i];
@@ -35,7 +35,7 @@ std::ostream& operator<<(std::ostream& stream, uint8_t(&arr)[Size])
 }
 
 template<size_t Size>
-std::ostream& operator<<(std::ostream& stream, uint32_t(&arr)[Size])
+static std::ostream& operator<<(std::ostream& stream, uint32_t(&arr)[Size])
 {
 	for (size_t i = 0; i < Size; i++)
 		stream << arr[i] << " ";
@@ -44,7 +44,7 @@ std::ostream& operator<<(std::ostream& stream, uint32_t(&arr)[Size])
 }
 
 template<size_t Size>
-std::ostream& operator<<(std::ostream& stream, float(&arr)[Size])
+static std::ostream& operator<<(std::ostream& stream, float(&arr)[Size])
 {
 	for (size_t i = 0; i < Size; i++)
 		stream << arr[i] << " ";
@@ -97,8 +97,7 @@ namespace Flint
 				VulkanQueue vQueue = {};
 				vQueue.Initialize(vDevice, flags);
 
-				bool extensionsSupported = Helpers::CheckDeviceExtensionSupport(vDevice, deviceExtensions);
-				bool swapChainAdequate = false;
+				const bool extensionsSupported = Helpers::CheckDeviceExtensionSupport(vDevice, deviceExtensions);
 
 				VkPhysicalDeviceFeatures supportedFeatures = {};
 				vkGetPhysicalDeviceFeatures(vDevice, &supportedFeatures);
@@ -124,7 +123,7 @@ namespace Flint
 		{
 			OPTICK_EVENT();
 
-			VulkanDisplay const& vDisplay = pDisplay->StaticCast<VulkanDisplay>();
+			const VulkanDisplay& vDisplay = pDisplay->StaticCast<VulkanDisplay>();
 			VkBool32 isSupported = VK_FALSE;
 			FLINT_VK_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(GetPhysicalDevice(), GetQueue().mGraphicsFamily.value(), vDisplay.GetSurface(), &isSupported));
 			return isSupported == VK_TRUE;
@@ -322,11 +321,11 @@ namespace Flint
 			bIsTerminated = true;
 		}
 
-		VkResult VulkanDevice::CreateImageMemory(const std::vector<VkImage>& vImages, VkMemoryPropertyFlags vMemoryflags, VkDeviceMemory* pDeviceMemory) const
+		VkResult VulkanDevice::CreateImageMemory(const std::vector<VkImage>& vImages, VkMemoryPropertyFlags vMemoryFlags, VkDeviceMemory* pDeviceMemory) const
 		{
 			OPTICK_EVENT();
 
-			if (!vImages.size())
+			if (vImages.empty())
 				return VkResult::VK_ERROR_UNKNOWN;
 
 			VkMemoryRequirements vMR = {};
@@ -341,7 +340,7 @@ namespace Flint
 
 			for (UI32 i = 0; i < vMP.memoryTypeCount; i++)
 			{
-				if ((vMR.memoryTypeBits & (1 << i)) && (vMP.memoryTypes[i].propertyFlags & vMemoryflags) == vMemoryflags)
+				if ((vMR.memoryTypeBits & (1 << i)) && (vMP.memoryTypes[i].propertyFlags & vMemoryFlags) == vMemoryFlags)
 				{
 					vAI.memoryTypeIndex = i;
 					break;
@@ -440,7 +439,7 @@ namespace Flint
 				break;
 
 			default:
-				FLINT_THROW_RUNTIME_ERROR("Unsupported layout transition!");
+				throw std::runtime_error("Unsupported layout transition!");
 			}
 
 			switch (vNewLayout)
@@ -472,7 +471,7 @@ namespace Flint
 				break;
 
 			default:
-				FLINT_THROW_RUNTIME_ERROR("Unsupported layout transition!");
+				throw std::runtime_error("Unsupported layout transition!");
 			}
 
 			const VkPipelineStageFlags sourceStage = Utilities::GetPipelineStageFlags(vMB.srcAccessMask);
@@ -484,7 +483,7 @@ namespace Flint
 		{
 			OPTICK_EVENT();
 
-			VulkanOneTimeCommandBuffer vCommandBuffer(*this);
+			const VulkanOneTimeCommandBuffer vCommandBuffer(*this);
 			SetImageLayout(vCommandBuffer, vImage, vOldLayout, vNewLayout, vFormat, layerCount, currentLayer, mipLevels, currentLevel, vAspects);
 		}
 
@@ -492,16 +491,16 @@ namespace Flint
 		{
 			OPTICK_EVENT();
 
-			VulkanInstance& instance = pInstance->StaticCast<VulkanInstance>();
+			const auto& vInstance = pInstance->StaticCast<VulkanInstance>();
 
 			UI32 deviceCount = 0;
-			vkEnumeratePhysicalDevices(instance.GetInstance(), &deviceCount, nullptr);
+			vkEnumeratePhysicalDevices(vInstance.GetInstance(), &deviceCount, nullptr);
 
 			if (deviceCount == 0)
-				FLINT_THROW_RUNTIME_ERROR("No available devices found!");
+				throw std::runtime_error("No available devices found!");
 
 			std::vector<VkPhysicalDevice> devices(deviceCount);
-			vkEnumeratePhysicalDevices(instance.GetInstance(), &deviceCount, devices.data());
+			vkEnumeratePhysicalDevices(vInstance.GetInstance(), &deviceCount, devices.data());
 
 			VkPhysicalDeviceProperties vPhysicalDeviceProperties = {};
 			// Iterate through all the candidate devices and find the best device.
@@ -526,7 +525,7 @@ namespace Flint
 
 			//  Check if a physical device was found.
 			if (vPhysicalDevice == VK_NULL_HANDLE)
-				FLINT_THROW_RUNTIME_ERROR("Unable to find suitable physical device!");
+				throw std::runtime_error("Unable to find suitable physical device!");
 
 			vSampleCount = Helpers::GetMaxUsableSamples(vPhysicalDevice);
 
@@ -685,7 +684,7 @@ namespace Flint
 		{
 			OPTICK_EVENT();
 
-			VulkanInstance& instance = pInstance->StaticCast<VulkanInstance>();
+			const auto& vInstance = pInstance->StaticCast<VulkanInstance>();
 
 			vQueue.Initialize(vPhysicalDevice, mFlags);
 
@@ -729,8 +728,8 @@ namespace Flint
 			vDeviceCreateInfo.enabledExtensionCount = static_cast<UI32>(mDeviceExtensions.size());
 			vDeviceCreateInfo.ppEnabledExtensionNames = mDeviceExtensions.data();
 
-			std::vector<const char*> validationLayers = std::move(instance.GetValidationLayers());
-			if (instance.IsValidationEnabled())
+			const std::vector<const char*> validationLayers = vInstance.GetValidationLayers();
+			if (vInstance.IsValidationEnabled())
 			{
 				vDeviceCreateInfo.enabledLayerCount = static_cast<UI32>(validationLayers.size());
 				vDeviceCreateInfo.ppEnabledLayerNames = validationLayers.data();
@@ -796,13 +795,13 @@ namespace Flint
 			vmaCreateInfo.device = GetLogicalDevice();
 			vmaCreateInfo.vulkanApiVersion = VK_API_VERSION_1_2;
 
-			VmaVulkanFunctions functions = GetVulkanFunctions();
+			const VmaVulkanFunctions functions = GetVulkanFunctions();
 			vmaCreateInfo.pVulkanFunctions = &functions;
 
 			FLINT_VK_ASSERT(vmaCreateAllocator(&vmaCreateInfo, &mVmaAllocator));
 		}
 
-		void VulkanDevice::DestroyVmaAllocator()
+		void VulkanDevice::DestroyVmaAllocator() const
 		{
 			vmaDestroyAllocator(mVmaAllocator);
 		}

@@ -25,7 +25,7 @@ namespace Flint
 		const auto pRenderTargetFXAA = pProcessingPipeline->CreateProcessingNode<FXAAPass>(pRenderTarget.get());
 		const auto pRenderTargetImGui = pProcessingPipeline->CreateProcessingNode<ImGuiPass>();
 
-		pRenderTarget->CreateGameObject<Object>(&mApplication, pRenderTarget);
+		const auto pObject = pRenderTarget->CreateGameObject<Object>(&mApplication, pRenderTarget);
 
 		while (pProcessingPipeline->GetDisplay()->IsOpen())
 		{
@@ -37,7 +37,7 @@ namespace Flint
 			const UI64 delta = pProcessingPipeline->Update();
 
 			// Update all the game objects.
-			for (auto const& pGameObjects : pRenderTarget->GetGameObjects())
+			for (const auto& pGameObjects : pRenderTarget->GetGameObjects())
 				pGameObjects->Update(delta, &pProcessingPipeline->GetCamera());
 
 			// End the frame.
@@ -48,6 +48,7 @@ namespace Flint
 		}
 
 		mApplication.Cleanup();
+		pObject->Terminate();
 	}
 }
 

@@ -44,6 +44,9 @@ namespace Flint
 		SetupGeometryStore();
 		SetupPipeline(pRenderTarget);
 		SetupImage();
+
+		pVertexShader->Terminate();
+		pFragmentShader->Terminate();
 	}
 
 	void ImGuiAdapter::Initialize(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<OffScreenRenderTarget>& pRenderTarget)
@@ -75,6 +78,9 @@ namespace Flint
 		SetupGeometryStore();
 		SetupPipeline(pRenderTarget);
 		SetupImage();
+
+		pVertexShader->Terminate();
+		pFragmentShader->Terminate();
 	}
 
 	void ImGuiAdapter::Render(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 index)
@@ -115,7 +121,7 @@ namespace Flint
 
 				for (I32 j = 0; j < pCommandList->CmdBuffer.Size; j++)
 				{
-					auto const& pCommand = pCommandList->CmdBuffer[j];
+					const auto& pCommand = pCommandList->CmdBuffer[j];
 
 					pDynamicStateContainer->SetScissor(
 						FBox2D(static_cast<UI32>(pCommand.ClipRect.z - pCommand.ClipRect.x), static_cast<UI32>(pCommand.ClipRect.w - pCommand.ClipRect.y)),
@@ -201,9 +207,6 @@ namespace Flint
 	void ImGuiAdapter::Terminate()
 	{
 		pPipeline->Terminate();
-
-		pVertexShader->Terminate();
-		pFragmentShader->Terminate();
 
 		pGeometryStore->Terminate();
 

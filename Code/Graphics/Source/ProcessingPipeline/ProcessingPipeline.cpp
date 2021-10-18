@@ -134,7 +134,7 @@ namespace Flint
 	void ProcessingPipeline::ProcessNodes(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 frameIndex, const UI32 imageIndex)
 	{
 		ProcessingNode* pPreviousNode = nullptr;
-		for (auto const& pNode : pProcessingNodes)
+		for (const auto& pNode : pProcessingNodes)
 		{
 			pNode->Process(pPreviousNode, pCommandBuffer, frameIndex, imageIndex);
 			pPreviousNode = pNode.get();
