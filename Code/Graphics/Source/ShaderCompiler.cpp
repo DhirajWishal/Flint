@@ -2,170 +2,133 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "Graphics/ShaderCompiler.hpp"
-
 #include "GraphicsCore/Device.hpp"
-
-#include <shaderc/shaderc.hpp>
 
 #include <fstream>
 #include <iostream>
+#include <random>
 
 namespace Flint
 {
 	namespace Helpers
 	{
-		shaderc_shader_kind GetShaderKindGLSL(const ShaderType type)
+		const char* GetShaderStageString(const ShaderType shaderType)
 		{
-			switch (type)
+			switch (shaderType)
 			{
-			case Flint::ShaderType::Vertex:
-				return shaderc_shader_kind::shaderc_glsl_vertex_shader;
+			case ShaderType::Vertex:
+				return "vert";
+				break;
 
-			case Flint::ShaderType::TessellationControl:
-				return shaderc_shader_kind::shaderc_glsl_tess_control_shader;
+			case ShaderType::TessellationControl:
+				return "tesc";
 
-			case Flint::ShaderType::TessellationEvaluation:
-				return shaderc_shader_kind::shaderc_glsl_tess_evaluation_shader;
+			case ShaderType::TessellationEvaluation:
+				return "tese";
 
-			case Flint::ShaderType::Geometry:
-				return shaderc_shader_kind::shaderc_glsl_geometry_shader;
+			case ShaderType::Geometry:
+				return "geom";
 
-			case Flint::ShaderType::Fragment:
-				return shaderc_shader_kind::shaderc_glsl_fragment_shader;
+			case ShaderType::Fragment:
+				return "frag";
 
-			case Flint::ShaderType::Compute:
-				return shaderc_shader_kind::shaderc_glsl_compute_shader;
+			case ShaderType::Compute:
+				return "comp";
 
-			case Flint::ShaderType::RayGen:
-				return shaderc_shader_kind::shaderc_glsl_raygen_shader;
+			case ShaderType::RayGen:
+				return "rgen";
 
-			case Flint::ShaderType::AnyHit:
-				return shaderc_shader_kind::shaderc_glsl_anyhit_shader;
+			case ShaderType::AnyHit:
+				return "rahit";
 
-			case Flint::ShaderType::ClosestHit:
-				return shaderc_shader_kind::shaderc_glsl_closesthit_shader;
+			case ShaderType::ClosestHit:
+				return "rchit";
 
-			case Flint::ShaderType::RayMiss:
-				return shaderc_shader_kind::shaderc_glsl_miss_shader;
+			case ShaderType::RayMiss:
+				return "rmiss";
 
 			default:
-				FLINT_THROW_RUNTIME_ERROR("Invalid or undefined shader type!");
+				throw std::invalid_argument("Shader type is invalid or undefined!");
 			}
-
-			return shaderc_shader_kind::shaderc_glsl_default_vertex_shader;
 		}
 
-		shaderc_shader_kind GetShaderKindHLSL(const ShaderType type)
+		void DumpToFile(std::string const& code, std::string const& fileName)
 		{
-			switch (type)
-			{
-			case Flint::ShaderType::Vertex:
-				return shaderc_shader_kind::shaderc_vertex_shader;
+			std::fstream file(fileName, std::ios::out | std::ios::binary);
 
-			case Flint::ShaderType::TessellationControl:
-				return shaderc_shader_kind::shaderc_tess_control_shader;
+			if (file.is_open())
+				throw std::runtime_error("Failed to open the required file!");
 
-			case Flint::ShaderType::TessellationEvaluation:
-				return shaderc_shader_kind::shaderc_tess_evaluation_shader;
-
-			case Flint::ShaderType::Geometry:
-				return shaderc_shader_kind::shaderc_geometry_shader;
-
-			case Flint::ShaderType::Fragment:
-				return shaderc_shader_kind::shaderc_fragment_shader;
-
-			case Flint::ShaderType::Compute:
-				return shaderc_shader_kind::shaderc_compute_shader;
-
-			case Flint::ShaderType::RayGen:
-				return shaderc_shader_kind::shaderc_raygen_shader;
-
-			case Flint::ShaderType::AnyHit:
-				return shaderc_shader_kind::shaderc_anyhit_shader;
-
-			case Flint::ShaderType::ClosestHit:
-				return shaderc_shader_kind::shaderc_closesthit_shader;
-
-			case Flint::ShaderType::RayMiss:
-				return shaderc_shader_kind::shaderc_miss_shader;
-
-			default:
-				FLINT_THROW_RUNTIME_ERROR("Invalid or undefined shader type!");
-			}
-
-			return shaderc_shader_kind::shaderc_vertex_shader;
+			file.write(code.c_str(), code.size());
+			file.close();
 		}
 	}
 
-	ShaderCompiler::ShaderCompiler(const std::filesystem::path& shaderFile, const ShaderCodeType codeType, const ShaderType shaderType)
+	ShaderCompiler::ShaderCompiler(const std::filesystem::path& shaderFile, const ShaderCodeType codeType, const ShaderType shaderType, std::filesystem::path compilerTool)
 		: mCodeType(codeType), mType(shaderType)
 	{
+		static std::default_random_engine RandomEngine = {};
+
+		const std::string stage = Helpers::GetShaderStageString(shaderType);
+		const std::string outputFileName = std::to_string(RandomEngine());
+		const std::string command = "call " + compilerTool.make_preferred().string() + " -V -S " + stage + " " + shaderFile.string() + " -o " + outputFileName;
+
+		// Issue the command.
+		if (std::system(command.c_str()) != 0)
+			throw std::runtime_error("Could not compile the shader file!");
+
 		// Load the shade file.
-		std::ifstream file(shaderFile, std::ios::in | std::ios::binary | std::ios::ate);
+		std::ifstream file(outputFileName, std::ios::in | std::ios::binary | std::ios::ate);
 
 		if (!file.is_open())
 			throw std::invalid_argument("Provided asset file is not available!");
 
-		UI64 size = file.tellg();
+		const UI64 size = file.tellg();
 		file.seekg(0);
 
 		// Get the shader code.
-		std::string shaderCode;
-		shaderCode.resize(size);
-		file.read(shaderCode.data(), size);
+		mShaderCode.resize(size);
+		file.read(reinterpret_cast<char*>(mShaderCode.data()), size);
 		file.close();
 
-		shaderc::Compiler compiler;
-		shaderc::SpvCompilationResult result;
-		shaderc::CompileOptions options;
-		options.SetOptimizationLevel(shaderc_optimization_level::shaderc_optimization_level_performance);
-
-		// Compile the shader.
-		if (codeType == ShaderCodeType::GLSL)
-			result = compiler.CompileGlslToSpv(shaderCode, Helpers::GetShaderKindGLSL(shaderType), shaderFile.string().c_str(), options);
-		//else if (codeType == ShaderCodeType::HLSL)
-		//	result = compiler.CompileGlslToSpv(shaderCode, Helpers::GetShaderKindHLSL(shaderType), shaderFile.filename().string().c_str());
-		else
-			FLINT_THROW_RUNTIME_ERROR("Invalid shader file type!");
-
-		// Check the compilation result.
-		if (result.GetCompilationStatus() != shaderc_compilation_status::shaderc_compilation_status_success)
-		{
-			std::cerr << result.GetErrorMessage() << std::endl;
-			throw std::range_error("Shader compilation failed!");
-		}
-
-		// Insert the compiled shader code.
-		mShaderCode.resize(std::distance(result.begin(), result.end()) * sizeof(UI32));
-		std::copy(reinterpret_cast<const unsigned char*>(result.begin()), reinterpret_cast<const unsigned char*>(result.end()), reinterpret_cast<unsigned char*>(mShaderCode.data()));
+		// Remove the temporary file.
+		std::filesystem::remove(outputFileName);
 	}
 
-	ShaderCompiler::ShaderCompiler(const std::string& shaderCode, const ShaderCodeType codeType, const ShaderType shaderType)
+	ShaderCompiler::ShaderCompiler(const std::string& shaderCode, const ShaderCodeType codeType, const ShaderType shaderType, std::filesystem::path compilerTool)
 		: mCodeType(codeType), mType(shaderType)
 	{
-		shaderc::Compiler compiler;
-		shaderc::SpvCompilationResult result;
-		shaderc::CompileOptions options;
-		options.SetOptimizationLevel(shaderc_optimization_level::shaderc_optimization_level_performance);
+		static std::default_random_engine RandomEngine = {};
 
-		// Compile the shader.
-		if (codeType == ShaderCodeType::GLSL)
-			result = compiler.CompileGlslToSpv(shaderCode, Helpers::GetShaderKindGLSL(shaderType), "Source", options);
-		//else if (codeType == ShaderCodeType::HLSL)
-		//	result = compiler.CompileGlslToSpv(shaderCode, Helpers::GetShaderKindHLSL(shaderType), shaderFile.filename().string().c_str());
-		else
-			FLINT_THROW_RUNTIME_ERROR("Invalid shader file type!");
+		const std::string outputFileName = std::to_string(RandomEngine());
+		const std::string stage = Helpers::GetShaderStageString(shaderType);
+		const std::string inputFile = outputFileName + ".in";
+		const std::string outputFile = outputFileName + ".out";
+		const std::string command = "call " + compilerTool.make_preferred().string() + " -V -S " + stage + " " + inputFile + " -o " + outputFileName;
 
-		// Check the compilation result.
-		if (result.GetCompilationStatus() != shaderc_compilation_status::shaderc_compilation_status_success)
-		{
-			std::cerr << result.GetErrorMessage() << std::endl;
-			throw std::range_error("Shader compilation failed!");
-		}
+		// Dump the code data to a file.
+		Helpers::DumpToFile(shaderCode, inputFile);
 
-		// Insert the compiled shader code.
-		mShaderCode.resize(std::distance(result.begin(), result.end()) * sizeof(UI32));
-		std::copy(reinterpret_cast<const unsigned char*>(result.begin()), reinterpret_cast<const unsigned char*>(result.end()), reinterpret_cast<unsigned char*>(mShaderCode.data()));
+		// Execute the command.
+		if (std::system(command.c_str()) != 0)
+			throw std::runtime_error("Could not compile the shader file!");
+
+		// Load the shade file.
+		std::ifstream file(outputFileName, std::ios::in | std::ios::binary | std::ios::ate);
+
+		if (!file.is_open())
+			throw std::invalid_argument("Provided asset file is not available!");
+
+		const UI64 size = file.tellg();
+		file.seekg(0);
+
+		// Get the shader code.
+		mShaderCode.resize(size);
+		file.read(reinterpret_cast<char*>(mShaderCode.data()), size);
+		file.close();
+
+		// Remove the temporary file.
+		std::filesystem::remove(outputFile);
 	}
 
 	std::shared_ptr<Shader> ShaderCompiler::CreateShader(const std::shared_ptr<Device>& pDevice) const

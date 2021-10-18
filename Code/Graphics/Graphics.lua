@@ -29,7 +29,6 @@ project "FlintGraphics"
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.Assimp}",
 		"%{IncludeDir.optick}",
-		"%{IncludeDir.shaderc}",
 	}
 
 	libdirs {
@@ -38,20 +37,16 @@ project "FlintGraphics"
 
 	links { 
 		"assimp-vc142-mt",
-		"shaderc_combined",
 		"VulkanBackend"
 	}
 	
 	filter { "toolset:msc", "configurations:Debug" }
-		libdirs { "%{IncludeLib.shaderc_debug}" }
 	    buildoptions "/MTd"
 
 	filter { "toolset:msc", "configurations:PreRelease" }
-		libdirs { "%{IncludeLib.shaderc_release}" }
 	    buildoptions "/MT"
 
 	filter { "toolset:msc", "configurations:Release" }
-		libdirs { "%{IncludeLib.shaderc_release}" }
 	    buildoptions "/MT"
 
 	filter ""

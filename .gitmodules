@@ -10,9 +10,6 @@
 [submodule "ThirdParty/gdown"]
 	path = ThirdParty/gdown
 	url = https://github.com/DhirajWishal/gdown
-[submodule "ThirdParty/shaderc"]
-	path = ThirdParty/shaderc
-	url = https://github.com/DhirajWishal/shaderc
 [submodule "ThirdParty/premake"]
 	path = ThirdParty/premake
 	url = https://github.com/DhirajWishal/premake-core

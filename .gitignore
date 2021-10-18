@@ -342,3 +342,8 @@ Demos/**/*.json
 Makefile
 Demos/**/Makefile
 Code/**/Makefile
+Workspace/*
+!Workspace/Flint
+!Workspace/Fonts
+!Workspace/Shaders
+!Workspace/Tools

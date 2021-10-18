@@ -111,5 +111,5 @@ namespace Flint
 	constexpr float CreateColor256(const float color) { return color / 256.0f; }
 	constexpr UI64 BitShiftLeft(const UI64 count) { return static_cast<UI64>(1) << count; }
 	constexpr UI64 BitShiftRight(const UI64 count) { return static_cast<UI64>(1) << count; }
-	std::filesystem::path NormalizePath(std::filesystem::path path);
+	inline std::filesystem::path NormalizePath(std::filesystem::path path) { return path.make_preferred(); }
 }
