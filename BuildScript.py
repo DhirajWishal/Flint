@@ -6,14 +6,25 @@ Flint build script.
 """
 
 import os
+import sys
 
-# Build premake
-print("\nBuilding Premake ...")
-os.system("cd \"ThirdParty/premake\" && call Bootstrap.bat")
+if sys.platform.startswith('win32'):
+    # Build premake
+    print("\nBuilding Premake ...")
+    os.system("cd \"ThirdParty/premake\" && call Bootstrap.bat")
 
-# Build Flint
-print("Building the Flint project ...")
-os.system("call \"ThirdParty/premake/bin/release/premake5\" vs2019")
+    # Build Flint
+    print("Building the Flint project ...")
+    os.system("call \"ThirdParty/premake/bin/release/premake5\" vs2019")
+
+elif sys.platform.startswith('linux'):
+    # Build premake
+    print("\nBuilding Premake ...")
+    os.system("cd \"ThirdParty/premake\" && make")
+
+    # Build Flint
+    print("Building the Flint project ...")
+    os.system("call \"ThirdParty/premake/bin/release/premake5\" gmake2")
 
 # Build glfw
 print("\nBuilding glfw ...")
@@ -22,11 +33,6 @@ os.system("cd \"ThirdParty/glfw\" && cmake CMakeLists.txt -DBUILD_SHARED_LIBS=ON
 # Build SPIRV Cross
 print("\nBuilding SPIRV-Cross ...")
 os.system("cd \"ThirdParty/SPIRV-Cross\" && cmake CMakeLists.txt && cmake --build . --config Release")
-
-# Build shaderc
-print("\nBuilding shaderc ...")
-os.system("cd \"ThirdParty/shaderc\" && python utils/git-sync-deps && cmake CMakeLists.txt && cmake --build . --config Release")
-os.system("cd \"ThirdParty/shaderc\" && cmake --build . --config Debug")
 
 # Build Assimp
 print("\nBuilding Assimp ...")
