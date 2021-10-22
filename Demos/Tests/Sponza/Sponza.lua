@@ -49,16 +49,7 @@ project "Sponza"
 	}
 
 	links {
-	    "optick",
 		"TestBase",
-		"FlintEngine",
-		"FlintGraphics",
-		"FlintCore",
-		"GraphicsCore",
-		"VulkanBackend",
-
-		"%{Binary.GLFW}",
-		--"%{Binary.Assimp}",
 	}
 
 	filter "toolset:msc"

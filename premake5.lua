@@ -35,6 +35,17 @@ workspace "Flint"
 	-- Binaries
 	Binary = {}
 
+	IncludeLib["GLFW"] = "%{wks.location}/ThirdParty/glfw/src/Release"
+    IncludeLib["Vulkan"] = "%{wks.location}/ThirdParty/Vulkan/lib"
+    IncludeLib["SPIRV_Cross"] = "%{wks.location}/ThirdParty/SPIRV-Cross/Release"
+    IncludeLib["Assimp"] = "%{wks.location}/ThirdParty/Assimp/lib/Release"
+    IncludeLib["benchmark"] = "%{wks.location}/ThirdParty/benchmark/build/src/Release"
+
+	Binary["GLFW"] = "glfw3dll"
+    Binary["Vulkan"] = "vulkan-1"
+    Binary["Assimp"] = "assimp-vc142-mt"
+    Binary["benchmark"] = "benchmark"
+
 	filter "configurations:Debug"
 		defines { "FLINT_DEBUG" }
 		symbols "On"
@@ -53,28 +64,28 @@ workspace "Flint"
 	filter "system:windows"
 		defines { "FLINT_PLATFORM_WINDOWS" }
 
-		IncludeLib["GLFW"] = "%{wks.location}/ThirdParty/glfw/src/Release"
-        IncludeLib["Vulkan"] = "%{wks.location}/ThirdParty/Vulkan/lib"
-        IncludeLib["SPIRV_Cross"] = "%{wks.location}/ThirdParty/SPIRV-Cross/Release"
-        IncludeLib["Assimp"] = "%{wks.location}/ThirdParty/Assimp/lib/Release"
-        IncludeLib["benchmark"] = "%{wks.location}/ThirdParty/benchmark/build/src/Release"
-
-		Binary["GLFW"] = "glfw3dll"
-        Binary["Vulkan"] = "vulkan-1"
-        Binary["Assimp"] = "assimp-vc142-mt"
-        Binary["benchmark"] = "benchmark"
+		--IncludeLib["GLFW"] = "%{wks.location}/ThirdParty/glfw/src/Release"
+        --IncludeLib["Vulkan"] = "%{wks.location}/ThirdParty/Vulkan/lib"
+        --IncludeLib["SPIRV_Cross"] = "%{wks.location}/ThirdParty/SPIRV-Cross/Release"
+        --IncludeLib["Assimp"] = "%{wks.location}/ThirdParty/Assimp/lib/Release"
+        --IncludeLib["benchmark"] = "%{wks.location}/ThirdParty/benchmark/build/src/Release"
+		--
+		--Binary["GLFW"] = "glfw3dll"
+        --Binary["Vulkan"] = "vulkan-1"
+        --Binary["Assimp"] = "assimp-vc142-mt"
+        --Binary["benchmark"] = "benchmark"
 
 	filter "system:linux"
 		defines { "FLINT_PLATFORM_LINUX" }
 
-		IncludeLib["GLFW"] = "%{wks.location}/ThirdParty/glfw/src"
-        IncludeLib["Assimp"] = "%{wks.location}/ThirdParty/Assimp/lib"
-        IncludeLib["benchmark"] = "%{wks.location}/ThirdParty/benchmark/build/src"
-
-		Binary["GLFW"] = "libglfw3"
-        Binary["Vulkan"] = "vulkan-1"
-        Binary["Assimp"] = "libassimp"
-        Binary["benchmark"] = "libbenchmark"
+		--IncludeLib["GLFW"] = "%{wks.location}/ThirdParty/glfw/src"
+        --IncludeLib["Assimp"] = "%{wks.location}/ThirdParty/Assimp/lib"
+        --IncludeLib["benchmark"] = "%{wks.location}/ThirdParty/benchmark/build/src"
+		--
+		--Binary["GLFW"] = "libglfw3"
+        --Binary["Vulkan"] = "vulkan-1"
+        --Binary["Assimp"] = "libassimp"
+        --Binary["benchmark"] = "libbenchmark"
 
 	filter ""
 

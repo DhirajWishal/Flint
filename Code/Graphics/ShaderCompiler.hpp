@@ -46,7 +46,6 @@ namespace Flint
 
 #endif // defined FLINT_PLATFORM_WINDOWS
 
-
 #if defined FLINT_PLATFORM_WINDOWS
 		/**
 		 * Compile the shader using a high level shader code.
