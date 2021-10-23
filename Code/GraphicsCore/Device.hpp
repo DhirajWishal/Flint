@@ -13,7 +13,9 @@ namespace Flint
 
 	class CommandBufferAllocator;
 	class CommandBuffer;
+
 	class SynchronizationPrimitive;
+	class HostSynchronizationPrimitive;
 
 	class SwapChain;
 	class RenderTarget;
@@ -263,11 +265,12 @@ namespace Flint
 		virtual std::shared_ptr<GeometryStore> CreateGeometryStore(const std::vector<ShaderAttribute>& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic) = 0;
 
 		/**
-		 * Create a new synchronization primitive.
+		 * Create a new host synchronization primitive.
+		 * Host synchronization primitives are used to synchronize the client/ host application.
 		 *
 		 * @return The primitive pointer.
 		 */
-		virtual std::shared_ptr<SynchronizationPrimitive> CreateSynchronizationPrimitive() = 0;
+		virtual std::shared_ptr<HostSynchronizationPrimitive> CreateHostSynchronizationPrimitive() = 0;
 
 		/**
 		 * Create a new query object.

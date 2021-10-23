@@ -5,7 +5,7 @@
 
 #include "GraphicsCore/CommandBufferAllocator.hpp"
 #include "GraphicsCore/Instance.hpp"
-#include "GraphicsCore/SynchronizationPrimitive.hpp"
+#include "GraphicsCore/HostSynchronizationPrimitive.hpp"
 
 namespace Flint
 {
@@ -55,9 +55,9 @@ namespace Flint
 		pCommandBuffers = pCommandBufferAllocator->CreateCommandBuffers();
 
 		// Create the synchronization primitives.
-		pSynchronizationPrimitives.reserve(bufferCount);
+		pHostSynchronizationPrimitives.reserve(bufferCount);
 		for (UI32 i = 0; i < bufferCount; i++)
-			pSynchronizationPrimitives.emplace_back(pDevice->CreateSynchronizationPrimitive());
+			pHostSynchronizationPrimitives.emplace_back(pDevice->CreateHostSynchronizationPrimitive());
 	}
 
 	ProcessingPipeline::~ProcessingPipeline()
@@ -66,7 +66,7 @@ namespace Flint
 		pCommandBufferAllocator->Terminate();
 		pDisplay->Terminate();
 
-		pSynchronizationPrimitives.clear();
+		pHostSynchronizationPrimitives.clear();
 	}
 
 	void ProcessingPipeline::Execute()
@@ -84,8 +84,8 @@ namespace Flint
 		const auto imageIndex = GetCurrentImageIndex();
 
 		// Get the synchronization primitive and wait until the command buffer is completed.
-		const auto pSynchronizationPrimitive = GetInFlightSynchronizationPrimitive();
-		pSynchronizationPrimitive->Wait();
+		const auto pHostSynchronizationPrimitives = GetInFlightHostSynchronizationPrimitive();
+		pHostSynchronizationPrimitives->Wait();
 
 		// Begin the command buffer recording.
 		pCommandBuffer->BeginBufferRecording();
@@ -98,7 +98,7 @@ namespace Flint
 		pCommandBuffer->EndBufferRecording();
 
 		// Submit the commands to the device.
-		GetDevice()->SubmitGraphicsCommandBuffer(pCommandBuffer.get(), pSynchronizationPrimitive.get());
+		GetDevice()->SubmitGraphicsCommandBuffer(pCommandBuffer.get(), pHostSynchronizationPrimitives.get());
 
 		// Present the swap chain to the display.
 		if (!pScreenBoundRenderTarget->PresentToDisplay())

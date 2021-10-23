@@ -459,7 +459,7 @@ namespace std
 	{
 		const size_t operator()(const Flint::ShaderAttribute& other) const
 		{
-			return hash<std::string>()(other.mAttributeName) ^ static_cast<UI8>(other.mDataType) ^ other.mLocation;
+			return hash<std::string>()(other.mAttributeName) ^ static_cast<Flint::UI8>(other.mDataType) ^ other.mLocation;
 		}
 	};
 

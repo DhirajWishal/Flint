@@ -3,18 +3,18 @@
 
 #pragma once
 
-#include "GraphicsCore/SynchronizationPrimitive.hpp"
+#include "GraphicsCore/HostSynchronizationPrimitive.hpp"
 #include "VulkanDevice.hpp"
 
 namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanSynchronizationPrimitive final : public SynchronizationPrimitive
+		class VulkanHostSynchronizationPrimitive final : public HostSynchronizationPrimitive
 		{
 		public:
-			VulkanSynchronizationPrimitive(const std::shared_ptr<Device>& pDevice);
-			~VulkanSynchronizationPrimitive() { if (!bIsTerminated) Terminate(); }
+			VulkanHostSynchronizationPrimitive(const std::shared_ptr<Device>& pDevice);
+			~VulkanHostSynchronizationPrimitive() { if (!bIsTerminated) Terminate(); }
 
 			virtual void Wait(const UI64 timeout = std::numeric_limits<UI64>::max()) override;
 			virtual void Reset() override;

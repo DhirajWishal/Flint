@@ -288,6 +288,9 @@ namespace Flint
 		pPackageSets.resize(size);
 		pOcclusionPackageSets.reserve(size);
 
+		// Enable or disable mip mapping.
+		const bool bEnableMipMapping = false;
+
 		for (auto& wireFrame : mAsset.GetWireFrames())
 		{
 			const Material material = wireFrame.GetMaterial();
@@ -296,18 +299,18 @@ namespace Flint
 			{
 				if (pProperty->GetType() == MaterialProperties::MaterialType::TEXTURE_PATH)
 				{
-					auto pTexturePath = std::static_pointer_cast<MaterialProperties::TexturePath>(pProperty);
+					const auto pTexturePath = std::static_pointer_cast<MaterialProperties::TexturePath>(pProperty);
 					if (pTexturePath->mType != MaterialProperties::TextureType::Diffuse)
 						continue;
 
 					auto& loader = loaderMap[pTexturePath];
-					auto pImage = loader.CreateImage(pApplication->GetDevice(), ImageType::TwoDimension, ImageUsage::Graphics, 1, 1);
-					auto pImageView = pImage->CreateImageView(0, pImage->GetLayerCount(), 0, pImage->GetMipLevels(), ImageUsage::Graphics);
+					const auto pImage = loader.CreateImage(pApplication->GetDevice(), ImageType::TwoDimension, ImageUsage::Graphics, 1, !bEnableMipMapping);
+					const auto pImageView = pImage->CreateImageView(0, pImage->GetLayerCount(), 0, pImage->GetMipLevels(), ImageUsage::Graphics);
 
 					Flint::ImageSamplerSpecification samplerSpecification = {};
 					samplerSpecification.mMaxLevelOfDetail = static_cast<float>(pImage->GetMipLevels());
 					samplerSpecification.mBorderColor = BorderColor::OpaqueBlackINT;
-					auto pSampler = pApplication->GetDevice()->CreateImageSampler(samplerSpecification);
+					const auto pSampler = pApplication->GetDevice()->CreateImageSampler(samplerSpecification);
 
 					for (UI64 i = 0; i < size; i++)
 					{
@@ -323,7 +326,7 @@ namespace Flint
 
 			auto pPackage = pOcclusionPipeline->CreateResourcePackage(0);
 			pPackage->BindResource(0, pUniformBuffer);
-			pOcclusionPackageSets.push_back(pPackage);
+			pOcclusionPackageSets.push_back(std::move(pPackage));
 		}
 	}
 }

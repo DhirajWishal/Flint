@@ -8,22 +8,22 @@
 #include <cstdint>
 #include <limits>
 
-typedef uint8_t								UI8;
-typedef uint16_t							UI16;
-typedef uint32_t							UI32;
-typedef uint64_t							UI64;
-
-typedef int8_t								I8;
-typedef int16_t								I16;
-typedef int32_t								I32;
-typedef int64_t								I64;
-
-typedef wchar_t								wchar;
-
-typedef UI8									BYTE;
-
 namespace Flint
 {
+	typedef uint8_t								UI8;
+	typedef uint16_t							UI16;
+	typedef uint32_t							UI32;
+	typedef uint64_t							UI64;
+
+	typedef int8_t								I8;
+	typedef int16_t								I16;
+	typedef int32_t								I32;
+	typedef int64_t								I64;
+
+	typedef wchar_t								wchar;
+
+	typedef UI8									BYTE;
+
 	/**
 	 * Flint extent 2D structure.
 	 *
@@ -93,9 +93,9 @@ namespace Flint
 	 */
 	struct FColor4D
 	{
-		FColor4D() = default;
-		FColor4D(float value) : mRed(value), mGreen(value), mBlue(value), mAlpha(value) {}
-		FColor4D(float red, float green, float blue, float alpha) : mRed(red), mGreen(green), mBlue(blue), mAlpha(alpha) {}
+		constexpr FColor4D() = default;
+		constexpr FColor4D(float value) : mRed(value), mGreen(value), mBlue(value), mAlpha(value) {}
+		constexpr FColor4D(float red, float green, float blue, float alpha) : mRed(red), mGreen(green), mBlue(blue), mAlpha(alpha) {}
 
 		float mRed = 0.0f, mGreen = 0.0f, mBlue = 0.0f, mAlpha = 0.0f;
 	};

@@ -175,14 +175,14 @@ namespace Flint
 		 *
 		 * @return The vector of synchronization primitives.
 		 */
-		std::vector<std::shared_ptr<SynchronizationPrimitive>> GetSynchronizationPrimitives() const { return pSynchronizationPrimitives; }
+		std::vector<std::shared_ptr<HostSynchronizationPrimitive>> GetHostSynchronizationPrimitives() const { return pHostSynchronizationPrimitives; }
 
 		/**
 		 * Get the synchronization primitive that is in flight.
 		 *
 		 * @return The synchronization primitive.
 		 */
-		std::shared_ptr<SynchronizationPrimitive> GetInFlightSynchronizationPrimitive() const { return pSynchronizationPrimitives[GetCurrentFrameIndex()]; }
+		std::shared_ptr<HostSynchronizationPrimitive> GetInFlightHostSynchronizationPrimitive() const { return pHostSynchronizationPrimitives[GetCurrentFrameIndex()]; }
 
 		/**
 		 * Get all the processing nodes in the pipeline.
@@ -204,7 +204,7 @@ namespace Flint
 	protected:
 		std::vector<std::shared_ptr<ProcessingNode>> pProcessingNodes = {};
 		std::vector<std::shared_ptr<CommandBuffer>> pCommandBuffers = {};
-		std::vector<std::shared_ptr<SynchronizationPrimitive>> pSynchronizationPrimitives = {};
+		std::vector<std::shared_ptr<HostSynchronizationPrimitive>> pHostSynchronizationPrimitives = {};
 
 		std::shared_ptr<Display> pDisplay = nullptr;
 

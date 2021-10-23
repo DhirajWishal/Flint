@@ -15,7 +15,7 @@
 #include "VulkanBackend/VulkanShader.hpp"
 #include "VulkanBackend/VulkanGraphicsPipeline.hpp"
 #include "VulkanBackend/VulkanComputePipeline.hpp"
-#include "VulkanBackend/VulkanSynchronizationPrimitive.hpp"
+#include "VulkanBackend/VulkanHostSynchronizationPrimitive.hpp"
 #include "VulkanBackend/VulkanQuery.hpp"
 
 #include "GraphicsCore/GeometryStore.hpp"
@@ -209,9 +209,9 @@ namespace Flint
 			return std::make_shared<GeometryStore>(shared_from_this(), vertexAttributes, indexSize, profile);
 		}
 
-		std::shared_ptr<SynchronizationPrimitive> VulkanDevice::CreateSynchronizationPrimitive()
+		std::shared_ptr<HostSynchronizationPrimitive> VulkanDevice::CreateHostSynchronizationPrimitive()
 		{
-			return std::make_shared<VulkanSynchronizationPrimitive>(shared_from_this());
+			return std::make_shared<VulkanHostSynchronizationPrimitive>(shared_from_this());
 		}
 
 		std::shared_ptr<Query> VulkanDevice::CreateQuery(const QueryUsage usage, const UI32 queryCount)
@@ -227,7 +227,7 @@ namespace Flint
 			VkFence vFence = VK_NULL_HANDLE;
 			if (pPrimitive)
 			{
-				VulkanSynchronizationPrimitive& vPrimitive = pPrimitive->StaticCast<VulkanSynchronizationPrimitive>();
+				VulkanHostSynchronizationPrimitive& vPrimitive = pPrimitive->StaticCast<VulkanHostSynchronizationPrimitive>();
 				vPrimitive.Reset();
 				vFence = vPrimitive.GetFence();
 			}
@@ -250,7 +250,7 @@ namespace Flint
 			VkFence vFence = VK_NULL_HANDLE;
 			if (pPrimitive)
 			{
-				VulkanSynchronizationPrimitive& vPrimitive = pPrimitive->StaticCast<VulkanSynchronizationPrimitive>();
+				VulkanHostSynchronizationPrimitive& vPrimitive = pPrimitive->StaticCast<VulkanHostSynchronizationPrimitive>();
 				vPrimitive.Reset();
 				vFence = vPrimitive.GetFence();
 			}
@@ -266,7 +266,7 @@ namespace Flint
 			VkFence vFence = VK_NULL_HANDLE;
 			if (pPrimitive)
 			{
-				VulkanSynchronizationPrimitive& vPrimitive = pPrimitive->StaticCast<VulkanSynchronizationPrimitive>();
+				VulkanHostSynchronizationPrimitive& vPrimitive = pPrimitive->StaticCast<VulkanHostSynchronizationPrimitive>();
 				vPrimitive.Reset();
 				vFence = vPrimitive.GetFence();
 			}
@@ -289,7 +289,7 @@ namespace Flint
 			VkFence vFence = VK_NULL_HANDLE;
 			if (pPrimitive)
 			{
-				VulkanSynchronizationPrimitive& vPrimitive = pPrimitive->StaticCast<VulkanSynchronizationPrimitive>();
+				VulkanHostSynchronizationPrimitive& vPrimitive = pPrimitive->StaticCast<VulkanHostSynchronizationPrimitive>();
 				vPrimitive.Reset();
 				vFence = vPrimitive.GetFence();
 			}

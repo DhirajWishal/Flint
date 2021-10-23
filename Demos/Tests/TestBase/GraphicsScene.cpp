@@ -30,7 +30,7 @@ namespace Flint
 
 		pSynchronizationPrimtives.reserve(pSecondaryCommandBuffers.size());
 		for (UI64 i = 0; i < pCommandBuffers.size(); i++)
-			pSynchronizationPrimtives.push_back(pDevice->CreateSynchronizationPrimitive());
+			pSynchronizationPrimtives.push_back(pDevice->CreateHostSynchronizationPrimitive());
 
 		mImGuiAdapter.Initialize(pDevice, pRenderTarget);
 		mCamera.SetAspectRatio(pDisplay->GetExtent());

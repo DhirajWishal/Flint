@@ -20,17 +20,5 @@ namespace Flint
 		 * @param pDevice The device pointer.
 		 */
 		SynchronizationPrimitive(const std::shared_ptr<Device>& pDevice) : DeviceBoundObject(pDevice) {}
-
-		/**
-		 * Wait until the device flags the primitive.
-		 *
-		 * @param timeout The maximum timeout.
-		 */
-		virtual void Wait(const UI64 timeout = std::numeric_limits<UI64>::max()) = 0;
-
-		/**
-		 * Reset the primitive to its default state.
-		 */
-		virtual void Reset() = 0;
 	};
 }
