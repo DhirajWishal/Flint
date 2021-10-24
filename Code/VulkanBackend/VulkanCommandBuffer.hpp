@@ -67,6 +67,8 @@ namespace Flint
 			virtual void EndQuery(const Query* pQuery, const UI32 index) override;
 			virtual void ResetQuery(const Query* pQuery, const UI32 beginIndex, const UI32 count) override;
 
+			virtual void Synchronize() override;
+
 			virtual void Terminate() override;
 
 		public:

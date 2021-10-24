@@ -68,6 +68,22 @@ namespace Flint
 
 	public:
 		/**
+		 * Utility function supporting data copy.
+		 * Make sure that the memory profile is transfer friendly or the buffer type supports data copy.
+		 *
+		 * @tparam Type The type of the data to be copied.
+		 * @param data The data to copy.
+		 * @param offset The offset in the buffer to copy data to. Default is 0.
+		 */
+		template<class Type>
+		void CopyData(const Type& data, const UI64 offset = 0)
+		{
+			Type* pData = static_cast<Type*>(MapMemory(sizeof(Type), offset));
+			(*pData) = data;
+			UnmapMemory();
+		}
+
+		/**
 		 * Extend the buffer's size.
 		 *
 		 * @param sizeToAdd The size to extend the buffer with.

@@ -381,6 +381,12 @@ namespace Flint
 		 */
 		virtual void ResetQuery(const Query* pQuery, const UI32 beginIndex, const UI32 count) = 0;
 
+		/**
+		 * Add a synchronization command to the command buffer.
+		 * Synchronization is needed in between two commands to make sure that the previous command is properly executed before continuing with the next command.
+		 */
+		virtual void Synchronize() = 0;
+
 	public:
 		/**
 		 * Get the allocator of this command buffer.

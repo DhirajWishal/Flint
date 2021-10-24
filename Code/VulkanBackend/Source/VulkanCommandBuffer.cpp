@@ -423,7 +423,7 @@ namespace Flint
 		void VulkanCommandBuffer::BindConstantData(const GraphicsPipeline* pPipeline, const ConstantData* pConstantData, const ShaderType type)
 		{
 			VulkanDevice& vDevice = pAllocator->GetDevice()->StaticCast<VulkanDevice>();
-			vDevice.GetDeviceTable().vkCmdPushConstants(vCommandBuffer, pPipeline->StaticCast<VulkanComputePipeline>().GetPipelineLayout(), Utilities::GetShaderStage(type), static_cast<UI32>(pConstantData->mOffset), static_cast<UI32>(pConstantData->mSize), pConstantData->pData);
+			vDevice.GetDeviceTable().vkCmdPushConstants(vCommandBuffer, pPipeline->StaticCast<VulkanGraphicsPipeline>().GetPipelineLayout(), Utilities::GetShaderStage(type), static_cast<UI32>(pConstantData->mOffset), static_cast<UI32>(pConstantData->mSize), pConstantData->pData);
 		}
 
 		void VulkanCommandBuffer::BindDynamicStates(const ComputePipeline* pPipeline, const DynamicStateContainer* pDynamicStates)
@@ -601,6 +601,27 @@ namespace Flint
 		{
 			auto const& vQuery = pQuery->StaticCast<VulkanQuery>();
 			pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetDeviceTable().vkCmdResetQueryPool(vCommandBuffer, vQuery.GetQuery(), beginIndex, count);
+		}
+
+		void VulkanCommandBuffer::Synchronize()
+		{
+			VkMemoryBarrier vMemoryBarrier = {};
+			VkBufferMemoryBarrier vBufferMemoryBarrier = {};
+			VkImageMemoryBarrier vImageMemoryBarrier = {};
+
+			VulkanDevice& vDevice = pAllocator->GetDevice()->StaticCast<VulkanDevice>();
+			vDevice.GetDeviceTable().vkCmdPipelineBarrier(
+				vCommandBuffer,
+				VkPipelineStageFlagBits(),
+				VkPipelineStageFlagBits(),
+				VkDependencyFlagBits(),
+				1,
+				&vMemoryBarrier,
+				1,
+				&vBufferMemoryBarrier,
+				1,
+				&vImageMemoryBarrier
+			);
 		}
 
 		void VulkanCommandBuffer::Terminate()
