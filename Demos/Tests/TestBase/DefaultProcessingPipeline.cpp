@@ -32,7 +32,7 @@ namespace Flint
 		io.DeltaTime = delta / 1000.0f;
 
 		ImGui::Begin("Statistics");
-		ImGui::Text("Frame time: %.4f ms", io.DeltaTime / 1000.0f);
+		ImGui::Text("Frame time: %.4f ms (%d FPS)", io.DeltaTime / 1000.0f, static_cast<UI32>(1000.0f / (io.DeltaTime / 1000.0f)));
 		ImGui::End();
 
 		const auto extent = pDisplay->GetExtent();

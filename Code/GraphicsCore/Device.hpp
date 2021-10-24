@@ -16,6 +16,7 @@ namespace Flint
 
 	class SynchronizationPrimitive;
 	class HostSynchronizationPrimitive;
+	class DeviceSynchronizationPrimitive;
 
 	class SwapChain;
 	class RenderTarget;
@@ -271,6 +272,14 @@ namespace Flint
 		 * @return The primitive pointer.
 		 */
 		virtual std::shared_ptr<HostSynchronizationPrimitive> CreateHostSynchronizationPrimitive() = 0;
+
+		/**
+		 * Create a new device synchronization primitive.
+		 * Device synchronization primitives are used to synchronize the device.
+		 *
+		 * @return The primitive pointer.
+		 */
+		virtual std::shared_ptr<DeviceSynchronizationPrimitive> CreateDeviceSynchronizationPrimitive() = 0;
 
 		/**
 		 * Create a new query object.

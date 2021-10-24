@@ -14,6 +14,7 @@
 #include "VulkanBackend/VulkanQuery.hpp"
 
 #include "GraphicsCore/GeometryStore.hpp"
+#include "GraphicsCore/DynamicStateContainer.hpp"
 
 namespace Flint
 {
@@ -346,66 +347,83 @@ namespace Flint
 			if (!pDynamicStates)
 				return;
 
-			VulkanDevice& vDevice = pAllocator->GetDevice()->StaticCast<VulkanDevice>();
-			DynamicStateFlags flags = pDynamicStates->mFlags;
-			if (flags & DynamicStateFlags::ViewPort)
-			{
-				DynamicStateContainer::ViewPort const& viewPort = pDynamicStates->mViewPort;
+			if (pDynamicStates->mFlags & DynamicStateFlags::ViewPort)
+				BindViewPort(pPipeline, &pDynamicStates->mViewPort);
 
-				VkViewport vVP = {};
-				vVP.width = viewPort.mExtent.mWidth;
-				vVP.height = viewPort.mExtent.mHeight;
-				vVP.minDepth = viewPort.mDepth.mWidth;
-				vVP.maxDepth = viewPort.mDepth.mHeight;
-				vVP.x = viewPort.mOffset.mWidth;
-				vVP.y = viewPort.mOffset.mHeight;
+			if (pDynamicStates->mFlags & DynamicStateFlags::Scissor)
+				BindScissor(pPipeline, &pDynamicStates->mScissor);
 
-				vDevice.GetDeviceTable().vkCmdSetViewport(vCommandBuffer, 0, 1, &vVP);
-			}
+			if (pDynamicStates->mFlags & DynamicStateFlags::LineWidth)
+				BindLineWidth(pPipeline, &pDynamicStates->mLineWidth);
 
-			if (flags & DynamicStateFlags::Scissor)
-			{
-				DynamicStateContainer::Scissor const& scissor = pDynamicStates->mScissor;
+			if (pDynamicStates->mFlags & DynamicStateFlags::DepthBias)
+				BindDepthBias(pPipeline, &pDynamicStates->mDepthBias);
 
-				VkRect2D vR2D = {};
-				vR2D.extent.width = scissor.mExtent.mWidth;
-				vR2D.extent.height = scissor.mExtent.mHeight;
-				vR2D.offset.x = scissor.mOffset.mWidth;
-				vR2D.offset.y = scissor.mOffset.mHeight;
+			if (pDynamicStates->mFlags & DynamicStateFlags::BlendConstants)
+				BindBlendConstants(pPipeline, &pDynamicStates->mBlendConstants);
 
-				vDevice.GetDeviceTable().vkCmdSetScissor(vCommandBuffer, 0, 1, &vR2D);
-			}
-
-			if (flags & DynamicStateFlags::LineWidth)
-			{
-				vkCmdSetLineWidth(vCommandBuffer, pDynamicStates->mLineWidth.mLineWidth);
-			}
-
-			if (flags & DynamicStateFlags::DepthBias)
-			{
-				DynamicStateContainer::DepthBias const& depthBias = pDynamicStates->mDepthBias;
-				vDevice.GetDeviceTable().vkCmdSetDepthBias(vCommandBuffer, depthBias.mDepthBiasFactor, depthBias.mDepthClampFactor, depthBias.mDepthSlopeFactor);
-			}
-
-			if (flags & DynamicStateFlags::BlendConstants)
-			{
-				vDevice.GetDeviceTable().vkCmdSetBlendConstants(vCommandBuffer, pDynamicStates->mBlendConstants.mConstants);
-			}
-
-			if (flags & DynamicStateFlags::DepthBounds)
-			{
-				DynamicStateContainer::DepthBounds const& bounds = pDynamicStates->mDepthBounds;
-				vDevice.GetDeviceTable().vkCmdSetDepthBounds(vCommandBuffer, bounds.mBounds.mWidth, bounds.mBounds.mHeight);
-			}
+			if (pDynamicStates->mFlags & DynamicStateFlags::DepthBounds)
+				BindDepthBounds(pPipeline, &pDynamicStates->mDepthBounds);
 
 			for (UI8 i = 0; i < 10; i++)
-			{
 				if (!pDynamicStates->mConstantBlocks[i].IsNull())
-				{
-					DynamicStateContainer::ConstantData const& data = pDynamicStates->mConstantBlocks[i];
-					vDevice.GetDeviceTable().vkCmdPushConstants(vCommandBuffer, pPipeline->StaticCast<VulkanGraphicsPipeline>().GetPipelineLayout(), Utilities::GetShaderStage(ShaderType(i + 1)), static_cast<UI32>(data.mOffset), static_cast<UI32>(data.mSize), data.pData);
-				}
-			}
+					BindConstantData(pPipeline, &pDynamicStates->mConstantBlocks[i], ShaderType(i + 1));
+		}
+
+		void VulkanCommandBuffer::BindViewPort(const GraphicsPipeline* pPipeline, const ViewPort* pViewPort)
+		{
+			VkViewport vVP = {};
+			vVP.width = pViewPort->mExtent.mWidth;
+			vVP.height = pViewPort->mExtent.mHeight;
+			vVP.minDepth = pViewPort->mDepth.mWidth;
+			vVP.maxDepth = pViewPort->mDepth.mHeight;
+			vVP.x = pViewPort->mOffset.mWidth;
+			vVP.y = pViewPort->mOffset.mHeight;
+
+			VulkanDevice& vDevice = pAllocator->GetDevice()->StaticCast<VulkanDevice>();
+			vDevice.GetDeviceTable().vkCmdSetViewport(vCommandBuffer, 0, 1, &vVP);
+		}
+
+		void VulkanCommandBuffer::BindScissor(const GraphicsPipeline* pPipeline, const Scissor* pScissor)
+		{
+			VkRect2D vR2D = {};
+			vR2D.extent.width = pScissor->mExtent.mWidth;
+			vR2D.extent.height = pScissor->mExtent.mHeight;
+			vR2D.offset.x = pScissor->mOffset.mWidth;
+			vR2D.offset.y = pScissor->mOffset.mHeight;
+
+			VulkanDevice& vDevice = pAllocator->GetDevice()->StaticCast<VulkanDevice>();
+			vDevice.GetDeviceTable().vkCmdSetScissor(vCommandBuffer, 0, 1, &vR2D);
+		}
+
+		void VulkanCommandBuffer::BindLineWidth(const GraphicsPipeline* pPipeline, const LineWidth* pLineWidth)
+		{
+			VulkanDevice& vDevice = pAllocator->GetDevice()->StaticCast<VulkanDevice>();
+			vDevice.GetDeviceTable().vkCmdSetLineWidth(vCommandBuffer, pLineWidth->mLineWidth);
+		}
+
+		void VulkanCommandBuffer::BindDepthBias(const GraphicsPipeline* pPipeline, const DepthBias* pDepthBias)
+		{
+			VulkanDevice& vDevice = pAllocator->GetDevice()->StaticCast<VulkanDevice>();
+			vDevice.GetDeviceTable().vkCmdSetDepthBias(vCommandBuffer, pDepthBias->mDepthBiasFactor, pDepthBias->mDepthClampFactor, pDepthBias->mDepthSlopeFactor);
+		}
+
+		void VulkanCommandBuffer::BindBlendConstants(const GraphicsPipeline* pPipeline, const BlendConstants* pBlendConstants)
+		{
+			VulkanDevice& vDevice = pAllocator->GetDevice()->StaticCast<VulkanDevice>();
+			vDevice.GetDeviceTable().vkCmdSetBlendConstants(vCommandBuffer, pBlendConstants->mConstants);
+		}
+
+		void VulkanCommandBuffer::BindDepthBounds(const GraphicsPipeline* pPipeline, const DepthBounds* pDepthBounds)
+		{
+			VulkanDevice& vDevice = pAllocator->GetDevice()->StaticCast<VulkanDevice>();
+			vDevice.GetDeviceTable().vkCmdSetDepthBounds(vCommandBuffer, pDepthBounds->mBounds.mWidth, pDepthBounds->mBounds.mHeight);
+		}
+
+		void VulkanCommandBuffer::BindConstantData(const GraphicsPipeline* pPipeline, const ConstantData* pConstantData, const ShaderType type)
+		{
+			VulkanDevice& vDevice = pAllocator->GetDevice()->StaticCast<VulkanDevice>();
+			vDevice.GetDeviceTable().vkCmdPushConstants(vCommandBuffer, pPipeline->StaticCast<VulkanComputePipeline>().GetPipelineLayout(), Utilities::GetShaderStage(type), static_cast<UI32>(pConstantData->mOffset), static_cast<UI32>(pConstantData->mSize), pConstantData->pData);
 		}
 
 		void VulkanCommandBuffer::BindDynamicStates(const ComputePipeline* pPipeline, const DynamicStateContainer* pDynamicStates)
@@ -415,64 +433,14 @@ namespace Flint
 			if (!pDynamicStates)
 				return;
 
+			// Just bind the constant data as all the other dynamic states are not supported.
+			BindConstantData(pPipeline, &pDynamicStates->mConstantBlocks[5]);
+		}
+
+		void VulkanCommandBuffer::BindConstantData(const ComputePipeline* pPipeline, const ConstantData* pConstantData)
+		{
 			VulkanDevice& vDevice = pAllocator->GetDevice()->StaticCast<VulkanDevice>();
-			DynamicStateFlags flags = pDynamicStates->mFlags;
-			if (flags & DynamicStateFlags::ViewPort)
-			{
-				DynamicStateContainer::ViewPort const& viewPort = pDynamicStates->mViewPort;
-
-				VkViewport vVP = {};
-				vVP.width = viewPort.mExtent.mWidth;
-				vVP.height = viewPort.mExtent.mHeight;
-				vVP.minDepth = viewPort.mDepth.mWidth;
-				vVP.maxDepth = viewPort.mDepth.mHeight;
-				vVP.x = viewPort.mOffset.mWidth;
-				vVP.y = viewPort.mOffset.mHeight;
-
-				vDevice.GetDeviceTable().vkCmdSetViewport(vCommandBuffer, 0, 1, &vVP);
-			}
-
-			if (flags & DynamicStateFlags::Scissor)
-			{
-				DynamicStateContainer::Scissor const& scissor = pDynamicStates->mScissor;
-
-				VkRect2D vR2D = {};
-				vR2D.extent.width = scissor.mExtent.mWidth;
-				vR2D.extent.height = scissor.mExtent.mHeight;
-				vR2D.offset.x = scissor.mOffset.mWidth;
-				vR2D.offset.y = scissor.mOffset.mHeight;
-
-				vDevice.GetDeviceTable().vkCmdSetScissor(vCommandBuffer, 0, 1, &vR2D);
-			}
-
-			if (flags & DynamicStateFlags::LineWidth)
-			{
-				vDevice.GetDeviceTable().vkCmdSetLineWidth(vCommandBuffer, pDynamicStates->mLineWidth.mLineWidth);
-			}
-
-			if (flags & DynamicStateFlags::DepthBias)
-			{
-				DynamicStateContainer::DepthBias const& depthBias = pDynamicStates->mDepthBias;
-				vDevice.GetDeviceTable().vkCmdSetDepthBias(vCommandBuffer, depthBias.mDepthBiasFactor, depthBias.mDepthClampFactor, depthBias.mDepthSlopeFactor);
-			}
-
-			if (flags & DynamicStateFlags::BlendConstants)
-			{
-				vDevice.GetDeviceTable().vkCmdSetBlendConstants(vCommandBuffer, pDynamicStates->mBlendConstants.mConstants);
-			}
-
-			if (flags & DynamicStateFlags::DepthBounds)
-			{
-				DynamicStateContainer::DepthBounds const& bounds = pDynamicStates->mDepthBounds;
-				vDevice.GetDeviceTable().vkCmdSetDepthBounds(vCommandBuffer, bounds.mBounds.mWidth, bounds.mBounds.mHeight);
-			}
-
-			// Just taking the 5th entry would be enough as it is the compute shader's block.
-			if (!pDynamicStates->mConstantBlocks[5].IsNull())
-			{
-				DynamicStateContainer::ConstantData const& data = pDynamicStates->mConstantBlocks[5];
-				vDevice.GetDeviceTable().vkCmdPushConstants(vCommandBuffer, pPipeline->StaticCast<VulkanComputePipeline>().GetPipelineLayout(), VkShaderStageFlagBits::VK_SHADER_STAGE_COMPUTE_BIT, static_cast<UI32>(data.mOffset), static_cast<UI32>(data.mSize), data.pData);
-			}
+			vDevice.GetDeviceTable().vkCmdPushConstants(vCommandBuffer, pPipeline->StaticCast<VulkanComputePipeline>().GetPipelineLayout(), VkShaderStageFlagBits::VK_SHADER_STAGE_COMPUTE_BIT, static_cast<UI32>(pConstantData->mOffset), static_cast<UI32>(pConstantData->mSize), pConstantData->pData);
 		}
 
 		void VulkanCommandBuffer::IssueDrawCall(WireFrame& wireFrame, const UI64 firstInstance, const UI64 instanceCount, const DrawCallMode mode)

@@ -16,6 +16,7 @@
 #include "VulkanBackend/VulkanGraphicsPipeline.hpp"
 #include "VulkanBackend/VulkanComputePipeline.hpp"
 #include "VulkanBackend/VulkanHostSynchronizationPrimitive.hpp"
+#include "VulkanBackend/VulkanDeviceSynchronizationPrimitive.hpp"
 #include "VulkanBackend/VulkanQuery.hpp"
 
 #include "GraphicsCore/GeometryStore.hpp"
@@ -212,6 +213,11 @@ namespace Flint
 		std::shared_ptr<HostSynchronizationPrimitive> VulkanDevice::CreateHostSynchronizationPrimitive()
 		{
 			return std::make_shared<VulkanHostSynchronizationPrimitive>(shared_from_this());
+		}
+
+		std::shared_ptr<DeviceSynchronizationPrimitive> VulkanDevice::CreateDeviceSynchronizationPrimitive()
+		{
+			return std::make_shared<VulkanDeviceSynchronizationPrimitive>(shared_from_this());
 		}
 
 		std::shared_ptr<Query> VulkanDevice::CreateQuery(const QueryUsage usage, const UI32 queryCount)

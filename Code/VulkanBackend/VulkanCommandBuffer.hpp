@@ -39,7 +39,15 @@ namespace Flint
 			virtual void BindResourcePackage(const ComputePipeline* pPipeline, ResourcePackage* pResourcePackage) override;
 			virtual void BindResourcePackages(const ComputePipeline* pPipeline, const std::vector<ResourcePackage*>& pResourcePackages) override;
 			virtual void BindDynamicStates(const GraphicsPipeline* pPipeline, const DynamicStateContainer* pDynamicStates) override;
+			virtual void BindViewPort(const GraphicsPipeline* pPipeline, const ViewPort* pViewPort) override;
+			virtual void BindScissor(const GraphicsPipeline* pPipeline, const Scissor* pScissor) override;
+			virtual void BindLineWidth(const GraphicsPipeline* pPipeline, const LineWidth* pLineWidth) override;
+			virtual void BindDepthBias(const GraphicsPipeline* pPipeline, const DepthBias* pDepthBias) override;
+			virtual void BindBlendConstants(const GraphicsPipeline* pPipeline, const BlendConstants* pBlendConstants) override;
+			virtual void BindDepthBounds(const GraphicsPipeline* pPipeline, const DepthBounds* pDepthBounds) override;
+			virtual void BindConstantData(const GraphicsPipeline* pPipeline, const ConstantData* pConstantData, const ShaderType type) override;
 			virtual void BindDynamicStates(const ComputePipeline* pPipeline, const DynamicStateContainer* pDynamicStates) override;
+			virtual void BindConstantData(const ComputePipeline* pPipeline, const ConstantData* pConstantData) override;
 
 			virtual void IssueDrawCall(WireFrame& wireFrame, const UI64 firstInstance = 0, const UI64 instanceCount = 1, const DrawCallMode mode = DrawCallMode::Indexed) override;
 			virtual void IssueDrawCall(WireFrame&& wireFrame, const UI64 firstInstance = 0, const UI64 instanceCount = 1, const DrawCallMode mode = DrawCallMode::Indexed) override;

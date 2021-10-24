@@ -46,131 +46,130 @@ namespace Flint
 	}
 
 	/**
+		 * Dynamic sate object.
+		 * This is the base class for all the dynamic states supported.
+		 */
+	struct DynamicStateObject
+	{
+		DynamicStateObject(DynamicStateFlags flag) : mFlag(flag) {}
+		virtual ~DynamicStateObject() {}
+
+		/**
+		 * Get the state flags of the object.
+		 *
+		 * @return The dynamic state flag.
+		 */
+		DynamicStateFlags GetFlag() const { return mFlag; }
+
+		DynamicStateFlags mFlag = DynamicStateFlags::Undefined;
+	};
+
+	/**
+	 * Viewport structure.
+	 * Viewport is the area that is being rendered to the screen. Think of it as a window and the content within the boundary will be displayed.
+	 */
+	struct ViewPort final : public DynamicStateObject
+	{
+		ViewPort() : DynamicStateObject(DynamicStateFlags::ViewPort) {}
+		ViewPort(const FExtent2D<float>& extent, const FExtent2D<float>& offset, const FExtent2D<float>& depth)
+			: DynamicStateObject(DynamicStateFlags::ViewPort), mExtent(extent), mOffset(offset), mDepth(depth) {}
+
+		FExtent2D<float> mExtent = {};
+		FExtent2D<float> mOffset = {};
+		FExtent2D<float> mDepth = {};	// { Min, Max }
+	};
+
+	/**
+	 * Scissor structure.
+	 */
+	struct Scissor final : public DynamicStateObject
+	{
+		Scissor() : DynamicStateObject(DynamicStateFlags::Scissor) {}
+		Scissor(const FBox2D& extent, const FBox2D& offset) : DynamicStateObject(DynamicStateFlags::Scissor), mExtent(extent), mOffset(offset) {}
+
+		FBox2D mExtent = {};
+		FBox2D mOffset = {};
+	};
+
+	/**
+	 * Line width structure.
+	 * This defines the rendering line width.
+	 */
+	struct LineWidth final : public DynamicStateObject
+	{
+		LineWidth() : DynamicStateObject(DynamicStateFlags::LineWidth) {}
+		LineWidth(const float width) : DynamicStateObject(DynamicStateFlags::LineWidth), mLineWidth(width) {}
+
+		float mLineWidth = 1.0f;
+	};
+
+	/**
+	 * Depth bias structure.
+	 * Set the depth bias.
+	 */
+	struct DepthBias final : public DynamicStateObject
+	{
+		DepthBias() : DynamicStateObject(DynamicStateFlags::DepthBias) {}
+		DepthBias(const float biasFactor, const float clampFactor, const float slopeFactor)
+			: DynamicStateObject(DynamicStateFlags::DepthBias), mDepthBiasFactor(biasFactor),
+			mDepthClampFactor(clampFactor), mDepthSlopeFactor(slopeFactor) {}
+
+		float mDepthBiasFactor = 0.0f;
+		float mDepthClampFactor = 0.0f;
+		float mDepthSlopeFactor = 0.0f;
+	};
+
+	/**
+	 * Blend constants structure.
+	 * Set the pipeline blend constants.
+	 */
+	struct BlendConstants final : public DynamicStateObject
+	{
+		BlendConstants() : DynamicStateObject(DynamicStateFlags::BlendConstants) {}
+		BlendConstants(const float(&constants)[4]) : DynamicStateObject(DynamicStateFlags::BlendConstants) { std::copy(constants, constants + 4, mConstants); }
+
+		float mConstants[4] = {};
+	};
+
+	/**
+	 * Depth bounds struct.
+	 * Set pipeline depth bounds.
+	 */
+	struct DepthBounds final : public DynamicStateObject
+	{
+		DepthBounds() : DynamicStateObject(DynamicStateFlags::DepthBounds) {}
+		DepthBounds(const FExtent2D<float>& bounds) : DynamicStateObject(DynamicStateFlags::DepthBounds), mBounds(bounds) {}
+
+		FExtent2D<float> mBounds = {};	// { Min, Max }
+	};
+
+	/**
+	 * Constant data struct.
+	 * This struct is used to pass data to constant blocks.
+	 */
+	struct ConstantData
+	{
+		ConstantData() = default;
+		ConstantData(const void* pData, const UI64 size, const UI64 offset) : pData(pData), mSize(size), mOffset(offset) {}
+
+		/**
+		 * Check if the constant block is null.
+		 *
+		 * @return The boolean value.
+		 */
+		constexpr bool IsNull() const { return pData == nullptr; }
+
+		const void* pData = nullptr;
+		UI64 mSize = 0;
+		UI64 mOffset = 0;
+	};
+
+	/**
 	 * Flint dynamic state container.
 	 * This object contains the dynamic states which are to be passed to the pipeline at draw time.
 	 */
 	struct DynamicStateContainer
 	{
-		/**
-		 * Dynamic sate object.
-		 * This is the base class for all the dynamic states supported.
-		 */
-		struct DynamicStateObject
-		{
-			DynamicStateObject(DynamicStateFlags flag) : mFlag(flag) {}
-			virtual ~DynamicStateObject() {}
-
-			/**
-			 * Get the state flags of the object.
-			 *
-			 * @return The dynamic state flag.
-			 */
-			DynamicStateFlags GetFlag() const { return mFlag; }
-
-			DynamicStateFlags mFlag = DynamicStateFlags::Undefined;
-		};
-
-		/**
-		 * Viewport structure.
-		 * Viewport is the area that is being rendered to the screen. Think of it as a window and the content within the boundary will be displayed.
-		 */
-		struct ViewPort final : public DynamicStateObject
-		{
-			ViewPort() : DynamicStateObject(DynamicStateFlags::ViewPort) {}
-			ViewPort(const FExtent2D<float>& extent, const FExtent2D<float>& offset, const FExtent2D<float>& depth)
-				: DynamicStateObject(DynamicStateFlags::ViewPort), mExtent(extent), mOffset(offset), mDepth(depth) {}
-
-			FExtent2D<float> mExtent = {};
-			FExtent2D<float> mOffset = {};
-			FExtent2D<float> mDepth = {};	// { Min, Max }
-		};
-
-		/**
-		 * Scissor structure.
-		 */
-		struct Scissor final : public DynamicStateObject
-		{
-			Scissor() : DynamicStateObject(DynamicStateFlags::Scissor) {}
-			Scissor(const FBox2D& extent, const FBox2D& offset) : DynamicStateObject(DynamicStateFlags::Scissor), mExtent(extent), mOffset(offset) {}
-
-			FBox2D mExtent = {};
-			FBox2D mOffset = {};
-		};
-
-		/**
-		 * Line width structure.
-		 * This defines the rendering line width.
-		 */
-		struct LineWidth final : public DynamicStateObject
-		{
-			LineWidth() : DynamicStateObject(DynamicStateFlags::LineWidth) {}
-			LineWidth(const float width) : DynamicStateObject(DynamicStateFlags::LineWidth), mLineWidth(width) {}
-
-			float mLineWidth = 1.0f;
-		};
-
-		/**
-		 * Depth bias structure.
-		 * Set the depth bias.
-		 */
-		struct DepthBias final : public DynamicStateObject
-		{
-			DepthBias() : DynamicStateObject(DynamicStateFlags::DepthBias) {}
-			DepthBias(const float biasFactor, const float clampFactor, const float slopeFactor)
-				: DynamicStateObject(DynamicStateFlags::DepthBias), mDepthBiasFactor(biasFactor),
-				mDepthClampFactor(clampFactor), mDepthSlopeFactor(slopeFactor) {}
-
-			float mDepthBiasFactor = 0.0f;
-			float mDepthClampFactor = 0.0f;
-			float mDepthSlopeFactor = 0.0f;
-		};
-
-		/**
-		 * Blend constants structure.
-		 * Set the pipeline blend constants.
-		 */
-		struct BlendConstants final : public DynamicStateObject
-		{
-			BlendConstants() : DynamicStateObject(DynamicStateFlags::BlendConstants) {}
-			BlendConstants(const float(&constants)[4]) : DynamicStateObject(DynamicStateFlags::BlendConstants) { std::copy(constants, constants + 4, mConstants); }
-
-			float mConstants[4] = {};
-		};
-
-		/**
-		 * Depth bounds struct.
-		 * Set pipeline depth bounds.
-		 */
-		struct DepthBounds final : public DynamicStateObject
-		{
-			DepthBounds() : DynamicStateObject(DynamicStateFlags::DepthBounds) {}
-			DepthBounds(const FExtent2D<float>& bounds) : DynamicStateObject(DynamicStateFlags::DepthBounds), mBounds(bounds) {}
-
-			FExtent2D<float> mBounds = {};	// { Min, Max }
-		};
-
-		/**
-		 * Constant data struct.
-		 * This struct is used to pass data to constant blocks.
-		 */
-		struct ConstantData
-		{
-			ConstantData() = default;
-			ConstantData(const void* pData, const UI64 size, const UI64 offset) : pData(pData), mSize(size), mOffset(offset) {}
-
-			/**
-			 * Check if the constant block is null.
-			 *
-			 * @return The boolean value.
-			 */
-			constexpr bool IsNull() const { return pData == nullptr; }
-
-			const void* pData = nullptr;
-			UI64 mSize = 0;
-			UI64 mOffset = 0;
-		};
-
-	public:
 		DynamicStateContainer() = default;
 
 		/**
@@ -178,7 +177,7 @@ namespace Flint
 		 *
 		 * @param extent The extent of the viewport.
 		 * @param depth The viewport depth.
-		 * @pram offset: The viewport offset.
+		 * @param offset The viewport offset.
 		 */
 		void SetViewPort(const FExtent2D<float>& extent, const FExtent2D<float>& depth, const FExtent2D<float>& offset);
 

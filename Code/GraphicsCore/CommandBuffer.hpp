@@ -22,6 +22,13 @@ namespace Flint
 	class CommandBufferAllocator;
 
 	struct DynamicStateContainer;
+	struct ViewPort;
+	struct Scissor;
+	struct LineWidth;
+	struct DepthBias;
+	struct BlendConstants;
+	struct DepthBounds;
+	struct ConstantData;
 
 	/**
 	 * Draw call mode enum.
@@ -196,12 +203,76 @@ namespace Flint
 		virtual void BindDynamicStates(const GraphicsPipeline* pPipeline, const DynamicStateContainer* pDynamicStates) = 0;
 
 		/**
+		 * Bind a view port to the command buffer.
+		 * 
+		 * @param pPipeline The pipeline pointer.
+		 * @param pViewPort The view port pointer.
+		 */
+		virtual void BindViewPort(const GraphicsPipeline* pPipeline, const ViewPort* pViewPort) = 0;
+
+		/**
+		 * Bind a scissor to the command buffer.
+		 * 
+		 * @param pPipeline The pipeline pointer.
+		 * @param pScissor The scissor pointer.
+		 */
+		virtual void BindScissor(const GraphicsPipeline* pPipeline, const Scissor* pScissor) = 0;
+
+		/**
+		 * Bind a line width to the command buffer.
+		 * 
+		 * @param pPipeline The pipeline pointer.
+		 * @param pLineWidth The line width pointer.
+		 */
+		virtual void BindLineWidth(const GraphicsPipeline* pPipeline, const LineWidth* pLineWidth) = 0;
+
+		/**
+		 * Bind a depth bias to the command buffer.
+		 * 
+		 * @param pPipeline The pipeline pointer.
+		 * @param pDepthBias The depth bias pointer.
+		 */
+		virtual void BindDepthBias(const GraphicsPipeline* pPipeline, const DepthBias* pDepthBias) = 0;
+
+		/**
+		 * Bind blend constants to the command buffer.
+		 * 
+		 * @param pPipeline The pipeline pointer.
+		 * @param pBlendConstants The blend constants pointer.
+		 */
+		virtual void BindBlendConstants(const GraphicsPipeline* pPipeline, const BlendConstants* pBlendConstants) = 0;
+
+		/**
+		 * Bind depth bounds to the command buffer.
+		 * 
+		 * @param pPipeline The pipeline pointer.
+		 * @param pDepthBounds The depth bounds pointer.
+		 */
+		virtual void BindDepthBounds(const GraphicsPipeline* pPipeline, const DepthBounds* pDepthBounds) = 0;
+
+		/**
+		 * Bind constant data to the command buffer.
+		 * 
+		 * @param pConstantData The constant data pointer.
+		 * @param type The shader type to bind the data to.
+		 */
+		virtual void BindConstantData(const GraphicsPipeline* pPipeline, const ConstantData* pConstantData, const ShaderType type) = 0;
+
+		/**
 		 * Bind dynamic states to the command buffer.
 		 *
 		 * @param pPipeline The pipeline to which the dynamic states are bound to.
 		 * @param pDynamicStates The dynamic states to bind.
 		 */
 		virtual void BindDynamicStates(const ComputePipeline* pPipeline, const DynamicStateContainer* pDynamicStates) = 0;
+
+		/**
+		 * Bind constant data to the command buffer.
+		 *
+		 * @param pConstantData The constant data pointer.
+		 * @param type The shader type to bind the data to.
+		 */
+		virtual void BindConstantData(const ComputePipeline* pPipeline, const ConstantData* pConstantData) = 0;
 
 		/**
 		 * Issue a draw call to the command buffer.
