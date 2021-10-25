@@ -55,6 +55,9 @@ namespace Flint
 
 		void UpdateGeometryStore();
 
+		UI64 GetNewVertexBufferSize(const UI64 newSize) const;
+		UI64 GetNewIndexBufferSize(const UI64 newSize) const;
+
 	public:
 		std::shared_ptr<Device> pDevice = nullptr;
 		std::shared_ptr<RenderTarget> pRenderTarget = nullptr;

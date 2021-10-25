@@ -21,6 +21,12 @@ namespace Flint
 #endif // FLINT_DEBUG
 
 		pDevice = pInstance->CreateDevice(DeviceFlags::External | DeviceFlags::GraphicsCompatible | DeviceFlags::ComputeCompatible);
+
+		// Create the empty image, image view and sampler.
+		const UI8 pixelData[4] = { 255, 255, 255, 255 };
+		pEmptyImage = pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Graphics, FBox3D(1), PixelFormat::R8G8B8A8_SRGB, 1, 1, pixelData);
+		pEmptyImageView = pEmptyImage->CreateImageView(0, 1, 0, 1, ImageUsage::Graphics);
+		pEmptyImageSampler = pDevice->CreateImageSampler(ImageSamplerSpecification());
 	}
 
 	Application::~Application()

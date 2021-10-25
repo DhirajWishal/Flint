@@ -305,6 +305,8 @@ namespace Flint
 
 					auto& loader = loaderMap[pTexturePath];
 					const auto pImage = loader.CreateImage(pApplication->GetDevice(), ImageType::TwoDimension, ImageUsage::Graphics, 1, !bEnableMipMapping);
+					pImage->GenerateMipMaps();
+
 					const auto pImageView = pImage->CreateImageView(0, pImage->GetLayerCount(), 0, pImage->GetMipLevels(), ImageUsage::Graphics);
 
 					Flint::ImageSamplerSpecification samplerSpecification = {};

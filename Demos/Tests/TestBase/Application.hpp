@@ -5,6 +5,8 @@
 
 #include "GraphicsCore/Instance.hpp"
 #include "GraphicsCore/Device.hpp"
+#include "GraphicsCore/ImageView.hpp"
+#include "GraphicsCore/ImageSampler.hpp"
 
 #include <imgui.h>
 
@@ -31,6 +33,10 @@ namespace Flint
 
 		std::shared_ptr<Instance> pInstance = nullptr;
 		std::shared_ptr<Device> pDevice = nullptr;
+
+		std::shared_ptr<Image> pEmptyImage = nullptr;
+		std::shared_ptr<ImageView> pEmptyImageView = nullptr;
+		std::shared_ptr<ImageSampler> pEmptyImageSampler = nullptr;
 
 		std::unordered_map<std::string, std::shared_ptr<GeometryStore>> pGeometryStores;
 

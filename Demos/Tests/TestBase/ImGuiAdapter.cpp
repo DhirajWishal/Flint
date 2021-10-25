@@ -8,6 +8,8 @@
 
 #include <optick.h>
 
+constexpr Flint::UI64 ElementCount = 2500;
+
 namespace Flint
 {
 	ImGuiAdapter::ImGuiAdapter()
@@ -308,7 +310,7 @@ namespace Flint
 		if (!pDrawData)
 			return;
 
-		const UI64 vertexSize = pDrawData->TotalVtxCount * sizeof(ImDrawVert), indexSize = pDrawData->TotalIdxCount * sizeof(ImDrawIdx);
+		const UI64 vertexSize = GetNewVertexBufferSize(pDrawData->TotalVtxCount * sizeof(ImDrawVert)), indexSize = GetNewIndexBufferSize(pDrawData->TotalIdxCount * sizeof(ImDrawIdx));
 		if ((vertexSize == 0) || (indexSize == 0))
 			return;
 
@@ -316,7 +318,7 @@ namespace Flint
 		std::shared_ptr<Buffer> pIndexBuffer = nullptr;
 
 		bool bShouldWaitIdle = false;
-		if (pGeometryStore->GetVertexCount() != pDrawData->TotalVtxCount)
+		if (pGeometryStore->GetVertexCount() < pDrawData->TotalVtxCount || pDrawData->TotalVtxCount < (pGeometryStore->GetVertexCount() - ElementCount))
 		{
 			pGeometryStore->UnmapVertexBuffer();
 			pVertexBuffer = pDevice->CreateBuffer(BufferType::Staging, vertexSize);
@@ -325,7 +327,7 @@ namespace Flint
 			bShouldWaitIdle = true;
 		}
 
-		if (pGeometryStore->GetIndexCount() < pDrawData->TotalIdxCount)
+		if (pGeometryStore->GetIndexCount() < pDrawData->TotalIdxCount || pDrawData->TotalIdxCount < (pGeometryStore->GetIndexCount() - ElementCount))
 		{
 			pGeometryStore->UnmapIndexBuffer();
 			pIndexBuffer = pDevice->CreateBuffer(BufferType::Staging, indexSize);
@@ -368,5 +370,19 @@ namespace Flint
 			pIndexBuffer->Terminate();
 			pIndexData = static_cast<ImDrawIdx*>(pGeometryStore->MapIndexBuffer());
 		}
+	}
+
+	UI64 ImGuiAdapter::GetNewVertexBufferSize(const UI64 newSize) const
+	{
+		constexpr UI64 VertexFactor = ElementCount * sizeof(ImDrawVert);
+		const auto count = (newSize / VertexFactor) + 1;
+		return count * VertexFactor;
+	}
+
+	UI64 ImGuiAdapter::GetNewIndexBufferSize(const UI64 newSize) const
+	{
+		constexpr UI64 IndexFactor = ElementCount * sizeof(ImDrawIdx);
+		const auto count = (newSize / IndexFactor) + 1;
+		return count * IndexFactor;
 	}
 }
