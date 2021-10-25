@@ -289,7 +289,7 @@ namespace Flint
 		pOcclusionPackageSets.reserve(size);
 
 		// Enable or disable mip mapping.
-		const bool bEnableMipMapping = false;
+		const bool bEnableMipMapping = true;
 
 		for (auto& wireFrame : mAsset.GetWireFrames())
 		{
@@ -309,7 +309,13 @@ namespace Flint
 
 					Flint::ImageSamplerSpecification samplerSpecification = {};
 					samplerSpecification.mMaxLevelOfDetail = static_cast<float>(pImage->GetMipLevels());
-					samplerSpecification.mBorderColor = BorderColor::OpaqueBlackINT;
+					samplerSpecification.mCompareOperator = CompareOperator::Never;
+					samplerSpecification.mAddressModeU = AddressMode::MirroredRepeat;
+					samplerSpecification.mAddressModeV = AddressMode::MirroredRepeat;
+					samplerSpecification.mAddressModeW = AddressMode::MirroredRepeat;
+					samplerSpecification.mMaxAnisotrophy = 0.0f;
+					samplerSpecification.bEnableAnisotropy = true;
+					//samplerSpecification.mBorderColor = BorderColor::OpaqueBlackINT;
 					const auto pSampler = pApplication->GetDevice()->CreateImageSampler(samplerSpecification);
 
 					for (UI64 i = 0; i < size; i++)

@@ -252,7 +252,7 @@ namespace Flint
 		if (pIndexBuffer)
 			pIndexBuffer->UnmapMemory();
 
-		pGeometryStore->SetData(pVertexBuffer, pIndexBuffer);
+		pGeometryStore->SetData(pVertexBuffer.get(), pIndexBuffer.get());
 
 		if (pVertexBuffer)
 			pVertexBuffer->Terminate();

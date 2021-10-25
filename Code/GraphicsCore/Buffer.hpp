@@ -120,9 +120,18 @@ namespace Flint
 		 */
 		const BufferMemoryProfile GetMemoryProfile() const { return mMemoryProfile; }
 
+		/**
+		 * Check if the buffer is already mapped.
+		 *
+		 * @return The boolean value.
+		 */
+		bool IsMapped() const { return bIsMapped; }
+
 	protected:
 		UI64 mSize = 0;
 		BufferType mType = BufferType::Undefined;
 		BufferMemoryProfile mMemoryProfile = BufferMemoryProfile::Automatic;
+
+		bool bIsMapped = false;
 	};
 }

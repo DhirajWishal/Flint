@@ -103,7 +103,6 @@ namespace Flint
 
 				if (pMaterial->GetTexture(type, i, &path) == aiReturn::aiReturn_SUCCESS)
 				{
-					OPTICK_EVENT();
 					material.AddProperty(std::make_shared<MaterialProperties::TexturePath>(basePath + path.C_Str(), GetTextureType(type)));
 				}
 			}
@@ -111,6 +110,8 @@ namespace Flint
 
 		void GetColors(const char* pKey, const UI32 type, const UI32 index, Material& material, const aiMaterial* pMaterial)
 		{
+			OPTICK_EVENT();
+
 			aiColor4D color(0.0f, 0.0f, 0.0f, 0.0f);
 			if (pMaterial->Get(pKey, type, index, color) == aiReturn::aiReturn_SUCCESS)
 			{

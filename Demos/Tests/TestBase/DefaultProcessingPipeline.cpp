@@ -3,8 +3,7 @@
 
 #include "DefaultProcessingPipeline.hpp"
 
-#include "optick.h"
-
+#include <optick.h>
 #include <imgui.h>
 
 namespace Flint

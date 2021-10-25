@@ -148,12 +148,12 @@ namespace Flint
 			vCreateInfo.addressModeV = Helpers::GetAddressMode(specification.mAddressModeV);
 			vCreateInfo.addressModeW = Helpers::GetAddressMode(specification.mAddressModeW);
 			vCreateInfo.anisotropyEnable = GET_VK_BOOL(specification.bEnableAnisotropy);
+			vCreateInfo.maxAnisotropy = specification.mMaxAnisotrophy;
 			vCreateInfo.borderColor = Helpers::GetBorderColor(specification.mBorderColor);
 			vCreateInfo.compareEnable = GET_VK_BOOL(specification.bEnableCompare);
 			vCreateInfo.compareOp = Helpers::GetCompareOperator(specification.mCompareOperator);
 			vCreateInfo.magFilter = Helpers::GetFilter(specification.mImageMagificationFilter);
 			vCreateInfo.minFilter = Helpers::GetFilter(specification.mImageMinificationFilter);
-			vCreateInfo.maxAnisotropy = specification.mMaxAnisotrophy;
 			vCreateInfo.maxLod = specification.mMaxLevelOfDetail;
 			vCreateInfo.minLod = specification.mMinLevelOfDetail;
 			vCreateInfo.mipLodBias = specification.mMipLODBias;
@@ -161,7 +161,7 @@ namespace Flint
 			vCreateInfo.unnormalizedCoordinates = GET_VK_BOOL(specification.bEnableUnnormalizedCoordinates);
 
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-			if (vCreateInfo.maxAnisotropy == 0.0f)
+			if (vCreateInfo.maxAnisotropy == 0.0f && specification.bEnableAnisotropy)
 			{
 				VkPhysicalDeviceProperties vProperties = {};
 				vkGetPhysicalDeviceProperties(vDevice.GetPhysicalDevice(), &vProperties);

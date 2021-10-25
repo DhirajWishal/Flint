@@ -86,6 +86,9 @@ namespace Flint
 		ImGui::InputFloat("Yaw ", &mYaw);
 		ImGui::SliderFloat("Movement Bias", &mMovementBias, 0.005f, 1.0f);
 		ImGui::End();
+
+		projectionMatrix = glm::perspective(glm::radians(mFieldOfView), mAspectRatio, mCameraNear, mCameraFar);
+		projectionMatrix[1][1] *= -1.0f;
 	}
 
 	void Camera::ResetFirstMouse()

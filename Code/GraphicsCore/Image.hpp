@@ -47,7 +47,7 @@ namespace Flint
 		// Defines that we store the data upon attachment store.
 		StoreOnStore = BitShiftLeft(3),
 
-		// Defines that we dont care about the storing operation.
+		// Defines that we don't care about the storing operation.
 		DiscardStore = BitShiftLeft(4),
 
 		// Stencil image section.
@@ -63,7 +63,7 @@ namespace Flint
 		// Defines that we store the data upon stencil store.
 		StencilStoreOnStore = BitShiftLeft(8),
 
-		// Defines that we dont care about the storing operation.
+		// Defines that we don't care about the storing operation.
 		StencilDiscardStore = BitShiftLeft(9),
 	};
 

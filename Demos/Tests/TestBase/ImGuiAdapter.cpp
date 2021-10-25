@@ -208,6 +208,8 @@ namespace Flint
 	{
 		pPipeline->Terminate();
 
+		pGeometryStore->UnmapVertexBuffer();
+		pGeometryStore->UnmapIndexBuffer();
 		pGeometryStore->Terminate();
 
 		pFontImage->Terminate();
@@ -316,32 +318,32 @@ namespace Flint
 		bool bShouldWaitIdle = false;
 		if (pGeometryStore->GetVertexCount() != pDrawData->TotalVtxCount)
 		{
+			pGeometryStore->UnmapVertexBuffer();
 			pVertexBuffer = pDevice->CreateBuffer(BufferType::Staging, vertexSize);
 			pVertexData = static_cast<ImDrawVert*>(pVertexBuffer->MapMemory(vertexSize));
 
 			bShouldWaitIdle = true;
 		}
-		else
-			pVertexData = static_cast<ImDrawVert*>(pGeometryStore->MapVertexBuffer());
 
 		if (pGeometryStore->GetIndexCount() < pDrawData->TotalIdxCount)
 		{
+			pGeometryStore->UnmapIndexBuffer();
 			pIndexBuffer = pDevice->CreateBuffer(BufferType::Staging, indexSize);
 			pIndexData = static_cast<ImDrawIdx*>(pIndexBuffer->MapMemory(indexSize));
 
 			bShouldWaitIdle = true;
 		}
-		else
-			pIndexData = static_cast<ImDrawIdx*>(pGeometryStore->MapIndexBuffer());
 
+		auto pCopyVertexPointer = pVertexData;
+		auto pCopyIndexPointer = pIndexData;
 		for (I32 i = 0; i < pDrawData->CmdListsCount; i++) {
 			const ImDrawList* pCommandList = pDrawData->CmdLists[i];
 
-			std::copy_n(pCommandList->VtxBuffer.Data, pCommandList->VtxBuffer.Size, pVertexData);
-			std::copy_n(pCommandList->IdxBuffer.Data, pCommandList->IdxBuffer.Size, pIndexData);
+			std::copy_n(pCommandList->VtxBuffer.Data, pCommandList->VtxBuffer.Size, pCopyVertexPointer);
+			std::copy_n(pCommandList->IdxBuffer.Data, pCommandList->IdxBuffer.Size, pCopyIndexPointer);
 
-			pVertexData += pCommandList->VtxBuffer.Size;
-			pIndexData += pCommandList->IdxBuffer.Size;
+			pCopyVertexPointer += pCommandList->VtxBuffer.Size;
+			pCopyIndexPointer += pCommandList->IdxBuffer.Size;
 		}
 
 		if (pVertexBuffer)
@@ -356,13 +358,15 @@ namespace Flint
 		pGeometryStore->SetData(pVertexBuffer.get(), pIndexBuffer.get());
 
 		if (pVertexBuffer)
+		{
 			pVertexBuffer->Terminate();
-		else
-			pGeometryStore->UnmapVertexBuffer();
+			pVertexData = static_cast<ImDrawVert*>(pGeometryStore->MapVertexBuffer());
+		}
 
 		if (pIndexBuffer)
+		{
 			pIndexBuffer->Terminate();
-		else
-			pGeometryStore->UnmapIndexBuffer();
+			pIndexData = static_cast<ImDrawIdx*>(pGeometryStore->MapIndexBuffer());
+		}
 	}
 }

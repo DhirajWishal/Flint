@@ -248,7 +248,7 @@ namespace Flint
 		AddressMode mAddressModeV = AddressMode::Repeat;
 		AddressMode mAddressModeW = AddressMode::Repeat;
 
-		BorderColor mBorderColor = BorderColor::OpaqueBlackINT;
+		BorderColor mBorderColor = BorderColor::OpaqueWhiteFLOAT;
 
 		CompareOperator mCompareOperator = CompareOperator::Always;
 

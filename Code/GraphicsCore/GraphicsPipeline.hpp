@@ -297,16 +297,7 @@ namespace Flint
 		 * @param pFragmentShader The fragment shader (optional).
 		 * @param specification The pipeline specification.
 		 */
-		GraphicsPipeline(
-			const std::shared_ptr<Device>& pDevice,
-			const std::string& pipelineName,
-			const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget,
-			const std::shared_ptr<Shader>& pVertexShader,
-			const std::shared_ptr<Shader>& pTessellationControlShader,
-			const std::shared_ptr<Shader>& pTessellationEvaluationShader,
-			const std::shared_ptr<Shader>& pGeometryShader,
-			const std::shared_ptr<Shader>& pFragmentShader,
-			const GraphicsPipelineSpecification& specification);
+		GraphicsPipeline(const std::shared_ptr<Device>& pDevice, const std::string& pipelineName, const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget, const std::shared_ptr<Shader>& pVertexShader, const std::shared_ptr<Shader>& pTessellationControlShader, const std::shared_ptr<Shader>& pTessellationEvaluationShader, const std::shared_ptr<Shader>& pGeometryShader, const std::shared_ptr<Shader>& pFragmentShader, const GraphicsPipelineSpecification& specification);
 
 		/**
 		 * Construct the pipeline using an off screen render target.
@@ -321,16 +312,7 @@ namespace Flint
 		 * @param pFragmentShader The fragment shader (optional).
 		 * @param specification The pipeline specification.
 		 */
-		GraphicsPipeline(
-			const std::shared_ptr<Device>& pDevice,
-			const std::string& pipelineName,
-			const std::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget,
-			const std::shared_ptr<Shader>& pVertexShader,
-			const std::shared_ptr<Shader>& pTessellationControlShader,
-			const std::shared_ptr<Shader>& pTessellationEvaluationShader,
-			const std::shared_ptr<Shader>& pGeometryShader,
-			const std::shared_ptr<Shader>& pFragmentShader,
-			const GraphicsPipelineSpecification& specification);
+		GraphicsPipeline(const std::shared_ptr<Device>& pDevice, const std::string& pipelineName, const std::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget, const std::shared_ptr<Shader>& pVertexShader, const std::shared_ptr<Shader>& pTessellationControlShader, const std::shared_ptr<Shader>& pTessellationEvaluationShader, const std::shared_ptr<Shader>& pGeometryShader, const std::shared_ptr<Shader>& pFragmentShader, const GraphicsPipelineSpecification& specification);
 
 		/**
 		 * Recreate the graphics pipeline.
@@ -350,7 +332,7 @@ namespace Flint
 	public:
 		/**
 		 * Get the vertex shader pointer.
-		 * 
+		 *
 		 * @return The shader pointer.
 		 */
 		const std::shared_ptr<Shader> GetVertexShader() const { return pVertexShader; }

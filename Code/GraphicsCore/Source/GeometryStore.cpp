@@ -48,6 +48,21 @@ namespace Flint
 		}
 	}
 
+	void GeometryStore::SetBuffers(std::shared_ptr<Buffer>&& pNewVertexBuffer, std::shared_ptr<Buffer>&& pNewIndexBuffer)
+	{
+		if (pNewVertexBuffer)
+		{
+			mVertexCount = pNewVertexBuffer->GetSize() / mVertexSize;
+			pVertexBuffer = std::move(pNewVertexBuffer);
+		}
+
+		if (pNewIndexBuffer)
+		{
+			mIndexCount = pNewIndexBuffer->GetSize() / mIndexSize;
+			pIndexBuffer = std::move(pNewIndexBuffer);
+		}
+	}
+
 	std::pair<UI64, UI64> GeometryStore::AddGeometry(UI64 vertexCount, const void* pVertexData, UI64 indexCount, const void* pIndexData)
 	{
 		std::shared_ptr<Buffer> pVertexStagingBuffer = nullptr;
@@ -233,11 +248,13 @@ namespace Flint
 
 	void GeometryStore::UnmapVertexBuffer()
 	{
-		pVertexBuffer->UnmapMemory();
+		if (pVertexBuffer)
+			pVertexBuffer->UnmapMemory();
 	}
 
 	void GeometryStore::UnmapIndexBuffer()
 	{
-		pIndexBuffer->UnmapMemory();
+		if (pIndexBuffer)
+			pIndexBuffer->UnmapMemory();
 	}
 }

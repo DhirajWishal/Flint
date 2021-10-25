@@ -372,6 +372,8 @@ namespace Flint
 
 		void VulkanCommandBuffer::BindViewPort(const GraphicsPipeline* pPipeline, const ViewPort* pViewPort)
 		{
+			OPTICK_EVENT();
+
 			VkViewport vVP = {};
 			vVP.width = pViewPort->mExtent.mWidth;
 			vVP.height = pViewPort->mExtent.mHeight;
@@ -386,6 +388,8 @@ namespace Flint
 
 		void VulkanCommandBuffer::BindScissor(const GraphicsPipeline* pPipeline, const Scissor* pScissor)
 		{
+			OPTICK_EVENT();
+
 			VkRect2D vR2D = {};
 			vR2D.extent.width = pScissor->mExtent.mWidth;
 			vR2D.extent.height = pScissor->mExtent.mHeight;
@@ -398,30 +402,40 @@ namespace Flint
 
 		void VulkanCommandBuffer::BindLineWidth(const GraphicsPipeline* pPipeline, const LineWidth* pLineWidth)
 		{
+			OPTICK_EVENT();
+
 			VulkanDevice& vDevice = pAllocator->GetDevice()->StaticCast<VulkanDevice>();
 			vDevice.GetDeviceTable().vkCmdSetLineWidth(vCommandBuffer, pLineWidth->mLineWidth);
 		}
 
 		void VulkanCommandBuffer::BindDepthBias(const GraphicsPipeline* pPipeline, const DepthBias* pDepthBias)
 		{
+			OPTICK_EVENT();
+
 			VulkanDevice& vDevice = pAllocator->GetDevice()->StaticCast<VulkanDevice>();
 			vDevice.GetDeviceTable().vkCmdSetDepthBias(vCommandBuffer, pDepthBias->mDepthBiasFactor, pDepthBias->mDepthClampFactor, pDepthBias->mDepthSlopeFactor);
 		}
 
 		void VulkanCommandBuffer::BindBlendConstants(const GraphicsPipeline* pPipeline, const BlendConstants* pBlendConstants)
 		{
+			OPTICK_EVENT();
+
 			VulkanDevice& vDevice = pAllocator->GetDevice()->StaticCast<VulkanDevice>();
 			vDevice.GetDeviceTable().vkCmdSetBlendConstants(vCommandBuffer, pBlendConstants->mConstants);
 		}
 
 		void VulkanCommandBuffer::BindDepthBounds(const GraphicsPipeline* pPipeline, const DepthBounds* pDepthBounds)
 		{
+			OPTICK_EVENT();
+
 			VulkanDevice& vDevice = pAllocator->GetDevice()->StaticCast<VulkanDevice>();
 			vDevice.GetDeviceTable().vkCmdSetDepthBounds(vCommandBuffer, pDepthBounds->mBounds.mWidth, pDepthBounds->mBounds.mHeight);
 		}
 
 		void VulkanCommandBuffer::BindConstantData(const GraphicsPipeline* pPipeline, const ConstantData* pConstantData, const ShaderType type)
 		{
+			OPTICK_EVENT();
+
 			VulkanDevice& vDevice = pAllocator->GetDevice()->StaticCast<VulkanDevice>();
 			vDevice.GetDeviceTable().vkCmdPushConstants(vCommandBuffer, pPipeline->StaticCast<VulkanGraphicsPipeline>().GetPipelineLayout(), Utilities::GetShaderStage(type), static_cast<UI32>(pConstantData->mOffset), static_cast<UI32>(pConstantData->mSize), pConstantData->pData);
 		}
@@ -439,6 +453,8 @@ namespace Flint
 
 		void VulkanCommandBuffer::BindConstantData(const ComputePipeline* pPipeline, const ConstantData* pConstantData)
 		{
+			OPTICK_EVENT();
+
 			VulkanDevice& vDevice = pAllocator->GetDevice()->StaticCast<VulkanDevice>();
 			vDevice.GetDeviceTable().vkCmdPushConstants(vCommandBuffer, pPipeline->StaticCast<VulkanComputePipeline>().GetPipelineLayout(), VkShaderStageFlagBits::VK_SHADER_STAGE_COMPUTE_BIT, static_cast<UI32>(pConstantData->mOffset), static_cast<UI32>(pConstantData->mSize), pConstantData->pData);
 		}
@@ -523,7 +539,7 @@ namespace Flint
 		{
 			OPTICK_EVENT();
 
-			auto const& vSourceImage = pSourceImage->StaticCast<VulkanImage>();
+			const auto& vSourceImage = pSourceImage->StaticCast<VulkanImage>();
 			auto& vSwapChain = pSwapChain->StaticCast<VulkanSwapChain>();
 
 			VkOffset3D vSourceOffset = {};
@@ -548,6 +564,10 @@ namespace Flint
 			vSourceImage.SetImageLayoutManual(vCommandBuffer, VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
 			vSwapChain.CopyFromImage(vCommandBuffer, vSourceImage.GetImage(), vSourceImage.GetImageLayout(), vSourceOffset, vDestinationOffset, imageIndex, vLayers);
 			vSourceImage.SetImageLayoutManual(vCommandBuffer, vOldSrcLayout);
+
+			VkMemoryBarrier vMemoryBarrier = {};
+			VkBufferMemoryBarrier vBufferMemoryBarrier = {};
+			VkImageMemoryBarrier vImageMemoryBarrier = {};
 		}
 
 		void VulkanCommandBuffer::SubmitSecondaryCommandBuffer(const std::shared_ptr<CommandBuffer>& pCommandBuffer)
@@ -599,17 +619,21 @@ namespace Flint
 
 		void VulkanCommandBuffer::ResetQuery(const Query* pQuery, const UI32 beginIndex, const UI32 count)
 		{
+			OPTICK_EVENT();
+
 			auto const& vQuery = pQuery->StaticCast<VulkanQuery>();
 			pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetDeviceTable().vkCmdResetQueryPool(vCommandBuffer, vQuery.GetQuery(), beginIndex, count);
 		}
 
 		void VulkanCommandBuffer::Synchronize()
 		{
+			OPTICK_EVENT();
+
 			VkMemoryBarrier vMemoryBarrier = {};
 			VkBufferMemoryBarrier vBufferMemoryBarrier = {};
 			VkImageMemoryBarrier vImageMemoryBarrier = {};
 
-			VulkanDevice& vDevice = pAllocator->GetDevice()->StaticCast<VulkanDevice>();
+			auto& vDevice = pAllocator->GetDevice()->StaticCast<VulkanDevice>();
 			vDevice.GetDeviceTable().vkCmdPipelineBarrier(
 				vCommandBuffer,
 				VkPipelineStageFlagBits(),

@@ -43,6 +43,15 @@ namespace Flint
 		void SetData(const Buffer* pVertexStagingBuffer, const Buffer* pIndexStagingBuffer);
 
 		/**
+		 * Set the vertex and index buffers.
+		 * This will move in the provided buffers.
+		 * 
+		 * @param pNewVertexBuffer The vertex buffer pointer.
+		 * @param pNewIndexBuffer The index buffer pointer.
+		 */
+		void SetBuffers(std::shared_ptr<Buffer>&& pNewVertexBuffer, std::shared_ptr<Buffer>&& pNewIndexBuffer);
+
+		/**
 		 * Add a geometry to the store.
 		 *
 		 * @param vertexCount The number of vertexes to add.

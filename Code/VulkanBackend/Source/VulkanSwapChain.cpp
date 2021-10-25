@@ -109,7 +109,6 @@ namespace Flint
 
 		VkAttachmentDescription VulkanSwapChain::GetAttachmentDescription() const
 		{
-			bShouldClear;
 			VkAttachmentDescription vDesc = {};
 			vDesc.flags = 0;
 			vDesc.format = GetImageFormat();

@@ -136,7 +136,7 @@ namespace Flint
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 			FLINT_VK_ASSERT(vmaMapMemory(vDevice.GetVmaAllocator(), vmaAllocation, &pDataStore));
 
-
+			bIsMapped = true;
 			return pDataStore;
 		}
 
@@ -146,10 +146,14 @@ namespace Flint
 
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 			vmaUnmapMemory(vDevice.GetVmaAllocator(), vmaAllocation);
+			bIsMapped = false;
 		}
 
 		void VulkanBuffer::Terminate()
 		{
+			if (bIsMapped)
+				UnmapMemory();
+
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 			vmaDestroyBuffer(vDevice.GetVmaAllocator(), vBuffer, vmaAllocation);
 

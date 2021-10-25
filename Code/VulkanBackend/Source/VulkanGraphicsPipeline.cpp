@@ -538,26 +538,8 @@ namespace Flint
 			}
 		}
 
-		VulkanGraphicsPipeline::VulkanGraphicsPipeline(
-			const std::shared_ptr<Device>& pDevice,
-			const std::string& pipelineName,
-			const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget,
-			const std::shared_ptr<Shader>& pVertexShader,
-			const std::shared_ptr<Shader>& pTessellationControlShader,
-			const std::shared_ptr<Shader>& pTessellationEvaluationShader,
-			const std::shared_ptr<Shader>& pGeometryShader,
-			const std::shared_ptr<Shader>& pFragmentShader,
-			const GraphicsPipelineSpecification& specification)
-			: GraphicsPipeline(
-				pDevice,
-				pipelineName,
-				pScreenBoundRenderTarget,
-				pVertexShader,
-				pTessellationControlShader,
-				pTessellationEvaluationShader,
-				pGeometryShader,
-				pFragmentShader,
-				specification)
+		VulkanGraphicsPipeline::VulkanGraphicsPipeline(const std::shared_ptr<Device>& pDevice, const std::string& pipelineName, const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget, const std::shared_ptr<Shader>& pVertexShader, const std::shared_ptr<Shader>& pTessellationControlShader, const std::shared_ptr<Shader>& pTessellationEvaluationShader, const std::shared_ptr<Shader>& pGeometryShader, const std::shared_ptr<Shader>& pFragmentShader, const GraphicsPipelineSpecification& specification)
+			: GraphicsPipeline(pDevice, pipelineName, pScreenBoundRenderTarget, pVertexShader, pTessellationControlShader, pTessellationEvaluationShader, pGeometryShader, pFragmentShader, specification)
 		{
 			OPTICK_EVENT();
 
@@ -569,26 +551,8 @@ namespace Flint
 			CreatePipeline();
 		}
 
-		VulkanGraphicsPipeline::VulkanGraphicsPipeline(
-			const std::shared_ptr<Device>& pDevice,
-			const std::string& pipelineName,
-			const std::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget,
-			const std::shared_ptr<Shader>& pVertexShader,
-			const std::shared_ptr<Shader>& pTessellationControlShader,
-			const std::shared_ptr<Shader>& pTessellationEvaluationShader,
-			const std::shared_ptr<Shader>& pGeometryShader,
-			const std::shared_ptr<Shader>& pFragmentShader,
-			const GraphicsPipelineSpecification& specification)
-			: GraphicsPipeline(
-				pDevice,
-				pipelineName,
-				pOffScreenRenderTarget,
-				pVertexShader,
-				pTessellationControlShader,
-				pTessellationEvaluationShader,
-				pGeometryShader,
-				pFragmentShader,
-				specification)
+		VulkanGraphicsPipeline::VulkanGraphicsPipeline(const std::shared_ptr<Device>& pDevice, const std::string& pipelineName, const std::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget, const std::shared_ptr<Shader>& pVertexShader, const std::shared_ptr<Shader>& pTessellationControlShader, const std::shared_ptr<Shader>& pTessellationEvaluationShader, const std::shared_ptr<Shader>& pGeometryShader, const std::shared_ptr<Shader>& pFragmentShader, const GraphicsPipelineSpecification& specification)
+			: GraphicsPipeline(pDevice, pipelineName, pOffScreenRenderTarget, pVertexShader, pTessellationControlShader, pTessellationEvaluationShader, pGeometryShader, pFragmentShader, specification)
 		{
 			OPTICK_EVENT();
 
@@ -754,7 +718,7 @@ namespace Flint
 			vColorBlendStateCreateInfo.flags = 0;
 			vColorBlendStateCreateInfo.logicOp = Helpers::GetLogicOp(mSpecification.mColorBlendLogic);
 			vColorBlendStateCreateInfo.logicOpEnable = GET_VK_BOOL(mSpecification.bEnableColorBlendLogic);
-			std::copy(mSpecification.mColorBlendConstants, mSpecification.mColorBlendConstants + 4, vColorBlendStateCreateInfo.blendConstants);
+			std::copy_n(mSpecification.mColorBlendConstants, 4, vColorBlendStateCreateInfo.blendConstants);
 
 			vColorBlendStateCreateInfo.attachmentCount = static_cast<UI32>(vCBASS.size());
 			vColorBlendStateCreateInfo.pAttachments = vCBASS.data();
