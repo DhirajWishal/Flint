@@ -30,22 +30,22 @@ namespace Flint
 		/**
 		 * Move the camera to the front.
 		 */
-		void MoveFront(UI64 delta);
+		void MoveFront(uint64 delta);
 
 		/**
 		 * Move the camera to the back.
 		 */
-		void MoveBack(UI64 delta);
+		void MoveBack(uint64 delta);
 
 		/**
 		 * Move the camera to the left.
 		 */
-		void MoveLeft(UI64 delta);
+		void MoveLeft(uint64 delta);
 
 		/**
 		 * Move the camera to the right.
 		 */
-		void MoveRight(UI64 delta);
+		void MoveRight(uint64 delta);
 
 		/**
 		 * Handle mouse position.
@@ -178,8 +178,8 @@ namespace Flint
 		float mYaw = 90.0f;
 		float mPitch = 0.0f;
 
-		UI32 mWindowWidth = 0;
-		UI32 mWindowHeight = 0;
+		uint32 mWindowWidth = 0;
+		uint32 mWindowHeight = 0;
 
 		bool bFirstMouse = true;
 	};

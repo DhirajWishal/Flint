@@ -20,7 +20,7 @@ BasicController::BasicController(Flint::ClientInterface* pClientInterface)
 	pPackage->BindResource(0, mUniformMVP->pUniformBuffer);
 }
 
-void BasicController::OnUpdate(const UI64 delta, const Flint::UpdateSpecification specification)
+void BasicController::OnUpdate(const uint64 delta, const Flint::UpdateSpecification specification)
 {
 	Flint::Components::Camera* pCamera = pClientInterface->GetComponent<Flint::Components::Camera>("DefaultCamera");
 	auto pUniform = mUniformMVP.GetComponent();

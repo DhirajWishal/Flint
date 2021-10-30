@@ -12,12 +12,12 @@ namespace Flint
 		/**
 		 * Plugin permissions enum.
 		 */
-		enum class PluginPermissions : UI32 {
+		enum class PluginPermissions : uint32 {
 			RenderCapabilities = BitShiftLeft(0),
 		};
 
-		constexpr PluginPermissions operator|(const PluginPermissions& lhs, const PluginPermissions& rhs) { return static_cast<PluginPermissions>(static_cast<UI32>(lhs) | static_cast<UI32>(rhs)); }
-		constexpr PluginPermissions operator&(const PluginPermissions& lhs, const PluginPermissions& rhs) { return static_cast<PluginPermissions>(static_cast<UI32>(lhs) & static_cast<UI32>(rhs)); }
+		constexpr PluginPermissions operator|(const PluginPermissions& lhs, const PluginPermissions& rhs) { return static_cast<PluginPermissions>(static_cast<uint32>(lhs) | static_cast<uint32>(rhs)); }
+		constexpr PluginPermissions operator&(const PluginPermissions& lhs, const PluginPermissions& rhs) { return static_cast<PluginPermissions>(static_cast<uint32>(lhs) & static_cast<uint32>(rhs)); }
 
 		/**
 		 * Flint plugin interface object.

@@ -21,6 +21,6 @@ namespace Flint
 
 	void GeometryStoreManager::CreateNewGeometryStore(const std::vector<ShaderAttribute>& inputAttributes)
 	{
-		mGeometryStoreMap[inputAttributes] = pDefaultDevice->CreateGeometryStore(inputAttributes, sizeof(UI32));
+		mGeometryStoreMap[inputAttributes] = pDefaultDevice->CreateGeometryStore(inputAttributes, sizeof(uint32));
 	}
 }

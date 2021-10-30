@@ -60,18 +60,18 @@ namespace Flint
 			pCommandBuffer->BindGeometryStore(pGeometryStore);
 			pCommandBuffer->BindGraphicsPipeline(pPipeline);
 
-			UI64 vertexOffset = 0, indexOffset = 0;
-			for (I32 i = 0; i < pDrawData->CmdListsCount; i++)
+			uint64 vertexOffset = 0, indexOffset = 0;
+			for (int32 i = 0; i < pDrawData->CmdListsCount; i++)
 			{
 				auto pCommandList = pDrawData->CmdLists[i];
 
-				for (I32 j = 0; j < pCommandList->CmdBuffer.Size; j++)
+				for (int32 j = 0; j < pCommandList->CmdBuffer.Size; j++)
 				{
 					auto& pCommand = pCommandList->CmdBuffer[j];
 
 					pDynamicStateContainer->SetScissor(
-						FBox2D(static_cast<UI32>(pCommand.ClipRect.z - pCommand.ClipRect.x), static_cast<UI32>(pCommand.ClipRect.w - pCommand.ClipRect.y)),
-						FBox2D(std::max(static_cast<I32>(pCommand.ClipRect.x), 0), std::max(static_cast<I32>(pCommand.ClipRect.y), 0)));
+						FBox2D(static_cast<uint32>(pCommand.ClipRect.z - pCommand.ClipRect.x), static_cast<uint32>(pCommand.ClipRect.w - pCommand.ClipRect.y)),
+						FBox2D(std::max(static_cast<int32>(pCommand.ClipRect.x), 0), std::max(static_cast<int32>(pCommand.ClipRect.y), 0)));
 
 					// Handle the texture.
 					if (pCommand.TextureId != nullptr)
@@ -155,7 +155,7 @@ namespace Flint
 
 	void ImGuiAdapter::SetupGeometryStore()
 	{
-		pGeometryStore = pDevice->CreateGeometryStore(pVertexShader->GetInputAttributes(), sizeof(UI16), BufferMemoryProfile::TransferFriendly);
+		pGeometryStore = pDevice->CreateGeometryStore(pVertexShader->GetInputAttributes(), sizeof(uint16), BufferMemoryProfile::TransferFriendly);
 	}
 
 	void ImGuiAdapter::SetupPipeline()
@@ -213,7 +213,7 @@ namespace Flint
 		if (!pDrawData)
 			return;
 
-		UI64 vertexSize = pDrawData->TotalVtxCount * sizeof(ImDrawVert), indexSize = pDrawData->TotalIdxCount * sizeof(ImDrawIdx);
+		uint64 vertexSize = pDrawData->TotalVtxCount * sizeof(ImDrawVert), indexSize = pDrawData->TotalIdxCount * sizeof(ImDrawIdx);
 		if ((vertexSize == 0) || (indexSize == 0))
 			return;
 
@@ -236,7 +236,7 @@ namespace Flint
 		else
 			pIndexData = static_cast<ImDrawIdx*>(pGeometryStore->MapIndexBuffer());
 
-		for (I32 i = 0; i < pDrawData->CmdListsCount; i++) {
+		for (int32 i = 0; i < pDrawData->CmdListsCount; i++) {
 			const ImDrawList* pCommandList = pDrawData->CmdLists[i];
 
 			std::copy(pCommandList->VtxBuffer.Data, pCommandList->VtxBuffer.Data + pCommandList->VtxBuffer.Size, pVertexData);

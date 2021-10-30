@@ -26,7 +26,7 @@ namespace Flint
 		 *
 		 * @param timeout The maximum timeout.
 		 */
-		virtual void Wait(const UI64 timeout = std::numeric_limits<UI64>::max()) = 0;
+		virtual void Wait(const uint64 timeout = std::numeric_limits<uint64>::max()) = 0;
 
 		/**
 		 * Reset the primitive to its default state.

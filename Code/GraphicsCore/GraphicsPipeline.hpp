@@ -14,7 +14,7 @@ namespace Flint
 	 * Pipeline primitive topology.
 	 * This describes how the vertexes are connected.
 	 */
-	enum class PrimitiveTopology : UI8 {
+	enum class PrimitiveTopology : uint8 {
 		PointList,
 		LineList,
 		LineStrip,
@@ -31,7 +31,7 @@ namespace Flint
 	/**
 	 * Pipeline cull mode.
 	 */
-	enum class CullMode : UI8 {
+	enum class CullMode : uint8 {
 		None,
 		Front,
 		Back,
@@ -42,7 +42,7 @@ namespace Flint
 	 * Pipeline front face.
 	 * This defines how to find the front size of a triangle.
 	 */
-	enum class FrontFace : UI8 {
+	enum class FrontFace : uint8 {
 		/**
 		 * In this mode, the front side of it is facing away from you.
 		 */
@@ -58,7 +58,7 @@ namespace Flint
 	 * Pipeline polygon mode.
 	 * This defines how a vertex group. A vertex group is defined by the primitive topology.
 	 */
-	enum class PolygonMode : UI8 {
+	enum class PolygonMode : uint8 {
 		Fill,
 		Line,
 		Point,
@@ -68,7 +68,7 @@ namespace Flint
 	 * Pipeline color blend logic.
 	 * This defined what logic to apply when color blending.
 	 */
-	enum class ColorBlendLogic : UI8 {
+	enum class ColorBlendLogic : uint8 {
 		Clear,
 		And,
 		AndReverse,
@@ -91,7 +91,7 @@ namespace Flint
 	 * Pipeline depth compare logic.
 	 * This defines what logic to apply when depth comparing.
 	 */
-	enum class DepthCompareLogic : UI8 {
+	enum class DepthCompareLogic : uint8 {
 		Never,
 		Less,
 		Equal,
@@ -105,7 +105,7 @@ namespace Flint
 	/**
 	 * Color blend factor enum.
 	 */
-	enum class ColorBlendFactor : UI8 {
+	enum class ColorBlendFactor : uint8 {
 		Zero,
 		One,
 		SourceColor,
@@ -130,7 +130,7 @@ namespace Flint
 	/**
 	 * Color blend operator enum.
 	 */
-	enum class ColorBlendOperator : UI8 {
+	enum class ColorBlendOperator : uint8 {
 		Add,
 		Subtract,
 		ReverseSubtract,
@@ -187,7 +187,7 @@ namespace Flint
 	/**
 	 * Color write mask enum.
 	 */
-	enum class ColorWriteMask : UI8 {
+	enum class ColorWriteMask : uint8 {
 		R = BitShiftLeft(0),
 		G = BitShiftLeft(1),
 		B = BitShiftLeft(2),
@@ -201,7 +201,7 @@ namespace Flint
 	 * @param rhs The right hand side argument.
 	 * @return The OR performed color write mask.
 	 */
-	constexpr ColorWriteMask operator|(const ColorWriteMask& lhs, const ColorWriteMask& rhs) { return static_cast<ColorWriteMask>(static_cast<UI8>(lhs) | static_cast<UI8>(rhs)); }
+	constexpr ColorWriteMask operator|(const ColorWriteMask& lhs, const ColorWriteMask& rhs) { return static_cast<ColorWriteMask>(static_cast<uint8>(lhs) | static_cast<uint8>(rhs)); }
 
 	/**
 	 * Color write mask bitwise And operator.
@@ -210,7 +210,7 @@ namespace Flint
 	 * @param rhs The right hand side argument.
 	 * @return The And performed color write mask.
 	 */
-	constexpr ColorWriteMask operator&(const ColorWriteMask& lhs, const ColorWriteMask& rhs) { return static_cast<ColorWriteMask>(static_cast<UI8>(lhs) & static_cast<UI8>(rhs)); }
+	constexpr ColorWriteMask operator&(const ColorWriteMask& lhs, const ColorWriteMask& rhs) { return static_cast<ColorWriteMask>(static_cast<uint8>(lhs) & static_cast<uint8>(rhs)); }
 
 	/**
 	 * Color blend attachment structure.
@@ -247,7 +247,7 @@ namespace Flint
 		float mRasterizerLineWidth = 1.0f;
 		float mMinSampleShading = 1.0f;
 
-		UI32 mTessellationPatchControlPoints = 0;
+		uint32 mTessellationPatchControlPoints = 0;
 
 		PrimitiveTopology mPrimitiveTopology = PrimitiveTopology::TriangleList;
 		CullMode mCullMode = CullMode::Back;

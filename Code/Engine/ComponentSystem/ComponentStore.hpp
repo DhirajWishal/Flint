@@ -22,7 +22,7 @@ namespace Flint
 		const bool operator==(const ComponentIdentifier& other) const { return mStringHash == other.mStringHash; }
 		const bool operator!=(const ComponentIdentifier& other) const { return mStringHash != other.mStringHash; }
 
-		UI64 mStringHash = 0;
+		uint64 mStringHash = 0;
 	};
 
 	/**
@@ -95,7 +95,7 @@ namespace Flint
 		 *
 		 * @return The size.
 		 */
-		const UI64 Size() const { return mComponents.Size(); }
+		const uint64 Size() const { return mComponents.Size(); }
 
 	public:
 		/**

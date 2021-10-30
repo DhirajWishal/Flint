@@ -48,7 +48,7 @@ namespace Flint
 		LoadTextures();
 	}
 
-	void Object::Update(UI64 delta, Camera* pCamera)
+	void Object::Update(uint64 delta, Camera* pCamera)
 	{
 		OPTICK_EVENT();
 
@@ -63,7 +63,7 @@ namespace Flint
 		CopyToBuffer(pUniformBuffer, mMatrix);
 	}
 
-	void Object::Draw(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 index)
+	void Object::Draw(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const uint32 index)
 	{
 		OPTICK_EVENT();
 
@@ -71,11 +71,11 @@ namespace Flint
 		pCommandBuffer->BindGeometryStore(mAsset.GetGeometryStore().get());
 		pCommandBuffer->BindDynamicStates(pPipeline.get(), pDynamicStates.get());
 
-		UI64 drawCount = 0;
-		const UI64 count = mAsset.GetWireFrames().size();
+		uint64 drawCount = 0;
+		const uint64 count = mAsset.GetWireFrames().size();
 		auto& wireFrames = mAsset.GetWireFrames();
 		const auto& samples = mDrawSamples[index];
-		for (UI64 i = 0; i < count; i++)
+		for (uint64 i = 0; i < count; i++)
 		{
 			if (samples[i] == 0 && !bSkipCulling)
 				continue;
@@ -95,7 +95,7 @@ namespace Flint
 		ImGui::End();
 	}
 
-	void Object::OcclusionPass(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 index)
+	void Object::OcclusionPass(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const uint32 index)
 	{
 		OPTICK_EVENT();
 
@@ -110,25 +110,25 @@ namespace Flint
 
 		const auto pQuery = pOcclusionQueries[index];
 
-		const UI64 count = mAsset.GetWireFrames().size();
+		const uint64 count = mAsset.GetWireFrames().size();
 		auto& wireFrames = mAsset.GetWireFrames();
-		for (UI64 i = 0; i < count; i++)
+		for (uint64 i = 0; i < count; i++)
 		{
 			auto& wireFrame = wireFrames[i];
 
-			pCommandBuffer->BeginQuery(pQuery.get(), static_cast<UI32>(i));
+			pCommandBuffer->BeginQuery(pQuery.get(), static_cast<uint32>(i));
 			pCommandBuffer->IssueDrawCall(wireFrame);
-			pCommandBuffer->EndQuery(pQuery.get(), static_cast<UI32>(i));
+			pCommandBuffer->EndQuery(pQuery.get(), static_cast<uint32>(i));
 		}
 	}
 
-	void Object::ResetOcclusionQuery(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 index, const bool isFirstUse)
+	void Object::ResetOcclusionQuery(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const uint32 index, const bool isFirstUse)
 	{
 		const auto pQuery = pOcclusionQueries[index];
 		if (!isFirstUse && !bShouldFreezeOcclusion && !bSkipCulling)
 		{
 			auto& samples = mDrawSamples[index];
-			pQuery->RequestQueryData(0, pQuery->GetQueryCount(), sizeof(UI64) * samples.size(), samples.data(), sizeof(UI64), QueryDataMode::UI64Result | QueryDataMode::WaitForResult);
+			pQuery->RequestQueryData(0, pQuery->GetQueryCount(), sizeof(uint64) * samples.size(), samples.data(), sizeof(uint64), QueryDataMode::UI64Result | QueryDataMode::WaitForResult);
 		}
 
 		pCommandBuffer->ResetQuery(pQuery.get(), 0, pQuery->GetQueryCount());
@@ -177,7 +177,7 @@ namespace Flint
 
 		specification.mVertexInputAttributeMap[0] = pVertexShader->GetInputAttributes();
 		pPipeline = pDevice->CreateGraphicsPipeline("Object", pOffScreenPass->GetRenderTarget(), pVertexShader, nullptr, nullptr, nullptr, pFragmentShader, specification);
-		pApplication->CreateGeometryStore("Object", pVertexShader->GetInputAttributes(), sizeof(UI32));
+		pApplication->CreateGeometryStore("Object", pVertexShader->GetInputAttributes(), sizeof(uint32));
 
 		const auto windowExtent = pOffScreenPass->GetExtent();
 		pDynamicStates->SetViewPort(Flint::FExtent2D<float>{static_cast<float>(windowExtent.mWidth), static_cast<float>(windowExtent.mHeight)}, Flint::FExtent2D<float>(0.0f, 1.0f), { 0.0f, 0.0f });
@@ -240,10 +240,10 @@ namespace Flint
 		pOcclusionQueries.reserve(pOffScreenPass->GetRenderTarget()->GetBufferCount());
 
 		const auto size = mAsset.GetWireFrames().size();
-		for (UI32 i = 0; i < pOffScreenPass->GetRenderTarget()->GetBufferCount(); i++)
+		for (uint32 i = 0; i < pOffScreenPass->GetRenderTarget()->GetBufferCount(); i++)
 		{
-			mDrawSamples.emplace_back(std::vector<UI64>(size));
-			pOcclusionQueries.push_back(pApplication->GetDevice()->CreateQuery(QueryUsage::Occlusion, static_cast<UI32>(size)));
+			mDrawSamples.emplace_back(std::vector<uint64>(size));
+			pOcclusionQueries.push_back(pApplication->GetDevice()->CreateQuery(QueryUsage::Occlusion, static_cast<uint32>(size)));
 		}
 	}
 
@@ -284,7 +284,7 @@ namespace Flint
 			}
 		}
 
-		const UI64 size = pOffScreenPass->GetBufferCount();
+		const uint64 size = pOffScreenPass->GetBufferCount();
 		pPackageSets.resize(size);
 		pOcclusionPackageSets.reserve(size);
 
@@ -320,7 +320,7 @@ namespace Flint
 					//samplerSpecification.mBorderColor = BorderColor::OpaqueBlackINT;
 					const auto pSampler = pApplication->GetDevice()->CreateImageSampler(samplerSpecification);
 
-					for (UI64 i = 0; i < size; i++)
+					for (uint64 i = 0; i < size; i++)
 					{
 						auto pPackage = pPipeline->CreateResourcePackage(0);
 						pPackage->BindResource(0, pUniformBuffer);

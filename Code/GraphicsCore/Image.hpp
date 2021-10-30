@@ -12,7 +12,7 @@ namespace Flint
 	/**
 	 * Loading operation enum.
 	 */
-	enum class LoadOperation : UI8 {
+	enum class LoadOperation : uint8 {
 		Store,
 		Load,
 		DontCare
@@ -33,7 +33,7 @@ namespace Flint
 	 *
 	 * The user cannot define two flags within the same sub section. In that case the lowest (first) flag will be used.
 	 */
-	enum class ImageRenderTargetSpecification : UI16 {
+	enum class ImageRenderTargetSpecification : uint16 {
 		// Color image section.
 		// Defines that we load data upon attachment load.
 		LoadOnLoad = BitShiftLeft(0),
@@ -67,8 +67,8 @@ namespace Flint
 		StencilDiscardStore = BitShiftLeft(9),
 	};
 
-	constexpr bool operator&(const ImageRenderTargetSpecification lhs, const ImageRenderTargetSpecification rhs) { return static_cast<UI16>(lhs) & static_cast<UI16>(rhs); }
-	constexpr ImageRenderTargetSpecification operator|(const ImageRenderTargetSpecification lhs, const ImageRenderTargetSpecification rhs) { return static_cast<ImageRenderTargetSpecification>(static_cast<UI16>(lhs) | static_cast<UI16>(rhs)); }
+	constexpr bool operator&(const ImageRenderTargetSpecification lhs, const ImageRenderTargetSpecification rhs) { return static_cast<uint16>(lhs) & static_cast<uint16>(rhs); }
+	constexpr ImageRenderTargetSpecification operator|(const ImageRenderTargetSpecification lhs, const ImageRenderTargetSpecification rhs) { return static_cast<ImageRenderTargetSpecification>(static_cast<uint16>(lhs) | static_cast<uint16>(rhs)); }
 
 	/**
 	 * Image render target specification structure.
@@ -105,7 +105,7 @@ namespace Flint
 		 * @param pImageData The image data pointer to load data from.
 		 * @param sampleCount The multi sample count to use.
 		 */
-		Image(const std::shared_ptr<Device>& pDevice, const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const UI8 layers, const UI32 mipLevels, const void* pImageData, const MultiSampleCount sampleCount = MultiSampleCount::One);
+		Image(const std::shared_ptr<Device>& pDevice, const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const uint8 layers, const uint32 mipLevels, const void* pImageData, const MultiSampleCount sampleCount = MultiSampleCount::One);
 
 		/**
 		 * Generate mip maps.
@@ -128,7 +128,7 @@ namespace Flint
 		 * @param mipLevels The mip levels to cover.
 		 * @param usage The image usage.
 		 */
-		virtual std::shared_ptr<ImageView> CreateImageView(const UI32 baseLayerIndex, const UI32 layerCount, const UI32 baseMipLevel, const UI32 mipLevels, const ImageUsage usage) = 0;
+		virtual std::shared_ptr<ImageView> CreateImageView(const uint32 baseLayerIndex, const uint32 layerCount, const uint32 baseMipLevel, const uint32 mipLevels, const ImageUsage usage) = 0;
 
 		/**
 		 * Get the value of a single pixel.
@@ -143,8 +143,8 @@ namespace Flint
 			std::shared_ptr<Buffer> pStagingBuffer = CopyToBuffer();
 			Type* pPixels = static_cast<Type*>(pStagingBuffer->MapMemory(pStagingBuffer->GetSize()));
 
-			UI64 row = static_cast<UI64>(position.mHeight) * mExtent.mWidth;
-			UI64 index = row + position.mWidth;
+			uint64 row = static_cast<uint64>(position.mHeight) * mExtent.mWidth;
+			uint64 index = row + position.mWidth;
 			Type pixel = pPixels[index];
 
 			pStagingBuffer->UnmapMemory();
@@ -166,7 +166,7 @@ namespace Flint
 		 *
 		 * @return The mip levels.
 		 */
-		const UI32 GetMipLevels() const { return mMipLevels; }
+		const uint32 GetMipLevels() const { return mMipLevels; }
 
 		/**
 		 * Get the type of the image.
@@ -194,7 +194,7 @@ namespace Flint
 		 *
 		 * @return The layer count.
 		 */
-		const UI8 GetLayerCount() const { return mLayerCount; }
+		const uint8 GetLayerCount() const { return mLayerCount; }
 
 		/**
 		 * Get the image render target specification structure.
@@ -217,16 +217,16 @@ namespace Flint
 		 * @param extent The extent of the image.
 		 * @return The mip levels.
 		 */
-		static UI32 GetBestMipLevels(const FBox3D extent);
+		static uint32 GetBestMipLevels(const FBox3D extent);
 
 	protected:
 		FBox3D mExtent = {};
-		UI32 mMipLevels = 0;
+		uint32 mMipLevels = 0;
 		ImageType mType = ImageType::TwoDimension;
 		ImageUsage mUsage = ImageUsage::Graphics;
 		PixelFormat mFormat = PixelFormat::Undefined;
 		MultiSampleCount mMultiSampleCount = MultiSampleCount::One;
-		UI8 mLayerCount = 1;
+		uint8 mLayerCount = 1;
 
 		ImageRenderTargetSpecification mImageRenderingTargetSpecification = ImageRenderTargetSpecification(0);
 	};

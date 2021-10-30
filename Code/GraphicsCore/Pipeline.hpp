@@ -49,14 +49,14 @@ namespace Flint
 		 * @param size The size of the data block.
 		 * @param pData The data to be written.
 		 */
-		void WriteDataToCacheFile(const UI64 size, unsigned char* pData) const;
+		void WriteDataToCacheFile(const uint64 size, unsigned char* pData) const;
 
 		/**
 		 * Read the pipeline cache data from an external file.
 		 *
 		 * @return The pair of size and data.
 		 */
-		std::pair<UI64, unsigned char*> ReadDataFromCacheFile() const;
+		std::pair<uint64, unsigned char*> ReadDataFromCacheFile() const;
 
 	public:
 		/**
@@ -65,7 +65,7 @@ namespace Flint
 		 * @param index The set index.
 		 * @return The package.
 		 */
-		std::shared_ptr<ResourcePackage> CreateResourcePackage(const UI64 index);
+		std::shared_ptr<ResourcePackage> CreateResourcePackage(const uint64 index);
 
 	protected:
 		std::string mPipelineName = "";

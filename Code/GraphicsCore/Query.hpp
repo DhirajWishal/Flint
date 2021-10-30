@@ -11,15 +11,15 @@ namespace Flint
 	 * Query data mode enum.
 	 * These flags define how to get the data.
 	 */
-	enum class QueryDataMode : UI8 {
+	enum class QueryDataMode : uint8 {
 		UI64Result = BitShiftLeft(0),
 		WaitForResult = BitShiftLeft(1),
 		Availability = BitShiftLeft(2),
 		PartialData = BitShiftLeft(3)
 	};
 
-	constexpr bool operator&(const QueryDataMode lhs, const QueryDataMode rhs) { return static_cast<UI8>(lhs) & static_cast<UI8>(rhs); }
-	constexpr QueryDataMode operator|(const QueryDataMode lhs, const QueryDataMode rhs) { return static_cast<QueryDataMode>(static_cast<UI8>(lhs) | static_cast<UI8>(rhs)); }
+	constexpr bool operator&(const QueryDataMode lhs, const QueryDataMode rhs) { return static_cast<uint8>(lhs) & static_cast<uint8>(rhs); }
+	constexpr QueryDataMode operator|(const QueryDataMode lhs, const QueryDataMode rhs) { return static_cast<QueryDataMode>(static_cast<uint8>(lhs) | static_cast<uint8>(rhs)); }
 
 	/**
 	 * Flint query object.
@@ -37,7 +37,7 @@ namespace Flint
 		 * @param usage The query usage.
 		 * @param queryCount The number of queries this contains.
 		 */
-		Query(const std::shared_ptr<Device>& pDevice, const QueryUsage usage, const UI32 queryCount) : DeviceBoundObject(pDevice), mUsage(usage), mQueryCount(queryCount) {}
+		Query(const std::shared_ptr<Device>& pDevice, const QueryUsage usage, const uint32 queryCount) : DeviceBoundObject(pDevice), mUsage(usage), mQueryCount(queryCount) {}
 
 		/**
 		 * Recreate the query with primitive count.
@@ -45,7 +45,7 @@ namespace Flint
 		 *
 		 * @param queryCount The number of query primitives required.
 		 */
-		virtual void Recreate(const UI32 queryCount) = 0;
+		virtual void Recreate(const uint32 queryCount) = 0;
 
 		/**
 		 * Request data from the query.
@@ -57,7 +57,7 @@ namespace Flint
 		 * @param stride The data stride.
 		 * @param dataMode The data mode defining how to get the data.
 		 */
-		virtual void RequestQueryData(const UI32 firstQuery, const UI32 count, const UI64 dataSize, void* pDataStore, const UI64 stride, const QueryDataMode dataMode) = 0;
+		virtual void RequestQueryData(const uint32 firstQuery, const uint32 count, const uint64 dataSize, void* pDataStore, const uint64 stride, const QueryDataMode dataMode) = 0;
 
 	public:
 		/**
@@ -72,10 +72,10 @@ namespace Flint
 		 *
 		 * @return The primitive count.
 		 */
-		UI32 GetQueryCount() const { return mQueryCount; }
+		uint32 GetQueryCount() const { return mQueryCount; }
 
 	protected:
 		QueryUsage mUsage = QueryUsage::Occlusion;
-		UI32 mQueryCount = 0;
+		uint32 mQueryCount = 0;
 	};
 }

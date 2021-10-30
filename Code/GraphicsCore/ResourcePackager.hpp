@@ -21,14 +21,14 @@ namespace Flint
 		 *
 		 * @param pPipeline The graphics pipeline pointer.
 		 */
-		ResourcePackager(const UI32 setIndex, const std::shared_ptr<GraphicsPipeline>& pPipeline);
+		ResourcePackager(const uint32 setIndex, const std::shared_ptr<GraphicsPipeline>& pPipeline);
 
 		/**
 		 * Construct the packager.
 		 *
 		 * @param pPipeline The compute pipeline pointer.
 		 */
-		ResourcePackager(const UI32 setIndex, const std::shared_ptr<ComputePipeline>& pPipeline);
+		ResourcePackager(const uint32 setIndex, const std::shared_ptr<ComputePipeline>& pPipeline);
 
 		/**
 		 * Create a new package.
@@ -55,20 +55,20 @@ namespace Flint
 		 *
 		 * @return The set index.
 		 */
-		const UI32 GetSetIndex() const { return mSetIndex; }
+		const uint32 GetSetIndex() const { return mSetIndex; }
 
 		/**
 		 * Get the resource map of the packager.
 		 * 
 		 * @return The resource map.
 		 */
-		const std::unordered_map<UI32, ShaderResourceType> GetResources() const { return mResources; }
+		const std::unordered_map<uint32, ShaderResourceType> GetResources() const { return mResources; }
 
 	protected:
 		std::shared_ptr<Pipeline> pPipeline = nullptr;
 		std::vector<std::shared_ptr<ResourcePackage>> pPackages = {};
-		std::unordered_map<UI32, ShaderResourceType> mResources = {};
+		std::unordered_map<uint32, ShaderResourceType> mResources = {};
 
-		UI32 mSetIndex = 0;
+		uint32 mSetIndex = 0;
 	};
 }

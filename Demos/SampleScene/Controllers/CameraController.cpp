@@ -11,7 +11,7 @@ CameraController::CameraController(Flint::ClientInterface* pClientInterface)
 	mCameraHandle = pClientInterface->CreateComponent<Flint::Components::Camera>("DefaultCamera");
 }
 
-void CameraController::OnUpdate(const UI64 delta, const Flint::UpdateSpecification specification)
+void CameraController::OnUpdate(const uint64 delta, const Flint::UpdateSpecification specification)
 {
 	auto pDisplay = pClientInterface->GetDefaultScreenBoundRenderTarget()->GetDisplay();
 	auto pCamera = mCameraHandle.GetComponent();

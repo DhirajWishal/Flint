@@ -59,7 +59,7 @@ namespace Flint
 		 *
 		 * @param index The index of the device to set.
 		 */
-		void SetDefaultDevice(const UI32 index);
+		void SetDefaultDevice(const uint32 index);
 
 		/**
 		 * Get the default device pointer.
@@ -73,7 +73,7 @@ namespace Flint
 		 *
 		 * @param index The index of the device to destroy.
 		 */
-		void DestroyDevice(const UI32 index);
+		void DestroyDevice(const uint32 index);
 
 		/**
 		 * Destroy all the devices.
@@ -86,11 +86,11 @@ namespace Flint
 		 * All the models are rendered to the default render target if not explicitly specified.
 		 * The name of the render target is "Default".
 		 *
-		 * @param extent The extent of the render target. Default is std::numeric_limits<UI32>::max().
+		 * @param extent The extent of the render target. Default is std::numeric_limits<uint32>::max().
 		 * @param windowTitle The title of the window. Default is "Flint".
 		 * @return The created render target pointer.
 		 */
-		std::shared_ptr<ScreenBoundRenderTarget> CreateDefaultScreenBoundRenderTarget(const FBox2D& extent = { std::numeric_limits<UI32>::max() }, const std::string& windowTitle = "Flint");
+		std::shared_ptr<ScreenBoundRenderTarget> CreateDefaultScreenBoundRenderTarget(const FBox2D& extent = { std::numeric_limits<uint32>::max() }, const std::string& windowTitle = "Flint");
 
 		/**
 		 * Set the default render target.

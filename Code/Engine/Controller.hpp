@@ -47,7 +47,7 @@ namespace Flint
 		 * @param specification The update specification.
 		 * @param delta The time delta.
 		 */
-		virtual void OnUpdate(const UI64 delta, const UpdateSpecification specification) = 0;
+		virtual void OnUpdate(const uint64 delta, const UpdateSpecification specification) = 0;
 
 	public:
 		std::string_view mIdentifier = "";

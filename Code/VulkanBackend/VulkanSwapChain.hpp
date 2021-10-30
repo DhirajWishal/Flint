@@ -15,11 +15,11 @@ namespace Flint
 		class VulkanSwapChain final : public SwapChain, public VulkanRenderTargetAttachmentInterface
 		{
 		public:
-			VulkanSwapChain(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, UI32 imageCount, const SwapChainPresentMode presentMode);
+			VulkanSwapChain(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, uint32 imageCount, const SwapChainPresentMode presentMode);
 			~VulkanSwapChain() { if (!bIsTerminated) Terminate(); }
 
 			virtual void Recreate() override;
-			virtual NextImageInfo AcquireNextImage(const UI32 frameIndex) override;
+			virtual NextImageInfo AcquireNextImage(const uint32 frameIndex) override;
 			virtual void Terminate() override;
 
 			VkPresentInfoKHR* PrepareToPresent();
@@ -28,18 +28,18 @@ namespace Flint
 			virtual VkFormat GetImageFormat() const override;
 			virtual VkAttachmentDescription GetAttachmentDescription() const override;
 			virtual VkImageLayout GetAttachmentLayout() const override;
-			virtual VkImageView GetImageView(UI32 index) const override final { return vImageViews[index]; }
+			virtual VkImageView GetImageView(uint32 index) const override final { return vImageViews[index]; }
 
 			const VkSwapchainKHR GetSwapChain() const { return vSwapChain; }
 			const VkSwapchainKHR* GetSwapChainPtr() const { return &vSwapChain; }
-			const UI32* GetImageIndexPtr() const { return &mImageIndex; }
+			const uint32* GetImageIndexPtr() const { return &mImageIndex; }
 
 			const VkSemaphore GetInFlightSemaphore() const { return vCurrentInFlightSemaphore; }
 			const VkSemaphore GetRenderFinishedSemaphore() const { return vCurrentRenderFinishedSemaphore; }
 
 			void ToggleClear() { bShouldClear = true; }
 
-			void CopyFromImage(VkCommandBuffer vCommandBuffer, const VkImage vSrcImage, const VkImageLayout vSrcLayout, VkOffset3D srcOffset, VkOffset3D dstOffset, const UI32 index, const VkImageSubresourceLayers vSrcSubresourceLayer);
+			void CopyFromImage(VkCommandBuffer vCommandBuffer, const VkImage vSrcImage, const VkImageLayout vSrcLayout, VkOffset3D srcOffset, VkOffset3D dstOffset, const uint32 index, const VkImageSubresourceLayers vSrcSubresourceLayer);
 
 		private:
 			void CreateSwapChain();

@@ -10,7 +10,7 @@ namespace Flint
 	/**
 	 * Shader code type enum.
 	 */
-	enum class ShaderCodeType : UI8 {
+	enum class ShaderCodeType : uint8 {
 		GLSL,
 		HLSL
 	};
@@ -33,20 +33,6 @@ namespace Flint
 		 */
 		ShaderCompiler(const std::filesystem::path& shaderFile, const ShaderCodeType codeType, const ShaderType shaderType, std::filesystem::path compilerTool = "Tools/Windows/glslangValidator");
 
-#elif defined FLINT_PLATFORM_LINUX
-		/**
-		 * Compile the shader by loading the code from a file.
-		 *
-		 * @param shaderFile The shader file to compile.
-		 * @param codeType The shader file type. Currently only supports GLSL.
-		 * @param shaderType The type of the shader.
-		 * @param compilerTool The compiler tool path. Default is "Tools/Linux/glslangValidator".
-		 */
-		ShaderCompiler(const std::filesystem::path& shaderFile, const ShaderCodeType codeType, const ShaderType shaderType, std::filesystem::path compilerTool = "Tools/Linux/glslangValidator");
-
-#endif // defined FLINT_PLATFORM_WINDOWS
-
-#if defined FLINT_PLATFORM_WINDOWS
 		/**
 		 * Compile the shader using a high level shader code.
 		 *
@@ -58,6 +44,16 @@ namespace Flint
 		ShaderCompiler(const std::string& shaderCode, const ShaderCodeType codeType, const ShaderType shaderType, std::filesystem::path compilerTool = "Tools/Windows/glslangValidator");
 
 #elif defined FLINT_PLATFORM_LINUX
+		/**
+		 * Compile the shader by loading the code from a file.
+		 *
+		 * @param shaderFile The shader file to compile.
+		 * @param codeType The shader file type. Currently only supports GLSL.
+		 * @param shaderType The type of the shader.
+		 * @param compilerTool The compiler tool path. Default is "Tools/Linux/glslangValidator".
+		 */
+		ShaderCompiler(const std::filesystem::path& shaderFile, const ShaderCodeType codeType, const ShaderType shaderType, std::filesystem::path compilerTool = "Tools/Linux/glslangValidator");
+
 		/**
 		 * Compile the shader using a high level shader code.
 		 *
@@ -75,7 +71,7 @@ namespace Flint
 		 *
 		 * @return The shader code vector.
 		 */
-		const std::vector<UI32> GetShaderCode() const { return mShaderCode; }
+		const std::vector<uint32> GetShaderCode() const { return mShaderCode; }
 
 		/**
 		 * Create the shader object using the shader code.
@@ -86,7 +82,7 @@ namespace Flint
 		std::shared_ptr<Shader> CreateShader(const std::shared_ptr<Device>& pDevice) const;
 
 	private:
-		std::vector<UI32> mShaderCode = {};
+		std::vector<uint32> mShaderCode = {};
 		ShaderType mType = ShaderType::Vertex;
 		ShaderCodeType mCodeType = ShaderCodeType::GLSL;
 	};

@@ -16,16 +16,16 @@ namespace Flint
 	public:
 		SceneRenderTarget() = default;
 
-		void Initialize(const std::shared_ptr<Device>& pDevice, const UI32 bufferCount, const FBox2D extent, const std::shared_ptr<ResourcePackage>& pPackage);
+		void Initialize(const std::shared_ptr<Device>& pDevice, const uint32 bufferCount, const FBox2D extent, const std::shared_ptr<ResourcePackage>& pPackage);
 		void Terminate();
 
-		void Render(const std::shared_ptr<Display>& pDisplay, const UI64 delta);
+		void Render(const std::shared_ptr<Display>& pDisplay, const uint64 delta);
 
 		void Recreate(const FBox2D& extent);
 
 	private:
-		const FBox2D GetExtent() const { return { static_cast<UI32>(mExtent.x), static_cast<UI32>(mExtent.y) }; }
-		void UpdateCamera(const std::shared_ptr<Display>& pDisplay, const UI64 delta);
+		const FBox2D GetExtent() const { return { static_cast<uint32>(mExtent.x), static_cast<uint32>(mExtent.y) }; }
+		void UpdateCamera(const std::shared_ptr<Display>& pDisplay, const uint64 delta);
 
 	private:
 		VikingRoom mVikingRoom = {};

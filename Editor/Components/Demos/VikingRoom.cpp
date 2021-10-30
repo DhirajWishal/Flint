@@ -26,7 +26,7 @@ namespace Flint
 		pFragmentShader = pDevice->CreateShader(ShaderType::Fragment, fragmentShaderCompiler.GetShaderCode());
 		pUniformBuffer = pDevice->CreateBuffer(BufferType::Uniform, sizeof(UniformBufferObject));
 
-		pGeometryStore = pDevice->CreateGeometryStore(pVertexShader->GetInputAttributes(), sizeof(UI32));
+		pGeometryStore = pDevice->CreateGeometryStore(pVertexShader->GetInputAttributes(), sizeof(uint32));
 
 		AssetLoader assetLoader(pGeometryStore, "E:\\Flint\\Assets\\Packages\\VikingRoom\\VikingRoom\\untitled.obj", Defaults::CreateDefaultVertexDescriptor());
 		mAsset = Asset(assetLoader.GetWireFrames(), pGeometryStore);
@@ -60,7 +60,7 @@ namespace Flint
 		pFragmentShader = pDevice->CreateShader(ShaderType::Fragment, fragmentShaderCompiler.GetShaderCode());
 		pUniformBuffer = pDevice->CreateBuffer(BufferType::Uniform, sizeof(UniformBufferObject));
 
-		pGeometryStore = pDevice->CreateGeometryStore(pVertexShader->GetInputAttributes(), sizeof(UI32));
+		pGeometryStore = pDevice->CreateGeometryStore(pVertexShader->GetInputAttributes(), sizeof(uint32));
 
 		AssetLoader assetLoader(pGeometryStore, "E:\\Flint\\Assets\\Packages\\VikingRoom\\VikingRoom\\untitled.obj", Defaults::CreateDefaultVertexDescriptor());
 		mAsset = Asset(assetLoader.GetWireFrames(), pGeometryStore);

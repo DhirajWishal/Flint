@@ -26,7 +26,7 @@ namespace Flint
 
 			bool CheckValidationLayerSupport(std::vector<const char*> layers)
 			{
-				UI32 layerCount = 0;
+				uint32 layerCount = 0;
 				vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
 
 				std::vector<VkLayerProperties> availableLayers(layerCount);
@@ -53,7 +53,7 @@ namespace Flint
 
 			std::vector<const char*> GetRequiredInstanceExtensions(bool enableValidation)
 			{
-				UI32 glfwExtensionCount = 0;
+				uint32 glfwExtensionCount = 0;
 				const char** glfwExtensions = nullptr;
 				glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 				std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
@@ -198,14 +198,14 @@ namespace Flint
 
 			// Get and insert the required instance extensions.
 			std::vector<const char*> requiredExtensions = std::move(Helpers::GetRequiredInstanceExtensions(mEnableValidation));
-			createInfo.enabledExtensionCount = static_cast<UI32>(requiredExtensions.size());
+			createInfo.enabledExtensionCount = static_cast<uint32>(requiredExtensions.size());
 			createInfo.ppEnabledExtensionNames = requiredExtensions.data();
 
 			// Initialize debugger.
 			VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo = {};
 			if (mEnableValidation)
 			{
-				createInfo.enabledLayerCount = static_cast<UI32>(mValidationLayers.size());
+				createInfo.enabledLayerCount = static_cast<uint32>(mValidationLayers.size());
 				createInfo.ppEnabledLayerNames = mValidationLayers.data();
 
 				debugCreateInfo = Helpers::CreateDebugMessengerCreateInfo();

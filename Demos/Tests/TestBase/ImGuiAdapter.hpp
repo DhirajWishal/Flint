@@ -41,7 +41,7 @@ namespace Flint
 		void Initialize(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<ScreenBoundRenderTarget>& pRenderTarget);
 		void Initialize(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<OffScreenRenderTarget>& pRenderTarget);
 
-		void Render(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 index);
+		void Render(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const uint32 index);
 		void Terminate();
 
 		std::shared_ptr<ResourcePackage> CreateResourcePackage() { return pPipeline->CreateResourcePackage(0); }
@@ -55,8 +55,8 @@ namespace Flint
 
 		void UpdateGeometryStore();
 
-		UI64 GetNewVertexBufferSize(const UI64 newSize) const;
-		UI64 GetNewIndexBufferSize(const UI64 newSize) const;
+		uint64 GetNewVertexBufferSize(const uint64 newSize) const;
+		uint64 GetNewIndexBufferSize(const uint64 newSize) const;
 
 	public:
 		std::shared_ptr<Device> pDevice = nullptr;

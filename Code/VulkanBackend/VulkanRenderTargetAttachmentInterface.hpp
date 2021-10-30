@@ -9,7 +9,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		enum class RenderTargetAttachmenType : UI8 {
+		enum class RenderTargetAttachmenType : uint8 {
 			Undefined,
 			SwapChain,
 			ColorBuffer,
@@ -23,7 +23,7 @@ namespace Flint
 
 			virtual VkAttachmentDescription GetAttachmentDescription() const = 0;
 			virtual VkImageLayout GetAttachmentLayout() const = 0;
-			virtual VkImageView GetImageView(UI32 index) const = 0;
+			virtual VkImageView GetImageView(uint32 index) const = 0;
 			virtual RenderTargetAttachmenType GetAttachmentType() const = 0;
 			virtual VkFormat GetImageFormat() const = 0;
 		};

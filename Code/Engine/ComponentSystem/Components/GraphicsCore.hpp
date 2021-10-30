@@ -35,7 +35,7 @@ namespace Flint
 		 */
 		struct Buffer
 		{
-			Buffer(GraphicsDevice* pDevice, const GraphicsCore::BufferType type, const UI64 size, const GraphicsCore::BufferMemoryProfile profile = GraphicsCore::BufferMemoryProfile::Automatic);
+			Buffer(GraphicsDevice* pDevice, const GraphicsCore::BufferType type, const uint64 size, const GraphicsCore::BufferMemoryProfile profile = GraphicsCore::BufferMemoryProfile::Automatic);
 
 			AbstractionObject mBuffer = {};
 		};
@@ -43,27 +43,27 @@ namespace Flint
 		/**
 		 * Staging buffer component.
 		 */
-		struct StagingBuffer final : public Buffer { StagingBuffer(GraphicsDevice* pDevice, const UI64 size, const GraphicsCore::BufferMemoryProfile profile = GraphicsCore::BufferMemoryProfile::Automatic) : Buffer(pDevice, GraphicsCore::BufferType::Staging, size, profile) {} };
+		struct StagingBuffer final : public Buffer { StagingBuffer(GraphicsDevice* pDevice, const uint64 size, const GraphicsCore::BufferMemoryProfile profile = GraphicsCore::BufferMemoryProfile::Automatic) : Buffer(pDevice, GraphicsCore::BufferType::Staging, size, profile) {} };
 		
 		/**
 		 * Vertex buffer component.
 		 */
-		struct VertexBuffer final : public Buffer { VertexBuffer(GraphicsDevice* pDevice, const UI64 size, const GraphicsCore::BufferMemoryProfile profile = GraphicsCore::BufferMemoryProfile::Automatic) : Buffer(pDevice, GraphicsCore::BufferType::Vertex, size, profile) {} };
+		struct VertexBuffer final : public Buffer { VertexBuffer(GraphicsDevice* pDevice, const uint64 size, const GraphicsCore::BufferMemoryProfile profile = GraphicsCore::BufferMemoryProfile::Automatic) : Buffer(pDevice, GraphicsCore::BufferType::Vertex, size, profile) {} };
 		
 		/**
 		 * Index buffer component.
 		 */
-		struct IndexBuffer final : public Buffer { IndexBuffer(GraphicsDevice* pDevice, const UI64 size, const GraphicsCore::BufferMemoryProfile profile = GraphicsCore::BufferMemoryProfile::Automatic) : Buffer(pDevice, GraphicsCore::BufferType::Index, size, profile) {} };
+		struct IndexBuffer final : public Buffer { IndexBuffer(GraphicsDevice* pDevice, const uint64 size, const GraphicsCore::BufferMemoryProfile profile = GraphicsCore::BufferMemoryProfile::Automatic) : Buffer(pDevice, GraphicsCore::BufferType::Index, size, profile) {} };
 		
 		/**
 		 * Uniform buffer component.
 		 */
-		struct UniformBuffer final : public Buffer { UniformBuffer(GraphicsDevice* pDevice, const UI64 size, const GraphicsCore::BufferMemoryProfile profile = GraphicsCore::BufferMemoryProfile::Automatic) : Buffer(pDevice, GraphicsCore::BufferType::Uniform, size, profile) {} };
+		struct UniformBuffer final : public Buffer { UniformBuffer(GraphicsDevice* pDevice, const uint64 size, const GraphicsCore::BufferMemoryProfile profile = GraphicsCore::BufferMemoryProfile::Automatic) : Buffer(pDevice, GraphicsCore::BufferType::Uniform, size, profile) {} };
 		
 		/**
 		 * Storage buffer component.
 		 */
-		struct StorageBuffer final : public Buffer { StorageBuffer(GraphicsDevice* pDevice, const UI64 size, const GraphicsCore::BufferMemoryProfile profile = GraphicsCore::BufferMemoryProfile::Automatic) : Buffer(pDevice, GraphicsCore::BufferType::Storage, size, profile) {} };
+		struct StorageBuffer final : public Buffer { StorageBuffer(GraphicsDevice* pDevice, const uint64 size, const GraphicsCore::BufferMemoryProfile profile = GraphicsCore::BufferMemoryProfile::Automatic) : Buffer(pDevice, GraphicsCore::BufferType::Storage, size, profile) {} };
 
 		/**
 		 * Shader component.
@@ -72,7 +72,7 @@ namespace Flint
 		{
 			Shader(GraphicsDevice* pDevice, const GraphicsCore::ShaderType type, const std::filesystem::path& assetFile);
 			Shader(GraphicsDevice* pDevice, const GraphicsCore::ShaderType type, const std::string& code);
-			Shader(GraphicsDevice* pDevice, const GraphicsCore::ShaderType type, const std::vector<UI32>& code);
+			Shader(GraphicsDevice* pDevice, const GraphicsCore::ShaderType type, const std::vector<uint32>& code);
 
 			AbstractionObject mShader = {};
 		};
@@ -82,7 +82,7 @@ namespace Flint
 		 */
 		struct GeometryStore
 		{
-			GeometryStore(GraphicsDevice* pDevice, const GraphicsCore::TShaderAttributeMap& vertexAttributes, UI64 indexSize, const GraphicsCore::BufferMemoryProfile profile = GraphicsCore::BufferMemoryProfile::Automatic);
+			GeometryStore(GraphicsDevice* pDevice, const GraphicsCore::TShaderAttributeMap& vertexAttributes, uint64 indexSize, const GraphicsCore::BufferMemoryProfile profile = GraphicsCore::BufferMemoryProfile::Automatic);
 
 			AbstractionObject mGeometryStore = {};
 		};

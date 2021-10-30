@@ -12,7 +12,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanResourcePackage::VulkanResourcePackage(const std::shared_ptr<ResourcePackager>& pPackager, const std::vector<UI32>& bufferBindings, const std::vector<UI32>& imageBindings, const VkDescriptorSet& vSet)
+		VulkanResourcePackage::VulkanResourcePackage(const std::shared_ptr<ResourcePackager>& pPackager, const std::vector<uint32>& bufferBindings, const std::vector<uint32>& imageBindings, const VkDescriptorSet& vSet)
 			: ResourcePackage(pPackager, bufferBindings, imageBindings), vDescriptorSet(vSet)
 		{
 		}
@@ -23,7 +23,7 @@ namespace Flint
 				return;
 
 			VulkanDevice& vDevice = pPackager->GetPipeline()->GetDevice()->StaticCast<VulkanDevice>();
-			const std::unordered_map<UI32, ShaderResourceType> resources = pPackager->GetResources();
+			const std::unordered_map<uint32, ShaderResourceType> resources = pPackager->GetResources();
 			std::vector<VkWriteDescriptorSet> vWrites = {};
 
 			VkWriteDescriptorSet vWrite = {};
@@ -36,12 +36,12 @@ namespace Flint
 			// Resolve buffers.
 			for (const auto buffers : mBufferBindings)
 			{
-				vWrite.descriptorCount = static_cast<UI32>(buffers.second.size());
+				vWrite.descriptorCount = static_cast<uint32>(buffers.second.size());
 				vWrite.dstArrayElement = 0;
 				vWrite.dstBinding = buffers.first;
 				vWrite.descriptorType = Utilities::GetDescriptorType(resources.at(buffers.first));
 
-				UI64 index = 0;
+				uint64 index = 0;
 				VkDescriptorBufferInfo* pBufferInfos = new VkDescriptorBufferInfo[vWrite.descriptorCount];
 				for (const auto buffer : buffers.second)
 				{
@@ -62,12 +62,12 @@ namespace Flint
 			vWrite.pBufferInfo = VK_NULL_HANDLE;
 			for (const auto images : mImageBindings)
 			{
-				vWrite.descriptorCount = static_cast<UI32>(images.second.size());
+				vWrite.descriptorCount = static_cast<uint32>(images.second.size());
 				vWrite.dstArrayElement = 0;
 				vWrite.dstBinding = images.first;
 				vWrite.descriptorType = Utilities::GetDescriptorType(resources.at(images.first));
 
-				UI64 index = 0;
+				uint64 index = 0;
 				VkDescriptorImageInfo* pImageInfos = new VkDescriptorImageInfo[vWrite.descriptorCount];
 				for (const auto image : images.second)
 				{
@@ -88,7 +88,7 @@ namespace Flint
 				vWrites.push_back(vWrite);
 			}
 
-			vDevice.GetDeviceTable().vkUpdateDescriptorSets(vDevice.GetLogicalDevice(), static_cast<UI32>(vWrites.size()), vWrites.data(), 0, nullptr);
+			vDevice.GetDeviceTable().vkUpdateDescriptorSets(vDevice.GetLogicalDevice(), static_cast<uint32>(vWrites.size()), vWrites.data(), 0, nullptr);
 
 			// Delete the allocated memory.
 			for (auto vWriteDelete : vWrites)

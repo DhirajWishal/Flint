@@ -37,7 +37,7 @@ namespace Flint
 			}
 		}
 
-		VulkanSwapChain::VulkanSwapChain(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, UI32 imageCount, const SwapChainPresentMode presentMode)
+		VulkanSwapChain::VulkanSwapChain(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, uint32 imageCount, const SwapChainPresentMode presentMode)
 			: SwapChain(pDevice, pDisplay, imageCount, presentMode)
 		{
 			OPTICK_EVENT();
@@ -71,14 +71,14 @@ namespace Flint
 			mImageIndex = 0;
 		}
 
-		NextImageInfo VulkanSwapChain::AcquireNextImage(const UI32 frameIndex)
+		NextImageInfo VulkanSwapChain::AcquireNextImage(const uint32 frameIndex)
 		{
 			OPTICK_EVENT();
 
 			NextImageInfo imageInfo = {};
 
 			vCurrentInFlightSemaphore = vInFlightSemaphores[frameIndex];
-			VkResult result = pDevice->StaticCast<VulkanDevice>().GetDeviceTable().vkAcquireNextImageKHR(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), vSwapChain, std::numeric_limits<UI64>::max(), vCurrentInFlightSemaphore, VK_NULL_HANDLE, &mImageIndex);
+			VkResult result = pDevice->StaticCast<VulkanDevice>().GetDeviceTable().vkAcquireNextImageKHR(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), vSwapChain, std::numeric_limits<uint64>::max(), vCurrentInFlightSemaphore, VK_NULL_HANDLE, &mImageIndex);
 			if (result == VkResult::VK_ERROR_OUT_OF_DATE_KHR || result == VkResult::VK_SUBOPTIMAL_KHR)
 				imageInfo.bShouldRecreate = true;
 
@@ -128,7 +128,7 @@ namespace Flint
 			return VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 		}
 
-		void VulkanSwapChain::CopyFromImage(VkCommandBuffer vCommandBuffer, const VkImage vSrcImage, const VkImageLayout vSrcLayout, VkOffset3D srcOffset, VkOffset3D dstOffset, const UI32 index, const VkImageSubresourceLayers vSrcSubresourceLayer)
+		void VulkanSwapChain::CopyFromImage(VkCommandBuffer vCommandBuffer, const VkImage vSrcImage, const VkImageLayout vSrcLayout, VkOffset3D srcOffset, VkOffset3D dstOffset, const uint32 index, const VkImageSubresourceLayers vSrcSubresourceLayer)
 		{
 			VkImageCopy vImageCopy = {};
 			vImageCopy.extent.width = mExtent.mWidth;
@@ -198,14 +198,14 @@ namespace Flint
 			vCreateInfo.minImageCount = mImageCount;
 			vCreateInfo.imageFormat = surfaceFormat.format;
 			vCreateInfo.imageColorSpace = surfaceFormat.colorSpace;
-			vCreateInfo.imageExtent = { static_cast<UI32>(mExtent.mWidth), static_cast<UI32>(mExtent.mHeight) };
+			vCreateInfo.imageExtent = { static_cast<uint32>(mExtent.mWidth), static_cast<uint32>(mExtent.mHeight) };
 			vCreateInfo.imageArrayLayers = 1;
 			vCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
 			vCreateInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
 			vCreateInfo.queueFamilyIndexCount = 0;
 			vCreateInfo.pQueueFamilyIndices = nullptr;
 
-			UI32 queueFamilyindices[2] = {
+			uint32 queueFamilyindices[2] = {
 				vDevice.GetQueue().mGraphicsFamily.value(),
 				vDevice.GetQueue().mTransferFamily.value()
 			};
@@ -270,7 +270,7 @@ namespace Flint
 			vInFlightSemaphores.reserve(vImages.size());
 			vRenderFinishedSemaphores.reserve(vImages.size());
 
-			for (UI64 i = 0; i < vImages.size(); i++)
+			for (uint64 i = 0; i < vImages.size(); i++)
 			{
 				VkSemaphore vSemaphore = VK_NULL_HANDLE;
 
@@ -286,7 +286,7 @@ namespace Flint
 		{
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 
-			for (UI64 i = 0; i < vInFlightSemaphores.size(); i++)
+			for (uint64 i = 0; i < vInFlightSemaphores.size(); i++)
 			{
 				vDevice.GetDeviceTable().vkDestroySemaphore(vDevice.GetLogicalDevice(), vInFlightSemaphores[i], nullptr);
 				vDevice.GetDeviceTable().vkDestroySemaphore(vDevice.GetLogicalDevice(), vRenderFinishedSemaphores[i], nullptr);

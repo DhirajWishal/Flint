@@ -83,7 +83,7 @@ namespace Flint
 		if (!file.is_open())
 			throw std::invalid_argument("Provided asset file is not available!");
 
-		const UI64 size = file.tellg();
+		const uint64 size = file.tellg();
 		file.seekg(0);
 
 		// Get the shader code.
@@ -119,7 +119,7 @@ namespace Flint
 		if (!file.is_open())
 			throw std::invalid_argument("Provided asset file is not available!");
 
-		const UI64 size = file.tellg();
+		const uint64 size = file.tellg();
 		file.seekg(0);
 
 		// Get the shader code.

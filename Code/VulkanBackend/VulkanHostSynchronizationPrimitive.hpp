@@ -16,7 +16,7 @@ namespace Flint
 			VulkanHostSynchronizationPrimitive(const std::shared_ptr<Device>& pDevice);
 			~VulkanHostSynchronizationPrimitive() { if (!bIsTerminated) Terminate(); }
 
-			virtual void Wait(const UI64 timeout = std::numeric_limits<UI64>::max()) override;
+			virtual void Wait(const uint64 timeout = std::numeric_limits<uint64>::max()) override;
 			virtual void Reset() override;
 			virtual void Terminate() override;
 

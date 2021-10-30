@@ -19,20 +19,20 @@ namespace Flint
 	 * Vertex attribute data type enum.
 	 * This enum contains all the supported vertex attribute data types.
 	 */
-	enum class ShaderAttributeDataType : UI8 {
+	enum class ShaderAttributeDataType : uint8 {
 		BYTE = 1,
 
-		I8 = 1,
-		UI8 = 1,
+		int8 = 1,
+		uint8 = 1,
 		SI8 = 1,
-		I16 = 2,
-		UI16 = 2,
+		int16 = 2,
+		uint16 = 2,
 		SI16 = 2,
-		I32 = 4,
-		UI32 = 4,
+		int32 = 4,
+		uint32 = 4,
 		SI32 = 4,
-		I64 = 8,
-		UI64 = 8,
+		int64 = 8,
+		uint64 = 8,
 		SI64 = 8,
 
 		FLOAT = 4,
@@ -70,7 +70,7 @@ namespace Flint
 	/**
 	 * Buffer type enum.
 	 */
-	enum class BufferType : UI8 {
+	enum class BufferType : uint8 {
 		Undefined,
 		Staging,
 		Vertex, Index,
@@ -86,7 +86,7 @@ namespace Flint
 	 * DeviceOnly will set data in the device and stagging buffers are required to access them.
 	 * TransferFriendly will enable it to be mapped to the local address space.
 	 */
-	enum class BufferMemoryProfile : UI8 {
+	enum class BufferMemoryProfile : uint8 {
 		Automatic,
 		CPUOnly,
 		DeviceOnly,
@@ -96,7 +96,7 @@ namespace Flint
 	/**
 	 * Image type enum.
 	 */
-	enum class ImageType : UI8 {
+	enum class ImageType : uint8 {
 		OneDimension,
 		TwoDimension,
 		ThreeDimension,
@@ -111,7 +111,7 @@ namespace Flint
 	/**
 	 * Image usage enum.
 	 */
-	enum class ImageUsage : UI8 {
+	enum class ImageUsage : uint8 {
 		Graphics = BitShiftLeft(0),
 		Storage = BitShiftLeft(1),
 		Depth = BitShiftLeft(2),
@@ -125,7 +125,7 @@ namespace Flint
 	 * @param rhs The right hand side argument.
 	 * @return The OR-ed value.
 	 */
-	constexpr ImageUsage operator|(const ImageUsage& lhs, const ImageUsage& rhs) { return static_cast<ImageUsage>(static_cast<UI8>(lhs) | static_cast<UI8>(rhs)); }
+	constexpr ImageUsage operator|(const ImageUsage& lhs, const ImageUsage& rhs) { return static_cast<ImageUsage>(static_cast<uint8>(lhs) | static_cast<uint8>(rhs)); }
 
 	/**
 	 * Bitwise And operator for the image usage.
@@ -134,12 +134,12 @@ namespace Flint
 	 * @param rhs The right hand side argument.
 	 * @return The And-ed value.
 	 */
-	constexpr ImageUsage operator&(const ImageUsage& lhs, const ImageUsage& rhs) { return static_cast<ImageUsage>(static_cast<UI8>(lhs) & static_cast<UI8>(rhs)); }
+	constexpr ImageUsage operator&(const ImageUsage& lhs, const ImageUsage& rhs) { return static_cast<ImageUsage>(static_cast<uint8>(lhs) & static_cast<uint8>(rhs)); }
 
 	/**
 	 * Pixel format enum.
 	 */
-	enum class PixelFormat : UI8 {
+	enum class PixelFormat : uint8 {
 		Undefined,
 
 		R8_SRGB,
@@ -180,7 +180,7 @@ namespace Flint
 	/**
 	 * Address mode enum.
 	 */
-	enum class AddressMode : UI8 {
+	enum class AddressMode : uint8 {
 		Repeat,
 		MirroredRepeat,
 		ClampToEdge,
@@ -191,7 +191,7 @@ namespace Flint
 	/**
 	 * Border color enum.
 	 */
-	enum class BorderColor : UI8 {
+	enum class BorderColor : uint8 {
 		TransparentBlackFLOAT,
 		TransparentBlackINT,
 		OpaqueBlackFLOAT,
@@ -203,7 +203,7 @@ namespace Flint
 	/**
 	 * Compare operator enum.
 	 */
-	enum class CompareOperator : UI8 {
+	enum class CompareOperator : uint8 {
 		Never,
 		Less,
 		Equal,
@@ -217,7 +217,7 @@ namespace Flint
 	/**
 	 * Image filter enum.
 	 */
-	enum class ImageFilter : UI8 {
+	enum class ImageFilter : uint8 {
 		Nearest,
 		Linear,
 		CubicImage,
@@ -226,7 +226,7 @@ namespace Flint
 	/**
 	 *Image mip map mode enum.
 	 */
-	enum class ImageMipMapMode : UI8 {
+	enum class ImageMipMapMode : uint8 {
 		Nearest,
 		Linear,
 	};
@@ -265,7 +265,7 @@ namespace Flint
 	/**
 	 * Shader code type enum.
 	 */
-	enum class ShaderType : UI8 {
+	enum class ShaderType : uint8 {
 		Undefined,
 		Vertex, TessellationControl, TessellationEvaluation, Geometry, Fragment,
 		Compute,
@@ -275,7 +275,7 @@ namespace Flint
 	/**
 	 * Shader resource type enum.
 	 */
-	enum class ShaderResourceType : UI8 {
+	enum class ShaderResourceType : uint8 {
 		Sampler,
 		CombinedImageSampler,
 		SampledImage,
@@ -296,9 +296,9 @@ namespace Flint
 	struct ShaderResource
 	{
 		ShaderResource() = default;
-		ShaderResource(UI32 setIndex, ShaderResourceType type) : mSetIndex(setIndex), mType(type) {}
+		ShaderResource(uint32 setIndex, ShaderResourceType type) : mSetIndex(setIndex), mType(type) {}
 
-		UI32 mSetIndex = 0;
+		uint32 mSetIndex = 0;
 		ShaderResourceType mType = ShaderResourceType::UniformBuffer;
 	};
 
@@ -308,12 +308,12 @@ namespace Flint
 	struct ShaderAttribute
 	{
 		ShaderAttribute() = default;
-		ShaderAttribute(const std::string& name, UI32 location, ShaderAttributeDataType type) : mAttributeName(name), mLocation(location), mDataType(type) {}
+		ShaderAttribute(const std::string& name, uint32 location, ShaderAttributeDataType type) : mAttributeName(name), mLocation(location), mDataType(type) {}
 
 		const bool operator==(const ShaderAttribute& other) const { return mAttributeName == other.mAttributeName && mLocation == other.mLocation && mDataType == other.mDataType; }
 
 		std::string mAttributeName = "";
-		UI32 mLocation = 0;
+		uint32 mLocation = 0;
 		ShaderAttributeDataType mDataType = ShaderAttributeDataType::VEC3;
 	};
 
@@ -323,21 +323,21 @@ namespace Flint
 	struct ShaderResourceKey
 	{
 		ShaderResourceKey() = default;
-		ShaderResourceKey(const UI32 set, UI32 binding) : mSetIndex(set), mBindingIndex(binding) {}
+		ShaderResourceKey(const uint32 set, uint32 binding) : mSetIndex(set), mBindingIndex(binding) {}
 
-		UI32 mSetIndex = 0;
-		UI32 mBindingIndex = 0;
+		uint32 mSetIndex = 0;
+		uint32 mBindingIndex = 0;
 
 		constexpr bool operator==(const ShaderResourceKey& other) const { return mSetIndex == other.mSetIndex && mBindingIndex == other.mBindingIndex; }
 	};
 
-	using TShaderResourceMap = std::unordered_map<UI32, std::unordered_map<UI32, ShaderResourceType>>;
-	using TShaderAttributeMap = std::unordered_map<UI32, std::vector<ShaderAttribute>>;
+	using TShaderResourceMap = std::unordered_map<uint32, std::unordered_map<uint32, ShaderResourceType>>;
+	using TShaderAttributeMap = std::unordered_map<uint32, std::vector<ShaderAttribute>>;
 
 	/**
 	 * Rasterization samples enum.
 	 */
-	enum class MultiSampleCount : UI8 {
+	enum class MultiSampleCount : uint8 {
 		One = BitShiftLeft(0),
 		Two = BitShiftLeft(1),
 		Four = BitShiftLeft(2),
@@ -354,7 +354,7 @@ namespace Flint
 	 * @param rhs The right hand side argument.
 	 * @return The OR performed samples.
 	 */
-	constexpr MultiSampleCount operator|(const MultiSampleCount& lhs, const MultiSampleCount& rhs) { return static_cast<MultiSampleCount>(static_cast<UI8>(lhs) | static_cast<UI8>(rhs)); }
+	constexpr MultiSampleCount operator|(const MultiSampleCount& lhs, const MultiSampleCount& rhs) { return static_cast<MultiSampleCount>(static_cast<uint8>(lhs) | static_cast<uint8>(rhs)); }
 
 	/**
 	 * Rasterization samples bitwise And operator.
@@ -363,12 +363,12 @@ namespace Flint
 	 * @param rhs The right hand side argument.
 	 * @return The And performed samples.
 	 */
-	constexpr MultiSampleCount operator&(const MultiSampleCount& lhs, const MultiSampleCount& rhs) { return static_cast<MultiSampleCount>(static_cast<UI8>(lhs) & static_cast<UI8>(rhs)); }
+	constexpr MultiSampleCount operator&(const MultiSampleCount& lhs, const MultiSampleCount& rhs) { return static_cast<MultiSampleCount>(static_cast<uint8>(lhs) & static_cast<uint8>(rhs)); }
 
 	/**
 	 * Screen bound render target present mode.
 	 */
-	enum class SwapChainPresentMode : UI8 {
+	enum class SwapChainPresentMode : uint8 {
 		Immediate,
 		MailBox,
 		FIFO,
@@ -383,10 +383,10 @@ namespace Flint
 	struct DepthClearValues
 	{
 		DepthClearValues() = default;
-		DepthClearValues(float depth, UI32 stencil) : mDepth(depth), mStencil(stencil) {}
+		DepthClearValues(float depth, uint32 stencil) : mDepth(depth), mStencil(stencil) {}
 
 		float mDepth = 0.0f;
-		UI32 mStencil = 0;
+		uint32 mStencil = 0;
 	};
 
 	/**
@@ -409,7 +409,7 @@ namespace Flint
 	 * Query usage enum.
 	 * This specify what the query is used for.
 	 */
-	enum class QueryUsage : UI8 {
+	enum class QueryUsage : uint8 {
 		Occlusion,
 		PipelineStatistics,
 		Timestamp,
@@ -459,7 +459,7 @@ namespace std
 	{
 		const size_t operator()(const Flint::ShaderAttribute& other) const
 		{
-			return hash<std::string>()(other.mAttributeName) ^ static_cast<Flint::UI8>(other.mDataType) ^ other.mLocation;
+			return hash<std::string>()(other.mAttributeName) ^ static_cast<Flint::uint8>(other.mDataType) ^ other.mLocation;
 		}
 	};
 

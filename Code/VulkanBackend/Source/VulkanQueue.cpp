@@ -13,13 +13,13 @@ namespace Flint
 		{
 			OPTICK_EVENT();
 
-			UI32 queueFamilyCount = 0;
+			uint32 queueFamilyCount = 0;
 			vkGetPhysicalDeviceQueueFamilyProperties(vPhysicalDevice, &queueFamilyCount, nullptr);
 
 			std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
 			vkGetPhysicalDeviceQueueFamilyProperties(vPhysicalDevice, &queueFamilyCount, queueFamilies.data());
 
-			I32 i = 0;
+			int32 i = 0;
 			for (auto itr = queueFamilies.begin(); itr != queueFamilies.end(); itr++, i++)
 			{
 				if (itr->queueCount > 0)

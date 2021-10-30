@@ -27,7 +27,7 @@ namespace Flint
 		mTextureContainer.mExtent = ImVec2(static_cast<float>(pColorImage->GetExtent().mWidth), static_cast<float>(pColorImage->GetExtent().mHeight));
 	}
 
-	void ImGuiPass::Process(ProcessingNode* pPreviousNode, const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 frameIndex, const UI32 imageIndex)
+	void ImGuiPass::Process(ProcessingNode* pPreviousNode, const std::shared_ptr<CommandBuffer>& pCommandBuffer, const uint32 frameIndex, const uint32 imageIndex)
 	{
 		OPTICK_EVENT();
 

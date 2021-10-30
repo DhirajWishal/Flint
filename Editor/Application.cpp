@@ -55,7 +55,7 @@ namespace Flint
 	void Application::Execute()
 	{
 		mNewTimePoint = std::chrono::steady_clock::now();
-		UI64 delta = mNewTimePoint.time_since_epoch().count() - mOldTimePoint.time_since_epoch().count();
+		uint64 delta = mNewTimePoint.time_since_epoch().count() - mOldTimePoint.time_since_epoch().count();
 
 		mRenderTarget.PollEvents(delta);
 

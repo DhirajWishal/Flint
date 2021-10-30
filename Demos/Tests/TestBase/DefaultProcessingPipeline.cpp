@@ -8,19 +8,19 @@
 
 namespace Flint
 {
-	DefaultProcessingPipeline::DefaultProcessingPipeline(const std::shared_ptr<Device>& pDevice, const FBox2D frameExtent, const std::string& displayTitle, const UI32 pipelineCount, const MultiSampleCount msaaCount, const bool forceColorBuffer, const bool forceDepthBuffer)
+	DefaultProcessingPipeline::DefaultProcessingPipeline(const std::shared_ptr<Device>& pDevice, const FBox2D frameExtent, const std::string& displayTitle, const uint32 pipelineCount, const MultiSampleCount msaaCount, const bool forceColorBuffer, const bool forceDepthBuffer)
 		: ProcessingPipeline(pDevice, frameExtent, displayTitle, pipelineCount, msaaCount, forceColorBuffer, forceDepthBuffer)
 	{
 		mCamera.SetAspectRatio(pDisplay->GetExtent());
 	}
 
-	UI64 DefaultProcessingPipeline::Update()
+	uint64 DefaultProcessingPipeline::Update()
 	{
 		OPTICK_EVENT();
 
 		// Get the current time point and delta.
 		const auto currentTimePoint = std::chrono::steady_clock::now();
-		const UI64 delta = currentTimePoint.time_since_epoch().count() - mOldTimePoint.time_since_epoch().count();
+		const uint64 delta = currentTimePoint.time_since_epoch().count() - mOldTimePoint.time_since_epoch().count();
 
 		// Get the display and update it.
 		const auto pDisplay = GetDisplay();
@@ -31,7 +31,7 @@ namespace Flint
 		io.DeltaTime = delta / 1000.0f;
 
 		ImGui::Begin("Statistics");
-		ImGui::Text("Frame time: %.4f ms (%d FPS)", io.DeltaTime / 1000.0f, static_cast<UI32>(1000.0f / (io.DeltaTime / 1000.0f)));
+		ImGui::Text("Frame time: %.4f ms (%d FPS)", io.DeltaTime / 1000.0f, static_cast<uint32>(1000.0f / (io.DeltaTime / 1000.0f)));
 		ImGui::End();
 
 		const auto extent = pDisplay->GetExtent();

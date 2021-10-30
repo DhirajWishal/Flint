@@ -28,7 +28,7 @@ namespace Flint
 		 * @param indexSize The size of a single index in bytes.
 		 * @param profile The memory profile of the buffer. Default is BufferMemoryProfile::Automatic.
 		 */
-		GeometryStore(const std::shared_ptr<Device>& pDevice, const std::vector<ShaderAttribute>& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic);
+		GeometryStore(const std::shared_ptr<Device>& pDevice, const std::vector<ShaderAttribute>& vertexAttributes, uint64 indexSize, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic);
 		~GeometryStore() { if (!bIsTerminated) Terminate(); }
 
 		GeometryStore(const GeometryStore&) = delete;
@@ -60,7 +60,7 @@ namespace Flint
 		 * @param pIndexData The index data to add.
 		 * @return The pair of offsets (vertex offset, index offset) in which the geometry is stored.
 		 */
-		std::pair<UI64, UI64> AddGeometry(UI64 vertexCount, const void* pVertexData, UI64 indexCount, const void* pIndexData);
+		std::pair<uint64, uint64> AddGeometry(uint64 vertexCount, const void* pVertexData, uint64 indexCount, const void* pIndexData);
 
 		/**
 		 * Add geometry to the store using buffers.
@@ -70,7 +70,7 @@ namespace Flint
 		 * @param pIndexStagingBuffer The index data stored stagging buffer.
 		 * @return The pair of offsets (vertex offset, index offset) in which the geometry is stored.
 		 */
-		std::pair<UI64, UI64> AddGeometry(const Buffer* pVertexStagingBuffer, const Buffer* pIndexStagingBuffer);
+		std::pair<uint64, uint64> AddGeometry(const Buffer* pVertexStagingBuffer, const Buffer* pIndexStagingBuffer);
 
 		/**
 		 * Remove a geometry from the store.
@@ -80,7 +80,7 @@ namespace Flint
 		 * @param indexOffset The index offset in the buffer.
 		 * @param indexCount The number of indexes to remove.
 		 */
-		void RemoveGeometry(UI64 vertexOffset, UI64 vertexCount, UI64 indexOffset, UI64 indexCount);
+		void RemoveGeometry(uint64 vertexOffset, uint64 vertexCount, uint64 indexOffset, uint64 indexCount);
 
 	public:
 		/**
@@ -115,28 +115,28 @@ namespace Flint
 		 *
 		 * @return The size in bytes.
 		 */
-		const UI64 GetVertexSize() const { return mVertexSize; }
+		const uint64 GetVertexSize() const { return mVertexSize; }
 
 		/**
 		 * Get the vertex count.
 		 *
 		 * @return The number of vertexes stored.
 		 */
-		const UI64 GetVertexCount() const { return mVertexCount; }
+		const uint64 GetVertexCount() const { return mVertexCount; }
 
 		/**
 		 * Get the size of a single index.
 		 *
 		 * @return The size in bytes.
 		 */
-		const UI64 GetIndexSize() const { return mIndexSize; }
+		const uint64 GetIndexSize() const { return mIndexSize; }
 
 		/**
 		 * Get the index count.
 		 *
 		 * @return The number of indexes stored.
 		 */
-		const UI64 GetIndexCount() const { return mIndexCount; }
+		const uint64 GetIndexCount() const { return mIndexCount; }
 
 		/**
 		 * Map the vertex buffer to the local address space.
@@ -170,11 +170,11 @@ namespace Flint
 		std::shared_ptr<Buffer> pVertexBuffer = nullptr;
 		std::shared_ptr<Buffer> pIndexBuffer = nullptr;
 
-		UI64 mVertexSize = 0;
-		UI64 mIndexSize = 0;
+		uint64 mVertexSize = 0;
+		uint64 mIndexSize = 0;
 
-		UI64 mVertexCount = 0;
-		UI64 mIndexCount = 0;
+		uint64 mVertexCount = 0;
+		uint64 mIndexCount = 0;
 
 		BufferMemoryProfile mMemoryProfile = BufferMemoryProfile::Automatic;
 	};

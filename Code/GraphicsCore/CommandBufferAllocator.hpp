@@ -24,7 +24,7 @@ namespace Flint
 		 * @param pDevice The device pointer.
 		 * @param bufferCount The number of buffers to allocate.
 		 */
-		CommandBufferAllocator(const std::shared_ptr<Device>& pDevice, const UI32 bufferCount);
+		CommandBufferAllocator(const std::shared_ptr<Device>& pDevice, const uint32 bufferCount);
 
 		/**
 		 * Construct a secondary command buffer allocator.
@@ -33,7 +33,7 @@ namespace Flint
 		 * @param pParent The parent command buffer allocator.
 		 * @param bufferCount The number of buffers to allocate.
 		 */
-		CommandBufferAllocator(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<CommandBufferAllocator>& pParent, const UI32 bufferCount);
+		CommandBufferAllocator(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<CommandBufferAllocator>& pParent, const uint32 bufferCount);
 
 		/**
 		 * Create the command buffers.
@@ -55,7 +55,7 @@ namespace Flint
 		 * 
 		 * @return The buffer count.
 		 */
-		const UI32 GetBufferCount() const { return mBufferCount; }
+		const uint32 GetBufferCount() const { return mBufferCount; }
 
 		/**
 		 * Get the parent command buffer pointer.
@@ -77,7 +77,7 @@ namespace Flint
 		 * @param index The index of the command buffer.
 		 * @return The command buffer pointer.
 		 */
-		const std::shared_ptr<CommandBuffer> GetCommandBuffer(const UI64 index) const { return pCommandBuffers[index]; }
+		const std::shared_ptr<CommandBuffer> GetCommandBuffer(const uint64 index) const { return pCommandBuffers[index]; }
 
 	protected:
 		/**
@@ -85,12 +85,12 @@ namespace Flint
 		 * 
 		 * @param index The command buffer index.
 		 */
-		void FlagCommandBufferAsTerminated(UI32 index) { pCommandBuffers[index]->Terminate(); }
+		void FlagCommandBufferAsTerminated(uint32 index) { pCommandBuffers[index]->Terminate(); }
 
 	protected:
 		std::vector<std::shared_ptr<CommandBuffer>> pCommandBuffers = {};
 		std::shared_ptr<CommandBufferAllocator> pParentAllocator = nullptr;
 
-		UI32 mBufferCount = 0;
+		uint32 mBufferCount = 0;
 	};
 }

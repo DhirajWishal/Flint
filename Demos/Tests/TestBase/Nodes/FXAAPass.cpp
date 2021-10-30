@@ -43,7 +43,7 @@ namespace Flint
 		pResourcePackage->BindResource(1, pAntiAliasedImage, pAntiAliasedImage->CreateImageView(0, pAntiAliasedImage->GetLayerCount(), 0, pAntiAliasedImage->GetMipLevels(), ImageUsage::Storage), pDevice->CreateImageSampler(ImageSamplerSpecification()), ImageUsage::Storage);
 	}
 
-	void FXAAPass::Process(ProcessingNode* pPreviousNode, const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 frameIndex, const UI32 imageIndex)
+	void FXAAPass::Process(ProcessingNode* pPreviousNode, const std::shared_ptr<CommandBuffer>& pCommandBuffer, const uint32 frameIndex, const uint32 imageIndex)
 	{
 		OPTICK_EVENT();
 

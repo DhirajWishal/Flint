@@ -29,7 +29,7 @@ namespace Flint
 		pSecondaryCommandBuffers = pSecondaryAllocator->CreateCommandBuffers();
 
 		pSynchronizationPrimtives.reserve(pSecondaryCommandBuffers.size());
-		for (UI64 i = 0; i < pCommandBuffers.size(); i++)
+		for (uint64 i = 0; i < pCommandBuffers.size(); i++)
 			pSynchronizationPrimtives.push_back(pDevice->CreateHostSynchronizationPrimitive());
 
 		mImGuiAdapter.Initialize(pDevice, pRenderTarget);
@@ -78,7 +78,7 @@ namespace Flint
 		OPTICK_EVENT();
 
 		auto currentTimePoint = mClock.now();
-		UI64 delta = currentTimePoint.time_since_epoch().count() - mOldTimePoint.time_since_epoch().count();
+		uint64 delta = currentTimePoint.time_since_epoch().count() - mOldTimePoint.time_since_epoch().count();
 
 		auto pDisplay = GetDisplay();
 		pDisplay->Update();
@@ -145,7 +145,7 @@ namespace Flint
 			return;
 		}
 
-		const UI32 index = pRenderTarget->GetFrameIndex();
+		const uint32 index = pRenderTarget->GetFrameIndex();
 		auto pSynchronizationPrimtive = pSynchronizationPrimtives[index];
 		pSynchronizationPrimtive->Wait();
 

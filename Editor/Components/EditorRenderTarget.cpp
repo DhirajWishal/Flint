@@ -19,7 +19,7 @@ namespace Flint
 
 	void EditorRenderTarget::Initialize(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Instance>& pInstnace)
 	{
-		pDisplay = pInstnace->CreateDisplay({ std::numeric_limits<UI32>::max() }, "Flint Editor");
+		pDisplay = pInstnace->CreateDisplay({ std::numeric_limits<uint32>::max() }, "Flint Editor");
 		mExtent = pDisplay->GetExtent();
 
 		const auto sampleCount = pDevice->GetSupportedMultiSampleCount();
@@ -64,7 +64,7 @@ namespace Flint
 		return pDisplay->IsOpen();
 	}
 
-	void EditorRenderTarget::PollEvents(UI64 delta)
+	void EditorRenderTarget::PollEvents(uint64 delta)
 	{
 		pDisplay->Update();
 
@@ -149,7 +149,7 @@ namespace Flint
 		pRenderTarget->GetDevice()->WaitForQueue();
 	}
 
-	void EditorRenderTarget::UpdateUI(const UI64 delta)
+	void EditorRenderTarget::UpdateUI(const uint64 delta)
 	{
 	}
 

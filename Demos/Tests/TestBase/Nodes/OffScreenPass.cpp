@@ -25,7 +25,7 @@ namespace Flint
 		bIsFirstPass.resize(GetBufferCount(), true);
 	}
 
-	void OffScreenPass::Process(ProcessingNode* pPreviousNode, const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 frameIndex, const UI32 imageIndex)
+	void OffScreenPass::Process(ProcessingNode* pPreviousNode, const std::shared_ptr<CommandBuffer>& pCommandBuffer, const uint32 frameIndex, const uint32 imageIndex)
 	{
 		OPTICK_EVENT();
 
@@ -39,7 +39,7 @@ namespace Flint
 		pCommandBuffer->BindRenderTarget(pOffScreenRenderTarget.get());
 
 		// Occlusion pass.
-		UI32 index = 0;
+		uint32 index = 0;
 		for (const auto& pGameObject : pGameObjects)
 			pGameObject->OcclusionPass(pCommandBuffer, frameIndex);
 

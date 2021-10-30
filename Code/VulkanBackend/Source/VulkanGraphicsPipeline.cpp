@@ -599,7 +599,7 @@ namespace Flint
 
 		void VulkanGraphicsPipeline::CreateResourcePackagers()
 		{
-			for (UI32 i = 0; i < vDescriptorSetLayouts.size(); i++)
+			for (uint32 i = 0; i < vDescriptorSetLayouts.size(); i++)
 				pResourcePackagers.push_back(std::make_shared<VulkanResourcePackager>(i, shared_from_this(), vDescriptorSetLayouts[i]));
 		}
 
@@ -608,7 +608,7 @@ namespace Flint
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 
 			// Write cache data.
-			UI64 cacheSize = 0;
+			uint64 cacheSize = 0;
 			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkGetPipelineCacheData(vDevice.GetLogicalDevice(), vPipelineCache, &cacheSize, nullptr));
 
 			unsigned char* pDataStore = new unsigned char[cacheSize];
@@ -666,7 +666,7 @@ namespace Flint
 						vAttributeDescription.format = Helpers::GetFormatFromSize(attribute.mDataType);
 
 						vVertexAttributes.push_back(vAttributeDescription);
-						vAttributeDescription.offset += static_cast<UI32>(attribute.mDataType);
+						vAttributeDescription.offset += static_cast<uint32>(attribute.mDataType);
 					}
 
 					vBindingDescription.binding = binding.first;
@@ -679,9 +679,9 @@ namespace Flint
 			vVertexInputStateCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 			vVertexInputStateCreateInfo.pNext = VK_NULL_HANDLE;
 			vVertexInputStateCreateInfo.flags = 0;
-			vVertexInputStateCreateInfo.vertexAttributeDescriptionCount = static_cast<UI32>(vVertexAttributes.size());
+			vVertexInputStateCreateInfo.vertexAttributeDescriptionCount = static_cast<uint32>(vVertexAttributes.size());
 			vVertexInputStateCreateInfo.pVertexAttributeDescriptions = vVertexAttributes.data();
-			vVertexInputStateCreateInfo.vertexBindingDescriptionCount = static_cast<UI32>(vVertexBindings.size());
+			vVertexInputStateCreateInfo.vertexBindingDescriptionCount = static_cast<uint32>(vVertexBindings.size());
 			vVertexInputStateCreateInfo.pVertexBindingDescriptions = vVertexBindings.data();
 
 			// Input assembly state.
@@ -720,7 +720,7 @@ namespace Flint
 			vColorBlendStateCreateInfo.logicOpEnable = GET_VK_BOOL(mSpecification.bEnableColorBlendLogic);
 			std::copy_n(mSpecification.mColorBlendConstants, 4, vColorBlendStateCreateInfo.blendConstants);
 
-			vColorBlendStateCreateInfo.attachmentCount = static_cast<UI32>(vCBASS.size());
+			vColorBlendStateCreateInfo.attachmentCount = static_cast<uint32>(vCBASS.size());
 			vColorBlendStateCreateInfo.pAttachments = vCBASS.data();
 
 			// Rasterization state.
@@ -764,7 +764,7 @@ namespace Flint
 			vDynamicStateCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
 			vDynamicStateCreateInfo.pNext = VK_NULL_HANDLE;
 			vDynamicStateCreateInfo.flags = 0;
-			vDynamicStateCreateInfo.dynamicStateCount = static_cast<UI32>(vDynamicStates.size());
+			vDynamicStateCreateInfo.dynamicStateCount = static_cast<uint32>(vDynamicStates.size());
 			vDynamicStateCreateInfo.pDynamicStates = vDynamicStates.data();
 		}
 
@@ -793,7 +793,7 @@ namespace Flint
 
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 			std::vector<VkPushConstantRange> vConstantRanges;
-			std::unordered_map<UI32, DescriptorSetInfo> descriptorSetInfos;
+			std::unordered_map<uint32, DescriptorSetInfo> descriptorSetInfos;
 
 			// Resolve vertex shader data.
 			{
@@ -876,7 +876,7 @@ namespace Flint
 				vLayoutCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 				vLayoutCreateInfo.pNext = VK_NULL_HANDLE;
 				vLayoutCreateInfo.flags = 0;
-				vLayoutCreateInfo.bindingCount = static_cast<UI32>(info.second.mLayoutBindings.size());
+				vLayoutCreateInfo.bindingCount = static_cast<uint32>(info.second.mLayoutBindings.size());
 				vLayoutCreateInfo.pBindings = info.second.mLayoutBindings.data();
 
 				VkDescriptorSetLayout vDescriptorSetLayout = VK_NULL_HANDLE;
@@ -890,9 +890,9 @@ namespace Flint
 			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 			vCreateInfo.pNext = VK_NULL_HANDLE;
 			vCreateInfo.flags = 0;
-			vCreateInfo.pushConstantRangeCount = static_cast<UI32>(vConstantRanges.size());
+			vCreateInfo.pushConstantRangeCount = static_cast<uint32>(vConstantRanges.size());
 			vCreateInfo.pPushConstantRanges = vConstantRanges.data();
-			vCreateInfo.setLayoutCount = static_cast<UI32>(vDescriptorSetLayouts.size());
+			vCreateInfo.setLayoutCount = static_cast<uint32>(vDescriptorSetLayouts.size());
 			vCreateInfo.pSetLayouts = vDescriptorSetLayouts.data();
 
 			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreatePipelineLayout(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vPipelineLayout));
@@ -904,8 +904,8 @@ namespace Flint
 
 			// Resolve viewport state.
 			VkRect2D vR2D = {};
-			vR2D.extent.width = static_cast<UI32>(pRenderTarget->GetExtent().mWidth);
-			vR2D.extent.height = static_cast<UI32>(pRenderTarget->GetExtent().mHeight);
+			vR2D.extent.width = static_cast<uint32>(pRenderTarget->GetExtent().mWidth);
+			vR2D.extent.height = static_cast<uint32>(pRenderTarget->GetExtent().mHeight);
 			vR2D.offset = { 0, 0 };
 
 			VkViewport vVP = {};
@@ -930,7 +930,7 @@ namespace Flint
 			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 			vCreateInfo.pNext = VK_NULL_HANDLE;
 			vCreateInfo.flags = 0;
-			vCreateInfo.stageCount = static_cast<UI32>(vShaderStageCreateInfo.size());
+			vCreateInfo.stageCount = static_cast<uint32>(vShaderStageCreateInfo.size());
 			vCreateInfo.pStages = vShaderStageCreateInfo.data();
 			vCreateInfo.pVertexInputState = &vVertexInputStateCreateInfo;
 			vCreateInfo.pInputAssemblyState = &vInputAssemblyStateCreateInfo;

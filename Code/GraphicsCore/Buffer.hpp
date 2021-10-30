@@ -11,7 +11,7 @@ namespace Flint
 	 * Buffer resize mode enum.
 	 * This defines what to do to the stored data after resizing.
 	 */
-	enum class BufferResizeMode : UI8 {
+	enum class BufferResizeMode : uint8 {
 		Clear,
 		Copy,
 	};
@@ -31,7 +31,7 @@ namespace Flint
 		 * @param size The size of the buffer.
 		 * @param profile The memory profile of the buffer. Default is BufferMemoryProfile::Automatic.
 		 */
-		Buffer(const std::shared_ptr<Device>& pDevice, const BufferType type, const UI64 size, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic);
+		Buffer(const std::shared_ptr<Device>& pDevice, const BufferType type, const uint64 size, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic);
 
 		/**
 		 * Resize the buffer.
@@ -40,7 +40,7 @@ namespace Flint
 		 * @param size The new size of the buffer.
 		 * @param mode The resize mode.
 		 */
-		virtual void Resize(const UI64 size, const BufferResizeMode mode) = 0;
+		virtual void Resize(const uint64 size, const BufferResizeMode mode) = 0;
 
 		/**
 		 * Copy data to this buffer using another buffer.
@@ -50,7 +50,7 @@ namespace Flint
 		 * @param srcOffet The source buffer offset.
 		 * @param dstOffset The destination (this) buffer offset.
 		 */
-		virtual void CopyFromBuffer(const Buffer* pSrcBuffer, const UI64 size, const UI64 srcOffset, const UI64 dstOffset) = 0;
+		virtual void CopyFromBuffer(const Buffer* pSrcBuffer, const uint64 size, const uint64 srcOffset, const uint64 dstOffset) = 0;
 
 		/**
 		 * Map the buffer memory to the local address space.
@@ -59,7 +59,7 @@ namespace Flint
 		 * @param offset The offset of the buffer to map.
 		 * @return The mapped address pointer.
 		 */
-		virtual void* MapMemory(const UI64 size, const UI64 offset = 0) = 0;
+		virtual void* MapMemory(const uint64 size, const uint64 offset = 0) = 0;
 
 		/**
 		 * Unmap the buffer memory from the local address space.
@@ -76,7 +76,7 @@ namespace Flint
 		 * @param offset The offset in the buffer to copy data to. Default is 0.
 		 */
 		template<class Type>
-		void CopyData(const Type& data, const UI64 offset = 0)
+		void CopyData(const Type& data, const uint64 offset = 0)
 		{
 			Type* pData = static_cast<Type*>(MapMemory(sizeof(Type), offset));
 			(*pData) = data;
@@ -89,7 +89,7 @@ namespace Flint
 		 * @param sizeToAdd The size to extend the buffer with.
 		 * @param mode The resize mode.
 		 */
-		void Extend(const UI64 sizeToAdd, const BufferResizeMode mode) { Resize(GetSize() + sizeToAdd, mode); }
+		void Extend(const uint64 sizeToAdd, const BufferResizeMode mode) { Resize(GetSize() + sizeToAdd, mode); }
 
 		/**
 		 * Shrink the buffer's size.
@@ -97,14 +97,14 @@ namespace Flint
 		 * @param sizeToReduce The size to shrink the buffer with.
 		 * @param mode The resize mode.
 		 */
-		void Shrink(const UI64 sizeToReduce, const BufferResizeMode mode) { Resize(GetSize() - sizeToReduce, mode); }
+		void Shrink(const uint64 sizeToReduce, const BufferResizeMode mode) { Resize(GetSize() - sizeToReduce, mode); }
 
 		/**
 		 * Get the buffer size.
 		 *
 		 * @return The size in bytes.
 		 */
-		const UI64 GetSize() const { return mSize; }
+		const uint64 GetSize() const { return mSize; }
 
 		/**
 		 * Get the buffer type.
@@ -128,7 +128,7 @@ namespace Flint
 		bool IsMapped() const { return bIsMapped; }
 
 	protected:
-		UI64 mSize = 0;
+		uint64 mSize = 0;
 		BufferType mType = BufferType::Undefined;
 		BufferMemoryProfile mMemoryProfile = BufferMemoryProfile::Automatic;
 

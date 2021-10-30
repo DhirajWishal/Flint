@@ -21,7 +21,7 @@ namespace Flint
 			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateFence(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vFence));
 		}
 
-		void VulkanHostSynchronizationPrimitive::Wait(const UI64 timeout)
+		void VulkanHostSynchronizationPrimitive::Wait(const uint64 timeout)
 		{
 			OPTICK_EVENT();
 

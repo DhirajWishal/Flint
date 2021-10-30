@@ -26,7 +26,7 @@ namespace Flint
 		pPackage->BindResource(1, pImageSampler, pImage);
 	}
 
-	void SkyBox::Update(UI64 delta, Camera* pCamera)
+	void SkyBox::Update(uint64 delta, Camera* pCamera)
 	{
 		auto mat = pCamera->GetMatrix();
 		mMatrix.mViewMatrix = mat.mViewMatrix;
@@ -94,7 +94,7 @@ namespace Flint
 		specification.mVertexInputAttributeMap[0] = pVertexShader->GetInputAttributes();
 		pPipeline = pApplication->GetGraphicsScene("Default")->CreateGraphicsPipeline("SkyBox", pVertexShader, pFragmentShader, specification);
 
-		pApplication->CreateGeometryStore("SkyBox", pVertexShader->GetInputAttributes(), sizeof(UI32));
+		pApplication->CreateGeometryStore("SkyBox", pVertexShader->GetInputAttributes(), sizeof(uint32));
 
 		auto windowExtent = pApplication->GetGraphicsScene("Default")->GetDisplay()->GetExtent();
 		pDynamicStates->SetViewPort(Flint::FExtent2D<float>{static_cast<float>(windowExtent.mWidth), static_cast<float>(windowExtent.mHeight)}, Flint::FExtent2D<float>(0.0f, 1.0f), { 0.0f, 0.0f });

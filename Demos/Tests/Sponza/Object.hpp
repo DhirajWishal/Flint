@@ -30,10 +30,10 @@ namespace Flint
 		Object(Application* pApplication, std::shared_ptr<OffScreenPass> pOffScreenPass);
 
 		virtual void Initialize(Application* pApplication) override;
-		virtual void Update(UI64 delta, Camera* pCamera) override;
-		virtual void Draw(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 index) override;
-		virtual void OcclusionPass(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 index) override;
-		virtual void ResetOcclusionQuery(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 index, const bool isFirstUse) override;
+		virtual void Update(uint64 delta, Camera* pCamera) override;
+		virtual void Draw(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const uint32 index) override;
+		virtual void OcclusionPass(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const uint32 index) override;
+		virtual void ResetOcclusionQuery(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const uint32 index, const bool isFirstUse) override;
 		virtual void Terminate() override;
 
 	private:
@@ -47,7 +47,7 @@ namespace Flint
 		std::vector<std::vector<std::shared_ptr<ResourcePackage>>> pPackageSets = {};
 		std::vector<std::shared_ptr<ResourcePackage>> pOcclusionPackageSets = {};
 		std::vector<std::shared_ptr<Query>> pOcclusionQueries = {};
-		std::vector<std::vector<UI64>> mDrawSamples = {};
+		std::vector<std::vector<uint64>> mDrawSamples = {};
 
 		Application* pApplication = nullptr;
 		std::shared_ptr<OffScreenPass> pOffScreenPass = nullptr;

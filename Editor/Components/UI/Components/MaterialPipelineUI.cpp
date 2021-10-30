@@ -277,7 +277,7 @@ namespace Flint
 		ImGui::Spacing();
 
 		ImGui::TextColored(TitleColor, "Color Blending");
-		for (UI64 i = 0; i < spec.mColorBlendAttachments.size(); i++)
+		for (uint64 i = 0; i < spec.mColorBlendAttachments.size(); i++)
 		{
 			const ColorBlendAttachment attachment = spec.mColorBlendAttachments[i];
 
@@ -396,7 +396,7 @@ namespace Flint
 			{
 				ImGui::Text("Location: %u", attribute.mLocation);
 				ImGui::Text("Variable name: %s", attribute.mAttributeName.c_str());
-				ImGui::Text("Size: %u bytes", static_cast<UI8>(attribute.mDataType));
+				ImGui::Text("Size: %u bytes", static_cast<uint8>(attribute.mDataType));
 				ImGui::Spacing();
 			}
 			ImGui::Unindent();
@@ -414,7 +414,7 @@ namespace Flint
 			{
 				ImGui::Text("Location: %u", attribute.mLocation);
 				ImGui::Text("Variable name: %s", attribute.mAttributeName.c_str());
-				ImGui::Text("Size: %u bytes", static_cast<UI8>(attribute.mDataType));
+				ImGui::Text("Size: %u bytes", static_cast<uint8>(attribute.mDataType));
 				ImGui::Spacing();
 			}
 			ImGui::Unindent();

@@ -26,7 +26,7 @@ namespace Flint
 			ImFont* pCurrentFont = ImGui::GetFont();
 			if (ImGui::BeginCombo("Select Font", pCurrentFont->GetDebugName()))
 			{
-				for (UI32 i = 0; i < static_cast<UI32>(io.Fonts->Fonts.Size); i++)
+				for (uint32 i = 0; i < static_cast<uint32>(io.Fonts->Fonts.Size); i++)
 				{
 					ImFont* pFont = io.Fonts->Fonts[i];
 

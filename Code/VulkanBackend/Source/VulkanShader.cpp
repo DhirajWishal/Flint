@@ -13,10 +13,10 @@ namespace Flint
 	{
 		namespace Helpers
 		{
-			std::vector<UI32> ResolvePadding(const std::vector<UI32>& code)
+			std::vector<uint32> ResolvePadding(const std::vector<uint32>& code)
 			{
-				const UI64 finalCodeSize = code.size() / 4;
-				std::vector<UI32> resolvedCode(code.begin(), code.begin() + finalCodeSize);
+				const uint64 finalCodeSize = code.size() / 4;
+				std::vector<uint32> resolvedCode(code.begin(), code.begin() + finalCodeSize);
 
 				return resolvedCode;
 			}
@@ -190,7 +190,7 @@ namespace Flint
 			if (!shaderFile.is_open())
 				throw std::runtime_error("Submitted shader file path is invalid!");
 
-			const UI64 codeSize = shaderFile.tellg();
+			const uint64 codeSize = shaderFile.tellg();
 			shaderFile.seekg(0);
 
 			mShaderCode.resize(codeSize);
@@ -201,7 +201,7 @@ namespace Flint
 			PerformReflection();
 		}
 
-		VulkanShader::VulkanShader(const std::shared_ptr<Device>& pDevice, const ShaderType type, const std::vector<UI32>& code)
+		VulkanShader::VulkanShader(const std::shared_ptr<Device>& pDevice, const ShaderType type, const std::vector<uint32>& code)
 			: Shader(pDevice, type, code), mShaderCode(code)
 		{
 			OPTICK_EVENT();
@@ -209,7 +209,7 @@ namespace Flint
 			ResolveShaderStage();
 
 			// Add padding if the code isnt a multiple of 4.
-			for (UI8 i = 0; i < mShaderCode.size() % 4; i++)
+			for (uint8 i = 0; i < mShaderCode.size() % 4; i++)
 				mShaderCode.push_back(0);
 
 			CreateShaderModule();
@@ -253,7 +253,7 @@ namespace Flint
 			if (!shaderFile.is_open())
 				throw std::runtime_error("Submitted shader file path is invalid!");
 
-			const UI64 codeSize = shaderFile.tellg();
+			const uint64 codeSize = shaderFile.tellg();
 			shaderFile.seekg(0);
 
 			mShaderCode.resize(codeSize);
@@ -264,7 +264,7 @@ namespace Flint
 			PerformReflection();
 		}
 
-		void VulkanShader::Reload(const std::vector<UI32>& code)
+		void VulkanShader::Reload(const std::vector<uint32>& code)
 		{
 			OPTICK_EVENT();
 			Terminate();
@@ -319,11 +319,11 @@ namespace Flint
 			OPTICK_EVENT();
 
 			SpvReflectShaderModule sShaderModule = {};
-			UI32 variableCount = 0;
+			uint32 variableCount = 0;
 
-			//std::vector<UI32> shaderCode = mShaderCode;
-			std::vector<UI32> shaderCode = std::move(Helpers::ResolvePadding(mShaderCode));
-			Helpers::ValidateReflection(spvReflectCreateShaderModule(shaderCode.size() * sizeof(UI32), shaderCode.data(), &sShaderModule));
+			//std::vector<uint32> shaderCode = mShaderCode;
+			std::vector<uint32> shaderCode = std::move(Helpers::ResolvePadding(mShaderCode));
+			Helpers::ValidateReflection(spvReflectCreateShaderModule(shaderCode.size() * sizeof(uint32), shaderCode.data(), &sShaderModule));
 
 			// Resolve shader inputs.
 			{
@@ -356,7 +356,7 @@ namespace Flint
 							resource->location,
 							static_cast<ShaderAttributeDataType>(
 								(resource->type_description->traits.numeric.scalar.width / 8) *
-								std::max(resource->type_description->traits.numeric.vector.component_count, UI32(1)))));
+								std::max(resource->type_description->traits.numeric.vector.component_count, uint32(1)))));
 					}
 				}
 			}
@@ -386,7 +386,7 @@ namespace Flint
 						resource->location,
 						static_cast<ShaderAttributeDataType>(
 							(resource->type_description->traits.numeric.scalar.width / 8) *
-							std::max(resource->type_description->traits.numeric.vector.component_count, UI32(1)))));
+							std::max(resource->type_description->traits.numeric.vector.component_count, uint32(1)))));
 				}
 			}
 

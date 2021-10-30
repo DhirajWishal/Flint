@@ -23,7 +23,7 @@ namespace Flint
 		pDevice = pInstance->CreateDevice(DeviceFlags::External | DeviceFlags::GraphicsCompatible | DeviceFlags::ComputeCompatible);
 
 		// Create the empty image, image view and sampler.
-		const UI8 pixelData[4] = { 255, 255, 255, 255 };
+		const uint8 pixelData[4] = { 255, 255, 255, 255 };
 		pEmptyImage = pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Graphics, FBox3D(1), PixelFormat::R8G8B8A8_SRGB, 1, 1, pixelData);
 		pEmptyImageView = pEmptyImage->CreateImageView(0, 1, 0, 1, ImageUsage::Graphics);
 		pEmptyImageSampler = pDevice->CreateImageSampler(ImageSamplerSpecification());
@@ -80,7 +80,7 @@ namespace Flint
 		pDevice->WaitIdle();
 	}
 
-	std::shared_ptr<GeometryStore> Application::CreateGeometryStore(const std::string& name, const std::vector<ShaderAttribute>& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile)
+	std::shared_ptr<GeometryStore> Application::CreateGeometryStore(const std::string& name, const std::vector<ShaderAttribute>& vertexAttributes, uint64 indexSize, const BufferMemoryProfile profile)
 	{
 		OPTICK_EVENT();
 

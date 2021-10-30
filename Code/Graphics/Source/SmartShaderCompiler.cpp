@@ -5,17 +5,17 @@
 
 namespace Flint
 {
-	void SmartShaderCompiler::AddInput(const InputAttributeType type, const UI32 location)
+	void SmartShaderCompiler::AddInput(const InputAttributeType type, const uint32 location)
 	{
 		mInputAttributes.push_back({ type, location });
 	}
 
-	void SmartShaderCompiler::AddOutput(const InputAttributeType type, const UI32 location)
+	void SmartShaderCompiler::AddOutput(const InputAttributeType type, const uint32 location)
 	{
 		mOutputAttributes.push_back({ type, location });
 	}
 
-	void SmartShaderCompiler::AddUniform(const ShaderResourceType type, const UI32 setIndex, const UI32 binding)
+	void SmartShaderCompiler::AddUniform(const ShaderResourceType type, const uint32 setIndex, const uint32 binding)
 	{
 		mResourceSetMap[setIndex].push_back({ type, binding });
 	}

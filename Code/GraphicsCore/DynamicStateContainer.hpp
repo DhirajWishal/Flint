@@ -11,7 +11,7 @@ namespace Flint
 	 * Dynamic state flags.
 	 * This determines which dynamic states the pipeline consists.
 	 */
-	enum class DynamicStateFlags : UI8 {
+	enum class DynamicStateFlags : uint8 {
 		Undefined,
 		ViewPort = BitShiftLeft(0),
 		Scissor = BitShiftLeft(1),
@@ -30,7 +30,7 @@ namespace Flint
 	 */
 	constexpr DynamicStateFlags operator|(const DynamicStateFlags& lhs, const DynamicStateFlags& rhs)
 	{
-		return static_cast<DynamicStateFlags>(static_cast<UI8>(lhs) | static_cast<UI8>(rhs));
+		return static_cast<DynamicStateFlags>(static_cast<uint8>(lhs) | static_cast<uint8>(rhs));
 	}
 
 	/**
@@ -42,7 +42,7 @@ namespace Flint
 	 */
 	constexpr bool operator&(const DynamicStateFlags& lhs, const DynamicStateFlags& rhs)
 	{
-		return static_cast<UI8>(lhs) & static_cast<UI8>(rhs);
+		return static_cast<uint8>(lhs) & static_cast<uint8>(rhs);
 	}
 
 	/**
@@ -150,7 +150,7 @@ namespace Flint
 	struct ConstantData
 	{
 		ConstantData() = default;
-		ConstantData(const void* pData, const UI64 size, const UI64 offset) : pData(pData), mSize(size), mOffset(offset) {}
+		ConstantData(const void* pData, const uint64 size, const uint64 offset) : pData(pData), mSize(size), mOffset(offset) {}
 
 		/**
 		 * Check if the constant block is null.
@@ -160,8 +160,8 @@ namespace Flint
 		constexpr bool IsNull() const { return pData == nullptr; }
 
 		const void* pData = nullptr;
-		UI64 mSize = 0;
-		UI64 mOffset = 0;
+		uint64 mSize = 0;
+		uint64 mOffset = 0;
 	};
 
 	/**
@@ -227,7 +227,7 @@ namespace Flint
 		 * @param size The size to be passed.
 		 * @param offset The offset of the data. Default is 0.
 		 */
-		void SetConstantData(const ShaderType shaderType, void* pData, const UI64 size, const UI64 offset = 0);
+		void SetConstantData(const ShaderType shaderType, void* pData, const uint64 size, const uint64 offset = 0);
 
 	public:
 		ViewPort mViewPort = {};

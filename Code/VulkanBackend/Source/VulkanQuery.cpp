@@ -26,13 +26,13 @@ namespace Flint
 			}
 		}
 
-		VulkanQuery::VulkanQuery(const std::shared_ptr<Device>& pDevice, const QueryUsage usage, const UI32 queryCount)
+		VulkanQuery::VulkanQuery(const std::shared_ptr<Device>& pDevice, const QueryUsage usage, const uint32 queryCount)
 			: Query(pDevice, usage, queryCount)
 		{
 			CreatePool();
 		}
 
-		void VulkanQuery::Recreate(const UI32 queryCount)
+		void VulkanQuery::Recreate(const uint32 queryCount)
 		{
 			// Skip if the two sizes are equal.
 			if (queryCount == mQueryCount)
@@ -45,7 +45,7 @@ namespace Flint
 			bIsTerminated = false;
 		}
 
-		void VulkanQuery::RequestQueryData(const UI32 firstQuery, const UI32 count, const UI64 dataSize, void* pDataStore, const UI64 stride, const QueryDataMode dataMode)
+		void VulkanQuery::RequestQueryData(const uint32 firstQuery, const uint32 count, const uint64 dataSize, void* pDataStore, const uint64 stride, const QueryDataMode dataMode)
 		{
 			VkQueryResultFlags vResultFlags = 0;
 			if (dataMode & QueryDataMode::UI64Result)

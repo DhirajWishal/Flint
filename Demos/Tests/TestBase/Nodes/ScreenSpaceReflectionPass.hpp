@@ -44,7 +44,7 @@ namespace Flint
 		 * @param frameIndex The current frame index.
 		 * @param imageIndex The current image index.
 		 */
-		virtual void Process(ProcessingNode* pPreviousNode, const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 frameIndex, const UI32 imageIndex) override;
+		virtual void Process(ProcessingNode* pPreviousNode, const std::shared_ptr<CommandBuffer>& pCommandBuffer, const uint32 frameIndex, const uint32 imageIndex) override;
 
 	public:
 		/**

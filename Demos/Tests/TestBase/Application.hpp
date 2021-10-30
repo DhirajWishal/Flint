@@ -25,7 +25,7 @@ namespace Flint
 		void EndFrame();
 		void Cleanup();
 
-		std::shared_ptr<GeometryStore> CreateGeometryStore(const std::string& name, const std::vector<ShaderAttribute>& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic);
+		std::shared_ptr<GeometryStore> CreateGeometryStore(const std::string& name, const std::vector<ShaderAttribute>& vertexAttributes, uint64 indexSize, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic);
 		std::shared_ptr<GeometryStore> GetGeometryStore(const std::string& name) const { return pGeometryStores.at(name); }
 
 		std::shared_ptr<Instance> GetInstance() const { return pInstance; }

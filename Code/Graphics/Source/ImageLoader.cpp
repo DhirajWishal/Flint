@@ -11,7 +11,7 @@ namespace Flint
 {
 	ImageLoader::ImageLoader(const std::filesystem::path& assetFile)
 	{
-		I32 texWidth = 0, texHeight = 0, texChannels = 0;
+		int32 texWidth = 0, texHeight = 0, texChannels = 0;
 
 		if (stbi_is_hdr(assetFile.string().c_str()))
 		{
@@ -29,13 +29,13 @@ namespace Flint
 
 	ImageLoader::ImageLoader(const std::vector<std::filesystem::path>& assetFiles)
 	{
-		I32 texWidth = 0, texHeight = 0, texChannels = 0;
+		int32 texWidth = 0, texHeight = 0, texChannels = 0;
 
-		UI64 offset = 0;
-		for (UI64 i = 0; i < assetFiles.size(); i++)
+		uint64 offset = 0;
+		for (uint64 i = 0; i < assetFiles.size(); i++)
 		{
 			auto pixels = stbi_load(assetFiles[i].string().c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
-			UI64 imageSize = static_cast<UI64>(texWidth) * static_cast<UI64>(texHeight) * 4;
+			uint64 imageSize = static_cast<uint64>(texWidth) * static_cast<uint64>(texHeight) * 4;
 
 			if (!imageSize)
 				throw std::runtime_error("Couldn't load the requested image at location: " + assetFiles[i].string());
@@ -62,7 +62,7 @@ namespace Flint
 			stbi_image_free(pPixelData);
 	}
 
-	std::shared_ptr<Image> ImageLoader::CreateImage(const std::shared_ptr<Device>& pDevice, const ImageType type, const ImageUsage usage, const UI32 layers, const UI32 mipLevels, const MultiSampleCount sampleCount) const
+	std::shared_ptr<Image> ImageLoader::CreateImage(const std::shared_ptr<Device>& pDevice, const ImageType type, const ImageUsage usage, const uint32 layers, const uint32 mipLevels, const MultiSampleCount sampleCount) const
 	{
 		if (mipLevels != 0)
 			return pDevice->CreateImage(type, usage, mExtent, mPixelFormat, layers, mipLevels, pPixelData, sampleCount);

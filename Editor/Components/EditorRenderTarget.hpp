@@ -28,10 +28,10 @@ namespace Flint
 		void Terminate();
 
 		bool IsDisplayOpen() const;
-		void PollEvents(UI64 delta);
+		void PollEvents(uint64 delta);
 		void DrawFrame(const ClientInterface* pClient);
 
-		void UpdateUI(const UI64 delta);
+		void UpdateUI(const uint64 delta);
 
 		const bool HasDragAndDrop() const { return pDisplay->ContainsDragAndDrop(); }
 		const std::vector<std::filesystem::path> GetDropPaths();

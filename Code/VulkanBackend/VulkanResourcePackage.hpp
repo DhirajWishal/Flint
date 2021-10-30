@@ -13,7 +13,7 @@ namespace Flint
 		class VulkanResourcePackage final : public ResourcePackage
 		{
 		public:
-			VulkanResourcePackage(const std::shared_ptr<ResourcePackager>& pPackager, const std::vector<UI32>& bufferBindings, const std::vector<UI32>& imageBindings, const VkDescriptorSet& vSet);
+			VulkanResourcePackage(const std::shared_ptr<ResourcePackager>& pPackager, const std::vector<uint32>& bufferBindings, const std::vector<uint32>& imageBindings, const VkDescriptorSet& vSet);
 
 			virtual void PrepareIfNecessary() override;
 

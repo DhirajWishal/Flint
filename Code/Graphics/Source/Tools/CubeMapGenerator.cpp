@@ -12,7 +12,7 @@
 
 namespace Flint
 {
-	CubeMapGenerator::CubeMapGenerator(const std::shared_ptr<Device>& pDevice, const std::filesystem::path& assetFile, UI32 mips)
+	CubeMapGenerator::CubeMapGenerator(const std::shared_ptr<Device>& pDevice, const std::filesystem::path& assetFile, uint32 mips)
 	{
 		if (assetFile.extension().string() != ".hdr")
 			throw std::invalid_argument("Provided asset file is not supported!");
@@ -20,7 +20,7 @@ namespace Flint
 		ImageLoader loader(assetFile);
 		auto pTexture = pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Graphics, loader.GetExtent(), loader.GetPixelFormat(), 1, 1, loader.GetPixelData());
 
-		UI32 length = loader.GetExtent().mWidth / 4;
+		uint32 length = loader.GetExtent().mWidth / 4;
 		FBox3D extent = FBox3D(length, length, 1);
 
 		if (mips == 0)

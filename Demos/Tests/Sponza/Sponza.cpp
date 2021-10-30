@@ -34,7 +34,7 @@ namespace Flint
 			pRenderTargetFXAA->DrawUi();
 
 			// Update the pipeline.
-			const UI64 delta = pProcessingPipeline->Update();
+			const uint64 delta = pProcessingPipeline->Update();
 
 			// Update all the game objects.
 			for (const auto& pGameObjects : pRenderTarget->GetGameObjects())

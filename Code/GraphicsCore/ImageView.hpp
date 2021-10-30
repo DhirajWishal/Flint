@@ -25,7 +25,7 @@ namespace Flint
 		 * @param mipLevels The number of mip levels to cover.
 		 * @param usage The image view usage.
 		 */
-		ImageView(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Image>& pImage, const UI32 baseLayerIndex, const UI32 layerCount, const UI32 baseMipLevel, const UI32 mipLevels, const ImageUsage usage);
+		ImageView(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Image>& pImage, const uint32 baseLayerIndex, const uint32 layerCount, const uint32 baseMipLevel, const uint32 mipLevels, const ImageUsage usage);
 
 	public:
 		/**
@@ -40,36 +40,36 @@ namespace Flint
 		 *
 		 * @return The layer index.
 		 */
-		UI32 GetBaseLayerIndex() const { return mBaseLayerIndex; }
+		uint32 GetBaseLayerIndex() const { return mBaseLayerIndex; }
 
 		/**
 		 * Get the layer count.
 		 *
 		 * @return The layer count.
 		 */
-		UI32 GetLayerCount() const { return mLayerCount; }
+		uint32 GetLayerCount() const { return mLayerCount; }
 
 		/**
 		 * Get the base mip level.
 		 *
 		 * @return The mip level
 		 */
-		UI32 GetBaseMipLevel() const { return mBaseMipLevel; }
+		uint32 GetBaseMipLevel() const { return mBaseMipLevel; }
 
 		/**
 		 * Get the mip levels.
 		 *
 		 * @return The mip levels.
 		 */
-		UI32 GetMipLevels() const { return mMipLevels; }
+		uint32 GetMipLevels() const { return mMipLevels; }
 
 	protected:
 		std::shared_ptr<Image> pParentImage = nullptr;
 
-		UI32 mBaseLayerIndex = 0;
-		UI32 mLayerCount = 0;
-		UI32 mBaseMipLevel = 0;
-		UI32 mMipLevels = 0;
+		uint32 mBaseLayerIndex = 0;
+		uint32 mLayerCount = 0;
+		uint32 mBaseMipLevel = 0;
+		uint32 mMipLevels = 0;
 		ImageUsage mUsage = ImageUsage::Color;
 	};
 }

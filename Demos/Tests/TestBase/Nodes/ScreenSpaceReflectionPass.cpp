@@ -38,7 +38,7 @@ namespace Flint
 		pOutputImage = pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Storage, pOffScreenImage->GetExtent(), pOffScreenImage->GetFormat(), pOffScreenImage->GetLayerCount(), pOffScreenImage->GetMipLevels(), nullptr);
 
 		pResourcePackages.reserve(GetBufferCount());
-		for (UI32 i = 0; i < GetBufferCount(); i++)
+		for (uint32 i = 0; i < GetBufferCount(); i++)
 		{
 			const auto pResourcePackage = pComputePipeline->CreateResourcePackage(0);
 
@@ -67,7 +67,7 @@ namespace Flint
 		pLensProjection->UnmapMemory();
 	}
 
-	void ScreenSpaceReflectionPass::Process(ProcessingNode* pPreviousNode, const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 frameIndex, const UI32 imageIndex)
+	void ScreenSpaceReflectionPass::Process(ProcessingNode* pPreviousNode, const std::shared_ptr<CommandBuffer>& pCommandBuffer, const uint32 frameIndex, const uint32 imageIndex)
 	{
 		OPTICK_EVENT();
 

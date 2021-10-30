@@ -14,22 +14,22 @@ namespace Flint
 		projectionMatrix[1][1] *= -1.0f;
 	}
 
-	void Camera::MoveFront(UI64 delta)
+	void Camera::MoveFront(uint64 delta)
 	{
 		mPosition += mFront * (static_cast<float>(delta) / 100000000) * mMovementBias;
 	}
 
-	void Camera::MoveBack(UI64 delta)
+	void Camera::MoveBack(uint64 delta)
 	{
 		mPosition -= mFront * (static_cast<float>(delta) / 100000000) * mMovementBias;
 	}
 
-	void Camera::MoveLeft(UI64 delta)
+	void Camera::MoveLeft(uint64 delta)
 	{
 		mPosition -= mRight * (static_cast<float>(delta) / 100000000) * mMovementBias;
 	}
 
-	void Camera::MoveRight(UI64 delta)
+	void Camera::MoveRight(uint64 delta)
 	{
 		mPosition += mRight * (static_cast<float>(delta) / 100000000) * mMovementBias;
 	}

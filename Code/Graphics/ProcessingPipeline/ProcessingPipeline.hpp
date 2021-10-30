@@ -32,7 +32,7 @@ namespace Flint
 		 * @param forceColorBuffer Force to use a color buffer. Default is false.
 		 * @param forceDepthBuffer Whether or not to use a depth buffer. Default is false.
 		 */
-		ProcessingPipeline(const std::shared_ptr<Device>& pDevice, const FBox2D frameExtent, const std::string& displayTitle, const UI32 pipelineCount, const MultiSampleCount msaaCount, const bool forceColorBuffer = false, const bool forceDepthBuffer = false);
+		ProcessingPipeline(const std::shared_ptr<Device>& pDevice, const FBox2D frameExtent, const std::string& displayTitle, const uint32 pipelineCount, const MultiSampleCount msaaCount, const bool forceColorBuffer = false, const bool forceDepthBuffer = false);
 
 		/**
 		 * Destructor.
@@ -82,7 +82,7 @@ namespace Flint
 		 *
 		 * @return The buffer count.
 		 */
-		UI32 GetBufferCount() const { return pScreenBoundRenderTarget->GetBufferCount(); }
+		uint32 GetBufferCount() const { return pScreenBoundRenderTarget->GetBufferCount(); }
 
 		/**
 		 * Get the device to which the pipeline is bound to.
@@ -154,14 +154,14 @@ namespace Flint
 		 *
 		 * @return The frame index.
 		 */
-		UI32 GetCurrentFrameIndex() const { return pScreenBoundRenderTarget->GetFrameIndex(); }
+		uint32 GetCurrentFrameIndex() const { return pScreenBoundRenderTarget->GetFrameIndex(); }
 
 		/**
 		 * Get the current image index.
 		 *
 		 * @return The image index.
 		 */
-		UI32 GetCurrentImageIndex() const { return pScreenBoundRenderTarget->GetImageIndex(); }
+		uint32 GetCurrentImageIndex() const { return pScreenBoundRenderTarget->GetImageIndex(); }
 
 		/**
 		 * Get the current command buffer in flight.
@@ -199,7 +199,7 @@ namespace Flint
 		 * @param frameIndex The current frame index.
 		 * @param imageIndex The current swap chain image index.
 		 */
-		void ProcessNodes(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 frameIndex, const UI32 imageIndex);
+		void ProcessNodes(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const uint32 frameIndex, const uint32 imageIndex);
 
 	protected:
 		std::vector<std::shared_ptr<ProcessingNode>> pProcessingNodes = {};

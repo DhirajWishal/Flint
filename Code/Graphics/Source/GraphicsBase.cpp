@@ -43,7 +43,7 @@ namespace Flint
 			pDefaultDevice = pDevices.front();
 	}
 
-	void GraphicsBase::SetDefaultDevice(const UI32 index)
+	void GraphicsBase::SetDefaultDevice(const uint32 index)
 	{
 		pDefaultDevice = pDevices[index];
 	}
@@ -53,7 +53,7 @@ namespace Flint
 		return pDefaultDevice;
 	}
 
-	void GraphicsBase::DestroyDevice(const UI32 index)
+	void GraphicsBase::DestroyDevice(const uint32 index)
 	{
 		pDevices[index]->Terminate();
 		pDevices.erase(pDevices.begin() + index);

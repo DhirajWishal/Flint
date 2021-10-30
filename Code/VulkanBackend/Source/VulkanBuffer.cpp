@@ -8,7 +8,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanBuffer::VulkanBuffer(const std::shared_ptr<Device>& pDevice, const BufferType type, const UI64 size, const BufferMemoryProfile profile)
+		VulkanBuffer::VulkanBuffer(const std::shared_ptr<Device>& pDevice, const BufferType type, const uint64 size, const BufferMemoryProfile profile)
 			: Buffer(pDevice, type, size, profile)
 		{
 			OPTICK_EVENT();
@@ -73,10 +73,10 @@ namespace Flint
 			CreateBuffer();
 		}
 
-		void VulkanBuffer::Resize(const UI64 size, const BufferResizeMode mode)
+		void VulkanBuffer::Resize(const uint64 size, const BufferResizeMode mode)
 		{
 			OPTICK_EVENT();
-			const UI64 oldSize = mSize;
+			const uint64 oldSize = mSize;
 
 			if (mode == BufferResizeMode::Copy)
 			{
@@ -108,7 +108,7 @@ namespace Flint
 				throw std::invalid_argument("Buffer copy mode is invalid or undefined!");
 		}
 
-		void VulkanBuffer::CopyFromBuffer(const Buffer* pSrcBuffer, const UI64 size, const UI64 srcOffset, const UI64 dstOffset)
+		void VulkanBuffer::CopyFromBuffer(const Buffer* pSrcBuffer, const uint64 size, const uint64 srcOffset, const uint64 dstOffset)
 		{
 			OPTICK_EVENT();
 
@@ -122,7 +122,7 @@ namespace Flint
 			vDevice.GetDeviceTable().vkCmdCopyBuffer(vCommandBuffer, pSrcBuffer->StaticCast<VulkanBuffer>().vBuffer, vBuffer, 1, &vBufferCopy);
 		}
 
-		void* VulkanBuffer::MapMemory(const UI64 size, const UI64 offset)
+		void* VulkanBuffer::MapMemory(const uint64 size, const uint64 offset)
 		{
 			OPTICK_EVENT();
 
@@ -171,7 +171,7 @@ namespace Flint
 			vCreateInfo.queueFamilyIndexCount = 0;
 			vCreateInfo.pQueueFamilyIndices = VK_NULL_HANDLE;
 			vCreateInfo.sharingMode = VkSharingMode::VK_SHARING_MODE_EXCLUSIVE;
-			vCreateInfo.size = static_cast<UI32>(mSize);
+			vCreateInfo.size = static_cast<uint32>(mSize);
 			vCreateInfo.usage = vBufferUsage;
 
 			VmaAllocationCreateInfo vmaAllocationCreateInfo = {};

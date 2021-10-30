@@ -8,7 +8,7 @@
 
 namespace Flint
 {
-	void SceneRenderTarget::Initialize(const std::shared_ptr<Device>& pDevice, const UI32 bufferCount, const FBox2D extent, const std::shared_ptr<ResourcePackage>& pPackage)
+	void SceneRenderTarget::Initialize(const std::shared_ptr<Device>& pDevice, const uint32 bufferCount, const FBox2D extent, const std::shared_ptr<ResourcePackage>& pPackage)
 	{
 		const FBox3D imageExtent = FBox3D(extent.mWidth, extent.mHeight, 1);
 		const auto sampleCount = MultiSampleCount::One;
@@ -52,7 +52,7 @@ namespace Flint
 		mVikingRoom.Terminate();
 	}
 
-	void SceneRenderTarget::Render(const std::shared_ptr<Display>& pDisplay, const UI64 delta)
+	void SceneRenderTarget::Render(const std::shared_ptr<Display>& pDisplay, const uint64 delta)
 	{
 		mExtent.x = static_cast<float>(pDisplay->GetExtent().mWidth) / 2;
 		mExtent.y = static_cast<float>(pDisplay->GetExtent().mHeight) / 2;
@@ -109,7 +109,7 @@ namespace Flint
 		mVikingRoom.Recreate();
 	}
 
-	void SceneRenderTarget::UpdateCamera(const std::shared_ptr<Display>& pDisplay, const UI64 delta)
+	void SceneRenderTarget::UpdateCamera(const std::shared_ptr<Display>& pDisplay, const uint64 delta)
 	{
 		auto extent = pDisplay->GetExtent();
 		if (!extent.IsZero())

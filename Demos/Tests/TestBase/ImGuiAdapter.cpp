@@ -8,7 +8,7 @@
 
 #include <optick.h>
 
-constexpr Flint::UI64 ElementCount = 2500;
+constexpr Flint::uint64 ElementCount = 2500;
 
 namespace Flint
 {
@@ -85,7 +85,7 @@ namespace Flint
 		pFragmentShader->Terminate();
 	}
 
-	void ImGuiAdapter::Render(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const UI32 index)
+	void ImGuiAdapter::Render(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const uint32 index)
 	{
 		OPTICK_EVENT();
 
@@ -116,18 +116,18 @@ namespace Flint
 			pCommandBuffer->BindGeometryStore(pGeometryStore.get());
 			pCommandBuffer->BindGraphicsPipeline(pPipeline.get());
 
-			UI64 vertexOffset = 0, indexOffset = 0;
-			for (I32 i = 0; i < pDrawData->CmdListsCount; i++)
+			uint64 vertexOffset = 0, indexOffset = 0;
+			for (int32 i = 0; i < pDrawData->CmdListsCount; i++)
 			{
 				const auto pCommandList = pDrawData->CmdLists[i];
 
-				for (I32 j = 0; j < pCommandList->CmdBuffer.Size; j++)
+				for (int32 j = 0; j < pCommandList->CmdBuffer.Size; j++)
 				{
 					const auto& pCommand = pCommandList->CmdBuffer[j];
 
 					pDynamicStateContainer->SetScissor(
-						FBox2D(static_cast<UI32>(pCommand.ClipRect.z - pCommand.ClipRect.x), static_cast<UI32>(pCommand.ClipRect.w - pCommand.ClipRect.y)),
-						FBox2D(std::max(static_cast<I32>(pCommand.ClipRect.x), 0), std::max(static_cast<I32>(pCommand.ClipRect.y), 0)));
+						FBox2D(static_cast<uint32>(pCommand.ClipRect.z - pCommand.ClipRect.x), static_cast<uint32>(pCommand.ClipRect.w - pCommand.ClipRect.y)),
+						FBox2D(std::max(static_cast<int32>(pCommand.ClipRect.x), 0), std::max(static_cast<int32>(pCommand.ClipRect.y), 0)));
 
 					// Handle the texture.
 					if (pCommand.TextureId != nullptr)
@@ -270,7 +270,7 @@ namespace Flint
 	{
 		OPTICK_EVENT();
 
-		pGeometryStore = pDevice->CreateGeometryStore(pVertexShader->GetInputAttributes(), sizeof(UI16), BufferMemoryProfile::TransferFriendly);
+		pGeometryStore = pDevice->CreateGeometryStore(pVertexShader->GetInputAttributes(), sizeof(uint16), BufferMemoryProfile::TransferFriendly);
 	}
 
 	void ImGuiAdapter::SetupImage()
@@ -283,7 +283,7 @@ namespace Flint
 		int width = 0, height = 0, bitsPerPixel = 0;
 
 		imGuiIO.Fonts->GetTexDataAsRGBA32(&pFontImageData, &width, &height, &bitsPerPixel);
-		for (UI64 i = 0; i < pRenderTarget->GetBufferCount(); i++)
+		for (uint64 i = 0; i < pRenderTarget->GetBufferCount(); i++)
 		{
 			pFontImage = pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Graphics, FBox3D(width, height, 1), PixelFormat::R8G8B8A8_SRGB, 1, 1, pFontImageData);
 
@@ -310,7 +310,7 @@ namespace Flint
 		if (!pDrawData)
 			return;
 
-		const UI64 vertexSize = GetNewVertexBufferSize(pDrawData->TotalVtxCount * sizeof(ImDrawVert)), indexSize = GetNewIndexBufferSize(pDrawData->TotalIdxCount * sizeof(ImDrawIdx));
+		const uint64 vertexSize = GetNewVertexBufferSize(pDrawData->TotalVtxCount * sizeof(ImDrawVert)), indexSize = GetNewIndexBufferSize(pDrawData->TotalIdxCount * sizeof(ImDrawIdx));
 		if ((vertexSize == 0) || (indexSize == 0))
 			return;
 
@@ -338,7 +338,7 @@ namespace Flint
 
 		auto pCopyVertexPointer = pVertexData;
 		auto pCopyIndexPointer = pIndexData;
-		for (I32 i = 0; i < pDrawData->CmdListsCount; i++) {
+		for (int32 i = 0; i < pDrawData->CmdListsCount; i++) {
 			const ImDrawList* pCommandList = pDrawData->CmdLists[i];
 
 			std::copy_n(pCommandList->VtxBuffer.Data, pCommandList->VtxBuffer.Size, pCopyVertexPointer);
@@ -372,16 +372,16 @@ namespace Flint
 		}
 	}
 
-	UI64 ImGuiAdapter::GetNewVertexBufferSize(const UI64 newSize) const
+	uint64 ImGuiAdapter::GetNewVertexBufferSize(const uint64 newSize) const
 	{
-		constexpr UI64 VertexFactor = ElementCount * sizeof(ImDrawVert);
+		constexpr uint64 VertexFactor = ElementCount * sizeof(ImDrawVert);
 		const auto count = (newSize / VertexFactor) + 1;
 		return count * VertexFactor;
 	}
 
-	UI64 ImGuiAdapter::GetNewIndexBufferSize(const UI64 newSize) const
+	uint64 ImGuiAdapter::GetNewIndexBufferSize(const uint64 newSize) const
 	{
-		constexpr UI64 IndexFactor = ElementCount * sizeof(ImDrawIdx);
+		constexpr uint64 IndexFactor = ElementCount * sizeof(ImDrawIdx);
 		const auto count = (newSize / IndexFactor) + 1;
 		return count * IndexFactor;
 	}

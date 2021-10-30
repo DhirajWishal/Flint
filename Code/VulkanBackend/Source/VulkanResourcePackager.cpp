@@ -9,7 +9,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanResourcePackager::VulkanResourcePackager(const UI32 setIndex, const std::shared_ptr<GraphicsPipeline>& pPipeline, const VkDescriptorSetLayout vLayout)
+		VulkanResourcePackager::VulkanResourcePackager(const uint32 setIndex, const std::shared_ptr<GraphicsPipeline>& pPipeline, const VkDescriptorSetLayout vLayout)
 			: ResourcePackager(setIndex, pPipeline), vDescriptorSetLayout(vLayout)
 		{
 			// Resolve vertex shader data.
@@ -112,7 +112,7 @@ namespace Flint
 			}
 		}
 
-		VulkanResourcePackager::VulkanResourcePackager(const UI32 setIndex, const std::shared_ptr<ComputePipeline>& pPipeline, const VkDescriptorSetLayout vLayout)
+		VulkanResourcePackager::VulkanResourcePackager(const uint32 setIndex, const std::shared_ptr<ComputePipeline>& pPipeline, const VkDescriptorSetLayout vLayout)
 			: ResourcePackager(setIndex, pPipeline), vDescriptorSetLayout(vLayout)
 		{
 			VulkanShader& vShader = pPipeline->GetShader()->StaticCast<VulkanShader>();
@@ -161,7 +161,7 @@ namespace Flint
 			vPoolCreateInfo.pNext = VK_NULL_HANDLE;
 			vPoolCreateInfo.flags = 0;
 			vPoolCreateInfo.maxSets = mDescriptorSetCount;
-			vPoolCreateInfo.poolSizeCount = static_cast<UI32>(vPoolSizes.size());
+			vPoolCreateInfo.poolSizeCount = static_cast<uint32>(vPoolSizes.size());
 			vPoolCreateInfo.pPoolSizes = vPoolSizes.data();
 
 			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateDescriptorPool(vDevice.GetLogicalDevice(), &vPoolCreateInfo, nullptr, &vDescriptorPool));
@@ -171,7 +171,7 @@ namespace Flint
 		{
 			VulkanDevice& vDevice = pPipeline->GetDevice()->StaticCast<VulkanDevice>();
 
-			std::vector<UI32> buffers, images;
+			std::vector<uint32> buffers, images;
 			for (const auto binding : mResources)
 			{
 				if (binding.second == ShaderResourceType::Sampler ||
@@ -200,7 +200,7 @@ namespace Flint
 			}
 
 			// Update the existing packages.
-			for (UI64 i = 0; i < pPackages.size(); i++)
+			for (uint64 i = 0; i < pPackages.size(); i++)
 				pPackages[i]->StaticCast<VulkanResourcePackage>().SetDescriptorSet(vDescriptorSets[i]);
 
 			// Create the new package.

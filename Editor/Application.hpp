@@ -44,7 +44,7 @@ namespace Flint
 		EditorRenderTarget mRenderTarget;
 
 		float mAverageFrameTime = 0.0f;
-		UI64 mFrameCount = 0;
+		uint64 mFrameCount = 0;
 
 		bool bShouldRun = true;
 	};

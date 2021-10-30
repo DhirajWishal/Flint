@@ -56,7 +56,7 @@ namespace Flint
 				}
 			}
 
-			std::vector<VkImageView> CreateImageViews(const std::vector<VkImage>& vImages, VkFormat imageFormat, VulkanDevice& device, VkImageAspectFlags aspectFlags, VkImageViewType viewType, UI32 layerCount, UI32 baseLayerIndex, UI32 mipLevels, UI32 baseMipLevel, VkComponentMapping mapping)
+			std::vector<VkImageView> CreateImageViews(const std::vector<VkImage>& vImages, VkFormat imageFormat, VulkanDevice& device, VkImageAspectFlags aspectFlags, VkImageViewType viewType, uint32 layerCount, uint32 baseLayerIndex, uint32 mipLevels, uint32 baseMipLevel, VkComponentMapping mapping)
 			{
 				VkImageViewCreateInfo vCreateInfo = {};
 				vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -379,7 +379,7 @@ namespace Flint
 				return VkFormat::VK_FORMAT_UNDEFINED;
 			}
 
-			UI8 GetByteDepth(const PixelFormat format)
+			uint8 GetByteDepth(const PixelFormat format)
 			{
 				switch (format)
 				{

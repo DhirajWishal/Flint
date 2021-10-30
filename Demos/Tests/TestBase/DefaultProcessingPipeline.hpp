@@ -26,7 +26,7 @@ namespace Flint
 		 * @param forceColorBuffer Force to use a color buffer. Default is false.
 		 * @param forceDepthBuffer Whether or not to use a depth buffer. Default is false.
 		 */
-		DefaultProcessingPipeline(const std::shared_ptr<Device>& pDevice, const FBox2D frameExtent, const std::string& displayTitle, const UI32 pipelineCount, const MultiSampleCount msaaCount, const bool forceColorBuffer = false, const bool forceDepthBuffer = false);
+		DefaultProcessingPipeline(const std::shared_ptr<Device>& pDevice, const FBox2D frameExtent, const std::string& displayTitle, const uint32 pipelineCount, const MultiSampleCount msaaCount, const bool forceColorBuffer = false, const bool forceDepthBuffer = false);
 
 		/**
 		 * Update method.
@@ -34,7 +34,7 @@ namespace Flint
 		 *
 		 * @return The time delta.
 		 */
-		UI64 Update();
+		uint64 Update();
 
 	public:
 		/**

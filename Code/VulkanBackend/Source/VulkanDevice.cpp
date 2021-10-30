@@ -79,7 +79,7 @@ namespace Flint
 
 			bool CheckDeviceExtensionSupport(VkPhysicalDevice vPhysicalDevice, std::vector<const char*> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME })
 			{
-				UI32 extensionCount = 0;
+				uint32 extensionCount = 0;
 				vkEnumerateDeviceExtensionProperties(vPhysicalDevice, nullptr, &extensionCount, nullptr);
 
 				std::vector<VkExtensionProperties> availableExtensions(extensionCount);
@@ -135,37 +135,37 @@ namespace Flint
 			return MultiSampleCount(vSampleCount);
 		}
 
-		std::shared_ptr<CommandBufferAllocator> VulkanDevice::CreateCommandBufferAllocator(const UI32 bufferCount)
+		std::shared_ptr<CommandBufferAllocator> VulkanDevice::CreateCommandBufferAllocator(const uint32 bufferCount)
 		{
 			return std::make_shared<VulkanCommandBufferAllocator>(shared_from_this(), bufferCount);
 		}
 
-		std::shared_ptr<CommandBufferAllocator> VulkanDevice::CreateSecondaryCommandBufferAllocator(const UI32 bufferCount, const std::shared_ptr<CommandBufferAllocator>& pParentAllocator)
+		std::shared_ptr<CommandBufferAllocator> VulkanDevice::CreateSecondaryCommandBufferAllocator(const uint32 bufferCount, const std::shared_ptr<CommandBufferAllocator>& pParentAllocator)
 		{
 			return std::make_shared<VulkanCommandBufferAllocator>(shared_from_this(), pParentAllocator, bufferCount);
 		}
 
-		std::shared_ptr<SwapChain> VulkanDevice::CreateSwapChain(const std::shared_ptr<Display>& pDisplay, UI32 imageCount, const SwapChainPresentMode presentMode)
+		std::shared_ptr<SwapChain> VulkanDevice::CreateSwapChain(const std::shared_ptr<Display>& pDisplay, uint32 imageCount, const SwapChainPresentMode presentMode)
 		{
 			return std::make_shared<VulkanSwapChain>(shared_from_this(), pDisplay, imageCount, presentMode);
 		}
 
-		std::shared_ptr<ScreenBoundRenderTarget> VulkanDevice::CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor)
+		std::shared_ptr<ScreenBoundRenderTarget> VulkanDevice::CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const uint32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor)
 		{
 			return  std::make_shared<VulkanScreenBoundRenderTarget>(shared_from_this(), pDisplay, extent, bufferCount, imageAttachments, presentMode, swapChainClearColor);
 		}
 
-		std::shared_ptr<OffScreenRenderTarget> VulkanDevice::CreateOffScreenRenderTarget(const FBox2D& extent, const UI32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments)
+		std::shared_ptr<OffScreenRenderTarget> VulkanDevice::CreateOffScreenRenderTarget(const FBox2D& extent, const uint32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments)
 		{
 			return std::make_shared<VulkanOffScreenRenderTarget>(shared_from_this(), extent, bufferCount, imageAttachments);
 		}
 
-		std::shared_ptr<Buffer> VulkanDevice::CreateBuffer(const BufferType type, const UI64 size, const BufferMemoryProfile profile)
+		std::shared_ptr<Buffer> VulkanDevice::CreateBuffer(const BufferType type, const uint64 size, const BufferMemoryProfile profile)
 		{
 			return std::make_shared<VulkanBuffer>(shared_from_this(), type, size, profile);
 		}
 
-		std::shared_ptr<Image> VulkanDevice::CreateImage(const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const UI8 layers, const UI32 mipLevels, const void* pImageData, const MultiSampleCount sampleCount)
+		std::shared_ptr<Image> VulkanDevice::CreateImage(const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const uint8 layers, const uint32 mipLevels, const void* pImageData, const MultiSampleCount sampleCount)
 		{
 			return std::make_shared<VulkanImage>(shared_from_this(), type, usage, extent, format, layers, mipLevels, pImageData, sampleCount);
 		}
@@ -180,7 +180,7 @@ namespace Flint
 			return std::make_shared<VulkanShader>(shared_from_this(), type, path);
 		}
 
-		std::shared_ptr<Shader> VulkanDevice::CreateShader(const ShaderType type, const std::vector<UI32>& code)
+		std::shared_ptr<Shader> VulkanDevice::CreateShader(const ShaderType type, const std::vector<uint32>& code)
 		{
 			return std::make_shared<VulkanShader>(shared_from_this(), type, code);
 		}
@@ -205,7 +205,7 @@ namespace Flint
 			return std::make_shared<VulkanComputePipeline>(shared_from_this(), pipelineName, pShader);
 		}
 
-		std::shared_ptr<GeometryStore> VulkanDevice::CreateGeometryStore(const std::vector<ShaderAttribute>& vertexAttributes, UI64 indexSize, const BufferMemoryProfile profile)
+		std::shared_ptr<GeometryStore> VulkanDevice::CreateGeometryStore(const std::vector<ShaderAttribute>& vertexAttributes, uint64 indexSize, const BufferMemoryProfile profile)
 		{
 			return std::make_shared<GeometryStore>(shared_from_this(), vertexAttributes, indexSize, profile);
 		}
@@ -220,7 +220,7 @@ namespace Flint
 			return std::make_shared<VulkanDeviceSynchronizationPrimitive>(shared_from_this());
 		}
 
-		std::shared_ptr<Query> VulkanDevice::CreateQuery(const QueryUsage usage, const UI32 queryCount)
+		std::shared_ptr<Query> VulkanDevice::CreateQuery(const QueryUsage usage, const uint32 queryCount)
 		{
 			return std::make_shared<VulkanQuery>(shared_from_this(), usage, queryCount);
 		}
@@ -244,10 +244,10 @@ namespace Flint
 		void VulkanDevice::SubmitGraphicsCommandBuffers(const std::vector<CommandBuffer*>& pCommandBuffers, SynchronizationPrimitive* pPrimitive)
 		{
 			OPTICK_EVENT();
-			const UI64 bufferCount = pCommandBuffers.size();
+			const uint64 bufferCount = pCommandBuffers.size();
 
 			std::vector<VkSubmitInfo> vSubmitInfos(bufferCount);
-			for (UI64 i = 0; i < bufferCount; i++)
+			for (uint64 i = 0; i < bufferCount; i++)
 			{
 				auto& vCommandBuffer = pCommandBuffers[i]->StaticCast<VulkanCommandBuffer>();
 				vSubmitInfos[i] = vCommandBuffer.GetSubmitInfo();
@@ -261,7 +261,7 @@ namespace Flint
 				vFence = vPrimitive.GetFence();
 			}
 
-			FLINT_VK_ASSERT(GetDeviceTable().vkQueueSubmit(GetQueue().vGraphicsQueue, static_cast<UI32>(vSubmitInfos.size()), vSubmitInfos.data(), vFence));
+			FLINT_VK_ASSERT(GetDeviceTable().vkQueueSubmit(GetQueue().vGraphicsQueue, static_cast<uint32>(vSubmitInfos.size()), vSubmitInfos.data(), vFence));
 		}
 
 		void VulkanDevice::SubmitComputeCommandBuffer(const CommandBuffer* pCommandBuffer, SynchronizationPrimitive* pPrimitive)
@@ -283,10 +283,10 @@ namespace Flint
 		void VulkanDevice::SubmitComputeCommandBuffers(const std::vector<CommandBuffer*>& pCommandBuffers, SynchronizationPrimitive* pPrimitive)
 		{
 			OPTICK_EVENT();
-			const UI64 bufferCount = pCommandBuffers.size();
+			const uint64 bufferCount = pCommandBuffers.size();
 
 			std::vector<VkSubmitInfo> vSubmitInfos(bufferCount);
-			for (UI64 i = 0; i < bufferCount; i++)
+			for (uint64 i = 0; i < bufferCount; i++)
 			{
 				auto& vCommandBuffer = pCommandBuffers[i]->StaticCast<VulkanCommandBuffer>();
 				vSubmitInfos[i] = vCommandBuffer.GetSubmitInfo();
@@ -300,7 +300,7 @@ namespace Flint
 				vFence = vPrimitive.GetFence();
 			}
 
-			FLINT_VK_ASSERT(GetDeviceTable().vkQueueSubmit(GetQueue().vComputeQueue, static_cast<UI32>(vSubmitInfos.size()), vSubmitInfos.data(), vFence));
+			FLINT_VK_ASSERT(GetDeviceTable().vkQueueSubmit(GetQueue().vComputeQueue, static_cast<uint32>(vSubmitInfos.size()), vSubmitInfos.data(), vFence));
 		}
 
 		void VulkanDevice::WaitIdle()
@@ -344,7 +344,7 @@ namespace Flint
 			vAI.sType = VkStructureType::VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 			vAI.allocationSize = vMR.size * vImages.size();
 
-			for (UI32 i = 0; i < vMP.memoryTypeCount; i++)
+			for (uint32 i = 0; i < vMP.memoryTypeCount; i++)
 			{
 				if ((vMR.memoryTypeBits & (1 << i)) && (vMP.memoryTypes[i].propertyFlags & vMemoryFlags) == vMemoryFlags)
 				{
@@ -356,13 +356,13 @@ namespace Flint
 			FLINT_VK_ASSERT(GetDeviceTable().vkAllocateMemory(GetLogicalDevice(), &vAI, nullptr, pDeviceMemory));
 
 			VkResult result = VkResult::VK_ERROR_UNKNOWN;
-			for (UI32 i = 0; i < vImages.size(); i++)
+			for (uint32 i = 0; i < vImages.size(); i++)
 				result = GetDeviceTable().vkBindImageMemory(GetLogicalDevice(), vImages[i], *pDeviceMemory, vMR.size * i);
 
 			return result;
 		}
 
-		void VulkanDevice::SetImageLayout(VkCommandBuffer vCommandBuffer, VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, UI32 layerCount, UI32 currentLayer, const UI32 mipLevels, const UI32 currentLevel, VkImageAspectFlags vAspects) const
+		void VulkanDevice::SetImageLayout(VkCommandBuffer vCommandBuffer, VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, uint32 layerCount, uint32 currentLayer, const uint32 mipLevels, const uint32 currentLevel, VkImageAspectFlags vAspects) const
 		{
 			OPTICK_EVENT();
 
@@ -485,7 +485,7 @@ namespace Flint
 			GetDeviceTable().vkCmdPipelineBarrier(vCommandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &vMB);
 		}
 
-		void VulkanDevice::SetImageLayout(VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, UI32 layerCount, UI32 currentLayer, const UI32 mipLevels, const UI32 currentLevel, VkImageAspectFlags vAspects) const
+		void VulkanDevice::SetImageLayout(VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, uint32 layerCount, uint32 currentLayer, const uint32 mipLevels, const uint32 currentLevel, VkImageAspectFlags vAspects) const
 		{
 			OPTICK_EVENT();
 
@@ -499,7 +499,7 @@ namespace Flint
 
 			const auto& vInstance = pInstance->StaticCast<VulkanInstance>();
 
-			UI32 deviceCount = 0;
+			uint32 deviceCount = 0;
 			vkEnumeratePhysicalDevices(vInstance.GetInstance(), &deviceCount, nullptr);
 
 			if (deviceCount == 0)
@@ -572,7 +572,7 @@ namespace Flint
 
 			std::cout << "\tPipeline Cache UUID: ";
 			for (const auto number : vPhysicalDeviceProperties.pipelineCacheUUID)
-				std::cout << static_cast<UI32>(number);
+				std::cout << static_cast<uint32>(number);
 			std::cout << std::endl;
 
 			std::cout << "\tDevice limits:" << std::endl;
@@ -695,7 +695,7 @@ namespace Flint
 			vQueue.Initialize(vPhysicalDevice, mFlags);
 
 			std::vector<VkDeviceQueueCreateInfo> vQueueCreateInfos;
-			std::set<UI32> uniqueQueueFamilies = {
+			std::set<uint32> uniqueQueueFamilies = {
 				vQueue.mTransferFamily.value()
 			};
 
@@ -706,7 +706,7 @@ namespace Flint
 				uniqueQueueFamilies.insert(vQueue.mComputeFamily.value());
 
 			float queuePriority = 1.0f;
-			for (UI32 queueFamily : uniqueQueueFamilies)
+			for (uint32 queueFamily : uniqueQueueFamilies)
 			{
 				VkDeviceQueueCreateInfo vQueueCreateInfo = {};
 				vQueueCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
@@ -728,16 +728,16 @@ namespace Flint
 			// Device create info.
 			VkDeviceCreateInfo vDeviceCreateInfo = {};
 			vDeviceCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-			vDeviceCreateInfo.queueCreateInfoCount = static_cast<UI32>(vQueueCreateInfos.size());
+			vDeviceCreateInfo.queueCreateInfoCount = static_cast<uint32>(vQueueCreateInfos.size());
 			vDeviceCreateInfo.pQueueCreateInfos = vQueueCreateInfos.data();
 			vDeviceCreateInfo.pEnabledFeatures = &vFeatures;
-			vDeviceCreateInfo.enabledExtensionCount = static_cast<UI32>(mDeviceExtensions.size());
+			vDeviceCreateInfo.enabledExtensionCount = static_cast<uint32>(mDeviceExtensions.size());
 			vDeviceCreateInfo.ppEnabledExtensionNames = mDeviceExtensions.data();
 
 			const std::vector<const char*> validationLayers = vInstance.GetValidationLayers();
 			if (vInstance.IsValidationEnabled())
 			{
-				vDeviceCreateInfo.enabledLayerCount = static_cast<UI32>(validationLayers.size());
+				vDeviceCreateInfo.enabledLayerCount = static_cast<uint32>(validationLayers.size());
 				vDeviceCreateInfo.ppEnabledLayerNames = validationLayers.data();
 			}
 			else
