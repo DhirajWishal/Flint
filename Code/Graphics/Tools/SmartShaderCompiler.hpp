@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Asset.hpp"
+#include "Graphics/Asset.hpp"
 #include "GraphicsCore/Shader.hpp"
 
 namespace Flint
@@ -13,7 +13,7 @@ namespace Flint
 	 */
 	class SmartShaderCompiler
 	{
-		using TIOAttribute = std::pair<InputAttributeType, uint32>;
+		using TIOAttribute = std::pair<ShaderAttribute, uint32>;
 		using TResource = std::pair<ShaderResourceType, uint32>;
 
 	public:

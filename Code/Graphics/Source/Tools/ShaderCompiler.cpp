@@ -1,7 +1,7 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#include "Graphics/ShaderCompiler.hpp"
+#include "Graphics/Tools/ShaderCompiler.hpp"
 #include "GraphicsCore/Device.hpp"
 
 #include <fstream>

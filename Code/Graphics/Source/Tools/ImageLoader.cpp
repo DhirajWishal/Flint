@@ -1,7 +1,7 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#include "Graphics/ImageLoader.hpp"
+#include "Graphics/Tools/ImageLoader.hpp"
 #include "GraphicsCore/Device.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION

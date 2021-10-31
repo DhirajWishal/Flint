@@ -1,12 +1,12 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#include "Graphics/AssetLoader.hpp"
+#include "Graphics/Tools/AssetLoader.hpp"
 
 #include "GraphicsCore/Device.hpp"
 #include "GraphicsCore/Material.hpp"
 
-#include "Graphics/ImageLoader.hpp"
+#include "Graphics/Tools/ImageLoader.hpp"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>

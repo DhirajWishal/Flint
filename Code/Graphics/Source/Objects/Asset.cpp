@@ -1,7 +1,7 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#include "Graphics/Asset.hpp"
+#include "Graphics/Objects/Asset.hpp"
 
 namespace Flint
 {
