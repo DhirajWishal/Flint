@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Graphics/Asset.hpp"
+#include "Graphics/Objects/Asset.hpp"
 #include "GraphicsCore/Shader.hpp"
 
 namespace Flint

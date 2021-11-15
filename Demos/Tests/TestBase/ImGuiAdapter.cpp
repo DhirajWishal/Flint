@@ -4,7 +4,7 @@
 #include "ImGuiAdapter.hpp"
 #include "GraphicsCore/ScreenBoundRenderTarget.hpp"
 #include "GraphicsCore/ResourcePackager.hpp"
-#include "Graphics/ShaderCompiler.hpp"
+#include "Graphics/Tools/ShaderCompiler.hpp"
 
 #include <optick.h>
 

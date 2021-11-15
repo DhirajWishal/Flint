@@ -238,22 +238,22 @@ namespace Flint
 			{
 				std::vector<VkDynamicState> states;
 				if (flags & DynamicStateFlags::ViewPort)
-					states.push_back(VkDynamicState::VK_DYNAMIC_STATE_VIEWPORT);
+					states.emplace_back(VkDynamicState::VK_DYNAMIC_STATE_VIEWPORT);
 
 				if (flags & DynamicStateFlags::Scissor)
-					states.push_back(VkDynamicState::VK_DYNAMIC_STATE_SCISSOR);
+					states.emplace_back(VkDynamicState::VK_DYNAMIC_STATE_SCISSOR);
 
 				if (flags & DynamicStateFlags::LineWidth)
-					states.push_back(VkDynamicState::VK_DYNAMIC_STATE_LINE_WIDTH);
+					states.emplace_back(VkDynamicState::VK_DYNAMIC_STATE_LINE_WIDTH);
 
 				if (flags & DynamicStateFlags::DepthBias)
-					states.push_back(VkDynamicState::VK_DYNAMIC_STATE_DEPTH_BIAS);
+					states.emplace_back(VkDynamicState::VK_DYNAMIC_STATE_DEPTH_BIAS);
 
 				if (flags & DynamicStateFlags::BlendConstants)
-					states.push_back(VkDynamicState::VK_DYNAMIC_STATE_BLEND_CONSTANTS);
+					states.emplace_back(VkDynamicState::VK_DYNAMIC_STATE_BLEND_CONSTANTS);
 
 				if (flags & DynamicStateFlags::DepthBounds)
-					states.push_back(VkDynamicState::VK_DYNAMIC_STATE_DEPTH_BOUNDS);
+					states.emplace_back(VkDynamicState::VK_DYNAMIC_STATE_DEPTH_BOUNDS);
 
 				return states;
 			}
@@ -600,7 +600,7 @@ namespace Flint
 		void VulkanGraphicsPipeline::CreateResourcePackagers()
 		{
 			for (uint32 i = 0; i < vDescriptorSetLayouts.size(); i++)
-				pResourcePackagers.push_back(std::make_shared<VulkanResourcePackager>(i, shared_from_this(), vDescriptorSetLayouts[i]));
+				pResourcePackagers.emplace_back(std::make_shared<VulkanResourcePackager>(i, shared_from_this(), vDescriptorSetLayouts[i]));
 		}
 
 		void VulkanGraphicsPipeline::Terminate()
@@ -634,19 +634,19 @@ namespace Flint
 		void VulkanGraphicsPipeline::SetupDefaults()
 		{
 			// Resolve shader stages.
-			vShaderStageCreateInfo.push_back(pVertexShader->StaticCast<VulkanShader>().GetShaderStageCreateInfo());
+			vShaderStageCreateInfo.emplace_back(pVertexShader->StaticCast<VulkanShader>().GetShaderStageCreateInfo());
 
 			if (pFragmentShader)
-				vShaderStageCreateInfo.push_back(pFragmentShader->StaticCast<VulkanShader>().GetShaderStageCreateInfo());
+				vShaderStageCreateInfo.emplace_back(pFragmentShader->StaticCast<VulkanShader>().GetShaderStageCreateInfo());
 
 			if (pTessellationControlShader)
-				vShaderStageCreateInfo.push_back(pTessellationControlShader->StaticCast<VulkanShader>().GetShaderStageCreateInfo());
+				vShaderStageCreateInfo.emplace_back(pTessellationControlShader->StaticCast<VulkanShader>().GetShaderStageCreateInfo());
 
 			if (pTessellationEvaluationShader)
-				vShaderStageCreateInfo.push_back(pTessellationEvaluationShader->StaticCast<VulkanShader>().GetShaderStageCreateInfo());
+				vShaderStageCreateInfo.emplace_back(pTessellationEvaluationShader->StaticCast<VulkanShader>().GetShaderStageCreateInfo());
 
 			if (pGeometryShader)
-				vShaderStageCreateInfo.push_back(pGeometryShader->StaticCast<VulkanShader>().GetShaderStageCreateInfo());
+				vShaderStageCreateInfo.emplace_back(pGeometryShader->StaticCast<VulkanShader>().GetShaderStageCreateInfo());
 
 			// Resolve vertex input state.
 			{
@@ -665,14 +665,14 @@ namespace Flint
 						vAttributeDescription.location = attribute.mLocation;
 						vAttributeDescription.format = Helpers::GetFormatFromSize(attribute.mDataType);
 
-						vVertexAttributes.push_back(vAttributeDescription);
+						vVertexAttributes.emplace_back(vAttributeDescription);
 						vAttributeDescription.offset += static_cast<uint32>(attribute.mDataType);
 					}
 
 					vBindingDescription.binding = binding.first;
 					vBindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 					vBindingDescription.stride = vAttributeDescription.offset;
-					vVertexBindings.push_back(vBindingDescription);
+					vVertexBindings.emplace_back(vBindingDescription);
 				}
 			}
 
@@ -710,7 +710,7 @@ namespace Flint
 				vAttachmentState.dstAlphaBlendFactor = Helpers::GetBlendFactor(attachment.mDstAlphaBlendFactor);
 				vAttachmentState.dstColorBlendFactor = Helpers::GetBlendFactor(attachment.mDstBlendFactor);
 
-				vCBASS.push_back(vAttachmentState);
+				vCBASS.emplace_back(vAttachmentState);
 			}
 
 			vColorBlendStateCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
@@ -882,7 +882,7 @@ namespace Flint
 				VkDescriptorSetLayout vDescriptorSetLayout = VK_NULL_HANDLE;
 				FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateDescriptorSetLayout(vDevice.GetLogicalDevice(), &vLayoutCreateInfo, nullptr, &vDescriptorSetLayout));
 
-				vDescriptorSetLayouts.push_back(vDescriptorSetLayout);
+				vDescriptorSetLayouts.emplace_back(vDescriptorSetLayout);
 			}
 
 			// Create pipeline layout.

@@ -4,7 +4,7 @@
 #pragma once
 
 #include "TestBase/Nodes/OffScreenPass.hpp"
-#include "Graphics/Asset.hpp"
+#include "Graphics/Objects/Asset.hpp"
 #include "GraphicsCore/ResourcePackager.hpp"
 
 #include <glm/glm.hpp>

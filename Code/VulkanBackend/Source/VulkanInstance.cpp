@@ -59,18 +59,18 @@ namespace Flint
 				std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 
 				if (enableValidation)
-					extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+					extensions.emplace_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 
 				//if (pushDescriptorsSupported)
-				//	extentions.push_back(VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME);
+				//	extentions.emplace_back(VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME);
 				//
 				//if (checkpointsSupported)
-				//	extentions.push_back(VK_NV_DEVICE_DIAGNOSTIC_CHECKPOINTS_EXTENSION_NAME);
+				//	extentions.emplace_back(VK_NV_DEVICE_DIAGNOSTIC_CHECKPOINTS_EXTENSION_NAME);
 				//
 				//if (meshShadingSupported)
-				//	extentions.push_back(VK_NV_MESH_SHADER_EXTENSION_NAME);
+				//	extentions.emplace_back(VK_NV_MESH_SHADER_EXTENSION_NAME);
 				//
-				//extentions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
+				//extentions.emplace_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
 
 				return extensions;
 			}
@@ -132,7 +132,7 @@ namespace Flint
 				throw std::runtime_error("Vulkan is not supported! Make sure that the drivers support Vulkan before using the Vulkan Backend.");
 
 			if (enableValidation)
-				mValidationLayers.push_back("VK_LAYER_KHRONOS_validation");
+				mValidationLayers.emplace_back("VK_LAYER_KHRONOS_validation");
 
 			InitializeInstance();
 			volkLoadInstance(vInstance);

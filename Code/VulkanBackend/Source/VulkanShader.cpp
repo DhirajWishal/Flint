@@ -210,7 +210,7 @@ namespace Flint
 
 			// Add padding if the code isnt a multiple of 4.
 			for (uint8 i = 0; i < mShaderCode.size() % 4; i++)
-				mShaderCode.push_back(0);
+				mShaderCode.emplace_back(0);
 
 			CreateShaderModule();
 			PerformReflection();
@@ -344,14 +344,14 @@ namespace Flint
 
 					if (resource->built_in > -1)
 					{
-						mInputAttributes.push_back(ShaderAttribute(
+						mInputAttributes.emplace_back(ShaderAttribute(
 							name,
 							resource->location,
 							ShaderAttributeDataType::BUILT_IN));
 					}
 					else
 					{
-						mInputAttributes.push_back(ShaderAttribute(
+						mInputAttributes.emplace_back(ShaderAttribute(
 							name,
 							resource->location,
 							static_cast<ShaderAttributeDataType>(
@@ -381,7 +381,7 @@ namespace Flint
 					if (resource->name)
 						name = resource->name;
 
-					mOutputAttributes.push_back(ShaderAttribute(
+					mOutputAttributes.emplace_back(ShaderAttribute(
 						name,
 						resource->location,
 						static_cast<ShaderAttributeDataType>(
@@ -414,8 +414,8 @@ namespace Flint
 					vSize.type = vBinding.descriptorType;
 					vSize.descriptorCount = resource->count;
 
-					mDescriptorSetMap[resource->set].mLayoutBindings.push_back(vBinding);
-					mDescriptorSetMap[resource->set].mPoolSizes.push_back(vSize);
+					mDescriptorSetMap[resource->set].mLayoutBindings.emplace_back(vBinding);
+					mDescriptorSetMap[resource->set].mPoolSizes.emplace_back(vSize);
 
 					ShaderResourceKey key{ resource->set,vBinding.binding };
 					mResourceMap[resource->set][resource->binding] = Helpers::GetShaderResourceType(resource->descriptor_type);
@@ -436,7 +436,7 @@ namespace Flint
 				{
 					vPushConstantRange.size = resource->size;
 					vPushConstantRange.offset = resource->offset;
-					mConstantRanges.push_back(vPushConstantRange);
+					mConstantRanges.emplace_back(vPushConstantRange);
 				}
 			}
 		}

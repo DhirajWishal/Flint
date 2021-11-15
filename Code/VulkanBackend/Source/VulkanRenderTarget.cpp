@@ -45,22 +45,22 @@ namespace Flint
 				if (!(*itr))
 					continue;
 
-				vDescriptions.push_back((*itr)->GetAttachmentDescription());
+				vDescriptions.emplace_back((*itr)->GetAttachmentDescription());
 				vAR.layout = (*itr)->GetAttachmentLayout();
 
 				switch ((*itr)->GetAttachmentType())
 				{
 				case Flint::VulkanBackend::RenderTargetAttachmenType::SwapChain:
-					vResolveAttachmentRef.push_back(vAR);
+					vResolveAttachmentRef.emplace_back(vAR);
 					break;
 
 				case Flint::VulkanBackend::RenderTargetAttachmenType::ColorBuffer:
-					vColorAttachmentRef.push_back(vAR);
+					vColorAttachmentRef.emplace_back(vAR);
 					bHasColorAttachment = true;
 					break;
 
 				case Flint::VulkanBackend::RenderTargetAttachmenType::DepthBuffer:
-					vDepthAttachmentRef.push_back(vAR);
+					vDepthAttachmentRef.emplace_back(vAR);
 					break;
 
 				default:
@@ -131,21 +131,21 @@ namespace Flint
 					if (!(*itr))
 						continue;
 
-					vDescriptions.push_back((*itr)->GetAttachmentDescription());
+					vDescriptions.emplace_back((*itr)->GetAttachmentDescription());
 					vAR.layout = (*itr)->GetAttachmentLayout();
 
 					switch ((*itr)->GetAttachmentType())
 					{
 					case Flint::VulkanBackend::RenderTargetAttachmenType::SwapChain:
-						vResolveAttachmentRef.push_back(vAR);
+						vResolveAttachmentRef.emplace_back(vAR);
 						break;
 
 					case Flint::VulkanBackend::RenderTargetAttachmenType::ColorBuffer:
-						vColorAttachmentRef.push_back(vAR);
+						vColorAttachmentRef.emplace_back(vAR);
 						break;
 
 					case Flint::VulkanBackend::RenderTargetAttachmenType::DepthBuffer:
-						vDepthAttachmentRef.push_back(vAR);
+						vDepthAttachmentRef.emplace_back(vAR);
 						break;
 
 					default:
@@ -160,11 +160,11 @@ namespace Flint
 				vSD.pDepthStencilAttachment = vDepthAttachmentRef.data();
 				vSD.pResolveAttachments = vResolveAttachmentRef.data();
 
-				vSubpassDescriptions.push_back(vSD);
+				vSubpassDescriptions.emplace_back(vSD);
 
-				vColorAttachmentRefs.push_back(std::move(vColorAttachmentRef));
-				vDepthAttachmentRefs.push_back(std::move(vDepthAttachmentRef));
-				vResolveAttachmentRefs.push_back(std::move(vResolveAttachmentRef));
+				vColorAttachmentRefs.emplace_back(std::move(vColorAttachmentRef));
+				vDepthAttachmentRefs.emplace_back(std::move(vDepthAttachmentRef));
+				vResolveAttachmentRefs.emplace_back(std::move(vResolveAttachmentRef));
 			}
 
 			VkRenderPassCreateInfo vCreateInfo = {};
@@ -206,7 +206,7 @@ namespace Flint
 				std::vector<VkImageView> vAttachments;
 
 				for (auto itr = pAttachments.begin(); itr != pAttachments.end(); itr++)
-					vAttachments.push_back((*itr)->GetImageView(i));
+					vAttachments.emplace_back((*itr)->GetImageView(i));
 
 				vCreateInfo.pAttachments = vAttachments.data();
 				FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateFramebuffer(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vFrameBuffers[i]));

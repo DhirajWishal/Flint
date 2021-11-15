@@ -275,10 +275,10 @@ namespace Flint
 				VkSemaphore vSemaphore = VK_NULL_HANDLE;
 
 				FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateSemaphore(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vSemaphore));
-				vInFlightSemaphores.push_back(vSemaphore);
+				vInFlightSemaphores.emplace_back(vSemaphore);
 
 				FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateSemaphore(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vSemaphore));
-				vRenderFinishedSemaphores.push_back(vSemaphore);
+				vRenderFinishedSemaphores.emplace_back(vSemaphore);
 			}
 		}
 

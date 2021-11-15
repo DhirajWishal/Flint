@@ -52,7 +52,7 @@ namespace Flint
 			static_assert(!std::is_base_of_v<Type, ProcessingNode>, "'Type' should be derived from 'ProcessingNode'!");
 
 			auto pNode = std::make_shared<Type>(this, args...);
-			pProcessingNodes.push_back(pNode);
+			pProcessingNodes.emplace_back(pNode);
 			return pNode;
 		}
 

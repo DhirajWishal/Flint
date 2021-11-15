@@ -41,7 +41,7 @@ namespace Flint
 			bool bIsColorPresent = false;
 			for (const auto attachment : mAttachments)
 			{
-				pAttachmentInferfaces.push_back(&attachment.pImage->StaticCast<VulkanImage>());
+				pAttachmentInferfaces.emplace_back(&attachment.pImage->StaticCast<VulkanImage>());
 
 				VkClearValue vClearValue = {};
 				if ((attachment.pImage->GetUsage() & ImageUsage::Color) == ImageUsage::Color)
@@ -50,7 +50,7 @@ namespace Flint
 					vClearValue.color.float32[1] = attachment.mClearColor.mGreen;
 					vClearValue.color.float32[2] = attachment.mClearColor.mBlue;
 					vClearValue.color.float32[3] = attachment.mClearColor.mAlpha;
-					vClearAspectFlags.push_back(VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT);
+					vClearAspectFlags.emplace_back(VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT);
 
 					bIsColorPresent = true;
 				}
@@ -58,16 +58,16 @@ namespace Flint
 				{
 					vClearValue.depthStencil.depth = attachment.mDepthClearValue.mDepth;
 					vClearValue.depthStencil.stencil = attachment.mDepthClearValue.mStencil;
-					vClearAspectFlags.push_back(VkImageAspectFlagBits::VK_IMAGE_ASPECT_DEPTH_BIT);
+					vClearAspectFlags.emplace_back(VkImageAspectFlagBits::VK_IMAGE_ASPECT_DEPTH_BIT);
 				}
 				else
 					throw backend_error("Invalid attachment type! The image usage should contain either Color or Depth.");
 
-				vClearValues.push_back(vClearValue);
+				vClearValues.emplace_back(vClearValue);
 			}
 
 			auto& vSwapChain = pSwapChain->StaticCast<VulkanSwapChain>();
-			pAttachmentInferfaces.push_back(&vSwapChain);
+			pAttachmentInferfaces.emplace_back(&vSwapChain);
 			if (!bIsColorPresent)
 			{
 				vSwapChain.ToggleClear();
@@ -78,8 +78,8 @@ namespace Flint
 				vClearValue.color.float32[2] = swapChainClearColor.mBlue;
 				vClearValue.color.float32[3] = swapChainClearColor.mAlpha;
 
-				vClearAspectFlags.push_back(VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT);
-				vClearValues.push_back(vClearValue);
+				vClearAspectFlags.emplace_back(VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT);
+				vClearValues.emplace_back(vClearValue);
 			}
 
 			vRenderTarget.CreateRenderPass(pAttachmentInferfaces, VK_PIPELINE_BIND_POINT_GRAPHICS, vDependencies);
@@ -144,11 +144,11 @@ namespace Flint
 			for (auto attachment : mAttachments)
 			{
 				attachment.pImage->StaticCast<VulkanImage>().Recreate(mExtent);
-				pAttachmentInferfaces.push_back(&attachment.pImage->StaticCast<VulkanImage>());
+				pAttachmentInferfaces.emplace_back(&attachment.pImage->StaticCast<VulkanImage>());
 			}
 
 			pSwapChain->Recreate();
-			pAttachmentInferfaces.push_back(&pSwapChain->StaticCast<VulkanSwapChain>());
+			pAttachmentInferfaces.emplace_back(&pSwapChain->StaticCast<VulkanSwapChain>());
 
 			vRenderTarget.CreateRenderPass(pAttachmentInferfaces, VK_PIPELINE_BIND_POINT_GRAPHICS, vDependencies);
 			vRenderTarget.CreateFrameBuffer(pAttachmentInferfaces, mExtent, mBufferCount);

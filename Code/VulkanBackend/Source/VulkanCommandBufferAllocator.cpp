@@ -58,7 +58,7 @@ namespace Flint
 
 			pCommandBuffers.reserve(mBufferCount);
 			for (const auto vCommandBuffer : vCommandBuffers)
-				pCommandBuffers.push_back(std::make_shared<VulkanCommandBuffer>(shared_from_this(), vCommandBuffer));
+				pCommandBuffers.emplace_back(std::make_shared<VulkanCommandBuffer>(shared_from_this(), vCommandBuffer));
 
 			return pCommandBuffers;
 		}

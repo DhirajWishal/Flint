@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "Graphics/Tools/CubeMapGenerator.hpp"
-#include "Graphics/ImageLoader.hpp"
-#include "Graphics/ShaderCompiler.hpp"
+#include "Graphics/Tools/ImageLoader.hpp"
+#include "Graphics/Tools/ShaderCompiler.hpp"
 
 #include "GraphicsCore/OffScreenRenderTarget.hpp"
 #include "GraphicsCore/ComputePipeline.hpp"

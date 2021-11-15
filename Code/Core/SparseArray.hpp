@@ -26,7 +26,7 @@ namespace Flint
 		 */
 		const uint32 push_back(const Type& data)
 		{
-			mEntries.push_back(data);
+			mEntries.emplace_back(data);
 			return mCurrentIndex++;
 		}
 
@@ -38,7 +38,7 @@ namespace Flint
 		 */
 		const uint32 push_back(Type&& data)
 		{
-			mEntries.push_back(std::move(data));
+			mEntries.emplace_back(std::move(data));
 			return mCurrentIndex++;
 		}
 

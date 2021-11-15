@@ -4,7 +4,6 @@
 #pragma once
 
 #include "Controller.hpp"
-#include "Graphics/GeometryStoreManager.hpp"
 
 namespace Flint
 {
@@ -14,7 +13,7 @@ namespace Flint
 	 * 
 	 * Once the client is created, the first registered controller will be created. After that the controllers are supposed to create other controllers and keep the logic flow.
 	 */
-	class ClientInterface : public ComponentRegistry, public GeometryStoreManager
+	class ClientInterface : public ComponentRegistry
 	{
 	public:
 		ClientInterface() = default;

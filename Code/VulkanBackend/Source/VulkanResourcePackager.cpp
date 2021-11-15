@@ -178,9 +178,9 @@ namespace Flint
 					binding.second == ShaderResourceType::SampledImage ||
 					binding.second == ShaderResourceType::StorageImage ||
 					binding.second == ShaderResourceType::CombinedImageSampler)
-					images.push_back(binding.first);
+					images.emplace_back(binding.first);
 				else
-					buffers.push_back(binding.first);
+					buffers.emplace_back(binding.first);
 			}
 
 			std::vector<VkDescriptorSet> vDescriptorSets(mDescriptorSetCount);
@@ -205,7 +205,7 @@ namespace Flint
 
 			// Create the new package.
 			auto pNewPackage = std::make_shared<VulkanResourcePackage>(shared_from_this(), buffers, images, vDescriptorSets.back());
-			pPackages.push_back(pNewPackage);
+			pPackages.emplace_back(pNewPackage);
 
 			return pNewPackage;
 		}

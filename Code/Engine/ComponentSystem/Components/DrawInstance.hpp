@@ -29,7 +29,7 @@ namespace Flint
 
 			void AddDrawData(const GraphicsCore::WireFrame* pWireFrame, const std::vector<std::shared_ptr<Graphics::ResourcePackage>>& pPackages, const std::shared_ptr<GraphicsCore::DynamicStateContainer>& pDynamicStates)
 			{
-				mDrawData.push_back(DrawData(pWireFrame, pPackages, pDynamicStates));
+				mDrawData.emplace_back(DrawData(pWireFrame, pPackages, pDynamicStates));
 			}
 
 			std::vector<DrawData> mDrawData = {};

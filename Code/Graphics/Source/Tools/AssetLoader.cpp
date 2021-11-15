@@ -336,7 +336,7 @@ namespace Flint
 				const auto pMaterial = pScene->mMaterials[pMesh->mMaterialIndex];
 
 				if (useMultiThreading)
-					futures.push_back(std::async(std::launch::async, Helpers::LoadWireFrame, pMesh, pMaterial, basePath, vertexDescriptor, pBufferMemory + (vertexOffset * vertexFloatCount), vertexOffset, &indexData[i], &mWireFrames[i]));
+					futures.emplace_back(std::async(std::launch::async, Helpers::LoadWireFrame, pMesh, pMaterial, basePath, vertexDescriptor, pBufferMemory + (vertexOffset * vertexFloatCount), vertexOffset, &indexData[i], &mWireFrames[i]));
 				else
 					Helpers::LoadWireFrame(pMesh, pMaterial, basePath, vertexDescriptor, pBufferMemory + (vertexOffset * vertexFloatCount), vertexOffset, &indexData[i], &mWireFrames[i]);
 

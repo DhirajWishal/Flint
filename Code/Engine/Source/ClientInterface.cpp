@@ -12,7 +12,7 @@ namespace Flint
 
 	void ClientInterface::RegisterIdentifier(const std::string& identifier)
 	{
-		mRegisteredClasses.push_back(identifier);
+		mRegisteredClasses.emplace_back(identifier);
 	}
 	
 	void ClientInterface::ActivateController(const std::string_view& identifier)

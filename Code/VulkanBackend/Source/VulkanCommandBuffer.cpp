@@ -90,8 +90,8 @@ namespace Flint
 			VulkanScreenBoundRenderTarget const& vRenderTarget = pRenderTarget->StaticCast<VulkanScreenBoundRenderTarget>();
 
 			auto const& vSwapChain = std::static_pointer_cast<VulkanSwapChain>(vRenderTarget.GetSwapChain());
-			vInFlightSemaphores.push_back(vSwapChain->GetInFlightSemaphore());
-			vRenderFinishedSemaphores.push_back(vSwapChain->GetRenderFinishedSemaphore());
+			vInFlightSemaphores.emplace_back(vSwapChain->GetInFlightSemaphore());
+			vRenderFinishedSemaphores.emplace_back(vSwapChain->GetRenderFinishedSemaphore());
 
 			VkRenderPassBeginInfo vBeginInfo = {};
 			vBeginInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -113,8 +113,8 @@ namespace Flint
 			VulkanScreenBoundRenderTarget const& vRenderTarget = pRenderTarget->StaticCast<VulkanScreenBoundRenderTarget>();
 
 			auto const& vSwapChain = std::static_pointer_cast<VulkanSwapChain>(vRenderTarget.GetSwapChain());
-			vInFlightSemaphores.push_back(vSwapChain->GetInFlightSemaphore());
-			vRenderFinishedSemaphores.push_back(vSwapChain->GetRenderFinishedSemaphore());
+			vInFlightSemaphores.emplace_back(vSwapChain->GetInFlightSemaphore());
+			vRenderFinishedSemaphores.emplace_back(vSwapChain->GetRenderFinishedSemaphore());
 
 			VkRenderPassBeginInfo vBeginInfo = {};
 			vBeginInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -572,7 +572,7 @@ namespace Flint
 
 		void VulkanCommandBuffer::SubmitSecondaryCommandBuffer(const std::shared_ptr<CommandBuffer>& pCommandBuffer)
 		{
-			vSecondaryCommandBuffers.push_back(pCommandBuffer->StaticCast<VulkanCommandBuffer>().GetVulkanCommandBuffer());
+			vSecondaryCommandBuffers.emplace_back(pCommandBuffer->StaticCast<VulkanCommandBuffer>().GetVulkanCommandBuffer());
 		}
 
 		void VulkanCommandBuffer::ExecuteSecondaryCommands()
@@ -597,8 +597,8 @@ namespace Flint
 		void VulkanCommandBuffer::IncludeSwapChain(SwapChain* pSwapChain)
 		{
 			auto const& vSwapChain = pSwapChain->StaticCast<VulkanSwapChain>();
-			vInFlightSemaphores.push_back(vSwapChain.GetInFlightSemaphore());
-			vRenderFinishedSemaphores.push_back(vSwapChain.GetRenderFinishedSemaphore());
+			vInFlightSemaphores.emplace_back(vSwapChain.GetInFlightSemaphore());
+			vRenderFinishedSemaphores.emplace_back(vSwapChain.GetRenderFinishedSemaphore());
 		}
 
 		void VulkanCommandBuffer::BeginQuery(const Query* pQuery, const uint32 index, const bool requirePrecision)

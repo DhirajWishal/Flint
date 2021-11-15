@@ -20,7 +20,7 @@ namespace Flint
 		if (mBufferBindings.find(binding) == mBufferBindings.end())
 			throw std::invalid_argument("Submitted binding is not valid!");
 
-		mBufferBindings[binding].push_back(BufferBinding(pBuffer, offset));
+		mBufferBindings[binding].emplace_back(BufferBinding(pBuffer, offset));
 		bIsUpdated = true;
 	}
 
@@ -29,7 +29,7 @@ namespace Flint
 		if (mImageBindings.find(binding) == mImageBindings.end())
 			throw std::invalid_argument("Submitted binding is not valid!");
 
-		mImageBindings[binding].push_back(ImageBinding(pImage, pImageView, pImageSampler, usage));
+		mImageBindings[binding].emplace_back(ImageBinding(pImage, pImageView, pImageSampler, usage));
 		bIsUpdated = true;
 	}
 

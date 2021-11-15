@@ -4,7 +4,7 @@
 #include "ScreenSpaceReflectionPass.hpp"
 #include "TestBase/DefaultProcessingPipeline.hpp"
 #include "Graphics/ProcessingPipeline/ProcessingPipeline.hpp"
-#include "Graphics/ShaderCompiler.hpp"
+#include "Graphics/Tools/ShaderCompiler.hpp"
 #include "GraphicsCore/ResourcePackage.hpp"
 
 #include <optick.h>

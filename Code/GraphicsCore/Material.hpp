@@ -20,7 +20,7 @@ namespace Flint
 		 *
 		 * @param pProperty The property to add.
 		 */
-		void AddProperty(std::shared_ptr<MaterialProperties::Property>&& pProperty) { pProperties.push_back(std::move(pProperty)); }
+		void AddProperty(std::shared_ptr<MaterialProperties::Property>&& pProperty) { pProperties.emplace_back(std::move(pProperty)); }
 
 		/**
 		 * Get all the properties.

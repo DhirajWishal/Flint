@@ -55,7 +55,7 @@ namespace Flint
 				}
 
 				vWrite.pBufferInfo = pBufferInfos;
-				vWrites.push_back(vWrite);
+				vWrites.emplace_back(vWrite);
 			}
 
 			// Resolve images.
@@ -85,7 +85,7 @@ namespace Flint
 				}
 
 				vWrite.pImageInfo = pImageInfos;
-				vWrites.push_back(vWrite);
+				vWrites.emplace_back(vWrite);
 			}
 
 			vDevice.GetDeviceTable().vkUpdateDescriptorSets(vDevice.GetLogicalDevice(), static_cast<uint32>(vWrites.size()), vWrites.data(), 0, nullptr);

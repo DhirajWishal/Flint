@@ -45,7 +45,7 @@ namespace Flint
 		void VulkanComputePipeline::CreateResourcePackagers()
 		{
 			for (uint32 i = 0; i < vDescriptorSetLayouts.size(); i++)
-				pResourcePackagers.push_back(std::make_shared<VulkanResourcePackager>(i, shared_from_this(), vDescriptorSetLayouts[i]));
+				pResourcePackagers.emplace_back(std::make_shared<VulkanResourcePackager>(i, shared_from_this(), vDescriptorSetLayouts[i]));
 		}
 
 		void VulkanComputePipeline::Terminate()
@@ -129,7 +129,7 @@ namespace Flint
 				VkDescriptorSetLayout vDescriptorSetLayout = VK_NULL_HANDLE;
 				FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateDescriptorSetLayout(vDevice.GetLogicalDevice(), &vLayoutCreateInfo, nullptr, &vDescriptorSetLayout));
 
-				vDescriptorSetLayouts.push_back(vDescriptorSetLayout);
+				vDescriptorSetLayouts.emplace_back(vDescriptorSetLayout);
 			}
 
 			// Create pipeline layout.

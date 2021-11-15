@@ -114,7 +114,7 @@ namespace Flint
 			OPTICK_EVENT();
 
 			if ((flags & DeviceFlags::GraphicsCompatible) == DeviceFlags::GraphicsCompatible)
-				mDeviceExtensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+				mDeviceExtensions.emplace_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
 
 			InitializePhysicalDevice();
 			InitializeLogicalDevice();
@@ -713,7 +713,7 @@ namespace Flint
 				vQueueCreateInfo.queueFamilyIndex = queueFamily;
 				vQueueCreateInfo.queueCount = 1;
 				vQueueCreateInfo.pQueuePriorities = &queuePriority;
-				vQueueCreateInfos.push_back(vQueueCreateInfo);
+				vQueueCreateInfos.emplace_back(vQueueCreateInfo);
 			}
 
 			// Physical device features.

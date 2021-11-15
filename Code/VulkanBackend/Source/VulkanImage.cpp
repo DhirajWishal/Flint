@@ -491,8 +491,8 @@ namespace Flint
 			{
 				if (vDevice.GetQueue().mGraphicsFamily != vDevice.GetQueue().mComputeFamily)
 				{
-					queueIndexes.push_back(vDevice.GetQueue().mGraphicsFamily.value());
-					queueIndexes.push_back(vDevice.GetQueue().mComputeFamily.value());
+					queueIndexes.emplace_back(vDevice.GetQueue().mGraphicsFamily.value());
+					queueIndexes.emplace_back(vDevice.GetQueue().mComputeFamily.value());
 
 					vCreateInfo.sharingMode = VK_SHARING_MODE_CONCURRENT;
 				}

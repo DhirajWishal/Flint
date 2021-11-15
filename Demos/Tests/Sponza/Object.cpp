@@ -4,8 +4,8 @@
 #include "Object.hpp"
 
 #include "TestBase/GraphicsScene.hpp"
-#include "Graphics/ShaderCompiler.hpp"
-#include "Graphics/ImageLoader.hpp"
+#include "Graphics/Tools/ShaderCompiler.hpp"
+#include "Graphics/Tools/ImageLoader.hpp"
 #include "Graphics/Tools/CubeMapGenerator.hpp"
 #include "GraphicsCore/Query.hpp"
 
@@ -243,7 +243,7 @@ namespace Flint
 		for (uint32 i = 0; i < pOffScreenPass->GetRenderTarget()->GetBufferCount(); i++)
 		{
 			mDrawSamples.emplace_back(std::vector<uint64>(size));
-			pOcclusionQueries.push_back(pApplication->GetDevice()->CreateQuery(QueryUsage::Occlusion, static_cast<uint32>(size)));
+			pOcclusionQueries.emplace_back(pApplication->GetDevice()->CreateQuery(QueryUsage::Occlusion, static_cast<uint32>(size)));
 		}
 	}
 
@@ -269,7 +269,7 @@ namespace Flint
 						if (pTexturePath->mType != MaterialProperties::TextureType::Diffuse)
 							continue;
 
-						futures.push_back(std::async(std::launch::async, [](const std::shared_ptr<MaterialProperties::TexturePath>& pTexturePath,
+						futures.emplace_back(std::async(std::launch::async, [](const std::shared_ptr<MaterialProperties::TexturePath>& pTexturePath,
 							std::unordered_map<std::shared_ptr<MaterialProperties::TexturePath>, ImageLoader>* pLoaderMap)
 							{
 								ImageLoader loader(pTexturePath->mTexturePath);
@@ -327,14 +327,14 @@ namespace Flint
 						pPackage->BindResource(1, pImage, pImageView, pSampler);
 						pPackage->PrepareIfNecessary();
 
-						pPackageSets[i].push_back(std::move(pPackage));
+						pPackageSets[i].emplace_back(std::move(pPackage));
 					}
 				}
 			}
 
 			auto pPackage = pOcclusionPipeline->CreateResourcePackage(0);
 			pPackage->BindResource(0, pUniformBuffer);
-			pOcclusionPackageSets.push_back(std::move(pPackage));
+			pOcclusionPackageSets.emplace_back(std::move(pPackage));
 		}
 	}
 }
