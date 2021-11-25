@@ -5,7 +5,7 @@
 
 project "SampleScene"
 	kind "SharedLib"
-	cppdialect "C++17"
+	cppdialect "C++20"
 	language "C++"
 	staticruntime "On"
 	systemversion "latest"

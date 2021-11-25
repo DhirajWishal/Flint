@@ -7,7 +7,7 @@ project "FlintGraphics"
 	language "C++"
 	kind "StaticLib"
 	systemversion "latest"
-	cppdialect "C++17"
+	cppdialect "C++20"
 	staticruntime "on"
 
 	flags { "MultiProcessorCompile" }

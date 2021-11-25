@@ -31,7 +31,7 @@ namespace Flint
 
 	private:
 #ifndef FLINT_RELEASE
-		std::string_view mFunctionSignature = nullptr;
+		std::string_view mFunctionSignature = {};
 		std::chrono::time_point<std::chrono::high_resolution_clock> mStart = {};
 		std::chrono::time_point<std::chrono::high_resolution_clock> mEnd = {};
 

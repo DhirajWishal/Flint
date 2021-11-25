@@ -515,6 +515,18 @@ namespace VULKAN_HPP_NAMESPACE
   struct ShaderResourceUsageAMD;
   struct ShaderStatisticsInfoAMD;
 
+  //=== VK_KHR_dynamic_rendering ===
+  struct RenderingInfoKHR;
+  struct RenderingAttachmentInfoKHR;
+  struct PipelineRenderingCreateInfoKHR;
+  struct PhysicalDeviceDynamicRenderingFeaturesKHR;
+  struct CommandBufferInheritanceRenderingInfoKHR;
+  struct RenderingFragmentShadingRateAttachmentInfoKHR;
+  struct RenderingFragmentDensityMapAttachmentInfoEXT;
+  struct AttachmentSampleCountInfoAMD;
+  using AttachmentSampleCountInfoNV = AttachmentSampleCountInfoAMD;
+  struct MultiviewPerViewAttributesInfoNVX;
+
 #if defined( VK_USE_PLATFORM_GGP )
   //=== VK_GGP_stream_descriptor_surface ===
   struct StreamDescriptorSurfaceCreateInfoGGP;
@@ -1167,6 +1179,9 @@ namespace VULKAN_HPP_NAMESPACE
   //=== VK_EXT_4444_formats ===
   struct PhysicalDevice4444FormatsFeaturesEXT;
 
+  //=== VK_ARM_rasterization_order_attachment_access ===
+  struct PhysicalDeviceRasterizationOrderAttachmentAccessFeaturesARM;
+
   //=== VK_EXT_rgba10x6_formats ===
   struct PhysicalDeviceRGBA10X6FormatsFeaturesEXT;
 
@@ -1199,6 +1214,10 @@ namespace VULKAN_HPP_NAMESPACE
 
   //=== VK_EXT_physical_device_drm ===
   struct PhysicalDeviceDrmPropertiesEXT;
+
+  //=== VK_EXT_depth_clip_control ===
+  struct PhysicalDeviceDepthClipControlFeaturesEXT;
+  struct PipelineViewportDepthClipControlCreateInfoEXT;
 
   //=== VK_EXT_primitive_topology_list_restart ===
   struct PhysicalDevicePrimitiveTopologyListRestartFeaturesEXT;
@@ -1260,6 +1279,10 @@ namespace VULKAN_HPP_NAMESPACE
   //=== VK_EXT_global_priority_query ===
   struct PhysicalDeviceGlobalPriorityQueryFeaturesEXT;
   struct QueueFamilyGlobalPriorityPropertiesEXT;
+
+  //=== VK_EXT_image_view_min_lod ===
+  struct PhysicalDeviceImageViewMinLodFeaturesEXT;
+  struct ImageViewMinLodCreateInfoEXT;
 
   //=== VK_EXT_multi_draw ===
   struct PhysicalDeviceMultiDrawFeaturesEXT;
@@ -3932,6 +3955,20 @@ namespace VULKAN_HPP_NAMESPACE
                                       uint32_t                         stride,
                                       Dispatch const & d               VULKAN_HPP_DEFAULT_DISPATCHER_ASSIGNMENT ) const
       VULKAN_HPP_NOEXCEPT;
+
+    //=== VK_KHR_dynamic_rendering ===
+
+    template <typename Dispatch = VULKAN_HPP_DEFAULT_DISPATCHER_TYPE>
+    void beginRenderingKHR( const VULKAN_HPP_NAMESPACE::RenderingInfoKHR * pRenderingInfo,
+                            Dispatch const & d VULKAN_HPP_DEFAULT_DISPATCHER_ASSIGNMENT ) const VULKAN_HPP_NOEXCEPT;
+#ifndef VULKAN_HPP_DISABLE_ENHANCED_MODE
+    template <typename Dispatch = VULKAN_HPP_DEFAULT_DISPATCHER_TYPE>
+    void beginRenderingKHR( const VULKAN_HPP_NAMESPACE::RenderingInfoKHR & renderingInfo,
+                            Dispatch const & d VULKAN_HPP_DEFAULT_DISPATCHER_ASSIGNMENT ) const VULKAN_HPP_NOEXCEPT;
+#endif /*VULKAN_HPP_DISABLE_ENHANCED_MODE*/
+
+    template <typename Dispatch = VULKAN_HPP_DEFAULT_DISPATCHER_TYPE>
+    void endRenderingKHR( Dispatch const & d VULKAN_HPP_DEFAULT_DISPATCHER_ASSIGNMENT ) const VULKAN_HPP_NOEXCEPT;
 
     //=== VK_KHR_device_group ===
 
@@ -13119,24 +13156,6 @@ namespace VULKAN_HPP_NAMESPACE
       VULKAN_HPP_NAMESPACE::PerformanceCounterDescriptionKHR * pCounterDescriptions,
       Dispatch const & d VULKAN_HPP_DEFAULT_DISPATCHER_ASSIGNMENT ) const VULKAN_HPP_NOEXCEPT;
 #ifndef VULKAN_HPP_DISABLE_ENHANCED_MODE
-    template <typename Allocator = std::allocator<PerformanceCounterDescriptionKHR>,
-              typename Dispatch  = VULKAN_HPP_DEFAULT_DISPATCHER_TYPE>
-    VULKAN_HPP_NODISCARD typename ResultValueType<std::vector<PerformanceCounterDescriptionKHR, Allocator>>::type
-      enumerateQueueFamilyPerformanceQueryCountersKHR(
-        uint32_t                                                        queueFamilyIndex,
-        ArrayProxy<VULKAN_HPP_NAMESPACE::PerformanceCounterKHR> const & counters,
-        Dispatch const & d VULKAN_HPP_DEFAULT_DISPATCHER_ASSIGNMENT ) const;
-    template <typename Allocator                 = std::allocator<PerformanceCounterDescriptionKHR>,
-              typename Dispatch                  = VULKAN_HPP_DEFAULT_DISPATCHER_TYPE,
-              typename B                         = Allocator,
-              typename std::enable_if<std::is_same<typename B::value_type, PerformanceCounterDescriptionKHR>::value,
-                                      int>::type = 0>
-    VULKAN_HPP_NODISCARD typename ResultValueType<std::vector<PerformanceCounterDescriptionKHR, Allocator>>::type
-      enumerateQueueFamilyPerformanceQueryCountersKHR(
-        uint32_t                                                        queueFamilyIndex,
-        ArrayProxy<VULKAN_HPP_NAMESPACE::PerformanceCounterKHR> const & counters,
-        Allocator const &                                               vectorAllocator,
-        Dispatch const & d VULKAN_HPP_DEFAULT_DISPATCHER_ASSIGNMENT ) const;
     template <typename PerformanceCounterKHRAllocator            = std::allocator<PerformanceCounterKHR>,
               typename PerformanceCounterDescriptionKHRAllocator = std::allocator<PerformanceCounterDescriptionKHR>,
               typename Dispatch                                  = VULKAN_HPP_DEFAULT_DISPATCHER_TYPE>

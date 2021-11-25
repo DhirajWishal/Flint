@@ -5,7 +5,7 @@
 
 project "Sponza"
 	kind "ConsoleApp"
-	cppdialect "C++17"
+	cppdialect "C++20"
 	language "C++"
 	systemversion "latest"
 	staticruntime "on"
@@ -55,14 +55,12 @@ project "Sponza"
 	filter "toolset:msc"
 		postbuildcommands {
 			"{Copy} \"%{wks.location}/ThirdParty/glfw/src/Release/glfw3.dll\" \"%{cfg.targetdir}\"",
-			"{Copy} \"%{wks.location}/ThirdParty/Runtime/vulkan-1.dll\" \"%{cfg.targetdir}\"",
 			"{Copy} \"%{wks.location}/ThirdParty/Assimp/bin/Release/assimp-vc142-mt.dll\" \"%{cfg.targetdir}\"",
 		}
 
 	filter "toolset:clang or gcc"
 		postbuildcommands {
 			"{Copy} \"%{wks.location}/ThirdParty/glfw/src/Release/libglfw.so\" \"%{cfg.targetdir}\"",
-			--"{Copy} \"%{wks.location}/ThirdParty/Runtime/vulkan-1.dll\" \"%{cfg.targetdir}\"",
 			"{Copy} \"%{wks.location}/ThirdParty/Assimp/bin/libassimp.so\" \"%{cfg.targetdir}\"",
 		}
 

@@ -5,7 +5,7 @@
 
 project "TestBase"
 	kind "StaticLib"
-	cppdialect "C++17"
+	cppdialect "C++20"
 	language "C++"
 	systemversion "latest"
 	staticruntime "on"

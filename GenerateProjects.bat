@@ -1,2 +1,2 @@
-call python BuildScript.py
+call python Scripts/BuildScript.py
 PAUSE
