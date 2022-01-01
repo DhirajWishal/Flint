@@ -15,10 +15,15 @@ layout (binding = 0) uniform UBO
     float mipBias;
 } Ubo;
 
+layout (push_constant) uniform ConstantBlock
+{
+    mat4 view;
+} constants;
+
 void main()
 {
     outNormal = inNormal;
     outTexCoordinate = inTextureCoordinates;
 
-    gl_Position = Ubo.projection * Ubo.view * Ubo.model * vec4(inPosition, 1.0f);
+    gl_Position = Ubo.projection * constants.view * Ubo.model * vec4(inPosition, 1.0f);
 }  
