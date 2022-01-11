@@ -3,11 +3,9 @@
 
 #pragma once
 
+#include "Core/Reactor/Reactor.hpp"
+
 namespace Flint
 {
-	class VulkanReactor
-	{
-	public:
-		VulkanReactor() = default;
-	};
+	void VulkanReactorWorker(std::list<std::unique_ptr<CommandBase>>& commands, std::mutex& mutex);
 }

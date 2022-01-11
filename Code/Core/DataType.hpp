@@ -10,19 +10,19 @@
 
 namespace Flint
 {
-	typedef uint8_t								uint8;
-	typedef uint16_t							uint16;
-	typedef uint32_t							uint32;
-	typedef uint64_t							uint64;
+	using uint8 = uint8_t;
+	using uint16 = uint16_t;
+	using uint32 = uint32_t;
+	using uint64 = uint64_t;
 
-	typedef int8_t								int8;
-	typedef int16_t								int16;
-	typedef int32_t								int32;
-	typedef int64_t								int64;
+	using int8 = int8_t;
+	using int16 = int16_t;
+	using int32 = int32_t;
+	using int64 = int64_t;
 
-	typedef wchar_t								wchar;
+	using wchar = wchar_t;
 
-	typedef uint8								BYTE;
+	using BYTE = uint8;
 
 	/**
 	 * Flint extent 2D structure.
@@ -97,11 +97,14 @@ namespace Flint
 		constexpr FColor4D(float value) : mRed(value), mGreen(value), mBlue(value), mAlpha(value) {}
 		constexpr FColor4D(float red, float green, float blue, float alpha) : mRed(red), mGreen(green), mBlue(blue), mAlpha(alpha) {}
 
-		float mRed = 0.0f, mGreen = 0.0f, mBlue = 0.0f, mAlpha = 0.0f;
+		float mRed = 0.0f;
+		float mGreen = 0.0f;
+		float mBlue = 0.0f;
+		float mAlpha = 0.0f;
 	};
 
-	typedef FExtent2D<uint32> FBox2D;
-	typedef FExtent3D<uint32> FBox3D;
+	using FBox2D = FExtent2D<uint32>;
+	using FBox3D = FExtent3D<uint32>;
 
 	template<class Type> constexpr bool operator==(const FExtent2D<Type>& lhs, const FExtent2D<Type>& rhs) { return lhs.X == rhs.X && lhs.Y == rhs.Y; }
 	template<class Type> constexpr bool operator!=(const FExtent2D<Type>& lhs, const FExtent2D<Type>& rhs) { return lhs.X != rhs.X || lhs.Y != rhs.Y; }

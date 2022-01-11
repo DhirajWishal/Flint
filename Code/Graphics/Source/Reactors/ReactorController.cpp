@@ -11,7 +11,7 @@ namespace Flint
 		template<class Type>
 		void ReactorFunction(std::deque<std::unique_ptr<Command>>& commandQueue, std::mutex const& resourceMutex)
 		{
-			Type reactor{ commandQueue, resourceMutex };
+			//Type reactor{ commandQueue, resourceMutex };
 		}
 	}
 
@@ -22,7 +22,7 @@ namespace Flint
 
 	ReactorController::ReactorController(ReactorType type)
 	{
-		if (type == ReactorType::Vulkan)
-			mReactorThread = std::jthread(Reactors::ReactorFunction<VulkanReactor>, mCommandQueue, mResourceMutex);
+		//if (type == ReactorType::Vulkan)
+		//	mReactorThread = std::jthread(Reactors::ReactorFunction<VulkanReactor>, mCommandQueue, mResourceMutex);
 	}
 }

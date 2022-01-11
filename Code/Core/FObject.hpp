@@ -8,6 +8,14 @@
 
 namespace Flint
 {
+	class FObject;
+
+	/**
+	 * Concept which only accepts object types which are derived from the FObject class.
+	 */
+	template<class Type>
+	concept DerivedFromFObject = std::is_base_of_v<Type, FObject>;
+
 	/**
 	 * Flint object class.
 	 * This is the base class for all the Flint objects and contains common and utility functions.
@@ -25,7 +33,7 @@ namespace Flint
 		 * @tparam Derived: The derived type.
 		 * @return The derived class reference.
 		 */
-		template<class Derived, std::enable_if_t<std::is_base_of<Derived, FObject>::value, bool> = true>
+		template<DerivedFromFObject Derived>
 		Derived& DynamicCast() { return *dynamic_cast<Derived*>(this); }
 
 		/**
