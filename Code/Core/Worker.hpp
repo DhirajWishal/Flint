@@ -28,6 +28,20 @@ namespace Flint
 		Worker();
 
 		/**
+		 * Copy constructor.
+		 *
+		 * @param other The other worker.
+		 */
+		Worker(const Worker& other);
+
+		/**
+		 * Move constructor.
+		 *
+		 * @param other The other worker.
+		 */
+		Worker(Worker&& other);
+
+		/**
 		 * Destructor.
 		 */
 		~Worker();
@@ -105,6 +119,23 @@ namespace Flint
 		 * @return The command count.
 		 */
 		uint64 GetAsyncCommandCount() const { return mCommands.size(); }
+
+	public:
+		/**
+		 * Copy assign operator.
+		 * 
+		 * @param other The other worker.
+		 * @return This object reference.
+		 */
+		Worker& operator=(const Worker& other);
+
+		/**
+		 * Move assign operator.
+		 *
+		 * @param other The other worker.
+		 * @return This object reference.
+		 */
+		Worker& operator=(Worker&& other);
 
 	private:
 		std::jthread mWorkerThread = {};

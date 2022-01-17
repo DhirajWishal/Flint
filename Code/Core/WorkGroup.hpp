@@ -34,7 +34,7 @@ namespace Flint
 		 * @return A promise object of the function return.
 		 */
 		template<class Function, class... Arguments, class ReturnType = std::invoke_result_t<Function, Arguments...>>
-		std::future<ReturnType> IssueWork(Function&& function, Arguments&&... arguments) { return mWorkers[GetNextIndex(mIndex++)].IssueWork(function, arguments); }
+		std::future<ReturnType> IssueWork(Function&& function, Arguments&&... arguments) { return mWorkers[GetNextIndex(mIndex++)].IssueWork(std::forward<Function>(function), std::forward<Arguments>(arguments)...); }
 
 		/**
 		 * Get the work group size.
