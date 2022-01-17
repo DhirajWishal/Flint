@@ -49,6 +49,7 @@ namespace Flint
 			{
 				// Lock the resources.
 				auto uniqueLock = std::unique_lock(mMutex);
+				auto future = std::future<ReturnType>();
 
 				// If the return type is void, we don't need to assign anything to a promise. 
 				// Because of this, we can simply call the provided function and return an empty future.
@@ -56,46 +57,44 @@ namespace Flint
 				{
 					// Emplace the lambda to the list.
 					mCommands.emplace_back([function, arguments...]() { function(std::forward<Arguments>(arguments)...); });
-
-					// Notify the thread that we inserted a new command.
-					mConditionVariable.notify_one();
-
-					return std::future<ReturnType>();
 				}
 				else
 				{
 					// If the return type is not void, we need a promise because we must return its value.
-					// But as for captures, we cannot move the promise itself, or as a unique pointer, so we use a shared pointer.
-					std::shared_ptr<std::promise<ReturnType>> pPromise = std::make_shared<std::promise<ReturnType>>();
+					// But as for captures, we cannot move the promise itself, so we use a pointer for that purpose.
+					// Even though a smart pointer will work, this is somewhat of an overkill as we can easily manage the pointer and cut down the overhead of using a shared pointer.
+					const auto pPromise = new std::promise<ReturnType>();
 
 					// Get the future from the promise.
-					auto future = pPromise->get_future();
+					future = pPromise->get_future();
 
-					// Issue the command and notify the worker.
-					mCommands.emplace_back([pPromise = std::move(pPromise), function, arguments...](){ pPromise->set_value(std::move(function(std::forward<Arguments>(arguments)...))); });
-					mConditionVariable.notify_one();
-
-					return future;
+					// Issue the command.
+					mCommands.emplace_back([pPromise, function, arguments...](){ pPromise->set_value(std::move(function(std::forward<Arguments>(arguments)...))); delete pPromise; });
 				}
+
+				// Notify the thread that we inserted a new command.
+				mConditionVariable.notify_one();
+
+				return future;
 			}
 
 			/**
 			 * Get the wait duration of the worker.
-			 * 
+			 *
 			 * @return The duration in milliseconds.
 			 */
 			std::chrono::milliseconds GetWaitDuration() const { return mWaitDuration; }
 
 			/**
 			 * Set the worker thread's wait duration.
-			 * 
+			 *
 			 * @param duration The wait duration to set.
 			 */
 			void SetWaitDuration(const std::chrono::milliseconds duration) { mWaitDuration = duration; }
 
 			/**
 			 * Get the number of asynchronous commands waiting in the queue.
-			 * 
+			 *
 			 * @return The command count.
 			 */
 			uint64 GetAsyncCommandCount() const { return mCommands.size(); }
