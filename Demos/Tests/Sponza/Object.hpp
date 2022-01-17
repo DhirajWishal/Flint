@@ -69,6 +69,9 @@ namespace Flint
 		std::shared_ptr<DynamicStateContainer> pDynamicStatesLeftEye = nullptr;
 		std::shared_ptr<DynamicStateContainer> pDynamicStatesRightEye = nullptr;
 
+		std::future<bool> mAsyncStatus;
+		bool bFirstAsync = true;
+
 		float mEyeExpansion = 0.0f;
 
 		bool bShouldFreezeOcclusion = false;

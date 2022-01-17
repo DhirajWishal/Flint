@@ -18,19 +18,23 @@ namespace Flint
 	Object::Object(Application* pApplication, std::shared_ptr<OffScreenPass> pOffScreenPass)
 		: pApplication(pApplication), pOffScreenPass(pOffScreenPass)
 	{
-		pDynamicStates = std::make_shared<DynamicStateContainer>();
-		pDynamicStatesLeftEye = std::make_shared<DynamicStateContainer>();
-		pDynamicStatesRightEye = std::make_shared<DynamicStateContainer>();
+		mAsyncStatus = pApplication->mGraphicsWorker.IssueWork([this, pApplication]() {
+			pDynamicStates = std::make_shared<DynamicStateContainer>();
+			pDynamicStatesLeftEye = std::make_shared<DynamicStateContainer>();
+			pDynamicStatesRightEye = std::make_shared<DynamicStateContainer>();
 
-		pUniformBuffer = pApplication->GetDevice()->CreateBuffer(BufferType::Uniform, sizeof(ModelViewProjection));
+			pUniformBuffer = pApplication->GetDevice()->CreateBuffer(BufferType::Uniform, sizeof(ModelViewProjection));
 
-		//pApplication->GetGraphicsScene("Default")->mCamera.SetCameraRange(0.01f, 2048.0f);
-		mMatrix.mModelMatrix = glm::scale(mMatrix.mModelMatrix, glm::vec3(0.005f));
+			//pApplication->GetGraphicsScene("Default")->mCamera.SetCameraRange(0.01f, 2048.0f);
+			mMatrix.mModelMatrix = glm::scale(mMatrix.mModelMatrix, glm::vec3(0.005f));
 
-		CreatePipeline();
-		CreateOcclusionPipeline();
-		LoadAsset();
-		LoadTextures();
+			CreatePipeline();
+			CreateOcclusionPipeline();
+			LoadAsset();
+			LoadTextures();
+
+			return true;
+			});
 	}
 
 	void Object::Initialize(Application* pApplication)
@@ -39,24 +43,31 @@ namespace Flint
 
 		this->pApplication = pApplication;
 
-		pDynamicStates = std::make_shared<DynamicStateContainer>();
-		pDynamicStatesLeftEye = std::make_shared<DynamicStateContainer>();
-		pDynamicStatesRightEye = std::make_shared<DynamicStateContainer>();
+		mAsyncStatus = pApplication->mGraphicsWorker.IssueWork([this, pApplication]() {
+			pDynamicStates = std::make_shared<DynamicStateContainer>();
+			pDynamicStatesLeftEye = std::make_shared<DynamicStateContainer>();
+			pDynamicStatesRightEye = std::make_shared<DynamicStateContainer>();
 
-		pUniformBuffer = pApplication->GetDevice()->CreateBuffer(BufferType::Uniform, sizeof(ModelViewProjection));
+			pUniformBuffer = pApplication->GetDevice()->CreateBuffer(BufferType::Uniform, sizeof(ModelViewProjection));
 
-		//pApplication->GetGraphicsScene("Default")->mCamera.SetCameraRange(0.01f, 2048.0f);
-		mMatrix.mModelMatrix = glm::scale(mMatrix.mModelMatrix, glm::vec3(0.005f));
+			//pApplication->GetGraphicsScene("Default")->mCamera.SetCameraRange(0.01f, 2048.0f);
+			mMatrix.mModelMatrix = glm::scale(mMatrix.mModelMatrix, glm::vec3(0.005f));
 
-		CreatePipeline();
-		CreateOcclusionPipeline();
-		LoadAsset();
-		LoadTextures();
+			CreatePipeline();
+			CreateOcclusionPipeline();
+			LoadAsset();
+			LoadTextures();
+
+			return true;
+			});
 	}
 
 	void Object::Update(uint64 delta, Camera* pCamera)
 	{
 		OPTICK_EVENT();
+
+		if (bFirstAsync && mAsyncStatus.valid() && mAsyncStatus.get())
+			bFirstAsync = false;
 
 		const auto mat = pCamera->GetMatrix();
 		mMatrix.mViewMatrix = mat.mViewMatrix;
