@@ -17,7 +17,7 @@ namespace Flint
 		/**
 		 * Constructor.
 		 * Construct the work group using the worker count.
-		 * 
+		 *
 		 * @param groupSize The number of workers in the work group.
 		 */
 		explicit WorkGroup(uint64 groupSize) : mWorkers(groupSize) {}
@@ -34,29 +34,41 @@ namespace Flint
 		 * @return A promise object of the function return.
 		 */
 		template<class Function, class... Arguments, class ReturnType = std::invoke_result_t<Function, Arguments...>>
-		std::future<ReturnType> IssueWork(Function&& function, Arguments&&... arguments)
-		{
-			return mWorkers[GetNextIndex(mIndex++)].IssueWork(function, arguments);
-		}
+		std::future<ReturnType> IssueWork(Function&& function, Arguments&&... arguments) { return mWorkers[GetNextIndex(mIndex++)].IssueWork(function, arguments); }
 
 		/**
 		 * Get the work group size.
-		 * 
+		 *
 		 * @return The work group size.
 		 */
-		uint64 GetWorkGroupSize() const { return mWorkers.size(); }
+		uint64 GetSize() const { return mWorkers.size(); }
 
 		/**
 		 * Resize the work group.
-		 * 
+		 *
 		 * @param size The required size.
 		 */
-		void ResizeWorkGroup(uint64 size) { mWorkers.resize(size); }
+		void Resize(uint64 size) { mWorkers.resize(size); }
+
+		/**
+		 * Get the current index.
+		 * 
+		 * @return The index.
+		 */
+		uint64 GetCurrentIndex() const { return mIndex; }
+
+		/**
+		 * Get a worker from the group.
+		 * 
+		 * @param index The index of the worker.
+		 * @return The worker reference.
+		 */
+		Worker& GetWorker(uint64 index) { return mWorkers[index]; }
 
 	private:
 		/**
 		 * Get the index of the next position to assign the work.
-		 * 
+		 *
 		 * @param index The previous index.
 		 * @return The index.
 		 */
