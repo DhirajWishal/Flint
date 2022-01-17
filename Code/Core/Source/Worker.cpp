@@ -10,72 +10,20 @@ namespace Flint
 	Worker::Worker()
 	{
 		// Setup the thread.
-		mWorkerThread = std::jthread([this]()
-			{
-				while (bShouldRun || mCommands.size())
-				{
-					// Lock the resources.
-					auto uniqueLock = std::unique_lock(mMutex);
-
-					// Check if we can execute a command. If not, we wait for a specified amount of time. If a command was submitted within that time, it is executed or else it will wait.
-					if (!mCommands.empty() || mConditionVariable.wait_for(uniqueLock, mWaitDuration, [this]() { return !mCommands.empty(); }))
-					{
-						auto function = std::move(mCommands.back());
-						mCommands.pop_back();
-
-						// Execute the work.
-						function();
-					}
-				}
-			});
-
+		mWorkerThread = std::jthread([this]() { WorkerFunction(mCommands, mMutex, mConditionVariable, mWaitDuration, bShouldRun); });
 		mWaitDuration = 500ms;
 	}
 
 	Worker::Worker(std::chrono::milliseconds duration) : mWaitDuration(duration)
 	{
 		// Setup the thread.
-		mWorkerThread = std::jthread([this]()
-			{
-				while (bShouldRun || mCommands.size())
-				{
-					// Lock the resources.
-					auto uniqueLock = std::unique_lock(mMutex);
-
-					// Check if we can execute a command. If not, we wait for a specified amount of time. If a command was submitted within that time, it is executed or else it will wait.
-					if (!mCommands.empty() || mConditionVariable.wait_for(uniqueLock, mWaitDuration, [this]() { return !mCommands.empty(); }))
-					{
-						auto function = std::move(mCommands.back());
-						mCommands.pop_back();
-
-						// Execute the work.
-						function();
-					}
-				}
-			});
+		mWorkerThread = std::jthread([this]() { WorkerFunction(mCommands, mMutex, mConditionVariable, mWaitDuration, bShouldRun); });
 	}
 
 	Worker::Worker(const Worker& other) : mCommands(other.mCommands), mWaitDuration(other.mWaitDuration)
 	{
 		// Setup the thread.
-		mWorkerThread = std::jthread([this]()
-			{
-				while (bShouldRun || mCommands.size())
-				{
-					// Lock the resources.
-					auto uniqueLock = std::unique_lock(mMutex);
-
-					// Check if we can execute a command. If not, we wait for a specified amount of time. If a command was submitted within that time, it is executed or else it will wait.
-					if (!mCommands.empty() || mConditionVariable.wait_for(uniqueLock, mWaitDuration, [this]() { return !mCommands.empty(); }))
-					{
-						auto function = std::move(mCommands.back());
-						mCommands.pop_back();
-
-						// Execute the work.
-						function();
-					}
-				}
-			});
+		mWorkerThread = std::jthread([this]() { WorkerFunction(mCommands, mMutex, mConditionVariable, mWaitDuration, bShouldRun); });
 	}
 
 	Worker::Worker(Worker&& other) : mCommands(std::move(other.mCommands)), mWaitDuration(std::move(other.mWaitDuration))
@@ -84,24 +32,7 @@ namespace Flint
 		other.mWorkerThread.join();
 
 		// Setup the thread.
-		mWorkerThread = std::jthread([this]()
-			{
-				while (bShouldRun || mCommands.size())
-				{
-					// Lock the resources.
-					auto uniqueLock = std::unique_lock(mMutex);
-
-					// Check if we can execute a command. If not, we wait for a specified amount of time. If a command was submitted within that time, it is executed or else it will wait.
-					if (!mCommands.empty() || mConditionVariable.wait_for(uniqueLock, mWaitDuration, [this]() { return !mCommands.empty(); }))
-					{
-						auto function = std::move(mCommands.back());
-						mCommands.pop_back();
-
-						// Execute the work.
-						function();
-					}
-				}
-			});
+		mWorkerThread = std::jthread([this]() { WorkerFunction(mCommands, mMutex, mConditionVariable, mWaitDuration, bShouldRun); });
 	}
 
 	Worker::~Worker()
@@ -127,5 +58,24 @@ namespace Flint
 		other.mWorkerThread.join();
 
 		return *this;
+	}
+
+	void Worker::WorkerFunction(std::list<std::function<void()>>& commands, std::mutex& mutex, std::condition_variable& conditionVariable, const std::chrono::milliseconds& waitingDuration, const bool& shouldRun)
+	{
+		while (shouldRun || commands.size())
+		{
+			// Lock the resources.
+			auto uniqueLock = std::unique_lock(mutex);
+
+			// Check if we can execute a command. If not, we wait for a specified amount of time. If a command was submitted within that time, it is executed or else it will wait.
+			if (!commands.empty() || conditionVariable.wait_for(uniqueLock, waitingDuration, [commands]() { return !commands.empty(); }))
+			{
+				auto function = std::move(commands.back());
+				commands.pop_back();
+
+				// Execute the work.
+				function();
+			}
+		}
 	}
 }

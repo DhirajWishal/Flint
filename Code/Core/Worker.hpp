@@ -30,7 +30,7 @@ namespace Flint
 		/**
 		 * Constructor.
 		 * Set the duration for the worker to wait.
-		 * 
+		 *
 		 * @param duration The waiting duration.
 		 */
 		explicit Worker(std::chrono::milliseconds duration);
@@ -131,7 +131,7 @@ namespace Flint
 	public:
 		/**
 		 * Copy assign operator.
-		 * 
+		 *
 		 * @param other The other worker.
 		 * @return This object reference.
 		 */
@@ -144,6 +144,19 @@ namespace Flint
 		 * @return This object reference.
 		 */
 		Worker& operator=(Worker&& other);
+
+	private:
+		/**
+		 * Worker function used to execute the issued work.
+		 * 
+		 * @param commands The commands to execute.
+		 * @param mutex The resource mutex.
+		 * @param conditionVariable The condition variable used for synchronization.
+		 * @param waitingDuration The waiting duration of the worker.
+		 * @param shouldRun the boolean stating if the function should keep running.
+		 */
+		static void WorkerFunction(std::list<std::function<void()>>& commands, std::mutex& mutex, std::condition_variable& conditionVariable, const std::chrono::milliseconds& waitingDuration, const bool& shouldRun);
+
 
 	private:
 		std::jthread mWorkerThread = {};
