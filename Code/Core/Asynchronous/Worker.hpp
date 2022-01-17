@@ -39,16 +39,14 @@ namespace Flint
 			 *
 			 * @tparam Function The function type.
 			 * @tparam Arguments The function arguments.
+			 * @tparam ReturnType The return type of the function. This can either be specified explicitly or can be deduced implicitly.
 			 * @param function The function to be executed asynchronously.
 			 * @param arguments The arguments needed by the asynchronous function.
 			 * @return A promise object of the function return.
 			 */
-			template<class Function, class... Arguments>
-			std::future<std::invoke_result_t<Function, Arguments...>> IssueAsync(Function&& function, Arguments&&... arguments)
+			template<class Function, class... Arguments, class ReturnType = std::invoke_result_t<Function, Arguments...>>
+			std::future<ReturnType> IssueAsync(Function&& function, Arguments&&... arguments)
 			{
-				// Get the return type.
-				using ReturnType = std::invoke_result_t<Function, Arguments...>;
-
 				// Lock the resources.
 				auto uniqueLock = std::unique_lock(mMutex);
 

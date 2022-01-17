@@ -28,7 +28,8 @@ namespace Flint
 			while (shouldRun || commands.size())
 			{
 				auto uniqueLock = std::unique_lock(mutex);
-				if (conditionVariable.wait_for(uniqueLock, waitDuration, [commands]() { return commands.empty() == false; }))
+
+				if (!commands.empty() || conditionVariable.wait_for(uniqueLock, waitDuration, [commands]() { return commands.empty() == false; }))
 				{
 					auto function = std::move(commands.back());
 					commands.pop_back();

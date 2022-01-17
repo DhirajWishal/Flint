@@ -9,6 +9,7 @@
 #include "Graphics/Tools/CubeMapGenerator.hpp"
 #include "GraphicsCore/Query.hpp"
 
+
 #include <glm/gtx/transform.hpp>
 #include <optick.h>
 #include <future>
