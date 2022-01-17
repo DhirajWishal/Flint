@@ -29,6 +29,8 @@ project "FlintGraphics"
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.Assimp}",
 		"%{IncludeDir.optick}",
+		"%{IncludeDir.volk}",
+		"%{IncludeDir.Vulkan}",
 	}
 
 	libdirs {
