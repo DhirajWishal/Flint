@@ -79,6 +79,13 @@ namespace Flint
 		 */
 		void SetAspectRatio(FBox2D extent);
 
+		/**
+		 * Get the aspect ratio of the camera.
+		 *
+		 * @return The float value.
+		 */
+		float GetAspectRatio() const;
+
 	public:
 		/**
 		 * Get the camera position.
@@ -139,14 +146,14 @@ namespace Flint
 
 		/**
 		 * Set the movement bias.
-		 * 
+		 *
 		 * @param bias The bias to set.
 		 */
 		void SetMovementBias(const float bias) { mMovementBias = bias; }
 
 		/**
 		 * Get the movement bias.
-		 * 
+		 *
 		 * @return The movement bias.
 		 */
 		float& GetMovementBias() { return mMovementBias; }

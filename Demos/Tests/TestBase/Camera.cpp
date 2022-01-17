@@ -102,4 +102,9 @@ namespace Flint
 		projectionMatrix = glm::perspective(glm::radians(mFieldOfView), mAspectRatio, mCameraNear, mCameraFar);
 		projectionMatrix[1][1] *= -1.0f;
 	}
+
+	float Camera::GetAspectRatio() const
+	{
+		return mAspectRatio;
+	}
 }

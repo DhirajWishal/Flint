@@ -227,7 +227,7 @@ namespace Flint
 		 * @param size The size to be passed.
 		 * @param offset The offset of the data. Default is 0.
 		 */
-		void SetConstantData(const ShaderType shaderType, void* pData, const uint64 size, const uint64 offset = 0);
+		void SetConstantData(const ShaderType shaderType, const void* pData, const uint64 size, const uint64 offset = 0);
 
 	public:
 		ViewPort mViewPort = {};

@@ -7,6 +7,7 @@
 #include "GraphicsCore/Device.hpp"
 #include "GraphicsCore/ImageView.hpp"
 #include "GraphicsCore/ImageSampler.hpp"
+#include "Core/Worker.hpp"
 
 #include <imgui.h>
 
@@ -42,5 +43,7 @@ namespace Flint
 
 		ImGuiDockNodeFlags mDockspaceFlags = ImGuiDockNodeFlags_None | ImGuiDockNodeFlags_PassthruCentralNode;
 		ImGuiWindowFlags mWindowFlags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+
+		Worker mGraphicsWorker = {};
 	};
 }

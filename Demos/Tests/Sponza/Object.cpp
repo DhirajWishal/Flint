@@ -18,16 +18,23 @@ namespace Flint
 	Object::Object(Application* pApplication, std::shared_ptr<OffScreenPass> pOffScreenPass)
 		: pApplication(pApplication), pOffScreenPass(pOffScreenPass)
 	{
-		pDynamicStates = std::make_shared<DynamicStateContainer>();
-		pUniformBuffer = pApplication->GetDevice()->CreateBuffer(BufferType::Uniform, sizeof(ModelViewProjection));
+		mAsyncStatus = pApplication->mGraphicsWorker.IssueWork([this, pApplication]() {
+			pDynamicStates = std::make_shared<DynamicStateContainer>();
+			pDynamicStatesLeftEye = std::make_shared<DynamicStateContainer>();
+			pDynamicStatesRightEye = std::make_shared<DynamicStateContainer>();
 
-		//pApplication->GetGraphicsScene("Default")->mCamera.SetCameraRange(0.01f, 2048.0f);
-		mMatrix.mModelMatrix = glm::scale(mMatrix.mModelMatrix, glm::vec3(0.005f));
+			pUniformBuffer = pApplication->GetDevice()->CreateBuffer(BufferType::Uniform, sizeof(ModelViewProjection));
 
-		CreatePipeline();
-		CreateOcclusionPipeline();
-		LoadAsset();
-		LoadTextures();
+			//pApplication->GetGraphicsScene("Default")->mCamera.SetCameraRange(0.01f, 2048.0f);
+			mMatrix.mModelMatrix = glm::scale(mMatrix.mModelMatrix, glm::vec3(0.005f));
+
+			CreatePipeline();
+			CreateOcclusionPipeline();
+			LoadAsset();
+			LoadTextures();
+
+			return true;
+			});
 	}
 
 	void Object::Initialize(Application* pApplication)
@@ -36,28 +43,45 @@ namespace Flint
 
 		this->pApplication = pApplication;
 
-		pDynamicStates = std::make_shared<DynamicStateContainer>();
-		pUniformBuffer = pApplication->GetDevice()->CreateBuffer(BufferType::Uniform, sizeof(ModelViewProjection));
+		mAsyncStatus = pApplication->mGraphicsWorker.IssueWork([this, pApplication]() {
+			pDynamicStates = std::make_shared<DynamicStateContainer>();
+			pDynamicStatesLeftEye = std::make_shared<DynamicStateContainer>();
+			pDynamicStatesRightEye = std::make_shared<DynamicStateContainer>();
 
-		//pApplication->GetGraphicsScene("Default")->mCamera.SetCameraRange(0.01f, 2048.0f);
-		mMatrix.mModelMatrix = glm::scale(mMatrix.mModelMatrix, glm::vec3(0.005f));
+			pUniformBuffer = pApplication->GetDevice()->CreateBuffer(BufferType::Uniform, sizeof(ModelViewProjection));
 
-		CreatePipeline();
-		CreateOcclusionPipeline();
-		LoadAsset();
-		LoadTextures();
+			//pApplication->GetGraphicsScene("Default")->mCamera.SetCameraRange(0.01f, 2048.0f);
+			mMatrix.mModelMatrix = glm::scale(mMatrix.mModelMatrix, glm::vec3(0.005f));
+
+			CreatePipeline();
+			CreateOcclusionPipeline();
+			LoadAsset();
+			LoadTextures();
+
+			return true;
+			});
 	}
 
 	void Object::Update(uint64 delta, Camera* pCamera)
 	{
 		OPTICK_EVENT();
 
+		if (bFirstAsync && mAsyncStatus.valid() && mAsyncStatus.get())
+			bFirstAsync = false;
+
 		const auto mat = pCamera->GetMatrix();
 		mMatrix.mViewMatrix = mat.mViewMatrix;
 		mMatrix.mProjectionMatrix = mat.mProjectionMatrix;
 
+		const auto leftEyeMatrix = glm::lookAt(pCamera->GetPosition() + glm::vec3(mEyeExpansion, 0.0f, 0.0f), pCamera->GetPosition() + pCamera->GetCameraFront(), pCamera->GetCameraUp());
+		const auto rightEyeMatrix = glm::lookAt(pCamera->GetPosition() - glm::vec3(mEyeExpansion, 0.0f, 0.0f), pCamera->GetPosition() + pCamera->GetCameraFront(), pCamera->GetCameraUp());
+
+		pDynamicStatesLeftEye->SetConstantData(Flint::ShaderType::Vertex, &leftEyeMatrix, sizeof(leftEyeMatrix));
+		pDynamicStatesRightEye->SetConstantData(Flint::ShaderType::Vertex, &rightEyeMatrix, sizeof(rightEyeMatrix));
+
 		ImGui::Begin("Settings");
 		ImGui::SliderFloat("Bias", &mMatrix.mMipBias, 0, 10);
+		ImGui::SliderFloat("Eye expansion", &mEyeExpansion, 0, 10);
 		ImGui::End();
 
 		CopyToBuffer(pUniformBuffer, mMatrix);
@@ -67,31 +91,83 @@ namespace Flint
 	{
 		OPTICK_EVENT();
 
-		pCommandBuffer->BindGraphicsPipeline(pPipeline.get());
-		pCommandBuffer->BindGeometryStore(mAsset.GetGeometryStore().get());
-		pCommandBuffer->BindDynamicStates(pPipeline.get(), pDynamicStates.get());
-
 		uint64 drawCount = 0;
 		const uint64 count = mAsset.GetWireFrames().size();
 		auto& wireFrames = mAsset.GetWireFrames();
-		const auto& samples = mDrawSamples[index];
-		for (uint64 i = 0; i < count; i++)
+
+		if (bStereoVision)
 		{
-			if (samples[i] == 0 && !bSkipCulling)
-				continue;
+			// Left eye
+			{
+				pCommandBuffer->BindGraphicsPipeline(pPipeline.get());
+				pCommandBuffer->BindGeometryStore(mAsset.GetGeometryStore().get());
+				pCommandBuffer->BindDynamicStates(pPipeline.get(), pDynamicStatesLeftEye.get());
 
-			auto& wireFrame = wireFrames[i];
-			auto& pPackage = pPackageSets[index][i];
+				drawCount = 0;
+				const auto& samples = mDrawSamples[index];
+				for (uint64 i = 0; i < count; i++)
+				{
+					if (samples[i] == 0 && !bSkipCulling)
+						continue;
 
-			pCommandBuffer->BindResourcePackage(pPipeline.get(), pPackage.get());
-			pCommandBuffer->IssueDrawCall(wireFrame);
-			drawCount++;
+					auto& wireFrame = wireFrames[i];
+					auto& pPackage = pPackageSets[index][i];
+
+					pCommandBuffer->BindResourcePackage(pPipeline.get(), pPackage.get());
+					pCommandBuffer->IssueDrawCall(wireFrame);
+					drawCount++;
+				}
+			}
+
+			// Right eye
+			{
+				pCommandBuffer->BindGraphicsPipeline(pPipeline.get());
+				pCommandBuffer->BindGeometryStore(mAsset.GetGeometryStore().get());
+				pCommandBuffer->BindDynamicStates(pPipeline.get(), pDynamicStatesRightEye.get());
+
+				drawCount = 0;
+				const auto& samples = mDrawSamples[index];
+				for (uint64 i = 0; i < count; i++)
+				{
+					if (samples[i] == 0 && !bSkipCulling)
+						continue;
+
+					auto& wireFrame = wireFrames[i];
+					auto& pPackage = pPackageSets[index][i];
+
+					pCommandBuffer->BindResourcePackage(pPipeline.get(), pPackage.get());
+					pCommandBuffer->IssueDrawCall(wireFrame);
+					drawCount++;
+				}
+			}
+		}
+		else
+		{
+			pCommandBuffer->BindGraphicsPipeline(pPipeline.get());
+			pCommandBuffer->BindGeometryStore(mAsset.GetGeometryStore().get());
+			pCommandBuffer->BindDynamicStates(pPipeline.get(), pDynamicStates.get());
+
+			drawCount = 0;
+			const auto& samples = mDrawSamples[index];
+			for (uint64 i = 0; i < count; i++)
+			{
+				if (samples[i] == 0 && !bSkipCulling)
+					continue;
+
+				auto& wireFrame = wireFrames[i];
+				auto& pPackage = pPackageSets[index][i];
+
+				pCommandBuffer->BindResourcePackage(pPipeline.get(), pPackage.get());
+				pCommandBuffer->IssueDrawCall(wireFrame);
+				drawCount++;
+			}
 		}
 
 		ImGui::Begin("Occlusion Culling");
 		ImGui::Text("Count: %u / %u", drawCount, count);
 		ImGui::Checkbox("Pause Occlusion Culling", &bShouldFreezeOcclusion);
 		ImGui::Checkbox("Skip Occlusion Culling", &bSkipCulling);
+		ImGui::Checkbox("Stereo vision", &bStereoVision);
 		ImGui::End();
 	}
 
@@ -180,8 +256,16 @@ namespace Flint
 		pApplication->CreateGeometryStore("Object", pVertexShader->GetInputAttributes(), sizeof(uint32));
 
 		const auto windowExtent = pOffScreenPass->GetExtent();
-		pDynamicStates->SetViewPort(Flint::FExtent2D<float>{static_cast<float>(windowExtent.mWidth), static_cast<float>(windowExtent.mHeight)}, Flint::FExtent2D<float>(0.0f, 1.0f), { 0.0f, 0.0f });
+		const auto viewPort = Flint::FExtent2D<float>{ static_cast<float>(windowExtent.mWidth), static_cast<float>(windowExtent.mHeight) };
+		pDynamicStates->SetViewPort(viewPort, Flint::FExtent2D<float>(0.0f, 1.0f), { 0.0f, 0.0f });
 		pDynamicStates->SetScissor(windowExtent, { 0, 0 });
+
+		const auto viewPortHalf = Flint::FExtent2D<float>{ static_cast<float>(windowExtent.mWidth) / 2, static_cast<float>(windowExtent.mHeight) };
+		pDynamicStatesLeftEye->SetViewPort(viewPortHalf, Flint::FExtent2D<float>(0.0f, 1.0f), { 0.0f, 0.0f });
+		pDynamicStatesLeftEye->SetScissor(windowExtent, { 0, 0 });
+
+		pDynamicStatesRightEye->SetViewPort(viewPortHalf, Flint::FExtent2D<float>(0.0f, 1.0f), { viewPortHalf.mWidth, 0.0f });
+		pDynamicStatesRightEye->SetScissor(windowExtent, { 0, 0 });
 
 		pVertexShader->Terminate();
 		pFragmentShader->Terminate();
@@ -259,7 +343,7 @@ namespace Flint
 			std::vector<std::future<void>> futures;
 			for (auto& wireFrame : mAsset.GetWireFrames())
 			{
-				Material& material = wireFrame.GetMaterial();
+				Material const& material = wireFrame.GetMaterial();
 
 				for (const auto pProperty : material.GetProperties())
 				{
@@ -274,7 +358,7 @@ namespace Flint
 							{
 								ImageLoader loader(pTexturePath->mTexturePath);
 
-								std::lock_guard<std::mutex> guard(mImageLocker);
+								std::lock_guard guard(mImageLocker);
 								pLoaderMap->insert({ pTexturePath, std::move(loader) });
 							}, pTexturePath, &loaderMap));
 
@@ -303,7 +387,7 @@ namespace Flint
 					if (pTexturePath->mType != MaterialProperties::TextureType::Diffuse)
 						continue;
 
-					auto& loader = loaderMap[pTexturePath];
+					auto const& loader = loaderMap[pTexturePath];
 					const auto pImage = loader.CreateImage(pApplication->GetDevice(), ImageType::TwoDimension, ImageUsage::Graphics, 1, !bEnableMipMapping);
 					pImage->GenerateMipMaps();
 

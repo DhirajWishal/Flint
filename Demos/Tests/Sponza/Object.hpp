@@ -25,6 +25,12 @@ namespace Flint
 			float mMipBias = 0.0f;
 		} mMatrix;
 
+		struct EyeMatrix
+		{
+			glm::mat4 mProjectionMatrix = glm::mat4(1.0f);
+			glm::mat4 mViewMatrix = glm::mat4(1.0f);
+		} mLeftEyeMat, mRightEyeMat;
+
 	public:
 		Object() = default;
 		Object(Application* pApplication, std::shared_ptr<OffScreenPass> pOffScreenPass);
@@ -43,6 +49,9 @@ namespace Flint
 		void LoadTextures();
 
 	private:
+		glm::mat4 mLeftEyeView = glm::mat4(1.0f);
+		glm::mat4 mRightEyeView = glm::mat4(1.0f);
+
 		Asset mAsset = {};
 		std::vector<std::vector<std::shared_ptr<ResourcePackage>>> pPackageSets = {};
 		std::vector<std::shared_ptr<ResourcePackage>> pOcclusionPackageSets = {};
@@ -57,7 +66,16 @@ namespace Flint
 		std::shared_ptr<Buffer> pUniformBuffer = nullptr;
 
 		std::shared_ptr<DynamicStateContainer> pDynamicStates = nullptr;
+		std::shared_ptr<DynamicStateContainer> pDynamicStatesLeftEye = nullptr;
+		std::shared_ptr<DynamicStateContainer> pDynamicStatesRightEye = nullptr;
+
+		std::future<bool> mAsyncStatus;
+		bool bFirstAsync = true;
+
+		float mEyeExpansion = 0.0f;
+
 		bool bShouldFreezeOcclusion = false;
 		bool bSkipCulling = false;
+		bool bStereoVision = true;
 	};
 }
