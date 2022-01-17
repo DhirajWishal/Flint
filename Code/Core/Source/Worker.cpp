@@ -32,6 +32,29 @@ namespace Flint
 		mWaitDuration = 500ms;
 	}
 
+	Worker::Worker(std::chrono::milliseconds duration) : mWaitDuration(duration)
+	{
+		// Setup the thread.
+		mWorkerThread = std::jthread([this]()
+			{
+				while (bShouldRun || mCommands.size())
+				{
+					// Lock the resources.
+					auto uniqueLock = std::unique_lock(mMutex);
+
+					// Check if we can execute a command. If not, we wait for a specified amount of time. If a command was submitted within that time, it is executed or else it will wait.
+					if (!mCommands.empty() || mConditionVariable.wait_for(uniqueLock, mWaitDuration, [this]() { return !mCommands.empty(); }))
+					{
+						auto function = std::move(mCommands.back());
+						mCommands.pop_back();
+
+						// Execute the work.
+						function();
+					}
+				}
+			});
+	}
+
 	Worker::Worker(const Worker& other) : mCommands(other.mCommands), mWaitDuration(other.mWaitDuration)
 	{
 		// Setup the thread.

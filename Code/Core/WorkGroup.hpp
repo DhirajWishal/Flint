@@ -23,6 +23,15 @@ namespace Flint
 		explicit WorkGroup(uint64 groupSize) : mWorkers(groupSize) {}
 
 		/**
+		 * Constructor.
+		 * Construct the work group using the worker count and their duration.
+		 *
+		 * @param groupSize The number of workers in the work group.
+		 * @param duration The duration to wait for all the workers.
+		 */
+		explicit WorkGroup(uint64 groupSize, std::chrono::milliseconds duration) : mWorkers(groupSize, Worker(duration)) {}
+
+		/**
 		 * Issue work to a worker to execute.
 		 * Work is assigned in a deterministic way (index % groupSize).
 		 *

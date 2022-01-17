@@ -28,6 +28,14 @@ namespace Flint
 		Worker();
 
 		/**
+		 * Constructor.
+		 * Set the duration for the worker to wait.
+		 * 
+		 * @param duration The waiting duration.
+		 */
+		explicit Worker(std::chrono::milliseconds duration);
+
+		/**
 		 * Copy constructor.
 		 *
 		 * @param other The other worker.
@@ -71,7 +79,7 @@ namespace Flint
 				mCommands.emplace_back(
 					[function, arguments...]()
 				{
-					function(std::forward<Arguments>(arguments)...);
+					function(arguments...);
 				});
 			}
 			else
@@ -88,7 +96,7 @@ namespace Flint
 				mCommands.emplace_back(
 					[pPromise, function, arguments...]()
 				{
-					pPromise->set_value(std::move(function(std::forward<Arguments>(arguments)...)));
+					pPromise->set_value(std::move(function(arguments...)));
 					delete pPromise;
 				});
 			}

@@ -13,6 +13,8 @@
 #include <optick.h>
 #include <future>
 
+#include "Core/WorkGroup.hpp"
+
 namespace Flint
 {
 	Object::Object(Application* pApplication, std::shared_ptr<OffScreenPass> pOffScreenPass)
@@ -335,42 +337,16 @@ namespace Flint
 
 	void Object::LoadTextures()
 	{
+		using namespace std::chrono_literals;
+
 		OPTICK_EVENT();
 
 		std::unordered_map<std::shared_ptr<MaterialProperties::TexturePath>, ImageLoader> loaderMap = {};
 
-		{
-			std::vector<std::future<void>> futures;
-			for (auto& wireFrame : mAsset.GetWireFrames())
-			{
-				Material const& material = wireFrame.GetMaterial();
-
-				for (const auto pProperty : material.GetProperties())
-				{
-					if (pProperty->GetType() == MaterialProperties::MaterialType::TEXTURE_PATH)
-					{
-						auto pTexturePath = std::static_pointer_cast<MaterialProperties::TexturePath>(pProperty);
-						if (pTexturePath->mType != MaterialProperties::TextureType::Diffuse)
-							continue;
-
-						futures.emplace_back(std::async(std::launch::async, [](const std::shared_ptr<MaterialProperties::TexturePath>& pTexturePath,
-							std::unordered_map<std::shared_ptr<MaterialProperties::TexturePath>, ImageLoader>* pLoaderMap)
-							{
-								ImageLoader loader(pTexturePath->mTexturePath);
-
-								std::lock_guard guard(mImageLocker);
-								pLoaderMap->insert({ pTexturePath, std::move(loader) });
-							}, pTexturePath, &loaderMap));
-
-						break;
-					}
-				}
-			}
-		}
-
 		const uint64 size = pOffScreenPass->GetBufferCount();
 		pPackageSets.resize(size);
 		pOcclusionPackageSets.reserve(size);
+		auto workGroup = WorkGroup(mAsset.GetWireFrames().size() / 2, 1ms);
 
 		// Enable or disable mip mapping.
 		const bool bEnableMipMapping = true;
@@ -379,46 +355,53 @@ namespace Flint
 		{
 			const Material material = wireFrame.GetMaterial();
 
-			for (const auto pProperty : material.GetProperties())
-			{
-				if (pProperty->GetType() == MaterialProperties::MaterialType::TEXTURE_PATH)
+			workGroup.IssueWork([this, material, size]()
 				{
-					const auto pTexturePath = std::static_pointer_cast<MaterialProperties::TexturePath>(pProperty);
-					if (pTexturePath->mType != MaterialProperties::TextureType::Diffuse)
-						continue;
-
-					auto const& loader = loaderMap[pTexturePath];
-					const auto pImage = loader.CreateImage(pApplication->GetDevice(), ImageType::TwoDimension, ImageUsage::Graphics, 1, !bEnableMipMapping);
-					pImage->GenerateMipMaps();
-
-					const auto pImageView = pImage->CreateImageView(0, pImage->GetLayerCount(), 0, pImage->GetMipLevels(), ImageUsage::Graphics);
-
-					Flint::ImageSamplerSpecification samplerSpecification = {};
-					samplerSpecification.mMaxLevelOfDetail = static_cast<float>(pImage->GetMipLevels());
-					samplerSpecification.mCompareOperator = CompareOperator::Never;
-					samplerSpecification.mAddressModeU = AddressMode::MirroredRepeat;
-					samplerSpecification.mAddressModeV = AddressMode::MirroredRepeat;
-					samplerSpecification.mAddressModeW = AddressMode::MirroredRepeat;
-					samplerSpecification.mMaxAnisotrophy = 0.0f;
-					samplerSpecification.bEnableAnisotropy = true;
-					//samplerSpecification.mBorderColor = BorderColor::OpaqueBlackINT;
-					const auto pSampler = pApplication->GetDevice()->CreateImageSampler(samplerSpecification);
-
-					for (uint64 i = 0; i < size; i++)
+					for (const auto pProperty : material.GetProperties())
 					{
-						auto pPackage = pPipeline->CreateResourcePackage(0);
-						pPackage->BindResource(0, pUniformBuffer);
-						pPackage->BindResource(1, pImage, pImageView, pSampler);
-						pPackage->PrepareIfNecessary();
+						if (pProperty->GetType() == MaterialProperties::MaterialType::TEXTURE_PATH)
+						{
+							const auto pTexturePath = std::static_pointer_cast<MaterialProperties::TexturePath>(pProperty);
+							if (pTexturePath->mType != MaterialProperties::TextureType::Diffuse)
+								continue;
 
-						pPackageSets[i].emplace_back(std::move(pPackage));
+							ImageLoader loader(pTexturePath->mTexturePath);
+
+							auto lock = std::lock_guard(mImageLocker);
+							const auto pImage = loader.CreateImage(pApplication->GetDevice(), ImageType::TwoDimension, ImageUsage::Graphics, 1, !bEnableMipMapping);
+							pImage->GenerateMipMaps();
+
+							const auto pImageView = pImage->CreateImageView(0, pImage->GetLayerCount(), 0, pImage->GetMipLevels(), ImageUsage::Graphics);
+
+							Flint::ImageSamplerSpecification samplerSpecification = {};
+							samplerSpecification.mMaxLevelOfDetail = static_cast<float>(pImage->GetMipLevels());
+							samplerSpecification.mCompareOperator = CompareOperator::Never;
+							samplerSpecification.mAddressModeU = AddressMode::MirroredRepeat;
+							samplerSpecification.mAddressModeV = AddressMode::MirroredRepeat;
+							samplerSpecification.mAddressModeW = AddressMode::MirroredRepeat;
+							samplerSpecification.mMaxAnisotrophy = 0.0f;
+							samplerSpecification.bEnableAnisotropy = true;
+							//samplerSpecification.mBorderColor = BorderColor::OpaqueBlackINT;
+							const auto pSampler = pApplication->GetDevice()->CreateImageSampler(samplerSpecification);
+
+							for (uint64 i = 0; i < size; i++)
+							{
+								auto pPackage = pPipeline->CreateResourcePackage(0);
+								pPackage->BindResource(0, pUniformBuffer);
+								pPackage->BindResource(1, pImage, pImageView, pSampler);
+								pPackage->PrepareIfNecessary();
+
+								pPackageSets[i].emplace_back(std::move(pPackage));
+							}
+						}
 					}
-				}
-			}
 
-			auto pPackage = pOcclusionPipeline->CreateResourcePackage(0);
-			pPackage->BindResource(0, pUniformBuffer);
-			pOcclusionPackageSets.emplace_back(std::move(pPackage));
+					auto pPackage = pOcclusionPipeline->CreateResourcePackage(0);
+					pPackage->BindResource(0, pUniformBuffer);
+					pOcclusionPackageSets.emplace_back(std::move(pPackage));
+				});
 		}
+
+		bEnableMipMapping;
 	}
 }
