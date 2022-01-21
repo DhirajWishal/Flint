@@ -6,10 +6,11 @@
 #include "ComponentHandle.hpp"
 
 #include <unordered_map>
+#include <typeindex>
 
 namespace Flint
 {
-	using TComponentStore = std::unordered_map<std::string, std::shared_ptr<ComponentStoreInterface>>;
+	using TComponentStore = std::unordered_map<std::type_index, std::shared_ptr<ComponentStoreInterface>>;
 
 	/**
 	 * Flint component registry.
@@ -23,27 +24,31 @@ namespace Flint
 		/**
 		 * Check if a component type is registered.
 		 *
+		 * @tparam Type The type of the object.
 		 * @return The boolean value.
 		 */
 		template<class Type>
 		const bool IsRegistered() const
 		{
-			return mComponentStores.find(typeid(Type).name()) != mComponentStores.end();
+			return mComponentStores.contains(typeid(Type));
 		}
 
 		/**
 		 * Register a component to the store.
+		 * 
+		 * @tparam Type The type of the object.
 		 */
 		template<class Type>
 		void RegisterComponent()
 		{
-			mComponentStores[typeid(Type).name()] = std::make_shared<ComponentStore<Type>>();
+			mComponentStores[typeid(Type)] = std::make_shared<ComponentStore<Type>>();
 		}
 
 		/**
 		 * Get a component store from the registry.
 		 * If the component store is not registered, it'll create a new store.
 		 * 
+		 * @tparam Type The type of the object.
 		 * @return The pointer.
 		 */
 		template<class Type>
@@ -52,13 +57,14 @@ namespace Flint
 			if (!IsRegistered<Type>())
 				RegisterComponent<Type>();
 
-			return std::static_pointer_cast<ComponentStore<Type>>(mComponentStores[typeid(Type).name()]);
+			return std::static_pointer_cast<ComponentStore<Type>>(mComponentStores[typeid(Type)]);
 		}
 
 		/**
 		 * Get a component store from the registry.
 		 * If the component store is not present, it'll return nullptr.
 		 *
+		 * @tparam Type The type of the object.
 		 * @return The pointer.
 		 */
 		template<class Type>
@@ -67,14 +73,17 @@ namespace Flint
 			if (!IsRegistered<Type>())
 				return nullptr;
 
-			return std::static_pointer_cast<ComponentStore<Type>>(mComponentStores.at(typeid(Type).name()));
+			return std::static_pointer_cast<ComponentStore<Type>>(mComponentStores.at(typeid(Type)));
 		}
+
+
 
 		/**
 		 * Create a new component.
 		 * 
 		 * @param identifier The component identifier string.
 		 * @param args The component's constructor arguments.
+		 * @tparam Type The type of the object.
 		 * @return The component handle.
 		 */
 		template<class Type, class... Args>
@@ -91,6 +100,7 @@ namespace Flint
 		 * Get a component from the store.
 		 * 
 		 * @param identifier The component identifier.
+		 * @tparam Type The type of the object.
 		 * @return The type pointer.
 		 */
 		template<class Type>
@@ -113,7 +123,7 @@ namespace Flint
 		 */
 		const TComponentStore GetComponentStores() const { return mComponentStores; }
 
-	protected:
+	private:
 		TComponentStore mComponentStores = {};
 	};
 }

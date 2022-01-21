@@ -76,6 +76,6 @@ namespace Flint
 
 		bool bShouldFreezeOcclusion = false;
 		bool bSkipCulling = false;
-		bool bStereoVision = true;
+		bool bStereoVision = false;
 	};
 }

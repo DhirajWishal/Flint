@@ -12,7 +12,7 @@ namespace Flint
 		: ProcessingPipeline(pDevice, frameExtent, displayTitle, pipelineCount, msaaCount, forceColorBuffer, forceDepthBuffer)
 	{
 		const auto displayExtent = pDisplay->GetExtent();
-		mCamera.SetAspectRatio({ displayExtent.mWidth / 2, displayExtent.mHeight });
+		mCamera.SetAspectRatio({ displayExtent.mWidth, displayExtent.mHeight });
 	}
 
 	uint64 DefaultProcessingPipeline::Update()

@@ -10,20 +10,20 @@ layout (location = 1) out vec2 outTexCoordinate;
 layout (binding = 0) uniform UBO 
 {
 	mat4 model;
-    mat4 view;
+	mat4 view;
 	mat4 projection;
-    float mipBias;
+	float mipBias;
 } Ubo;
 
 layout (push_constant) uniform ConstantBlock
 {
-    mat4 view;
+	mat4 view;
 } constants;
 
 void main()
 {
-    outNormal = inNormal;
-    outTexCoordinate = inTextureCoordinates;
+	outNormal = inNormal;
+	outTexCoordinate = inTextureCoordinates;
 
-    gl_Position = Ubo.projection * constants.view * Ubo.model * vec4(inPosition, 1.0f);
+	gl_Position = Ubo.projection * Ubo.view * Ubo.model * vec4(inPosition, 1.0f);
 }  

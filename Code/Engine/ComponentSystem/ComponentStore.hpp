@@ -16,13 +16,12 @@ namespace Flint
 	struct ComponentIdentifier
 	{
 		ComponentIdentifier() = default;
-		ComponentIdentifier(const std::string& string) : mStringHash(Hasher::HashDataBlock(string.data(), string.size())) {}
+		explicit ComponentIdentifier(const std::string_view& string) : mStringHash(Hasher::HashDataBlock(string.data(), string.size())), mStringLength(string.size()) {}
 
-		const bool operator<(const ComponentIdentifier& other) const { return mStringHash < other.mStringHash; }
-		const bool operator==(const ComponentIdentifier& other) const { return mStringHash == other.mStringHash; }
-		const bool operator!=(const ComponentIdentifier& other) const { return mStringHash != other.mStringHash; }
+		auto operator<=>(const ComponentIdentifier& other) const = default;
 
 		uint64 mStringHash = 0;
+		uint64 mStringLength = 0;
 	};
 
 	/**
@@ -37,10 +36,13 @@ namespace Flint
 	template<class Type>
 	class ComponentStore final : public ComponentStoreInterface
 	{
+	public:
 		using Iterator		= typename BinaryMap<ComponentIdentifier, Type>::Iterator;
 		using ConstIterator = typename BinaryMap<ComponentIdentifier, Type>::ConstIterator;
 
-	public:
+		/**
+		 * Default constructor.
+		 */
 		ComponentStore() = default;
 
 		/**
