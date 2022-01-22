@@ -4,10 +4,10 @@
 #pragma once
 
 #include <vector>
-#include "GameObject.hpp"
-#include <memory>
 #include <unordered_map>
 #include <typeindex>
+
+#include "GameObject.hpp"
 
 namespace Flint
 {
@@ -60,7 +60,10 @@ namespace Flint
 	 */
 	class Scene final
 	{
+		using UpdateFunction = void(*)(GameObjectStroreInterface&, const uint64);
+
 		using ObjectMap = std::unordered_map<std::type_index, std::unique_ptr<GameObjectStroreInterface>>;
+		using ObjectUpdateHandlers = std::unordered_map<std::type_index, UpdateFunction>;
 
 	public:
 		/**
@@ -92,23 +95,30 @@ namespace Flint
 		template<class Type>
 		void Register()
 		{
-			mGameObjects[GetTypeIndex<Type>()] = std::make_unique<GameObjectStore<Type>>();
+			const auto index = GetTypeIndex<Type>();
+			mGameObjects[index] = std::make_unique<GameObjectStore<Type>>();
+			mGameObjectUpdateHandlers[index] = [](GameObjectStroreInterface& objects, const uint64 delta)
+			{
+				auto& store = static_cast<GameObjectStore<Type>&>(objects);
+				for (auto& object : store.GetVector())
+					object.OnUpdate(delta);
+			};
 		}
 
 		/**
 		 * Get the type store pointer from the game object store.
 		 *
 		 * @tparam Type The object type.
-		 * @return The game object store pointer.
+		 * @return The game object store reference.
 		 */
 		template<class Type>
-		GameObjectStore<Type>* GetStore() const
+		GameObjectStore<Type>& GetStore() const
 		{
 			// First things first, check if the type is registered.
 			if (!IsRegistered<Type>())
 				Register<Type>();
 
-			return static_cast<GameObjectStore<Type>*>(mGameObjects.at(GetTypeIndex<Type>()).get());
+			return static_cast<GameObjectStore<Type>&>(*mGameObjects.at(GetTypeIndex<Type>()).get());
 		}
 
 		/**
@@ -126,11 +136,19 @@ namespace Flint
 			if (!IsRegistered<Type>())
 				Register<Type>();
 
-			auto pStore = GetStore<Type>();
-			pStore->GetVector().emplace_back(std::forward<Arguments>(arguments)...);
+			auto& store = GetStore<Type>();
+			store.GetVector().emplace_back(this, std::forward<Arguments>(arguments)...);
 
-			return &pStore->GetVector().back();
+			return &store.GetVector().back();
 		}
+
+	public:
+		/**
+		 * Update all the created game objects.
+		 * 
+		 * @param delta The delta time difference.
+		 */
+		void Update(const uint64 delta);
 
 	private:
 		/**
@@ -147,5 +165,6 @@ namespace Flint
 
 	private:
 		ObjectMap mGameObjects = {};
+		ObjectUpdateHandlers mGameObjectUpdateHandlers = {};
 	};
 }
