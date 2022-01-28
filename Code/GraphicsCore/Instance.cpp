@@ -3,10 +3,16 @@
 
 export module Flint.GraphicsCore.Instance;
 
+import Flint.Core.FObject;
 import Flint.GraphicsCore.Display;
+import Flint.GraphicsCore.Device;
+import <memory>;
+import <string>;
 
 export namespace Flint
 {
+	class Device;
+
 	/**
 	 * Flint instance backend object.
 	 * This object is the main object for any Flint instance.
@@ -64,6 +70,8 @@ export namespace Flint
 }
 
 module: private;
+
+import <filesystem>;
 
 namespace Flint
 {

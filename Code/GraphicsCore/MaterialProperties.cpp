@@ -3,7 +3,12 @@
 
 export module Flint.GraphicsCore.MaterialProperties;
 
+import Flint.Core.DataType;
+import Flint.Core.FObject;
 import Flint.GraphicsCore.Image;
+import Flint.GraphicsCore.Device;
+import <filesystem>;
+import <memory>;
 
 export namespace Flint
 {
@@ -314,7 +319,7 @@ namespace Flint
 {
 	namespace MaterialProperties
 	{
-		std::shared_ptr<Image> Flint::MaterialProperties::TextureData::CreateImage(const std::shared_ptr<Device>& pDevice, const ImageType type, const ImageUsage usage, const uint32 layers, const uint32 mipLevels, const MultiSampleCount sampleCount)
+		std::shared_ptr<Image> TextureData::CreateImage(const std::shared_ptr<Device>& pDevice, const ImageType type, const ImageUsage usage, const uint32 layers, const uint32 mipLevels, const MultiSampleCount sampleCount)
 		{
 			if (mipLevels != 0)
 				return pDevice->CreateImage(type, usage, mExtent, mPixelFormat, layers, mipLevels, pPixelData, sampleCount);

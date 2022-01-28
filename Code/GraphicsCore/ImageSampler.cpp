@@ -1,9 +1,11 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-export module Flint.GraphicCore.ImageSampler;
+export module Flint.GraphicsCore.ImageSampler;
 
 import Flint.GraphicsCore.Image;
+import Flint.GraphicsCore.DeviceBoundObject;
+import <memory>;
 
 export namespace Flint
 {

@@ -3,7 +3,11 @@
 
 export module Flint.GraphicsCore.CommandBufferAllocator;
 
+import Flint.Core.DataType;
+import Flint.GraphicsCore.DeviceBoundObject;
 import Flint.GraphicsCore.CommandBuffer;
+import <memory>;
+import <vector>;
 
 export namespace Flint
 {
@@ -96,6 +100,8 @@ export namespace Flint
 }
 
 module: private;
+
+import <stdexcept>;
 
 namespace Flint
 {

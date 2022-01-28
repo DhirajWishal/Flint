@@ -3,6 +3,7 @@
 
 export module Flint.GraphicsCore.Query;
 
+import Flint.Core.DataType;
 import Flint.GraphicsCore.DeviceBoundObject;
 
 export namespace Flint

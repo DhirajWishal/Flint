@@ -3,16 +3,18 @@
 
 export module Flint.GraphicsCore.DeviceBoundObject;
 
-#include "Core/FObject.hpp"
-#include "Core/Error.hpp"
-#include "Core/Hasher.hpp"
-
-#include <vector>
-#include <unordered_map>
+import Flint.Core.DataType;
+import Flint.Core.FObject;
+import Flint.Core.Error;
+import Flint.Core.Hasher;
+import <string>;
+import <memory>;
+import <vector>;
+import <unordered_map>;
 
 export namespace Flint
 {
-	class Deie
+	class Device;
 	class Image;
 
 	/**
@@ -474,6 +476,8 @@ namespace std
 }
 
 module: private;
+
+import <stdexcept>;
 
 namespace Flint
 {

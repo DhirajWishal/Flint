@@ -3,9 +3,14 @@
 
 export module Flint.GraphicsCore.ResourcePackage;
 
+import Flint.Core.DataType;
+import Flint.Core.FObject;
 import Flint.GraphicsCore.Buffer;
 import Flint.GraphicsCore.ImageSampler;
 import Flint.GraphicsCore.ImageView;
+import <memory>;
+import <vector>;
+import <unordered_map>;
 
 export namespace Flint
 {
@@ -141,6 +146,8 @@ export namespace Flint
 }
 
 module: private;
+
+import <stdexcept>;
 
 namespace Flint
 {

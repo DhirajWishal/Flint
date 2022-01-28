@@ -3,7 +3,11 @@
 
 export module Flint.GraphicsCore.SwapChain;
 
+import Flint.Core.DataType;
+import Flint.GraphicsCore.DeviceBoundObject;
 import Flint.GraphicsCore.Display;
+import Flint.GraphicsCore.Device;
+import <memory>;
 
 export namespace Flint
 {
@@ -121,6 +125,8 @@ export namespace Flint
 }
 
 module: private;
+
+import <stdexcept>;
 
 namespace Flint
 {

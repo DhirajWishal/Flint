@@ -3,7 +3,7 @@
 
 export module Flint.GraphicsPipeline.WireFrame;
 
-#include "Core/DataType.hpp"
+import Flint.Core.DataType;
 import Flint.GraphicsCore.Material;
 
 export namespace Flint

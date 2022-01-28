@@ -3,7 +3,11 @@
 
 export module Flint.GraphicsCore.Image;
 
+import Flint.Core.DataType;
 import Flint.GraphicsCore.Buffer;
+import Flint.GraphicsCore.Device;
+import Flint.GraphicsCore.DeviceBoundObject;
+import <memory>;
 
 export namespace Flint
 {
@@ -234,7 +238,8 @@ export namespace Flint
 
 module: private;
 
-#include <cmath>
+import <cmath>;
+import <stdexcept>;
 
 namespace Flint
 {	
