@@ -5,7 +5,7 @@ export module Flint.GraphicsCore.Pipeline;
 
 import Flint.GraphicsCore.DeviceBoundObject;
 
-namespace Flint
+export namespace Flint
 {
 	class RenderTarget;
 	class ResourcePackager;

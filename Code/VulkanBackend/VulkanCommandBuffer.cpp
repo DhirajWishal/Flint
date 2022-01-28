@@ -7,7 +7,7 @@ export module Flint.VulkanBackend.VulkanCommandBuffer;
 #include "GraphicsCore/CommandBuffer.hpp"
 import Flint.VulkanBackend.VulkanDevice;
 
-namespace Flint
+export namespace Flint
 {
 	namespace VulkanBackend
 	{
@@ -134,7 +134,7 @@ namespace Flint
 			vBeginInfo.pInheritanceInfo = VK_NULL_HANDLE;
 
 			VulkanDevice& vDevice = pAllocator->GetDevice()->StaticCast<VulkanDevice>();
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkBeginCommandBuffer(vCommandBuffer, &vBeginInfo));
+			Utilities::CheckResult(vDevice.GetDeviceTable().vkBeginCommandBuffer(vCommandBuffer, &vBeginInfo));
 
 			vInFlightSemaphores.clear();
 			vRenderFinishedSemaphores.clear();
@@ -153,7 +153,7 @@ namespace Flint
 			vBeginInfo.pInheritanceInfo = pRenderTarget->StaticCast<VulkanScreenBoundRenderTarget>().GetVulkanInheritanceInfo();
 
 			VulkanDevice& vDevice = pAllocator->GetDevice()->StaticCast<VulkanDevice>();
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkBeginCommandBuffer(vCommandBuffer, &vBeginInfo));
+			Utilities::CheckResult(vDevice.GetDeviceTable().vkBeginCommandBuffer(vCommandBuffer, &vBeginInfo));
 
 			bIsRecording = true;
 		}
@@ -169,7 +169,7 @@ namespace Flint
 			vBeginInfo.pInheritanceInfo = pRenderTarget->StaticCast<VulkanOffScreenRenderTarget>().GetVulkanInheritanceInfo();
 
 			VulkanDevice& vDevice = pAllocator->GetDevice()->StaticCast<VulkanDevice>();
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkBeginCommandBuffer(vCommandBuffer, &vBeginInfo));
+			Utilities::CheckResult(vDevice.GetDeviceTable().vkBeginCommandBuffer(vCommandBuffer, &vBeginInfo));
 
 			bIsRecording = true;
 		}
@@ -681,7 +681,7 @@ namespace Flint
 		{
 			OPTICK_EVENT();
 
-			FLINT_VK_ASSERT(pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetDeviceTable().vkEndCommandBuffer(vCommandBuffer));
+			Utilities::CheckResult(pAllocator->GetDevice()->StaticCast<VulkanDevice>().GetDeviceTable().vkEndCommandBuffer(vCommandBuffer));
 			bIsRecording = false;
 		}
 

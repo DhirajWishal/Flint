@@ -5,7 +5,7 @@ export module Flint.GraphicsCore.Display;
 
 import Flint.GraphicsCore.Device;
 
-namespace Flint
+export namespace Flint
 {
 	/**
 	 * Event action enum.

@@ -7,7 +7,7 @@ export module Flint.VulkanBackend.VulkanDeviceSynchronizationPrimitive;
 #include "GraphicsCore/DeviceSynchronizationPrimitive.hpp"
 import Flint.VulkanBackend.VulkanDevice;
 
-namespace Flint
+export namespace Flint
 {
 	namespace VulkanBackend
 	{
@@ -42,7 +42,7 @@ namespace Flint
 			vCreateInfo.flags = 0;
 
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateSemaphore(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vSemaphore));
+			Utilities::CheckResult(vDevice.GetDeviceTable().vkCreateSemaphore(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vSemaphore));
 		}
 
 		void VulkanDeviceSynchronizationPrimitive::Terminate()

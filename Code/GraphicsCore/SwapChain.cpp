@@ -5,7 +5,7 @@ export module Flint.GraphicsCore.SwapChain;
 
 import Flint.GraphicsCore.Display;
 
-namespace Flint
+export namespace Flint
 {
 	/**
 	 * Next image info structure.

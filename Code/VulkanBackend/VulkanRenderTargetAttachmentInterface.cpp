@@ -6,7 +6,7 @@ export module Flint.VulkanBackend.VulkanRenderTargetAttachmentInterface;
 
 import Flint.VulkanBackend.VulkanDevice;
 
-namespace Flint
+export namespace Flint
 {
 	namespace VulkanBackend
 	{

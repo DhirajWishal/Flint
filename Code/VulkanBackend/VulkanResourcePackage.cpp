@@ -7,7 +7,7 @@ export module Flint.VulkanBackend.VulkanResourcePackage;
 #include "GraphicsCore/ResourcePackage.hpp"
 import Flint.VulkanBackend.VulkanDevice;
 
-namespace Flint
+export namespace Flint
 {
 	namespace VulkanBackend
 	{

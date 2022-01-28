@@ -3,11 +3,14 @@
 
 export module Flint.GraphicsCore.CommandBuffer;
 
-import Flint.GraphicsCore.DeviceBoundObject;
+import Flint.Core.DataType;
+import Flint.Core.FObject;
 import Flint.GraphicsCore.RenderTarget;
 import Flint.GraphicsCore.WireFrame;
+import <memory>;
+import <vector>;
 
-namespace Flint
+export namespace Flint
 {
 	class SwapChain;
 	class ScreenBoundRenderTarget;

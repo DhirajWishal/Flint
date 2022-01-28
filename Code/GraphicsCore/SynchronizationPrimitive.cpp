@@ -5,7 +5,7 @@ export module Flint.GraphicsCore.SynchronizationPrimitive;
 
 import Flint.GraphicsCore.DeviceBoundObject;
 
-namespace Flint
+export namespace Flint
 {
 	/**
 	 * Flint synchronization primitive class.

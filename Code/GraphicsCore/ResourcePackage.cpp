@@ -7,7 +7,7 @@ import Flint.GraphicsCore.Buffer;
 import Flint.GraphicsCore.ImageSampler;
 import Flint.GraphicsCore.ImageView;
 
-namespace Flint
+export namespace Flint
 {
 	class ResourcePackager;
 

@@ -7,7 +7,7 @@ export module Flint.VulkanBackend.VulkanCommandSynchronizationPrimitive;
 #include "GraphicsCore/CommandSynchronizationPrimitive.hpp"
 import Flint.VulkanBackend.VulkanDevice;
 
-namespace Flint
+export namespace Flint
 {
 	namespace VulkanBackend
 	{

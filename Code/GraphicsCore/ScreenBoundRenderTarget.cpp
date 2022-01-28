@@ -7,7 +7,7 @@ import Flint.GraphicsCore.OffScreenRenderTarget;
 import Flint.GraphicsCore.Display;
 import Flint.GraphicsCore.SwapChain;
 
-namespace Flint
+export namespace Flint
 {
 	/**
 	 * Flint screen bound render target.

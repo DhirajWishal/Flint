@@ -5,7 +5,7 @@ export module Flint.GraphicsCore.DynamicStateContainer;
 
 import Flint.GraphicsCore.DeviceBoundObject;
 
-namespace Flint
+export namespace Flint
 {
 	/**
 	 * Dynamic state flags.

@@ -20,7 +20,7 @@ namespace std
 	};
 }
 
-namespace Flint
+export namespace Flint
 {
 	/**
 	 * Flint shader object.

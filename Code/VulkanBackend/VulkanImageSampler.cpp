@@ -7,7 +7,7 @@ export module Flint.VulkanBackend.VulkanImageSampler;
 #include "GraphicsCore/ImageSampler.hpp"
 import Flint.VulkanBackend.VulkanDevice;
 
-namespace Flint
+export namespace Flint
 {
 	namespace VulkanBackend
 	{
@@ -173,10 +173,10 @@ namespace Flint
 			vCreateInfo.addressModeU = Helpers::GetAddressMode(specification.mAddressModeU);
 			vCreateInfo.addressModeV = Helpers::GetAddressMode(specification.mAddressModeV);
 			vCreateInfo.addressModeW = Helpers::GetAddressMode(specification.mAddressModeW);
-			vCreateInfo.anisotropyEnable = GET_VK_BOOL(specification.bEnableAnisotropy);
+			vCreateInfo.anisotropyEnable = GetVkBool(specification.bEnableAnisotropy);
 			vCreateInfo.maxAnisotropy = specification.mMaxAnisotrophy;
 			vCreateInfo.borderColor = Helpers::GetBorderColor(specification.mBorderColor);
-			vCreateInfo.compareEnable = GET_VK_BOOL(specification.bEnableCompare);
+			vCreateInfo.compareEnable = GetVkBool(specification.bEnableCompare);
 			vCreateInfo.compareOp = Helpers::GetCompareOperator(specification.mCompareOperator);
 			vCreateInfo.magFilter = Helpers::GetFilter(specification.mImageMagificationFilter);
 			vCreateInfo.minFilter = Helpers::GetFilter(specification.mImageMinificationFilter);
@@ -184,7 +184,7 @@ namespace Flint
 			vCreateInfo.minLod = specification.mMinLevelOfDetail;
 			vCreateInfo.mipLodBias = specification.mMipLODBias;
 			vCreateInfo.mipmapMode = Helpers::GetMipMapMode(specification.mMipMapMode);
-			vCreateInfo.unnormalizedCoordinates = GET_VK_BOOL(specification.bEnableUnnormalizedCoordinates);
+			vCreateInfo.unnormalizedCoordinates = GetVkBool(specification.bEnableUnnormalizedCoordinates);
 
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 			if (vCreateInfo.maxAnisotropy == 0.0f && specification.bEnableAnisotropy)
@@ -194,7 +194,7 @@ namespace Flint
 				vCreateInfo.maxAnisotropy = vProperties.limits.maxSamplerAnisotropy;
 			}
 
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateSampler(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vSampler));
+			Utilities::CheckResult(vDevice.GetDeviceTable().vkCreateSampler(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vSampler));
 		}
 
 		void VulkanImageSampler::Terminate()

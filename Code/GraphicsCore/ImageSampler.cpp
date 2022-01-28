@@ -5,7 +5,7 @@ export module Flint.GraphicCore.ImageSampler;
 
 import Flint.GraphicsCore.Image;
 
-namespace Flint
+export namespace Flint
 {
 	/**
 	 * Flint image sampler object.

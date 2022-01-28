@@ -9,7 +9,7 @@ import Flint.VulkanBackend.VulkanDisplay;
 
 #include "GraphicsCore/SwapChain.hpp"
 
-namespace Flint
+export namespace Flint
 {
 	namespace VulkanBackend
 	{
@@ -149,7 +149,7 @@ namespace Flint
 			if (result == VkResult::VK_ERROR_OUT_OF_DATE_KHR || result == VkResult::VK_SUBOPTIMAL_KHR)
 				imageInfo.bShouldRecreate = true;
 
-			else FLINT_VK_ASSERT(result);
+			else Utilities::CheckResult(result);
 
 			vCurrentRenderFinishedSemaphore = vRenderFinishedSemaphores[mImageIndex];
 			imageInfo.mIndex = mImageIndex;
@@ -294,15 +294,15 @@ namespace Flint
 				throw std::runtime_error("Submitted device and display are incompatible!");
 
 			VkSwapchainKHR vNewSwapChain = VK_NULL_HANDLE;
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateSwapchainKHR(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vNewSwapChain));
+			Utilities::CheckResult(vDevice.GetDeviceTable().vkCreateSwapchainKHR(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vNewSwapChain));
 
 			if (vSwapChain != VK_NULL_HANDLE) DestroySwapChain();
 			vSwapChain = vNewSwapChain;
 
 			vCreateInfo.minImageCount = 0;
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkGetSwapchainImagesKHR(vDevice.GetLogicalDevice(), vSwapChain, &vCreateInfo.minImageCount, nullptr));
+			Utilities::CheckResult(vDevice.GetDeviceTable().vkGetSwapchainImagesKHR(vDevice.GetLogicalDevice(), vSwapChain, &vCreateInfo.minImageCount, nullptr));
 			vImages.resize(vCreateInfo.minImageCount);
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkGetSwapchainImagesKHR(vDevice.GetLogicalDevice(), vSwapChain, &vCreateInfo.minImageCount, vImages.data()));
+			Utilities::CheckResult(vDevice.GetDeviceTable().vkGetSwapchainImagesKHR(vDevice.GetLogicalDevice(), vSwapChain, &vCreateInfo.minImageCount, vImages.data()));
 
 			vImageViews = std::move(Utilities::CreateImageViews(vImages, vCreateInfo.imageFormat, vDevice));
 		}
@@ -341,10 +341,10 @@ namespace Flint
 			{
 				VkSemaphore vSemaphore = VK_NULL_HANDLE;
 
-				FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateSemaphore(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vSemaphore));
+				Utilities::CheckResult(vDevice.GetDeviceTable().vkCreateSemaphore(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vSemaphore));
 				vInFlightSemaphores.emplace_back(vSemaphore);
 
-				FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateSemaphore(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vSemaphore));
+				Utilities::CheckResult(vDevice.GetDeviceTable().vkCreateSemaphore(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vSemaphore));
 				vRenderFinishedSemaphores.emplace_back(vSemaphore);
 			}
 		}

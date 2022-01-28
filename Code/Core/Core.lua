@@ -38,6 +38,9 @@ project "FlintCore"
 		"optick"
 	}
 
+	filter { "files:**.cpp" }
+		compileas "Module"
+
 	filter { "toolset:msc", "configurations:Debug" }
 	    buildoptions "/MTd"
 

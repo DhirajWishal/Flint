@@ -5,7 +5,7 @@ export module Flint.GraphicsCore.Query;
 
 import Flint.GraphicsCore.DeviceBoundObject;
 
-namespace Flint
+export namespace Flint
 {
 	/**
 	 * Query data mode enum.

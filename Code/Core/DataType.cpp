@@ -1,14 +1,15 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#pragma once
+export module Flint.Core.DataType;
 
-#include "Macros.hpp"
+import Flint.Core.Profiler;
 
-#include <cstdint>
-#include <limits>
+import <cstdint>;
+import <limits>;
+import <filesystem>;
 
-namespace Flint
+export namespace Flint
 {
 	using uint8 = uint8_t;
 	using uint16 = uint16_t;

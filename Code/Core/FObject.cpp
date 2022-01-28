@@ -1,12 +1,12 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#pragma once
+export module Flint.Core.FObject;
 
-#include "Core/DataType.hpp"
-#include <type_traits>
+import Flint.Core.DataType;
+import <type_traits>;
 
-namespace Flint
+export namespace Flint
 {
 	class FObject;
 

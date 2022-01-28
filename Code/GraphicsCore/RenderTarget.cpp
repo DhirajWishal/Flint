@@ -7,7 +7,7 @@ import Flint.GraphicsCore.CommandBuffer;
 import Flint.GraphicsCore.ComputePipeline;
 #include "Core/CountingSemaphore.hpp"
 
-namespace Flint
+export namespace Flint
 {
 	class GraphicsPipeline;
 	class GeometryStore;

@@ -1,11 +1,15 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#pragma once
+export module Flint.Core.WorkGroup;
 
-#include "Worker.hpp"
+import Flint.Core.Worker;
+import Flint.Core.DataType;
+import <chrono>;
+import <vector>;
+import <future>;
 
-namespace Flint
+export namespace Flint
 {
 	/**
 	 * Work group class.

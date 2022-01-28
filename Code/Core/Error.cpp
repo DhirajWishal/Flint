@@ -1,13 +1,12 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#pragma once
+export module Flint.Core.Error;
+import Flint.Core.DataType;
 
-#include "DataType.hpp"
+import <stdexcept>;
 
-#include <stdexcept>
-
-namespace Flint
+export namespace Flint
 {
 	/**
 	 * Flint backend error exception.
@@ -18,23 +17,10 @@ namespace Flint
 	class backend_error final : public std::runtime_error
 	{
 	public:
-		backend_error(const std::string& msg);
-		backend_error(const char* msg);
+		backend_error(const std::string& msg) : std::runtime_error(msg) {}
+		backend_error(const char* msg) : std::runtime_error(msg) {}
 	};
-}
 
-#ifndef FLINT_RELEASE
-#	define FLINT_ASSERT(expression, condition, error)					if (expression != condition) error
-#	define FLINT_ASSERT_DISCARDABLE(expression, condition, error)		if (expression != condition) error;
-
-#else
-#	define FLINT_ASSERT(expression, condition, error)					expression
-#	define FLINT_ASSERT_DISCARDABLE(expression, condition, error)
-
-#endif // !FLINT_RELEASE
-
-namespace Flint
-{
 	/* Backend error constants. */
 
 	constexpr char BackendErrorUnknown[] = "Unknown error!";

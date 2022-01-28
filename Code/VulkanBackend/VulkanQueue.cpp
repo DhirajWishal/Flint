@@ -10,7 +10,7 @@ export module Flint.VulkanBackend.VulkanQueue;
 #include <optick.h>
 #include <optional>
 
-namespace Flint
+export namespace Flint
 {
 	namespace VulkanBackend
 	{

@@ -4,8 +4,11 @@
 export module Flint.GraphicsCore.Buffer;
 
 import Flint.GraphicsCore.DeviceBoundObject;
+import Flint.Core.DataType;
+import <memory>;
+import <stdexcept>;
 
-namespace Flint
+export namespace Flint
 {
 	/**
 	 * Buffer resize mode enum.

@@ -1,12 +1,14 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#pragma once
+export module Flint.Core.CountingSemaphore;
 
-#include "DataType.hpp"
-#include "BinarySemaphore.hpp"
+import Flint.Core.DataType;
+import Flint.Core.BinarySemaphore;
 
-namespace Flint
+import <atomic>;
+
+export namespace Flint
 {
 	/**
 	 * Flint counting semaphore object.
@@ -43,4 +45,29 @@ namespace Flint
 	private:
 		std::atomic<uint64> mAtomicCounter = 0;
 	};
+}
+
+module: private;
+
+namespace Flint
+{
+	void CountingSemaphore::Release()
+	{
+		mAtomicCounter++;
+	}
+
+	void CountingSemaphore::Acquire(std::atomic<uint64> count)
+	{
+		while (mAtomicCounter != count);
+		mAtomicCounter = 0;
+	}
+
+	bool CountingSemaphore::TryAcquire(std::atomic<uint64> count)
+	{
+		if (mAtomicCounter != count)
+			return false;
+
+		mAtomicCounter = 0;
+		return true;
+	}
 }

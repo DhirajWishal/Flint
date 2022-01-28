@@ -8,7 +8,7 @@ import Flint.VulkanBackend.VulkanDevice;
 import Flint.VulkanBackend.VulkanRenderTargetAttachmentInterface;
 #include "GraphicsCore/RenderTarget.hpp"
 
-namespace Flint
+export namespace Flint
 {
 	namespace VulkanBackend
 	{
@@ -135,7 +135,7 @@ namespace Flint
 			vCreateInfo.dependencyCount = static_cast<uint32>(vSubpassDependencies.size());
 			vCreateInfo.pDependencies = vSubpassDependencies.data();
 
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateRenderPass(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vRenderPass));
+			Utilities::CheckResult(vDevice.GetDeviceTable().vkCreateRenderPass(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vRenderPass));
 		}
 
 		void VulkanRenderTarget::CreateRenderPassWithMultipleSubpasses(std::vector<std::vector<VulkanRenderTargetAttachmentInterface*>> pSubpasses, VkPipelineBindPoint vBindPoint, const std::vector<VkSubpassDependency>& vSubpassDependencies)
@@ -217,7 +217,7 @@ namespace Flint
 			vCreateInfo.dependencyCount = static_cast<uint32>(vSubpassDependencies.size());
 			vCreateInfo.pDependencies = vSubpassDependencies.data();
 
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateRenderPass(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vRenderPass));
+			Utilities::CheckResult(vDevice.GetDeviceTable().vkCreateRenderPass(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vRenderPass));
 		}
 
 		void VulkanRenderTarget::DestroyRenderPass()
@@ -248,7 +248,7 @@ namespace Flint
 					vAttachments.emplace_back((*itr)->GetImageView(i));
 
 				vCreateInfo.pAttachments = vAttachments.data();
-				FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateFramebuffer(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vFrameBuffers[i]));
+				Utilities::CheckResult(vDevice.GetDeviceTable().vkCreateFramebuffer(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vFrameBuffers[i]));
 			}
 		}
 
@@ -274,7 +274,7 @@ namespace Flint
 			vCreateInfo.pAttachments = vImageViews.data();
 
 			VkFramebuffer vFrameBuffer = VK_NULL_HANDLE;
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateFramebuffer(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vFrameBuffer));
+			Utilities::CheckResult(vDevice.GetDeviceTable().vkCreateFramebuffer(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vFrameBuffer));
 
 			return vFrameBuffer;
 		}

@@ -7,7 +7,7 @@ import Flint.GraphicsCore.ResourcePackage;
 import Flint.GraphicsCore.GraphicsPipeline;
 import Flint.GraphicsCore.ComputePipeline;
 
-namespace Flint
+export namespace Flint
 {
 	/**
 	 * Flint resource packager.

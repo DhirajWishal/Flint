@@ -5,7 +5,7 @@ export module Flint.GraphicsCore.ImageView;
 
 import Flint.GraphicsCore.Image;
 
-namespace Flint
+export namespace Flint
 {
 	/**
 	 * Flint image view object.

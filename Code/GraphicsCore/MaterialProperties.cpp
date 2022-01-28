@@ -5,7 +5,7 @@ export module Flint.GraphicsCore.MaterialProperties;
 
 import Flint.GraphicsCore.Image;
 
-namespace Flint
+export namespace Flint
 {
 	namespace MaterialProperties
 	{

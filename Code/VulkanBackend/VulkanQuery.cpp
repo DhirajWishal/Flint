@@ -7,7 +7,7 @@ export module Flint.VulkanBackend.VulkanQuery;
 #include "GraphicsCore/Query.hpp"
 import Flint.VulkanBackend.VulkanDevice;
 
-namespace Flint
+export namespace Flint
 {
 	namespace VulkanBackend
 	{
@@ -92,7 +92,7 @@ namespace Flint
 				vResultFlags |= VkQueryResultFlagBits::VK_QUERY_RESULT_PARTIAL_BIT;
 
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkGetQueryPoolResults(vDevice.GetLogicalDevice(), vQueryPool, firstQuery, count, dataSize, pDataStore, stride, vResultFlags));
+			Utilities::CheckResult(vDevice.GetDeviceTable().vkGetQueryPoolResults(vDevice.GetLogicalDevice(), vQueryPool, firstQuery, count, dataSize, pDataStore, stride, vResultFlags));
 		}
 
 		void VulkanQuery::Terminate()
@@ -114,7 +114,7 @@ namespace Flint
 			vCreateInfo.queryType = Helpers::GetQueryType(mUsage);
 
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateQueryPool(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vQueryPool));
+			Utilities::CheckResult(vDevice.GetDeviceTable().vkCreateQueryPool(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vQueryPool));
 		}
 	}
 }

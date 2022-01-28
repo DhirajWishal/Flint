@@ -8,7 +8,7 @@ import Flint.GraphicsCore.Shader;
 import Flint.GraphicsCore.RenderTarget;
 import Flint.GraphicsCore.DynamicStateContainer;
 
-namespace Flint
+export namespace Flint
 {
 	/**
 	 * Pipeline primitive topology.

@@ -7,7 +7,7 @@ export module Flint.VulkanBackend.VulkanComputePipeline;
 #include "GraphicsCore/ComputePipeline.hpp"
 import Flint.VulkanBackend.VulkanDevice;
 
-namespace Flint
+export namespace Flint
 {
 	namespace VulkanBackend
 	{
@@ -95,10 +95,10 @@ namespace Flint
 
 			// Write cache data.
 			uint64 cacheSize = 0;
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkGetPipelineCacheData(vDevice.GetLogicalDevice(), vPipelineCache, &cacheSize, nullptr));
+			Utilities::CheckResult(vDevice.GetDeviceTable().vkGetPipelineCacheData(vDevice.GetLogicalDevice(), vPipelineCache, &cacheSize, nullptr));
 
 			unsigned char* pDataStore = new unsigned char[cacheSize];
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkGetPipelineCacheData(vDevice.GetLogicalDevice(), vPipelineCache, &cacheSize, pDataStore));
+			Utilities::CheckResult(vDevice.GetDeviceTable().vkGetPipelineCacheData(vDevice.GetLogicalDevice(), vPipelineCache, &cacheSize, pDataStore));
 
 			WriteDataToCacheFile(cacheSize, pDataStore);
 			delete[] pDataStore;
@@ -132,7 +132,7 @@ namespace Flint
 			vCreateInfo.pInitialData = pData;
 
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreatePipelineCache(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vPipelineCache));
+			Utilities::CheckResult(vDevice.GetDeviceTable().vkCreatePipelineCache(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vPipelineCache));
 
 			delete[] pData;
 		}
@@ -168,7 +168,7 @@ namespace Flint
 				vLayoutCreateInfo.pBindings = info.second.mLayoutBindings.data();
 
 				VkDescriptorSetLayout vDescriptorSetLayout = VK_NULL_HANDLE;
-				FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateDescriptorSetLayout(vDevice.GetLogicalDevice(), &vLayoutCreateInfo, nullptr, &vDescriptorSetLayout));
+				Utilities::CheckResult(vDevice.GetDeviceTable().vkCreateDescriptorSetLayout(vDevice.GetLogicalDevice(), &vLayoutCreateInfo, nullptr, &vDescriptorSetLayout));
 
 				vDescriptorSetLayouts.emplace_back(vDescriptorSetLayout);
 			}
@@ -183,7 +183,7 @@ namespace Flint
 			vCreateInfo.setLayoutCount = static_cast<uint32>(vDescriptorSetLayouts.size());
 			vCreateInfo.pSetLayouts = vDescriptorSetLayouts.data();
 
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreatePipelineLayout(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vPipelineLayout));
+			Utilities::CheckResult(vDevice.GetDeviceTable().vkCreatePipelineLayout(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vPipelineLayout));
 		}
 
 		void VulkanComputePipeline::CreatePipeline()
@@ -198,7 +198,7 @@ namespace Flint
 			vCreateInfo.stage = pShader->StaticCast<VulkanShader>().GetShaderStageCreateInfo();
 
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateComputePipelines(vDevice.GetLogicalDevice(), vPipelineCache, 1, &vCreateInfo, nullptr, &vPipeline));
+			Utilities::CheckResult(vDevice.GetDeviceTable().vkCreateComputePipelines(vDevice.GetLogicalDevice(), vPipelineCache, 1, &vCreateInfo, nullptr, &vPipeline));
 		}
 	}
 }
