@@ -1,10 +1,34 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-export module Flint.VulkanBackend.VulkanCommandBuffer;
-module: private;
+export module Flint.VulkanBackend.VulkanHostSynchronizationPrimitive;
 
-#include "VulkanBackend/VulkanHostSynchronizationPrimitive.hpp"
+#include "GraphicsCore/HostSynchronizationPrimitive.hpp"
+import Flint.VulkanBackend.VulkanDevice;
+
+namespace Flint
+{
+	namespace VulkanBackend
+	{
+		class VulkanHostSynchronizationPrimitive final : public HostSynchronizationPrimitive
+		{
+		public:
+			VulkanHostSynchronizationPrimitive(const std::shared_ptr<Device>& pDevice);
+			~VulkanHostSynchronizationPrimitive() { if (!bIsTerminated) Terminate(); }
+
+			virtual void Wait(const uint64 timeout = std::numeric_limits<uint64>::max()) override;
+			virtual void Reset() override;
+			virtual void Terminate() override;
+
+			const VkFence GetFence() const { return vFence; }
+
+		private:
+			VkFence vFence = VK_NULL_HANDLE;
+		};
+	}
+}
+
+module: private;
 
 namespace Flint
 {

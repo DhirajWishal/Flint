@@ -1,11 +1,33 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-export module Flint.VulkanBackend.VulkanCommandBuffer;
-module: private;
+export module Flint.VulkanBackend.VulkanImageView;
 
-#include "VulkanBackend/VulkanImageView.hpp"
-#include "VulkanBackend/VulkanImage.hpp"
+#include "GraphicsCore/ImageView.hpp"
+import Flint.VulkanBackend.VulkanDevice;
+
+namespace Flint
+{
+	namespace VulkanBackend
+	{
+		class VulkanImageView final : public ImageView
+		{
+		public:
+			VulkanImageView(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Image>& pImage, const uint32 baseLayerIndex, const uint32 layerCount, const uint32 baseMipLevel, const uint32 mipLevels, const ImageUsage usage);
+			~VulkanImageView() { if (!bIsTerminated) Terminate(); }
+
+			virtual void Terminate() override;
+
+			const VkImageView GetImageView() const { return vImageView; }
+
+		private:
+			VkImageView vImageView = VK_NULL_HANDLE;
+		};
+	}
+}
+
+module: private;
+import Flint.VulkanBackend.VulkanImage;
 
 #include <optick.h>
 
