@@ -52,6 +52,9 @@ project "Sponza"
 		"TestBase",
 	}
 
+	filter { "files:**.cpp" }
+		compileas "Module"
+
 	filter "toolset:msc"
 		postbuildcommands {
 			"{Copy} \"%{wks.location}/ThirdParty/glfw/src/Release/glfw3.dll\" \"%{cfg.targetdir}\"",

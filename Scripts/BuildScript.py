@@ -15,7 +15,7 @@ def runOnWindows():
 
     # Build Flint
     print("Building the Flint project ...")
-    os.system("call \"ThirdParty/premake/bin/release/premake5\" vs2019")
+    os.system("call \"ThirdParty/premake/bin/release/premake5\" vs2022")
 
     # Build glfw
     print("\nBuilding glfw ...")
