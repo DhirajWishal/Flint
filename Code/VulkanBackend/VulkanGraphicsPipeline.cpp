@@ -61,10 +61,10 @@ namespace Flint
 
 module: private;
 
-#include "VulkanBackend/VulkanShader.hpp"
-#include "VulkanBackend/VulkanScreenBoundRenderTarget.hpp"
-#include "VulkanBackend/VulkanOffScreenRenderTarget.hpp"
-#include "VulkanBackend/VulkanResourcePackager.hpp"
+import Flint.VulkanBackend.VulkanShader;
+import Flint.VulkanBackend.VulkanScreenBoundRenderTarget;
+import Flint.VulkanBackend.VulkanOffScreenRenderTarget;
+import Flint.VulkanBackend.VulkanResourcePackager;
 
 namespace Flint
 {

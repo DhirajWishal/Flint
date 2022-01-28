@@ -4,7 +4,7 @@
 export module Flint.VulkanBackend.VulkanInstance;
 
 #include "GraphicsCore/Instance.hpp"
-#include "VulkanMacros.hpp"
+import Flint.VulkanBackend.VulkanMacros;
 
 namespace Flint
 {
@@ -46,13 +46,9 @@ namespace Flint
 
 module: private;
 
-#include "VulkanBackend/VulkanMacros.hpp"
-
 import Flint.VulkanBackend.VulkanDevice;
 import Flint.VulkanBackend.vulkanDisplay;
 
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
 #include <iostream>
 #include <cstring>
 

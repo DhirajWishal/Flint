@@ -1,37 +1,28 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-export module Flint.VulkanBackend.VulkanScreenBoundRenderTarget;
+export module Flint.VulkanBackend.VulkanOffScreenRenderTarget;
 
-#include "GraphicsCore/ScreenBoundRenderTarget.hpp"
-
+#include "GraphicsCore/OffScreenRenderTarget.hpp"
 import Flint.VulkanBackend.VulkanRenderTarget;
-#include "VulkanSwapChain.hpp"
 
 namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanCommandBufferList;
-
-		class VulkanScreenBoundRenderTarget final : public ScreenBoundRenderTarget, public std::enable_shared_from_this<VulkanScreenBoundRenderTarget>
+		class VulkanOffScreenRenderTarget : public OffScreenRenderTarget, public std::enable_shared_from_this<VulkanOffScreenRenderTarget>
 		{
 		public:
-			VulkanScreenBoundRenderTarget(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const uint32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor = FColor4D(0.0f));
-			~VulkanScreenBoundRenderTarget() { if (!bIsTerminated) Terminate(); }
+			VulkanOffScreenRenderTarget(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const uint32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments);
 
+			virtual void Recreate(const FBox2D& extent) override;
 			virtual bool PrepareNewFrame() override;
-			virtual bool PresentToDisplay() override;
 			virtual void Terminate() override;
-			virtual void Recreate() override;
-			virtual const uint32 GetImageIndex() const override final { return pSwapChain->GetImageIndex(); }
 
 			VkRenderPass GetRenderPass() const { return vRenderTarget.vRenderPass; }
-			const VkFramebuffer GetFramebuffer() const { return vRenderTarget.vFrameBuffers[GetImageIndex()]; }
+			const VkFramebuffer GetFramebuffer() const { return vRenderTarget.vFrameBuffers[mFrameIndex]; }
 
-			const VulkanSwapChain* GetVulkanSwapChain() const { return static_cast<const VulkanSwapChain*>(pSwapChain.get()); }
-
-			const uint32 GetClearScreenValueCount() const { return static_cast<uint32>(vClearValues.size()); }
+			const uint32 GetClearScreenValueCount() const { return static_cast<uint32>(mAttachments.size()); }
 			const VkClearValue* GetClearScreenValues() const { return vClearValues.data(); }
 
 			std::vector<VkClearValue> GetClearScreenValueVector() const { return vClearValues; }
@@ -39,37 +30,37 @@ namespace Flint
 
 			const VkCommandBufferInheritanceInfo* GetVulkanInheritanceInfo() const;
 
-		private:
+		protected:
 			VulkanRenderTarget vRenderTarget;
 
 			std::vector<VkSubpassDependency> vDependencies{ 2 };
-			std::atomic<VkCommandBufferInheritanceInfo> vInheritanceInfo = {};
+			std::shared_ptr<OffScreenRenderTarget> pThisRenderTarget = nullptr;
 			mutable VkCommandBufferInheritanceInfo vInheritInfo = {};
 
 			std::vector<VkClearValue> vClearValues = {};
 			std::vector<VkImageAspectFlags> vClearAspectFlags = {};
-
-			bool bShouldSkip = false;
 		};
 	}
 }
 
 module: private;
 
+import Flint.VulkanBackend.VulkanScreenBoundRenderTarget;
 import Flint.VulkanBackend.VulkanGraphicsPipeline;
 import Flint.VulkanBackend.VulkanImage;
+
 #include "GraphicsCore/GeometryStore.hpp"
 
 namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanScreenBoundRenderTarget::VulkanScreenBoundRenderTarget(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const uint32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor)
-			: ScreenBoundRenderTarget(pDevice, pDisplay, extent, bufferCount, imageAttachments, presentMode), vRenderTarget(pDevice->StaticCast<VulkanDevice>())
+		VulkanOffScreenRenderTarget::VulkanOffScreenRenderTarget(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const uint32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments)
+			: OffScreenRenderTarget(pDevice, extent, bufferCount, imageAttachments), vRenderTarget(pDevice->StaticCast<VulkanDevice>())
 		{
 			OPTICK_EVENT();
 
-			pSwapChain = std::make_shared<VulkanSwapChain>(pDevice, pDisplay, bufferCount, presentMode);
+			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 
 			vDependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
 			vDependencies[0].dstSubpass = 0;
@@ -88,9 +79,7 @@ namespace Flint
 			vDependencies[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
 
 			std::vector<VulkanRenderTargetAttachmentInterface*> pAttachmentInferfaces;
-			pAttachmentInferfaces.reserve(mAttachments.size() + 1);
-
-			bool bIsColorPresent = false;
+			pAttachmentInferfaces.reserve(mAttachments.size());
 			for (const auto attachment : mAttachments)
 			{
 				pAttachmentInferfaces.emplace_back(&attachment.pImage->StaticCast<VulkanImage>());
@@ -103,8 +92,6 @@ namespace Flint
 					vClearValue.color.float32[2] = attachment.mClearColor.mBlue;
 					vClearValue.color.float32[3] = attachment.mClearColor.mAlpha;
 					vClearAspectFlags.emplace_back(VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT);
-
-					bIsColorPresent = true;
 				}
 				else if ((attachment.pImage->GetUsage() & ImageUsage::Depth) == ImageUsage::Depth)
 				{
@@ -118,22 +105,6 @@ namespace Flint
 				vClearValues.emplace_back(vClearValue);
 			}
 
-			auto& vSwapChain = pSwapChain->StaticCast<VulkanSwapChain>();
-			pAttachmentInferfaces.emplace_back(&vSwapChain);
-			if (!bIsColorPresent)
-			{
-				vSwapChain.ToggleClear();
-
-				VkClearValue vClearValue = {};
-				vClearValue.color.float32[0] = swapChainClearColor.mRed;
-				vClearValue.color.float32[1] = swapChainClearColor.mGreen;
-				vClearValue.color.float32[2] = swapChainClearColor.mBlue;
-				vClearValue.color.float32[3] = swapChainClearColor.mAlpha;
-
-				vClearAspectFlags.emplace_back(VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT);
-				vClearValues.emplace_back(vClearValue);
-			}
-
 			vRenderTarget.CreateRenderPass(pAttachmentInferfaces, VK_PIPELINE_BIND_POINT_GRAPHICS, vDependencies);
 			vRenderTarget.CreateFrameBuffer(pAttachmentInferfaces, extent, bufferCount);
 
@@ -141,49 +112,10 @@ namespace Flint
 			vInheritInfo.pNext = VK_NULL_HANDLE;
 			vInheritInfo.renderPass = vRenderTarget.vRenderPass;
 		}
-
-		bool VulkanScreenBoundRenderTarget::PrepareNewFrame()
+		
+		void VulkanOffScreenRenderTarget::Recreate(const FBox2D& extent)
 		{
-			OPTICK_EVENT();
-
-			auto nextImage = pSwapChain->AcquireNextImage(mFrameIndex);
-			return !nextImage.bShouldRecreate;
-		}
-
-		bool VulkanScreenBoundRenderTarget::PresentToDisplay()
-		{
-			OPTICK_EVENT();
-
-			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-			VkResult vResult = vDevice.GetDeviceTable().vkQueuePresentKHR(vDevice.GetQueue().vTransferQueue, pSwapChain->StaticCast<VulkanSwapChain>().PrepareToPresent());
-			if (vResult == VK_ERROR_OUT_OF_DATE_KHR || vResult == VK_SUBOPTIMAL_KHR)
-				return false;
-			else FLINT_VK_ASSERT(vResult);
-
-			return true;
-		}
-
-		void VulkanScreenBoundRenderTarget::Terminate()
-		{
-			vRenderTarget.Terminate();
-			pSwapChain->Terminate();
-
-			bIsTerminated = true;
-		}
-
-		void VulkanScreenBoundRenderTarget::Recreate()
-		{
-			OPTICK_EVENT();
-
-			FBox2D newExtent = pDisplay->GetExtent();
-			if (newExtent.IsZero())
-			{
-				bShouldSkip = true;
-				return;
-			}
-
-			mExtent = newExtent;
-			bShouldSkip = false;
+			mExtent = extent;
 
 			pDevice->WaitIdle();
 
@@ -191,7 +123,7 @@ namespace Flint
 			vRenderTarget.DestroyFrameBuffers();
 
 			std::vector<VulkanRenderTargetAttachmentInterface*> pAttachmentInferfaces;
-			pAttachmentInferfaces.reserve(mAttachments.size() + 1);
+			pAttachmentInferfaces.reserve(mAttachments.size());
 
 			for (auto attachment : mAttachments)
 			{
@@ -199,21 +131,27 @@ namespace Flint
 				pAttachmentInferfaces.emplace_back(&attachment.pImage->StaticCast<VulkanImage>());
 			}
 
-			pSwapChain->Recreate();
-			pAttachmentInferfaces.emplace_back(&pSwapChain->StaticCast<VulkanSwapChain>());
-
 			vRenderTarget.CreateRenderPass(pAttachmentInferfaces, VK_PIPELINE_BIND_POINT_GRAPHICS, vDependencies);
 			vRenderTarget.CreateFrameBuffer(pAttachmentInferfaces, mExtent, mBufferCount);
 
 			vInheritInfo.renderPass = vRenderTarget.vRenderPass;
 			mFrameIndex = 0;
-
-			bShouldRecreateResources = true;
 		}
 
-		const VkCommandBufferInheritanceInfo* VulkanScreenBoundRenderTarget::GetVulkanInheritanceInfo() const
+		bool VulkanOffScreenRenderTarget::PrepareNewFrame()
 		{
-			vInheritInfo.framebuffer = GetFramebuffer();
+			return true;
+		}
+
+		void VulkanOffScreenRenderTarget::Terminate()
+		{
+			vRenderTarget.Terminate();
+			bIsTerminated = true;
+		}
+		
+		const VkCommandBufferInheritanceInfo* VulkanOffScreenRenderTarget::GetVulkanInheritanceInfo() const
+		{
+			vInheritInfo.framebuffer = vRenderTarget.vFrameBuffers[mFrameIndex];
 			return &vInheritInfo;
 		}
 	}

@@ -41,8 +41,7 @@ namespace Flint
 
 module: private;
 
-#include "VulkanBackend/VulkanMacros.hpp"
-
+import Flint.VulkanBackend.VulkanMacros;
 import Flint.VulkanBackend.VulkanDevice;
 import Flint.VulkanBackend.VulkanShader;
 

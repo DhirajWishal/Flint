@@ -93,15 +93,15 @@ namespace Flint
 
 module: private;
 import Flint.VulkanBackend.VulkanCommandBufferAllocator;
-#include "VulkanBackend/VulkanScreenBoundRenderTarget.hpp"
-#include "VulkanBackend/VulkanOffScreenRenderTarget.hpp"
-#include "VulkanBackend/VulkanGraphicsPipeline.hpp"
-#include "VulkanBackend/VulkanComputePipeline.hpp"
+import Flint.VulkanBackend.VulkanScreenBoundRenderTarget;
+import Flint.VulkanBackend.VulkanOffScreenRenderTarget;
+import Flint.VulkanBackend.VulkanGraphicsPipeline;
+import Flint.VulkanBackend.VulkanComputePipeline;
 import Flint.VulkanBackend.VulkanBuffer;
-#include "VulkanBackend/VulkanImage.hpp"
-#include "VulkanBackend/VulkanUtilities.hpp"
-#include "VulkanBackend/VulkanResourcePackage.hpp"
-#include "VulkanBackend/VulkanQuery.hpp"
+import Flint.VulkanBackend.VulkanImage;
+import Flint.VulkanBackend.VulkanUtilities;
+import Flint.VulkanBackend.VulkanResourcePackage;
+import Flint.VulkanBackend.VulkanQuery;
 
 #include "GraphicsCore/GeometryStore.hpp"
 #include "GraphicsCore/DynamicStateContainer.hpp"
