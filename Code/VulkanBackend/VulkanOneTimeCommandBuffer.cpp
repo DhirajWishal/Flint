@@ -1,6 +1,7 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
+#include <volk.h>
 export module Flint.VulkanBackend.VulkanOneTimeCommandBuffer;
 
 import Flint.VulkanBackend.VulkanDevice;
