@@ -14,7 +14,6 @@ import <filesystem>;
 export namespace Flint
 {
 	class Display;
-	class DeviceBoundObject;
 	class Instance;
 
 	class CommandBufferAllocator;

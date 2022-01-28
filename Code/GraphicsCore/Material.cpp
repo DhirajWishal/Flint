@@ -3,7 +3,10 @@
 
 export module Flint.GraphicsCore.Material;
 
+import Flint.Core.FObject;
 import Flint.GraphicsCore.MaterialProperties;
+import <memory>;
+import <vector>;
 
 export namespace Flint
 {

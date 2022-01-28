@@ -5,7 +5,7 @@ export module Flint.GraphicsCore.GeometryStore;
 
 import Flint.Core.DataType;
 import Flint.GraphicsCore.DeviceBoundObject;
-//import Flint.GraphicsCore.Device;
+import Flint.GraphicsCore.Device;
 import Flint.GraphicsCore.Buffer;
 import Flint.GraphicsCore.Shader;
 import <memory>;
