@@ -50,9 +50,6 @@ project "VulkanBackend"
 		"%{Binary.GLFW}",
 	}
 
-	filter { "files:**.cpp" }
-		compileas "Module"
-
 	filter { "toolset:msc", "configurations:Debug" }
 	    buildoptions "/MTd"
 

@@ -1,30 +1,17 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
+#include "Sponza.hpp"
+
 #include "TestBase/GraphicsScene.hpp"
 #include "TestBase/Nodes/FXAAPass.hpp"
 #include "TestBase/Nodes/ScreenSpaceReflectionPass.hpp"
 #include "TestBase/Nodes/ImGuiPass.hpp"
 
-#include "TestBase/Application.hpp"
-#include "TestBase/DefaultProcessingPipeline.hpp"
-
 #include <optick.h>
-
-export module Sponza;
-import Object;
 
 namespace Flint
 {
-	export class Sponza
-	{
-	public:
-		Sponza();
-
-		Application mApplication = {};
-		std::unique_ptr<DefaultProcessingPipeline> pProcessingPipeline = nullptr;
-	};
-
 	Sponza::Sponza()
 	{
 		OPTICK_EVENT();
@@ -63,4 +50,10 @@ namespace Flint
 		mApplication.Cleanup();
 		pObject->Terminate();
 	}
+}
+
+int main()
+{
+	Flint::Sponza sponza = {};
+	return 0;
 }

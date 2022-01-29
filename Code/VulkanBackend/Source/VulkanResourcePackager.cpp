@@ -1,9 +1,6 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-export module Flint.VulkanBackend.VulkanCommandBuffer;
-module: private;
-
 #include "VulkanBackend/VulkanResourcePackager.hpp"
 #include "VulkanBackend/VulkanResourcePackage.hpp"
 #include "VulkanBackend/VulkanShader.hpp"
