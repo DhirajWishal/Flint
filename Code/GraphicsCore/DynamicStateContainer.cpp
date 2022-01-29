@@ -3,7 +3,6 @@
 
 export module Flint.GraphicsCore.DynamicStateContainer;
 
-import Flint.Core.DataType;
 import Flint.GraphicsCore.DeviceBoundObject;
 
 export namespace Flint
@@ -245,8 +244,6 @@ export namespace Flint
 }
 
 module: private;
-
-import <stdexcept>;
 
 namespace Flint
 {

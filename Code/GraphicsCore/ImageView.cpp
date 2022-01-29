@@ -4,8 +4,6 @@
 export module Flint.GraphicsCore.ImageView;
 
 import Flint.GraphicsCore.Image;
-import Flint.GraphicsCore.DeviceBoundObject;
-import <memory>;
 
 export namespace Flint
 {
@@ -77,8 +75,6 @@ export namespace Flint
 }
 
 module: private;
-
-import <stdexcept>;
 
 namespace Flint
 {

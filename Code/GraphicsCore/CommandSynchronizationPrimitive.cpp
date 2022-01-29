@@ -4,7 +4,6 @@
 export module Flint.GraphicsCore.CommandSynchronizationPrimitive;
 
 import Flint.GraphicsCore.SynchronizationPrimitive;
-import <memory>;
 
 export namespace Flint
 {

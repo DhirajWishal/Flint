@@ -3,12 +3,7 @@
 
 export module Flint.GraphicsCore.Shader;
 
-import Flint.Core.DataType;
 import Flint.GraphicsCore.DeviceBoundObject;
-import <memory>;
-import <vector>;
-import <string>;
-import <filesystem>;
 
 namespace std
 {
@@ -131,8 +126,6 @@ export namespace Flint
 }
 
 module: private;
-
-import <stdexcept>;
 
 namespace Flint
 {

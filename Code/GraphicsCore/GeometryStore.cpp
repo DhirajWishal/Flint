@@ -3,14 +3,8 @@
 
 export module Flint.GraphicsCore.GeometryStore;
 
-import Flint.Core.DataType;
-import Flint.GraphicsCore.DeviceBoundObject;
-//import Flint.GraphicsCore.Device;
 import Flint.GraphicsCore.Buffer;
 import Flint.GraphicsCore.Shader;
-import <memory>;
-import <utility>;
-import <vector>;
 
 export namespace Flint
 {
@@ -188,7 +182,7 @@ export namespace Flint
 
 module: private;
 
-import <stdexcept>;
+import Flint.GraphicsCore.Device;
 
 namespace Flint
 {

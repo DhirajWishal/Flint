@@ -3,7 +3,6 @@
 
 export module Flint.GraphicsCore.HostSynchronizationPrimitive;
 
-import Flint.Core.DataType;
 import Flint.GraphicsCore.SynchronizationPrimitive;
 
 export namespace Flint

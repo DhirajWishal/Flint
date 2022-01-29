@@ -5,6 +5,7 @@ export module Flint.GraphicsCore.RenderTarget;
 
 import Flint.GraphicsCore.CommandBuffer;
 import Flint.GraphicsCore.ComputePipeline;
+#include "Core/CountingSemaphore.hpp"
 
 export namespace Flint
 {

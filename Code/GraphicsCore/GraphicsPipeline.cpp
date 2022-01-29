@@ -3,13 +3,10 @@
 
 export module Flint.GraphicsCore.GraphicsPipeline;
 
-import Flint.Core.DataType;
 import Flint.GraphicsCore.Pipeline;
 import Flint.GraphicsCore.Shader;
 import Flint.GraphicsCore.RenderTarget;
-import Flint.GraphicsCore.ScreenBoundRenderTarget;
 import Flint.GraphicsCore.DynamicStateContainer;
-import <memory>;
 
 export namespace Flint
 {
@@ -383,7 +380,7 @@ export namespace Flint
 
 module: private;
 
-import <stdexcept>;
+import Flint.GraphicsCore.ScreenBoundRenderTarget;
 
 namespace Flint
 {
