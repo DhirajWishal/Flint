@@ -1,32 +1,10 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-export module Flint.VulkanBackend.VulkanImageSampler;
-
-#include "GraphicsCore/ImageSampler.hpp"
-import Flint.VulkanBackend.VulkanDevice;
-
-namespace Flint
-{
-	namespace VulkanBackend
-	{
-		class VulkanImageSampler final : public ImageSampler
-		{
-		public:
-			VulkanImageSampler(const std::shared_ptr<Device>& pDevice, const ImageSamplerSpecification& specification);
-			~VulkanImageSampler() { if (!bIsTerminated) Terminate(); }
-
-			virtual void Terminate() override;
-
-			const VkSampler GetSampler() const { return vSampler; }
-
-		private:
-			VkSampler vSampler = VK_NULL_HANDLE;
-		};
-	}
-}
-
+export module Flint.VulkanBackend.VulkanCommandBuffer;
 module: private;
+
+#include "VulkanBackend/VulkanImageSampler.hpp"
 
 namespace Flint
 {

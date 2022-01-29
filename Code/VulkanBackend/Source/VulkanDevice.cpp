@@ -4,7 +4,7 @@
 export module Flint.VulkanBackend.VulkanDevice;
 
 #include "GraphicsCore/Device.hpp"
-import Flint.VulkanBackend.VulkanInstance;
+#include "../VulkanInstance.hpp"
 #include "../VulkanQueue.hpp"
 
 #include <vk_mem_alloc.h>

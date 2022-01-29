@@ -1,35 +1,10 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-export module Flint.VulkanBackend.VulkanOneTimeCommandBuffer;
-
-import Flint.VulkanBackend.VulkanDevice;
-
-namespace Flint
-{
-	namespace VulkanBackend
-	{
-		class VulkanOneTimeCommandBuffer {
-		public:
-			VulkanOneTimeCommandBuffer(const VulkanDevice& device);
-			~VulkanOneTimeCommandBuffer();
-
-			operator VkCommandBuffer() const { return vBuffer; }
-			operator VkCommandPool() const { return vPool; }
-
-			VkCommandBuffer GetBuffer() const { return vBuffer; }
-			VkCommandPool GetPool() const { return vPool; }
-
-		private:
-			VulkanDevice& vDevice;
-
-			VkCommandBuffer vBuffer = VK_NULL_HANDLE;
-			VkCommandPool vPool = VK_NULL_HANDLE;
-		};
-	}
-}
-
+export module Flint.VulkanBackend.VulkanCommandBuffer;
 module: private;
+
+#include "VulkanBackend/VulkanOneTimeCommandBuffer.hpp"
 
 namespace Flint
 {

@@ -1,9 +1,9 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-export module Flint.VulkanBackend.VulkanRenderTargetAttachmentInterface;
+#pragma once
 
-import Flint.VulkanBackend.VulkanDevice;
+#include "VulkanDevice.hpp"
 
 namespace Flint
 {
