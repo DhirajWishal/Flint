@@ -68,7 +68,7 @@ namespace Flint
 
 module: private;
 
-import Flint.VulkanBackend.VulkanUtilities;
+#include "VulkanBackend/VulkanUtilities.hpp"
 
 namespace Flint
 {

@@ -37,7 +37,7 @@ namespace Flint
 
 module: private;
 
-import Flint.VulkanBackend.VulkanShader;
+#include "VulkanBackend/VulkanShader.hpp"
 
 namespace Flint
 {

@@ -1,9 +1,9 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-export module Flint.VulkanBackend.VulkanMacros;
+#pragma once
 
-import Flint.VulkanBackend.VulkanUtilities;
+#include "VulkanUtilities.hpp"
 
 #ifdef FLINT_DEBUG
 #	define FLINT_VK_ASSERT(expression)	::Flint::VulkanBackend::Utilities::CheckResult(expression)

@@ -56,7 +56,7 @@ namespace Flint
 
 module: private;
 
-import Flint.VulkanBackend.VulkanUtilities;
+#include "VulkanBackend/VulkanUtilities.hpp"
 
 #include "spirv_reflect.h"
 #include <fstream>

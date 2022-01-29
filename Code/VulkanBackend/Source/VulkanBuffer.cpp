@@ -39,7 +39,7 @@ namespace Flint
 }
 
 module: private;
-import Flint.VulkanBackend.VulkanOneTimeCommandBuffer;
+#include "VulkanBackend/VulkanOneTimeCommandBuffer.hpp"
 
 namespace Flint
 {

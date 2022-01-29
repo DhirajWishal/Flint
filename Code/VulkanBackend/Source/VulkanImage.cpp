@@ -4,7 +4,7 @@
 export module Flint.VulkanBackend.VulkanImage;
 
 #include "GraphicsCore/Image.hpp"
-import Flint.VulkanBackend.VulkanRenderTargetAttachmentInterface;
+#include "VulkanRenderTargetAttachmentInterface.hpp"
 
 namespace Flint
 {
@@ -68,10 +68,10 @@ namespace Flint
 
 module: private;
 
-import Flint.VulkanBackend.VulkanUtilities;
+#include "VulkanBackend/VulkanUtilities.hpp"
 import Flint.VulkanBackend.VulkanBuffer;
-import Flint.VulkanBackend.VulkanOneTimeCommandBuffer;
-import Flint.VulkanBackend.VulkanImageView;
+#include "VulkanBackend/VulkanOneTimeCommandBuffer.hpp"
+#include "VulkanBackend/VulkanImageView.hpp"
 
 namespace Flint
 {

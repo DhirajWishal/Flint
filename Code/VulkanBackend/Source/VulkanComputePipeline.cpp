@@ -41,10 +41,9 @@ namespace Flint
 }
 
 module: private;
-
-import Flint.VulkanBackend.VulkanShader;
-import Flint.VulkanBackend.VulkanOneTimeCommandBuffer;
-import Flint.VulkanBackend.VulkanResourcePackager;
+#include "VulkanBackend/VulkanShader.hpp"
+#include "VulkanBackend/VulkanOneTimeCommandBuffer.hpp"
+#include "VulkanBackend/VulkanResourcePackager.hpp"
 import Flint.VulkanBackend.VulkanCommandBuffer;
 import Flint.VulkanBackend.VulkanCommandBufferAllocator;
 

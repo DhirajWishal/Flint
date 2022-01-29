@@ -4,9 +4,8 @@
 export module Flint.VulkanBackend.VulkanDevice;
 
 #include "GraphicsCore/Device.hpp"
-
 import Flint.VulkanBackend.VulkanInstance;
-import Flint.VulkanBackend.VulkanQueue;
+#include "../VulkanQueue.hpp"
 
 #include <vk_mem_alloc.h>
 
@@ -104,22 +103,22 @@ namespace Flint
 
 module: private;
 
-import Flint.VulkanBackend.VulkanDisplay;
-import Flint.VulkanBackend.VulkanOneTimeCommandBuffer;
+#include "VulkanBackend/VulkanDisplay.hpp"
+#include "VulkanBackend/VulkanOneTimeCommandBuffer.hpp"
 import Flint.VulkanBackend.VulkanCommandBuffer;
 import Flint.VulkanBackend.VulkanCommandBufferAllocator;
-import Flint.VulkanBackend.VulkanSwapChain;
-import Flint.VulkanBackend.VulkanScreenBoundRenderTarget;
-import Flint.VulkanBackend.VulkanOffScreenRenderTarget;
+#include "VulkanBackend/VulkanSwapChain.hpp"
+#include "VulkanBackend/VulkanScreenBoundRenderTarget.hpp"
+#include "VulkanBackend/VulkanOffScreenRenderTarget.hpp"
 import Flint.VulkanBackend.VulkanBuffer;
-import Flint.VulkanBackend.VulkanImage;
-import Flint.VulkanBackend.VulkanImageSampler;
-import Flint.VulkanBackend.VulkanShader;
-import Flint.VulkanBackend.VulkanGraphicsPipeline;
+#include "VulkanBackend/VulkanImage.hpp"
+#include "VulkanBackend/VulkanImageSampler.hpp"
+#include "VulkanBackend/VulkanShader.hpp"
+#include "VulkanBackend/VulkanGraphicsPipeline.hpp"
 import Flint.VulkanBackend.VulkanComputePipeline;
-import Flint.VulkanBackend.VulkanHostSynchronizationPrimitive;
-import Flint.VulkanBackend.VulkanDeviceSynchronizationPrimitive;
-import Flint.VulkanBackend.VulkanQuery;
+#include "VulkanBackend/VulkanHostSynchronizationPrimitive.hpp"
+#include "VulkanBackend/VulkanDeviceSynchronizationPrimitive.hpp"
+#include "VulkanBackend/VulkanQuery.hpp"
 
 #include "GraphicsCore/GeometryStore.hpp"
 

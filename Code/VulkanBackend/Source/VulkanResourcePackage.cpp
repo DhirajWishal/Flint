@@ -31,7 +31,7 @@ namespace Flint
 
 module: private;
 
-import Flint.VulkanBackend.VulkanResourcePackager;
+#include "VulkanBackend/VulkanResourcePackager.hpp"
 import Flint.VulkanBackend.VulkanBuffer;
 import Flint.VulkanBackend.VulkanImage;
 import Flint.VulkanBackend.VulkanImageView;
