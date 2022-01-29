@@ -5,21 +5,19 @@ export module Flint.GraphicsCore.CommandBuffer;
 
 import Flint.Core.DataType;
 import Flint.Core.FObject;
-import Flint.GraphicsCore.DeviceBoundObject;
+import Flint.GraphicsCore.RenderTarget;
 import Flint.GraphicsCore.WireFrame;
 import <memory>;
 import <vector>;
 
 export namespace Flint
 {
-	//class DeviceBoundObject;
 	class SwapChain;
 	class ScreenBoundRenderTarget;
 	class OffScreenRenderTarget;
 	class GraphicsPipeline;
 	class ComputePipeline;
 	class Buffer;
-	class Image;
 	class GeometryStore;
 	class ResourcePackage;
 	class Query;

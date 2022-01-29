@@ -12,7 +12,7 @@ import <memory>;
 
 export namespace Flint
 {
-	export namespace MaterialProperties
+	namespace MaterialProperties
 	{
 		/**
 		 * Material type enum.
@@ -312,6 +312,8 @@ export namespace Flint
 }
 
 module: private;
+
+import Flint.GraphicsCore.Device;
 
 namespace Flint
 {

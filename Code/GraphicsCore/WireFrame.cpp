@@ -1,11 +1,10 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-export module Flint.GraphicsCore.WireFrame;
+export module Flint.GraphicsPipeline.WireFrame;
 
 import Flint.Core.DataType;
 import Flint.GraphicsCore.Material;
-import <string>;
 
 export namespace Flint
 {
