@@ -1,12 +1,12 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-export module Flint.Core.BinaryMap;
+#pragma once
 
-import Flint.Core.DataType;
-import <vector>;
+#include "DataType.hpp"
+#include <vector>
 
-export namespace Flint
+namespace Flint
 {
 	/**
 	 * Flint binary map object.

@@ -10,9 +10,9 @@ export module Flint.GraphicsCore.DeviceBoundObject;
 #include <vector>
 #include <unordered_map>
 
-export namespace Flint
+namespace Flint
 {
-	class Deie
+	class Device;
 	class Image;
 
 	/**

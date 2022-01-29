@@ -11,7 +11,7 @@ import Flint.VulkanBackend.VulkanQueue;
 
 #include <vk_mem_alloc.h>
 
-export namespace Flint
+namespace Flint
 {
 	namespace VulkanBackend
 	{
@@ -229,7 +229,7 @@ namespace Flint
 
 			const VulkanDisplay& vDisplay = pDisplay->StaticCast<VulkanDisplay>();
 			VkBool32 isSupported = VK_FALSE;
-			Utilities::CheckResult(vkGetPhysicalDeviceSurfaceSupportKHR(GetPhysicalDevice(), GetQueue().mGraphicsFamily.value(), vDisplay.GetSurface(), &isSupported));
+			FLINT_VK_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(GetPhysicalDevice(), GetQueue().mGraphicsFamily.value(), vDisplay.GetSurface(), &isSupported));
 			return isSupported == VK_TRUE;
 		}
 
@@ -341,7 +341,7 @@ namespace Flint
 				vFence = vPrimitive.GetFence();
 			}
 
-			Utilities::CheckResult(GetDeviceTable().vkQueueSubmit(GetQueue().vGraphicsQueue, 1, vCommandBuffer.GetSubmitInfoAddress(), vFence));
+			FLINT_VK_ASSERT(GetDeviceTable().vkQueueSubmit(GetQueue().vGraphicsQueue, 1, vCommandBuffer.GetSubmitInfoAddress(), vFence));
 		}
 
 		void VulkanDevice::SubmitGraphicsCommandBuffers(const std::vector<CommandBuffer*>& pCommandBuffers, SynchronizationPrimitive* pPrimitive)
@@ -364,7 +364,7 @@ namespace Flint
 				vFence = vPrimitive.GetFence();
 			}
 
-			Utilities::CheckResult(GetDeviceTable().vkQueueSubmit(GetQueue().vGraphicsQueue, static_cast<uint32>(vSubmitInfos.size()), vSubmitInfos.data(), vFence));
+			FLINT_VK_ASSERT(GetDeviceTable().vkQueueSubmit(GetQueue().vGraphicsQueue, static_cast<uint32>(vSubmitInfos.size()), vSubmitInfos.data(), vFence));
 		}
 
 		void VulkanDevice::SubmitComputeCommandBuffer(const CommandBuffer* pCommandBuffer, SynchronizationPrimitive* pPrimitive)
@@ -380,7 +380,7 @@ namespace Flint
 				vFence = vPrimitive.GetFence();
 			}
 
-			Utilities::CheckResult(GetDeviceTable().vkQueueSubmit(GetQueue().vGraphicsQueue, 1, vCommandBuffer.GetSubmitInfoAddress(), vFence));
+			FLINT_VK_ASSERT(GetDeviceTable().vkQueueSubmit(GetQueue().vGraphicsQueue, 1, vCommandBuffer.GetSubmitInfoAddress(), vFence));
 		}
 
 		void VulkanDevice::SubmitComputeCommandBuffers(const std::vector<CommandBuffer*>& pCommandBuffers, SynchronizationPrimitive* pPrimitive)
@@ -403,21 +403,21 @@ namespace Flint
 				vFence = vPrimitive.GetFence();
 			}
 
-			Utilities::CheckResult(GetDeviceTable().vkQueueSubmit(GetQueue().vComputeQueue, static_cast<uint32>(vSubmitInfos.size()), vSubmitInfos.data(), vFence));
+			FLINT_VK_ASSERT(GetDeviceTable().vkQueueSubmit(GetQueue().vComputeQueue, static_cast<uint32>(vSubmitInfos.size()), vSubmitInfos.data(), vFence));
 		}
 
 		void VulkanDevice::WaitIdle()
 		{
 			OPTICK_EVENT();
 
-			Utilities::CheckResult(GetDeviceTable().vkDeviceWaitIdle(GetLogicalDevice()));
+			FLINT_VK_ASSERT(GetDeviceTable().vkDeviceWaitIdle(GetLogicalDevice()));
 		}
 
 		void VulkanDevice::WaitForQueue()
 		{
 			OPTICK_EVENT();
 
-			Utilities::CheckResult(GetDeviceTable().vkQueueWaitIdle(GetQueue().vTransferQueue));
+			FLINT_VK_ASSERT(GetDeviceTable().vkQueueWaitIdle(GetQueue().vTransferQueue));
 		}
 
 		void VulkanDevice::Terminate()
@@ -456,7 +456,7 @@ namespace Flint
 				}
 			}
 
-			Utilities::CheckResult(GetDeviceTable().vkAllocateMemory(GetLogicalDevice(), &vAI, nullptr, pDeviceMemory));
+			FLINT_VK_ASSERT(GetDeviceTable().vkAllocateMemory(GetLogicalDevice(), &vAI, nullptr, pDeviceMemory));
 
 			VkResult result = VkResult::VK_ERROR_UNKNOWN;
 			for (uint32 i = 0; i < vImages.size(); i++)
@@ -847,7 +847,7 @@ namespace Flint
 				vDeviceCreateInfo.enabledLayerCount = 0;
 
 			// Create the logical device.
-			Utilities::CheckResult(vkCreateDevice(vPhysicalDevice, &vDeviceCreateInfo, nullptr, &vLogicalDevice));
+			FLINT_VK_ASSERT(vkCreateDevice(vPhysicalDevice, &vDeviceCreateInfo, nullptr, &vLogicalDevice));
 			volkLoadDeviceTable(&mDeviceTable, vLogicalDevice);
 
 			if ((mFlags & DeviceFlags::GraphicsCompatible) == DeviceFlags::GraphicsCompatible)
@@ -907,7 +907,7 @@ namespace Flint
 			const VmaVulkanFunctions functions = GetVulkanFunctions();
 			vmaCreateInfo.pVulkanFunctions = &functions;
 
-			Utilities::CheckResult(vmaCreateAllocator(&vmaCreateInfo, &mVmaAllocator));
+			FLINT_VK_ASSERT(vmaCreateAllocator(&vmaCreateInfo, &mVmaAllocator));
 		}
 
 		void VulkanDevice::DestroyVmaAllocator() const

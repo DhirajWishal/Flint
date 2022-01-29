@@ -5,7 +5,7 @@ export module Flint.GraphicsCore.Device;
 
 import Flint.GraphicsCore.DeviceBoundObject;
 
-export namespace Flint
+namespace Flint
 {
 	class Display;
 	class DeviceBoundObject;

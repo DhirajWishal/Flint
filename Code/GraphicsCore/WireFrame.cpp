@@ -6,7 +6,7 @@ export module Flint.GraphicsPipeline.WireFrame;
 #include "Core/DataType.hpp"
 import Flint.GraphicsCore.Material;
 
-export namespace Flint
+namespace Flint
 {
 	/**
 	 * Flint wire frame object.

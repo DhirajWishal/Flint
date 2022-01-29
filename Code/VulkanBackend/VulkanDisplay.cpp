@@ -11,7 +11,7 @@ import Flint.VulkanBackend.VulkanInstance;
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
-export namespace Flint
+namespace Flint
 {
 	namespace VulkanBackend
 	{
@@ -217,7 +217,7 @@ namespace Flint
 			glfwSetWindowCloseCallback(pWindow, _Callbacks::WindowCloseCallback);
 			glfwSetWindowSizeCallback(pWindow, _Callbacks::ApplicationResizeCallback);
 
-			Utilities::CheckResult(glfwCreateWindowSurface(pInstance->StaticCast<VulkanInstance>().GetInstance(), pWindow, nullptr, &vSurface));
+			FLINT_VK_ASSERT(glfwCreateWindowSurface(pInstance->StaticCast<VulkanInstance>().GetInstance(), pWindow, nullptr, &vSurface));
 
 			SetupMaps();
 		}

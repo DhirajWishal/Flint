@@ -7,7 +7,7 @@ export module Flint.VulkanBackend.VulkanBuffer;
 #include "GraphicsCore/Buffer.hpp"
 import Flint.VulkanBackend.VulkanDevice;
 
-export namespace Flint
+namespace Flint
 {
 	namespace VulkanBackend
 	{
@@ -172,7 +172,7 @@ namespace Flint
 
 			void* pDataStore = nullptr;
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-			Utilities::CheckResult(vmaMapMemory(vDevice.GetVmaAllocator(), vmaAllocation, &pDataStore));
+			FLINT_VK_ASSERT(vmaMapMemory(vDevice.GetVmaAllocator(), vmaAllocation, &pDataStore));
 
 			bIsMapped = true;
 			return pDataStore;
@@ -215,7 +215,7 @@ namespace Flint
 			VmaAllocationCreateInfo vmaAllocationCreateInfo = {};
 			vmaAllocationCreateInfo.usage = vmaMemoryUsage;
 
-			Utilities::CheckResult(vmaCreateBuffer(pDevice->StaticCast<VulkanDevice>().GetVmaAllocator(), &vCreateInfo, &vmaAllocationCreateInfo, &vBuffer, &vmaAllocation, nullptr));
+			FLINT_VK_ASSERT(vmaCreateBuffer(pDevice->StaticCast<VulkanDevice>().GetVmaAllocator(), &vCreateInfo, &vmaAllocationCreateInfo, &vBuffer, &vmaAllocation, nullptr));
 		}
 	}
 }

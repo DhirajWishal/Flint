@@ -6,7 +6,7 @@ export module Flint.GraphicsCore.GeometryStore;
 import Flint.GraphicsCore.Buffer;
 import Flint.GraphicsCore.Shader;
 
-export namespace Flint
+namespace Flint
 {
 	/**
 	 * Flint geometry store object.

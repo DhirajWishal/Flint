@@ -7,7 +7,7 @@ export module Flint.VulkanBackend.VulkanImageView;
 #include "GraphicsCore/ImageView.hpp"
 import Flint.VulkanBackend.VulkanDevice;
 
-export namespace Flint
+namespace Flint
 {
 	namespace VulkanBackend
 	{
@@ -92,7 +92,7 @@ namespace Flint
 			}
 
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
-			Utilities::CheckResult(vDevice.GetDeviceTable().vkCreateImageView(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vImageView));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateImageView(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vImageView));
 		}
 
 		void VulkanImageView::Terminate()

@@ -9,7 +9,7 @@ export module Flint.VulkanBackend.VulkanScreenBoundRenderTarget;
 import Flint.VulkanBackend.VulkanRenderTarget;
 import Flint.VulkanBackend.VulkanSwapChain;
 
-export namespace Flint
+namespace Flint
 {
 	namespace VulkanBackend
 	{
@@ -159,7 +159,7 @@ namespace Flint
 			VkResult vResult = vDevice.GetDeviceTable().vkQueuePresentKHR(vDevice.GetQueue().vTransferQueue, pSwapChain->StaticCast<VulkanSwapChain>().PrepareToPresent());
 			if (vResult == VK_ERROR_OUT_OF_DATE_KHR || vResult == VK_SUBOPTIMAL_KHR)
 				return false;
-			else Utilities::CheckResult(vResult);
+			else FLINT_VK_ASSERT(vResult);
 
 			return true;
 		}

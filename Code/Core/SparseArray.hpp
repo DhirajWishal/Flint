@@ -1,13 +1,11 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-export module Flint.Core.SparseArray;
+#pragma once
 
-import Flint.Core.DataType;
+#include "DataType.hpp"
 
-import <vector>;
-
-export namespace Flint
+namespace Flint
 {
 	/**
 	 * Flint sparse array.

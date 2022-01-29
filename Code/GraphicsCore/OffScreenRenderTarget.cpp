@@ -6,7 +6,7 @@ export module Flint.GraphicsCore.OffScreenRenderTarget;
 import Flint.GraphicsCore.RenderTarget;
 import Flint.GraphicsCore.Image;
 
-export namespace Flint
+namespace Flint
 {
 	/**
 	 * Flint off screen render target.

@@ -7,7 +7,7 @@ export module Flint.VulkanBackend.VulkanOffScreenRenderTarget;
 #include "GraphicsCore/OffScreenRenderTarget.hpp"
 import Flint.VulkanBackend.VulkanRenderTarget;
 
-export namespace Flint
+namespace Flint
 {
 	namespace VulkanBackend
 	{

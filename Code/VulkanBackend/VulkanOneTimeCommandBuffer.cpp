@@ -6,7 +6,7 @@ export module Flint.VulkanBackend.VulkanOneTimeCommandBuffer;
 
 import Flint.VulkanBackend.VulkanDevice;
 
-export namespace Flint
+namespace Flint
 {
 	namespace VulkanBackend
 	{
@@ -46,7 +46,7 @@ namespace Flint
 			vPoolCI.pNext = VK_NULL_HANDLE;
 			vPoolCI.queueFamilyIndex = vDevice.GetQueue().mTransferFamily.value();
 
-			Utilities::CheckResult(vDevice.GetDeviceTable().vkCreateCommandPool(vDevice.GetLogicalDevice(), &vPoolCI, nullptr, &vPool));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateCommandPool(vDevice.GetLogicalDevice(), &vPoolCI, nullptr, &vPool));
 
 			VkCommandBufferAllocateInfo vAI = {};
 			vAI.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -55,19 +55,19 @@ namespace Flint
 			vAI.commandPool = vPool;
 			vAI.commandBufferCount = 1;
 
-			Utilities::CheckResult(vDevice.GetDeviceTable().vkAllocateCommandBuffers(vDevice.GetLogicalDevice(), &vAI, &vBuffer));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkAllocateCommandBuffers(vDevice.GetLogicalDevice(), &vAI, &vBuffer));
 
 			VkCommandBufferBeginInfo vBI = {};
 			vBI.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 			//vBI.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-			Utilities::CheckResult(vDevice.GetDeviceTable().vkBeginCommandBuffer(vBuffer, &vBI));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkBeginCommandBuffer(vBuffer, &vBI));
 		}
 
 		VulkanOneTimeCommandBuffer::~VulkanOneTimeCommandBuffer()
 		{
 			OPTICK_EVENT();
 
-			Utilities::CheckResult(vDevice.GetDeviceTable().vkEndCommandBuffer(vBuffer));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkEndCommandBuffer(vBuffer));
 
 			VkSubmitInfo vSI = {};
 			vSI.sType = VkStructureType::VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -80,11 +80,11 @@ namespace Flint
 			vFCI.flags = 0;
 
 			VkFence vFence = VK_NULL_HANDLE;
-			Utilities::CheckResult(vDevice.GetDeviceTable().vkCreateFence(vDevice.GetLogicalDevice(), &vFCI, nullptr, &vFence));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateFence(vDevice.GetLogicalDevice(), &vFCI, nullptr, &vFence));
 
-			Utilities::CheckResult(vDevice.GetDeviceTable().vkQueueSubmit(vDevice.GetQueue().vTransferQueue, 1, &vSI, vFence));
-			Utilities::CheckResult(vDevice.GetDeviceTable().vkWaitForFences(vDevice.GetLogicalDevice(), 1, &vFence, VK_TRUE, std::numeric_limits<uint64>::max()));
-			Utilities::CheckResult(vDevice.GetDeviceTable().vkQueueWaitIdle(vDevice.GetQueue().vTransferQueue));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkQueueSubmit(vDevice.GetQueue().vTransferQueue, 1, &vSI, vFence));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkWaitForFences(vDevice.GetLogicalDevice(), 1, &vFence, VK_TRUE, std::numeric_limits<uint64>::max()));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkQueueWaitIdle(vDevice.GetQueue().vTransferQueue));
 			vDevice.GetDeviceTable().vkDestroyFence(vDevice.GetLogicalDevice(), vFence, nullptr);
 
 			vDevice.GetDeviceTable().vkFreeCommandBuffers(vDevice.GetLogicalDevice(), vPool, 1, vSI.pCommandBuffers);

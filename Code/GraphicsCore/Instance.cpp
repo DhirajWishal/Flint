@@ -5,7 +5,7 @@ export module Flint.GraphicsCore.Instance;
 
 import Flint.GraphicsCore.Display;
 
-export namespace Flint
+namespace Flint
 {
 	/**
 	 * Flint instance backend object.

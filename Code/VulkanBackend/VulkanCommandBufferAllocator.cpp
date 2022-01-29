@@ -7,7 +7,7 @@ export module Flint.VulkanBackend.VulkanCommandBufferAllocator;
 #include "GraphicsCore/CommandBufferAllocator.hpp"
 import Flint.VulkanBackend.VulkanDevice;
 
-export namespace Flint
+namespace Flint
 {
 	namespace VulkanBackend
 	{
@@ -47,7 +47,7 @@ namespace Flint
 			vCreateInfo.flags = VkCommandPoolCreateFlagBits::VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 			vCreateInfo.queueFamilyIndex = vDevice.GetQueue().mTransferFamily.value();
 
-			Utilities::CheckResult(vDevice.GetDeviceTable().vkCreateCommandPool(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vCommandPool));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateCommandPool(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vCommandPool));
 		}
 
 		VulkanCommandBufferAllocator::VulkanCommandBufferAllocator(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<CommandBufferAllocator>& pParent, const uint32 bufferCount)
@@ -62,7 +62,7 @@ namespace Flint
 			vCreateInfo.flags = VkCommandPoolCreateFlagBits::VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 			vCreateInfo.queueFamilyIndex = vDevice.GetQueue().mTransferFamily.value();
 
-			Utilities::CheckResult(vDevice.GetDeviceTable().vkCreateCommandPool(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vCommandPool));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateCommandPool(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vCommandPool));
 		}
 
 		const std::vector<std::shared_ptr<CommandBuffer>> VulkanCommandBufferAllocator::CreateCommandBuffers()
@@ -81,7 +81,7 @@ namespace Flint
 				vAllocateInfo.level = VkCommandBufferLevel::VK_COMMAND_BUFFER_LEVEL_SECONDARY;
 
 			std::vector<VkCommandBuffer> vCommandBuffers(mBufferCount);
-			Utilities::CheckResult(vDevice.GetDeviceTable().vkAllocateCommandBuffers(vDevice.GetLogicalDevice(), &vAllocateInfo, vCommandBuffers.data()));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkAllocateCommandBuffers(vDevice.GetLogicalDevice(), &vAllocateInfo, vCommandBuffers.data()));
 
 			pCommandBuffers.reserve(mBufferCount);
 			for (const auto vCommandBuffer : vCommandBuffers)

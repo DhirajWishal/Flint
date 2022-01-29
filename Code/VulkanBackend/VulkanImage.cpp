@@ -7,7 +7,7 @@ export module Flint.VulkanBackend.VulkanImage;
 #include "GraphicsCore/Image.hpp"
 import Flint.VulkanBackend.VulkanRenderTargetAttachmentInterface;
 
-export namespace Flint
+namespace Flint
 {
 	namespace VulkanBackend
 	{
@@ -568,7 +568,7 @@ namespace Flint
 			vCreateInfo.queueFamilyIndexCount = static_cast<uint32>(queueIndexes.size());
 			vCreateInfo.pQueueFamilyIndices = queueIndexes.data();
 
-			//Utilities::CheckResult(vDevice.GetDeviceTable().vkCreateImage(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vImage));
+			//FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateImage(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vImage));
 
 			VmaAllocationCreateInfo vmaAllocationCreateInfo = {};
 			vmaAllocationCreateInfo.usage = VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY;

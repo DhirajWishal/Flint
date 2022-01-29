@@ -5,7 +5,7 @@ export module Flint.GraphicsCore.HostSynchronizationPrimitive;
 
 import Flint.GraphicsCore.SynchronizationPrimitive;
 
-export namespace Flint
+namespace Flint
 {
 	/**
 	 * Flint host synchronization primitive.

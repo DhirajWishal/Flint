@@ -7,7 +7,7 @@ export module Flint.VulkanBackend.VulkanResourcePackager;
 #include "GraphicsCore/ResourcePackager.hpp"
 import Flint.VulkanBackend.VulkanResourcePackage;
 
-export namespace Flint
+namespace Flint
 {
 	namespace VulkanBackend
 	{
@@ -199,7 +199,7 @@ namespace Flint
 			vPoolCreateInfo.poolSizeCount = static_cast<uint32>(vPoolSizes.size());
 			vPoolCreateInfo.pPoolSizes = vPoolSizes.data();
 
-			Utilities::CheckResult(vDevice.GetDeviceTable().vkCreateDescriptorPool(vDevice.GetLogicalDevice(), &vPoolCreateInfo, nullptr, &vDescriptorPool));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateDescriptorPool(vDevice.GetLogicalDevice(), &vPoolCreateInfo, nullptr, &vDescriptorPool));
 		}
 
 		std::shared_ptr<VulkanResourcePackage> VulkanResourcePackager::CreateResourcePackage()
@@ -231,7 +231,7 @@ namespace Flint
 				vAllocateInfo.descriptorSetCount = mDescriptorSetCount;
 				vAllocateInfo.pSetLayouts = vDescriptorSetLayouts.data();
 
-				Utilities::CheckResult(vDevice.GetDeviceTable().vkAllocateDescriptorSets(vDevice.GetLogicalDevice(), &vAllocateInfo, vDescriptorSets.data()));
+				FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkAllocateDescriptorSets(vDevice.GetLogicalDevice(), &vAllocateInfo, vDescriptorSets.data()));
 			}
 
 			// Update the existing packages.

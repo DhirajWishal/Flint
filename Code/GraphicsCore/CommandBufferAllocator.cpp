@@ -5,7 +5,7 @@ export module Flint.GraphicsCore.CommandBufferAllocator;
 
 import Flint.GraphicsCore.CommandBuffer;
 
-export namespace Flint
+namespace Flint
 {
 	/**
 	 * Flint command buffer allocator.

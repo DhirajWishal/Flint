@@ -6,7 +6,7 @@ export module Flint.VulkanBackend.VulkanShader;
 
 import Flint.VulkanBackend.VulkanDevice;
 
-export namespace Flint
+namespace Flint
 {
 	namespace VulkanBackend
 	{
@@ -511,7 +511,7 @@ namespace Flint
 			vCreateInfo.pCode = mShaderCode.data();
 
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-			Utilities::CheckResult(vDevice.GetDeviceTable().vkCreateShaderModule(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vModule));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateShaderModule(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vModule));
 		}
 	}
 }

@@ -7,7 +7,7 @@ export module Flint.VulkanBackend.VulkanInstance;
 #include "GraphicsCore/Instance.hpp"
 import Flint.VulkanBackend.VulkanMacros;
 
-export namespace Flint
+namespace Flint
 {
 	namespace VulkanBackend
 	{
@@ -165,7 +165,7 @@ namespace Flint
 		{
 			OPTICK_EVENT();
 
-			Utilities::CheckResult(volkInitialize());
+			FLINT_VK_ASSERT(volkInitialize());
 			InitializeGLFW();
 
 			// Check if Vulkan is supported.
@@ -259,7 +259,7 @@ namespace Flint
 			}
 
 			// Create the instance handle.
-			Utilities::CheckResult(vkCreateInstance(&createInfo, nullptr, &vInstance));
+			FLINT_VK_ASSERT(vkCreateInstance(&createInfo, nullptr, &vInstance));
 		}
 
 		void VulkanInstance::TerminateInstance()
@@ -272,7 +272,7 @@ namespace Flint
 			VkDebugUtilsMessengerCreateInfoEXT createInfo = Helpers::CreateDebugMessengerCreateInfo();
 
 			auto func = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(vInstance, "vkCreateDebugUtilsMessengerEXT"));
-			Utilities::CheckResult(func(vInstance, &createInfo, nullptr, &vDebugMessenger));
+			FLINT_VK_ASSERT(func(vInstance, &createInfo, nullptr, &vDebugMessenger));
 		}
 
 		void VulkanInstance::TerminateDebugger()

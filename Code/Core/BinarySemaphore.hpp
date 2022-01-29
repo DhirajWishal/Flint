@@ -1,11 +1,11 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-export module Flint.Core.BinarySemaphore;
+#pragma once
 
-import <atomic>;
+#include <atomic>
 
-export namespace Flint
+namespace Flint
 {
 	/**
 	 * Flint binary semaphore object.
@@ -45,34 +45,4 @@ export namespace Flint
 	private:
 		std::atomic<bool> mAtomicBool = false;
 	};
-}
-
-module: private;
-
-namespace Flint
-{
-	BinarySemaphore::BinarySemaphore(const BinarySemaphore& other)
-	{
-		mAtomicBool.store(other.mAtomicBool);
-	}
-
-	void BinarySemaphore::Release()
-	{
-		mAtomicBool = true;
-	}
-
-	void BinarySemaphore::Acquire()
-	{
-		while (mAtomicBool != true);
-		mAtomicBool = false;
-	}
-
-	bool BinarySemaphore::TryAcquire()
-	{
-		if (mAtomicBool != true)
-			return false;
-
-		mAtomicBool = false;
-		return true;
-	}
 }

@@ -7,7 +7,7 @@ import Flint.GraphicsCore.Pipeline;
 import Flint.GraphicsCore.Shader;
 import Flint.GraphicsCore.DynamicStateContainer;
 
-export namespace Flint
+namespace Flint
 {
 	class ScreenBoundRenderTarget;
 	class OffScreenRenderTarget;

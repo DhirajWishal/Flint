@@ -5,7 +5,7 @@ export module Flint.GraphicsCore.DeviceSynchronizationPrimitive;
 
 import Flint.GraphicsCore.SynchronizationPrimitive;
 
-export namespace Flint
+namespace Flint
 {
 	/**
 	 * Flint device synchronization primitive.
