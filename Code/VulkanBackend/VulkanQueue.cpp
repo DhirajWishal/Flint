@@ -1,14 +1,13 @@
 // Copyright 2021 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#include <volk.h>
 export module Flint.VulkanBackend.VulkanQueue;
 
 #include "GraphicsCore/Instance.hpp"
 
-//import <volk.h>
-#include <optick.h>
+#include <volk.h>
 #include <optional>
+#include <optick.h>
 
 namespace Flint
 {
