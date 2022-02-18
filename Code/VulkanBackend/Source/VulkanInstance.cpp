@@ -81,7 +81,7 @@ namespace Flint
 				const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
 				void* pUserData)
 			{
-				std::string myMessagePreStatement = ": ";
+				std::string_view myMessagePreStatement = ": ";
 				static std::ofstream generalOutputFile("VulkanGeneralOutput.txt");
 
 				if (messageType == VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT)
@@ -104,17 +104,18 @@ namespace Flint
 			{
 				VkDebugUtilsMessengerCreateInfoEXT createInfo = {};
 				createInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-				createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT
-					| VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT
-					| VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-				createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
-					| VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT
-					| VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-				createInfo.pfnUserCallback = DebugCallback;
-
 				createInfo.pNext = VK_NULL_HANDLE;
 				createInfo.pUserData = VK_NULL_HANDLE;
 				createInfo.flags = 0;
+				createInfo.pfnUserCallback = DebugCallback;
+
+				createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT
+					| VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT
+					| VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+
+				createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
+					| VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT
+					| VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
 
 				return createInfo;
 			}
@@ -189,7 +190,7 @@ namespace Flint
 			appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
 			appInfo.pEngineName = "Flint";
 			appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-			appInfo.apiVersion = VK_API_VERSION_1_2;
+			appInfo.apiVersion = VK_API_VERSION_1_3;
 
 			// FInstance create info.
 			VkInstanceCreateInfo createInfo = {};
