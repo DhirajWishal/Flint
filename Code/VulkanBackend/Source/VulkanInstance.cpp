@@ -102,22 +102,22 @@ namespace Flint
 
 			VkDebugUtilsMessengerCreateInfoEXT CreateDebugMessengerCreateInfo()
 			{
-				VkDebugUtilsMessengerCreateInfoEXT createInfo = {};
-				createInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-				createInfo.pNext = VK_NULL_HANDLE;
-				createInfo.pUserData = VK_NULL_HANDLE;
-				createInfo.flags = 0;
-				createInfo.pfnUserCallback = DebugCallback;
+				VkDebugUtilsMessengerCreateInfoEXT vCreateInfo = {};
+				vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+				vCreateInfo.pNext = VK_NULL_HANDLE;
+				vCreateInfo.pUserData = VK_NULL_HANDLE;
+				vCreateInfo.flags = 0;
+				vCreateInfo.pfnUserCallback = DebugCallback;
 
-				createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT
+				vCreateInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT
 					| VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT
 					| VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
 
-				createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
+				vCreateInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
 					| VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT
 					| VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
 
-				return createInfo;
+				return vCreateInfo;
 			}
 		}
 
@@ -125,7 +125,10 @@ namespace Flint
 		{
 			OPTICK_EVENT();
 
+			// Initialize volk.
 			FLINT_VK_ASSERT(volkInitialize());
+
+			// Initialize GLFW.
 			InitializeGLFW();
 
 			// Check if Vulkan is supported.
@@ -135,9 +138,13 @@ namespace Flint
 			if (enableValidation)
 				mValidationLayers.emplace_back("VK_LAYER_KHRONOS_validation");
 
+			// Initialize the instance.
 			InitializeInstance();
+
+			// Instruct volk to load the instance data.
 			volkLoadInstance(vInstance);
 
+			// Create the debugger if validation is enabled.
 			if (IsValidationEnabled())
 				InitializeDebugger();
 		}
@@ -154,10 +161,14 @@ namespace Flint
 
 		void VulkanInstance::Terminate()
 		{
+			// Terminate the debugger if enabled.
 			if (IsValidationEnabled())
 				TerminateDebugger();
 
+			// Terminate the Vulkan instance.
 			TerminateInstance();
+
+			// Terminate GLFW.
 			TerminateGLFW();
 
 			bIsTerminated = true;
@@ -165,7 +176,10 @@ namespace Flint
 
 		void VulkanInstance::InitializeGLFW()
 		{
-			glfwInit();
+			// Initialize GLFW.
+			if (glfwInit() == GLFW_FALSE)
+				throw backend_error("Failed to initialize GLFW!");
+
 			glfwSetErrorCallback(Helpers::GLFWErrorCallback);
 			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 		}
@@ -184,42 +198,42 @@ namespace Flint
 				throw std::runtime_error("Validation layers requested but not available!");
 
 			// Application info.
-			VkApplicationInfo appInfo = {};
-			appInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_APPLICATION_INFO;
-			appInfo.pApplicationName = "Flint Engine";
-			appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-			appInfo.pEngineName = "Flint";
-			appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-			appInfo.apiVersion = VK_API_VERSION_1_3;
+			VkApplicationInfo vApplicationInfo = {};
+			vApplicationInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_APPLICATION_INFO;
+			vApplicationInfo.pApplicationName = "Flint Engine";
+			vApplicationInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
+			vApplicationInfo.pEngineName = "Flint";
+			vApplicationInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
+			vApplicationInfo.apiVersion = VK_API_VERSION_1_3;
 
 			// FInstance create info.
-			VkInstanceCreateInfo createInfo = {};
-			createInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-			createInfo.pApplicationInfo = &appInfo;
-
-			// Get and insert the required instance extensions.
-			std::vector<const char*> requiredExtensions = std::move(Helpers::GetRequiredInstanceExtensions(mEnableValidation));
-			createInfo.enabledExtensionCount = static_cast<uint32>(requiredExtensions.size());
-			createInfo.ppEnabledExtensionNames = requiredExtensions.data();
+			VkInstanceCreateInfo vCreateInfo = {};
+			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+			vCreateInfo.pApplicationInfo = &vApplicationInfo;
 
 			// Initialize debugger.
-			VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo = {};
+			std::vector<const char*> requiredExtensions;
+			VkDebugUtilsMessengerCreateInfoEXT vDebugCreateInfo = {};
 			if (mEnableValidation)
 			{
-				createInfo.enabledLayerCount = static_cast<uint32>(mValidationLayers.size());
-				createInfo.ppEnabledLayerNames = mValidationLayers.data();
+				vDebugCreateInfo = Helpers::CreateDebugMessengerCreateInfo();
 
-				debugCreateInfo = Helpers::CreateDebugMessengerCreateInfo();
-				createInfo.pNext = &debugCreateInfo;
+				// Get and insert the required instance extensions.
+				requiredExtensions = std::move(Helpers::GetRequiredInstanceExtensions(mEnableValidation));
+				vCreateInfo.enabledExtensionCount = static_cast<uint32>(requiredExtensions.size());
+				vCreateInfo.ppEnabledExtensionNames = requiredExtensions.data();
+				vCreateInfo.enabledLayerCount = static_cast<uint32>(mValidationLayers.size());
+				vCreateInfo.ppEnabledLayerNames = mValidationLayers.data();
+				vCreateInfo.pNext = &vDebugCreateInfo;
 			}
 			else
 			{
-				createInfo.enabledLayerCount = 0;
-				createInfo.pNext = nullptr;
+				vCreateInfo.enabledLayerCount = 0;
+				vCreateInfo.pNext = nullptr;
 			}
 
 			// Create the instance handle.
-			FLINT_VK_ASSERT(vkCreateInstance(&createInfo, nullptr, &vInstance));
+			FLINT_VK_ASSERT(vkCreateInstance(&vCreateInfo, nullptr, &vInstance));
 		}
 
 		void VulkanInstance::TerminateInstance()
@@ -229,18 +243,16 @@ namespace Flint
 
 		void VulkanInstance::InitializeDebugger()
 		{
-			VkDebugUtilsMessengerCreateInfoEXT createInfo = Helpers::CreateDebugMessengerCreateInfo();
+			VkDebugUtilsMessengerCreateInfoEXT vCreateInfo = Helpers::CreateDebugMessengerCreateInfo();
 
-			auto func = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(vInstance, "vkCreateDebugUtilsMessengerEXT"));
-			FLINT_VK_ASSERT(func(vInstance, &createInfo, nullptr, &vDebugMessenger));
+			const auto vkCreateDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(vInstance, "vkCreateDebugUtilsMessengerEXT"));
+			FLINT_VK_ASSERT(vkCreateDebugUtilsMessengerEXT(vInstance, &vCreateInfo, nullptr, &vDebugMessenger));
 		}
 
 		void VulkanInstance::TerminateDebugger()
 		{
-			auto func = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(vInstance, "vkDestroyDebugUtilsMessengerEXT"));
-
-			if (func != nullptr)
-				func(vInstance, vDebugMessenger, nullptr);
+			const auto vkDestroyDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(vInstance, "vkDestroyDebugUtilsMessengerEXT"));
+			vkDestroyDebugUtilsMessengerEXT(vInstance, vDebugMessenger, nullptr);
 		}
 	}
 }
