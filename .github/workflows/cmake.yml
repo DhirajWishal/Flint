@@ -2,9 +2,9 @@ name: CMake
 
 on:
   push:
-    branches: [ release, foliage, workflow ]
+    branches: [release, foliage, workflow]
   pull_request:
-    branches: [ release ]
+    branches: [release]
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
@@ -15,33 +15,33 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ windows-latest, ubuntu-latest ]
+        os: [windows-latest, ubuntu-latest]
 
     steps:
-    - uses: actions/checkout@v2
-      with:
+      - uses: actions/checkout@v2
+        with:
           submodules: true
-      
-    # Set up the build environment.
-    - name: Create Build Environment
-      run: cmake -E make_directory ${{runner.workspace}}/build
 
-    # Configure CMake
-    - name: Configure CMake
-    - if: matrix.os == 'ubuntu-latest'
-      with:
-        shell: bash
+      # Set up the build environment.
+      - name: Create Build Environment
+        run: cmake -E make_directory ${{runner.workspace}}/build
+
+      # Configure CMake
+      - name: Configure CMake
+      - if: matrix.os == 'ubuntu-latest'
+        with:
+          shell: bash
+          working-directory: ${{runner.workspace}}/build
+        run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++
+
+      - if: matrix.os != 'ubuntu-latest'
+        with:
+          shell: bash
+          working-directory: ${{runner.workspace}}/build
+        run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+
+      # Build the project.
+      - name: Build
         working-directory: ${{runner.workspace}}/build
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++
-
-    - if: matrix.os != 'ubuntu-latest'
-      with:
         shell: bash
-        working-directory: ${{runner.workspace}}/build
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE
-
-    # Build the project.
-    - name: Build
-      working-directory: ${{runner.workspace}}/build
-      shell: bash
-      run: cmake --build . --config $BUILD_TYPE
+        run: cmake --build . --config $BUILD_TYPE
