@@ -27,7 +27,7 @@ target_include_directories(FlintCore PUBLIC ${XXHASH_INCLUDE_DIR} ${OPTICK_INCLU
 target_link_libraries(FlintCore optik)
 
 # Make sure to specify the C++ standard to C++20.
-set_property(TARGET FlintCore PROPERTY CXX_STANDARD 20)
+target_compile_features(FlintCore PUBLIC cxx_std_20)
 
 # If we are on MSVC, we can use the Multi Processor Compilation option.
 if (MSVC)

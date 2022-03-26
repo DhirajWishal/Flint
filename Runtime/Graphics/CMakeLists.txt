@@ -35,7 +35,7 @@ target_include_directories(
 target_link_libraries(FlintGraphics FlintVulkanBackend assimp)
 
 # Make sure to specify the C++ standard to C++20.
-set_property(TARGET FlintGraphics PROPERTY CXX_STANDARD 20)
+target_compile_features(FlintGraphics PUBLIC cxx_std_20)
 
 # If we are on MSVC, we can use the Multi Processor Compilation option.
 if (MSVC)

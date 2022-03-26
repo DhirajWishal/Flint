@@ -27,7 +27,7 @@ target_include_directories(FlintEngine PUBLIC ${GLM_INCLUDE_DIR} ${OPTICK_INCLUD
 target_link_libraries(FlintEngine FlintGraphics)
 
 # Make sure to specify the C++ standard to C++20.
-set_property(TARGET FlintEngine PROPERTY CXX_STANDARD 20)
+target_compile_features(FlintEngine PUBLIC cxx_std_20)
 
 # If we are on MSVC, we can use the Multi Processor Compilation option.
 if (MSVC)

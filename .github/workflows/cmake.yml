@@ -15,14 +15,31 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ windows-latest, ubuntu-latest, macos-latest ]
+        name: [ubuntu-latest-gcc, windows-latest-cl.exe, ubuntu-gcc-hunter, windows-msvc-hunter]
+        include:
+          - name: windows-latest-cl.exe
+            os: windows-latest
+            cxx: cl.exe
+            cc: cl.exe
+          - name: ubuntu-latest-gcc
+            os: ubuntu-latest
+            cxx: g++
+            cc: gcc
+          - name: ubuntu-gcc-hunter
+            os: ubuntu-latest
+            toolchain: ninja-gcc-cxx20-fpic
+          - name: windows-msvc-hunter
+            os: windows-latest
+            toolchain: ninja-vs-win64-cxx20
 
     steps:
     - uses: actions/checkout@v2
       with:
           submodules: true
         
-    - if: matrix.os == 'ubuntu-latest'
+    # Setup the dependencies for Ubuntu.
+    - if: startsWith(matrix.os, 'ununtu')
+    - name: Configuring Ubuntu.
       run: |
           sudo apt update
           sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev

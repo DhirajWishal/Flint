@@ -41,7 +41,7 @@ target_link_libraries(
 )
 
 # Make sure to specify the C++ standard to C++20.
-set_property(TARGET FlintVulkanBackend PROPERTY CXX_STANDARD 20)
+target_compile_features(FlintVulkanBackend PUBLIC cxx_std_20)
 
 # If we are on MSVC, we can use the Multi Processor Compilation option.
 if (MSVC)
