@@ -21,7 +21,7 @@ add_library(
 target_include_directories(FlintCore PUBLIC ${XXHASH_INCLUDE_DIR} ${OPTICK_INCLUDE_DIR})
 
 # Add the optick static library as a target link.
-target_link_libraries(FlintCore Optick)
+target_link_libraries(FlintCore optik)
 
 # If we are on MSVC, we can use the Multi Processor Compilation option.
 if (MSVC)

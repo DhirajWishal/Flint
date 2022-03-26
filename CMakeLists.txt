@@ -60,7 +60,7 @@ set(OPTICK_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/optick/src)
 
 # As before, lets build the optick library as another target.
 add_library(
-	Optick
+	optick
 	STATIC
 	${OPTICK_INCLUDE_DIR}/optick_capi.cpp
 	${OPTICK_INCLUDE_DIR}/optick_core.cpp
@@ -74,7 +74,7 @@ add_library(
 )
 
 # Add the Vulkan headers as a target include directory.
-target_include_directories(Optick PUBLIC ${VULKAN_HEADERS_INCLUDE_DIR})
+target_include_directories(optick PUBLIC ${VULKAN_HEADERS_INCLUDE_DIR})
 
 # Set the SPIRV-Reflect library include directory.
 set(SPIRV_REFLECT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/SPIRV-Reflect)
@@ -118,16 +118,17 @@ add_compile_definitions(
 set(CMAKE_CXX_STANDARD 20)
 
 # Set the central include directory.
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Source)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Runtime)
 
 # Finally, lets add our projects.
-add_subdirectory(Source/Core)
-add_subdirectory(Source/Engine)
-add_subdirectory(Source/Graphics)
-add_subdirectory(Source/GraphicsCore)
-add_subdirectory(Source/VulkanBackend)
+add_subdirectory(Runtime/Core)
+add_subdirectory(Runtime/Engine)
+add_subdirectory(Runtime/Graphics)
+add_subdirectory(Runtime/GraphicsCore)
+add_subdirectory(Runtime/VulkanBackend)
+add_subdirectory(Sandbox)
 
 # Set the startup project for Visual Studio
 if (MSVC) 
-	set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT Engine)
+	set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT Sandbox)
 endif ()

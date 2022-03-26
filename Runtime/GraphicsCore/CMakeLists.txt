@@ -27,7 +27,7 @@ target_include_directories(
 )
 
 # Add the VulkanBackend static library as a target link.
-target_link_libraries(FlintGraphicsCore VulkanBackend)
+target_link_libraries(FlintGraphicsCore FlintVulkanBackend)
 
 # If we are on MSVC, we can use the Multi Processor Compilation option.
 if (MSVC)
