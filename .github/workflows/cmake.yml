@@ -36,29 +36,3 @@ jobs:
         working-directory: ${{runner.workspace}}/build
         shell: bash
         run: cmake --build . --config $BUILD_TYPE
-
-  # Now lets run on Ubuntu.
-  build-ubuntu-latest:
-    name: Building on Ubuntu.
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: true
-
-      # Set up the build environment.
-      - name: Create Build Environment
-        run: cmake -E make_directory ${{runner.workspace}}/build
-
-      # Configure CMake on Ubuntu
-      - name: Configure CMake on Ubuntu
-        shell: bash
-        working-directory: ${{runner.workspace}}/build
-        run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++
-
-      # Build the project.
-      - name: Build
-        working-directory: ${{runner.workspace}}/build
-        shell: bash
-        run: cmake --build . --config $BUILD_TYPE
