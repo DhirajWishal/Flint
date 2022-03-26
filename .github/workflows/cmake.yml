@@ -2,7 +2,7 @@ name: CMake
 
 on:
   push:
-    branches: [release, foliage, workflow]
+    branches: [release, foliage]
   pull_request:
     branches: [release]
 
