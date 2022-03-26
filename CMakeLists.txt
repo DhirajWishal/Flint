@@ -3,7 +3,7 @@
 
 # Main build script for Flint.
 # Set the minimum required CMake version.
-cmake_minimum_required(VERSION 3.22.3)
+cmake_minimum_required(VERSION 3.22.2)
 
 # Set the basic project description.
 project(
@@ -30,11 +30,20 @@ set(XXHASH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/xxHash)
 # Set up the assimp include, library and binary data.
 set(ASSIMP_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/assimp/include)
 
+# Set the required variables for assimp.
+set(ASSIMP_NO_EXPORT OFF CACHE BOOL "Disable the export functionality.")
+set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "We don't need the tests either.")
+
 # Add the assimp library as a subdirectory.
 add_subdirectory(ThirdParty/assimp)
 
 # Set the GLFW include, library and binary data.
 set(GLFW_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/glfw/include)
+
+# Set the required variables for GLFW.
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "Don't build the examples.'")
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "Don't build the tests.")
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "We don't need the docs either.")
 
 # Add the glfw library as a subdirectory.
 add_subdirectory(ThirdParty/glfw)
@@ -116,9 +125,6 @@ add_compile_definitions(
     $<$<PLATFORM_ID:Linux>:FLINT_PLATFORM_LINUX>
     $<$<PLATFORM_ID:Darwin>:FLINT_PLATFORM_MAC>
 )
-
-# Make sure to specify the C++ standard to C++20.
-set(CMAKE_CXX_STANDARD 20)
 
 # Set the central include directory.
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Runtime)

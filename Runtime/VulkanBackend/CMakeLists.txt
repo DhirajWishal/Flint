@@ -40,6 +40,9 @@ target_link_libraries(
 	SPIRV_Reflect
 )
 
+# Make sure to specify the C++ standard to C++20.
+target_compile_features(FlintVulkanBackend PUBLIC cxx_std_20)
+
 # If we are on MSVC, we can use the Multi Processor Compilation option.
 if (MSVC)
 	target_compile_options(FlintVulkanBackend PRIVATE "/MP")	
