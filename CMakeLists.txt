@@ -3,7 +3,7 @@
 
 # Main build script for Flint.
 # Set the minimum required CMake version.
-cmake_minimum_required(VERSION 3.22.3)
+cmake_minimum_required(VERSION 3.22.2)
 
 # Set the basic project description.
 project(
