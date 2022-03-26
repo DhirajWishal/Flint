@@ -137,14 +137,6 @@ add_subdirectory(Runtime/GraphicsCore)
 add_subdirectory(Runtime/VulkanBackend)
 add_subdirectory(Sandbox)
 
-# Make sure to specify the C++ standard to C++20.
-set_property(TARGET FlintCore PROPERTY CXX_STANDARD 20)
-set_property(TARGET FlintEngine PROPERTY CXX_STANDARD 20)
-set_property(TARGET FlintGraphics PROPERTY CXX_STANDARD 20)
-set_property(TARGET FlintGraphicsCore PROPERTY CXX_STANDARD 20)
-set_property(TARGET FlintVulkanBackend PROPERTY CXX_STANDARD 20)
-set_property(TARGET Sandbox PROPERTY CXX_STANDARD 20)
-
 # Set the startup project for Visual Studio
 if (MSVC) 
 	set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT Sandbox)

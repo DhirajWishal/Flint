@@ -34,6 +34,9 @@ target_include_directories(
 # Add the VulkanBackend static library as a target link.
 target_link_libraries(FlintGraphics FlintVulkanBackend assimp)
 
+# Make sure to specify the C++ standard to C++20.
+set_property(TARGET FlintGraphics PROPERTY CXX_STANDARD 20)
+
 # If we are on MSVC, we can use the Multi Processor Compilation option.
 if (MSVC)
 	target_compile_options(FlintGraphics PRIVATE "/MP")	

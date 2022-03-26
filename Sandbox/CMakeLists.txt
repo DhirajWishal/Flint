@@ -22,6 +22,9 @@ add_executable(
 # Add the FlintGraphics static library as a target link.
 target_link_libraries(Sandbox FlintEngine)
 
+# Make sure to specify the C++ standard to C++20.
+set_property(TARGET Sandbox PROPERTY CXX_STANDARD 20)
+
 # If we are on MSVC, we can use the Multi Processor Compilation option.
 if (MSVC)
 	target_compile_options(Sandbox PRIVATE "/MP")	

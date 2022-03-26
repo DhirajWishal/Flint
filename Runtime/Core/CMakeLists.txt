@@ -26,6 +26,9 @@ target_include_directories(FlintCore PUBLIC ${XXHASH_INCLUDE_DIR} ${OPTICK_INCLU
 # Add the optick static library as a target link.
 target_link_libraries(FlintCore optik)
 
+# Make sure to specify the C++ standard to C++20.
+set_property(TARGET FlintCore PROPERTY CXX_STANDARD 20)
+
 # If we are on MSVC, we can use the Multi Processor Compilation option.
 if (MSVC)
 	target_compile_options(FlintCore PRIVATE "/MP")	
