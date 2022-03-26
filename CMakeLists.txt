@@ -44,6 +44,20 @@ add_library(
 	${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/imgui/imgui_widgets.cpp
 )
 
+# Set the optick include directory.
+set(OPTICK_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/optick/src)
+
+# As before, lets build the optick library as another target.
+file(GLOB OPTICK_SOURCE_FILES ${OPTICK_INCLUDE_DIR}/*.cpp)
+file(GLOB OPTICK_HEADER_FILES ${OPTICK_INCLUDE_DIR}/*.h)
+
+add_library(
+	Optick
+	STATIC
+	${OPTICK_SOURCE_FILES}
+	${OPTICK_HEADER_FILES}
+)
+
 # Set the SPIRV-Reflect library include directory.
 set(SPIRV_REFLECT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/SPIRV-Reflect)
 
@@ -87,3 +101,13 @@ add_compile_definitions(
     $<$<PLATFORM_ID:Linux>:FLINT_PLATFORM_LINUX>
     $<$<PLATFORM_ID:Darwin>:FLINT_PLATFORM_MAC>
 )
+
+# Make sure to specify the C++ standard to C++20.
+set(CMAKE_CXX_STANDARD 20)
+
+# Finally, lets add our projects.
+add_subdirectory(Source/Core Binaries/Core)
+add_subdirectory(Source/Engine Binaries/Engine)
+add_subdirectory(Source/Graphics Binaries/Graphics)
+add_subdirectory(Source/GraphicsCore Binaries/GraphicsCore)
+add_subdirectory(Source/VulkanBackend Binaries/VulkanBackend)
