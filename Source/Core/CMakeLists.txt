@@ -6,11 +6,8 @@ project(
 )
 
 # Set the source and header files.
-file(GLOB FLINT_CORE_SOURCE_FILES *.cpp)
-file(GLOB FLINT_CORE_HEADER_FILES *.hpp)
-
-# Set the include directories.
-target_include_directories(FlintCore ${XXHASH_INCLUDE_DIR} ${OPTICK_INCLUDE_DIR})
+file(GLOB_RECURSE FLINT_CORE_SOURCE_FILES *.cpp)
+file(GLOB_RECURSE FLINT_CORE_HEADER_FILES *.hpp)
 
 # Add the library.
 add_library(
@@ -19,6 +16,9 @@ add_library(
 	${FLINT_CORE_SOURCE_FILES}
 	${FLINT_CORE_HEADER_FILES}
 )
+
+# Set the include directories.
+target_include_directories(FlintCore PUBLIC ${XXHASH_INCLUDE_DIR} ${OPTICK_INCLUDE_DIR})
 
 # Add the optick static library as a target link.
 target_link_libraries(FlintCore Optick)

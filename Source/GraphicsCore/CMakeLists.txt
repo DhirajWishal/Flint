@@ -6,16 +6,8 @@ project(
 )
 
 # Set the source and header files.
-file(GLOB FLINT_GRAPHICS_CORE_SOURCE_FILES *.cpp)
-file(GLOB FLINT_GRAPHICS_CORE_HEADER_FILES *.hpp)
-
-# Set the include directories.
-target_include_directories(
-	FlintGraphicsCore 
-	${VOLK_INCLUDE_DIR} 
-	${VULKAN_INCLUDE_DIR} 
-	${OPTICK_INCLUDE_DIR}
-)
+file(GLOB_RECURSE FLINT_GRAPHICS_CORE_SOURCE_FILES *.cpp)
+file(GLOB_RECURSE FLINT_GRAPHICS_CORE_HEADER_FILES *.hpp)
 
 # Add the library.
 add_library(
@@ -23,6 +15,15 @@ add_library(
 	STATIC
 	${FLINT_GRAPHICS_CORE_SOURCE_FILES}
 	${FLINT_GRAPHICS_CORE_HEADER_FILES}
+)
+
+# Set the include directories.
+target_include_directories(
+	FlintGraphicsCore 
+	PUBLIC 
+	${VOLK_INCLUDE_DIR} 
+	${VULKAN_INCLUDE_DIR} 
+	${OPTICK_INCLUDE_DIR}
 )
 
 # Add the VulkanBackend static library as a target link.

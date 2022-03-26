@@ -37,25 +37,29 @@ set(IM_GUI_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/imgui)
 add_library(
 	ImGui
 	STATIC 
-	${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/imgui/imgui.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/imgui/imgui_demo.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/imgui/imgui_draw.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/imgui/imgui_tables.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/imgui/imgui_widgets.cpp
+	${IM_GUI_INCLUDE_DIR}/imgui.cpp
+	${IM_GUI_INCLUDE_DIR}/imgui_demo.cpp
+	${IM_GUI_INCLUDE_DIR}/imgui_draw.cpp
+	${IM_GUI_INCLUDE_DIR}/imgui_tables.cpp
+	${IM_GUI_INCLUDE_DIR}/imgui_widgets.cpp
 )
 
 # Set the optick include directory.
 set(OPTICK_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/optick/src)
 
 # As before, lets build the optick library as another target.
-file(GLOB OPTICK_SOURCE_FILES ${OPTICK_INCLUDE_DIR}/*.cpp)
-file(GLOB OPTICK_HEADER_FILES ${OPTICK_INCLUDE_DIR}/*.h)
-
 add_library(
 	Optick
 	STATIC
-	${OPTICK_SOURCE_FILES}
-	${OPTICK_HEADER_FILES}
+	${OPTICK_INCLUDE_DIR}/optick_capi.cpp
+	${OPTICK_INCLUDE_DIR}/optick_core.cpp
+	${OPTICK_INCLUDE_DIR}/optick_gpu.cpp
+	${OPTICK_INCLUDE_DIR}/optick_gpu.d3d12.cpp
+	${OPTICK_INCLUDE_DIR}/optick_gpu.vulkan.cpp
+	${OPTICK_INCLUDE_DIR}/optick_message.cpp
+	${OPTICK_INCLUDE_DIR}/optick_miniz.cpp
+	${OPTICK_INCLUDE_DIR}/optick_serialization.cpp
+	${OPTICK_INCLUDE_DIR}/optick_server.cpp
 )
 
 # Set the SPIRV-Reflect library include directory.
@@ -106,8 +110,8 @@ add_compile_definitions(
 set(CMAKE_CXX_STANDARD 20)
 
 # Finally, lets add our projects.
-add_subdirectory(Source/Core Binaries/Core)
-add_subdirectory(Source/Engine Binaries/Engine)
-add_subdirectory(Source/Graphics Binaries/Graphics)
-add_subdirectory(Source/GraphicsCore Binaries/GraphicsCore)
-add_subdirectory(Source/VulkanBackend Binaries/VulkanBackend)
+add_subdirectory(Source/Core)
+add_subdirectory(Source/Engine)
+add_subdirectory(Source/Graphics)
+add_subdirectory(Source/GraphicsCore)
+add_subdirectory(Source/VulkanBackend)

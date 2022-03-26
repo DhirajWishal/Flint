@@ -7,9 +7,6 @@
 [submodule "ThirdParty/glm"]
 	path = ThirdParty/glm
 	url = https://github.com/g-truc/glm
-[submodule "ThirdParty/optik"]
-	path = ThirdParty/optik
-	url = https://github.com/bombomby/optick
 [submodule "ThirdParty/SPIRV-Reflect"]
 	path = ThirdParty/SPIRV-Reflect
 	url = https://github.com/KhronosGroup/SPIRV-Reflect
@@ -28,3 +25,6 @@
 [submodule "ThirdParty/xxHash"]
 	path = ThirdParty/xxHash
 	url = https://github.com/Cyan4973/xxHash
+[submodule "ThirdParty/optick"]
+	path = ThirdParty/optick
+	url = https://github.com/bombomby/optick

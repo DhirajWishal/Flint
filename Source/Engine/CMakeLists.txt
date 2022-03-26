@@ -6,11 +6,8 @@ project(
 )
 
 # Set the source and header files.
-file(GLOB FLINT_ENGINE_SOURCE_FILES *.cpp)
-file(GLOB FLINT_ENGINE_HEADER_FILES *.hpp)
-
-# Set the include directories.
-target_include_directories(FlintEngine ${GLM_INCLUDE_DIR} ${OPTICK_INCLUDE_DIR})
+file(GLOB_RECURSE FLINT_ENGINE_SOURCE_FILES *.cpp)
+file(GLOB_RECURSE FLINT_ENGINE_HEADER_FILES *.hpp)
 
 # Add the library.
 add_library(
@@ -19,6 +16,9 @@ add_library(
 	${FLINT_ENGINE_SOURCE_FILES}
 	${FLINT_ENGINE_HEADER_FILES}
 )
+
+# Set the include directories.
+target_include_directories(FlintEngine PUBLIC ${GLM_INCLUDE_DIR} ${OPTICK_INCLUDE_DIR})
 
 # Add the FlintGraphics static library as a target link.
 target_link_libraries(FlintEngine FlintGraphics)

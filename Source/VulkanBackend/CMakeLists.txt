@@ -6,18 +6,8 @@ project(
 )
 
 # Set the source and header files.
-file(GLOB FLINT_VULKAN_BACKEND_SOURCE_FILES *.cpp)
-file(GLOB FLINT_VULKAN_BACKEND_HEADER_FILES *.hpp)
-
-# Set the include directories.
-target_include_directories(
-	FlintVulkanBackend 
-	${VOLK_INCLUDE_DIR} 
-	${VULKAN_INCLUDE_DIR} 
-	${GLFW_INCLUDE_DIR}
-	${OPTICK_INCLUDE_DIR}
-	${VMA_INCLUDE_DIR}
-)
+file(GLOB_RECURSE FLINT_VULKAN_BACKEND_SOURCE_FILES *.cpp)
+file(GLOB_RECURSE FLINT_VULKAN_BACKEND_HEADER_FILES *.hpp)
 
 # Add the library.
 add_library(
@@ -25,6 +15,17 @@ add_library(
 	STATIC
 	${FLINT_VULKAN_BACKEND_SOURCE_FILES}
 	${FLINT_VULKAN_BACKEND_HEADER_FILES}
+)
+
+# Set the include directories.
+target_include_directories(
+	FlintVulkanBackend 
+	PUBLIC 
+	${VOLK_INCLUDE_DIR} 
+	${VULKAN_INCLUDE_DIR} 
+	${GLFW_INCLUDE_DIR}
+	${OPTICK_INCLUDE_DIR}
+	${VMA_INCLUDE_DIR}
 )
 
 # Add the VulkanBackend static library as a target link.
@@ -35,7 +36,7 @@ target_link_libraries(
 )
 
 # Set the target link directories.
-target_link_directories(FlintVulkanBackend ${GLFW_LIBRARY_DIR})
+target_link_directories(FlintVulkanBackend PUBLIC ${GLFW_LIBRARY_DIR})
 
 # If we are on MSVC, we can use the Multi Processor Compilation option.
 if (MSVC)
