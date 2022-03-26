@@ -1,3 +1,6 @@
+# Copyright 2021-2022 Dhiraj Wishal
+# SPDX-License-Identifier: Apache-2.0
+
 # Main build script for Flint.
 # Set the minimum required CMake version.
 cmake_minimum_required(VERSION 3.22.3)
