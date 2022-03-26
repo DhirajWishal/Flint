@@ -28,3 +28,6 @@
 [submodule "ThirdParty/optick"]
 	path = ThirdParty/optick
 	url = https://github.com/bombomby/optick
+[submodule "ThirdParty/glTF-Sample-Models"]
+	path = ThirdParty/glTF-Sample-Models
+	url = https://github.com/KhronosGroup/glTF-Sample-Models
