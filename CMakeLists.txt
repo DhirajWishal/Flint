@@ -15,15 +15,26 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(PREDEFINED_TARGETS_FOLDER "PredefinedTargets")
 
 # Set the basic third party directory variables.
+# Set the Vulkan header include directory.
+set(VULKAN_HEADERS_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/Vulkan-Headers/include)
+
+# Set the Vulkan Memory Manager header include directory.
+set(VMA_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/VulkanMemoryAllocator/include)
+
+# Set the xxHash header include directory.
+set(XXHASH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/xxHash)
+
 # Set up the assimp include, library and binary data.
 set(ASSIMP_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/assimp/include)
-set(ASSIMP_LIBRARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/assimp/build/lib/Release)
-set(ASSIMP_BINARY assimp-vc142-mt)
+
+# Add the assimp library as a subdirectory.
+add_subdirectory(ThirdParty/assimp)
 
 # Set the GLFW include, library and binary data.
 set(GLFW_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/glfw/include)
-set(GLFW_LIBRARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/glfw/build/src/Release)
-set(GLFW_BINARY glfw3dll)
+
+# Add the glfw library as a subdirectory.
+add_subdirectory(ThirdParty/glfw)
 
 # Set the GLM include directory.
 # Since this library is a header only library, we don't have to do anything else.
@@ -62,6 +73,9 @@ add_library(
 	${OPTICK_INCLUDE_DIR}/optick_server.cpp
 )
 
+# Add the Vulkan headers as a target include directory.
+target_include_directories(Optick PUBLIC ${VULKAN_HEADERS_INCLUDE_DIR})
+
 # Set the SPIRV-Reflect library include directory.
 set(SPIRV_REFLECT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/SPIRV-Reflect)
 
@@ -82,14 +96,8 @@ add_library(
 	${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/volk/volk.c
 )
 
-# Set the Vulkan header include directory.
-set(VULKAN_HEADERS_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/Vulkan-Headers/include)
-
-# Set the Vulkan Memory Manager header include directory.
-set(VMA_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/VulkanMemoryAllocator/include)
-
-# Set the xxHash header include directory.
-set(XXHASH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/xxHash)
+# Add the Vulkan headers as a target include directory.
+target_include_directories(volk PUBLIC ${VULKAN_HEADERS_INCLUDE_DIR})
 
 # Set global compile definitions.
 add_compile_definitions(
@@ -109,9 +117,17 @@ add_compile_definitions(
 # Make sure to specify the C++ standard to C++20.
 set(CMAKE_CXX_STANDARD 20)
 
+# Set the central include directory.
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Source)
+
 # Finally, lets add our projects.
 add_subdirectory(Source/Core)
 add_subdirectory(Source/Engine)
 add_subdirectory(Source/Graphics)
 add_subdirectory(Source/GraphicsCore)
 add_subdirectory(Source/VulkanBackend)
+
+# Set the startup project for Visual Studio
+if (MSVC) 
+	set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT Engine)
+endif ()

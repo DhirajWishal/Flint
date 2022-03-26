@@ -22,7 +22,7 @@ target_include_directories(
 	FlintGraphicsCore 
 	PUBLIC 
 	${VOLK_INCLUDE_DIR} 
-	${VULKAN_INCLUDE_DIR} 
+	${VULKAN_HEADERS_INCLUDE_DIR} 
 	${OPTICK_INCLUDE_DIR}
 )
 

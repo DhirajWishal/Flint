@@ -26,17 +26,16 @@ target_include_directories(
 	${GLFW_INCLUDE_DIR}
 	${OPTICK_INCLUDE_DIR}
 	${VMA_INCLUDE_DIR}
+	${SPIRV_REFLECT_INCLUDE_DIR}
 )
 
 # Add the VulkanBackend static library as a target link.
 target_link_libraries(
 	FlintVulkanBackend 
 	FlintGraphicsCore
-	${GLFW_BINARY}
+	glfw
+	SPIRV_Reflect
 )
-
-# Set the target link directories.
-target_link_directories(FlintVulkanBackend PUBLIC ${GLFW_LIBRARY_DIR})
 
 # If we are on MSVC, we can use the Multi Processor Compilation option.
 if (MSVC)

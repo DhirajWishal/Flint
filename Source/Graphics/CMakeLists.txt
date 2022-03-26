@@ -29,10 +29,7 @@ target_include_directories(
 )
 
 # Add the VulkanBackend static library as a target link.
-target_link_libraries(FlintGraphics FlintVulkanBackend ${ASSIMP_BINARY})
-
-# Set the link directories.
-target_link_directories(FlintGraphics PUBLIC ${ASSIMP_LIBRARY_DIR})
+target_link_libraries(FlintGraphics FlintVulkanBackend assimp)
 
 # If we are on MSVC, we can use the Multi Processor Compilation option.
 if (MSVC)
