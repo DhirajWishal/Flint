@@ -15,52 +15,30 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        name: [ubuntu-latest-gcc, windows-latest-cl.exe, ubuntu-gcc-hunter, windows-msvc-hunter]
-        include:
-          - name: windows-latest-cl.exe
-            os: windows-latest
-            cxx: cl.exe
-            cc: cl.exe
-          - name: ubuntu-latest-gcc
-            os: ubuntu-latest
-            cxx: g++
-            cc: gcc
-          - name: ubuntu-gcc-hunter
-            os: ubuntu-latest
-            toolchain: ninja-gcc-cxx20-fpic
-          - name: windows-msvc-hunter
-            os: windows-latest
-            toolchain: ninja-vs-win64-cxx20
+        os: [ windows-latest, ubuntu-latest ]
 
     steps:
     - uses: actions/checkout@v2
       with:
           submodules: true
-        
-    # Setup the dependencies for Ubuntu.
-    - if: startsWith(matrix.os, 'ununtu')
-    - name: Configuring Ubuntu.
-      run: |
-          sudo apt update
-          sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev
       
+    # Set up the build environment.
     - name: Create Build Environment
-      # Some projects don't allow in-source building, so create a separate build directory
-      # We'll use this as our working directory for all subsequent commands
       run: cmake -E make_directory ${{runner.workspace}}/build
 
+    # Configure CMake
     - name: Configure CMake
-      # Use a bash shell so we can use the same syntax for environment variable
-      # access regardless of the host operating system
-      shell: bash
-      working-directory: ${{runner.workspace}}/build
-      # Note the current convention is to use the -S and -B options here to specify source 
-      # and build directories, but this is only available with CMake 3.13 and higher.  
-      # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
+      with:
+        shell: bash
+        working-directory: ${{runner.workspace}}/build
+    - if: matrix.os == 'ubuntu-latest'
+      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++
+
+    - if: matrix.os != 'ubuntu-latest'
       run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE
 
+    # Build the project.
     - name: Build
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      # Execute the build.  You can specify a specific target with "--target <NAME>"
-      run: cmake --build . --config $BUILD_TYPE      
+      run: cmake --build . --config $BUILD_TYPE
