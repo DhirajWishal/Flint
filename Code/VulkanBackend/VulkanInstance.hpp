@@ -15,7 +15,7 @@ namespace Flint
 		class VulkanInstance final : public Instance, public std::enable_shared_from_this<VulkanInstance>
 		{
 		public:
-			VulkanInstance(bool enableValidation);
+			VulkanInstance(bool enableValidation, bool volkInitialized = false);
 			~VulkanInstance() { if (!bIsTerminated) Terminate(); }
 
 			virtual std::shared_ptr<Device> CreateDevice(const DeviceFlags flags) override;

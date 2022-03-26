@@ -65,15 +65,11 @@ namespace Flint
 				vCreateInfo.viewType = viewType;
 				vCreateInfo.format = imageFormat;
 				vCreateInfo.components = mapping;
-
-				VkImageSubresourceRange vSR = {};
-				vSR.layerCount = layerCount;
-				vSR.baseArrayLayer = baseLayerIndex;
-				vSR.levelCount = mipLevels;
-				vSR.baseMipLevel = baseMipLevel;
-				vSR.aspectMask = aspectFlags;
-
-				vCreateInfo.subresourceRange = vSR;
+				vCreateInfo.subresourceRange.layerCount = layerCount;
+				vCreateInfo.subresourceRange.baseArrayLayer = baseLayerIndex;
+				vCreateInfo.subresourceRange.levelCount = mipLevels;
+				vCreateInfo.subresourceRange.baseMipLevel = baseMipLevel;
+				vCreateInfo.subresourceRange.aspectMask = aspectFlags;
 
 				std::vector<VkImageView> vImageViews(vImages.size());
 				VkImageView* pArray = vImageViews.data();

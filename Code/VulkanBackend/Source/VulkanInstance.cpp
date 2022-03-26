@@ -121,7 +121,7 @@ namespace Flint
 			}
 		}
 
-		VulkanInstance::VulkanInstance(bool enableValidation) : Instance(enableValidation)
+		VulkanInstance::VulkanInstance(bool enableValidation, bool volkInitialized) : Instance(enableValidation)
 		{
 			OPTICK_EVENT();
 
