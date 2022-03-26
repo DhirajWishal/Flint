@@ -28,13 +28,16 @@ jobs:
 
     # Configure CMake
     - name: Configure CMake
+    - if: matrix.os == 'ubuntu-latest'
       with:
         shell: bash
         working-directory: ${{runner.workspace}}/build
-    - if: matrix.os == 'ubuntu-latest'
       run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++
 
     - if: matrix.os != 'ubuntu-latest'
+      with:
+        shell: bash
+        working-directory: ${{runner.workspace}}/build
       run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE
 
     # Build the project.
