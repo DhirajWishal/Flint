@@ -30,11 +30,20 @@ set(XXHASH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/xxHash)
 # Set up the assimp include, library and binary data.
 set(ASSIMP_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/assimp/include)
 
+# Set the required variables for assimp.
+set(ASSIMP_NO_EXPORT OFF CACHE BOOL "Disable the export functionality.")
+set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "We don't need the tests either.")
+
 # Add the assimp library as a subdirectory.
 add_subdirectory(ThirdParty/assimp)
 
 # Set the GLFW include, library and binary data.
 set(GLFW_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/glfw/include)
+
+# Set the required variables for GLFW.
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "Don't build the examples.'")
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "Don't build the tests.")
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "We don't need the docs either.")
 
 # Add the glfw library as a subdirectory.
 add_subdirectory(ThirdParty/glfw)
@@ -117,9 +126,6 @@ add_compile_definitions(
     $<$<PLATFORM_ID:Darwin>:FLINT_PLATFORM_MAC>
 )
 
-# Make sure to specify the C++ standard to C++20.
-set(CMAKE_CXX_STANDARD 20)
-
 # Set the central include directory.
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Runtime)
 
@@ -130,6 +136,14 @@ add_subdirectory(Runtime/Graphics)
 add_subdirectory(Runtime/GraphicsCore)
 add_subdirectory(Runtime/VulkanBackend)
 add_subdirectory(Sandbox)
+
+# Make sure to specify the C++ standard to C++20.
+set_property(TARGET FlintCore PROPERTY CXX_STANDARD 20)
+set_property(TARGET FlintEngine PROPERTY CXX_STANDARD 20)
+set_property(TARGET FlintGraphics PROPERTY CXX_STANDARD 20)
+set_property(TARGET FlintGraphicsCore PROPERTY CXX_STANDARD 20)
+set_property(TARGET FlintVulkanBackend PROPERTY CXX_STANDARD 20)
+set_property(TARGET Sandbox PROPERTY CXX_STANDARD 20)
 
 # Set the startup project for Visual Studio
 if (MSVC) 
