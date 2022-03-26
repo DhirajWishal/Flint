@@ -26,15 +26,17 @@ jobs:
       - name: Create Build Environment
         run: cmake -E make_directory ${{runner.workspace}}/build
 
-      # Configure CMake
-      - name: Configure CMake
+      # Configure CMake on Ubuntu
       - if: matrix.os == 'ubuntu-latest'
+      - name: Configure CMake on Ubuntu
         with:
           shell: bash
           working-directory: ${{runner.workspace}}/build
         run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++
 
+      # Configure CMake on Windows
       - if: matrix.os != 'ubuntu-latest'
+      - name: Configure CMake on Windows
         with:
           shell: bash
           working-directory: ${{runner.workspace}}/build
