@@ -35,7 +35,8 @@ namespace Flint
 	 * Vertex drawing will draw individual vertexes and would cost more.
 	 * Indexed drawing will use the index buffer to draw and is generally more efficient.
 	 */
-	enum class DrawCallMode : uint8_t {
+	enum class DrawCallMode : uint8_t
+	{
 		Vertex,
 		Indexed
 	};
@@ -204,7 +205,7 @@ namespace Flint
 
 		/**
 		 * Bind a view port to the command buffer.
-		 * 
+		 *
 		 * @param pPipeline The pipeline pointer.
 		 * @param pViewPort The view port pointer.
 		 */
@@ -212,7 +213,7 @@ namespace Flint
 
 		/**
 		 * Bind a scissor to the command buffer.
-		 * 
+		 *
 		 * @param pPipeline The pipeline pointer.
 		 * @param pScissor The scissor pointer.
 		 */
@@ -220,7 +221,7 @@ namespace Flint
 
 		/**
 		 * Bind a line width to the command buffer.
-		 * 
+		 *
 		 * @param pPipeline The pipeline pointer.
 		 * @param pLineWidth The line width pointer.
 		 */
@@ -228,7 +229,7 @@ namespace Flint
 
 		/**
 		 * Bind a depth bias to the command buffer.
-		 * 
+		 *
 		 * @param pPipeline The pipeline pointer.
 		 * @param pDepthBias The depth bias pointer.
 		 */
@@ -236,7 +237,7 @@ namespace Flint
 
 		/**
 		 * Bind blend constants to the command buffer.
-		 * 
+		 *
 		 * @param pPipeline The pipeline pointer.
 		 * @param pBlendConstants The blend constants pointer.
 		 */
@@ -244,7 +245,7 @@ namespace Flint
 
 		/**
 		 * Bind depth bounds to the command buffer.
-		 * 
+		 *
 		 * @param pPipeline The pipeline pointer.
 		 * @param pDepthBounds The depth bounds pointer.
 		 */
@@ -252,7 +253,7 @@ namespace Flint
 
 		/**
 		 * Bind constant data to the command buffer.
-		 * 
+		 *
 		 * @param pConstantData The constant data pointer.
 		 * @param type The shader type to bind the data to.
 		 */

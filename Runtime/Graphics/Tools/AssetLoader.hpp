@@ -11,7 +11,8 @@ namespace Flint
 	/**
 	 * Input attribute type enum.
 	 */
-	enum class InputAttributeType : uint8_t {
+	enum class InputAttributeType : uint8_t
+	{
 		Undefined,
 		Position,
 		Normal,
@@ -60,7 +61,7 @@ namespace Flint
 
 		/**
 		 * Get the size of the vertex.
-		 * 
+		 *
 		 * @return The size in bytes.
 		 */
 		const uint64_t Size() const;
@@ -85,7 +86,7 @@ namespace Flint
 
 		/**
 		 * Get the loaded wire frames.
-		 * 
+		 *
 		 * @return The vector of wire frames.
 		 */
 		const std::vector<WireFrame> GetWireFrames() const { return mWireFrames; }

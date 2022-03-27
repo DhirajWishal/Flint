@@ -12,7 +12,8 @@ namespace Flint
 	/**
 	 * Loading operation enum.
 	 */
-	enum class LoadOperation : uint8_t {
+	enum class LoadOperation : uint8_t
+	{
 		Store,
 		Load,
 		DontCare
@@ -33,7 +34,8 @@ namespace Flint
 	 *
 	 * The user cannot define two flags within the same sub section. In that case the lowest (first) flag will be used.
 	 */
-	enum class ImageRenderTargetSpecification : uint16_t {
+	enum class ImageRenderTargetSpecification : uint16_t
+	{
 		// Color image section.
 		// Defines that we load data upon attachment load.
 		LoadOnLoad = BitShiftLeft(0),

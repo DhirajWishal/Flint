@@ -12,7 +12,8 @@ namespace Flint
 	/**
 	 * Event action enum.
 	 */
-	enum class EventAction : uint8_t {
+	enum class EventAction : uint8_t
+	{
 		Released,
 		Pressed,
 		OnRepeat
@@ -21,7 +22,8 @@ namespace Flint
 	/**
 	 * Key code enum.
 	 */
-	enum class KeyCode : uint8_t {
+	enum class KeyCode : uint8_t
+	{
 		Unknown,
 
 		Space,
@@ -35,7 +37,7 @@ namespace Flint
 		Semicolon,
 		Equal,
 
-		KeyA, KeyB, KeyC, KeyD, KeyE, KeyF, KeyG, KeyH, KeyI, KeyJ, KeyK, KeyL, KeyM, 
+		KeyA, KeyB, KeyC, KeyD, KeyE, KeyF, KeyG, KeyH, KeyI, KeyJ, KeyK, KeyL, KeyM,
 		KeyN, KeyO, KeyP, KeyQ, KeyR, KeyS, KeyT, KeyU, KeyV, KeyW, KeyX, KeyY, KeyZ,
 
 		LeftBracket, RightBracket,
@@ -88,7 +90,8 @@ namespace Flint
 	/**
 	 * Special characters enum.
 	 */
-	enum class SpecialCharacter : uint8_t {
+	enum class SpecialCharacter : uint8_t
+	{
 		Shift = BitShiftLeft(0),
 		Control = BitShiftLeft(1),
 		Alt = BitShiftLeft(2),
@@ -103,7 +106,8 @@ namespace Flint
 	/**
 	 * Mouse button enum.
 	 */
-	enum class MouseButton : uint8_t {
+	enum class MouseButton : uint8_t
+	{
 		ButtonOne, ButtonTwo, ButtonThree, ButtonFour,
 		ButtonFive, ButtonSix, ButtonSeven, ButtonEight,
 
@@ -221,7 +225,7 @@ namespace Flint
 
 		/**
 		 * Get the best swap chain format.
-		 * 
+		 *
 		 * @param pDevice The device pointer.
 		 * @return The swap chain image format.
 		 */

@@ -7,7 +7,8 @@
 
 namespace Flint
 {
-	enum class RequestStatus : uint8_t {
+	enum class RequestStatus : uint8_t
+	{
 		Successful,
 		Pending,
 		Error
@@ -17,14 +18,14 @@ namespace Flint
 	 * Command base object.
 	 * This object is derived by different modules and is used to submit information to the reactor.
 	 */
-	class CommandBase 
+	class CommandBase
 	{
 	public:
 		CommandBase() = default;
-		
+
 		/**
 		 * Get the status of the request.
-		 * 
+		 *
 		 * @return The status.
 		 */
 		RequestStatus GetStatus() const { return mStatus; }

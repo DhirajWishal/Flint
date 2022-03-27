@@ -10,7 +10,8 @@ namespace Flint
 	/**
 	 * Shader code type enum.
 	 */
-	enum class ShaderCodeType : uint8_t {
+	enum class ShaderCodeType : uint8_t
+	{
 		GLSL,
 		HLSL
 	};

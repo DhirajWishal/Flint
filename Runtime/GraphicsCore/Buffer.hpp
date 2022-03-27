@@ -11,7 +11,8 @@ namespace Flint
 	 * Buffer resize mode enum.
 	 * This defines what to do to the stored data after resizing.
 	 */
-	enum class BufferResizeMode : uint8_t {
+	enum class BufferResizeMode : uint8_t
+	{
 		Clear,
 		Copy,
 	};

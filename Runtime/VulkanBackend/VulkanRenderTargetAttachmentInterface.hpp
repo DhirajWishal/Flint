@@ -9,7 +9,8 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		enum class RenderTargetAttachmenType : uint8_t {
+		enum class RenderTargetAttachmenType : uint8_t
+		{
 			Undefined,
 			SwapChain,
 			ColorBuffer,

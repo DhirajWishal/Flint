@@ -12,7 +12,8 @@ namespace Flint
 		/**
 		 * Material type enum.
 		 */
-		enum class MaterialType : uint8_t {
+		enum class MaterialType : uint8_t 
+		{
 			FLOAT,
 			FLOAT_2,
 			FLOAT_3,
@@ -204,7 +205,8 @@ namespace Flint
 		/**
 		 * Texture type enum.
 		 */
-		enum class TextureType : uint8_t {
+		enum class TextureType : uint8_t 
+		{
 			Undefined,
 			Specular,
 			Diffuse,

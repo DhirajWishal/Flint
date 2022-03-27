@@ -14,7 +14,8 @@ namespace Flint
 	 * Pipeline primitive topology.
 	 * This describes how the vertexes are connected.
 	 */
-	enum class PrimitiveTopology : uint8_t {
+	enum class PrimitiveTopology : uint8_t
+	{
 		PointList,
 		LineList,
 		LineStrip,
@@ -31,7 +32,8 @@ namespace Flint
 	/**
 	 * Pipeline cull mode.
 	 */
-	enum class CullMode : uint8_t {
+	enum class CullMode : uint8_t
+	{
 		None,
 		Front,
 		Back,
@@ -42,7 +44,8 @@ namespace Flint
 	 * Pipeline front face.
 	 * This defines how to find the front size of a triangle.
 	 */
-	enum class FrontFace : uint8_t {
+	enum class FrontFace : uint8_t
+	{
 		/**
 		 * In this mode, the front side of it is facing away from you.
 		 */
@@ -58,7 +61,8 @@ namespace Flint
 	 * Pipeline polygon mode.
 	 * This defines how a vertex group. A vertex group is defined by the primitive topology.
 	 */
-	enum class PolygonMode : uint8_t {
+	enum class PolygonMode : uint8_t
+	{
 		Fill,
 		Line,
 		Point,
@@ -68,7 +72,8 @@ namespace Flint
 	 * Pipeline color blend logic.
 	 * This defined what logic to apply when color blending.
 	 */
-	enum class ColorBlendLogic : uint8_t {
+	enum class ColorBlendLogic : uint8_t
+	{
 		Clear,
 		And,
 		AndReverse,
@@ -91,7 +96,8 @@ namespace Flint
 	 * Pipeline depth compare logic.
 	 * This defines what logic to apply when depth comparing.
 	 */
-	enum class DepthCompareLogic : uint8_t {
+	enum class DepthCompareLogic : uint8_t
+	{
 		Never,
 		Less,
 		Equal,
@@ -105,7 +111,8 @@ namespace Flint
 	/**
 	 * Color blend factor enum.
 	 */
-	enum class ColorBlendFactor : uint8_t {
+	enum class ColorBlendFactor : uint8_t
+	{
 		Zero,
 		One,
 		SourceColor,
@@ -130,7 +137,8 @@ namespace Flint
 	/**
 	 * Color blend operator enum.
 	 */
-	enum class ColorBlendOperator : uint8_t {
+	enum class ColorBlendOperator : uint8_t
+	{
 		Add,
 		Subtract,
 		ReverseSubtract,
@@ -187,7 +195,8 @@ namespace Flint
 	/**
 	 * Color write mask enum.
 	 */
-	enum class ColorWriteMask : uint8_t {
+	enum class ColorWriteMask : uint8_t
+	{
 		R = BitShiftLeft(0),
 		G = BitShiftLeft(1),
 		B = BitShiftLeft(2),

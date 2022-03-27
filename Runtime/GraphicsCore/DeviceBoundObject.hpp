@@ -19,7 +19,8 @@ namespace Flint
 	 * Vertex attribute data type enum.
 	 * This enum contains all the supported vertex attribute data types.
 	 */
-	enum class ShaderAttributeDataType : uint8_t {
+	enum class ShaderAttributeDataType : uint8_t
+	{
 		byte = 1,
 
 		int8_t = 1,
@@ -70,7 +71,8 @@ namespace Flint
 	/**
 	 * Buffer type enum.
 	 */
-	enum class BufferType : uint8_t {
+	enum class BufferType : uint8_t
+	{
 		Undefined,
 		Staging,
 		Vertex, Index,
@@ -86,7 +88,8 @@ namespace Flint
 	 * DeviceOnly will set data in the device and stagging buffers are required to access them.
 	 * TransferFriendly will enable it to be mapped to the local address space.
 	 */
-	enum class BufferMemoryProfile : uint8_t {
+	enum class BufferMemoryProfile : uint8_t
+	{
 		Automatic,
 		CPUOnly,
 		DeviceOnly,
@@ -96,7 +99,8 @@ namespace Flint
 	/**
 	 * Image type enum.
 	 */
-	enum class ImageType : uint8_t {
+	enum class ImageType : uint8_t
+	{
 		OneDimension,
 		TwoDimension,
 		ThreeDimension,
@@ -111,7 +115,8 @@ namespace Flint
 	/**
 	 * Image usage enum.
 	 */
-	enum class ImageUsage : uint8_t {
+	enum class ImageUsage : uint8_t
+	{
 		Graphics = BitShiftLeft(0),
 		Storage = BitShiftLeft(1),
 		Depth = BitShiftLeft(2),
@@ -139,7 +144,8 @@ namespace Flint
 	/**
 	 * Pixel format enum.
 	 */
-	enum class PixelFormat : uint8_t {
+	enum class PixelFormat : uint8_t
+	{
 		Undefined,
 
 		R8_SRGB,
@@ -180,7 +186,8 @@ namespace Flint
 	/**
 	 * Address mode enum.
 	 */
-	enum class AddressMode : uint8_t {
+	enum class AddressMode : uint8_t
+	{
 		Repeat,
 		MirroredRepeat,
 		ClampToEdge,
@@ -191,7 +198,8 @@ namespace Flint
 	/**
 	 * Border color enum.
 	 */
-	enum class BorderColor : uint8_t {
+	enum class BorderColor : uint8_t
+	{
 		TransparentBlackFLOAT,
 		TransparentBlackINT,
 		OpaqueBlackFLOAT,
@@ -203,7 +211,8 @@ namespace Flint
 	/**
 	 * Compare operator enum.
 	 */
-	enum class CompareOperator : uint8_t {
+	enum class CompareOperator : uint8_t
+	{
 		Never,
 		Less,
 		Equal,
@@ -217,7 +226,8 @@ namespace Flint
 	/**
 	 * Image filter enum.
 	 */
-	enum class ImageFilter : uint8_t {
+	enum class ImageFilter : uint8_t
+	{
 		Nearest,
 		Linear,
 		CubicImage,
@@ -226,7 +236,8 @@ namespace Flint
 	/**
 	 *Image mip map mode enum.
 	 */
-	enum class ImageMipMapMode : uint8_t {
+	enum class ImageMipMapMode : uint8_t
+	{
 		Nearest,
 		Linear,
 	};
@@ -265,7 +276,8 @@ namespace Flint
 	/**
 	 * Shader code type enum.
 	 */
-	enum class ShaderType : uint8_t {
+	enum class ShaderType : uint8_t
+	{
 		Undefined,
 		Vertex, TessellationControl, TessellationEvaluation, Geometry, Fragment,
 		Compute,
@@ -275,7 +287,8 @@ namespace Flint
 	/**
 	 * Shader resource type enum.
 	 */
-	enum class ShaderResourceType : uint8_t {
+	enum class ShaderResourceType : uint8_t
+	{
 		Sampler,
 		CombinedImageSampler,
 		SampledImage,
@@ -337,7 +350,8 @@ namespace Flint
 	/**
 	 * Rasterization samples enum.
 	 */
-	enum class MultiSampleCount : uint8_t {
+	enum class MultiSampleCount : uint8_t
+	{
 		One = BitShiftLeft(0),
 		Two = BitShiftLeft(1),
 		Four = BitShiftLeft(2),
@@ -368,7 +382,8 @@ namespace Flint
 	/**
 	 * Screen bound render target present mode.
 	 */
-	enum class SwapChainPresentMode : uint8_t {
+	enum class SwapChainPresentMode : uint8_t
+	{
 		Immediate,
 		MailBox,
 		FIFO,
@@ -409,7 +424,8 @@ namespace Flint
 	 * Query usage enum.
 	 * This specify what the query is used for.
 	 */
-	enum class QueryUsage : uint8_t {
+	enum class QueryUsage : uint8_t
+	{
 		Occlusion,
 		PipelineStatistics,
 		Timestamp,

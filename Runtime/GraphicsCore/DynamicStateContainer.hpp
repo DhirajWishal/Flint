@@ -11,7 +11,8 @@ namespace Flint
 	 * Dynamic state flags.
 	 * This determines which dynamic states the pipeline consists.
 	 */
-	enum class DynamicStateFlags : uint8_t {
+	enum class DynamicStateFlags : uint8_t
+	{
 		Undefined,
 		ViewPort = BitShiftLeft(0),
 		Scissor = BitShiftLeft(1),

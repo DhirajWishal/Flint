@@ -43,7 +43,8 @@ namespace Flint
 	 * Device flags enum.
 	 * This determines the device characteristics.
 	 */
-	enum class DeviceFlags : uint8_t {
+	enum class DeviceFlags : uint8_t
+	{
 		// This flag states to use external device (GPU) if available over integrated.
 		External = BitShiftLeft(0),
 

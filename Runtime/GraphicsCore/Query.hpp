@@ -11,7 +11,8 @@ namespace Flint
 	 * Query data mode enum.
 	 * These flags define how to get the data.
 	 */
-	enum class QueryDataMode : uint8_t {
+	enum class QueryDataMode : uint8_t
+	{
 		UI64Result = BitShiftLeft(0),
 		WaitForResult = BitShiftLeft(1),
 		Availability = BitShiftLeft(2),

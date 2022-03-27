@@ -12,7 +12,8 @@ namespace Flint
 		/**
 		 * Plugin permissions enum.
 		 */
-		enum class PluginPermissions : uint32_t {
+		enum class PluginPermissions : uint32_t
+		{
 			RenderCapabilities = BitShiftLeft(0),
 		};
 
@@ -21,7 +22,7 @@ namespace Flint
 
 		/**
 		 * Flint plugin interface object.
-		 * All the plugins that are required to be attached to the engine should be inherited from this object.
+		 * All the plug ins that are required to be attached to the engine should be inherited from this object.
 		 */
 		class PluginInterface : public FObject
 		{
@@ -30,7 +31,7 @@ namespace Flint
 
 			/**
 			 * Get the required permissions for the plugin.
-			 * 
+			 *
 			 * @return The plugin permissions.
 			 */
 			virtual PluginPermissions GetPermissions() const = 0;
@@ -51,7 +52,7 @@ namespace Flint
 
 /**
  * Flint export plugin macro.
- * All the plugins must be exported using this macro if the engine is to attach the plugin. If not the plugin will not be visible to the engine at runtime.
+ * All the plug ins must be exported using this macro if the engine is to attach the plugin. If not the plugin will not be visible to the engine at runtime.
  */
 #define FLINT_EXPORT_PLUGIN(plugin, ...)																	\
 extern "C"																									\
