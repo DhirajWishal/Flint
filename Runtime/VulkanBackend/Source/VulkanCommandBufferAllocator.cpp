@@ -8,40 +8,37 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanCommandBufferAllocator::VulkanCommandBufferAllocator(Device* pDevice, const uint32_t bufferCount)
+		VulkanCommandBufferAllocator::VulkanCommandBufferAllocator(VulkanDevice* pDevice, const uint32_t bufferCount)
 			: CommandBufferAllocator(pDevice, bufferCount)
 		{
 			OPTICK_EVENT();
-			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 
 			VkCommandPoolCreateInfo vCreateInfo = {};
 			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 			vCreateInfo.pNext = VK_NULL_HANDLE;
 			vCreateInfo.flags = VkCommandPoolCreateFlagBits::VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-			vCreateInfo.queueFamilyIndex = vDevice.GetQueue().mTransferFamily.value();
+			vCreateInfo.queueFamilyIndex = pDevice->GetQueue().mTransferFamily.value();
 
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateCommandPool(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vCommandPool));
+			FLINT_VK_ASSERT(pDevice->GetDeviceTable().vkCreateCommandPool(pDevice->GetLogicalDevice(), &vCreateInfo, nullptr, &vCommandPool));
 		}
 
-		VulkanCommandBufferAllocator::VulkanCommandBufferAllocator(Device* pDevice, CommandBufferAllocator* pParent, const uint32_t bufferCount)
+		VulkanCommandBufferAllocator::VulkanCommandBufferAllocator(VulkanDevice* pDevice, VulkanCommandBufferAllocator* pParent, const uint32_t bufferCount)
 			: CommandBufferAllocator(pDevice, pParent, bufferCount)
 		{
 			OPTICK_EVENT();
-			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 
 			VkCommandPoolCreateInfo vCreateInfo = {};
 			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 			vCreateInfo.pNext = VK_NULL_HANDLE;
 			vCreateInfo.flags = VkCommandPoolCreateFlagBits::VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-			vCreateInfo.queueFamilyIndex = vDevice.GetQueue().mTransferFamily.value();
+			vCreateInfo.queueFamilyIndex = pDevice->GetQueue().mTransferFamily.value();
 
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateCommandPool(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vCommandPool));
+			FLINT_VK_ASSERT(pDevice->GetDeviceTable().vkCreateCommandPool(pDevice->GetLogicalDevice(), &vCreateInfo, nullptr, &vCommandPool));
 		}
 
-		const std::vector<std::shared_ptr<CommandBuffer>> VulkanCommandBufferAllocator::CreateCommandBuffers()
+		const std::vector<std::shared_ptr<VulkanCommandBuffer>> VulkanCommandBufferAllocator::CreateCommandBuffers()
 		{
 			OPTICK_EVENT();
-			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 
 			VkCommandBufferAllocateInfo vAllocateInfo = {};
 			vAllocateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -54,7 +51,7 @@ namespace Flint
 				vAllocateInfo.level = VkCommandBufferLevel::VK_COMMAND_BUFFER_LEVEL_SECONDARY;
 
 			std::vector<VkCommandBuffer> vCommandBuffers(mBufferCount);
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkAllocateCommandBuffers(vDevice.GetLogicalDevice(), &vAllocateInfo, vCommandBuffers.data()));
+			FLINT_VK_ASSERT(pDevice->GetDeviceTable().vkAllocateCommandBuffers(pDevice->GetLogicalDevice(), &vAllocateInfo, vCommandBuffers.data()));
 
 			pCommandBuffers.reserve(mBufferCount);
 			for (const auto vCommandBuffer : vCommandBuffers)
@@ -63,24 +60,22 @@ namespace Flint
 			return pCommandBuffers;
 		}
 
-		std::unique_ptr<CommandBufferAllocator> VulkanCommandBufferAllocator::CreateChildAllocator()
+		std::unique_ptr<VulkanCommandBufferAllocator> VulkanCommandBufferAllocator::CreateChildAllocator()
 		{
 			return std::make_unique<VulkanCommandBufferAllocator>(pDevice, this, mBufferCount);
 		}
 
 		void VulkanCommandBufferAllocator::Terminate()
 		{
-			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
-
 			std::vector<VkCommandBuffer> vCommandBuffers(mBufferCount);
 			for (uint32_t i = 0; i < mBufferCount; i++)
 			{
-				vCommandBuffers[i] = pCommandBuffers[i]->StaticCast<VulkanCommandBuffer>().GetVulkanCommandBuffer();
+				vCommandBuffers[i] = pCommandBuffers[i]->GetVulkanCommandBuffer();
 				FlagCommandBufferAsTerminated(i);
 			}
 
-			vDevice.GetDeviceTable().vkFreeCommandBuffers(vDevice.GetLogicalDevice(), vCommandPool, mBufferCount, vCommandBuffers.data());
-			vDevice.GetDeviceTable().vkDestroyCommandPool(vDevice.GetLogicalDevice(), vCommandPool, nullptr);
+			pDevice->GetDeviceTable().vkFreeCommandBuffers(pDevice->GetLogicalDevice(), vCommandPool, mBufferCount, vCommandBuffers.data());
+			pDevice->GetDeviceTable().vkDestroyCommandPool(pDevice->GetLogicalDevice(), vCommandPool, nullptr);
 		}
 	}
 }

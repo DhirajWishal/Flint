@@ -192,9 +192,10 @@ namespace Flint
 	 * Flint display object.
 	 * This object is responsible for a single display/ window instance.
 	 */
+	template<class InstanceT, class DeviceT>
 	class Display : public FObject
 	{
-		friend Instance;
+		friend InstanceT;
 
 	public:
 		/**
@@ -205,7 +206,12 @@ namespace Flint
 		 *				  maximized mode.
 		 * @param title The display title.
 		 */
-		Display(Instance* pInstance, const FBox2D& extent, const std::string& title);
+		Display(InstanceT* pInstance, const FBox2D& extent, const std::string& title) 
+			: pInstance(pInstance), mExtent(extent), mTitle(title)
+		{
+			if (!pInstance)
+				throw std::invalid_argument("Instance pointer should not be null!");
+		}
 
 		/**
 		 * Update the display object.
@@ -221,7 +227,7 @@ namespace Flint
 		 * @param count The count that needs to be checked. Default is 0.
 		 * @return The best buffer count integer.
 		 */
-		virtual uint32_t FindBestBufferCount(Device* pDevice, const uint32_t count = 0) = 0;
+		virtual uint32_t FindBestBufferCount(DeviceT* pDevice, const uint32_t count = 0) = 0;
 
 		/**
 		 * Get the best swap chain format.
@@ -229,7 +235,7 @@ namespace Flint
 		 * @param pDevice The device pointer.
 		 * @return The swap chain image format.
 		 */
-		virtual PixelFormat GetBestSwapChainFormat(Device* pDevice) = 0;
+		virtual PixelFormat GetBestSwapChainFormat(DeviceT* pDevice) = 0;
 
 		/**
 		 * Terminate the device object.
@@ -255,7 +261,10 @@ namespace Flint
 		 *
 		 * @return The vector of paths.
 		 */
-		const std::vector<std::filesystem::path> GetDragAndDropValues();
+		const std::vector<std::filesystem::path> GetDragAndDropValues()
+		{
+			return std::move(mDragAndDropPaths);
+		}
 
 		/**
 		 * Get the title of the display.
@@ -340,7 +349,7 @@ namespace Flint
 		std::vector<std::filesystem::path> mDragAndDropPaths;
 
 		std::string mTitle = "";
-		Instance* pInstance = nullptr;
+		InstanceT* pInstance = nullptr;
 		FBox2D mExtent = {};
 
 		ButtonEvent mKeyEvents[static_cast<uint8_t>(KeyCode::KeyCodeMax)] = {};

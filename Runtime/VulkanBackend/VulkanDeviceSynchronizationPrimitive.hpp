@@ -10,10 +10,10 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanDeviceSynchronizationPrimitive final : public DeviceSynchronizationPrimitive
+		class VulkanDeviceSynchronizationPrimitive final : public DeviceSynchronizationPrimitive<VulkanDevice>
 		{
 		public:
-			VulkanDeviceSynchronizationPrimitive(Device* pDevice);
+			VulkanDeviceSynchronizationPrimitive(VulkanDevice* pDevice);
 			~VulkanDeviceSynchronizationPrimitive() { if (!bIsTerminated) Terminate(); }
 
 			virtual void Terminate() override;

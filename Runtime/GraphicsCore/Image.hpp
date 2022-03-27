@@ -5,6 +5,8 @@
 
 #include "Buffer.hpp"
 
+#include <cmath>
+
 namespace Flint
 {
 	class ImageView;
@@ -91,7 +93,8 @@ namespace Flint
 	  * Flint image object.
 	  * This object is used to store information about a single image. This can have multiple levels of the same image.
 	  */
-	class Image : public DeviceBoundObject
+	template<class DeviceT, class BufferT, class ImageViewT>
+	class Image : public DeviceBoundObject<DeviceT>
 	{
 	public:
 		/**
@@ -107,7 +110,21 @@ namespace Flint
 		 * @param pImageData The image data pointer to load data from.
 		 * @param sampleCount The multi sample count to use.
 		 */
-		Image(Device* pDevice, const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const uint8_t layers, const uint32_t mipLevels, const void* pImageData, const MultiSampleCount sampleCount = MultiSampleCount::One);
+		Image(DeviceT* pDevice, const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const uint8_t layers, const uint32_t mipLevels, const void* pImageData, const MultiSampleCount sampleCount = MultiSampleCount::One)
+			: DeviceBoundObject(pDevice), mType(type), mUsage(usage), mExtent(extent), mFormat(format), mLayerCount(layers), mMipLevels(mipLevels), mMultiSampleCount(sampleCount)
+		{
+			if (mExtent.IsZero())
+				throw std::invalid_argument("Image extent should not be 0!");
+
+			if (mFormat == PixelFormat::Undefined)
+				throw std::invalid_argument("Image pixel format should not be undefined!");
+
+			if (!mLayerCount)
+				throw std::invalid_argument("Image layer count should be grater than 0!");
+
+			if (!mMipLevels)
+				throw std::invalid_argument("Image mip levels must be grater than 0!");
+		}
 
 		/**
 		 * Generate mip maps.
@@ -119,7 +136,7 @@ namespace Flint
 		 *
 		 * @return The stagging buffer.
 		 */
-		virtual std::unique_ptr<Buffer> CopyToBuffer() = 0;
+		virtual std::unique_ptr<BufferT> CopyToBuffer() = 0;
 
 		/**
 		 * Create a new image view.
@@ -130,7 +147,7 @@ namespace Flint
 		 * @param mipLevels The mip levels to cover.
 		 * @param usage The image usage.
 		 */
-		virtual std::unique_ptr<ImageView> CreateImageView(const uint32_t baseLayerIndex, const uint32_t layerCount, const uint32_t baseMipLevel, const uint32_t mipLevels, const ImageUsage usage) = 0;
+		virtual std::unique_ptr<ImageViewT> CreateImageView(const uint32_t baseLayerIndex, const uint32_t layerCount, const uint32_t baseMipLevel, const uint32_t mipLevels, const ImageUsage usage) = 0;
 
 		/**
 		 * Get the value of a single pixel.
@@ -142,7 +159,7 @@ namespace Flint
 		template<class Type>
 		Type GetPixelValue(const FBox3D position)
 		{
-			std::unique_ptr<Buffer> pStagingBuffer = CopyToBuffer();
+			std::unique_ptr<BufferT> pStagingBuffer = CopyToBuffer();
 			Type* pPixels = static_cast<Type*>(pStagingBuffer->MapMemory(pStagingBuffer->GetSize()));
 
 			uint64_t row = static_cast<uint64_t>(position.mHeight) * mExtent.mWidth;
@@ -219,7 +236,10 @@ namespace Flint
 		 * @param extent The extent of the image.
 		 * @return The mip levels.
 		 */
-		static uint32_t GetBestMipLevels(const FBox3D extent);
+		static uint32_t GetBestMipLevels(const FBox3D extent)
+		{
+			return static_cast<uint32_t>(std::floor(std::log2(std::max(extent.mWidth, extent.mHeight))) + 1);
+		}
 
 	protected:
 		FBox3D mExtent = {};

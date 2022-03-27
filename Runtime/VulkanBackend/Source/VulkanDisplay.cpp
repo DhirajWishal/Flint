@@ -94,7 +94,7 @@ namespace Flint
 			return supportDetails;
 		}
 
-		VulkanDisplay::VulkanDisplay(Instance* pInstance, const FBox2D& extent, const std::string& title) : Display(pInstance, extent, title)
+		VulkanDisplay::VulkanDisplay(VulkanInstance* pInstance, const FBox2D& extent, const std::string& title) : Display(pInstance, extent, title)
 		{
 			OPTICK_EVENT();
 
@@ -160,11 +160,11 @@ namespace Flint
 			bIsTerminated = true;
 		}
 
-		uint32_t VulkanDisplay::FindBestBufferCount(Device* pDevice, const uint32_t count)
+		uint32_t VulkanDisplay::FindBestBufferCount(VulkanDevice* pDevice, const uint32_t count)
 		{
 			OPTICK_EVENT();
 
-			auto vSurfaceCapabilities = GetSurfaceCapabilities(pDevice->StaticCast<VulkanDevice>());
+			auto vSurfaceCapabilities = GetSurfaceCapabilities(*pDevice);
 			if (count == std::numeric_limits<uint32_t>::max())
 				return vSurfaceCapabilities.maxImageCount - 1;
 			else if (count == 0)
@@ -180,9 +180,9 @@ namespace Flint
 			return count;
 		}
 
-		PixelFormat VulkanDisplay::GetBestSwapChainFormat(Device* pDevice)
+		PixelFormat VulkanDisplay::GetBestSwapChainFormat(VulkanDevice* pDevice)
 		{
-			SwapChainSupportDetails vSupport = SwapChainSupportDetails::Query(pDevice->StaticCast<VulkanDevice>().GetPhysicalDevice(), GetSurface());
+			SwapChainSupportDetails vSupport = SwapChainSupportDetails::Query(pDevice->GetPhysicalDevice(), GetSurface());
 			VkSurfaceFormatKHR surfaceFormat = ChooseSurfaceFormat(vSupport.mFormats);
 
 			return Utilities::GetPixelFormat(surfaceFormat.format);

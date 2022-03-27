@@ -11,7 +11,8 @@ namespace Flint
 	 * Flint host synchronization primitive.
 	 * This primitive is used to synchronize the host application (the application that is using the API).
 	 */
-	class HostSynchronizationPrimitive : public SynchronizationPrimitive
+	template<class DeviceT>
+	class HostSynchronizationPrimitive : public SynchronizationPrimitive<DeviceT>
 	{
 	public:
 		/**
@@ -19,7 +20,7 @@ namespace Flint
 		 *
 		 * @param pDevice The device pointer.
 		 */
-		HostSynchronizationPrimitive(Device* pDevice) : SynchronizationPrimitive(pDevice) {}
+		HostSynchronizationPrimitive(DeviceT* pDevice) : SynchronizationPrimitive(pDevice) {}
 
 		/**
 		 * Wait until the device flags the primitive.

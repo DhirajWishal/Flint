@@ -9,18 +9,6 @@
 
 namespace Flint
 {
-	class SwapChain;
-	class ScreenBoundRenderTarget;
-	class OffScreenRenderTarget;
-	class GraphicsPipeline;
-	class ComputePipeline;
-	class Buffer;
-	class GeometryStore;
-	class ResourcePackage;
-	class Query;
-
-	class CommandBufferAllocator;
-
 	struct DynamicStateContainer;
 	struct ViewPort;
 	struct Scissor;
@@ -46,9 +34,22 @@ namespace Flint
 	 * Command buffers are used to record commands and to be submitted to the device to execute those commands.
 	 * These command buffers are allocated by the command buffer allocator, which manages the command buffer life time.
 	 */
-	class CommandBuffer : public FObject
+	template<
+		class DerivedT,
+		class CommandBufferAllocatorT,
+		class ScreenBoundRenderTargetT,
+		class OffScreenRenderTargetT,
+		class GraphicsPipelineT,
+		class ComputePipelineT,
+		class BufferT,
+		class ResourcePackageT,
+		class ImageT,
+		class SwapChainT,
+		class QueryT
+	>
+		class CommandBuffer : public FObject
 	{
-		friend CommandBufferAllocator;
+		friend CommandBufferAllocatorT;
 
 	protected:
 		/**
@@ -57,7 +58,7 @@ namespace Flint
 		 *
 		 * @param pAllocator The command buffer allocator which allocated this object.
 		 */
-		CommandBuffer(CommandBufferAllocator* pAllocator) : pAllocator(pAllocator) {}
+		CommandBuffer(CommandBufferAllocatorT* pAllocator) : pAllocator(pAllocator) {}
 
 	public:
 		/**
@@ -72,7 +73,7 @@ namespace Flint
 		 *
 		 * @param pRenderTarget The render target to which the commands are bound to.
 		 */
-		virtual void BeginBufferRecording(const ScreenBoundRenderTarget* pRenderTarget) = 0;
+		virtual void BeginBufferRecording(const ScreenBoundRenderTargetT* pRenderTarget) = 0;
 
 		/**
 		 * Begin secondary command buffer recording.
@@ -80,63 +81,63 @@ namespace Flint
 		 *
 		 * @param pRenderTarget The render target to which the commands are bound to.
 		 */
-		virtual void BeginBufferRecording(const OffScreenRenderTarget* pRenderTarget) = 0;
+		virtual void BeginBufferRecording(const OffScreenRenderTargetT* pRenderTarget) = 0;
 
 		/**
 		 * Bind a render target to the command buffer.
 		 *
 		 * @param pRenderTarget The render target pointer.
 		 */
-		virtual void BindRenderTarget(const ScreenBoundRenderTarget* pRenderTarget) = 0;
+		virtual void BindRenderTarget(const ScreenBoundRenderTargetT* pRenderTarget) = 0;
 
 		/**
 		 * Bind a render target to the current command buffer as secondary.
 		 *
 		 * @param pRenderTarget The render target pointer.
 		 */
-		virtual void BindRenderTargetSecondary(const ScreenBoundRenderTarget* pRenderTarget) = 0;
+		virtual void BindRenderTargetSecondary(const ScreenBoundRenderTargetT* pRenderTarget) = 0;
 
 		/**
 		 * Bind a render target to the command buffer.
 		 *
 		 * @param pRenderTarget The render target pointer.
 		 */
-		virtual void BindRenderTarget(const OffScreenRenderTarget* pRenderTarget) = 0;
+		virtual void BindRenderTarget(const OffScreenRenderTargetT* pRenderTarget) = 0;
 
 		/**
 		 * Bind a render target to the current command buffer as secondary.
 		 *
 		 * @param pRenderTarget The render target pointer.
 		 */
-		virtual void BindRenderTargetSecondary(const OffScreenRenderTarget* pRenderTarget) = 0;
+		virtual void BindRenderTargetSecondary(const OffScreenRenderTargetT* pRenderTarget) = 0;
 
 		/**
 		 * Clear a render target data to its default.
 		 *
 		 * @param pRenderTarget The render target pointer.
 		 */
-		virtual void ClearRenderTarget(const ScreenBoundRenderTarget* pRenderTarget) = 0;
+		virtual void ClearRenderTarget(const ScreenBoundRenderTargetT* pRenderTarget) = 0;
 
 		/**
 		 * Clear a render target data to its default.
 		 *
 		 * @param pRenderTarget The render target pointer.
 		 */
-		virtual void ClearRenderTarget(const OffScreenRenderTarget* pRenderTarget) = 0;
+		virtual void ClearRenderTarget(const OffScreenRenderTargetT* pRenderTarget) = 0;
 
 		/**
 		 * Bind a graphics pipeline to the command buffer.
 		 *
 		 * @param pGraphicsPipeline The graphics pipeline pointer.
 		 */
-		virtual void BindGraphicsPipeline(const GraphicsPipeline* pGraphicsPipeline) = 0;
+		virtual void BindGraphicsPipeline(const GraphicsPipelineT* pGraphicsPipeline) = 0;
 
 		/**
 		 * Bind a compute pipeline to the command buffer.
 		 *
 		 * @param pComputePipeline The compute pipeline pointer.
 		 */
-		virtual void BindComputePipeline(const ComputePipeline* pComputePipeline) = 0;
+		virtual void BindComputePipeline(const ComputePipelineT* pComputePipeline) = 0;
 
 		/**
 		 * Bind a vertex buffer to the command buffer.
@@ -145,7 +146,7 @@ namespace Flint
 		 * @param firstBinding The first binding of the buffer. Default is 0.
 		 * @param offset The offset of the buffer. Default is 0.
 		 */
-		virtual void BindVertexBuffer(const Buffer* pBuffer, const uint64_t firstBinding = 0, const uint64_t offset = 0) = 0;
+		virtual void BindVertexBuffer(const BufferT* pBuffer, const uint64_t firstBinding = 0, const uint64_t offset = 0) = 0;
 
 		/**
 		 * Bind a index buffer to the command buffer.
@@ -154,7 +155,7 @@ namespace Flint
 		 * @param indexSize The size of a single index. Acceptable sizes are 1, 2 and 4.
 		 * @param offset The offset of the buffer. Default is 0.
 		 */
-		virtual void BindIndexBuffer(const Buffer* pBuffer, const uint64_t indexSize, const uint64_t offset = 0) = 0;
+		virtual void BindIndexBuffer(const BufferT* pBuffer, const uint64_t indexSize, const uint64_t offset = 0) = 0;
 
 		/**
 		 * Bind a geometry store to the command buffer.
@@ -169,7 +170,7 @@ namespace Flint
 		 * @param pPipeline The pipeline pointer.
 		 * @param pResourcePackage The resource package to bind.
 		 */
-		virtual void BindResourcePackage(const GraphicsPipeline* pPipeline, ResourcePackage* pResourcePackage) = 0;
+		virtual void BindResourcePackage(const GraphicsPipelineT* pPipeline, ResourcePackageT* pResourcePackage) = 0;
 
 		/**
 		 * Bind draw resources to the command buffer.
@@ -177,7 +178,7 @@ namespace Flint
 		 * @param pPipeline The pipeline pointer.
 		 * @param pResourcePackages The resource packages to bind.
 		 */
-		virtual void BindResourcePackages(const GraphicsPipeline* pPipeline, const std::vector<ResourcePackage*>& pResourcePackages) = 0;
+		virtual void BindResourcePackages(const GraphicsPipelineT* pPipeline, const std::vector<ResourcePackageT*>& pResourcePackages) = 0;
 
 		/**
 		 * Bind an instance resource to the command buffer.
@@ -185,7 +186,7 @@ namespace Flint
 		 * @param pPipeline The pipeline pointer.
 		 * @param pResourcePackage The resource package to bind.
 		 */
-		virtual void BindResourcePackage(const ComputePipeline* pPipeline, ResourcePackage* pResourcePackage) = 0;
+		virtual void BindResourcePackage(const ComputePipelineT* pPipeline, ResourcePackageT* pResourcePackage) = 0;
 
 		/**
 		 * Bind draw resources to the command buffer.
@@ -193,7 +194,7 @@ namespace Flint
 		 * @param pPipeline The pipeline pointer.
 		 * @param pResourcePackages The resource packages to bind.
 		 */
-		virtual void BindResourcePackages(const ComputePipeline* pPipeline, const std::vector<ResourcePackage*>& pResourcePackages) = 0;
+		virtual void BindResourcePackages(const ComputePipelineT* pPipeline, const std::vector<ResourcePackageT*>& pResourcePackages) = 0;
 
 		/**
 		 * Bind dynamic states to the command buffer.
@@ -201,7 +202,7 @@ namespace Flint
 		 * @param pPipeline The pipeline to which the dynamic states are bound to.
 		 * @param pDynamicStates The dynamic states to bind.
 		 */
-		virtual void BindDynamicStates(const GraphicsPipeline* pPipeline, const DynamicStateContainer* pDynamicStates) = 0;
+		virtual void BindDynamicStates(const GraphicsPipelineT* pPipeline, const DynamicStateContainer* pDynamicStates) = 0;
 
 		/**
 		 * Bind a view port to the command buffer.
@@ -209,7 +210,7 @@ namespace Flint
 		 * @param pPipeline The pipeline pointer.
 		 * @param pViewPort The view port pointer.
 		 */
-		virtual void BindViewPort(const GraphicsPipeline* pPipeline, const ViewPort* pViewPort) = 0;
+		virtual void BindViewPort(const GraphicsPipelineT* pPipeline, const ViewPort* pViewPort) = 0;
 
 		/**
 		 * Bind a scissor to the command buffer.
@@ -217,7 +218,7 @@ namespace Flint
 		 * @param pPipeline The pipeline pointer.
 		 * @param pScissor The scissor pointer.
 		 */
-		virtual void BindScissor(const GraphicsPipeline* pPipeline, const Scissor* pScissor) = 0;
+		virtual void BindScissor(const GraphicsPipelineT* pPipeline, const Scissor* pScissor) = 0;
 
 		/**
 		 * Bind a line width to the command buffer.
@@ -225,7 +226,7 @@ namespace Flint
 		 * @param pPipeline The pipeline pointer.
 		 * @param pLineWidth The line width pointer.
 		 */
-		virtual void BindLineWidth(const GraphicsPipeline* pPipeline, const LineWidth* pLineWidth) = 0;
+		virtual void BindLineWidth(const GraphicsPipelineT* pPipeline, const LineWidth* pLineWidth) = 0;
 
 		/**
 		 * Bind a depth bias to the command buffer.
@@ -233,7 +234,7 @@ namespace Flint
 		 * @param pPipeline The pipeline pointer.
 		 * @param pDepthBias The depth bias pointer.
 		 */
-		virtual void BindDepthBias(const GraphicsPipeline* pPipeline, const DepthBias* pDepthBias) = 0;
+		virtual void BindDepthBias(const GraphicsPipelineT* pPipeline, const DepthBias* pDepthBias) = 0;
 
 		/**
 		 * Bind blend constants to the command buffer.
@@ -241,7 +242,7 @@ namespace Flint
 		 * @param pPipeline The pipeline pointer.
 		 * @param pBlendConstants The blend constants pointer.
 		 */
-		virtual void BindBlendConstants(const GraphicsPipeline* pPipeline, const BlendConstants* pBlendConstants) = 0;
+		virtual void BindBlendConstants(const GraphicsPipelineT* pPipeline, const BlendConstants* pBlendConstants) = 0;
 
 		/**
 		 * Bind depth bounds to the command buffer.
@@ -249,7 +250,7 @@ namespace Flint
 		 * @param pPipeline The pipeline pointer.
 		 * @param pDepthBounds The depth bounds pointer.
 		 */
-		virtual void BindDepthBounds(const GraphicsPipeline* pPipeline, const DepthBounds* pDepthBounds) = 0;
+		virtual void BindDepthBounds(const GraphicsPipelineT* pPipeline, const DepthBounds* pDepthBounds) = 0;
 
 		/**
 		 * Bind constant data to the command buffer.
@@ -257,7 +258,7 @@ namespace Flint
 		 * @param pConstantData The constant data pointer.
 		 * @param type The shader type to bind the data to.
 		 */
-		virtual void BindConstantData(const GraphicsPipeline* pPipeline, const ConstantData* pConstantData, const ShaderType type) = 0;
+		virtual void BindConstantData(const GraphicsPipelineT* pPipeline, const ConstantData* pConstantData, const ShaderType type) = 0;
 
 		/**
 		 * Bind dynamic states to the command buffer.
@@ -265,7 +266,7 @@ namespace Flint
 		 * @param pPipeline The pipeline to which the dynamic states are bound to.
 		 * @param pDynamicStates The dynamic states to bind.
 		 */
-		virtual void BindDynamicStates(const ComputePipeline* pPipeline, const DynamicStateContainer* pDynamicStates) = 0;
+		virtual void BindDynamicStates(const ComputePipelineT* pPipeline, const DynamicStateContainer* pDynamicStates) = 0;
 
 		/**
 		 * Bind constant data to the command buffer.
@@ -273,7 +274,7 @@ namespace Flint
 		 * @param pConstantData The constant data pointer.
 		 * @param type The shader type to bind the data to.
 		 */
-		virtual void BindConstantData(const ComputePipeline* pPipeline, const ConstantData* pConstantData) = 0;
+		virtual void BindConstantData(const ComputePipelineT* pPipeline, const ConstantData* pConstantData) = 0;
 
 		/**
 		 * Issue a draw call to the command buffer.
@@ -310,7 +311,7 @@ namespace Flint
 		 * @param pDestinationImage The destination image pointer.
 		 * @param destinationOffset The destination offset of the image to copy to.
 		 */
-		virtual void CopyImage(const Image* pSourceImage, const FBox3D sourceOffset, Image* pDestinationImage, const FBox3D destinationOffset) = 0;
+		virtual void CopyImage(const ImageT* pSourceImage, const FBox3D sourceOffset, ImageT* pDestinationImage, const FBox3D destinationOffset) = 0;
 
 		/**
 		 * Copy an image to a swap chain image.
@@ -321,14 +322,14 @@ namespace Flint
 		 * @param imageIndex The image index in the swap chain to which the copy is made.
 		 * @param destinationOffset The swap chain image offset to copy data to.
 		 */
-		virtual void CopyToSwapChainImage(const Image* pSourceImage, const FBox3D sourceOffset, SwapChain* pSwapChain, const uint32_t imageIndex, const FBox3D destinationOffset) = 0;
+		virtual void CopyToSwapChainImage(const ImageT* pSourceImage, const FBox3D sourceOffset, SwapChainT* pSwapChain, const uint32_t imageIndex, const FBox3D destinationOffset) = 0;
 
 		/**
 		 * Submit a secondary command buffer to be executed.
 		 *
 		 * @param pCommandBuffer The command buffer pointer.
 		 */
-		virtual void SubmitSecondaryCommandBuffer(const std::shared_ptr<CommandBuffer>& pCommandBuffer) = 0;
+		virtual void SubmitSecondaryCommandBuffer(const std::shared_ptr<DerivedT>& pCommandBuffer) = 0;
 
 		/**
 		 * Execute all the secondary commands.
@@ -353,7 +354,7 @@ namespace Flint
 		 *
 		 * @param pSwapChain The swap chain to include.
 		 */
-		virtual void IncludeSwapChain(SwapChain* pSwapChain) = 0;
+		virtual void IncludeSwapChain(SwapChainT* pSwapChain) = 0;
 
 		/**
 		 * Begin a query recording.
@@ -362,7 +363,7 @@ namespace Flint
 		 * @param index The index of the query primitive.
 		 * @param requirePrecision Toggle if we need high precision. Default is false.
 		 */
-		virtual void BeginQuery(const Query* pQuery, const uint32_t index, const bool requirePrecision = false) = 0;
+		virtual void BeginQuery(const QueryT* pQuery, const uint32_t index, const bool requirePrecision = false) = 0;
 
 		/**
 		 * End a query recording.
@@ -370,7 +371,7 @@ namespace Flint
 		 * @param pQuery The query to end recording.
 		 * @param index The index of the query primitive.
 		 */
-		virtual void EndQuery(const Query* pQuery, const uint32_t index) = 0;
+		virtual void EndQuery(const QueryT* pQuery, const uint32_t index) = 0;
 
 		/**
 		 * Reset a query recordings.
@@ -380,7 +381,7 @@ namespace Flint
 		 * @param beginIndex The begin query primitive index.
 		 * @param count The number of query primitives to reset.
 		 */
-		virtual void ResetQuery(const Query* pQuery, const uint32_t beginIndex, const uint32_t count) = 0;
+		virtual void ResetQuery(const QueryT* pQuery, const uint32_t beginIndex, const uint32_t count) = 0;
 
 		/**
 		 * Add a synchronization command to the command buffer.
@@ -394,7 +395,7 @@ namespace Flint
 		 *
 		 * @return The allocator pointer.
 		 */
-		CommandBufferAllocator* GetAllocator() const { return pAllocator; }
+		CommandBufferAllocatorT* GetAllocator() const { return pAllocator; }
 
 		/**
 		 * Check if the command buffer is valid.
@@ -418,7 +419,7 @@ namespace Flint
 		virtual void Terminate() = 0;
 
 	protected:
-		CommandBufferAllocator* pAllocator = nullptr;
+		CommandBufferAllocatorT* pAllocator = nullptr;
 
 		bool bIsRecording = false;
 	};

@@ -10,10 +10,10 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanImageSampler final : public ImageSampler
+		class VulkanImageSampler final : public ImageSampler<VulkanDevice>
 		{
 		public:
-			VulkanImageSampler(Device* pDevice, const ImageSamplerSpecification& specification);
+			VulkanImageSampler(VulkanDevice* pDevice, const ImageSamplerSpecification& specification);
 			~VulkanImageSampler() { if (!bIsTerminated) Terminate(); }
 
 			virtual void Terminate() override;

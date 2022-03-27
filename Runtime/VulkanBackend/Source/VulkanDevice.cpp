@@ -109,7 +109,7 @@ namespace Flint
 			}
 		}
 
-		VulkanDevice::VulkanDevice(Instance* pInstance, const DeviceFlags flags) : Device(pInstance, flags)
+		VulkanDevice::VulkanDevice(VulkanInstance* pInstance, const DeviceFlags flags) : Device(pInstance, flags)
 		{
 			OPTICK_EVENT();
 
@@ -120,13 +120,12 @@ namespace Flint
 			InitializeLogicalDevice();
 		}
 
-		bool VulkanDevice::IsDisplayCompatible(const Display* pDisplay)
+		bool VulkanDevice::IsDisplayCompatible(const VulkanDisplay* pDisplay)
 		{
 			OPTICK_EVENT();
 
-			const VulkanDisplay& vDisplay = pDisplay->StaticCast<VulkanDisplay>();
 			VkBool32 isSupported = VK_FALSE;
-			FLINT_VK_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(GetPhysicalDevice(), GetQueue().mGraphicsFamily.value(), vDisplay.GetSurface(), &isSupported));
+			FLINT_VK_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(GetPhysicalDevice(), GetQueue().mGraphicsFamily.value(), pDisplay->GetSurface(), &isSupported));
 			return isSupported == VK_TRUE;
 		}
 
@@ -135,169 +134,157 @@ namespace Flint
 			return MultiSampleCount(vSampleCount);
 		}
 
-		std::unique_ptr<CommandBufferAllocator> VulkanDevice::CreateCommandBufferAllocator(const uint32_t bufferCount)
+		std::unique_ptr<VulkanCommandBufferAllocator> VulkanDevice::CreateCommandBufferAllocator(const uint32_t bufferCount)
 		{
 			return std::make_unique<VulkanCommandBufferAllocator>(this, bufferCount);
 		}
 
-		std::unique_ptr<CommandBufferAllocator> VulkanDevice::CreateSecondaryCommandBufferAllocator(const uint32_t bufferCount, CommandBufferAllocator* pParentAllocator)
+		std::unique_ptr<VulkanCommandBufferAllocator> VulkanDevice::CreateSecondaryCommandBufferAllocator(const uint32_t bufferCount, VulkanCommandBufferAllocator* pParentAllocator)
 		{
 			return std::make_unique<VulkanCommandBufferAllocator>(this, pParentAllocator, bufferCount);
 		}
 
-		std::unique_ptr<SwapChain> VulkanDevice::CreateSwapChain(Display* pDisplay, uint32_t imageCount, const SwapChainPresentMode presentMode)
+		std::unique_ptr<VulkanSwapChain> VulkanDevice::CreateSwapChain(VulkanDisplay* pDisplay, uint32_t imageCount, const SwapChainPresentMode presentMode)
 		{
 			return std::make_unique<VulkanSwapChain>(this, pDisplay, imageCount, presentMode);
 		}
 
-		std::unique_ptr<ScreenBoundRenderTarget> VulkanDevice::CreateScreenBoundRenderTarget(Display* pDisplay, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor)
+		std::unique_ptr<VulkanScreenBoundRenderTarget> VulkanDevice::CreateScreenBoundRenderTarget(VulkanDisplay* pDisplay, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor)
 		{
 			return  std::make_unique<VulkanScreenBoundRenderTarget>(this, pDisplay, extent, bufferCount, imageAttachments, presentMode, swapChainClearColor);
 		}
 
-		std::unique_ptr<OffScreenRenderTarget> VulkanDevice::CreateOffScreenRenderTarget(const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments)
+		std::unique_ptr<VulkanOffScreenRenderTarget> VulkanDevice::CreateOffScreenRenderTarget(const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments)
 		{
 			return std::make_unique<VulkanOffScreenRenderTarget>(this, extent, bufferCount, imageAttachments);
 		}
 
-		std::unique_ptr<Buffer> VulkanDevice::CreateBuffer(const BufferType type, const uint64_t size, const BufferMemoryProfile profile)
+		std::unique_ptr<VulkanBuffer> VulkanDevice::CreateBuffer(const BufferType type, const uint64_t size, const BufferMemoryProfile profile)
 		{
 			return std::make_unique<VulkanBuffer>(this, type, size, profile);
 		}
 
-		std::unique_ptr<Image> VulkanDevice::CreateImage(const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const uint8_t layers, const uint32_t mipLevels, const void* pImageData, const MultiSampleCount sampleCount)
+		std::unique_ptr<VulkanImage> VulkanDevice::CreateImage(const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const uint8_t layers, const uint32_t mipLevels, const void* pImageData, const MultiSampleCount sampleCount)
 		{
 			return std::make_unique<VulkanImage>(this, type, usage, extent, format, layers, mipLevels, pImageData, sampleCount);
 		}
 
-		std::unique_ptr<ImageSampler> VulkanDevice::CreateImageSampler(const ImageSamplerSpecification& specification)
+		std::unique_ptr<VulkanImageSampler> VulkanDevice::CreateImageSampler(const ImageSamplerSpecification& specification)
 		{
 			return std::make_unique<VulkanImageSampler>(this, specification);
 		}
 
-		std::unique_ptr<Shader> VulkanDevice::CreateShader(const ShaderType type, const std::filesystem::path& path)
+		std::unique_ptr<VulkanShader> VulkanDevice::CreateShader(const ShaderType type, const std::filesystem::path& path)
 		{
 			return std::make_unique<VulkanShader>(this, type, path);
 		}
 
-		std::unique_ptr<Shader> VulkanDevice::CreateShader(const ShaderType type, const std::vector<uint32_t>& code)
+		std::unique_ptr<VulkanShader> VulkanDevice::CreateShader(const ShaderType type, const std::vector<uint32_t>& code)
 		{
 			return std::make_unique<VulkanShader>(this, type, code);
 		}
 
-		std::unique_ptr<Shader> VulkanDevice::CreateShader(const ShaderType type, const std::string& code)
+		std::unique_ptr<VulkanShader> VulkanDevice::CreateShader(const ShaderType type, const std::string& code)
 		{
 			return std::make_unique<VulkanShader>(this, type, code);
 		}
 
-		std::unique_ptr<GraphicsPipeline> VulkanDevice::CreateGraphicsPipeline(const std::string& pipelineName, ScreenBoundRenderTarget* pScreenBoundRenderTarget, std::unique_ptr<Shader>&& pVertexShader, std::unique_ptr<Shader>&& pTessellationControlShader, std::unique_ptr<Shader>&& pTessellationEvaluationShader, std::unique_ptr<Shader>&& pGeometryShader, std::unique_ptr<Shader>&& pFragmentShader, const GraphicsPipelineSpecification& specification)
+		std::unique_ptr<VulkanGraphicsPipeline> VulkanDevice::CreateGraphicsPipeline(const std::string& pipelineName, VulkanScreenBoundRenderTarget* pScreenBoundRenderTarget, std::unique_ptr<VulkanShader>&& pVertexShader, std::unique_ptr<VulkanShader>&& pTessellationControlShader, std::unique_ptr<VulkanShader>&& pTessellationEvaluationShader, std::unique_ptr<VulkanShader>&& pGeometryShader, std::unique_ptr<VulkanShader>&& pFragmentShader, const GraphicsPipelineSpecification& specification)
 		{
 			return std::make_unique<VulkanGraphicsPipeline>(this, pipelineName, pScreenBoundRenderTarget, std::move(pVertexShader), std::move(pTessellationControlShader), std::move(pTessellationEvaluationShader), std::move(pGeometryShader), std::move(pFragmentShader), specification);
 		}
 
-		std::unique_ptr<GraphicsPipeline> VulkanDevice::CreateGraphicsPipeline(const std::string& pipelineName, OffScreenRenderTarget* pOffScreenRenderTarget, std::unique_ptr<Shader>&& pVertexShader, std::unique_ptr<Shader>&& pTessellationControlShader, std::unique_ptr<Shader>&& pTessellationEvaluationShader, std::unique_ptr<Shader>&& pGeometryShader, std::unique_ptr<Shader>&& pFragmentShader, const GraphicsPipelineSpecification& specification)
+		std::unique_ptr<VulkanGraphicsPipeline> VulkanDevice::CreateGraphicsPipeline(const std::string& pipelineName, VulkanOffScreenRenderTarget* pOffScreenRenderTarget, std::unique_ptr<VulkanShader>&& pVertexShader, std::unique_ptr<VulkanShader>&& pTessellationControlShader, std::unique_ptr<VulkanShader>&& pTessellationEvaluationShader, std::unique_ptr<VulkanShader>&& pGeometryShader, std::unique_ptr<VulkanShader>&& pFragmentShader, const GraphicsPipelineSpecification& specification)
 		{
 			return std::make_unique<VulkanGraphicsPipeline>(this, pipelineName, pOffScreenRenderTarget, std::move(pVertexShader), std::move(pTessellationControlShader), std::move(pTessellationEvaluationShader), std::move(pGeometryShader), std::move(pFragmentShader), specification);
 		}
 
-		std::unique_ptr<ComputePipeline> VulkanDevice::CreateComputePipeline(const std::string& pipelineName, std::unique_ptr<Shader>&& pShader)
+		std::unique_ptr<VulkanComputePipeline> VulkanDevice::CreateComputePipeline(const std::string& pipelineName, std::unique_ptr<VulkanShader>&& pShader)
 		{
 			return std::make_unique<VulkanComputePipeline>(this, pipelineName, std::move(pShader));
 		}
 
-		std::shared_ptr<GeometryStore> VulkanDevice::CreateGeometryStore(const std::vector<ShaderAttribute>& vertexAttributes, uint64_t indexSize, const BufferMemoryProfile profile)
+		std::shared_ptr<VulkanGeometryStore> VulkanDevice::CreateGeometryStore(const std::vector<ShaderAttribute>& vertexAttributes, uint64_t indexSize, const BufferMemoryProfile profile)
 		{
-			return std::make_unique<GeometryStore>(this, vertexAttributes, indexSize, profile);
+			return std::make_unique<VulkanGeometryStore>(this, vertexAttributes, indexSize, profile);
 		}
 
-		std::unique_ptr<HostSynchronizationPrimitive> VulkanDevice::CreateHostSynchronizationPrimitive()
+		std::unique_ptr<VulkanHostSynchronizationPrimitive> VulkanDevice::CreateHostSynchronizationPrimitive()
 		{
 			return std::make_unique<VulkanHostSynchronizationPrimitive>(this);
 		}
 
-		std::unique_ptr<DeviceSynchronizationPrimitive> VulkanDevice::CreateDeviceSynchronizationPrimitive()
+		std::unique_ptr<VulkanDeviceSynchronizationPrimitive> VulkanDevice::CreateDeviceSynchronizationPrimitive()
 		{
 			return std::make_unique<VulkanDeviceSynchronizationPrimitive>(this);
 		}
 
-		std::unique_ptr<Query> VulkanDevice::CreateQuery(const QueryUsage usage, const uint32_t queryCount)
+		std::unique_ptr<VulkanQuery> VulkanDevice::CreateQuery(const QueryUsage usage, const uint32_t queryCount)
 		{
 			return std::make_unique<VulkanQuery>(this, usage, queryCount);
 		}
 
-		void VulkanDevice::SubmitGraphicsCommandBuffer(const CommandBuffer* pCommandBuffer, SynchronizationPrimitive* pPrimitive)
+		void VulkanDevice::SubmitGraphicsCommandBuffer(const VulkanCommandBuffer* pCommandBuffer, VulkanHostSynchronizationPrimitive* pPrimitive)
 		{
 			OPTICK_EVENT();
-			auto& vCommandBuffer = pCommandBuffer->StaticCast<VulkanCommandBuffer>();
 
 			VkFence vFence = VK_NULL_HANDLE;
 			if (pPrimitive)
 			{
-				VulkanHostSynchronizationPrimitive& vPrimitive = pPrimitive->StaticCast<VulkanHostSynchronizationPrimitive>();
-				vPrimitive.Reset();
-				vFence = vPrimitive.GetFence();
+				pPrimitive->Reset();
+				vFence = pPrimitive->GetFence();
 			}
 
-			FLINT_VK_ASSERT(GetDeviceTable().vkQueueSubmit(GetQueue().vGraphicsQueue, 1, vCommandBuffer.GetSubmitInfoAddress(), vFence));
+			FLINT_VK_ASSERT(GetDeviceTable().vkQueueSubmit(GetQueue().vGraphicsQueue, 1, pCommandBuffer->GetSubmitInfoAddress(), vFence));
 		}
 
-		void VulkanDevice::SubmitGraphicsCommandBuffers(const std::vector<CommandBuffer*>& pCommandBuffers, SynchronizationPrimitive* pPrimitive)
+		void VulkanDevice::SubmitGraphicsCommandBuffers(const std::vector<VulkanCommandBuffer*>& pCommandBuffers, VulkanHostSynchronizationPrimitive* pPrimitive)
 		{
 			OPTICK_EVENT();
 			const uint64_t bufferCount = pCommandBuffers.size();
 
 			std::vector<VkSubmitInfo> vSubmitInfos(bufferCount);
 			for (uint64_t i = 0; i < bufferCount; i++)
-			{
-				auto& vCommandBuffer = pCommandBuffers[i]->StaticCast<VulkanCommandBuffer>();
-				vSubmitInfos[i] = vCommandBuffer.GetSubmitInfo();
-			}
+				vSubmitInfos[i] = pCommandBuffers[i]->GetSubmitInfo();
 
 			VkFence vFence = VK_NULL_HANDLE;
 			if (pPrimitive)
 			{
-				VulkanHostSynchronizationPrimitive& vPrimitive = pPrimitive->StaticCast<VulkanHostSynchronizationPrimitive>();
-				vPrimitive.Reset();
-				vFence = vPrimitive.GetFence();
+				pPrimitive->Reset();
+				vFence = pPrimitive->GetFence();
 			}
 
 			FLINT_VK_ASSERT(GetDeviceTable().vkQueueSubmit(GetQueue().vGraphicsQueue, static_cast<uint32_t>(vSubmitInfos.size()), vSubmitInfos.data(), vFence));
 		}
 
-		void VulkanDevice::SubmitComputeCommandBuffer(const CommandBuffer* pCommandBuffer, SynchronizationPrimitive* pPrimitive)
+		void VulkanDevice::SubmitComputeCommandBuffer(const VulkanCommandBuffer* pCommandBuffer, VulkanHostSynchronizationPrimitive* pPrimitive)
 		{
 			OPTICK_EVENT();
-			auto& vCommandBuffer = pCommandBuffer->StaticCast<VulkanCommandBuffer>();
 
 			VkFence vFence = VK_NULL_HANDLE;
 			if (pPrimitive)
 			{
-				VulkanHostSynchronizationPrimitive& vPrimitive = pPrimitive->StaticCast<VulkanHostSynchronizationPrimitive>();
-				vPrimitive.Reset();
-				vFence = vPrimitive.GetFence();
+				pPrimitive->Reset();
+				vFence = pPrimitive->GetFence();
 			}
 
-			FLINT_VK_ASSERT(GetDeviceTable().vkQueueSubmit(GetQueue().vGraphicsQueue, 1, vCommandBuffer.GetSubmitInfoAddress(), vFence));
+			FLINT_VK_ASSERT(GetDeviceTable().vkQueueSubmit(GetQueue().vGraphicsQueue, 1, pCommandBuffer->GetSubmitInfoAddress(), vFence));
 		}
 
-		void VulkanDevice::SubmitComputeCommandBuffers(const std::vector<CommandBuffer*>& pCommandBuffers, SynchronizationPrimitive* pPrimitive)
+		void VulkanDevice::SubmitComputeCommandBuffers(const std::vector<VulkanCommandBuffer*>& pCommandBuffers, VulkanHostSynchronizationPrimitive* pPrimitive)
 		{
 			OPTICK_EVENT();
 			const uint64_t bufferCount = pCommandBuffers.size();
 
 			std::vector<VkSubmitInfo> vSubmitInfos(bufferCount);
 			for (uint64_t i = 0; i < bufferCount; i++)
-			{
-				auto& vCommandBuffer = pCommandBuffers[i]->StaticCast<VulkanCommandBuffer>();
-				vSubmitInfos[i] = vCommandBuffer.GetSubmitInfo();
-			}
+				vSubmitInfos[i] = pCommandBuffers[i]->GetSubmitInfo();
 
 			VkFence vFence = VK_NULL_HANDLE;
 			if (pPrimitive)
 			{
-				VulkanHostSynchronizationPrimitive& vPrimitive = pPrimitive->StaticCast<VulkanHostSynchronizationPrimitive>();
-				vPrimitive.Reset();
-				vFence = vPrimitive.GetFence();
+				pPrimitive->Reset();
+				vFence = pPrimitive->GetFence();
 			}
 
 			FLINT_VK_ASSERT(GetDeviceTable().vkQueueSubmit(GetQueue().vComputeQueue, static_cast<uint32_t>(vSubmitInfos.size()), vSubmitInfos.data(), vFence));
@@ -306,14 +293,12 @@ namespace Flint
 		void VulkanDevice::WaitIdle()
 		{
 			OPTICK_EVENT();
-
 			FLINT_VK_ASSERT(GetDeviceTable().vkDeviceWaitIdle(GetLogicalDevice()));
 		}
 
 		void VulkanDevice::WaitForQueue()
 		{
 			OPTICK_EVENT();
-
 			FLINT_VK_ASSERT(GetDeviceTable().vkQueueWaitIdle(GetQueue().vTransferQueue));
 		}
 
@@ -497,16 +482,14 @@ namespace Flint
 		{
 			OPTICK_EVENT();
 
-			const auto& vInstance = pInstance->StaticCast<VulkanInstance>();
-
 			uint32_t deviceCount = 0;
-			vkEnumeratePhysicalDevices(vInstance.GetInstance(), &deviceCount, nullptr);
+			vkEnumeratePhysicalDevices(pInstance->GetInstance(), &deviceCount, nullptr);
 
 			if (deviceCount == 0)
 				throw std::runtime_error("No available devices found!");
 
 			std::vector<VkPhysicalDevice> devices(deviceCount);
-			vkEnumeratePhysicalDevices(vInstance.GetInstance(), &deviceCount, devices.data());
+			vkEnumeratePhysicalDevices(pInstance->GetInstance(), &deviceCount, devices.data());
 
 			VkPhysicalDeviceProperties vPhysicalDeviceProperties = {};
 			// Iterate through all the candidate devices and find the best device.
@@ -690,8 +673,6 @@ namespace Flint
 		{
 			OPTICK_EVENT();
 
-			const auto& vInstance = pInstance->StaticCast<VulkanInstance>();
-
 			vQueue.Initialize(vPhysicalDevice, mFlags);
 
 			std::vector<VkDeviceQueueCreateInfo> vQueueCreateInfos;
@@ -734,8 +715,8 @@ namespace Flint
 			vDeviceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(mDeviceExtensions.size());
 			vDeviceCreateInfo.ppEnabledExtensionNames = mDeviceExtensions.data();
 
-			const std::vector<const char*> validationLayers = vInstance.GetValidationLayers();
-			if (vInstance.IsValidationEnabled())
+			const std::vector<const char*> validationLayers = pInstance->GetValidationLayers();
+			if (pInstance->IsValidationEnabled())
 			{
 				vDeviceCreateInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
 				vDeviceCreateInfo.ppEnabledLayerNames = validationLayers.data();

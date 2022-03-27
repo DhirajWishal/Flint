@@ -7,38 +7,6 @@
 
 namespace Flint
 {
-	class Display;
-	class DeviceBoundObject;
-	class Instance;
-
-	class CommandBufferAllocator;
-	class CommandBuffer;
-
-	class SynchronizationPrimitive;
-	class HostSynchronizationPrimitive;
-	class DeviceSynchronizationPrimitive;
-
-	class SwapChain;
-	class RenderTarget;
-	class ScreenBoundRenderTarget;
-	class OffScreenRenderTarget;
-
-	class Buffer;
-	class Image;
-	class ImageSampler;
-	class Shader;
-
-	class Pipeline;
-	class GraphicsPipeline;
-	class ComputePipeline;
-
-	struct GraphicsPipelineSpecification;
-	struct ShaderAttribute;
-
-	class GeometryStore;
-
-	class Query;
-
 	/**
 	 * Device flags enum.
 	 * This determines the device characteristics.
@@ -65,9 +33,10 @@ namespace Flint
 	 * Flint device object.
 	 * This object is the basis for all the resources. Almost all the resources are bound to a device.
 	 */
+	template<class DerivedT, class InstanceT, class DisplayT, class CommandBufferAllocatorT, class SwapChainT, class ScreenBoundRenderTargetT, class OffScreenRenderTargetT, class BufferT, class ImageT, class ImageSamplerT, class ShaderT, class GraphicsPipelineT, class ComputePipelineT, class GeometryStoreT, class HostSynchronizationPrimitiveT, class DeviceSynchronizationPrimitiveT, class QueryT, class CommandBufferT>
 	class Device : public FObject
 	{
-		friend Instance;
+		friend InstanceT;
 
 	public:
 		/**
@@ -76,7 +45,11 @@ namespace Flint
 		 * @param pInstance The instance pointer.
 		 * @param flags The device flags.
 		 */
-		Device(Instance* pInstance, const DeviceFlags flags);
+		Device(InstanceT* pInstance, const DeviceFlags flags) : pInstance(pInstance), mFlags(flags)
+		{
+			if (!pInstance)
+				throw std::invalid_argument("Instance pointer should not be null!");
+		}
 
 		/**
 		 * Check if the display is compatible with the device.
@@ -84,7 +57,7 @@ namespace Flint
 		 * @param pDisplay The display to check.
 		 * @return Boolean value stating if compatible or not.
 		 */
-		virtual bool IsDisplayCompatible(const Display* pDisplay) = 0;
+		virtual bool IsDisplayCompatible(const DisplayT* pDisplay) = 0;
 
 		/**
 		 * Create a new command buffer allocator.
@@ -92,7 +65,7 @@ namespace Flint
 		 * @param bufferCount The number of buffers the allocator should create.
 		 * @return The allocator pointer.
 		 */
-		virtual std::unique_ptr<CommandBufferAllocator> CreateCommandBufferAllocator(const uint32_t bufferCount) = 0;
+		virtual std::unique_ptr<CommandBufferAllocatorT> CreateCommandBufferAllocator(const uint32_t bufferCount) = 0;
 
 		/**
 		 * Create a new secondary command buffer allocator.
@@ -101,7 +74,7 @@ namespace Flint
 		 * @param pParentAllocator The parent command buffer allocator pointer.
 		 * @return The command buffer allocator pointer.
 		 */
-		virtual std::unique_ptr<CommandBufferAllocator> CreateSecondaryCommandBufferAllocator(const uint32_t bufferCount, CommandBufferAllocator* pParentAllocator) = 0;
+		virtual std::unique_ptr<CommandBufferAllocatorT> CreateSecondaryCommandBufferAllocator(const uint32_t bufferCount, CommandBufferAllocatorT* pParentAllocator) = 0;
 
 		/**
 		 * Create a new swap chain.
@@ -111,7 +84,7 @@ namespace Flint
 		 * @param presentMode The swap chain present mode.
 		 * @return The swap chain pointer.
 		 */
-		virtual std::unique_ptr<SwapChain> CreateSwapChain(Display* pDisplay, uint32_t imageCount, const SwapChainPresentMode presentMode) = 0;
+		virtual std::unique_ptr<SwapChainT> CreateSwapChain(DisplayT* pDisplay, uint32_t imageCount, const SwapChainPresentMode presentMode) = 0;
 
 		/**
 		 * Create a new screen bound render target.
@@ -125,7 +98,7 @@ namespace Flint
 		 * @param swapChainClearColor The swap chain's clear color.
 		 * @return The screen bound render target object.
 		 */
-		virtual std::unique_ptr<ScreenBoundRenderTarget> CreateScreenBoundRenderTarget(Display* pDisplay, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor = FColor4D(0.0f)) = 0;
+		virtual std::unique_ptr<ScreenBoundRenderTargetT> CreateScreenBoundRenderTarget(DisplayT* pDisplay, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor = FColor4D(0.0f)) = 0;
 
 		/**
 		 * Create a new off screen render target.
@@ -136,7 +109,7 @@ namespace Flint
 		 * @param imageAttachments The image attachments which the render target uses.
 		 * @return The render target pointer.
 		 */
-		virtual std::unique_ptr<OffScreenRenderTarget> CreateOffScreenRenderTarget(const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments) = 0;
+		virtual std::unique_ptr<OffScreenRenderTargetT> CreateOffScreenRenderTarget(const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments) = 0;
 
 		/**
 		 * Create a new buffer.
@@ -146,7 +119,7 @@ namespace Flint
 		 * @param profile The memory profile of the buffer. Default is BufferMemoryProfile::Automatic.
 		 * @return The buffer object.
 		 */
-		virtual std::unique_ptr<Buffer> CreateBuffer(const BufferType type, const uint64_t size, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic) = 0;
+		virtual std::unique_ptr<BufferT> CreateBuffer(const BufferType type, const uint64_t size, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic) = 0;
 
 		/**
 		 * Create a new image.
@@ -161,7 +134,7 @@ namespace Flint
 		 * @param sampleCount The image multi sample count.
 		 * @return The newly created image.
 		 */
-		virtual std::unique_ptr<Image> CreateImage(const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const uint8_t layers, const uint32_t mipLevels, const void* pImageData, const MultiSampleCount sampleCount = MultiSampleCount::One) = 0;
+		virtual std::unique_ptr<ImageT> CreateImage(const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const uint8_t layers, const uint32_t mipLevels, const void* pImageData, const MultiSampleCount sampleCount = MultiSampleCount::One) = 0;
 
 		/**
 		 * Create a new image sampler.
@@ -169,7 +142,7 @@ namespace Flint
 		 * @param specification The sampler specification.
 		 * @return The newly created sampler.
 		 */
-		virtual std::unique_ptr<ImageSampler> CreateImageSampler(const ImageSamplerSpecification& specification) = 0;
+		virtual std::unique_ptr<ImageSamplerT> CreateImageSampler(const ImageSamplerSpecification& specification) = 0;
 
 		/**
 		 * Create a new shader.
@@ -179,7 +152,7 @@ namespace Flint
 		 * @param path The shade code path.
 		 * @return The vertex shader object.
 		 */
-		virtual std::unique_ptr<Shader> CreateShader(const ShaderType type, const std::filesystem::path& path) = 0;
+		virtual std::unique_ptr<ShaderT> CreateShader(const ShaderType type, const std::filesystem::path& path) = 0;
 
 		/**
 		 * Create a new shader.
@@ -189,7 +162,7 @@ namespace Flint
 		 * @param code The shade code.
 		 * @return The vertex shader object.
 		 */
-		virtual std::unique_ptr<Shader> CreateShader(const ShaderType type, const std::vector<uint32_t>& code) = 0;
+		virtual std::unique_ptr<ShaderT> CreateShader(const ShaderType type, const std::vector<uint32_t>& code) = 0;
 
 		/**
 		 * Create a new shader.
@@ -199,7 +172,7 @@ namespace Flint
 		 * @param code The shade code.
 		 * @return The vertex shader object.
 		 */
-		virtual std::unique_ptr<Shader> CreateShader(const ShaderType type, const std::string& code) = 0;
+		virtual std::unique_ptr<ShaderT> CreateShader(const ShaderType type, const std::string& code) = 0;
 
 		/**
 		 * Create a new graphics pipeline bound to a screen bound render target.
@@ -214,7 +187,7 @@ namespace Flint
 		 * @param specification The pipeline specification.
 		 * @return The pipeline pointer.
 		 */
-		virtual std::unique_ptr<GraphicsPipeline> CreateGraphicsPipeline(const std::string& pipelineName, ScreenBoundRenderTarget* pScreenBoundRenderTarget, std::unique_ptr<Shader>&& pVertexShader, std::unique_ptr<Shader>&& pTessellationControlShader, std::unique_ptr<Shader>&& pTessellationEvaluationShader, std::unique_ptr<Shader>&& pGeometryShader, std::unique_ptr<Shader>&& pFragmentShader, const GraphicsPipelineSpecification& specification) = 0;
+		virtual std::unique_ptr<GraphicsPipelineT> CreateGraphicsPipeline(const std::string& pipelineName, ScreenBoundRenderTargetT* pScreenBoundRenderTarget, std::unique_ptr<ShaderT>&& pVertexShader, std::unique_ptr<ShaderT>&& pTessellationControlShader, std::unique_ptr<ShaderT>&& pTessellationEvaluationShader, std::unique_ptr<ShaderT>&& pGeometryShader, std::unique_ptr<ShaderT>&& pFragmentShader, const GraphicsPipelineSpecification& specification) = 0;
 
 		/**
 		 * Create a new graphics pipeline bound to a off screen render target.
@@ -229,7 +202,7 @@ namespace Flint
 		 * @param specification The pipeline specification.
 		 * @return The pipeline pointer.
 		 */
-		virtual std::unique_ptr<GraphicsPipeline> CreateGraphicsPipeline(const std::string& pipelineName, OffScreenRenderTarget* pOffScreenRenderTarget, std::unique_ptr<Shader>&& pVertexShader, std::unique_ptr<Shader>&& pTessellationControlShader, std::unique_ptr<Shader>&& pTessellationEvaluationShader, std::unique_ptr<Shader>&& pGeometryShader, std::unique_ptr<Shader>&& pFragmentShader, const GraphicsPipelineSpecification& specification) = 0;
+		virtual std::unique_ptr<GraphicsPipelineT> CreateGraphicsPipeline(const std::string& pipelineName, OffScreenRenderTargetT* pOffScreenRenderTarget, std::unique_ptr<ShaderT>&& pVertexShader, std::unique_ptr<ShaderT>&& pTessellationControlShader, std::unique_ptr<ShaderT>&& pTessellationEvaluationShader, std::unique_ptr<ShaderT>&& pGeometryShader, std::unique_ptr<ShaderT>&& pFragmentShader, const GraphicsPipelineSpecification& specification) = 0;
 
 		/**
 		 * Create a new compute pipeline.
@@ -238,7 +211,7 @@ namespace Flint
 		 * @param pShader The compute shader pointer.
 		 * @return The pipeline pointer.
 		 */
-		virtual std::unique_ptr<ComputePipeline> CreateComputePipeline(const std::string& pipelineName, std::unique_ptr<Shader>&& pShader) = 0;
+		virtual std::unique_ptr<ComputePipelineT> CreateComputePipeline(const std::string& pipelineName, std::unique_ptr<ShaderT>&& pShader) = 0;
 
 		/**
 		 * Create a new geometry store.
@@ -248,7 +221,7 @@ namespace Flint
 		 * @param profile The memory profile of the geometry store. Default is BufferMemoryProfile::Automatic.
 		 * @return The newly created geometry store pointer.
 		 */
-		virtual std::shared_ptr<GeometryStore> CreateGeometryStore(const std::vector<ShaderAttribute>& vertexAttributes, uint64_t indexSize, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic) = 0;
+		virtual std::shared_ptr<GeometryStoreT> CreateGeometryStore(const std::vector<ShaderAttribute>& vertexAttributes, uint64_t indexSize, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic) = 0;
 
 		/**
 		 * Create a new host synchronization primitive.
@@ -256,7 +229,7 @@ namespace Flint
 		 *
 		 * @return The primitive pointer.
 		 */
-		virtual std::unique_ptr<HostSynchronizationPrimitive> CreateHostSynchronizationPrimitive() = 0;
+		virtual std::unique_ptr<HostSynchronizationPrimitiveT> CreateHostSynchronizationPrimitive() = 0;
 
 		/**
 		 * Create a new device synchronization primitive.
@@ -264,7 +237,7 @@ namespace Flint
 		 *
 		 * @return The primitive pointer.
 		 */
-		virtual std::unique_ptr<DeviceSynchronizationPrimitive> CreateDeviceSynchronizationPrimitive() = 0;
+		virtual std::unique_ptr<DeviceSynchronizationPrimitiveT> CreateDeviceSynchronizationPrimitive() = 0;
 
 		/**
 		 * Create a new query object.
@@ -273,7 +246,7 @@ namespace Flint
 		 * @param queryCount The number of query primitives.
 		 * @return The query pointer.
 		 */
-		virtual std::unique_ptr<Query> CreateQuery(const QueryUsage usage, const uint32_t queryCount) = 0;
+		virtual std::unique_ptr<QueryT> CreateQuery(const QueryUsage usage, const uint32_t queryCount) = 0;
 
 	public:
 		/**
@@ -282,7 +255,7 @@ namespace Flint
 		 * @param pCommandBuffer The command buffer pointer.
 		 * @param pPrimitive The synchronization primitive to be flagged upon completion. Default is nullptr.
 		 */
-		virtual void SubmitGraphicsCommandBuffer(const CommandBuffer* pCommandBuffer, SynchronizationPrimitive* pPrimitive = nullptr) = 0;
+		virtual void SubmitGraphicsCommandBuffer(const CommandBufferT* pCommandBuffer, HostSynchronizationPrimitiveT* pPrimitive = nullptr) = 0;
 
 		/**
 		 * Submit graphics command buffers to the device.
@@ -290,7 +263,7 @@ namespace Flint
 		 * @param pCommandBuffers The command buffer pointers.
 		 * @param pPrimitive The synchronization primitive to be flagged upon completion. Default is nullptr.
 		 */
-		virtual void SubmitGraphicsCommandBuffers(const std::vector<CommandBuffer*>& pCommandBuffers, SynchronizationPrimitive* pPrimitive = nullptr) = 0;
+		virtual void SubmitGraphicsCommandBuffers(const std::vector<CommandBufferT*>& pCommandBuffers, HostSynchronizationPrimitiveT* pPrimitive = nullptr) = 0;
 
 		/**
 		 * Submit a compute command buffer to the device.
@@ -298,7 +271,7 @@ namespace Flint
 		 * @param pCommandBuffer The command buffer pointer.
 		 * @param pPrimitive The synchronization primitive to be flagged upon completion. Default is nullptr.
 		 */
-		virtual void SubmitComputeCommandBuffer(const CommandBuffer* pCommandBuffer, SynchronizationPrimitive* pPrimitive = nullptr) = 0;
+		virtual void SubmitComputeCommandBuffer(const CommandBufferT* pCommandBuffer, HostSynchronizationPrimitiveT* pPrimitive = nullptr) = 0;
 
 		/**
 		 * Submit compute command buffers to the device.
@@ -306,7 +279,7 @@ namespace Flint
 		 * @param pCommandBuffers The command buffer pointers.
 		 * @param pPrimitive The synchronization primitive to be flagged upon completion. Default is nullptr.
 		 */
-		virtual void SubmitComputeCommandBuffers(const std::vector<CommandBuffer*>& pCommandBuffers, SynchronizationPrimitive* pPrimitive = nullptr) = 0;
+		virtual void SubmitComputeCommandBuffers(const std::vector<CommandBufferT*>& pCommandBuffers, HostSynchronizationPrimitiveT* pPrimitive = nullptr) = 0;
 
 		/**
 		 * Wait till the device finish execution.
@@ -345,7 +318,7 @@ namespace Flint
 		 *
 		 * @return The instance pointer.
 		 */
-		Instance* GetInstance() const { return pInstance; }
+		InstanceT* GetInstance() const { return pInstance; }
 
 		/**
 		 * Get the supported rasterization samples.
@@ -355,7 +328,7 @@ namespace Flint
 		virtual MultiSampleCount GetSupportedMultiSampleCount() const = 0;
 
 	protected:
-		Instance* pInstance = nullptr;
+		InstanceT* pInstance = nullptr;
 		DeviceFlags mFlags = DeviceFlags::External | DeviceFlags::GraphicsCompatible;
 	};
 }

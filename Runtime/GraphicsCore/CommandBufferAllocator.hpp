@@ -15,7 +15,8 @@ namespace Flint
 	 * 1. Primary.
 	 * 2. Secondary.
 	 */
-	class CommandBufferAllocator : public DeviceBoundObject
+	template<class DerivedT, class DeviceT, class CommandBufferT>
+	class CommandBufferAllocator : public DeviceBoundObject<DeviceT>
 	{
 	public:
 		/**
@@ -24,7 +25,11 @@ namespace Flint
 		 * @param pDevice The device pointer.
 		 * @param bufferCount The number of buffers to allocate.
 		 */
-		CommandBufferAllocator(Device* pDevice, const uint32_t bufferCount);
+		CommandBufferAllocator(DeviceT* pDevice, const uint32_t bufferCount) : DeviceBoundObject(pDevice), mBufferCount(bufferCount)
+		{
+			if (bufferCount == 0)
+				throw std::invalid_argument("Command buffer count should not be 0!");
+		}
 
 		/**
 		 * Construct a secondary command buffer allocator.
@@ -33,21 +38,28 @@ namespace Flint
 		 * @param pParent The parent command buffer allocator.
 		 * @param bufferCount The number of buffers to allocate.
 		 */
-		CommandBufferAllocator(Device* pDevice, CommandBufferAllocator* pParent, const uint32_t bufferCount);
+		CommandBufferAllocator(DeviceT* pDevice, DerivedT* pParent, const uint32_t bufferCount) : DeviceBoundObject(pDevice), pParentAllocator(pParent), mBufferCount(bufferCount)
+		{
+			if (!pParentAllocator)
+				throw std::invalid_argument("The parent command buffer allocator pointer should not be null!");
+
+			if (bufferCount == 0)
+				throw std::invalid_argument("Command buffer count should not be 0!");
+		}
 
 		/**
 		 * Create the command buffers.
 		 * 
 		 * @return The created command buffers.
 		 */
-		virtual const std::vector<std::shared_ptr<CommandBuffer>> CreateCommandBuffers() = 0;
+		virtual const std::vector<std::shared_ptr<CommandBufferT>> CreateCommandBuffers() = 0;
 
 		/**
 		 * Create a child allocator object.
 		 * 
 		 * @return The created secondary command buffer allocator.
 		 */
-		virtual std::unique_ptr<CommandBufferAllocator> CreateChildAllocator() = 0;
+		virtual std::unique_ptr<DerivedT> CreateChildAllocator() = 0;
 
 	public:
 		/**
@@ -62,14 +74,14 @@ namespace Flint
 		 * 
 		 * @return The parent pointer. Returns nullptr if this is a primary command buffer allocator.
 		 */
-		const CommandBufferAllocator* GetParentAllocator() const { return pParentAllocator; }
+		const DerivedT* GetParentAllocator() const { return pParentAllocator; }
 
 		/**
 		 * Get the allocated command buffers.
 		 * 
 		 * @return The command buffer pointers.
 		 */
-		const std::vector<std::shared_ptr<CommandBuffer>> GetCommandBuffers() const { return pCommandBuffers; }
+		const std::vector<std::shared_ptr<CommandBufferT>> GetCommandBuffers() const { return pCommandBuffers; }
 
 		/**
 		 * Get a command buffer from the allocator.
@@ -77,7 +89,7 @@ namespace Flint
 		 * @param index The index of the command buffer.
 		 * @return The command buffer pointer.
 		 */
-		const std::shared_ptr<CommandBuffer> GetCommandBuffer(const uint64_t index) const { return pCommandBuffers[index]; }
+		const std::shared_ptr<CommandBufferT> GetCommandBuffer(const uint64_t index) const { return pCommandBuffers[index]; }
 
 	protected:
 		/**
@@ -88,8 +100,8 @@ namespace Flint
 		void FlagCommandBufferAsTerminated(uint32_t index) { pCommandBuffers[index]->Terminate(); }
 
 	protected:
-		std::vector<std::shared_ptr<CommandBuffer>> pCommandBuffers = {};
-		CommandBufferAllocator* pParentAllocator = nullptr;
+		std::vector<std::shared_ptr<CommandBufferT>> pCommandBuffers = {};
+		DerivedT* pParentAllocator = nullptr;
 
 		uint32_t mBufferCount = 0;
 	};

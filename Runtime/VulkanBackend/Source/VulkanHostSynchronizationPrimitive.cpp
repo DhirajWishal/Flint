@@ -7,7 +7,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanHostSynchronizationPrimitive::VulkanHostSynchronizationPrimitive(Device* pDevice)
+		VulkanHostSynchronizationPrimitive::VulkanHostSynchronizationPrimitive(VulkanDevice* pDevice)
 			: HostSynchronizationPrimitive(pDevice)
 		{
 			OPTICK_EVENT();
@@ -17,31 +17,24 @@ namespace Flint
 			vCreateInfo.pNext = VK_NULL_HANDLE;
 			vCreateInfo.flags = VkFenceCreateFlagBits::VK_FENCE_CREATE_SIGNALED_BIT;
 
-			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateFence(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vFence));
+			FLINT_VK_ASSERT(pDevice->GetDeviceTable().vkCreateFence(pDevice->GetLogicalDevice(), &vCreateInfo, nullptr, &vFence));
 		}
 
 		void VulkanHostSynchronizationPrimitive::Wait(const uint64_t timeout)
 		{
 			OPTICK_EVENT();
-
-			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkWaitForFences(vDevice.GetLogicalDevice(), 1, &vFence, VK_TRUE, timeout));
+			FLINT_VK_ASSERT(pDevice->GetDeviceTable().vkWaitForFences(pDevice->GetLogicalDevice(), 1, &vFence, VK_TRUE, timeout));
 		}
 
 		void VulkanHostSynchronizationPrimitive::Reset()
 		{
 			OPTICK_EVENT();
-
-			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkResetFences(vDevice.GetLogicalDevice(), 1, &vFence));
+			FLINT_VK_ASSERT(pDevice->GetDeviceTable().vkResetFences(pDevice->GetLogicalDevice(), 1, &vFence));
 		}
 
 		void VulkanHostSynchronizationPrimitive::Terminate()
 		{
-			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-			vDevice.GetDeviceTable().vkDestroyFence(vDevice.GetLogicalDevice(), vFence, nullptr);
-
+			pDevice->GetDeviceTable().vkDestroyFence(pDevice->GetLogicalDevice(), vFence, nullptr);
 			bIsTerminated = true;
 		}
 	}

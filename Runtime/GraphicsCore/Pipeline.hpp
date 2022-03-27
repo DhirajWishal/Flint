@@ -7,17 +7,22 @@
 
 namespace Flint
 {
-	class RenderTarget;
-	class ResourcePackager;
-	class ResourcePackage;
+#if defined FLINT_PLATFORM_WINDOWS
+	constexpr const char* CacheDirectory = "\\Flint\\Cache\\";
+
+#elif defined FLINT_PLATFORM_LINUX
+	constexpr const char* CacheDirectory = "/Flint/Cache/";
+
+#endif // defined FLINT_PLATFORM_WINDOWS
 
 	/**
 	 * Flint pipeline object.
 	 * This object is used to store information about a rendering or compute pipeline.
 	 */
-	class Pipeline : public DeviceBoundObject
+	template<class DeviceT, class RenderTargetT, class ResourcePackageT>
+	class Pipeline : public DeviceBoundObject<DeviceT>
 	{
-		friend RenderTarget;
+		friend RenderTargetT;
 
 	public:
 		/**
@@ -49,14 +54,48 @@ namespace Flint
 		 * @param size The size of the data block.
 		 * @param pData The data to be written.
 		 */
-		void WriteDataToCacheFile(const uint64_t size, unsigned char* pData) const;
+		void WriteDataToCacheFile(const uint64_t size, unsigned char* pData) const
+		{
+			// Return if the name is empty.
+			if (mPipelineName.empty())
+				return;
+
+			std::ofstream cacheFile(std::filesystem::current_path().string() + CacheDirectory + mPipelineName + ".fpc", std::ios::out | std::ios::binary);
+
+			if (!cacheFile.is_open())
+				throw std::runtime_error("Failed to write cache data!");
+
+			cacheFile.write(reinterpret_cast<char*>(pData), size);
+			cacheFile.flush();
+			cacheFile.close();
+		}
 
 		/**
 		 * Read the pipeline cache data from an external file.
 		 *
 		 * @return The pair of size and data.
 		 */
-		std::pair<uint64_t, unsigned char*> ReadDataFromCacheFile() const;
+		std::pair<uint64_t, unsigned char*> ReadDataFromCacheFile() const
+		{
+			// Return if the name is empty.
+			if (mPipelineName.empty())
+				return std::pair<uint64_t, unsigned char*>(0, nullptr);
+
+			std::ifstream cacheFile(std::filesystem::current_path().string() + CacheDirectory + mPipelineName + ".fpc", std::ios::in | std::ios::ate | std::ios::binary);
+
+			// If file does not exist, return without an issue.
+			if (!cacheFile.is_open())
+				return std::pair<uint64_t, unsigned char*>(0, nullptr);
+
+			const uint64_t size = cacheFile.tellg();
+			cacheFile.seekg(0);
+
+			unsigned char* pDataStore = new unsigned char[size];
+			cacheFile.read(reinterpret_cast<char*>(pDataStore), size);
+
+			cacheFile.close();
+			return std::pair<uint64_t, unsigned char*>(size, pDataStore);
+		}
 
 	public:
 		/**
@@ -65,11 +104,17 @@ namespace Flint
 		 * @param index The set index.
 		 * @return The package.
 		 */
-		std::shared_ptr<ResourcePackage> CreateResourcePackage(const uint64_t index);
+		std::shared_ptr<ResourcePackageT> CreateResourcePackage(const uint64_t index)
+		{
+			if (pResourcePackagers.empty())
+				CreateResourcePackagers();
+
+			return pResourcePackagers[index]->CreatePackage();
+		}
 
 	protected:
 		std::string mPipelineName = "";
-		std::vector<std::shared_ptr<ResourcePackager>> pResourcePackagers = {};
+		std::vector<std::shared_ptr<ResourcePackageT>> pResourcePackagers = {};
 
 		bool bShouldPrepareResources = true;
 	};

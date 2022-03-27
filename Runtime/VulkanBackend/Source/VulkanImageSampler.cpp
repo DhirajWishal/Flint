@@ -137,7 +137,7 @@ namespace Flint
 			}
 		}
 
-		VulkanImageSampler::VulkanImageSampler(Device* pDevice, const ImageSamplerSpecification& specification)
+		VulkanImageSampler::VulkanImageSampler(VulkanDevice* pDevice, const ImageSamplerSpecification& specification)
 			: ImageSampler(pDevice, specification)
 		{
 			VkSamplerCreateInfo vCreateInfo = {};
@@ -160,22 +160,19 @@ namespace Flint
 			vCreateInfo.mipmapMode = Helpers::GetMipMapMode(specification.mMipMapMode);
 			vCreateInfo.unnormalizedCoordinates = GET_VK_BOOL(specification.bEnableUnnormalizedCoordinates);
 
-			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 			if (vCreateInfo.maxAnisotropy == 0.0f && specification.bEnableAnisotropy)
 			{
 				VkPhysicalDeviceProperties vProperties = {};
-				vkGetPhysicalDeviceProperties(vDevice.GetPhysicalDevice(), &vProperties);
+				vkGetPhysicalDeviceProperties(pDevice->GetPhysicalDevice(), &vProperties);
 				vCreateInfo.maxAnisotropy = vProperties.limits.maxSamplerAnisotropy;
 			}
 
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateSampler(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vSampler));
+			FLINT_VK_ASSERT(pDevice->GetDeviceTable().vkCreateSampler(pDevice->GetLogicalDevice(), &vCreateInfo, nullptr, &vSampler));
 		}
 
 		void VulkanImageSampler::Terminate()
 		{
-			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-			vDevice.GetDeviceTable().vkDestroySampler(vDevice.GetLogicalDevice(), vSampler, nullptr);
-
+			pDevice->GetDeviceTable().vkDestroySampler(pDevice->GetLogicalDevice(), vSampler, nullptr);
 			bIsTerminated = true;
 		}
 	}

@@ -11,7 +11,8 @@ namespace Flint
 	 * Flint device synchronization primitive.
 	 * This object is used to synchronize the device operations.
 	 */
-	class DeviceSynchronizationPrimitive : public SynchronizationPrimitive
+	template<class DeviceT>
+	class DeviceSynchronizationPrimitive : public SynchronizationPrimitive<DeviceT>
 	{
 	public:
 		/**
@@ -19,6 +20,6 @@ namespace Flint
 		 *
 		 * @param pDevice The device pointer.
 		 */
-		DeviceSynchronizationPrimitive(Device* pDevice) : SynchronizationPrimitive(pDevice) {}
+		DeviceSynchronizationPrimitive(DeviceT* pDevice) : SynchronizationPrimitive(pDevice) {}
 	};
 }

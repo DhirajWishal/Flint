@@ -21,7 +21,8 @@ namespace Flint
 	 * Flint buffer object.
 	 * Buffers are used to store data in the device.
 	 */
-	class Buffer : public DeviceBoundObject
+	template<class DerivedT, class DeviceT>
+	class Buffer : public DeviceBoundObject<DeviceT>
 	{
 	public:
 		/**
@@ -32,7 +33,15 @@ namespace Flint
 		 * @param size The size of the buffer.
 		 * @param profile The memory profile of the buffer. Default is BufferMemoryProfile::Automatic.
 		 */
-		Buffer(Device* pDevice, const BufferType type, const uint64_t size, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic);
+		explicit Buffer(DeviceT* pDevice, const BufferType type, const uint64_t size, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic)
+			: DeviceBoundObject(pDevice), mType(type), mSize(size), mMemoryProfile(profile)
+		{
+			if (type == BufferType::Undefined)
+				throw std::invalid_argument("Buffer type should not be Undefined!");
+
+			if (size == 0)
+				throw std::invalid_argument("Buffer size should be greater than 0!");
+		}
 
 		/**
 		 * Resize the buffer.
@@ -51,7 +60,7 @@ namespace Flint
 		 * @param srcOffet The source buffer offset.
 		 * @param dstOffset The destination (this) buffer offset.
 		 */
-		virtual void CopyFromBuffer(const Buffer* pSrcBuffer, const uint64_t size, const uint64_t srcOffset, const uint64_t dstOffset) = 0;
+		virtual void CopyFromBuffer(const DerivedT* pSrcBuffer, const uint64_t size, const uint64_t srcOffset, const uint64_t dstOffset) = 0;
 
 		/**
 		 * Map the buffer memory to the local address space.

@@ -8,7 +8,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanBuffer::VulkanBuffer(Device* pDevice, const BufferType type, const uint64_t size, const BufferMemoryProfile profile)
+		VulkanBuffer::VulkanBuffer(VulkanDevice* pDevice, const BufferType type, const uint64_t size, const BufferMemoryProfile profile)
 			: Buffer(pDevice, type, size, profile)
 		{
 			OPTICK_EVENT();
@@ -81,7 +81,7 @@ namespace Flint
 			if (mode == BufferResizeMode::Copy)
 			{
 				// Create a stagging buffer to copy data to.
-				std::unique_ptr<Buffer> pStagingBuffer = pDevice->CreateBuffer(BufferType::Staging, oldSize);
+				auto pStagingBuffer = pDevice->CreateBuffer(BufferType::Staging, oldSize);
 				pStagingBuffer->CopyFromBuffer(this, oldSize, 0, 0);
 
 				// Terminate the existing buffer and get the new size.
@@ -108,7 +108,7 @@ namespace Flint
 				throw std::invalid_argument("Buffer copy mode is invalid or undefined!");
 		}
 
-		void VulkanBuffer::CopyFromBuffer(const Buffer* pSrcBuffer, const uint64_t size, const uint64_t srcOffset, const uint64_t dstOffset)
+		void VulkanBuffer::CopyFromBuffer(const VulkanBuffer* pSrcBuffer, const uint64_t size, const uint64_t srcOffset, const uint64_t dstOffset)
 		{
 			OPTICK_EVENT();
 
@@ -117,9 +117,8 @@ namespace Flint
 			vBufferCopy.srcOffset = srcOffset;
 			vBufferCopy.dstOffset = dstOffset;
 
-			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-			VulkanOneTimeCommandBuffer vCommandBuffer(vDevice);
-			vDevice.GetDeviceTable().vkCmdCopyBuffer(vCommandBuffer, pSrcBuffer->StaticCast<VulkanBuffer>().vBuffer, vBuffer, 1, &vBufferCopy);
+			VulkanOneTimeCommandBuffer vCommandBuffer(*pDevice);
+			pDevice->GetDeviceTable().vkCmdCopyBuffer(vCommandBuffer, pSrcBuffer->StaticCast<VulkanBuffer>().vBuffer, vBuffer, 1, &vBufferCopy);
 		}
 
 		void* VulkanBuffer::MapMemory(const uint64_t size, const uint64_t offset)
@@ -133,8 +132,7 @@ namespace Flint
 				throw std::range_error("Submitted size is invalid!");
 
 			void* pDataStore = nullptr;
-			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-			FLINT_VK_ASSERT(vmaMapMemory(vDevice.GetVmaAllocator(), vmaAllocation, &pDataStore));
+			FLINT_VK_ASSERT(vmaMapMemory(pDevice->GetVmaAllocator(), vmaAllocation, &pDataStore));
 
 			bIsMapped = true;
 			return pDataStore;
@@ -144,8 +142,7 @@ namespace Flint
 		{
 			OPTICK_EVENT();
 
-			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-			vmaUnmapMemory(vDevice.GetVmaAllocator(), vmaAllocation);
+			vmaUnmapMemory(pDevice->GetVmaAllocator(), vmaAllocation);
 			bIsMapped = false;
 		}
 
@@ -154,8 +151,7 @@ namespace Flint
 			if (bIsMapped)
 				UnmapMemory();
 
-			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-			vmaDestroyBuffer(vDevice.GetVmaAllocator(), vBuffer, vmaAllocation);
+			vmaDestroyBuffer(pDevice->GetVmaAllocator(), vBuffer, vmaAllocation);
 
 			bIsTerminated = true;
 		}
@@ -177,7 +173,7 @@ namespace Flint
 			VmaAllocationCreateInfo vmaAllocationCreateInfo = {};
 			vmaAllocationCreateInfo.usage = vmaMemoryUsage;
 
-			FLINT_VK_ASSERT(vmaCreateBuffer(pDevice->StaticCast<VulkanDevice>().GetVmaAllocator(), &vCreateInfo, &vmaAllocationCreateInfo, &vBuffer, &vmaAllocation, nullptr));
+			FLINT_VK_ASSERT(vmaCreateBuffer(pDevice->GetVmaAllocator(), &vCreateInfo, &vmaAllocationCreateInfo, &vBuffer, &vmaAllocation, nullptr));
 		}
 	}
 }

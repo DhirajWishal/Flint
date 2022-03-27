@@ -10,10 +10,10 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanComputePipeline final : public ComputePipeline
+		class VulkanComputePipeline final : public ComputePipeline<VulkanDevice, RenderTarget, VulkanResourcePackage, VulkanShader>
 		{
 		public:
-			VulkanComputePipeline(Device* pDevice, const std::string& pipelineName, std::unique_ptr<Shader>&& pComputeShader);
+			VulkanComputePipeline(VulkanDevice* pDevice, const std::string& pipelineName, std::unique_ptr<VulkanShader>&& pComputeShader);
 			~VulkanComputePipeline() { if (!bIsTerminated) Terminate(); }
 
 			virtual void ReloadShaders() override;
@@ -30,7 +30,6 @@ namespace Flint
 			void CreatePipeline();
 
 		private:
-			std::unique_ptr<ComputePipeline> pThisPipeline = nullptr;
 			std::vector<VkDescriptorSetLayout> vDescriptorSetLayouts = {};
 
 			VkPipelineLayout vPipelineLayout = VK_NULL_HANDLE;

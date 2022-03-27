@@ -7,7 +7,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanDeviceSynchronizationPrimitive::VulkanDeviceSynchronizationPrimitive(Device* pDevice)
+		VulkanDeviceSynchronizationPrimitive::VulkanDeviceSynchronizationPrimitive(VulkanDevice* pDevice)
 			: DeviceSynchronizationPrimitive(pDevice)
 		{
 			VkSemaphoreCreateInfo vCreateInfo = {};
@@ -15,14 +15,12 @@ namespace Flint
 			vCreateInfo.pNext = VK_NULL_HANDLE;
 			vCreateInfo.flags = 0;
 
-			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateSemaphore(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vSemaphore));
+			FLINT_VK_ASSERT(pDevice->GetDeviceTable().vkCreateSemaphore(pDevice->GetLogicalDevice(), &vCreateInfo, nullptr, &vSemaphore));
 		}
 
 		void VulkanDeviceSynchronizationPrimitive::Terminate()
 		{
-			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
-			vDevice.GetDeviceTable().vkDestroySemaphore(vDevice.GetLogicalDevice(), vSemaphore, nullptr);
+			pDevice->GetDeviceTable().vkDestroySemaphore(pDevice->GetLogicalDevice(), vSemaphore, nullptr);
 
 			bIsTerminated = true;
 		}

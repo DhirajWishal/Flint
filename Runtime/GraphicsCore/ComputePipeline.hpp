@@ -16,7 +16,8 @@ namespace Flint
 	 * Flint compute pipeline.
 	 * This pipeline is used to perform compute tasks on the GPU.
 	 */
-	class ComputePipeline : public Pipeline
+	template<class DeviceT, class RenderTargetT, class ResourcePackageT, class ShaderT>
+	class ComputePipeline : public Pipeline<DeviceT, RenderTargetT, ResourcePackageT>
 	{
 	public:
 		/**
@@ -26,7 +27,12 @@ namespace Flint
 		 * @param pipelineName The name of the pipeline.
 		 * @param pComputeShader The compute shader pointer.
 		 */
-		ComputePipeline(Device* pDevice, const std::string& pipelineName, std::unique_ptr<Shader>&& pComputeShader);
+		ComputePipeline(DeviceT* pDevice, const std::string& pipelineName, std::unique_ptr<ShaderT>&& pComputeShader)
+			: Pipeline(pDevice, pipelineName), pShader(std::move(pComputeShader))
+		{
+			if (!pShader)
+				throw std::invalid_argument("Compute shader pointers should not be null!");
+		}
 
 	public:
 		/**
@@ -34,10 +40,10 @@ namespace Flint
 		 *
 		 * @return The shader pointer.
 		 */
-		Shader* GetShader() const { return pShader.get(); }
+		ShaderT* GetShader() const { return pShader.get(); }
 
 	protected:
-		std::unique_ptr<Shader> pShader = nullptr;
+		std::unique_ptr<ShaderT> pShader = nullptr;
 
 		uint64_t mInstanceIndex = 0;
 	};

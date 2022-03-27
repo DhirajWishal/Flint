@@ -538,12 +538,12 @@ namespace Flint
 			}
 		}
 
-		VulkanGraphicsPipeline::VulkanGraphicsPipeline(Device* pDevice, const std::string& pipelineName, const ScreenBoundRenderTarget* pScreenBoundRenderTarget, std::unique_ptr<Shader>&& pVertexShader, std::unique_ptr<Shader>&& pTessellationControlShader, std::unique_ptr<Shader>&& pTessellationEvaluationShader, std::unique_ptr<Shader>&& pGeometryShader, std::unique_ptr<Shader>&& pFragmentShader, const GraphicsPipelineSpecification& specification)
+		VulkanGraphicsPipeline::VulkanGraphicsPipeline(VulkanDevice* pDevice, const std::string& pipelineName, const VulkanScreenBoundRenderTarget* pScreenBoundRenderTarget, std::unique_ptr<VulkanShader>&& pVertexShader, std::unique_ptr<VulkanShader>&& pTessellationControlShader, std::unique_ptr<VulkanShader>&& pTessellationEvaluationShader, std::unique_ptr<VulkanShader>&& pGeometryShader, std::unique_ptr<VulkanShader>&& pFragmentShader, const GraphicsPipelineSpecification& specification)
 			: GraphicsPipeline(pDevice, pipelineName, pScreenBoundRenderTarget, std::move(pVertexShader), std::move(pTessellationControlShader), std::move(pTessellationEvaluationShader), std::move(pGeometryShader), std::move(pFragmentShader), specification)
 		{
 			OPTICK_EVENT();
 
-			vRenderPass = pScreenBoundRenderTarget->StaticCast<VulkanScreenBoundRenderTarget>().GetRenderPass();
+			vRenderPass = pScreenBoundRenderTarget->GetRenderPass();
 
 			SetupDefaults();
 			CreatePipelineLayout();
@@ -551,12 +551,12 @@ namespace Flint
 			CreatePipeline();
 		}
 
-		VulkanGraphicsPipeline::VulkanGraphicsPipeline(Device* pDevice, const std::string& pipelineName, const OffScreenRenderTarget* pOffScreenRenderTarget, std::unique_ptr<Shader>&& pVertexShader, std::unique_ptr<Shader>&& pTessellationControlShader, std::unique_ptr<Shader>&& pTessellationEvaluationShader, std::unique_ptr<Shader>&& pGeometryShader, std::unique_ptr<Shader>&& pFragmentShader, const GraphicsPipelineSpecification& specification)
+		VulkanGraphicsPipeline::VulkanGraphicsPipeline(VulkanDevice* pDevice, const std::string& pipelineName, const VulkanOffScreenRenderTarget* pOffScreenRenderTarget, std::unique_ptr<VulkanShader>&& pVertexShader, std::unique_ptr<VulkanShader>&& pTessellationControlShader, std::unique_ptr<VulkanShader>&& pTessellationEvaluationShader, std::unique_ptr<VulkanShader>&& pGeometryShader, std::unique_ptr<VulkanShader>&& pFragmentShader, const GraphicsPipelineSpecification& specification)
 			: GraphicsPipeline(pDevice, pipelineName, pOffScreenRenderTarget, std::move(pVertexShader), std::move(pTessellationControlShader), std::move(pTessellationEvaluationShader), std::move(pGeometryShader), std::move(pFragmentShader), specification)
 		{
 			OPTICK_EVENT();
 
-			vRenderPass = pOffScreenRenderTarget->StaticCast<VulkanOffScreenRenderTarget>().GetRenderPass();
+			vRenderPass = pOffScreenRenderTarget->GetRenderPass();
 
 			SetupDefaults();
 			CreatePipelineLayout();
@@ -587,11 +587,11 @@ namespace Flint
 			CreateResourcePackagers();
 		}
 
-		void VulkanGraphicsPipeline::Recreate(ScreenBoundRenderTarget* pScreenBoundRenderTarget)
+		void VulkanGraphicsPipeline::Recreate(VulkanScreenBoundRenderTarget* pScreenBoundRenderTarget)
 		{
 			OPTICK_EVENT();
 
-			vRenderPass = pScreenBoundRenderTarget->StaticCast<VulkanScreenBoundRenderTarget>().GetRenderPass();
+			vRenderPass = pScreenBoundRenderTarget->GetRenderPass();
 
 			vkDestroyPipeline(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), vPipeline, nullptr);
 			CreatePipeline();
@@ -634,19 +634,19 @@ namespace Flint
 		void VulkanGraphicsPipeline::SetupDefaults()
 		{
 			// Resolve shader stages.
-			vShaderStageCreateInfo.emplace_back(pVertexShader->StaticCast<VulkanShader>().GetShaderStageCreateInfo());
+			vShaderStageCreateInfo.emplace_back(pVertexShader->GetShaderStageCreateInfo());
 
 			if (pFragmentShader)
-				vShaderStageCreateInfo.emplace_back(pFragmentShader->StaticCast<VulkanShader>().GetShaderStageCreateInfo());
+				vShaderStageCreateInfo.emplace_back(pFragmentShader->GetShaderStageCreateInfo());
 
 			if (pTessellationControlShader)
-				vShaderStageCreateInfo.emplace_back(pTessellationControlShader->StaticCast<VulkanShader>().GetShaderStageCreateInfo());
+				vShaderStageCreateInfo.emplace_back(pTessellationControlShader->GetShaderStageCreateInfo());
 
 			if (pTessellationEvaluationShader)
-				vShaderStageCreateInfo.emplace_back(pTessellationEvaluationShader->StaticCast<VulkanShader>().GetShaderStageCreateInfo());
+				vShaderStageCreateInfo.emplace_back(pTessellationEvaluationShader->GetShaderStageCreateInfo());
 
 			if (pGeometryShader)
-				vShaderStageCreateInfo.emplace_back(pGeometryShader->StaticCast<VulkanShader>().GetShaderStageCreateInfo());
+				vShaderStageCreateInfo.emplace_back(pGeometryShader->GetShaderStageCreateInfo());
 
 			// Resolve vertex input state.
 			{
@@ -797,10 +797,9 @@ namespace Flint
 
 			// Resolve vertex shader data.
 			{
-				auto& vShader = pVertexShader->StaticCast<VulkanShader>();
-				Utilities::AddPushConstantRangesToVector(vConstantRanges, vShader);
+				Utilities::AddPushConstantRangesToVector(vConstantRanges, *pVertexShader);
 
-				const auto map = vShader.GetDescriptorSetMap();
+				const auto map = pVertexShader->GetDescriptorSetMap();
 				for (const auto entry : map)
 				{
 					auto& info = descriptorSetInfos[entry.first];
@@ -812,10 +811,9 @@ namespace Flint
 			// Check and resolve fragment shader data.
 			if (pFragmentShader)
 			{
-				auto& vShader = pFragmentShader->StaticCast<VulkanShader>();
-				Utilities::AddPushConstantRangesToVector(vConstantRanges, vShader);
+				Utilities::AddPushConstantRangesToVector(vConstantRanges, *pFragmentShader);
 
-				const auto map = vShader.GetDescriptorSetMap();
+				const auto map = pFragmentShader->GetDescriptorSetMap();
 				for (const auto entry : map)
 				{
 					auto& info = descriptorSetInfos[entry.first];
@@ -827,10 +825,9 @@ namespace Flint
 			// Check and resolve tessellation control shader data.
 			if (pTessellationControlShader)
 			{
-				auto& vShader = pTessellationControlShader->StaticCast<VulkanShader>();
-				Utilities::AddPushConstantRangesToVector(vConstantRanges, vShader);
+				Utilities::AddPushConstantRangesToVector(vConstantRanges, *pTessellationControlShader);
 
-				const auto map = vShader.GetDescriptorSetMap();
+				const auto map = pTessellationControlShader->GetDescriptorSetMap();
 				for (const auto entry : map)
 				{
 					auto& info = descriptorSetInfos[entry.first];
@@ -842,10 +839,9 @@ namespace Flint
 			// Check and resolve tessellation evaluation shader data.
 			if (pTessellationEvaluationShader)
 			{
-				auto& vShader = pTessellationEvaluationShader->StaticCast<VulkanShader>();
-				Utilities::AddPushConstantRangesToVector(vConstantRanges, vShader);
+				Utilities::AddPushConstantRangesToVector(vConstantRanges, *pTessellationEvaluationShader);
 
-				const auto map = vShader.GetDescriptorSetMap();
+				const auto map = pTessellationEvaluationShader->GetDescriptorSetMap();
 				for (const auto entry : map)
 				{
 					auto& info = descriptorSetInfos[entry.first];
@@ -857,10 +853,9 @@ namespace Flint
 			// Check and resolve geometry shader data.
 			if (pGeometryShader)
 			{
-				auto& vShader = pGeometryShader->StaticCast<VulkanShader>();
-				Utilities::AddPushConstantRangesToVector(vConstantRanges, vShader);
+				Utilities::AddPushConstantRangesToVector(vConstantRanges, *pGeometryShader);
 
-				const auto map = vShader.GetDescriptorSetMap();
+				const auto map = pGeometryShader->GetDescriptorSetMap();
 				for (const auto entry : map)
 				{
 					auto& info = descriptorSetInfos[entry.first];

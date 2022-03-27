@@ -10,10 +10,10 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanHostSynchronizationPrimitive final : public HostSynchronizationPrimitive
+		class VulkanHostSynchronizationPrimitive final : public HostSynchronizationPrimitive<VulkanDevice>
 		{
 		public:
-			VulkanHostSynchronizationPrimitive(Device* pDevice);
+			VulkanHostSynchronizationPrimitive(VulkanDevice* pDevice);
 			~VulkanHostSynchronizationPrimitive() { if (!bIsTerminated) Terminate(); }
 
 			virtual void Wait(const uint64_t timeout = std::numeric_limits<uint64_t>::max()) override;

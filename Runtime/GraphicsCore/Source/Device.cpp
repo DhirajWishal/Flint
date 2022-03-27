@@ -5,9 +5,4 @@
 
 namespace Flint
 {
-	Device::Device(Instance* pInstance, const DeviceFlags flags) : pInstance(pInstance), mFlags(flags)
-	{
-		if (!pInstance)
-			throw std::invalid_argument("Instance pointer should not be null!");
-	}
 }

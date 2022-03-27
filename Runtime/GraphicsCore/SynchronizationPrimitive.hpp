@@ -11,7 +11,8 @@ namespace Flint
 	 * Flint synchronization primitive class.
 	 * Synchronization primitives are used to synchronize the client applications. These are mainly used in command buffer submissions.
 	 */
-	class SynchronizationPrimitive : public DeviceBoundObject
+	template<class DeviceT>
+	class SynchronizationPrimitive : public DeviceBoundObject<DeviceT>
 	{
 	public:
 		/**
@@ -19,6 +20,6 @@ namespace Flint
 		 *
 		 * @param pDevice The device pointer.
 		 */
-		SynchronizationPrimitive(Device* pDevice) : DeviceBoundObject(pDevice) {}
+		SynchronizationPrimitive(DeviceT* pDevice) : DeviceBoundObject(pDevice) {}
 	};
 }

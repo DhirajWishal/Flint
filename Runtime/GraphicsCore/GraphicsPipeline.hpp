@@ -290,7 +290,8 @@ namespace Flint
 	 * 4. Geometry (optional).
 	 * 5. Fragment (optional).
 	 */
-	class GraphicsPipeline : public Pipeline
+	template<class DeviceT, class RenderTargetT, class ResourcePackageT, class ShaderT, class ScreenBoundRenderTargetT, class OffScreenRenderTargetT>
+	class GraphicsPipeline : public Pipeline<DeviceT, RenderTargetT, ResourcePackageT>
 	{
 	public:
 		/**
@@ -306,7 +307,25 @@ namespace Flint
 		 * @param pFragmentShader The fragment shader (optional).
 		 * @param specification The pipeline specification.
 		 */
-		GraphicsPipeline(Device* pDevice, const std::string& pipelineName, const ScreenBoundRenderTarget* pScreenBoundRenderTarget, std::unique_ptr<Shader>&& pVertexShader, std::unique_ptr<Shader>&& pTessellationControlShader, std::unique_ptr<Shader>&& pTessellationEvaluationShader, std::unique_ptr<Shader>&& pGeometryShader, std::unique_ptr<Shader>&& pFragmentShader, const GraphicsPipelineSpecification& specification);
+		GraphicsPipeline(DeviceT* pDevice, const std::string& pipelineName, const ScreenBoundRenderTargetT* pScreenBoundRenderTarget, std::unique_ptr<ShaderT>&& pVertexShader, std::unique_ptr<ShaderT>&& pTessellationControlShader, std::unique_ptr<ShaderT>&& pTessellationEvaluationShader, std::unique_ptr<ShaderT>&& pGeometryShader, std::unique_ptr<ShaderT>&& pFragmentShader, const GraphicsPipelineSpecification& specification)
+			: Pipeline(pDevice, pipelineName)
+			, pRenderTarget(pScreenBoundRenderTarget)
+			, pVertexShader(std::move(pVertexShader))
+			, pTessellationControlShader(std::move(pTessellationControlShader))
+			, pTessellationEvaluationShader(std::move(pTessellationEvaluationShader))
+			, pGeometryShader(std::move(pGeometryShader))
+			, pFragmentShader(std::move(pFragmentShader))
+			, mSpecification(specification)
+		{
+			if (!pScreenBoundRenderTarget)
+				throw std::invalid_argument("Render target pointer should not be null!");
+
+			if (pVertexShader == nullptr)
+				throw std::invalid_argument("Vertex shader pointer should not be null!");
+
+			if (pFragmentShader == nullptr)
+				throw std::invalid_argument("Fragment shader pointer should not be null!");
+		}
 
 		/**
 		 * Construct the pipeline using an off screen render target.
@@ -321,7 +340,22 @@ namespace Flint
 		 * @param pFragmentShader The fragment shader (optional).
 		 * @param specification The pipeline specification.
 		 */
-		GraphicsPipeline(Device* pDevice, const std::string& pipelineName, const OffScreenRenderTarget* pOffScreenRenderTarget, std::unique_ptr<Shader>&& pVertexShader, std::unique_ptr<Shader>&& pTessellationControlShader, std::unique_ptr<Shader>&& pTessellationEvaluationShader, std::unique_ptr<Shader>&& pGeometryShader, std::unique_ptr<Shader>&& pFragmentShader, const GraphicsPipelineSpecification& specification);
+		GraphicsPipeline(DeviceT* pDevice, const std::string& pipelineName, const OffScreenRenderTargetT* pOffScreenRenderTarget, std::unique_ptr<ShaderT>&& pVertexShader, std::unique_ptr<ShaderT>&& pTessellationControlShader, std::unique_ptr<ShaderT>&& pTessellationEvaluationShader, std::unique_ptr<ShaderT>&& pGeometryShader, std::unique_ptr<ShaderT>&& pFragmentShader, const GraphicsPipelineSpecification& specification)
+			: Pipeline(pDevice, pipelineName)
+			, pRenderTarget(pOffScreenRenderTarget)
+			, pVertexShader(std::move(pVertexShader))
+			, pTessellationControlShader(std::move(pTessellationControlShader))
+			, pTessellationEvaluationShader(std::move(pTessellationEvaluationShader))
+			, pGeometryShader(std::move(pGeometryShader))
+			, pFragmentShader(std::move(pFragmentShader))
+			, mSpecification(specification)
+		{
+			if (!pOffScreenRenderTarget)
+				throw std::invalid_argument("Render target pointer should not be null!");
+
+			if (pVertexShader == nullptr)
+				throw std::invalid_argument("Vertex shader pointer should not be null!");
+		}
 
 		/**
 		 * Recreate the graphics pipeline.
@@ -329,7 +363,7 @@ namespace Flint
 		 *
 		 * @param pScreenBoundRenderTarget The screen bound render target pointer.
 		 */
-		virtual void Recreate(ScreenBoundRenderTarget* pScreenBoundRenderTarget) = 0;
+		virtual void Recreate(ScreenBoundRenderTargetT* pScreenBoundRenderTarget) = 0;
 
 		/**
 		 * Get the current graphics specification of the pipeline.
@@ -344,45 +378,45 @@ namespace Flint
 		 *
 		 * @return The shader pointer.
 		 */
-		Shader* GetVertexShader() const { return pVertexShader.get(); }
+		ShaderT* GetVertexShader() const { return pVertexShader.get(); }
 
 		/**
 		 * Get the fragment shader pointer.
 		 *
 		 * @return The shader pointer.
 		 */
-		Shader* GetFragmentShader() const { return pFragmentShader.get(); }
+		ShaderT* GetFragmentShader() const { return pFragmentShader.get(); }
 
 		/**
 		 * Get the tessellation control shader pointer.
 		 *
 		 * @return The shader pointer.
 		 */
-		Shader* GetTessellationControlShader() const { return pTessellationControlShader.get(); }
+		ShaderT* GetTessellationControlShader() const { return pTessellationControlShader.get(); }
 
 		/**
 		 * Get the tessellation evaluation shader pointer.
 		 *
 		 * @return The shader pointer.
 		 */
-		Shader* GetTessellationEvaluationShader() const { return pTessellationEvaluationShader.get(); }
+		ShaderT* GetTessellationEvaluationShader() const { return pTessellationEvaluationShader.get(); }
 
 		/**
 		 * Get the geometry shader pointer.
 		 *
 		 * @return The shader pointer.
 		 */
-		Shader* GetGeometryShader() const { return pGeometryShader.get(); }
+		ShaderT* GetGeometryShader() const { return pGeometryShader.get(); }
 
 	protected:
 		GraphicsPipelineSpecification mSpecification = {};
 
 		const RenderTarget* pRenderTarget = nullptr;
 
-		std::unique_ptr<Shader> pVertexShader = nullptr;
-		std::unique_ptr<Shader> pFragmentShader = nullptr;
-		std::unique_ptr<Shader> pTessellationControlShader = nullptr;
-		std::unique_ptr<Shader> pTessellationEvaluationShader = nullptr;
-		std::unique_ptr<Shader> pGeometryShader = nullptr;
+		std::unique_ptr<ShaderT> pVertexShader = nullptr;
+		std::unique_ptr<ShaderT> pFragmentShader = nullptr;
+		std::unique_ptr<ShaderT> pTessellationControlShader = nullptr;
+		std::unique_ptr<ShaderT> pTessellationEvaluationShader = nullptr;
+		std::unique_ptr<ShaderT> pGeometryShader = nullptr;
 	};
 }

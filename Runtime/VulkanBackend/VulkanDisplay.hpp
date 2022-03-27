@@ -27,17 +27,17 @@ namespace Flint
 			static SwapChainSupportDetails Query(VkPhysicalDevice vPhysicalDevice, VkSurfaceKHR vSurface);
 		};
 
-		class VulkanDisplay final : public Display
+		class VulkanDisplay final : public Display<VulkanInstance, VulkanDevice>
 		{
 		public:
-			VulkanDisplay(Instance* pInstance, const FBox2D& extent, const std::string& title);
+			VulkanDisplay(VulkanInstance* pInstance, const FBox2D& extent, const std::string& title);
 			~VulkanDisplay() { if (!bIsTerminated) Terminate(); }
 
 			virtual void Update() override;
 			virtual void Terminate() override;
 			virtual void ToggleResize() override final { mIsDislayResized = false; }
-			virtual uint32_t FindBestBufferCount(Device* pDevice, const uint32_t count = 0) override;
-			virtual PixelFormat GetBestSwapChainFormat(Device* pDevice) override;
+			virtual uint32_t FindBestBufferCount(VulkanDevice* pDevice, const uint32_t count = 0) override;
+			virtual PixelFormat GetBestSwapChainFormat(VulkanDevice* pDevice) override;
 			virtual void SetTitle(const std::string& title) override;
 			virtual void SetExtent(FBox2D newExtent) override;
 

@@ -11,7 +11,8 @@ namespace Flint
 	 * Flint image sampler object.
 	 * This object is used to sample images submitted to shaders.
 	 */
-	class ImageSampler : public DeviceBoundObject
+	template<class DeviceT>
+	class ImageSampler : public DeviceBoundObject<DeviceT>
 	{
 	public:
 		/**
@@ -20,7 +21,7 @@ namespace Flint
 		 * @param pDevice The device pointer.
 		 * @param specification The sampler specification.
 		 */
-		ImageSampler(Device* pDevice, const ImageSamplerSpecification& specification) : DeviceBoundObject(pDevice), mSpecification(specification) {}
+		ImageSampler(DeviceT* pDevice, const ImageSamplerSpecification& specification) : DeviceBoundObject(pDevice), mSpecification(specification) {}
 
 		/**
 		 * Get the sampler specification.

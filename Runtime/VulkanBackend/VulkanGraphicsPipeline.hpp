@@ -10,15 +10,15 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanGraphicsPipeline final : public GraphicsPipeline
+		class VulkanGraphicsPipeline final : public GraphicsPipeline<VulkanDevice, RenderTarget, VulkanResourcePackage, VulkanShader, VulkanScreenBoundRenderTarget, VulkanOffScreenRenderTarget>
 		{
 		public:
-			VulkanGraphicsPipeline(Device* pDevice, const std::string& pipelineName, const ScreenBoundRenderTarget* pScreenBoundRenderTarget, std::unique_ptr<Shader>&& pVertexShader, std::unique_ptr<Shader>&& pTessellationControlShader, std::unique_ptr<Shader>&& pTessellationEvaluationShader, std::unique_ptr<Shader>&& pGeometryShader, std::unique_ptr<Shader>&& pFragmentShader, const GraphicsPipelineSpecification& specification);
-			VulkanGraphicsPipeline(Device* pDevice, const std::string& pipelineName, const OffScreenRenderTarget* pOffScreenRenderTarget, std::unique_ptr<Shader>&& pVertexShader, std::unique_ptr<Shader>&& pTessellationControlShader, std::unique_ptr<Shader>&& pTessellationEvaluationShader, std::unique_ptr<Shader>&& pGeometryShader, std::unique_ptr<Shader>&& pFragmentShader, const GraphicsPipelineSpecification& specification);
+			VulkanGraphicsPipeline(VulkanDevice* pDevice, const std::string& pipelineName, const VulkanScreenBoundRenderTarget* pScreenBoundRenderTarget, std::unique_ptr<VulkanShader>&& pVertexShader, std::unique_ptr<VulkanShader>&& pTessellationControlShader, std::unique_ptr<VulkanShader>&& pTessellationEvaluationShader, std::unique_ptr<VulkanShader>&& pGeometryShader, std::unique_ptr<VulkanShader>&& pFragmentShader, const GraphicsPipelineSpecification& specification);
+			VulkanGraphicsPipeline(VulkanDevice* pDevice, const std::string& pipelineName, const VulkanOffScreenRenderTarget* pOffScreenRenderTarget, std::unique_ptr<VulkanShader>&& pVertexShader, std::unique_ptr<VulkanShader>&& pTessellationControlShader, std::unique_ptr<VulkanShader>&& pTessellationEvaluationShader, std::unique_ptr<VulkanShader>&& pGeometryShader, std::unique_ptr<VulkanShader>&& pFragmentShader, const GraphicsPipelineSpecification& specification);
 			~VulkanGraphicsPipeline() { if (!bIsTerminated) Terminate(); }
 
 			virtual void ReloadShaders() override;
-			virtual void Recreate(ScreenBoundRenderTarget* pScreenBoundRenderTarget) override;
+			virtual void Recreate(VulkanScreenBoundRenderTarget* pScreenBoundRenderTarget) override;
 			virtual void CreateResourcePackagers() override;
 			virtual void Terminate() override;
 

@@ -148,7 +148,7 @@ namespace Flint
 		 *
 		 * @return The vector of command buffer pointers.
 		 */
-		std::vector<std::shared_ptr<CommandBuffer>> GetTheCommandBuffers() const { return pCommandBuffers; }
+		std::vector<std::shared_ptr<CommandBuffer>> GetCommandBuffers() const { return pCommandBuffers; }
 
 		/**
 		 * Get the current frame index.

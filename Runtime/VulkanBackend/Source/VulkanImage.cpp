@@ -173,7 +173,7 @@ namespace Flint
 			}
 		}
 
-		VulkanImage::VulkanImage(Device* pDevice, const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const uint8_t layers, const uint32_t mipLevels, const void* pImageData, const MultiSampleCount sampleCount)
+		VulkanImage::VulkanImage(VulkanDevice* pDevice, const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const uint8_t layers, const uint32_t mipLevels, const void* pImageData, const MultiSampleCount sampleCount)
 			: Image(pDevice, type, usage, extent, format, layers, mipLevels, pImageData, sampleCount)
 		{
 			Initialize(pImageData);
@@ -186,9 +186,8 @@ namespace Flint
 			if (mMipLevels == 1)
 				return;
 
-			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 			VkFormatProperties vProperties = {};
-			vkGetPhysicalDeviceFormatProperties(vDevice.GetPhysicalDevice(), Utilities::GetVulkanFormat(mFormat), &vProperties);
+			vkGetPhysicalDeviceFormatProperties(pDevice->GetPhysicalDevice(), Utilities::GetVulkanFormat(mFormat), &vProperties);
 
 			if (!(vProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT))
 				throw backend_error("Texture format does not support linear bitting!");
@@ -201,7 +200,7 @@ namespace Flint
 			vCurrentLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		}
 
-		std::unique_ptr<Buffer> VulkanImage::CopyToBuffer()
+		std::unique_ptr<VulkanBuffer> VulkanImage::CopyToBuffer()
 		{
 			std::unique_ptr<VulkanBuffer> pBuffer = std::make_unique<VulkanBuffer>(pDevice, BufferType::Staging, static_cast<uint64_t>(mExtent.mWidth) * mExtent.mHeight * mExtent.mDepth * Utilities::GetByteDepth(mFormat) * mLayerCount);
 
@@ -219,40 +218,36 @@ namespace Flint
 			vCopy.imageSubresource.mipLevel = 0;	// TODO
 
 			{
-				VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-				VulkanOneTimeCommandBuffer vCommandBuffer(vDevice);
+				VulkanOneTimeCommandBuffer vCommandBuffer(*pDevice);
 				VkFormat vFormat = Utilities::GetVulkanFormat(mFormat);
 
-				vDevice.SetImageLayout(vCommandBuffer, vImage, vCurrentLayout, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, vFormat, mLayerCount, 0, mMipLevels);
+				pDevice->SetImageLayout(vCommandBuffer, vImage, vCurrentLayout, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, vFormat, mLayerCount, 0, mMipLevels);
 				vCurrentLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
 
-				vDevice.GetDeviceTable().vkCmdCopyImageToBuffer(vCommandBuffer, vImage, vCurrentLayout, pBuffer->GetBuffer(), 1, &vCopy);
+				pDevice->GetDeviceTable().vkCmdCopyImageToBuffer(vCommandBuffer, vImage, vCurrentLayout, pBuffer->GetBuffer(), 1, &vCopy);
 
-				vDevice.SetImageLayout(vCommandBuffer, vImage, vCurrentLayout, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, vFormat, mLayerCount, 0, mMipLevels);
+				pDevice->SetImageLayout(vCommandBuffer, vImage, vCurrentLayout, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, vFormat, mLayerCount, 0, mMipLevels);
 				vCurrentLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 			}
 
 			return pBuffer;
 		}
 
-		std::unique_ptr<ImageView> VulkanImage::CreateImageView(const uint32_t baseLayerIndex, const uint32_t layerCount, const uint32_t baseMipLevel, const uint32_t mipLevels, const ImageUsage usage)
+		std::unique_ptr<VulkanImageView> VulkanImage::CreateImageView(const uint32_t baseLayerIndex, const uint32_t layerCount, const uint32_t baseMipLevel, const uint32_t mipLevels, const ImageUsage usage)
 		{
 			return std::make_unique<VulkanImageView>(pDevice, this, baseLayerIndex, layerCount, baseMipLevel, mipLevels, usage);
 		}
 
 		void VulkanImage::Terminate()
 		{
-			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-			vDevice.GetDeviceTable().vkDestroyImageView(vDevice.GetLogicalDevice(), vImageView, nullptr);
-			vmaDestroyImage(vDevice.GetVmaAllocator(), vImage, vmaAllocation);
+			pDevice->GetDeviceTable().vkDestroyImageView(pDevice->GetLogicalDevice(), vImageView, nullptr);
+			vmaDestroyImage(pDevice->GetVmaAllocator(), vImage, vmaAllocation);
 
 			bIsTerminated = true;
 		}
 
 		void VulkanImage::CopyFromImage(VkCommandBuffer vCommandBuffer, VkImage vSrcImage, VkImageLayout vSrcLayout, VkOffset3D srcOffset, VkOffset3D dstOffset, VkImageSubresourceLayers subresourceLayers)
 		{
-			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-
 			VkImageCopy vImageCopy = {};
 			vImageCopy.extent.width = mExtent.mWidth;
 			vImageCopy.extent.height = mExtent.mHeight;
@@ -265,14 +260,12 @@ namespace Flint
 			vImageCopy.dstSubresource.baseArrayLayer = 0;
 			vImageCopy.dstSubresource.mipLevel = 0; // TODO
 
-			vDevice.GetDeviceTable().vkCmdCopyImage(vCommandBuffer, vSrcImage, vSrcLayout, vImage, vCurrentLayout, 1, &vImageCopy);
+			pDevice->GetDeviceTable().vkCmdCopyImage(vCommandBuffer, vSrcImage, vSrcLayout, vImage, vCurrentLayout, 1, &vImageCopy);
 		}
 
 		void VulkanImage::CopyFromImage(VkImage vSrcImage, VkImageLayout vSrcLayout, VkOffset3D srcOffset, VkOffset3D dstOffset, VkImageSubresourceLayers subresourceLayers)
 		{
-			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-			VulkanOneTimeCommandBuffer vCommandBuffer{ vDevice };
-
+			VulkanOneTimeCommandBuffer vCommandBuffer{ *pDevice };
 			CopyFromImage(vCommandBuffer, vSrcImage, vSrcLayout, srcOffset, dstOffset, subresourceLayers);
 		}
 
@@ -299,12 +292,12 @@ namespace Flint
 
 			if (usage == ImageUsage::Graphics && vCurrentLayout != VkImageLayout::VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
 			{
-				pDevice->StaticCast<VulkanDevice>().SetImageLayout(vImage, VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels, 0, GetAspectFlags());
+				pDevice->SetImageLayout(vImage, VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels, 0, GetAspectFlags());
 				vCurrentLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 			}
 			else if (usage == ImageUsage::Storage && vCurrentLayout != VkImageLayout::VK_IMAGE_LAYOUT_GENERAL)
 			{
-				pDevice->StaticCast<VulkanDevice>().SetImageLayout(vImage, VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels, 0, GetAspectFlags());
+				pDevice->SetImageLayout(vImage, VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels, 0, GetAspectFlags());
 				vCurrentLayout = VK_IMAGE_LAYOUT_GENERAL;
 			}
 
@@ -431,13 +424,13 @@ namespace Flint
 
 		void VulkanImage::SetImageLayout(VkCommandBuffer vCommandBuffer, VkImageLayout vNewLayout, uint32_t layerCount, uint32_t layerIndex, const uint32_t mipLevels) const
 		{
-			pDevice->StaticCast<VulkanDevice>().SetImageLayout(vCommandBuffer, vImage, vCurrentLayout, vNewLayout, Utilities::GetVulkanFormat(mFormat), layerCount, layerIndex, mipLevels);
+			pDevice->SetImageLayout(vCommandBuffer, vImage, vCurrentLayout, vNewLayout, Utilities::GetVulkanFormat(mFormat), layerCount, layerIndex, mipLevels);
 			vCurrentLayout = vNewLayout;
 		}
 
 		void VulkanImage::SetImageLayout(VkImageLayout vNewLayout) const
 		{
-			VulkanOneTimeCommandBuffer vCommandBuffer(pDevice->StaticCast<VulkanDevice>());
+			VulkanOneTimeCommandBuffer vCommandBuffer(*pDevice);
 			SetImageLayoutManual(vCommandBuffer, vNewLayout);
 		}
 
@@ -451,7 +444,6 @@ namespace Flint
 		{
 			OPTICK_EVENT();
 
-			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 			vCurrentLayout = VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED;
 
 			VkImageCreateInfo vCreateInfo = {};
@@ -479,7 +471,7 @@ namespace Flint
 			if ((mUsage & ImageUsage::Color) == ImageUsage::Color)
 			{
 				VkFormatProperties vProperties = {};
-				vkGetPhysicalDeviceFormatProperties(vDevice.GetPhysicalDevice(), Utilities::GetVulkanFormat(mFormat), &vProperties);
+				vkGetPhysicalDeviceFormatProperties(pDevice->GetPhysicalDevice(), Utilities::GetVulkanFormat(mFormat), &vProperties);
 
 				if (!(vProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT))
 					throw backend_error("Texture format does not support using as storage image!");
@@ -487,12 +479,12 @@ namespace Flint
 
 			// Prepare the queue indexes if the device if the compute and graphics queues are different.
 			std::vector<uint32_t> queueIndexes = {};
-			if (vDevice.IsGraphicsCompatible() && vDevice.IsComputeCompatible())
+			if (pDevice->IsGraphicsCompatible() && pDevice->IsComputeCompatible())
 			{
-				if (vDevice.GetQueue().mGraphicsFamily != vDevice.GetQueue().mComputeFamily)
+				if (pDevice->GetQueue().mGraphicsFamily != pDevice->GetQueue().mComputeFamily)
 				{
-					queueIndexes.emplace_back(vDevice.GetQueue().mGraphicsFamily.value());
-					queueIndexes.emplace_back(vDevice.GetQueue().mComputeFamily.value());
+					queueIndexes.emplace_back(pDevice->GetQueue().mGraphicsFamily.value());
+					queueIndexes.emplace_back(pDevice->GetQueue().mComputeFamily.value());
 
 					vCreateInfo.sharingMode = VK_SHARING_MODE_CONCURRENT;
 				}
@@ -501,11 +493,11 @@ namespace Flint
 			vCreateInfo.queueFamilyIndexCount = static_cast<uint32_t>(queueIndexes.size());
 			vCreateInfo.pQueueFamilyIndices = queueIndexes.data();
 
-			//FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateImage(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vImage));
+			//FLINT_VK_ASSERT(pDevice->GetDeviceTable().vkCreateImage(pDevice->GetLogicalDevice(), &vCreateInfo, nullptr, &vImage));
 
 			VmaAllocationCreateInfo vmaAllocationCreateInfo = {};
 			vmaAllocationCreateInfo.usage = VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY;
-			vmaCreateImage(vDevice.GetVmaAllocator(), &vCreateInfo, &vmaAllocationCreateInfo, &vImage, &vmaAllocation, nullptr);
+			vmaCreateImage(pDevice->GetVmaAllocator(), &vCreateInfo, &vmaAllocationCreateInfo, &vImage, &vmaAllocation, nullptr);
 		}
 
 		void VulkanImage::CreateImageView()
@@ -520,11 +512,10 @@ namespace Flint
 
 		void VulkanImage::GenerateDefaultMipChain()
 		{
-			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-			VulkanOneTimeCommandBuffer vCommandBuffer(vDevice);
+			VulkanOneTimeCommandBuffer vCommandBuffer(*pDevice);
 			if (vCurrentLayout != VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
 			{
-				vDevice.SetImageLayout(vCommandBuffer, vImage, vCurrentLayout, VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels);
+				pDevice->SetImageLayout(vCommandBuffer, vImage, vCurrentLayout, VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels);
 				vCurrentLayout = VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
 			}
 
@@ -552,7 +543,7 @@ namespace Flint
 					barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 					barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
 
-					vDevice.GetDeviceTable().vkCmdPipelineBarrier(vCommandBuffer,
+					pDevice->GetDeviceTable().vkCmdPipelineBarrier(vCommandBuffer,
 						VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0,
 						0, nullptr,
 						0, nullptr,
@@ -572,7 +563,7 @@ namespace Flint
 					blit.dstSubresource.baseArrayLayer = i;
 					blit.dstSubresource.layerCount = mLayerCount - i;
 
-					vDevice.GetDeviceTable().vkCmdBlitImage(vCommandBuffer,
+					pDevice->GetDeviceTable().vkCmdBlitImage(vCommandBuffer,
 						vImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
 						vImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 						1, &blit,
@@ -583,7 +574,7 @@ namespace Flint
 					barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
 					barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
-					vDevice.GetDeviceTable().vkCmdPipelineBarrier(vCommandBuffer,
+					pDevice->GetDeviceTable().vkCmdPipelineBarrier(vCommandBuffer,
 						VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0,
 						0, nullptr,
 						0, nullptr,
@@ -600,7 +591,7 @@ namespace Flint
 				barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 				barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
-				vDevice.GetDeviceTable().vkCmdPipelineBarrier(vCommandBuffer,
+				pDevice->GetDeviceTable().vkCmdPipelineBarrier(vCommandBuffer,
 					VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0,
 					0, nullptr,
 					0, nullptr,
@@ -610,14 +601,13 @@ namespace Flint
 
 		void VulkanImage::GenerateCubeMapMipChain()
 		{
-			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 			VkFormatProperties vProperties = {};
-			vkGetPhysicalDeviceFormatProperties(vDevice.GetPhysicalDevice(), Utilities::GetVulkanFormat(mFormat), &vProperties);
+			vkGetPhysicalDeviceFormatProperties(pDevice->GetPhysicalDevice(), Utilities::GetVulkanFormat(mFormat), &vProperties);
 
-			VulkanOneTimeCommandBuffer vCommandBuffer(vDevice);
+			VulkanOneTimeCommandBuffer vCommandBuffer(*pDevice);
 			if (vCurrentLayout != VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
 			{
-				vDevice.SetImageLayout(vCommandBuffer, vImage, vCurrentLayout, VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels);
+				pDevice->SetImageLayout(vCommandBuffer, vImage, vCurrentLayout, VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels);
 				vCurrentLayout = VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
 			}
 
@@ -643,7 +633,7 @@ namespace Flint
 				barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 				barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
 
-				vDevice.GetDeviceTable().vkCmdPipelineBarrier(vCommandBuffer,
+				pDevice->GetDeviceTable().vkCmdPipelineBarrier(vCommandBuffer,
 					VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0,
 					0, nullptr,
 					0, nullptr,
@@ -663,7 +653,7 @@ namespace Flint
 				blit.dstSubresource.baseArrayLayer = 0;
 				blit.dstSubresource.layerCount = mLayerCount;
 
-				vDevice.GetDeviceTable().vkCmdBlitImage(vCommandBuffer,
+				pDevice->GetDeviceTable().vkCmdBlitImage(vCommandBuffer,
 					vImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
 					vImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 					1, &blit,
@@ -674,7 +664,7 @@ namespace Flint
 				barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
 				barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
-				vDevice.GetDeviceTable().vkCmdPipelineBarrier(vCommandBuffer,
+				pDevice->GetDeviceTable().vkCmdPipelineBarrier(vCommandBuffer,
 					VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0,
 					0, nullptr,
 					0, nullptr,
@@ -691,7 +681,7 @@ namespace Flint
 			barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 			barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
-			vDevice.GetDeviceTable().vkCmdPipelineBarrier(vCommandBuffer,
+			pDevice->GetDeviceTable().vkCmdPipelineBarrier(vCommandBuffer,
 				VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0,
 				0, nullptr,
 				0, nullptr,
@@ -701,7 +691,6 @@ namespace Flint
 		void VulkanImage::Initialize(const void* pImageData)
 		{
 			OPTICK_EVENT();
-			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 
 			CreateImage();
 			CreateImageView();
@@ -716,7 +705,7 @@ namespace Flint
 				std::copy(static_cast<const std::byte*>(pImageData), static_cast<const std::byte*>(pImageData) + size, pBytes);
 				vStagingBuffer.UnmapMemory();
 
-				vDevice.SetImageLayout(vImage, vCurrentLayout, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels);
+				pDevice->SetImageLayout(vImage, vCurrentLayout, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels);
 				vCurrentLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
 
 				// Copy from buffer. TODO
@@ -734,8 +723,8 @@ namespace Flint
 					vCopy.imageSubresource.layerCount = mLayerCount;
 					vCopy.imageSubresource.mipLevel = 0;
 
-					VulkanOneTimeCommandBuffer vCommandBuffer(vDevice);
-					vDevice.GetDeviceTable().vkCmdCopyBufferToImage(vCommandBuffer, vStagingBuffer.GetBuffer(), vImage, vCurrentLayout, 1, &vCopy);
+					VulkanOneTimeCommandBuffer vCommandBuffer(*pDevice);
+					pDevice->GetDeviceTable().vkCmdCopyBufferToImage(vCommandBuffer, vStagingBuffer.GetBuffer(), vImage, vCurrentLayout, 1, &vCopy);
 				}
 
 				vStagingBuffer.Terminate();
@@ -746,22 +735,22 @@ namespace Flint
 			}
 			else if ((mUsage & ImageUsage::Graphics) == ImageUsage::Graphics)
 			{
-				vDevice.SetImageLayout(vImage, vCurrentLayout, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels);
+				pDevice->SetImageLayout(vImage, vCurrentLayout, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels);
 				vCurrentLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 			}
 			else if ((mUsage & ImageUsage::Color) == ImageUsage::Color)
 			{
-				vDevice.SetImageLayout(vImage, vCurrentLayout, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels);
+				pDevice->SetImageLayout(vImage, vCurrentLayout, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels);
 				vCurrentLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 			}
 			else if ((mUsage & ImageUsage::Storage) == ImageUsage::Storage)
 			{
-				vDevice.SetImageLayout(vImage, vCurrentLayout, VK_IMAGE_LAYOUT_GENERAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels);
+				pDevice->SetImageLayout(vImage, vCurrentLayout, VK_IMAGE_LAYOUT_GENERAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels);
 				vCurrentLayout = VK_IMAGE_LAYOUT_GENERAL;
 			}
 			else
 			{
-				vDevice.SetImageLayout(vImage, vCurrentLayout, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels);
+				pDevice->SetImageLayout(vImage, vCurrentLayout, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels);
 				vCurrentLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 			}
 		}

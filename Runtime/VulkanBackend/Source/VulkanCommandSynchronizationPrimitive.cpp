@@ -7,7 +7,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanCommandSynchronizationPrimitive::VulkanCommandSynchronizationPrimitive(Device* pDevice)
+		VulkanCommandSynchronizationPrimitive::VulkanCommandSynchronizationPrimitive(VulkanDevice* pDevice)
 			: CommandSynchronizationPrimitive(pDevice)
 		{
 		}

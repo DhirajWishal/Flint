@@ -5,9 +5,4 @@
 
 namespace Flint
 {
-	DeviceBoundObject::DeviceBoundObject(Device* pDevice) : pDevice(pDevice)
-	{
-		if (!pDevice)
-			throw std::invalid_argument("Device pointer should not be null!");
-	}
 }

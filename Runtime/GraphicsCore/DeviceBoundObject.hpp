@@ -439,9 +439,10 @@ namespace Flint
 	 * Flint device bound object.
 	 * This object is the base class for all the resources in Flint which are based on a device.
 	 */
+	template<class DeviceT>
 	class DeviceBoundObject : public FObject
 	{
-		friend Device;
+		friend DeviceT;
 
 	public:
 		/**
@@ -449,14 +450,18 @@ namespace Flint
 		 *
 		 * @param pDevice The device pointer.
 		 */
-		DeviceBoundObject(Device* pDevice);
+		explicit DeviceBoundObject(DeviceT* pDevice) : pDevice(pDevice)
+		{
+			if (!pDevice)
+				throw std::invalid_argument("Device pointer should not be null!");
+		}
 
 		/**
 		 * Get the device of this object.
 		 *
 		 * @return The device pointer.
 		 */
-		Device* GetDevice() const { return pDevice; }
+		DeviceT* GetDevice() const { return pDevice; }
 
 		/**
 		 * Terminate the device bound object.
@@ -464,7 +469,7 @@ namespace Flint
 		virtual void Terminate() = 0;
 
 	protected:
-		Device* pDevice = nullptr;
+		DeviceT* pDevice = nullptr;
 	};
 }
 
