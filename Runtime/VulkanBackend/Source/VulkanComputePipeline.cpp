@@ -45,7 +45,7 @@ namespace Flint
 		void VulkanComputePipeline::CreateResourcePackagers()
 		{
 			for (uint32_t i = 0; i < vDescriptorSetLayouts.size(); i++)
-				pResourcePackagers.emplace_back(std::make_shared<VulkanResourcePackager>(i, shared_from_this(), vDescriptorSetLayouts[i]));
+				pResourcePackagers.emplace_back(std::make_shared<VulkanResourcePackager>(i, this, vDescriptorSetLayouts[i]));
 		}
 
 		void VulkanComputePipeline::Terminate()

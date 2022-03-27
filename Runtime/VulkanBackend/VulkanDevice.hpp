@@ -27,8 +27,8 @@ namespace Flint
 
 			virtual std::shared_ptr<SwapChain> CreateSwapChain(Display* pDisplay, uint32_t imageCount, const SwapChainPresentMode presentMode) override;
 
-			virtual std::shared_ptr<ScreenBoundRenderTarget> CreateScreenBoundRenderTarget(Display* pDisplay, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor = FColor4D(0.0f)) override;
-			virtual std::shared_ptr<OffScreenRenderTarget> CreateOffScreenRenderTarget(const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments) override;
+			virtual std::unique_ptr<ScreenBoundRenderTarget> CreateScreenBoundRenderTarget(Display* pDisplay, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor = FColor4D(0.0f)) override;
+			virtual std::unique_ptr<OffScreenRenderTarget> CreateOffScreenRenderTarget(const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments) override;
 
 			virtual std::unique_ptr<Buffer> CreateBuffer(const BufferType type, const uint64_t size, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic) override;
 
@@ -40,9 +40,9 @@ namespace Flint
 			virtual std::unique_ptr<Shader> CreateShader(const ShaderType type, const std::vector<uint32_t>& code) override;
 			virtual std::unique_ptr<Shader> CreateShader(const ShaderType type, const std::string& code) override;
 
-			virtual std::shared_ptr<GraphicsPipeline> CreateGraphicsPipeline(const std::string& pipelineName, const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget, std::unique_ptr<Shader>&& pVertexShader, std::unique_ptr<Shader>&& pTessellationControlShader, std::unique_ptr<Shader>&& pTessellationEvaluationShader, std::unique_ptr<Shader>&& pGeometryShader, std::unique_ptr<Shader>&& pFragmentShader, const GraphicsPipelineSpecification& specification) override;
-			virtual std::shared_ptr<GraphicsPipeline> CreateGraphicsPipeline(const std::string& pipelineName, const std::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget, std::unique_ptr<Shader>&& pVertexShader, std::unique_ptr<Shader>&& pTessellationControlShader, std::unique_ptr<Shader>&& pTessellationEvaluationShader, std::unique_ptr<Shader>&& pGeometryShader, std::unique_ptr<Shader>&& pFragmentShader, const GraphicsPipelineSpecification& specification) override;
-			virtual std::shared_ptr<ComputePipeline> CreateComputePipeline(const std::string& pipelineName, std::unique_ptr<Shader>&& pShader) override;
+			virtual std::unique_ptr<GraphicsPipeline> CreateGraphicsPipeline(const std::string& pipelineName, ScreenBoundRenderTarget* pScreenBoundRenderTarget, std::unique_ptr<Shader>&& pVertexShader, std::unique_ptr<Shader>&& pTessellationControlShader, std::unique_ptr<Shader>&& pTessellationEvaluationShader, std::unique_ptr<Shader>&& pGeometryShader, std::unique_ptr<Shader>&& pFragmentShader, const GraphicsPipelineSpecification& specification) override;
+			virtual std::unique_ptr<GraphicsPipeline> CreateGraphicsPipeline(const std::string& pipelineName, OffScreenRenderTarget* pOffScreenRenderTarget, std::unique_ptr<Shader>&& pVertexShader, std::unique_ptr<Shader>&& pTessellationControlShader, std::unique_ptr<Shader>&& pTessellationEvaluationShader, std::unique_ptr<Shader>&& pGeometryShader, std::unique_ptr<Shader>&& pFragmentShader, const GraphicsPipelineSpecification& specification) override;
+			virtual std::unique_ptr<ComputePipeline> CreateComputePipeline(const std::string& pipelineName, std::unique_ptr<Shader>&& pShader) override;
 
 			virtual std::shared_ptr<GeometryStore> CreateGeometryStore(const typename std::vector<ShaderAttribute>& vertexAttributes, uint64_t indexSize, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic) override;
 

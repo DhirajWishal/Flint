@@ -6,7 +6,7 @@
 
 namespace Flint
 {
-	GraphicsPipeline::GraphicsPipeline(Device* pDevice, const std::string& pipelineName, const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget, std::unique_ptr<Shader>&& pVertexShader, std::unique_ptr<Shader>&& pTessellationControlShader, std::unique_ptr<Shader>&& pTessellationEvaluationShader, std::unique_ptr<Shader>&& pGeometryShader, std::unique_ptr<Shader>&& pFragmentShader, const GraphicsPipelineSpecification& specification)
+	GraphicsPipeline::GraphicsPipeline(Device* pDevice, const std::string& pipelineName, const ScreenBoundRenderTarget* pScreenBoundRenderTarget, std::unique_ptr<Shader>&& pVertexShader, std::unique_ptr<Shader>&& pTessellationControlShader, std::unique_ptr<Shader>&& pTessellationEvaluationShader, std::unique_ptr<Shader>&& pGeometryShader, std::unique_ptr<Shader>&& pFragmentShader, const GraphicsPipelineSpecification& specification)
 		: Pipeline(pDevice, pipelineName)
 		, pRenderTarget(pScreenBoundRenderTarget)
 		, pVertexShader(std::move(pVertexShader))
@@ -26,7 +26,7 @@ namespace Flint
 			throw std::invalid_argument("Fragment shader pointer should not be null!");
 	}
 
-	GraphicsPipeline::GraphicsPipeline(Device* pDevice, const std::string& pipelineName, const std::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget, std::unique_ptr<Shader>&& pVertexShader, std::unique_ptr<Shader>&& pTessellationControlShader, std::unique_ptr<Shader>&& pTessellationEvaluationShader, std::unique_ptr<Shader>&& pGeometryShader, std::unique_ptr<Shader>&& pFragmentShader, const GraphicsPipelineSpecification& specification)
+	GraphicsPipeline::GraphicsPipeline(Device* pDevice, const std::string& pipelineName, const OffScreenRenderTarget* pOffScreenRenderTarget, std::unique_ptr<Shader>&& pVertexShader, std::unique_ptr<Shader>&& pTessellationControlShader, std::unique_ptr<Shader>&& pTessellationEvaluationShader, std::unique_ptr<Shader>&& pGeometryShader, std::unique_ptr<Shader>&& pFragmentShader, const GraphicsPipelineSpecification& specification)
 		: Pipeline(pDevice, pipelineName)
 		, pRenderTarget(pOffScreenRenderTarget)
 		, pVertexShader(std::move(pVertexShader))

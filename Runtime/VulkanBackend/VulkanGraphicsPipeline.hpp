@@ -10,15 +10,15 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanGraphicsPipeline final : public GraphicsPipeline, public std::enable_shared_from_this<VulkanGraphicsPipeline>
+		class VulkanGraphicsPipeline final : public GraphicsPipeline
 		{
 		public:
-			VulkanGraphicsPipeline(Device* pDevice, const std::string& pipelineName, const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget, std::unique_ptr<Shader>&& pVertexShader, std::unique_ptr<Shader>&& pTessellationControlShader, std::unique_ptr<Shader>&& pTessellationEvaluationShader, std::unique_ptr<Shader>&& pGeometryShader, std::unique_ptr<Shader>&& pFragmentShader, const GraphicsPipelineSpecification& specification);
-			VulkanGraphicsPipeline(Device* pDevice, const std::string& pipelineName, const std::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget, std::unique_ptr<Shader>&& pVertexShader, std::unique_ptr<Shader>&& pTessellationControlShader, std::unique_ptr<Shader>&& pTessellationEvaluationShader, std::unique_ptr<Shader>&& pGeometryShader, std::unique_ptr<Shader>&& pFragmentShader, const GraphicsPipelineSpecification& specification);
+			VulkanGraphicsPipeline(Device* pDevice, const std::string& pipelineName, const ScreenBoundRenderTarget* pScreenBoundRenderTarget, std::unique_ptr<Shader>&& pVertexShader, std::unique_ptr<Shader>&& pTessellationControlShader, std::unique_ptr<Shader>&& pTessellationEvaluationShader, std::unique_ptr<Shader>&& pGeometryShader, std::unique_ptr<Shader>&& pFragmentShader, const GraphicsPipelineSpecification& specification);
+			VulkanGraphicsPipeline(Device* pDevice, const std::string& pipelineName, const OffScreenRenderTarget* pOffScreenRenderTarget, std::unique_ptr<Shader>&& pVertexShader, std::unique_ptr<Shader>&& pTessellationControlShader, std::unique_ptr<Shader>&& pTessellationEvaluationShader, std::unique_ptr<Shader>&& pGeometryShader, std::unique_ptr<Shader>&& pFragmentShader, const GraphicsPipelineSpecification& specification);
 			~VulkanGraphicsPipeline() { if (!bIsTerminated) Terminate(); }
 
 			virtual void ReloadShaders() override;
-			virtual void Recreate(const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget) override;
+			virtual void Recreate(ScreenBoundRenderTarget* pScreenBoundRenderTarget) override;
 			virtual void CreateResourcePackagers() override;
 			virtual void Terminate() override;
 

@@ -538,7 +538,7 @@ namespace Flint
 			}
 		}
 
-		VulkanGraphicsPipeline::VulkanGraphicsPipeline(Device* pDevice, const std::string& pipelineName, const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget, std::unique_ptr<Shader>&& pVertexShader, std::unique_ptr<Shader>&& pTessellationControlShader, std::unique_ptr<Shader>&& pTessellationEvaluationShader, std::unique_ptr<Shader>&& pGeometryShader, std::unique_ptr<Shader>&& pFragmentShader, const GraphicsPipelineSpecification& specification)
+		VulkanGraphicsPipeline::VulkanGraphicsPipeline(Device* pDevice, const std::string& pipelineName, const ScreenBoundRenderTarget* pScreenBoundRenderTarget, std::unique_ptr<Shader>&& pVertexShader, std::unique_ptr<Shader>&& pTessellationControlShader, std::unique_ptr<Shader>&& pTessellationEvaluationShader, std::unique_ptr<Shader>&& pGeometryShader, std::unique_ptr<Shader>&& pFragmentShader, const GraphicsPipelineSpecification& specification)
 			: GraphicsPipeline(pDevice, pipelineName, pScreenBoundRenderTarget, std::move(pVertexShader), std::move(pTessellationControlShader), std::move(pTessellationEvaluationShader), std::move(pGeometryShader), std::move(pFragmentShader), specification)
 		{
 			OPTICK_EVENT();
@@ -551,7 +551,7 @@ namespace Flint
 			CreatePipeline();
 		}
 
-		VulkanGraphicsPipeline::VulkanGraphicsPipeline(Device* pDevice, const std::string& pipelineName, const std::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget, std::unique_ptr<Shader>&& pVertexShader, std::unique_ptr<Shader>&& pTessellationControlShader, std::unique_ptr<Shader>&& pTessellationEvaluationShader, std::unique_ptr<Shader>&& pGeometryShader, std::unique_ptr<Shader>&& pFragmentShader, const GraphicsPipelineSpecification& specification)
+		VulkanGraphicsPipeline::VulkanGraphicsPipeline(Device* pDevice, const std::string& pipelineName, const OffScreenRenderTarget* pOffScreenRenderTarget, std::unique_ptr<Shader>&& pVertexShader, std::unique_ptr<Shader>&& pTessellationControlShader, std::unique_ptr<Shader>&& pTessellationEvaluationShader, std::unique_ptr<Shader>&& pGeometryShader, std::unique_ptr<Shader>&& pFragmentShader, const GraphicsPipelineSpecification& specification)
 			: GraphicsPipeline(pDevice, pipelineName, pOffScreenRenderTarget, std::move(pVertexShader), std::move(pTessellationControlShader), std::move(pTessellationEvaluationShader), std::move(pGeometryShader), std::move(pFragmentShader), specification)
 		{
 			OPTICK_EVENT();
@@ -587,7 +587,7 @@ namespace Flint
 			CreateResourcePackagers();
 		}
 
-		void VulkanGraphicsPipeline::Recreate(const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget)
+		void VulkanGraphicsPipeline::Recreate(ScreenBoundRenderTarget* pScreenBoundRenderTarget)
 		{
 			OPTICK_EVENT();
 
@@ -600,7 +600,7 @@ namespace Flint
 		void VulkanGraphicsPipeline::CreateResourcePackagers()
 		{
 			for (uint32_t i = 0; i < vDescriptorSetLayouts.size(); i++)
-				pResourcePackagers.emplace_back(std::make_shared<VulkanResourcePackager>(i, shared_from_this(), vDescriptorSetLayouts[i]));
+				pResourcePackagers.emplace_back(std::make_shared<VulkanResourcePackager>(i, this, vDescriptorSetLayouts[i]));
 		}
 
 		void VulkanGraphicsPipeline::Terminate()

@@ -9,7 +9,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanResourcePackager::VulkanResourcePackager(const uint32_t setIndex, const std::shared_ptr<GraphicsPipeline>& pPipeline, const VkDescriptorSetLayout vLayout)
+		VulkanResourcePackager::VulkanResourcePackager(const uint32_t setIndex, const GraphicsPipeline* pPipeline, const VkDescriptorSetLayout vLayout)
 			: ResourcePackager(setIndex, pPipeline), vDescriptorSetLayout(vLayout)
 		{
 			// Resolve vertex shader data.
@@ -112,7 +112,7 @@ namespace Flint
 			}
 		}
 
-		VulkanResourcePackager::VulkanResourcePackager(const uint32_t setIndex, const std::shared_ptr<ComputePipeline>& pPipeline, const VkDescriptorSetLayout vLayout)
+		VulkanResourcePackager::VulkanResourcePackager(const uint32_t setIndex, const ComputePipeline* pPipeline, const VkDescriptorSetLayout vLayout)
 			: ResourcePackager(setIndex, pPipeline), vDescriptorSetLayout(vLayout)
 		{
 			VulkanShader& vShader = pPipeline->GetShader()->StaticCast<VulkanShader>();

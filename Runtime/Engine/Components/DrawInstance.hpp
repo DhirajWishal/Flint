@@ -31,7 +31,7 @@ namespace Flint
 		struct DrawInstanceGraphics
 		{
 			DrawInstanceGraphics() = default;
-			DrawInstanceGraphics(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::shared_ptr<GraphicsPipeline>& pPipeline)
+			DrawInstanceGraphics(const std::shared_ptr<GeometryStore>& pGeometryStore, GraphicsPipeline* pPipeline)
 				: pGeometryStore(pGeometryStore), pGraphicsPipeline(pPipeline) {}
 
 			void AddDrawData(const WireFrame* pWireFrame, const std::vector<std::shared_ptr<ResourcePackage>>& pPackages, const std::shared_ptr<DynamicStateContainer>& pDynamicStates)
@@ -41,7 +41,7 @@ namespace Flint
 
 			std::vector<DrawData> mDrawData = {};
 			std::shared_ptr<GeometryStore> pGeometryStore = nullptr;
-			std::shared_ptr<GraphicsPipeline> pGraphicsPipeline = nullptr;
+			std::unique_ptr<GraphicsPipeline> pGraphicsPipeline = nullptr;
 		};
 	}
 }

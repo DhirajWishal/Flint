@@ -133,7 +133,7 @@ namespace Flint
 		 *
 		 * @retrun The render target pointer.
 		 */
-		std::shared_ptr<ScreenBoundRenderTarget> GetScreenBoundRenderTarget() const { return pScreenBoundRenderTarget; }
+		ScreenBoundRenderTarget* GetScreenBoundRenderTarget() const { return pScreenBoundRenderTarget.get(); }
 
 		/**
 		 * Get the command buffer allocator pointer.
@@ -208,7 +208,7 @@ namespace Flint
 
 		std::unique_ptr<Display> pDisplay = nullptr;
 
-		std::shared_ptr<ScreenBoundRenderTarget> pScreenBoundRenderTarget = nullptr;
+		std::unique_ptr<ScreenBoundRenderTarget> pScreenBoundRenderTarget = nullptr;
 		std::unique_ptr<CommandBufferAllocator> pCommandBufferAllocator = nullptr;
 
 		MultiSampleCount mMultiSampleCount = MultiSampleCount::One;

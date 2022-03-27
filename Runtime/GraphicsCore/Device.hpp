@@ -125,7 +125,7 @@ namespace Flint
 		 * @param swapChainClearColor The swap chain's clear color.
 		 * @return The screen bound render target object.
 		 */
-		virtual std::shared_ptr<ScreenBoundRenderTarget> CreateScreenBoundRenderTarget(Display* pDisplay, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor = FColor4D(0.0f)) = 0;
+		virtual std::unique_ptr<ScreenBoundRenderTarget> CreateScreenBoundRenderTarget(Display* pDisplay, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor = FColor4D(0.0f)) = 0;
 
 		/**
 		 * Create a new off screen render target.
@@ -136,7 +136,7 @@ namespace Flint
 		 * @param imageAttachments The image attachments which the render target uses.
 		 * @return The render target pointer.
 		 */
-		virtual std::shared_ptr<OffScreenRenderTarget> CreateOffScreenRenderTarget(const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments) = 0;
+		virtual std::unique_ptr<OffScreenRenderTarget> CreateOffScreenRenderTarget(const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments) = 0;
 
 		/**
 		 * Create a new buffer.
@@ -214,7 +214,7 @@ namespace Flint
 		 * @param specification The pipeline specification.
 		 * @return The pipeline pointer.
 		 */
-		virtual std::shared_ptr<GraphicsPipeline> CreateGraphicsPipeline(const std::string& pipelineName, const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget, std::unique_ptr<Shader>&& pVertexShader, std::unique_ptr<Shader>&& pTessellationControlShader, std::unique_ptr<Shader>&& pTessellationEvaluationShader, std::unique_ptr<Shader>&& pGeometryShader, std::unique_ptr<Shader>&& pFragmentShader, const GraphicsPipelineSpecification& specification) = 0;
+		virtual std::unique_ptr<GraphicsPipeline> CreateGraphicsPipeline(const std::string& pipelineName, ScreenBoundRenderTarget* pScreenBoundRenderTarget, std::unique_ptr<Shader>&& pVertexShader, std::unique_ptr<Shader>&& pTessellationControlShader, std::unique_ptr<Shader>&& pTessellationEvaluationShader, std::unique_ptr<Shader>&& pGeometryShader, std::unique_ptr<Shader>&& pFragmentShader, const GraphicsPipelineSpecification& specification) = 0;
 
 		/**
 		 * Create a new graphics pipeline bound to a off screen render target.
@@ -229,7 +229,7 @@ namespace Flint
 		 * @param specification The pipeline specification.
 		 * @return The pipeline pointer.
 		 */
-		virtual std::shared_ptr<GraphicsPipeline> CreateGraphicsPipeline(const std::string& pipelineName, const std::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget, std::unique_ptr<Shader>&& pVertexShader, std::unique_ptr<Shader>&& pTessellationControlShader, std::unique_ptr<Shader>&& pTessellationEvaluationShader, std::unique_ptr<Shader>&& pGeometryShader, std::unique_ptr<Shader>&& pFragmentShader, const GraphicsPipelineSpecification& specification) = 0;
+		virtual std::unique_ptr<GraphicsPipeline> CreateGraphicsPipeline(const std::string& pipelineName, OffScreenRenderTarget* pOffScreenRenderTarget, std::unique_ptr<Shader>&& pVertexShader, std::unique_ptr<Shader>&& pTessellationControlShader, std::unique_ptr<Shader>&& pTessellationEvaluationShader, std::unique_ptr<Shader>&& pGeometryShader, std::unique_ptr<Shader>&& pFragmentShader, const GraphicsPipelineSpecification& specification) = 0;
 
 		/**
 		 * Create a new compute pipeline.
@@ -238,7 +238,7 @@ namespace Flint
 		 * @param pShader The compute shader pointer.
 		 * @return The pipeline pointer.
 		 */
-		virtual std::shared_ptr<ComputePipeline> CreateComputePipeline(const std::string& pipelineName, std::unique_ptr<Shader>&& pShader) = 0;
+		virtual std::unique_ptr<ComputePipeline> CreateComputePipeline(const std::string& pipelineName, std::unique_ptr<Shader>&& pShader) = 0;
 
 		/**
 		 * Create a new geometry store.

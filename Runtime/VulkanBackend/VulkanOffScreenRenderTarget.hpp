@@ -10,7 +10,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanOffScreenRenderTarget : public OffScreenRenderTarget, public std::enable_shared_from_this<VulkanOffScreenRenderTarget>
+		class VulkanOffScreenRenderTarget : public OffScreenRenderTarget
 		{
 		public:
 			VulkanOffScreenRenderTarget(Device* pDevice, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments);
@@ -34,7 +34,7 @@ namespace Flint
 			VulkanRenderTarget vRenderTarget;
 
 			std::vector<VkSubpassDependency> vDependencies{ 2 };
-			std::shared_ptr<OffScreenRenderTarget> pThisRenderTarget = nullptr;
+			std::unique_ptr<OffScreenRenderTarget> pThisRenderTarget = nullptr;
 			mutable VkCommandBufferInheritanceInfo vInheritInfo = {};
 
 			std::vector<VkClearValue> vClearValues = {};

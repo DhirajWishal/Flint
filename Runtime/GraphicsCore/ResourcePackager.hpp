@@ -21,14 +21,14 @@ namespace Flint
 		 *
 		 * @param pPipeline The graphics pipeline pointer.
 		 */
-		ResourcePackager(const uint32_t setIndex, const std::shared_ptr<GraphicsPipeline>& pPipeline);
+		ResourcePackager(const uint32_t setIndex, const GraphicsPipeline* pPipeline);
 
 		/**
 		 * Construct the packager.
 		 *
 		 * @param pPipeline The compute pipeline pointer.
 		 */
-		ResourcePackager(const uint32_t setIndex, const std::shared_ptr<ComputePipeline>& pPipeline);
+		ResourcePackager(const uint32_t setIndex, const ComputePipeline* pPipeline);
 
 		/**
 		 * Create a new package.
@@ -48,7 +48,7 @@ namespace Flint
 		 * 
 		 * @return The pipeline pointer.
 		 */
-		const std::shared_ptr<Pipeline> GetPipeline() const { return pPipeline; }
+		const Pipeline* GetPipeline() const { return pPipeline; }
 
 		/**
 		 * Get the set index of the packager.
@@ -65,7 +65,7 @@ namespace Flint
 		const std::unordered_map<uint32_t, ShaderResourceType> GetResources() const { return mResources; }
 
 	protected:
-		std::shared_ptr<Pipeline> pPipeline = nullptr;
+		const Pipeline* pPipeline = nullptr;
 		std::vector<std::shared_ptr<ResourcePackage>> pPackages = {};
 		std::unordered_map<uint32_t, ShaderResourceType> mResources = {};
 

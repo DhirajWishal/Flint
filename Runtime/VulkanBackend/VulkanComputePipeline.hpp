@@ -10,7 +10,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanComputePipeline final : public ComputePipeline, public std::enable_shared_from_this<VulkanComputePipeline>
+		class VulkanComputePipeline final : public ComputePipeline
 		{
 		public:
 			VulkanComputePipeline(Device* pDevice, const std::string& pipelineName, std::unique_ptr<Shader>&& pComputeShader);
@@ -30,7 +30,7 @@ namespace Flint
 			void CreatePipeline();
 
 		private:
-			std::shared_ptr<ComputePipeline> pThisPipeline = nullptr;
+			std::unique_ptr<ComputePipeline> pThisPipeline = nullptr;
 			std::vector<VkDescriptorSetLayout> vDescriptorSetLayouts = {};
 
 			VkPipelineLayout vPipelineLayout = VK_NULL_HANDLE;

@@ -306,7 +306,7 @@ namespace Flint
 		 * @param pFragmentShader The fragment shader (optional).
 		 * @param specification The pipeline specification.
 		 */
-		GraphicsPipeline(Device* pDevice, const std::string& pipelineName, const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget, std::unique_ptr<Shader>&& pVertexShader, std::unique_ptr<Shader>&& pTessellationControlShader, std::unique_ptr<Shader>&& pTessellationEvaluationShader, std::unique_ptr<Shader>&& pGeometryShader, std::unique_ptr<Shader>&& pFragmentShader, const GraphicsPipelineSpecification& specification);
+		GraphicsPipeline(Device* pDevice, const std::string& pipelineName, const ScreenBoundRenderTarget* pScreenBoundRenderTarget, std::unique_ptr<Shader>&& pVertexShader, std::unique_ptr<Shader>&& pTessellationControlShader, std::unique_ptr<Shader>&& pTessellationEvaluationShader, std::unique_ptr<Shader>&& pGeometryShader, std::unique_ptr<Shader>&& pFragmentShader, const GraphicsPipelineSpecification& specification);
 
 		/**
 		 * Construct the pipeline using an off screen render target.
@@ -321,7 +321,7 @@ namespace Flint
 		 * @param pFragmentShader The fragment shader (optional).
 		 * @param specification The pipeline specification.
 		 */
-		GraphicsPipeline(Device* pDevice, const std::string& pipelineName, const std::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget, std::unique_ptr<Shader>&& pVertexShader, std::unique_ptr<Shader>&& pTessellationControlShader, std::unique_ptr<Shader>&& pTessellationEvaluationShader, std::unique_ptr<Shader>&& pGeometryShader, std::unique_ptr<Shader>&& pFragmentShader, const GraphicsPipelineSpecification& specification);
+		GraphicsPipeline(Device* pDevice, const std::string& pipelineName, const OffScreenRenderTarget* pOffScreenRenderTarget, std::unique_ptr<Shader>&& pVertexShader, std::unique_ptr<Shader>&& pTessellationControlShader, std::unique_ptr<Shader>&& pTessellationEvaluationShader, std::unique_ptr<Shader>&& pGeometryShader, std::unique_ptr<Shader>&& pFragmentShader, const GraphicsPipelineSpecification& specification);
 
 		/**
 		 * Recreate the graphics pipeline.
@@ -329,7 +329,7 @@ namespace Flint
 		 *
 		 * @param pScreenBoundRenderTarget The screen bound render target pointer.
 		 */
-		virtual void Recreate(const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget) = 0;
+		virtual void Recreate(ScreenBoundRenderTarget* pScreenBoundRenderTarget) = 0;
 
 		/**
 		 * Get the current graphics specification of the pipeline.
@@ -377,7 +377,7 @@ namespace Flint
 	protected:
 		GraphicsPipelineSpecification mSpecification = {};
 
-		std::shared_ptr<RenderTarget> pRenderTarget = nullptr;
+		const RenderTarget* pRenderTarget = nullptr;
 
 		std::unique_ptr<Shader> pVertexShader = nullptr;
 		std::unique_ptr<Shader> pFragmentShader = nullptr;

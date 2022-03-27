@@ -150,14 +150,14 @@ namespace Flint
 			return std::make_shared<VulkanSwapChain>(this, pDisplay, imageCount, presentMode);
 		}
 
-		std::shared_ptr<ScreenBoundRenderTarget> VulkanDevice::CreateScreenBoundRenderTarget(Display* pDisplay, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor)
+		std::unique_ptr<ScreenBoundRenderTarget> VulkanDevice::CreateScreenBoundRenderTarget(Display* pDisplay, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor)
 		{
-			return  std::make_shared<VulkanScreenBoundRenderTarget>(this, pDisplay, extent, bufferCount, imageAttachments, presentMode, swapChainClearColor);
+			return  std::make_unique<VulkanScreenBoundRenderTarget>(this, pDisplay, extent, bufferCount, imageAttachments, presentMode, swapChainClearColor);
 		}
 
-		std::shared_ptr<OffScreenRenderTarget> VulkanDevice::CreateOffScreenRenderTarget(const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments)
+		std::unique_ptr<OffScreenRenderTarget> VulkanDevice::CreateOffScreenRenderTarget(const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments)
 		{
-			return std::make_shared<VulkanOffScreenRenderTarget>(this, extent, bufferCount, imageAttachments);
+			return std::make_unique<VulkanOffScreenRenderTarget>(this, extent, bufferCount, imageAttachments);
 		}
 
 		std::unique_ptr<Buffer> VulkanDevice::CreateBuffer(const BufferType type, const uint64_t size, const BufferMemoryProfile profile)
@@ -190,19 +190,19 @@ namespace Flint
 			return std::make_unique<VulkanShader>(this, type, code);
 		}
 
-		std::shared_ptr<GraphicsPipeline> VulkanDevice::CreateGraphicsPipeline(const std::string& pipelineName, const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget, std::unique_ptr<Shader>&& pVertexShader, std::unique_ptr<Shader>&& pTessellationControlShader, std::unique_ptr<Shader>&& pTessellationEvaluationShader, std::unique_ptr<Shader>&& pGeometryShader, std::unique_ptr<Shader>&& pFragmentShader, const GraphicsPipelineSpecification& specification)
+		std::unique_ptr<GraphicsPipeline> VulkanDevice::CreateGraphicsPipeline(const std::string& pipelineName, ScreenBoundRenderTarget* pScreenBoundRenderTarget, std::unique_ptr<Shader>&& pVertexShader, std::unique_ptr<Shader>&& pTessellationControlShader, std::unique_ptr<Shader>&& pTessellationEvaluationShader, std::unique_ptr<Shader>&& pGeometryShader, std::unique_ptr<Shader>&& pFragmentShader, const GraphicsPipelineSpecification& specification)
 		{
-			return std::make_shared<VulkanGraphicsPipeline>(this, pipelineName, pScreenBoundRenderTarget, std::move(pVertexShader), std::move(pTessellationControlShader), std::move(pTessellationEvaluationShader), std::move(pGeometryShader), std::move(pFragmentShader), specification);
+			return std::make_unique<VulkanGraphicsPipeline>(this, pipelineName, pScreenBoundRenderTarget, std::move(pVertexShader), std::move(pTessellationControlShader), std::move(pTessellationEvaluationShader), std::move(pGeometryShader), std::move(pFragmentShader), specification);
 		}
 
-		std::shared_ptr<GraphicsPipeline> VulkanDevice::CreateGraphicsPipeline(const std::string& pipelineName, const std::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget, std::unique_ptr<Shader>&& pVertexShader, std::unique_ptr<Shader>&& pTessellationControlShader, std::unique_ptr<Shader>&& pTessellationEvaluationShader, std::unique_ptr<Shader>&& pGeometryShader, std::unique_ptr<Shader>&& pFragmentShader, const GraphicsPipelineSpecification& specification)
+		std::unique_ptr<GraphicsPipeline> VulkanDevice::CreateGraphicsPipeline(const std::string& pipelineName, OffScreenRenderTarget* pOffScreenRenderTarget, std::unique_ptr<Shader>&& pVertexShader, std::unique_ptr<Shader>&& pTessellationControlShader, std::unique_ptr<Shader>&& pTessellationEvaluationShader, std::unique_ptr<Shader>&& pGeometryShader, std::unique_ptr<Shader>&& pFragmentShader, const GraphicsPipelineSpecification& specification)
 		{
-			return std::make_shared<VulkanGraphicsPipeline>(this, pipelineName, pOffScreenRenderTarget, std::move(pVertexShader), std::move(pTessellationControlShader), std::move(pTessellationEvaluationShader), std::move(pGeometryShader), std::move(pFragmentShader), specification);
+			return std::make_unique<VulkanGraphicsPipeline>(this, pipelineName, pOffScreenRenderTarget, std::move(pVertexShader), std::move(pTessellationControlShader), std::move(pTessellationEvaluationShader), std::move(pGeometryShader), std::move(pFragmentShader), specification);
 		}
 
-		std::shared_ptr<ComputePipeline> VulkanDevice::CreateComputePipeline(const std::string& pipelineName, std::unique_ptr<Shader>&& pShader)
+		std::unique_ptr<ComputePipeline> VulkanDevice::CreateComputePipeline(const std::string& pipelineName, std::unique_ptr<Shader>&& pShader)
 		{
-			return std::make_shared<VulkanComputePipeline>(this, pipelineName, std::move(pShader));
+			return std::make_unique<VulkanComputePipeline>(this, pipelineName, std::move(pShader));
 		}
 
 		std::shared_ptr<GeometryStore> VulkanDevice::CreateGeometryStore(const std::vector<ShaderAttribute>& vertexAttributes, uint64_t indexSize, const BufferMemoryProfile profile)

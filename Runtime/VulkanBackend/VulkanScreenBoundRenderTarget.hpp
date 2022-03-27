@@ -16,7 +16,7 @@ namespace Flint
 	{
 		class VulkanCommandBufferList;
 
-		class VulkanScreenBoundRenderTarget final : public ScreenBoundRenderTarget, public std::enable_shared_from_this<VulkanScreenBoundRenderTarget>
+		class VulkanScreenBoundRenderTarget final : public ScreenBoundRenderTarget
 		{
 		public:
 			VulkanScreenBoundRenderTarget(Device* pDevice, Display* pDisplay, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor = FColor4D(0.0f));
