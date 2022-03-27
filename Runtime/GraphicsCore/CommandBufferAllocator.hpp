@@ -33,7 +33,7 @@ namespace Flint
 		 * @param pParent The parent command buffer allocator.
 		 * @param bufferCount The number of buffers to allocate.
 		 */
-		CommandBufferAllocator(Device* pDevice, const std::shared_ptr<CommandBufferAllocator>& pParent, const uint32_t bufferCount);
+		CommandBufferAllocator(Device* pDevice, CommandBufferAllocator* pParent, const uint32_t bufferCount);
 
 		/**
 		 * Create the command buffers.
@@ -47,7 +47,7 @@ namespace Flint
 		 * 
 		 * @return The created secondary command buffer allocator.
 		 */
-		virtual std::shared_ptr<CommandBufferAllocator> CreateChildAllocator() = 0;
+		virtual std::unique_ptr<CommandBufferAllocator> CreateChildAllocator() = 0;
 
 	public:
 		/**
@@ -62,7 +62,7 @@ namespace Flint
 		 * 
 		 * @return The parent pointer. Returns nullptr if this is a primary command buffer allocator.
 		 */
-		const std::shared_ptr<CommandBufferAllocator> GetParentAllocator() const { return pParentAllocator; }
+		const CommandBufferAllocator* GetParentAllocator() const { return pParentAllocator; }
 
 		/**
 		 * Get the allocated command buffers.
@@ -89,7 +89,7 @@ namespace Flint
 
 	protected:
 		std::vector<std::shared_ptr<CommandBuffer>> pCommandBuffers = {};
-		std::shared_ptr<CommandBufferAllocator> pParentAllocator = nullptr;
+		CommandBufferAllocator* pParentAllocator = nullptr;
 
 		uint32_t mBufferCount = 0;
 	};

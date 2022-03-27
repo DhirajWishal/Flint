@@ -135,14 +135,14 @@ namespace Flint
 			return MultiSampleCount(vSampleCount);
 		}
 
-		std::shared_ptr<CommandBufferAllocator> VulkanDevice::CreateCommandBufferAllocator(const uint32_t bufferCount)
+		std::unique_ptr<CommandBufferAllocator> VulkanDevice::CreateCommandBufferAllocator(const uint32_t bufferCount)
 		{
-			return std::make_shared<VulkanCommandBufferAllocator>(this, bufferCount);
+			return std::make_unique<VulkanCommandBufferAllocator>(this, bufferCount);
 		}
 
-		std::shared_ptr<CommandBufferAllocator> VulkanDevice::CreateSecondaryCommandBufferAllocator(const uint32_t bufferCount, const std::shared_ptr<CommandBufferAllocator>& pParentAllocator)
+		std::unique_ptr<CommandBufferAllocator> VulkanDevice::CreateSecondaryCommandBufferAllocator(const uint32_t bufferCount, CommandBufferAllocator* pParentAllocator)
 		{
-			return std::make_shared<VulkanCommandBufferAllocator>(this, pParentAllocator, bufferCount);
+			return std::make_unique<VulkanCommandBufferAllocator>(this, pParentAllocator, bufferCount);
 		}
 
 		std::shared_ptr<SwapChain> VulkanDevice::CreateSwapChain(Display* pDisplay, uint32_t imageCount, const SwapChainPresentMode presentMode)

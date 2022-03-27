@@ -22,8 +22,8 @@ namespace Flint
 			virtual bool IsDisplayCompatible(const Display* pDisplay) override;
 			virtual MultiSampleCount GetSupportedMultiSampleCount() const override;
 
-			virtual std::shared_ptr<CommandBufferAllocator> CreateCommandBufferAllocator(const uint32_t bufferCount) override;
-			virtual std::shared_ptr<CommandBufferAllocator> CreateSecondaryCommandBufferAllocator(const uint32_t bufferCount, const std::shared_ptr<CommandBufferAllocator>& pParentAllocator) override;
+			virtual std::unique_ptr<CommandBufferAllocator> CreateCommandBufferAllocator(const uint32_t bufferCount) override;
+			virtual std::unique_ptr<CommandBufferAllocator> CreateSecondaryCommandBufferAllocator(const uint32_t bufferCount, CommandBufferAllocator* pParentAllocator) override;
 
 			virtual std::shared_ptr<SwapChain> CreateSwapChain(Display* pDisplay, uint32_t imageCount, const SwapChainPresentMode presentMode) override;
 

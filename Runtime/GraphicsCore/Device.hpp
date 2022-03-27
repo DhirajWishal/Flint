@@ -92,7 +92,7 @@ namespace Flint
 		 * @param bufferCount The number of buffers the allocator should create.
 		 * @return The allocator pointer.
 		 */
-		virtual std::shared_ptr<CommandBufferAllocator> CreateCommandBufferAllocator(const uint32_t bufferCount) = 0;
+		virtual std::unique_ptr<CommandBufferAllocator> CreateCommandBufferAllocator(const uint32_t bufferCount) = 0;
 
 		/**
 		 * Create a new secondary command buffer allocator.
@@ -101,7 +101,7 @@ namespace Flint
 		 * @param pParentAllocator The parent command buffer allocator pointer.
 		 * @return The command buffer allocator pointer.
 		 */
-		virtual std::shared_ptr<CommandBufferAllocator> CreateSecondaryCommandBufferAllocator(const uint32_t bufferCount, const std::shared_ptr<CommandBufferAllocator>& pParentAllocator) = 0;
+		virtual std::unique_ptr<CommandBufferAllocator> CreateSecondaryCommandBufferAllocator(const uint32_t bufferCount, CommandBufferAllocator* pParentAllocator) = 0;
 
 		/**
 		 * Create a new swap chain.

@@ -10,15 +10,15 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanCommandBufferAllocator final : public CommandBufferAllocator, public std::enable_shared_from_this<VulkanCommandBufferAllocator>
+		class VulkanCommandBufferAllocator final : public CommandBufferAllocator
 		{
 		public:
 			VulkanCommandBufferAllocator(Device* pDevice, const uint32_t bufferCount);
-			VulkanCommandBufferAllocator(Device* pDevice, const std::shared_ptr<CommandBufferAllocator>& pParent, const uint32_t bufferCount);
+			VulkanCommandBufferAllocator(Device* pDevice, CommandBufferAllocator* pParent, const uint32_t bufferCount);
 			~VulkanCommandBufferAllocator() { if(!bIsTerminated) Terminate(); }
 
 			virtual const std::vector<std::shared_ptr<CommandBuffer>> CreateCommandBuffers() override;
-			virtual std::shared_ptr<CommandBufferAllocator> CreateChildAllocator() override;
+			virtual std::unique_ptr<CommandBufferAllocator> CreateChildAllocator() override;
 			virtual void Terminate() override;
 
 		private:

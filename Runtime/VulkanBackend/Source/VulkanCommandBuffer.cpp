@@ -20,7 +20,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanCommandBuffer::VulkanCommandBuffer(const std::shared_ptr<CommandBufferAllocator>& pAllocator, VkCommandBuffer vCommandBuffer)
+		VulkanCommandBuffer::VulkanCommandBuffer(CommandBufferAllocator* pAllocator, VkCommandBuffer vCommandBuffer)
 			: CommandBuffer(pAllocator), vCommandBuffer(vCommandBuffer)
 		{
 			OPTICK_EVENT();

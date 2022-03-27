@@ -13,7 +13,7 @@ namespace Flint
 		class VulkanCommandBuffer final : public CommandBuffer, public std::enable_shared_from_this<VulkanCommandBuffer>
 		{
 		public:
-			VulkanCommandBuffer(const std::shared_ptr<CommandBufferAllocator>& pAllocator, VkCommandBuffer vCommandBuffer);
+			VulkanCommandBuffer(CommandBufferAllocator* pAllocator, VkCommandBuffer vCommandBuffer);
 			~VulkanCommandBuffer() { if (!bIsTerminated) Terminate(); }
 
 			virtual void BeginBufferRecording() override;

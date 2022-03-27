@@ -57,7 +57,7 @@ namespace Flint
 		 *
 		 * @param pAllocator The command buffer allocator which allocated this object.
 		 */
-		CommandBuffer(const std::shared_ptr<CommandBufferAllocator>& pAllocator) : pAllocator(pAllocator) {}
+		CommandBuffer(CommandBufferAllocator* pAllocator) : pAllocator(pAllocator) {}
 
 	public:
 		/**
@@ -394,7 +394,7 @@ namespace Flint
 		 *
 		 * @return The allocator pointer.
 		 */
-		const std::shared_ptr<CommandBufferAllocator> GetAllocator() const { return pAllocator; }
+		CommandBufferAllocator* GetAllocator() const { return pAllocator; }
 
 		/**
 		 * Check if the command buffer is valid.
@@ -418,7 +418,7 @@ namespace Flint
 		virtual void Terminate() = 0;
 
 	protected:
-		std::shared_ptr<CommandBufferAllocator> pAllocator = nullptr;
+		CommandBufferAllocator* pAllocator = nullptr;
 
 		bool bIsRecording = false;
 	};

@@ -23,7 +23,7 @@ namespace Flint
 			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateCommandPool(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vCommandPool));
 		}
 
-		VulkanCommandBufferAllocator::VulkanCommandBufferAllocator(Device* pDevice, const std::shared_ptr<CommandBufferAllocator>& pParent, const uint32_t bufferCount)
+		VulkanCommandBufferAllocator::VulkanCommandBufferAllocator(Device* pDevice, CommandBufferAllocator* pParent, const uint32_t bufferCount)
 			: CommandBufferAllocator(pDevice, pParent, bufferCount)
 		{
 			OPTICK_EVENT();
@@ -58,14 +58,14 @@ namespace Flint
 
 			pCommandBuffers.reserve(mBufferCount);
 			for (const auto vCommandBuffer : vCommandBuffers)
-				pCommandBuffers.emplace_back(std::make_shared<VulkanCommandBuffer>(shared_from_this(), vCommandBuffer));
+				pCommandBuffers.emplace_back(std::make_shared<VulkanCommandBuffer>(this, vCommandBuffer));
 
 			return pCommandBuffers;
 		}
 
-		std::shared_ptr<CommandBufferAllocator> VulkanCommandBufferAllocator::CreateChildAllocator()
+		std::unique_ptr<CommandBufferAllocator> VulkanCommandBufferAllocator::CreateChildAllocator()
 		{
-			return std::make_shared<VulkanCommandBufferAllocator>(pDevice, shared_from_this(), mBufferCount);
+			return std::make_unique<VulkanCommandBufferAllocator>(pDevice, this, mBufferCount);
 		}
 
 		void VulkanCommandBufferAllocator::Terminate()

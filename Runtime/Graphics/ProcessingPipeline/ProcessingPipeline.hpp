@@ -140,7 +140,7 @@ namespace Flint
 		 *
 		 * @return The command buffer allocator pointer.
 		 */
-		std::shared_ptr<CommandBufferAllocator> GetCommandBufferAllocator() const { return pCommandBufferAllocator; }
+		CommandBufferAllocator* GetCommandBufferAllocator() const { return pCommandBufferAllocator.get(); }
 
 		/**
 		 * Get the command buffers.
@@ -209,7 +209,7 @@ namespace Flint
 		std::unique_ptr<Display> pDisplay = nullptr;
 
 		std::shared_ptr<ScreenBoundRenderTarget> pScreenBoundRenderTarget = nullptr;
-		std::shared_ptr<CommandBufferAllocator> pCommandBufferAllocator = nullptr;
+		std::unique_ptr<CommandBufferAllocator> pCommandBufferAllocator = nullptr;
 
 		MultiSampleCount mMultiSampleCount = MultiSampleCount::One;
 

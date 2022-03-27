@@ -12,7 +12,7 @@ namespace Flint
 			throw std::invalid_argument("Command buffer count should not be 0!");
 	}
 
-	CommandBufferAllocator::CommandBufferAllocator(Device* pDevice, const std::shared_ptr<CommandBufferAllocator>& pParent, const uint32_t bufferCount)
+	CommandBufferAllocator::CommandBufferAllocator(Device* pDevice, CommandBufferAllocator* pParent, const uint32_t bufferCount)
 		: DeviceBoundObject(pDevice), pParentAllocator(pParent), mBufferCount(bufferCount)
 	{
 		if (!pParentAllocator)
