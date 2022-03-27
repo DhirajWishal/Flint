@@ -62,7 +62,7 @@ namespace Flint
 		 *
 		 * @return The device pointer.
 		 */
-		std::shared_ptr<Device> GetDevice() const;
+		Device* GetDevice() const;
 
 		/**
 		 * Get the display pointer.

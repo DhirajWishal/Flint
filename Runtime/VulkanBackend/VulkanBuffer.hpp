@@ -13,7 +13,7 @@ namespace Flint
 		class VulkanBuffer final : public Buffer, public std::enable_shared_from_this<VulkanBuffer>
 		{
 		public:
-			VulkanBuffer(const std::shared_ptr<Device>& pDevice, const BufferType type, const uint64_t size, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic);
+			VulkanBuffer(Device* pDevice, const BufferType type, const uint64_t size, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic);
 			~VulkanBuffer() { if (!bIsTerminated) Terminate(); }
 
 			virtual void Resize(const uint64_t size, const BufferResizeMode mode) override;

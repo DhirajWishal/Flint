@@ -12,7 +12,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanScreenBoundRenderTarget::VulkanScreenBoundRenderTarget(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor)
+		VulkanScreenBoundRenderTarget::VulkanScreenBoundRenderTarget(Device* pDevice, const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor)
 			: ScreenBoundRenderTarget(pDevice, pDisplay, extent, bufferCount, imageAttachments, presentMode), vRenderTarget(pDevice->StaticCast<VulkanDevice>())
 		{
 			OPTICK_EVENT();

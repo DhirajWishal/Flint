@@ -8,7 +8,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanBuffer::VulkanBuffer(const std::shared_ptr<Device>& pDevice, const BufferType type, const uint64_t size, const BufferMemoryProfile profile)
+		VulkanBuffer::VulkanBuffer(Device* pDevice, const BufferType type, const uint64_t size, const BufferMemoryProfile profile)
 			: Buffer(pDevice, type, size, profile)
 		{
 			OPTICK_EVENT();

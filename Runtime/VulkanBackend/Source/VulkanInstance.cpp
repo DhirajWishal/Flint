@@ -149,9 +149,9 @@ namespace Flint
 				InitializeDebugger();
 		}
 
-		std::shared_ptr<Device> VulkanInstance::CreateDevice(const DeviceFlags flags)
+		std::unique_ptr<Device> VulkanInstance::CreateDevice(const DeviceFlags flags)
 		{
-			return std::make_shared<VulkanDevice>(shared_from_this(), flags);
+			return std::make_unique<VulkanDevice>(shared_from_this(), flags);
 		}
 
 		std::shared_ptr<Display> VulkanInstance::CreateDisplay(const FBox2D& extent, const std::string& title)

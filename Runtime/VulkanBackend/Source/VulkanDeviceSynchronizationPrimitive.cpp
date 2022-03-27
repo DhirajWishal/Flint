@@ -7,7 +7,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanDeviceSynchronizationPrimitive::VulkanDeviceSynchronizationPrimitive(const std::shared_ptr<Device>& pDevice)
+		VulkanDeviceSynchronizationPrimitive::VulkanDeviceSynchronizationPrimitive(Device* pDevice)
 			: DeviceSynchronizationPrimitive(pDevice)
 		{
 			VkSemaphoreCreateInfo vCreateInfo = {};

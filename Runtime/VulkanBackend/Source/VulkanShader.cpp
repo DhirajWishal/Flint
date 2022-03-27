@@ -179,7 +179,7 @@ namespace Flint
 			}
 		}
 
-		VulkanShader::VulkanShader(const std::shared_ptr<Device>& pDevice, const ShaderType type, const std::filesystem::path& path)
+		VulkanShader::VulkanShader(Device* pDevice, const ShaderType type, const std::filesystem::path& path)
 			: Shader(pDevice, type, path)
 		{
 			OPTICK_EVENT();
@@ -201,7 +201,7 @@ namespace Flint
 			PerformReflection();
 		}
 
-		VulkanShader::VulkanShader(const std::shared_ptr<Device>& pDevice, const ShaderType type, const std::vector<uint32_t>& code)
+		VulkanShader::VulkanShader(Device* pDevice, const ShaderType type, const std::vector<uint32_t>& code)
 			: Shader(pDevice, type, code), mShaderCode(code)
 		{
 			OPTICK_EVENT();
@@ -216,7 +216,7 @@ namespace Flint
 			PerformReflection();
 		}
 
-		VulkanShader::VulkanShader(const std::shared_ptr<Device>& pDevice, const ShaderType type, const std::string& code)
+		VulkanShader::VulkanShader(Device* pDevice, const ShaderType type, const std::string& code)
 			: Shader(pDevice, type, code)
 		{
 			OPTICK_EVENT();

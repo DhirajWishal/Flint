@@ -35,7 +35,7 @@ namespace Flint
 		struct ModelViewProjectionUniform
 		{
 			ModelViewProjectionUniform() = default;
-			ModelViewProjectionUniform(const std::shared_ptr<Device>& pDevice);
+			ModelViewProjectionUniform(Device* pDevice);
 
 			MatrixMVP mMatrix = {};
 			std::shared_ptr<Buffer> pUniformBuffer = nullptr;

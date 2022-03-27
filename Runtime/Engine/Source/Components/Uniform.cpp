@@ -8,7 +8,7 @@ namespace Flint
 {
 	namespace Components
 	{
-		ModelViewProjectionUniform::ModelViewProjectionUniform(const std::shared_ptr<Device>& pDevice)
+		ModelViewProjectionUniform::ModelViewProjectionUniform(Device* pDevice)
 		{
 			pUniformBuffer = pDevice->CreateBuffer(BufferType::Uniform, sizeof(MatrixMVP));
 		}

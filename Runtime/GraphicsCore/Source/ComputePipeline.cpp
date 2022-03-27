@@ -5,7 +5,7 @@
 
 namespace Flint
 {
-	ComputePipeline::ComputePipeline(const std::shared_ptr<Device>& pDevice, const std::string& pipelineName, const std::shared_ptr<Shader>& pComputeShader)
+	ComputePipeline::ComputePipeline(Device* pDevice, const std::string& pipelineName, const std::shared_ptr<Shader>& pComputeShader)
 		: Pipeline(pDevice, pipelineName), pShader(pComputeShader)
 	{
 		if (!pShader)

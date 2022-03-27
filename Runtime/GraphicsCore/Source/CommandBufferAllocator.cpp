@@ -5,14 +5,14 @@
 
 namespace Flint
 {
-	CommandBufferAllocator::CommandBufferAllocator(const std::shared_ptr<Device>& pDevice, const uint32_t bufferCount)
+	CommandBufferAllocator::CommandBufferAllocator(Device* pDevice, const uint32_t bufferCount)
 		: DeviceBoundObject(pDevice), mBufferCount(bufferCount)
 	{
 		if (bufferCount == 0)
 			throw std::invalid_argument("Command buffer count should not be 0!");
 	}
 
-	CommandBufferAllocator::CommandBufferAllocator(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<CommandBufferAllocator>& pParent, const uint32_t bufferCount)
+	CommandBufferAllocator::CommandBufferAllocator(Device* pDevice, const std::shared_ptr<CommandBufferAllocator>& pParent, const uint32_t bufferCount)
 		: DeviceBoundObject(pDevice), pParentAllocator(pParent), mBufferCount(bufferCount)
 	{
 		if (!pParentAllocator)

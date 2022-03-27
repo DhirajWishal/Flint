@@ -27,7 +27,7 @@ namespace Flint
 		 * @param pipelineName The name of the pipeline. This name is given to the pipeline cache object created upon destruction. Make sure that this name is unique.
 		 *	If you wish to not save cache externally, keep this field empty ("").
 		 */
-		Pipeline(const std::shared_ptr<Device>& pDevice, const std::string& pipelineName) : DeviceBoundObject(pDevice), mPipelineName(pipelineName) {}
+		Pipeline(Device* pDevice, const std::string& pipelineName) : DeviceBoundObject(pDevice), mPipelineName(pipelineName) {}
 
 		/**
 		 * Reload the shaders.

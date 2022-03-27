@@ -8,7 +8,7 @@ namespace Flint
 {
 	namespace MaterialProperties
 	{
-		std::shared_ptr<Image> Flint::MaterialProperties::TextureData::CreateImage(const std::shared_ptr<Device>& pDevice, const ImageType type, const ImageUsage usage, const uint32_t layers, const uint32_t mipLevels, const MultiSampleCount sampleCount)
+		std::shared_ptr<Image> Flint::MaterialProperties::TextureData::CreateImage(Device* pDevice, const ImageType type, const ImageUsage usage, const uint32_t layers, const uint32_t mipLevels, const MultiSampleCount sampleCount)
 		{
 			if (mipLevels != 0)
 				return pDevice->CreateImage(type, usage, mExtent, mPixelFormat, layers, mipLevels, pPixelData, sampleCount);

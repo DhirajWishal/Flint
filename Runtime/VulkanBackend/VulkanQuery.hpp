@@ -13,7 +13,7 @@ namespace Flint
 		class VulkanQuery final : public Query
 		{
 		public:
-			VulkanQuery(const std::shared_ptr<Device>& pDevice, const QueryUsage usage, const uint32_t queryCount);
+			VulkanQuery(Device* pDevice, const QueryUsage usage, const uint32_t queryCount);
 			~VulkanQuery() { if (!bIsTerminated) Terminate(); }
 
 			virtual void Recreate(const uint32_t queryCount) override;

@@ -290,7 +290,7 @@ namespace Flint
 			 * @param sampleCount The multi sample count. Default is One.
 			 * @return The image pointer.
 			 */
-			std::shared_ptr<Image> CreateImage(const std::shared_ptr<Device>& pDevice, const ImageType type, const ImageUsage usage, const uint32_t layers, const uint32_t mipLevels, const MultiSampleCount sampleCount = MultiSampleCount::One);
+			std::shared_ptr<Image> CreateImage(Device* pDevice, const ImageType type, const ImageUsage usage, const uint32_t layers, const uint32_t mipLevels, const MultiSampleCount sampleCount = MultiSampleCount::One);
 
 			/**
 			 * Clear texture data.

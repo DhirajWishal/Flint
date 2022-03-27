@@ -26,7 +26,7 @@ namespace Flint
 		 * @param pipelineName The name of the pipeline.
 		 * @param pComputeShader The compute shader pointer.
 		 */
-		ComputePipeline(const std::shared_ptr<Device>& pDevice, const std::string& pipelineName, const std::shared_ptr<Shader>& pComputeShader);
+		ComputePipeline(Device* pDevice, const std::string& pipelineName, const std::shared_ptr<Shader>& pComputeShader);
 
 	public:
 		/**

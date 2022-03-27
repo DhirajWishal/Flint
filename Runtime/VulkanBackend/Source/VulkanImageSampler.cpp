@@ -137,7 +137,7 @@ namespace Flint
 			}
 		}
 
-		VulkanImageSampler::VulkanImageSampler(const std::shared_ptr<Device>& pDevice, const ImageSamplerSpecification& specification)
+		VulkanImageSampler::VulkanImageSampler(Device* pDevice, const ImageSamplerSpecification& specification)
 			: ImageSampler(pDevice, specification)
 		{
 			VkSamplerCreateInfo vCreateInfo = {};

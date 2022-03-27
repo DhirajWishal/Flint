@@ -32,7 +32,7 @@ namespace Flint
 		 * @param forceColorBuffer Force to use a color buffer. Default is false.
 		 * @param forceDepthBuffer Whether or not to use a depth buffer. Default is false.
 		 */
-		ProcessingPipeline(const std::shared_ptr<Device>& pDevice, const FBox2D frameExtent, const std::string& displayTitle, const uint32_t pipelineCount, const MultiSampleCount msaaCount, const bool forceColorBuffer = false, const bool forceDepthBuffer = false);
+		ProcessingPipeline(Device* pDevice, const FBox2D frameExtent, const std::string& displayTitle, const uint32_t pipelineCount, const MultiSampleCount msaaCount, const bool forceColorBuffer = false, const bool forceDepthBuffer = false);
 
 		/**
 		 * Destructor.
@@ -89,7 +89,7 @@ namespace Flint
 		 *
 		 * @return The device pointer.
 		 */
-		std::shared_ptr<Device> GetDevice() const { return pScreenBoundRenderTarget->GetDevice(); }
+		Device* GetDevice() const { return pScreenBoundRenderTarget->GetDevice(); }
 
 		/**
 		 * Get the display pointer.

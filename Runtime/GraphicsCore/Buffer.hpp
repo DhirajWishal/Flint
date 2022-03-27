@@ -31,7 +31,7 @@ namespace Flint
 		 * @param size The size of the buffer.
 		 * @param profile The memory profile of the buffer. Default is BufferMemoryProfile::Automatic.
 		 */
-		Buffer(const std::shared_ptr<Device>& pDevice, const BufferType type, const uint64_t size, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic);
+		Buffer(Device* pDevice, const BufferType type, const uint64_t size, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic);
 
 		/**
 		 * Resize the buffer.

@@ -34,7 +34,7 @@ namespace Flint
 		 * @param imageCount The image count of the swap chain.
 		 * @param presentMode The swap chain present mode. If the requested present mode is not supported, an exception is thrown.
 		 */
-		SwapChain(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, uint32_t imageCount, const SwapChainPresentMode presentMode);
+		SwapChain(Device* pDevice, const std::shared_ptr<Display>& pDisplay, uint32_t imageCount, const SwapChainPresentMode presentMode);
 
 		/**
 		 * Recreate the swap chain.

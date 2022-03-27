@@ -21,7 +21,7 @@ namespace Flint
 		 * @param assetFile The HDR asset file.
 		 * @param mips The mip level to use. Default is 1. If the provided count is 0, the default will be set.
 		 */
-		CubeMapGenerator(const std::shared_ptr<Device>& pDevice, const std::filesystem::path& assetFile, uint32_t mips = 1);
+		CubeMapGenerator(Device* pDevice, const std::filesystem::path& assetFile, uint32_t mips = 1);
 
 		/**
 		 * Get the generated cube map image.

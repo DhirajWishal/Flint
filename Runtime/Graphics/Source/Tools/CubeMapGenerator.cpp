@@ -12,7 +12,7 @@
 
 namespace Flint
 {
-	CubeMapGenerator::CubeMapGenerator(const std::shared_ptr<Device>& pDevice, const std::filesystem::path& assetFile, uint32_t mips)
+	CubeMapGenerator::CubeMapGenerator(Device* pDevice, const std::filesystem::path& assetFile, uint32_t mips)
 	{
 		if (assetFile.extension().string() != ".hdr")
 			throw std::invalid_argument("Provided asset file is not supported!");

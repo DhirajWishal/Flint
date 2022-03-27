@@ -173,7 +173,7 @@ namespace Flint
 			}
 		}
 
-		VulkanImage::VulkanImage(const std::shared_ptr<Device>& pDevice, const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const uint8_t layers, const uint32_t mipLevels, const void* pImageData, const MultiSampleCount sampleCount)
+		VulkanImage::VulkanImage(Device* pDevice, const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const uint8_t layers, const uint32_t mipLevels, const void* pImageData, const MultiSampleCount sampleCount)
 			: Image(pDevice, type, usage, extent, format, layers, mipLevels, pImageData, sampleCount)
 		{
 			Initialize(pImageData);

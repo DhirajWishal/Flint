@@ -8,7 +8,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanCommandBufferAllocator::VulkanCommandBufferAllocator(const std::shared_ptr<Device>& pDevice, const uint32_t bufferCount)
+		VulkanCommandBufferAllocator::VulkanCommandBufferAllocator(Device* pDevice, const uint32_t bufferCount)
 			: CommandBufferAllocator(pDevice, bufferCount)
 		{
 			OPTICK_EVENT();
@@ -23,7 +23,7 @@ namespace Flint
 			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateCommandPool(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vCommandPool));
 		}
 
-		VulkanCommandBufferAllocator::VulkanCommandBufferAllocator(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<CommandBufferAllocator>& pParent, const uint32_t bufferCount)
+		VulkanCommandBufferAllocator::VulkanCommandBufferAllocator(Device* pDevice, const std::shared_ptr<CommandBufferAllocator>& pParent, const uint32_t bufferCount)
 			: CommandBufferAllocator(pDevice, pParent, bufferCount)
 		{
 			OPTICK_EVENT();

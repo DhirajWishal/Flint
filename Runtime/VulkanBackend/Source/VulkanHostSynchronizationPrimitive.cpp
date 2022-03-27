@@ -7,7 +7,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanHostSynchronizationPrimitive::VulkanHostSynchronizationPrimitive(const std::shared_ptr<Device>& pDevice)
+		VulkanHostSynchronizationPrimitive::VulkanHostSynchronizationPrimitive(Device* pDevice)
 			: HostSynchronizationPrimitive(pDevice)
 		{
 			OPTICK_EVENT();

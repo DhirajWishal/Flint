@@ -36,8 +36,8 @@ namespace Flint
 			virtual void Update() override;
 			virtual void Terminate() override;
 			virtual void ToggleResize() override final { mIsDislayResized = false; }
-			virtual uint32_t FindBestBufferCount(const Device* pDevice, const uint32_t count = 0) override;
-			virtual PixelFormat GetBestSwapChainFormat(const Device* pDevice) override;
+			virtual uint32_t FindBestBufferCount(Device* pDevice, const uint32_t count = 0) override;
+			virtual PixelFormat GetBestSwapChainFormat(Device* pDevice) override;
 			virtual void SetTitle(const std::string& title) override;
 			virtual void SetExtent(FBox2D newExtent) override;
 

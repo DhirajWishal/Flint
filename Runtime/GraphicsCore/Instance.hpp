@@ -27,7 +27,7 @@ namespace Flint
 		 * @param flags The device flags.
 		 * @return The created device object.
 		 */
-		virtual std::shared_ptr<Device> CreateDevice(const DeviceFlags flags) = 0;
+		virtual std::unique_ptr<Device> CreateDevice(const DeviceFlags flags) = 0;
 
 		/**
 		 * Create a new display object.

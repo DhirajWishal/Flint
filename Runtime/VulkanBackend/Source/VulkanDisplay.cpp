@@ -160,7 +160,7 @@ namespace Flint
 			bIsTerminated = true;
 		}
 
-		uint32_t VulkanDisplay::FindBestBufferCount(const Device* pDevice, const uint32_t count)
+		uint32_t VulkanDisplay::FindBestBufferCount(Device* pDevice, const uint32_t count)
 		{
 			OPTICK_EVENT();
 
@@ -180,7 +180,7 @@ namespace Flint
 			return count;
 		}
 
-		PixelFormat VulkanDisplay::GetBestSwapChainFormat(const Device* pDevice)
+		PixelFormat VulkanDisplay::GetBestSwapChainFormat(Device* pDevice)
 		{
 			SwapChainSupportDetails vSupport = SwapChainSupportDetails::Query(pDevice->StaticCast<VulkanDevice>().GetPhysicalDevice(), GetSurface());
 			VkSurfaceFormatKHR surfaceFormat = ChooseSurfaceFormat(vSupport.mFormats);

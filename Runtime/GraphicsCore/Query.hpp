@@ -37,7 +37,7 @@ namespace Flint
 		 * @param usage The query usage.
 		 * @param queryCount The number of queries this contains.
 		 */
-		Query(const std::shared_ptr<Device>& pDevice, const QueryUsage usage, const uint32_t queryCount) : DeviceBoundObject(pDevice), mUsage(usage), mQueryCount(queryCount) {}
+		Query(Device* pDevice, const QueryUsage usage, const uint32_t queryCount) : DeviceBoundObject(pDevice), mUsage(usage), mQueryCount(queryCount) {}
 
 		/**
 		 * Recreate the query with primitive count.

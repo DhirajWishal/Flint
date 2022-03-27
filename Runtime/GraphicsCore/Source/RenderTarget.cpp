@@ -6,7 +6,7 @@
 
 namespace Flint
 {
-	RenderTarget::RenderTarget(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments)
+	RenderTarget::RenderTarget(Device* pDevice, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments)
 		: DeviceBoundObject(pDevice), mExtent(extent), mBufferCount(bufferCount), mAttachments(imageAttachments)
 	{
 		if (extent.IsZero())

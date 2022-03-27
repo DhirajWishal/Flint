@@ -19,7 +19,7 @@ namespace Flint
 		 *
 		 * @param pDevice The device pointer.
 		 */
-		HostSynchronizationPrimitive(const std::shared_ptr<Device>& pDevice) : SynchronizationPrimitive(pDevice) {}
+		HostSynchronizationPrimitive(Device* pDevice) : SynchronizationPrimitive(pDevice) {}
 
 		/**
 		 * Wait until the device flags the primitive.

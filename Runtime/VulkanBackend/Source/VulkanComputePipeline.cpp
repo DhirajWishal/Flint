@@ -12,7 +12,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanComputePipeline::VulkanComputePipeline(const std::shared_ptr<Device>& pDevice, const std::string& pipelineName, const std::shared_ptr<Shader>& pComputeShader)
+		VulkanComputePipeline::VulkanComputePipeline(Device* pDevice, const std::string& pipelineName, const std::shared_ptr<Shader>& pComputeShader)
 			: ComputePipeline(pDevice, pipelineName, pComputeShader)
 		{
 			CreatePipelineCache();

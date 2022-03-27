@@ -34,9 +34,9 @@ namespace Flint
 		 *
 		 * @reutrn The device shared pointer.
 		 */
-		std::shared_ptr<Device> GetPrimitive() const { return pDevice; }
+		Device* GetPrimitive() const { return pDevice.get(); }
 
 	protected:
-		std::shared_ptr<Device> pDevice = nullptr;
+		std::unique_ptr<Device> pDevice = nullptr;
 	};
 }

@@ -5,7 +5,7 @@
 
 namespace Flint
 {
-	Buffer::Buffer(const std::shared_ptr<Device>& pDevice, const BufferType type, const uint64_t size, const BufferMemoryProfile profile)
+	Buffer::Buffer(Device* pDevice, const BufferType type, const uint64_t size, const BufferMemoryProfile profile)
 		: DeviceBoundObject(pDevice), mType(type), mSize(size), mMemoryProfile(profile)
 	{
 		if (type == BufferType::Undefined)

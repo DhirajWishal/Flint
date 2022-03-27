@@ -24,7 +24,7 @@ namespace Flint
 		 * @param pDevice The device pointer.
 		 * @param bufferCount The number of buffers to allocate.
 		 */
-		CommandBufferAllocator(const std::shared_ptr<Device>& pDevice, const uint32_t bufferCount);
+		CommandBufferAllocator(Device* pDevice, const uint32_t bufferCount);
 
 		/**
 		 * Construct a secondary command buffer allocator.
@@ -33,7 +33,7 @@ namespace Flint
 		 * @param pParent The parent command buffer allocator.
 		 * @param bufferCount The number of buffers to allocate.
 		 */
-		CommandBufferAllocator(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<CommandBufferAllocator>& pParent, const uint32_t bufferCount);
+		CommandBufferAllocator(Device* pDevice, const std::shared_ptr<CommandBufferAllocator>& pParent, const uint32_t bufferCount);
 
 		/**
 		 * Create the command buffers.

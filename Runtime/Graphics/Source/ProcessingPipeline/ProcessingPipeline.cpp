@@ -9,7 +9,7 @@
 
 namespace Flint
 {
-	ProcessingPipeline::ProcessingPipeline(const std::shared_ptr<Device>& pDevice, const FBox2D frameExtent, const std::string& displayTitle, const uint32_t pipelineCount, const MultiSampleCount msaaCount, const bool forceColorBuffer, const bool forceDepthBuffer)
+	ProcessingPipeline::ProcessingPipeline(Device* pDevice, const FBox2D frameExtent, const std::string& displayTitle, const uint32_t pipelineCount, const MultiSampleCount msaaCount, const bool forceColorBuffer, const bool forceDepthBuffer)
 		: mMultiSampleCount(msaaCount)
 	{
 		uint32_t bufferCount = pipelineCount;
@@ -17,7 +17,7 @@ namespace Flint
 
 		// Find the best buffer count if the pipeline count is 0.
 		if (pipelineCount == 0)
-			bufferCount = pDisplay->FindBestBufferCount(pDevice.get());
+			bufferCount = pDisplay->FindBestBufferCount(pDevice);
 
 		const auto frameBufferExtent = pDisplay->GetExtent();
 		const FBox3D extent = FBox3D(frameBufferExtent.mWidth, frameBufferExtent.mHeight, 1);
@@ -29,7 +29,7 @@ namespace Flint
 			bContainsColorBuffer = true;
 			attachments.emplace_back(
 				RenderTargetAttachment(
-					pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Color, extent, pDisplay->GetBestSwapChainFormat(pDevice.get()), 1, 1, nullptr),
+					pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Color, extent, pDisplay->GetBestSwapChainFormat(pDevice), 1, 1, nullptr),
 					FColor4D(CreateColor256(32.0f), CreateColor256(32.0f), CreateColor256(32.0f), 1.0f)
 				)
 			);

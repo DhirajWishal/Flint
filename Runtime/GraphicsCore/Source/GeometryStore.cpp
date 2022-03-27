@@ -6,7 +6,7 @@
 
 namespace Flint
 {
-	GeometryStore::GeometryStore(const std::shared_ptr<Device>& pDevice, const std::vector<ShaderAttribute>& vertexAttributes, uint64_t indexSize, const BufferMemoryProfile profile)
+	GeometryStore::GeometryStore(Device* pDevice, const std::vector<ShaderAttribute>& vertexAttributes, uint64_t indexSize, const BufferMemoryProfile profile)
 		: DeviceBoundObject(pDevice), mVertexAttribtues(vertexAttributes), mIndexSize(indexSize), mMemoryProfile(profile)
 	{
 		if (mVertexAttribtues.empty())

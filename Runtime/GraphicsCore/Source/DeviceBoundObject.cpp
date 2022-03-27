@@ -5,7 +5,7 @@
 
 namespace Flint
 {
-	DeviceBoundObject::DeviceBoundObject(const std::shared_ptr<Device>& pDevice) : pDevice(pDevice)
+	DeviceBoundObject::DeviceBoundObject(Device* pDevice) : pDevice(pDevice)
 	{
 		if (!pDevice)
 			throw std::invalid_argument("Device pointer should not be null!");

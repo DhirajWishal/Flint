@@ -433,14 +433,14 @@ namespace Flint
 		 *
 		 * @param pDevice The device pointer.
 		 */
-		DeviceBoundObject(const std::shared_ptr<Device>& pDevice);
+		DeviceBoundObject(Device* pDevice);
 
 		/**
 		 * Get the device of this object.
 		 *
 		 * @return The device pointer.
 		 */
-		std::shared_ptr<Device> GetDevice() const { return pDevice; }
+		Device* GetDevice() const { return pDevice; }
 
 		/**
 		 * Terminate the device bound object.
@@ -448,7 +448,7 @@ namespace Flint
 		virtual void Terminate() = 0;
 
 	protected:
-		std::shared_ptr<Device> pDevice = nullptr;
+		Device* pDevice = nullptr;
 	};
 }
 

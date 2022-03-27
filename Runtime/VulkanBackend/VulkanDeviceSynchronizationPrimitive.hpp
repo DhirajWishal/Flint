@@ -13,7 +13,7 @@ namespace Flint
 		class VulkanDeviceSynchronizationPrimitive final : public DeviceSynchronizationPrimitive
 		{
 		public:
-			VulkanDeviceSynchronizationPrimitive(const std::shared_ptr<Device>& pDevice);
+			VulkanDeviceSynchronizationPrimitive(Device* pDevice);
 			~VulkanDeviceSynchronizationPrimitive() { if (!bIsTerminated) Terminate(); }
 
 			virtual void Terminate() override;

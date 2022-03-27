@@ -28,7 +28,7 @@ namespace Flint
 		return pProcessingPipeline->GetBufferCount();
 	}
 
-	std::shared_ptr<Device> ProcessingNode::GetDevice() const
+	Device* ProcessingNode::GetDevice() const
 	{
 		return pProcessingPipeline->GetDevice();
 	}

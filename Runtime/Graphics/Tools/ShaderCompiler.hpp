@@ -79,7 +79,7 @@ namespace Flint
 		 * @param pDevice The device pointer.
 		 * @return The shader pointer.
 		 */
-		std::shared_ptr<Shader> CreateShader(const std::shared_ptr<Device>& pDevice) const;
+		std::shared_ptr<Shader> CreateShader(Device* pDevice) const;
 
 	private:
 		std::vector<uint32_t> mShaderCode = {};
