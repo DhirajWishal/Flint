@@ -5,8 +5,8 @@
 
 namespace Flint
 {
-	ComputePipeline::ComputePipeline(Device* pDevice, const std::string& pipelineName, const std::shared_ptr<Shader>& pComputeShader)
-		: Pipeline(pDevice, pipelineName), pShader(pComputeShader)
+	ComputePipeline::ComputePipeline(Device* pDevice, const std::string& pipelineName, std::unique_ptr<Shader>&& pComputeShader)
+		: Pipeline(pDevice, pipelineName), pShader(std::move(pComputeShader))
 	{
 		if (!pShader)
 			throw std::invalid_argument("Compute shader pointers should not be null!");

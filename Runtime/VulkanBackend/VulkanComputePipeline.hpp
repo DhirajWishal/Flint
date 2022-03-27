@@ -13,7 +13,7 @@ namespace Flint
 		class VulkanComputePipeline final : public ComputePipeline, public std::enable_shared_from_this<VulkanComputePipeline>
 		{
 		public:
-			VulkanComputePipeline(Device* pDevice, const std::string& pipelineName, const std::shared_ptr<Shader>& pComputeShader);
+			VulkanComputePipeline(Device* pDevice, const std::string& pipelineName, std::unique_ptr<Shader>&& pComputeShader);
 			~VulkanComputePipeline() { if (!bIsTerminated) Terminate(); }
 
 			virtual void ReloadShaders() override;

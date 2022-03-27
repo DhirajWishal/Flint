@@ -28,7 +28,7 @@ namespace Flint
 
 		pCubeMap = pDevice->CreateImage(ImageType::CubeMap, ImageUsage::Graphics | ImageUsage::Storage, extent, PixelFormat::R16G16B16A16_SFLOAT, 6, mips, nullptr);
 
-		std::shared_ptr<Shader> pShader = nullptr;
+		std::unique_ptr<Shader> pShader = nullptr;
 		if (!std::filesystem::exists(NormalizePath("Flint\\Shaders\\CubeMapGen.fsc")))
 		{
 			ShaderCompiler shaderCompiler(std::filesystem::path(NormalizePath("E:\\Flint\\Code\\Engine\\Shaders\\CubeMapGen\\Shader.comp")), ShaderCodeType::GLSL, ShaderType::Compute);
@@ -38,7 +38,7 @@ namespace Flint
 		else
 			pShader = pDevice->CreateShader(ShaderType::Compute, std::filesystem::path(NormalizePath("Flint\\Shaders\\CubeMapGen.fsc")));
 
-		auto pPipeline = pDevice->CreateComputePipeline("CubeMapGen", pShader);
+		auto pPipeline = pDevice->CreateComputePipeline("CubeMapGen", std::move(pShader));
 		auto pPackage = pPipeline->CreateResourcePackage(0);
 
 		Flint::ImageSamplerSpecification specification = {};

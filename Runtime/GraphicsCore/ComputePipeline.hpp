@@ -26,7 +26,7 @@ namespace Flint
 		 * @param pipelineName The name of the pipeline.
 		 * @param pComputeShader The compute shader pointer.
 		 */
-		ComputePipeline(Device* pDevice, const std::string& pipelineName, const std::shared_ptr<Shader>& pComputeShader);
+		ComputePipeline(Device* pDevice, const std::string& pipelineName, std::unique_ptr<Shader>&& pComputeShader);
 
 	public:
 		/**
@@ -34,10 +34,10 @@ namespace Flint
 		 *
 		 * @return The shader pointer.
 		 */
-		const std::shared_ptr<Shader> GetShader() const { return pShader; }
+		Shader* GetShader() const { return pShader.get(); }
 
 	protected:
-		std::shared_ptr<Shader> pShader = nullptr;
+		std::unique_ptr<Shader> pShader = nullptr;
 
 		uint64_t mInstanceIndex = 0;
 	};

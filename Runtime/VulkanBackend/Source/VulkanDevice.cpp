@@ -175,34 +175,34 @@ namespace Flint
 			return std::make_shared<VulkanImageSampler>(this, specification);
 		}
 
-		std::shared_ptr<Shader> VulkanDevice::CreateShader(const ShaderType type, const std::filesystem::path& path)
+		std::unique_ptr<Shader> VulkanDevice::CreateShader(const ShaderType type, const std::filesystem::path& path)
 		{
-			return std::make_shared<VulkanShader>(this, type, path);
+			return std::make_unique<VulkanShader>(this, type, path);
 		}
 
-		std::shared_ptr<Shader> VulkanDevice::CreateShader(const ShaderType type, const std::vector<uint32_t>& code)
+		std::unique_ptr<Shader> VulkanDevice::CreateShader(const ShaderType type, const std::vector<uint32_t>& code)
 		{
-			return std::make_shared<VulkanShader>(this, type, code);
+			return std::make_unique<VulkanShader>(this, type, code);
 		}
 
-		std::shared_ptr<Shader> VulkanDevice::CreateShader(const ShaderType type, const std::string& code)
+		std::unique_ptr<Shader> VulkanDevice::CreateShader(const ShaderType type, const std::string& code)
 		{
-			return std::make_shared<VulkanShader>(this, type, code);
+			return std::make_unique<VulkanShader>(this, type, code);
 		}
 
-		std::shared_ptr<GraphicsPipeline> VulkanDevice::CreateGraphicsPipeline(const std::string& pipelineName, const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget, const std::shared_ptr<Shader>& pVertexShader, const std::shared_ptr<Shader>& pTessellationControlShader, const std::shared_ptr<Shader>& pTessellationEvaluationShader, const std::shared_ptr<Shader>& pGeometryShader, const std::shared_ptr<Shader>& pFragmentShader, const GraphicsPipelineSpecification& specification)
+		std::shared_ptr<GraphicsPipeline> VulkanDevice::CreateGraphicsPipeline(const std::string& pipelineName, const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget, std::unique_ptr<Shader>&& pVertexShader, std::unique_ptr<Shader>&& pTessellationControlShader, std::unique_ptr<Shader>&& pTessellationEvaluationShader, std::unique_ptr<Shader>&& pGeometryShader, std::unique_ptr<Shader>&& pFragmentShader, const GraphicsPipelineSpecification& specification)
 		{
-			return std::make_shared<VulkanGraphicsPipeline>(this, pipelineName, pScreenBoundRenderTarget, pVertexShader, pTessellationControlShader, pTessellationEvaluationShader, pGeometryShader, pFragmentShader, specification);
+			return std::make_shared<VulkanGraphicsPipeline>(this, pipelineName, pScreenBoundRenderTarget, std::move(pVertexShader), std::move(pTessellationControlShader), std::move(pTessellationEvaluationShader), std::move(pGeometryShader), std::move(pFragmentShader), specification);
 		}
 
-		std::shared_ptr<GraphicsPipeline> VulkanDevice::CreateGraphicsPipeline(const std::string& pipelineName, const std::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget, const std::shared_ptr<Shader>& pVertexShader, const std::shared_ptr<Shader>& pTessellationControlShader, const std::shared_ptr<Shader>& pTessellationEvaluationShader, const std::shared_ptr<Shader>& pGeometryShader, const std::shared_ptr<Shader>& pFragmentShader, const GraphicsPipelineSpecification& specification)
+		std::shared_ptr<GraphicsPipeline> VulkanDevice::CreateGraphicsPipeline(const std::string& pipelineName, const std::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget, std::unique_ptr<Shader>&& pVertexShader, std::unique_ptr<Shader>&& pTessellationControlShader, std::unique_ptr<Shader>&& pTessellationEvaluationShader, std::unique_ptr<Shader>&& pGeometryShader, std::unique_ptr<Shader>&& pFragmentShader, const GraphicsPipelineSpecification& specification)
 		{
-			return std::make_shared<VulkanGraphicsPipeline>(this, pipelineName, pOffScreenRenderTarget, pVertexShader, pTessellationControlShader, pTessellationEvaluationShader, pGeometryShader, pFragmentShader, specification);
+			return std::make_shared<VulkanGraphicsPipeline>(this, pipelineName, pOffScreenRenderTarget, std::move(pVertexShader), std::move(pTessellationControlShader), std::move(pTessellationEvaluationShader), std::move(pGeometryShader), std::move(pFragmentShader), specification);
 		}
 
-		std::shared_ptr<ComputePipeline> VulkanDevice::CreateComputePipeline(const std::string& pipelineName, const std::shared_ptr<Shader>& pShader)
+		std::shared_ptr<ComputePipeline> VulkanDevice::CreateComputePipeline(const std::string& pipelineName, std::unique_ptr<Shader>&& pShader)
 		{
-			return std::make_shared<VulkanComputePipeline>(this, pipelineName, pShader);
+			return std::make_shared<VulkanComputePipeline>(this, pipelineName, std::move(pShader));
 		}
 
 		std::shared_ptr<GeometryStore> VulkanDevice::CreateGeometryStore(const std::vector<ShaderAttribute>& vertexAttributes, uint64_t indexSize, const BufferMemoryProfile profile)

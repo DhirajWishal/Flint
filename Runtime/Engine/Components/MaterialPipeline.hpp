@@ -16,11 +16,11 @@ namespace Flint
 		struct MaterialPipeline
 		{
 			std::shared_ptr<GraphicsPipeline> pPipeline = nullptr;
-			std::shared_ptr<Shader> pVertexShader = nullptr;
-			std::shared_ptr<Shader> pFragmentShader = nullptr;
-			std::shared_ptr<Shader> pTessellationControlShader = nullptr;
-			std::shared_ptr<Shader> pTessellationEvaluationShader = nullptr;
-			std::shared_ptr<Shader> pGeometryShader = nullptr;
+			std::unique_ptr<Shader> pVertexShader = nullptr;
+			std::unique_ptr<Shader> pFragmentShader = nullptr;
+			std::unique_ptr<Shader> pTessellationControlShader = nullptr;
+			std::unique_ptr<Shader> pTessellationEvaluationShader = nullptr;
+			std::unique_ptr<Shader> pGeometryShader = nullptr;
 		};
 	}
 }

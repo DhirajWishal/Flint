@@ -131,7 +131,7 @@ namespace Flint
 		std::filesystem::remove(outputFile);
 	}
 
-	std::shared_ptr<Shader> ShaderCompiler::CreateShader(Device* pDevice) const
+	std::unique_ptr<Shader> ShaderCompiler::CreateShader(Device* pDevice) const
 	{
 		return pDevice->CreateShader(mType, GetShaderCode());
 	}
