@@ -17,9 +17,9 @@ namespace Flint
 	struct BufferBinding
 	{
 		BufferBinding() = default;
-		BufferBinding(const std::shared_ptr<Buffer>& pBuffer, const uint64_t offset) : pBuffer(pBuffer), mOffset(offset) {}
+		BufferBinding(const Buffer* pBuffer, const uint64_t offset) : pBuffer(pBuffer), mOffset(offset) {}
 
-		std::shared_ptr<Buffer> pBuffer = nullptr;
+		const Buffer* pBuffer = nullptr;
 		uint64_t mOffset = 0;
 
 		const bool operator==(const BufferBinding& other) const { return pBuffer == other.pBuffer && mOffset == other.mOffset; }
@@ -76,7 +76,7 @@ namespace Flint
 		 * @param pBuffer The buffer pointer to bind.
 		 * @param offset The offset of the buffer to bind. Default is 0.
 		 */
-		void BindResource(const uint32_t binding, const std::shared_ptr<Buffer>& pBuffer, const uint64_t offset = 0);
+		void BindResource(const uint32_t binding, const Buffer* pBuffer, const uint64_t offset = 0);
 
 		/**
 		 * Bind resources to the package.

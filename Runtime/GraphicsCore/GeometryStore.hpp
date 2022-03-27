@@ -49,7 +49,7 @@ namespace Flint
 		 * @param pNewVertexBuffer The vertex buffer pointer.
 		 * @param pNewIndexBuffer The index buffer pointer.
 		 */
-		void SetBuffers(std::shared_ptr<Buffer>&& pNewVertexBuffer, std::shared_ptr<Buffer>&& pNewIndexBuffer);
+		void SetBuffers(std::unique_ptr<Buffer>&& pNewVertexBuffer, std::unique_ptr<Buffer>&& pNewIndexBuffer);
 
 		/**
 		 * Add a geometry to the store.
@@ -94,14 +94,14 @@ namespace Flint
 		 *
 		 * @return The buffer pointer.
 		 */
-		const std::shared_ptr<Buffer> GetVertexBuffer() const { return pVertexBuffer; }
+		Buffer* GetVertexBuffer() const { return pVertexBuffer.get(); }
 
 		/**
 		 * Get the index buffer from the store.
 		 *
 		 * @return The buffer pointer.
 		 */
-		const std::shared_ptr<Buffer> GetIndexBuffer() const { return pIndexBuffer; }
+		Buffer* GetIndexBuffer() const { return pIndexBuffer.get(); }
 
 		/**
 		 * Get the vertex attributes.
@@ -167,8 +167,8 @@ namespace Flint
 	private:
 		std::vector<ShaderAttribute> mVertexAttribtues = {};
 
-		std::shared_ptr<Buffer> pVertexBuffer = nullptr;
-		std::shared_ptr<Buffer> pIndexBuffer = nullptr;
+		std::unique_ptr<Buffer> pVertexBuffer = nullptr;
+		std::unique_ptr<Buffer> pIndexBuffer = nullptr;
 
 		uint64_t mVertexSize = 0;
 		uint64_t mIndexSize = 0;

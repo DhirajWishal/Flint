@@ -119,7 +119,7 @@ namespace Flint
 		 *
 		 * @return The stagging buffer.
 		 */
-		virtual std::shared_ptr<Buffer> CopyToBuffer() = 0;
+		virtual std::unique_ptr<Buffer> CopyToBuffer() = 0;
 
 		/**
 		 * Create a new image view.
@@ -142,7 +142,7 @@ namespace Flint
 		template<class Type>
 		Type GetPixelValue(const FBox3D position)
 		{
-			std::shared_ptr<Buffer> pStagingBuffer = CopyToBuffer();
+			std::unique_ptr<Buffer> pStagingBuffer = CopyToBuffer();
 			Type* pPixels = static_cast<Type*>(pStagingBuffer->MapMemory(pStagingBuffer->GetSize()));
 
 			uint64_t row = static_cast<uint64_t>(position.mHeight) * mExtent.mWidth;

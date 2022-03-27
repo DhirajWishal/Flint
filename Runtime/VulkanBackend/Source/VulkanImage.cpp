@@ -201,9 +201,9 @@ namespace Flint
 			vCurrentLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		}
 
-		std::shared_ptr<Buffer> VulkanImage::CopyToBuffer()
+		std::unique_ptr<Buffer> VulkanImage::CopyToBuffer()
 		{
-			std::shared_ptr<VulkanBuffer> pBuffer = std::make_shared<VulkanBuffer>(pDevice, BufferType::Staging, static_cast<uint64_t>(mExtent.mWidth) * mExtent.mHeight * mExtent.mDepth * Utilities::GetByteDepth(mFormat) * mLayerCount);
+			std::unique_ptr<VulkanBuffer> pBuffer = std::make_unique<VulkanBuffer>(pDevice, BufferType::Staging, static_cast<uint64_t>(mExtent.mWidth) * mExtent.mHeight * mExtent.mDepth * Utilities::GetByteDepth(mFormat) * mLayerCount);
 
 			VkBufferImageCopy vCopy = {};
 			vCopy.bufferOffset = 0;

@@ -288,8 +288,8 @@ namespace Flint
 		{
 			OPTICK_EVENT();
 
-			BindVertexBuffer(pGeometryStore->GetVertexBuffer().get());
-			BindIndexBuffer(pGeometryStore->GetIndexBuffer().get(), pGeometryStore->GetIndexSize());
+			BindVertexBuffer(pGeometryStore->GetVertexBuffer());
+			BindIndexBuffer(pGeometryStore->GetIndexBuffer(), pGeometryStore->GetIndexSize());
 		}
 
 		void VulkanCommandBuffer::BindResourcePackage(const GraphicsPipeline* pPipeline, ResourcePackage* pResourcePackage)

@@ -17,7 +17,7 @@ namespace Flint
 			~VulkanImage() { if (!bIsTerminated) Terminate(); }
 
 			virtual void GenerateMipMaps() override;
-			virtual std::shared_ptr<Buffer> CopyToBuffer() override;
+			virtual std::unique_ptr<Buffer> CopyToBuffer() override;
 			virtual std::shared_ptr<ImageView> CreateImageView(const uint32_t baseLayerIndex, const uint32_t layerCount, const uint32_t baseMipLevel, const uint32_t mipLevels, const ImageUsage usage) override;
 			virtual void Terminate() override;
 

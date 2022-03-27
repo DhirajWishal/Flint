@@ -146,7 +146,7 @@ namespace Flint
 		 * @param profile The memory profile of the buffer. Default is BufferMemoryProfile::Automatic.
 		 * @return The buffer object.
 		 */
-		virtual std::shared_ptr<Buffer> CreateBuffer(const BufferType type, const uint64_t size, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic) = 0;
+		virtual std::unique_ptr<Buffer> CreateBuffer(const BufferType type, const uint64_t size, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic) = 0;
 
 		/**
 		 * Create a new image.

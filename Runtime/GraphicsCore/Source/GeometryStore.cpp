@@ -48,7 +48,7 @@ namespace Flint
 		}
 	}
 
-	void GeometryStore::SetBuffers(std::shared_ptr<Buffer>&& pNewVertexBuffer, std::shared_ptr<Buffer>&& pNewIndexBuffer)
+	void GeometryStore::SetBuffers(std::unique_ptr<Buffer>&& pNewVertexBuffer, std::unique_ptr<Buffer>&& pNewIndexBuffer)
 	{
 		if (pNewVertexBuffer)
 		{
@@ -65,8 +65,8 @@ namespace Flint
 
 	std::pair<uint64_t, uint64_t> GeometryStore::AddGeometry(uint64_t vertexCount, const void* pVertexData, uint64_t indexCount, const void* pIndexData)
 	{
-		std::shared_ptr<Buffer> pVertexStagingBuffer = nullptr;
-		std::shared_ptr<Buffer> pIndexStagingBuffer = nullptr;
+		std::unique_ptr<Buffer> pVertexStagingBuffer = nullptr;
+		std::unique_ptr<Buffer> pIndexStagingBuffer = nullptr;
 
 		// Extend the buffer and add vertex data.
 		if (vertexCount)
@@ -149,8 +149,8 @@ namespace Flint
 		// Shrink the vertex buffer.
 		if (pVertexBuffer)
 		{
-			std::shared_ptr<Buffer> pStagingBuffer1 = nullptr;
-			std::shared_ptr<Buffer> pStagingBuffer2 = nullptr;
+			std::unique_ptr<Buffer> pStagingBuffer1 = nullptr;
+			std::unique_ptr<Buffer> pStagingBuffer2 = nullptr;
 
 			if (vertexOffset)
 			{
@@ -188,8 +188,8 @@ namespace Flint
 		// Shrink the index buffer.
 		if (pIndexBuffer)
 		{
-			std::shared_ptr<Buffer> pStagingBuffer1 = nullptr;
-			std::shared_ptr<Buffer> pStagingBuffer2 = nullptr;
+			std::unique_ptr<Buffer> pStagingBuffer1 = nullptr;
+			std::unique_ptr<Buffer> pStagingBuffer2 = nullptr;
 
 			if (indexOffset)
 			{

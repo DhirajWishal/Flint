@@ -15,7 +15,7 @@ namespace Flint
 			mImageBindings[binding] = {};
 	}
 
-	void ResourcePackage::BindResource(const uint32_t binding, const std::shared_ptr<Buffer>& pBuffer, const uint64_t offset)
+	void ResourcePackage::BindResource(const uint32_t binding, const Buffer* pBuffer, const uint64_t offset)
 	{
 		if (mBufferBindings.find(binding) == mBufferBindings.end())
 			throw std::invalid_argument("Submitted binding is not valid!");

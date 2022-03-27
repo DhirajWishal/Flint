@@ -81,7 +81,7 @@ namespace Flint
 			if (mode == BufferResizeMode::Copy)
 			{
 				// Create a stagging buffer to copy data to.
-				std::shared_ptr<Buffer> pStagingBuffer = pDevice->CreateBuffer(BufferType::Staging, oldSize);
+				std::unique_ptr<Buffer> pStagingBuffer = pDevice->CreateBuffer(BufferType::Staging, oldSize);
 				pStagingBuffer->CopyFromBuffer(this, oldSize, 0, 0);
 
 				// Terminate the existing buffer and get the new size.

@@ -160,9 +160,9 @@ namespace Flint
 			return std::make_shared<VulkanOffScreenRenderTarget>(this, extent, bufferCount, imageAttachments);
 		}
 
-		std::shared_ptr<Buffer> VulkanDevice::CreateBuffer(const BufferType type, const uint64_t size, const BufferMemoryProfile profile)
+		std::unique_ptr<Buffer> VulkanDevice::CreateBuffer(const BufferType type, const uint64_t size, const BufferMemoryProfile profile)
 		{
-			return std::make_shared<VulkanBuffer>(this, type, size, profile);
+			return std::make_unique<VulkanBuffer>(this, type, size, profile);
 		}
 
 		std::shared_ptr<Image> VulkanDevice::CreateImage(const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const uint8_t layers, const uint32_t mipLevels, const void* pImageData, const MultiSampleCount sampleCount)
