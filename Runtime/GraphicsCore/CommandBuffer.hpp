@@ -34,21 +34,8 @@ namespace Flint
 	 * Command buffers are used to record commands and to be submitted to the device to execute those commands.
 	 * These command buffers are allocated by the command buffer allocator, which manages the command buffer life time.
 	 */
-	template<
-		class DerivedT,
-		class CommandBufferAllocatorT,
-		class ScreenBoundRenderTargetT,
-		class OffScreenRenderTargetT,
-		class GraphicsPipelineT,
-		class ComputePipelineT,
-		class BufferT,
-		class GeometryStoreT,
-		class ResourcePackageT,
-		class ImageT,
-		class SwapChainT,
-		class QueryT
-	>
-		class CommandBuffer : public FObject
+	template<class DerivedT, class CommandBufferAllocatorT, class ScreenBoundRenderTargetT, class OffScreenRenderTargetT, class GraphicsPipelineT, class ComputePipelineT, class BufferT, class GeometryStoreT, class ResourcePackageT, class ImageT, class SwapChainT, class QueryT>
+	class CommandBuffer : public FObject
 	{
 		friend CommandBufferAllocatorT;
 

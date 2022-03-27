@@ -10,6 +10,6 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanGeometryStore : public GeometryStore<VulkanDevice, VulkanBuffer> {};
+		class VulkanGeometryStore final : public GeometryStore<VulkanDevice, VulkanBuffer> {};
 	}
 }

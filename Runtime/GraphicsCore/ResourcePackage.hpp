@@ -9,8 +9,6 @@
 
 namespace Flint
 {
-	class ResourcePackager;
-
 	/**
 	 * Buffer binding structure.
 	 */

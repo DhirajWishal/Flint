@@ -9,9 +9,6 @@
 
 namespace Flint
 {
-	class ScreenBoundRenderTarget;
-	class OffScreenRenderTarget;
-
 	/**
 	 * Flint compute pipeline.
 	 * This pipeline is used to perform compute tasks on the GPU.

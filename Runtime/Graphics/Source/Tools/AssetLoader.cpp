@@ -286,7 +286,7 @@ namespace Flint
 		return size;
 	}
 
-	AssetLoader::AssetLoader(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::filesystem::path& assetPath, const VertexDescriptor& vertexDescriptor, const bool useMultiThreading)
+	AssetLoader::AssetLoader(const std::shared_ptr<VulkanBackend::VulkanGeometryStore>& pGeometryStore, const std::filesystem::path& assetPath, const VertexDescriptor& vertexDescriptor, const bool useMultiThreading)
 		: pGeometryStore(pGeometryStore), mDescriptor(vertexDescriptor)
 	{
 		// Validate the geometry store and vertex descriptor.

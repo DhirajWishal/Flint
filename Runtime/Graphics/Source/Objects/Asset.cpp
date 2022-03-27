@@ -5,12 +5,12 @@
 
 namespace Flint
 {
-	Asset::Asset(const std::vector<WireFrame>& wireFrames, const std::shared_ptr<GeometryStore>& pGeometryStore)
+	Asset::Asset(const std::vector<WireFrame>& wireFrames, const std::shared_ptr<VulkanBackend::VulkanGeometryStore>& pGeometryStore)
 		: mWireFrames(wireFrames), pGeometryStore(pGeometryStore)
 	{
 	}
 
-	Asset::Asset(const std::filesystem::path& assetFile, const std::shared_ptr<GeometryStore>& pGeometryStore, const VertexDescriptor& vertexDescriptor, const bool useMultiThreading)
+	Asset::Asset(const std::filesystem::path& assetFile, const std::shared_ptr<VulkanBackend::VulkanGeometryStore>& pGeometryStore, const VertexDescriptor& vertexDescriptor, const bool useMultiThreading)
 		: pGeometryStore(pGeometryStore)
 	{
 		AssetLoader loader(pGeometryStore, assetFile, vertexDescriptor, useMultiThreading);

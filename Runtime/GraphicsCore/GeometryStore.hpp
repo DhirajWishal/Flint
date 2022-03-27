@@ -18,7 +18,7 @@ namespace Flint
 	 * to vertex attributes is that it allows us to store a large group of similar types data.
 	 */
 	template<class DeviceT, class BufferT>
-	class GeometryStore final : public DeviceBoundObject<DeviceT>, public std::enable_shared_from_this<GeometryStore<DeviceT, BufferT>>
+	class GeometryStore : public DeviceBoundObject<DeviceT>
 	{
 	public:
 		/**

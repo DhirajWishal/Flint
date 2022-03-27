@@ -9,8 +9,6 @@
 
 namespace Flint
 {
-	class ImageView;
-
 	/**
 	 * Loading operation enum.
 	 */
