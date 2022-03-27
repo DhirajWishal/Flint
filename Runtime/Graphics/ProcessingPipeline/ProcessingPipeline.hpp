@@ -96,7 +96,7 @@ namespace Flint
 		 *
 		 * @reutrn The display pointer.
 		 */
-		std::shared_ptr<Display> GetDisplay() const { return pDisplay; }
+		Display* GetDisplay() const { return pDisplay.get(); }
 
 		/**
 		 * Check if the color image is present.
@@ -206,7 +206,7 @@ namespace Flint
 		std::vector<std::shared_ptr<CommandBuffer>> pCommandBuffers = {};
 		std::vector<std::shared_ptr<HostSynchronizationPrimitive>> pHostSynchronizationPrimitives = {};
 
-		std::shared_ptr<Display> pDisplay = nullptr;
+		std::unique_ptr<Display> pDisplay = nullptr;
 
 		std::shared_ptr<ScreenBoundRenderTarget> pScreenBoundRenderTarget = nullptr;
 		std::shared_ptr<CommandBufferAllocator> pCommandBufferAllocator = nullptr;

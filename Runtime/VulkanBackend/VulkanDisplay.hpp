@@ -27,10 +27,10 @@ namespace Flint
 			static SwapChainSupportDetails Query(VkPhysicalDevice vPhysicalDevice, VkSurfaceKHR vSurface);
 		};
 
-		class VulkanDisplay final : public Display, public std::enable_shared_from_this<VulkanDisplay>
+		class VulkanDisplay final : public Display
 		{
 		public:
-			VulkanDisplay(const std::shared_ptr<Instance>& pInstance, const FBox2D& extent, const std::string& title);
+			VulkanDisplay(Instance* pInstance, const FBox2D& extent, const std::string& title);
 			~VulkanDisplay() { if (!bIsTerminated) Terminate(); }
 
 			virtual void Update() override;

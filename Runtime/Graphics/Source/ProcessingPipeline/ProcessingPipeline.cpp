@@ -48,7 +48,7 @@ namespace Flint
 		}
 
 		// Create the screen bound render target.
-		pScreenBoundRenderTarget = pDevice->CreateScreenBoundRenderTarget(pDisplay, frameBufferExtent, bufferCount, attachments, SwapChainPresentMode::MailBox);
+		pScreenBoundRenderTarget = pDevice->CreateScreenBoundRenderTarget(pDisplay.get(), frameBufferExtent, bufferCount, attachments, SwapChainPresentMode::MailBox);
 
 		// Create the command buffer allocator and buffers.
 		pCommandBufferAllocator = pDevice->CreateCommandBufferAllocator(bufferCount);

@@ -37,7 +37,7 @@ namespace Flint
 			}
 		}
 
-		VulkanSwapChain::VulkanSwapChain(Device* pDevice, const std::shared_ptr<Display>& pDisplay, uint32_t imageCount, const SwapChainPresentMode presentMode)
+		VulkanSwapChain::VulkanSwapChain(Device* pDevice, Display* pDisplay, uint32_t imageCount, const SwapChainPresentMode presentMode)
 			: SwapChain(pDevice, pDisplay, imageCount, presentMode)
 		{
 			OPTICK_EVENT();
@@ -205,7 +205,7 @@ namespace Flint
 			vCreateInfo.queueFamilyIndexCount = 0;
 			vCreateInfo.pQueueFamilyIndices = nullptr;
 
-			uint32_t queueFamilyindices[2] = {
+			const uint32_t queueFamilyindices[2] = {
 				vDevice.GetQueue().mGraphicsFamily.value(),
 				vDevice.GetQueue().mTransferFamily.value()
 			};
@@ -223,7 +223,7 @@ namespace Flint
 			vCreateInfo.clipped = VK_TRUE;
 			vCreateInfo.oldSwapchain = vSwapChain;
 
-			if (!vDevice.IsDisplayCompatible(pDisplay.get()))
+			if (!vDevice.IsDisplayCompatible(pDisplay))
 				throw std::runtime_error("Submitted device and display are incompatible!");
 
 			VkSwapchainKHR vNewSwapChain = VK_NULL_HANDLE;

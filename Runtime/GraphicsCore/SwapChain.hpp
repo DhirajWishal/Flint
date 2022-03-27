@@ -34,7 +34,7 @@ namespace Flint
 		 * @param imageCount The image count of the swap chain.
 		 * @param presentMode The swap chain present mode. If the requested present mode is not supported, an exception is thrown.
 		 */
-		SwapChain(Device* pDevice, const std::shared_ptr<Display>& pDisplay, uint32_t imageCount, const SwapChainPresentMode presentMode);
+		SwapChain(Device* pDevice, Display* pDisplay, uint32_t imageCount, const SwapChainPresentMode presentMode);
 
 		/**
 		 * Recreate the swap chain.
@@ -56,7 +56,7 @@ namespace Flint
 		 *
 		 * @return The display pointer.
 		 */
-		const std::shared_ptr<Display> GetDisplay() const { return pDisplay; }
+		Display* GetDisplay() const { return pDisplay; }
 
 		/**
 		 * Get the extent of the swap chain.
@@ -107,7 +107,7 @@ namespace Flint
 		const bool ShouldRecreate() const { return bShouldRecreate; }
 
 	protected:
-		std::shared_ptr<Display> pDisplay = nullptr;
+		Display* pDisplay = nullptr;
 
 		FBox2D mExtent = {};
 		uint32_t mImageCount = 0;

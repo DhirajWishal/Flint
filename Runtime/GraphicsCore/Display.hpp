@@ -201,7 +201,7 @@ namespace Flint
 		 *				  maximized mode.
 		 * @param title The display title.
 		 */
-		Display(const std::shared_ptr<Instance>& pInstance, const FBox2D& extent, const std::string& title);
+		Display(Instance* pInstance, const FBox2D& extent, const std::string& title);
 
 		/**
 		 * Update the display object.
@@ -336,7 +336,7 @@ namespace Flint
 		std::vector<std::filesystem::path> mDragAndDropPaths;
 
 		std::string mTitle = "";
-		std::shared_ptr<Instance> pInstance = nullptr;
+		Instance* pInstance = nullptr;
 		FBox2D mExtent = {};
 
 		ButtonEvent mKeyEvents[static_cast<uint8_t>(KeyCode::KeyCodeMax)] = {};

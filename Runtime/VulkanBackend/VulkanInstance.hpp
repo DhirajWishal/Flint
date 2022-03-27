@@ -12,14 +12,14 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanInstance final : public Instance, public std::enable_shared_from_this<VulkanInstance>
+		class VulkanInstance final : public Instance
 		{
 		public:
 			VulkanInstance(bool enableValidation, bool volkInitialized = false);
 			~VulkanInstance() { if (!bIsTerminated) Terminate(); }
 
 			virtual std::unique_ptr<Device> CreateDevice(const DeviceFlags flags) override;
-			virtual std::shared_ptr<Display> CreateDisplay(const FBox2D& extent, const std::string& title) override;
+			virtual std::unique_ptr<Display> CreateDisplay(const FBox2D& extent, const std::string& title) override;
 
 			virtual void Terminate() override;
 

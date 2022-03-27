@@ -109,7 +109,7 @@ namespace Flint
 			}
 		}
 
-		VulkanDevice::VulkanDevice(const std::shared_ptr<Instance>& pInstance, const DeviceFlags flags) : Device(pInstance, flags)
+		VulkanDevice::VulkanDevice(Instance* pInstance, const DeviceFlags flags) : Device(pInstance, flags)
 		{
 			OPTICK_EVENT();
 
@@ -145,12 +145,12 @@ namespace Flint
 			return std::make_shared<VulkanCommandBufferAllocator>(this, pParentAllocator, bufferCount);
 		}
 
-		std::shared_ptr<SwapChain> VulkanDevice::CreateSwapChain(const std::shared_ptr<Display>& pDisplay, uint32_t imageCount, const SwapChainPresentMode presentMode)
+		std::shared_ptr<SwapChain> VulkanDevice::CreateSwapChain(Display* pDisplay, uint32_t imageCount, const SwapChainPresentMode presentMode)
 		{
 			return std::make_shared<VulkanSwapChain>(this, pDisplay, imageCount, presentMode);
 		}
 
-		std::shared_ptr<ScreenBoundRenderTarget> VulkanDevice::CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor)
+		std::shared_ptr<ScreenBoundRenderTarget> VulkanDevice::CreateScreenBoundRenderTarget(Display* pDisplay, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor)
 		{
 			return  std::make_shared<VulkanScreenBoundRenderTarget>(this, pDisplay, extent, bufferCount, imageAttachments, presentMode, swapChainClearColor);
 		}

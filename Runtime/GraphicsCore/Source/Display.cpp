@@ -5,7 +5,7 @@
 
 namespace Flint
 {
-	Display::Display(const std::shared_ptr<Instance>& pInstance, const FBox2D& extent, const std::string& title) : pInstance(pInstance), mExtent(extent), mTitle(title)
+	Display::Display(Instance* pInstance, const FBox2D& extent, const std::string& title) : pInstance(pInstance), mExtent(extent), mTitle(title)
 	{
 		if (!pInstance)
 			throw std::invalid_argument("Instance pointer should not be null!");

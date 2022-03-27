@@ -22,8 +22,8 @@ namespace Flint
 			std::filesystem::create_directory(flintRuntimeDirectory.string() + "\\Shaders");
 	}
 
-	std::shared_ptr<Instance> CreateInstance(bool enableValidation)
+	std::unique_ptr<Instance> CreateInstance(bool enableValidation)
 	{
-		return std::make_shared<VulkanBackend::VulkanInstance>(enableValidation);
+		return std::make_unique<VulkanBackend::VulkanInstance>(enableValidation);
 	}
 }

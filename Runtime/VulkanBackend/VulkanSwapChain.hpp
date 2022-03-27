@@ -15,7 +15,7 @@ namespace Flint
 		class VulkanSwapChain final : public SwapChain, public VulkanRenderTargetAttachmentInterface
 		{
 		public:
-			VulkanSwapChain(Device* pDevice, const std::shared_ptr<Display>& pDisplay, uint32_t imageCount, const SwapChainPresentMode presentMode);
+			VulkanSwapChain(Device* pDevice, Display* pDisplay, uint32_t imageCount, const SwapChainPresentMode presentMode);
 			~VulkanSwapChain() { if (!bIsTerminated) Terminate(); }
 
 			virtual void Recreate() override;

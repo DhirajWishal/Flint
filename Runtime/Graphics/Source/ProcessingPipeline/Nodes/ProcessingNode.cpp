@@ -33,7 +33,7 @@ namespace Flint
 		return pProcessingPipeline->GetDevice();
 	}
 
-	std::shared_ptr<Display> ProcessingNode::GetDisplay() const
+	Display* ProcessingNode::GetDisplay() const
 	{
 		return pProcessingPipeline->GetDisplay();
 	}

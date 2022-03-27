@@ -35,7 +35,7 @@ namespace Flint
 		 * @param extent The display extent.
 		 * @param title The display title.
 		 */
-		virtual std::shared_ptr<Display> CreateDisplay(const FBox2D& extent, const std::string& title) = 0;
+		virtual std::unique_ptr<Display> CreateDisplay(const FBox2D& extent, const std::string& title) = 0;
 
 		/**
 		 * Terminate the instance object.
@@ -60,5 +60,5 @@ namespace Flint
 	 * @param enableValidation Whether or not to enable validation. We recommend using validation only in debug stage as it uses more resources.
 	 * @return The instance object reference.
 	 */
-	std::shared_ptr<Instance> CreateInstance(bool enableValidation);
+	std::unique_ptr<Instance> CreateInstance(bool enableValidation);
 }

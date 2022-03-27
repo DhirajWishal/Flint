@@ -75,7 +75,7 @@ namespace Flint
 		 * @param pInstance The instance pointer.
 		 * @param flags The device flags.
 		 */
-		Device(const std::shared_ptr<Instance>& pInstance, const DeviceFlags flags);
+		Device(Instance* pInstance, const DeviceFlags flags);
 
 		/**
 		 * Check if the display is compatible with the device.
@@ -110,7 +110,7 @@ namespace Flint
 		 * @param presentMode The swap chain present mode.
 		 * @return The swap chain pointer.
 		 */
-		virtual std::shared_ptr<SwapChain> CreateSwapChain(const std::shared_ptr<Display>& pDisplay, uint32_t imageCount, const SwapChainPresentMode presentMode) = 0;
+		virtual std::shared_ptr<SwapChain> CreateSwapChain(Display* pDisplay, uint32_t imageCount, const SwapChainPresentMode presentMode) = 0;
 
 		/**
 		 * Create a new screen bound render target.
@@ -124,7 +124,7 @@ namespace Flint
 		 * @param swapChainClearColor The swap chain's clear color.
 		 * @return The screen bound render target object.
 		 */
-		virtual std::shared_ptr<ScreenBoundRenderTarget> CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor = FColor4D(0.0f)) = 0;
+		virtual std::shared_ptr<ScreenBoundRenderTarget> CreateScreenBoundRenderTarget(Display* pDisplay, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor = FColor4D(0.0f)) = 0;
 
 		/**
 		 * Create a new off screen render target.
@@ -344,7 +344,7 @@ namespace Flint
 		 *
 		 * @return The instance pointer.
 		 */
-		std::shared_ptr<Instance> GetInstance() const { return pInstance; }
+		Instance* GetInstance() const { return pInstance; }
 
 		/**
 		 * Get the supported rasterization samples.
@@ -354,7 +354,7 @@ namespace Flint
 		virtual MultiSampleCount GetSupportedMultiSampleCount() const = 0;
 
 	protected:
-		std::shared_ptr<Instance> pInstance = nullptr;
+		Instance* pInstance = nullptr;
 		DeviceFlags mFlags = DeviceFlags::External | DeviceFlags::GraphicsCompatible;
 	};
 }

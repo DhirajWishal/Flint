@@ -69,7 +69,7 @@ namespace Flint
 		 *
 		 * @reutrn The display pointer.
 		 */
-		std::shared_ptr<Display> GetDisplay() const;
+		Display* GetDisplay() const;
 
 	protected:
 		ProcessingPipeline* pProcessingPipeline = nullptr;
