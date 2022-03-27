@@ -23,7 +23,8 @@ namespace Flint
 	 * Flint swap chain object.
 	 * Swap chains are used to render images to the display after being rendered to a render target.
 	 */
-	class SwapChain : public DeviceBoundObject
+	template<class DeviceT, class DisplayT>
+	class SwapChain : public DeviceBoundObject<DeviceT>
 	{
 	public:
 		/**
@@ -34,7 +35,15 @@ namespace Flint
 		 * @param imageCount The image count of the swap chain.
 		 * @param presentMode The swap chain present mode. If the requested present mode is not supported, an exception is thrown.
 		 */
-		SwapChain(Device* pDevice, Display* pDisplay, uint32_t imageCount, const SwapChainPresentMode presentMode);
+		SwapChain(DeviceT* pDevice, DisplayT* pDisplay, uint32_t imageCount, const SwapChainPresentMode presentMode)
+			: DeviceBoundObject(pDevice), pDisplay(pDisplay), mExtent(pDisplay->GetExtent()), mImageCount(imageCount), mPresentMode(presentMode)
+		{
+			if (!pDisplay)
+				throw std::invalid_argument("Display pointer should not be null!");
+
+			if (imageCount == 0)
+				throw std::invalid_argument("Swap chain image count should not be zero!");
+		}
 
 		/**
 		 * Recreate the swap chain.
@@ -56,7 +65,7 @@ namespace Flint
 		 *
 		 * @return The display pointer.
 		 */
-		Display* GetDisplay() const { return pDisplay; }
+		DisplayT* GetDisplay() const { return pDisplay; }
 
 		/**
 		 * Get the extent of the swap chain.
@@ -107,7 +116,7 @@ namespace Flint
 		const bool ShouldRecreate() const { return bShouldRecreate; }
 
 	protected:
-		Display* pDisplay = nullptr;
+		DisplayT* pDisplay = nullptr;
 
 		FBox2D mExtent = {};
 		uint32_t mImageCount = 0;

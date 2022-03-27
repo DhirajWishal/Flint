@@ -29,7 +29,8 @@ namespace Flint
 	 *
 	 * We require shaders to be in the SPIR-V format.
 	 */
-	class Shader : public DeviceBoundObject
+	template<class DeviceT>
+	class Shader : public DeviceBoundObject<DeviceT>
 	{
 	public:
 		/**
@@ -40,7 +41,14 @@ namespace Flint
 		 * @param type The shader type.
 		 * @param path The file path to the asset file.
 		 */
-		Shader(Device* pDevice, const ShaderType type, const std::filesystem::path& path);
+		Shader(DeviceT* pDevice, const ShaderType type, const std::filesystem::path& path) : DeviceBoundObject(pDevice), mType(type)
+		{
+			if (type == ShaderType::Undefined)
+				throw std::invalid_argument("Shader type should not be Undefined!");
+
+			if (path.empty())
+				throw std::invalid_argument("Shader file path should not be empty!");
+		}
 
 		/**
 		 * Construct the shader using a shader code.
@@ -50,7 +58,14 @@ namespace Flint
 		 * @param type The shader type.
 		 * @param code The shader code as a vector of uint32_t.
 		 */
-		Shader(Device* pDevice, const ShaderType type, const std::vector<uint32_t>& code);
+		Shader(DeviceT* pDevice, const ShaderType type, const std::vector<uint32_t>& code) : DeviceBoundObject(pDevice), mType(type)
+		{
+			if (type == ShaderType::Undefined)
+				throw std::invalid_argument("Shader type should not be Undefined!");
+
+			if (code.empty())
+				throw std::invalid_argument("Shader code should not be empty!");
+		}
 
 		/**
 		 * Construct the shader using a shader code.
@@ -60,7 +75,14 @@ namespace Flint
 		 * @param type The shader type.
 		 * @param code The shader code as a string.
 		 */
-		Shader(Device* pDevice, const ShaderType type, const std::string& code);
+		Shader(DeviceT* pDevice, const ShaderType type, const std::string& code) : DeviceBoundObject(pDevice), mType(type)
+		{
+			if (type == ShaderType::Undefined)
+				throw std::invalid_argument("Shader type should not be Undefined!");
+
+			if (code.empty())
+				throw std::invalid_argument("Shader code should not be empty!");
+		}
 
 		/**
 		 * Create the shader code cache.

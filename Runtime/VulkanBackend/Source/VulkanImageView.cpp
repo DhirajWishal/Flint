@@ -10,20 +10,19 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanImageView::VulkanImageView(Device* pDevice, const Image* pImage, const uint32_t baseLayerIndex, const uint32_t layerCount, const uint32_t baseMipLevel, const uint32_t mipLevels, const ImageUsage usage)
+		VulkanImageView::VulkanImageView(VulkanDevice* pDevice, const VulkanImage* pImage, const uint32_t baseLayerIndex, const uint32_t layerCount, const uint32_t baseMipLevel, const uint32_t mipLevels, const ImageUsage usage)
 			: ImageView(pDevice, pImage, baseLayerIndex, layerCount, baseMipLevel, mipLevels, usage)
 		{
 			OPTICK_EVENT();
-			auto const& vImage = pImage->StaticCast<VulkanImage>();
 
 			VkImageViewCreateInfo vCreateInfo = {};
 			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 			vCreateInfo.flags = 0;
 			vCreateInfo.pNext = VK_NULL_HANDLE;
-			vCreateInfo.image = vImage.GetImage();
-			vCreateInfo.viewType = vImage.GetImageViewType();
-			vCreateInfo.format = vImage.GetImageFormat();
-			vCreateInfo.components = vImage.GetComponentMapping();
+			vCreateInfo.image = pImage->GetImage();
+			vCreateInfo.viewType = pImage->GetImageViewType();
+			vCreateInfo.format = pImage->GetImageFormat();
+			vCreateInfo.components = pImage->GetComponentMapping();
 
 			vCreateInfo.subresourceRange.layerCount = layerCount;
 			vCreateInfo.subresourceRange.baseArrayLayer = baseLayerIndex;
@@ -65,15 +64,12 @@ namespace Flint
 				throw backend_error("Unsupported usage flag!");
 			}
 
-			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateImageView(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vImageView));
+			FLINT_VK_ASSERT(pDevice->GetDeviceTable().vkCreateImageView(pDevice->GetLogicalDevice(), &vCreateInfo, nullptr, &vImageView));
 		}
 
 		void VulkanImageView::Terminate()
 		{
-			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
-			vDevice.GetDeviceTable().vkDestroyImageView(vDevice.GetLogicalDevice(), vImageView, nullptr);
-
+			pDevice->GetDeviceTable().vkDestroyImageView(pDevice->GetLogicalDevice(), vImageView, nullptr);
 			bIsTerminated = true;
 		}
 	}

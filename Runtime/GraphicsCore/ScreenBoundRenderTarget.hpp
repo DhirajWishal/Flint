@@ -16,7 +16,8 @@ namespace Flint
 	 * If a color attachment is not present within the attachments, make sure that the first attachment is the Swap chain clear colors. If a color attachment is present,
 	 * the color attachment's clear color will be used. Explicitly stating the swap chain clear colors will be discarded.
 	 */
-	class ScreenBoundRenderTarget : public RenderTarget
+	template<class DeviceT, class ImageT, class DisplayT, class SwapChainT>
+	class ScreenBoundRenderTarget : public RenderTarget<DeviceT, ImageT>
 	{
 	public:
 		/**
@@ -29,7 +30,12 @@ namespace Flint
 		 * @param presentMode The image present mode to the display.
 		 * @param swapChainClearColor The clear colors used for the swap chain. If a color buffer/ attachment is present, this field can be ignored. If not this will be used. Default is FColor4D(0.0f).
 		 */
-		ScreenBoundRenderTarget(Device* pDevice, Display* pDisplay, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor = FColor4D(0.0f));
+		ScreenBoundRenderTarget(DeviceT* pDevice, DisplayT* pDisplay, const FBox2D& extent, const uint32_t bufferCount, const std::vector<typename RenderTarget<DeviceT, ImageT>::RenderTargetAttachmentT>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor = FColor4D(0.0f))
+			: RenderTarget(pDevice, extent, bufferCount, imageAttachments), pDisplay(pDisplay)
+		{
+			if (!pDisplay)
+				throw std::invalid_argument("Screen bound render target device pointer should not be null!");
+		}
 
 		/**
 		 * Present the images to the display.
@@ -49,14 +55,14 @@ namespace Flint
 		 *
 		 * @return The display pointer.
 		 */
-		Display* GetDisplay() const { return pDisplay; }
+		DisplayT* GetDisplay() const { return pDisplay; }
 
 		/**
 		 * Get the swap chain pointer.
 		 *
 		 * @return The swap chain pointer.
 		 */
-		SwapChain* GetSwapChain() const { return pSwapChain.get(); }
+		SwapChainT* GetSwapChain() const { return pSwapChain.get(); }
 
 		/**
 		 * Get the current image index.
@@ -79,8 +85,8 @@ namespace Flint
 		void NotifyRecreated() { bShouldRecreateResources = false; }
 
 	protected:
-		Display* pDisplay = nullptr;
-		std::unique_ptr<SwapChain> pSwapChain = nullptr;
+		DisplayT* pDisplay = nullptr;
+		std::unique_ptr<SwapChainT> pSwapChain = nullptr;
 
 		bool bShouldRecreateResources = false;
 	};

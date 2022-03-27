@@ -37,7 +37,7 @@ namespace Flint
 			}
 		}
 
-		VulkanSwapChain::VulkanSwapChain(Device* pDevice, Display* pDisplay, uint32_t imageCount, const SwapChainPresentMode presentMode)
+		VulkanSwapChain::VulkanSwapChain(VulkanDevice* pDevice, VulkanDisplay* pDisplay, uint32_t imageCount, const SwapChainPresentMode presentMode)
 			: SwapChain(pDevice, pDisplay, imageCount, presentMode)
 		{
 			OPTICK_EVENT();

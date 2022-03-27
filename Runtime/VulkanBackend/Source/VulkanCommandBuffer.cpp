@@ -261,7 +261,7 @@ namespace Flint
 			pAllocator->GetDevice()->GetDeviceTable().vkCmdBindIndexBuffer(vCommandBuffer, pBuffer->GetBuffer(), offset, indexType);
 		}
 
-		void VulkanCommandBuffer::BindGeometryStore(const GeometryStore* pGeometryStore)
+		void VulkanCommandBuffer::BindGeometryStore(const VulkanGeometryStore* pGeometryStore)
 		{
 			OPTICK_EVENT();
 

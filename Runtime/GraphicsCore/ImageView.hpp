@@ -11,7 +11,8 @@ namespace Flint
 	 * Flint image view object.
 	 * Image views are used to bind images to the resource packages.
 	 */
-	class ImageView : public DeviceBoundObject
+	template<class DeviceT, class ImageT>
+	class ImageView : public DeviceBoundObject<DeviceT>
 	{
 	public:
 		/**
@@ -25,7 +26,12 @@ namespace Flint
 		 * @param mipLevels The number of mip levels to cover.
 		 * @param usage The image view usage.
 		 */
-		ImageView(Device* pDevice, const Image* pImage, const uint32_t baseLayerIndex, const uint32_t layerCount, const uint32_t baseMipLevel, const uint32_t mipLevels, const ImageUsage usage);
+		ImageView(DeviceT* pDevice, const ImageT* pImage, const uint32_t baseLayerIndex, const uint32_t layerCount, const uint32_t baseMipLevel, const uint32_t mipLevels, const ImageUsage usage)
+			: DeviceBoundObject(pDevice), pParentImage(pImage), mBaseLayerIndex(baseLayerIndex), mLayerCount(layerCount), mBaseMipLevel(baseMipLevel), mMipLevels(mipLevels), mUsage(usage)
+		{
+			if (!pImage)
+				throw std::runtime_error("The image pointer should not be nullptr!");
+		}
 
 	public:
 		/**
@@ -33,7 +39,7 @@ namespace Flint
 		 *
 		 * @return The image pointer.
 		 */
-		const Image* GetParentImage() const { return pParentImage; }
+		const ImageT* GetParentImage() const { return pParentImage; }
 
 		/**
 		 * Get the base layer index.
@@ -64,7 +70,7 @@ namespace Flint
 		uint32_t GetMipLevels() const { return mMipLevels; }
 
 	protected:
-		const Image* pParentImage = nullptr;
+		const ImageT* pParentImage = nullptr;
 
 		uint32_t mBaseLayerIndex = 0;
 		uint32_t mLayerCount = 0;

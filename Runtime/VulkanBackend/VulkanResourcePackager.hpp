@@ -5,19 +5,21 @@
 
 #include "GraphicsCore/ResourcePackager.hpp"
 #include "VulkanResourcePackage.hpp"
+#include "VulkanGraphicsPipeline.hpp"
+#include "VulkanComputePipeline.hpp"
 
 namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanResourcePackager final : public ResourcePackager, public std::enable_shared_from_this<VulkanResourcePackager>
+		class VulkanResourcePackager final : public ResourcePackager<VulkanDevice, VulkanResourcePackage>
 		{
 		public:
-			VulkanResourcePackager(const uint32_t setIndex, const GraphicsPipeline* pPipeline, const VkDescriptorSetLayout vLayout);
-			VulkanResourcePackager(const uint32_t setIndex, const ComputePipeline* pPipeline, const VkDescriptorSetLayout vLayout);
+			VulkanResourcePackager(const uint32_t setIndex, const VulkanGraphicsPipeline* pPipeline, const VkDescriptorSetLayout vLayout);
+			VulkanResourcePackager(const uint32_t setIndex, const VulkanComputePipeline* pPipeline, const VkDescriptorSetLayout vLayout);
 			~VulkanResourcePackager() { if (!bIsTerminated) Terminate(); }
 
-			virtual std::shared_ptr<ResourcePackage> CreatePackage() override;
+			virtual std::shared_ptr<VulkanResourcePackage> CreatePackage() override;
 			virtual void Terminate() override;
 
 		private:

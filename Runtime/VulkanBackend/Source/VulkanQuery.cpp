@@ -26,7 +26,7 @@ namespace Flint
 			}
 		}
 
-		VulkanQuery::VulkanQuery(Device* pDevice, const QueryUsage usage, const uint32_t queryCount)
+		VulkanQuery::VulkanQuery(VulkanDevice* pDevice, const QueryUsage usage, const uint32_t queryCount)
 			: Query(pDevice, usage, queryCount)
 		{
 			CreatePool();

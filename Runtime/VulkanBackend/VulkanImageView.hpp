@@ -10,10 +10,10 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanImageView final : public ImageView
+		class VulkanImageView final : public ImageView<VulkanDevice, VulkanImage>
 		{
 		public:
-			VulkanImageView(Device* pDevice, const Image* pImage, const uint32_t baseLayerIndex, const uint32_t layerCount, const uint32_t baseMipLevel, const uint32_t mipLevels, const ImageUsage usage);
+			VulkanImageView(VulkanDevice* pDevice, const VulkanImage* pImage, const uint32_t baseLayerIndex, const uint32_t layerCount, const uint32_t baseMipLevel, const uint32_t mipLevels, const ImageUsage usage);
 			~VulkanImageView() { if (!bIsTerminated) Terminate(); }
 
 			virtual void Terminate() override;

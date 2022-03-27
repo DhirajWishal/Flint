@@ -21,7 +21,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanCommandBuffer final : public CommandBuffer<VulkanCommandBuffer, VulkanCommandBufferAllocator, VulkanScreenBoundRenderTarget, VulkanOffScreenRenderTarget, VulkanGraphicsPipeline, VulkanComputePipeline, VulkanBuffer, VulkanResourcePackage, VulkanImage, VulkanSwapChain, VulkanQuery>
+		class VulkanCommandBuffer final : public CommandBuffer<VulkanCommandBuffer, VulkanCommandBufferAllocator, VulkanScreenBoundRenderTarget, VulkanOffScreenRenderTarget, VulkanGraphicsPipeline, VulkanComputePipeline, VulkanBuffer, VulkanGeometryStore, VulkanResourcePackage, VulkanImage, VulkanSwapChain, VulkanQuery>
 		{
 		public:
 			VulkanCommandBuffer(VulkanCommandBufferAllocator* pAllocator, VkCommandBuffer vCommandBuffer);
@@ -43,7 +43,7 @@ namespace Flint
 
 			virtual void BindVertexBuffer(const VulkanBuffer* pBuffer, const uint64_t firstBinding = 0, const uint64_t offset = 0) override;
 			virtual void BindIndexBuffer(const VulkanBuffer* pBuffer, const uint64_t indexSize, const uint64_t offset = 0) override;
-			virtual void BindGeometryStore(const GeometryStore* pGeometryStore) override;
+			virtual void BindGeometryStore(const VulkanGeometryStore* pGeometryStore) override;
 
 			virtual void BindResourcePackage(const VulkanGraphicsPipeline* pPipeline, VulkanResourcePackage* pResourcePackage) override;
 			virtual void BindResourcePackages(const VulkanGraphicsPipeline* pPipeline, const std::vector<VulkanResourcePackage*>& pResourcePackages) override;

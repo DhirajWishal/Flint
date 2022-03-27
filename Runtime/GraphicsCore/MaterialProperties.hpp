@@ -250,6 +250,7 @@ namespace Flint
 		 * Texture image property.
 		 * This object stores information about a single texture image.
 		 */
+		template<class ImageT>
 		class TextureImage final : public Property
 		{
 		public:
@@ -259,15 +260,16 @@ namespace Flint
 			 * @param pImage The image pointer.
 			 * @param type The texture type.
 			 */
-			TextureImage(std::unique_ptr<Image>&& pImage, const TextureType type) : Property(MaterialType::TEXTURE_IMAGE), pImage(std::move(pImage)), mType(type) {}
+			TextureImage(std::unique_ptr<ImageT>&& pImage, const TextureType type) : Property(MaterialType::TEXTURE_IMAGE), pImage(std::move(pImage)), mType(type) {}
 
-			std::unique_ptr<Image> pImage = nullptr;
+			std::unique_ptr<ImageT> pImage = nullptr;
 			TextureType mType = TextureType::Undefined;
 		};
 
 		/**
 		 * Texture data property.
 		 */
+		template<class ImageT, class DeviceT>
 		class TextureData final : public Property
 		{
 		public:
@@ -292,7 +294,7 @@ namespace Flint
 			 * @param sampleCount The multi sample count. Default is One.
 			 * @return The image pointer.
 			 */
-			std::unique_ptr<Image> CreateImage(Device* pDevice, const ImageType type, const ImageUsage usage, const uint32_t layers, const uint32_t mipLevels, const MultiSampleCount sampleCount = MultiSampleCount::One);
+			std::unique_ptr<ImageT> CreateImage(DeviceT* pDevice, const ImageType type, const ImageUsage usage, const uint32_t layers, const uint32_t mipLevels, const MultiSampleCount sampleCount = MultiSampleCount::One);
 
 			/**
 			 * Clear texture data.

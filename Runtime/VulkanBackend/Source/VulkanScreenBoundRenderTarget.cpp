@@ -12,8 +12,8 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanScreenBoundRenderTarget::VulkanScreenBoundRenderTarget(Device* pDevice, Display* pDisplay, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor)
-			: ScreenBoundRenderTarget(pDevice, pDisplay, extent, bufferCount, imageAttachments, presentMode), vRenderTarget(pDevice->StaticCast<VulkanDevice>())
+		VulkanScreenBoundRenderTarget::VulkanScreenBoundRenderTarget(VulkanDevice* pDevice, VulkanDisplay* pDisplay, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachmentT>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor)
+			: ScreenBoundRenderTarget(pDevice, pDisplay, extent, bufferCount, imageAttachments, presentMode), vRenderTarget(*pDevice)
 		{
 			OPTICK_EVENT();
 
@@ -66,11 +66,10 @@ namespace Flint
 				vClearValues.emplace_back(vClearValue);
 			}
 
-			auto& vSwapChain = pSwapChain->StaticCast<VulkanSwapChain>();
-			pAttachmentInferfaces.emplace_back(&vSwapChain);
+			pAttachmentInferfaces.emplace_back(pSwapChain);
 			if (!bIsColorPresent)
 			{
-				vSwapChain.ToggleClear();
+				pSwapChain->ToggleClear();
 
 				VkClearValue vClearValue = {};
 				vClearValue.color.float32[0] = swapChainClearColor.mRed;
@@ -102,8 +101,7 @@ namespace Flint
 		{
 			OPTICK_EVENT();
 
-			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-			VkResult vResult = vDevice.GetDeviceTable().vkQueuePresentKHR(vDevice.GetQueue().vTransferQueue, pSwapChain->StaticCast<VulkanSwapChain>().PrepareToPresent());
+			VkResult vResult = pDevice->GetDeviceTable().vkQueuePresentKHR(pDevice->GetQueue().vTransferQueue, pSwapChain->PrepareToPresent());
 			if (vResult == VK_ERROR_OUT_OF_DATE_KHR || vResult == VK_SUBOPTIMAL_KHR)
 				return false;
 			else FLINT_VK_ASSERT(vResult);
@@ -148,7 +146,7 @@ namespace Flint
 			}
 
 			pSwapChain->Recreate();
-			pAttachmentInferfaces.emplace_back(&pSwapChain->StaticCast<VulkanSwapChain>());
+			pAttachmentInferfaces.emplace_back(pSwapChain.get());
 
 			vRenderTarget.CreateRenderPass(pAttachmentInferfaces, VK_PIPELINE_BIND_POINT_GRAPHICS, vDependencies);
 			vRenderTarget.CreateFrameBuffer(pAttachmentInferfaces, mExtent, mBufferCount);

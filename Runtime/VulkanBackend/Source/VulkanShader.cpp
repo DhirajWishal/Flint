@@ -179,7 +179,7 @@ namespace Flint
 			}
 		}
 
-		VulkanShader::VulkanShader(Device* pDevice, const ShaderType type, const std::filesystem::path& path)
+		VulkanShader::VulkanShader(VulkanDevice* pDevice, const ShaderType type, const std::filesystem::path& path)
 			: Shader(pDevice, type, path)
 		{
 			OPTICK_EVENT();
@@ -201,7 +201,7 @@ namespace Flint
 			PerformReflection();
 		}
 
-		VulkanShader::VulkanShader(Device* pDevice, const ShaderType type, const std::vector<uint32_t>& code)
+		VulkanShader::VulkanShader(VulkanDevice* pDevice, const ShaderType type, const std::vector<uint32_t>& code)
 			: Shader(pDevice, type, code), mShaderCode(code)
 		{
 			OPTICK_EVENT();
@@ -216,7 +216,7 @@ namespace Flint
 			PerformReflection();
 		}
 
-		VulkanShader::VulkanShader(Device* pDevice, const ShaderType type, const std::string& code)
+		VulkanShader::VulkanShader(VulkanDevice* pDevice, const ShaderType type, const std::string& code)
 			: Shader(pDevice, type, code)
 		{
 			OPTICK_EVENT();
@@ -294,9 +294,7 @@ namespace Flint
 
 		void VulkanShader::Terminate()
 		{
-			const VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-			vDevice.GetDeviceTable().vkDestroyShaderModule(vDevice.GetLogicalDevice(), vModule, nullptr);
-
+			pDevice->GetDeviceTable().vkDestroyShaderModule(pDevice->GetLogicalDevice(), vModule, nullptr);
 			bIsTerminated = true;
 		}
 
@@ -455,8 +453,7 @@ namespace Flint
 			vCreateInfo.codeSize = mShaderCode.size();
 			vCreateInfo.pCode = mShaderCode.data();
 
-			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateShaderModule(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vModule));
+			FLINT_VK_ASSERT(pDevice->GetDeviceTable().vkCreateShaderModule(pDevice->GetLogicalDevice(), &vCreateInfo, nullptr, &vModule));
 		}
 	}
 }

@@ -10,7 +10,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanGraphicsPipeline final : public GraphicsPipeline<VulkanDevice, RenderTarget, VulkanResourcePackage, VulkanShader, VulkanScreenBoundRenderTarget, VulkanOffScreenRenderTarget>
+		class VulkanGraphicsPipeline final : public GraphicsPipeline<VulkanDevice, RenderTarget<VulkanDevice, VulkanImage>, VulkanResourcePackage, VulkanShader, VulkanScreenBoundRenderTarget, VulkanOffScreenRenderTarget>
 		{
 		public:
 			VulkanGraphicsPipeline(VulkanDevice* pDevice, const std::string& pipelineName, const VulkanScreenBoundRenderTarget* pScreenBoundRenderTarget, std::unique_ptr<VulkanShader>&& pVertexShader, std::unique_ptr<VulkanShader>&& pTessellationControlShader, std::unique_ptr<VulkanShader>&& pTessellationEvaluationShader, std::unique_ptr<VulkanShader>&& pGeometryShader, std::unique_ptr<VulkanShader>&& pFragmentShader, const GraphicsPipelineSpecification& specification);

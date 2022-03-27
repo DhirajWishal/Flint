@@ -12,9 +12,6 @@
 
 namespace Flint
 {
-	class Device;
-	class Image;
-
 	/**
 	 * Vertex attribute data type enum.
 	 * This enum contains all the supported vertex attribute data types.
@@ -407,14 +404,15 @@ namespace Flint
 	/**
 	 * Render target attachment structure.
 	 */
+	template<class ImageT>
 	struct RenderTargetAttachment
 	{
 		RenderTargetAttachment() = default;
 		RenderTargetAttachment(const FColor4D& clearColor) : mClearColor(clearColor) {}
-		RenderTargetAttachment(Image* pImage, const FColor4D& clearColor) : pImage(std::move(pImage)), mClearColor(clearColor) {}
-		RenderTargetAttachment(Image* pImage, const DepthClearValues& depthValue) : pImage(std::move(pImage)), mDepthClearValue(depthValue) {}
+		RenderTargetAttachment(ImageT* pImage, const FColor4D& clearColor) : pImage(std::move(pImage)), mClearColor(clearColor) {}
+		RenderTargetAttachment(ImageT* pImage, const DepthClearValues& depthValue) : pImage(std::move(pImage)), mDepthClearValue(depthValue) {}
 
-		Image* pImage = nullptr;
+		ImageT* pImage = nullptr;
 
 		FColor4D mClearColor = FColor4D(CreateColor256(32.0f), CreateColor256(32.0f), CreateColor256(32.0f), 1.0f);
 		DepthClearValues mDepthClearValue = {};

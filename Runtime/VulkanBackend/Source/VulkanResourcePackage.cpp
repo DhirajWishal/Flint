@@ -12,7 +12,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanResourcePackage::VulkanResourcePackage(const std::shared_ptr<ResourcePackager>& pPackager, const std::vector<uint32_t>& bufferBindings, const std::vector<uint32_t>& imageBindings, const VkDescriptorSet& vSet)
+		VulkanResourcePackage::VulkanResourcePackage(const std::shared_ptr<VulkanResourcePackager>& pPackager, const std::vector<uint32_t>& bufferBindings, const std::vector<uint32_t>& imageBindings, const VkDescriptorSet& vSet)
 			: ResourcePackage(pPackager, bufferBindings, imageBindings), vDescriptorSet(vSet)
 		{
 		}
@@ -22,7 +22,6 @@ namespace Flint
 			if (!bIsUpdated)
 				return;
 
-			VulkanDevice& vDevice = pPackager->GetPipeline()->GetDevice()->StaticCast<VulkanDevice>();
 			const std::unordered_map<uint32_t, ShaderResourceType> resources = pPackager->GetResources();
 			std::vector<VkWriteDescriptorSet> vWrites = {};
 
@@ -88,7 +87,7 @@ namespace Flint
 				vWrites.emplace_back(vWrite);
 			}
 
-			vDevice.GetDeviceTable().vkUpdateDescriptorSets(vDevice.GetLogicalDevice(), static_cast<uint32_t>(vWrites.size()), vWrites.data(), 0, nullptr);
+			pPackager->GetDevice()->GetDeviceTable().vkUpdateDescriptorSets(pPackager->GetDevice()->GetLogicalDevice(), static_cast<uint32_t>(vWrites.size()), vWrites.data(), 0, nullptr);
 
 			// Delete the allocated memory.
 			for (auto vWriteDelete : vWrites)

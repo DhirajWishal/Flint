@@ -28,7 +28,8 @@ namespace Flint
 	 *
 	 * Query objects can contain multiple query primitives. In Vulkan, this object contains a VkQueryPool.
 	 */
-	class Query : public DeviceBoundObject
+	template<class DeviceT>
+	class Query : public DeviceBoundObject<DeviceT>
 	{
 	public:
 		/**
@@ -38,7 +39,7 @@ namespace Flint
 		 * @param usage The query usage.
 		 * @param queryCount The number of queries this contains.
 		 */
-		Query(Device* pDevice, const QueryUsage usage, const uint32_t queryCount) : DeviceBoundObject(pDevice), mUsage(usage), mQueryCount(queryCount) {}
+		Query(DeviceT* pDevice, const QueryUsage usage, const uint32_t queryCount) : DeviceBoundObject(pDevice), mUsage(usage), mQueryCount(queryCount) {}
 
 		/**
 		 * Recreate the query with primitive count.

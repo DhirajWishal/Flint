@@ -9,10 +9,6 @@
 
 namespace Flint
 {
-	class GraphicsPipeline;
-	class GeometryStore;
-	class CommandBuffer;
-
 	/**
 	 * Flint render target object.
 	 * This object is the base class for all the supported render targets.
@@ -24,9 +20,12 @@ namespace Flint
 	 *		Load Per Thread = Draw Instances / Thread Count
 	 * Each thread contains its own pair of GeometryStore and pipelines. So we recommend having one thread per geometry store in use IF the pipeline count or draw data count is high.
 	 */
-	class RenderTarget : public DeviceBoundObject
+	template<class DeviceT, class ImageT>
+	class RenderTarget : public DeviceBoundObject<DeviceT>
 	{
 	public:
+		using RenderTargetAttachmentT = RenderTargetAttachment<ImageT>;
+
 		/**
 		 * Default constructor.
 		 *
@@ -35,7 +34,15 @@ namespace Flint
 		 * @param bufferCount The frame buffer count.
 		 * @param imageAttachments The image attachments used by the render target.
 		 */
-		RenderTarget(Device* pDevice, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments);
+		RenderTarget(DeviceT* pDevice, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachmentT>& imageAttachments)
+			: DeviceBoundObject(pDevice), mExtent(extent), mBufferCount(bufferCount), mAttachments(imageAttachments)
+		{
+			if (extent.IsZero())
+				throw std::invalid_argument("Render target width and height should be greater than 0!");
+
+			if (bufferCount == 0)
+				throw std::invalid_argument("Render target buffer count should be greater than 0!");
+		}
 
 		/**
 		 * Prepare all the resources for a new frame.
@@ -50,7 +57,7 @@ namespace Flint
 		 *
 		 * @return The attachments.
 		 */
-		const std::vector<RenderTargetAttachment> GetAttachments() const { return mAttachments; }
+		const std::vector<RenderTargetAttachmentT> GetAttachments() const { return mAttachments; }
 
 		/**
 		 * Get a single attachment from the attachments.
@@ -58,7 +65,7 @@ namespace Flint
 		 * @param index The index of the attachment.
 		 * @return The attachment.
 		 */
-		const RenderTargetAttachment& GetAttachment(const uint64_t index) const { return mAttachments[index]; }
+		const RenderTargetAttachmentT& GetAttachment(const uint64_t index) const { return mAttachments[index]; }
 
 		/**
 		 * Get the current frame index.
@@ -100,7 +107,7 @@ namespace Flint
 		void IncrementFrameIndex() { mFrameIndex++; if (mFrameIndex >= mBufferCount) mFrameIndex = 0; }
 
 	protected:
-		std::vector<RenderTargetAttachment> mAttachments = {};
+		std::vector<RenderTargetAttachmentT> mAttachments = {};
 
 		FBox2D mExtent = {};
 		uint32_t mBufferCount = 0;

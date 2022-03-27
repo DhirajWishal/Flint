@@ -98,7 +98,7 @@ namespace Flint
 		 * @param swapChainClearColor The swap chain's clear color.
 		 * @return The screen bound render target object.
 		 */
-		virtual std::unique_ptr<ScreenBoundRenderTargetT> CreateScreenBoundRenderTarget(DisplayT* pDisplay, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor = FColor4D(0.0f)) = 0;
+		virtual std::unique_ptr<ScreenBoundRenderTargetT> CreateScreenBoundRenderTarget(DisplayT* pDisplay, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment<ImageT>>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor = FColor4D(0.0f)) = 0;
 
 		/**
 		 * Create a new off screen render target.
@@ -109,7 +109,7 @@ namespace Flint
 		 * @param imageAttachments The image attachments which the render target uses.
 		 * @return The render target pointer.
 		 */
-		virtual std::unique_ptr<OffScreenRenderTargetT> CreateOffScreenRenderTarget(const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments) = 0;
+		virtual std::unique_ptr<OffScreenRenderTargetT> CreateOffScreenRenderTarget(const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment<ImageT>>& imageAttachments) = 0;
 
 		/**
 		 * Create a new buffer.

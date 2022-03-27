@@ -10,7 +10,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanComputePipeline final : public ComputePipeline<VulkanDevice, RenderTarget, VulkanResourcePackage, VulkanShader>
+		class VulkanComputePipeline final : public ComputePipeline<VulkanDevice, RenderTarget<VulkanDevice, VulkanImage>, VulkanResourcePackage, VulkanShader>
 		{
 		public:
 			VulkanComputePipeline(VulkanDevice* pDevice, const std::string& pipelineName, std::unique_ptr<VulkanShader>&& pComputeShader);

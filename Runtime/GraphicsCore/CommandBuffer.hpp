@@ -42,6 +42,7 @@ namespace Flint
 		class GraphicsPipelineT,
 		class ComputePipelineT,
 		class BufferT,
+		class GeometryStoreT,
 		class ResourcePackageT,
 		class ImageT,
 		class SwapChainT,
@@ -162,7 +163,7 @@ namespace Flint
 		 *
 		 * @param pGeometryStore The geometry store pointer.
 		 */
-		virtual void BindGeometryStore(const GeometryStore* pGeometryStore) = 0;
+		virtual void BindGeometryStore(const GeometryStoreT* pGeometryStore) = 0;
 
 		/**
 		 * Bind a draw resources to the command buffer.

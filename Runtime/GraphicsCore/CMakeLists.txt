@@ -29,9 +29,6 @@ target_include_directories(
 	${OPTICK_INCLUDE_DIR}
 )
 
-# Add the VulkanBackend static library as a target link.
-target_link_libraries(FlintGraphicsCore FlintVulkanBackend)
-
 # Make sure to specify the C++ standard to C++20.
 target_compile_features(FlintGraphicsCore PUBLIC cxx_std_20)
 

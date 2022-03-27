@@ -10,10 +10,10 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanQuery final : public Query
+		class VulkanQuery final : public Query<VulkanDevice>
 		{
 		public:
-			VulkanQuery(Device* pDevice, const QueryUsage usage, const uint32_t queryCount);
+			VulkanQuery(VulkanDevice* pDevice, const QueryUsage usage, const uint32_t queryCount);
 			~VulkanQuery() { if (!bIsTerminated) Terminate(); }
 
 			virtual void Recreate(const uint32_t queryCount) override;

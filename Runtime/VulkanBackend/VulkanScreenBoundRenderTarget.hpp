@@ -16,10 +16,12 @@ namespace Flint
 	{
 		class VulkanCommandBufferList;
 
-		class VulkanScreenBoundRenderTarget final : public ScreenBoundRenderTarget
+		class VulkanScreenBoundRenderTarget final : public ScreenBoundRenderTarget<VulkanDevice, VulkanImage, VulkanDisplay, VulkanSwapChain>
 		{
 		public:
-			VulkanScreenBoundRenderTarget(Device* pDevice, Display* pDisplay, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor = FColor4D(0.0f));
+			using RenderTargetAttachmentT = typename RenderTarget<VulkanDevice, VulkanImage>::RenderTargetAttachmentT;
+
+			VulkanScreenBoundRenderTarget(VulkanDevice* pDevice, VulkanDisplay* pDisplay, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachmentT>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor = FColor4D(0.0f));
 			~VulkanScreenBoundRenderTarget() { if (!bIsTerminated) Terminate(); }
 
 			virtual bool PrepareNewFrame() override;

@@ -12,12 +12,10 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanOffScreenRenderTarget::VulkanOffScreenRenderTarget(Device* pDevice, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments)
-			: OffScreenRenderTarget(pDevice, extent, bufferCount, imageAttachments), vRenderTarget(pDevice->StaticCast<VulkanDevice>())
+		VulkanOffScreenRenderTarget::VulkanOffScreenRenderTarget(VulkanDevice* pDevice, const FBox2D& extent, const uint32_t bufferCount, const std::vector<typename RenderTarget<VulkanDevice, VulkanImage>::RenderTargetAttachmentT>& imageAttachments)
+			: OffScreenRenderTarget(pDevice, extent, bufferCount, imageAttachments), vRenderTarget(*pDevice)
 		{
 			OPTICK_EVENT();
-
-			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 
 			vDependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
 			vDependencies[0].dstSubpass = 0;
@@ -39,7 +37,7 @@ namespace Flint
 			pAttachmentInferfaces.reserve(mAttachments.size());
 			for (const auto attachment : mAttachments)
 			{
-				pAttachmentInferfaces.emplace_back(&attachment.pImage->StaticCast<VulkanImage>());
+				pAttachmentInferfaces.emplace_back(attachment.pImage);
 
 				VkClearValue vClearValue = {};
 				if ((attachment.pImage->GetUsage() & ImageUsage::Color) == ImageUsage::Color)

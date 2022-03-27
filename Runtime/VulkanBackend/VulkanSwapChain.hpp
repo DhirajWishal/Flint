@@ -12,10 +12,10 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanSwapChain final : public SwapChain, public VulkanRenderTargetAttachmentInterface
+		class VulkanSwapChain final : public SwapChain<VulkanDevice, VulkanDisplay>, public VulkanRenderTargetAttachmentInterface
 		{
 		public:
-			VulkanSwapChain(Device* pDevice, Display* pDisplay, uint32_t imageCount, const SwapChainPresentMode presentMode);
+			VulkanSwapChain(VulkanDevice* pDevice, VulkanDisplay* pDisplay, uint32_t imageCount, const SwapChainPresentMode presentMode);
 			~VulkanSwapChain() { if (!bIsTerminated) Terminate(); }
 
 			virtual void Recreate() override;

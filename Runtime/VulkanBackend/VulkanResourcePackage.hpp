@@ -5,15 +5,16 @@
 
 #include "GraphicsCore/ResourcePackage.hpp"
 #include "VulkanDevice.hpp"
+#include "VulkanBackend/VulkanResourcePackager.hpp"
 
 namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanResourcePackage final : public ResourcePackage
+		class VulkanResourcePackage final : public ResourcePackage<VulkanResourcePackager, VulkanBuffer, VulkanImage, VulkanImageView, VulkanImageSampler>
 		{
 		public:
-			VulkanResourcePackage(const std::shared_ptr<ResourcePackager>& pPackager, const std::vector<uint32_t>& bufferBindings, const std::vector<uint32_t>& imageBindings, const VkDescriptorSet& vSet);
+			VulkanResourcePackage(const std::shared_ptr<VulkanResourcePackager>& pPackager, const std::vector<uint32_t>& bufferBindings, const std::vector<uint32_t>& imageBindings, const VkDescriptorSet& vSet);
 
 			virtual void PrepareIfNecessary() override;
 

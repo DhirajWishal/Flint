@@ -11,6 +11,7 @@ namespace Flint
 	 * Flint instance backend object.
 	 * This object is the main object for any Flint instance.
 	 */
+	template<class DeviceT, class DisplayT>
 	class Instance : public FObject
 	{
 	public:
@@ -19,7 +20,20 @@ namespace Flint
 		 *
 		 * @param enableValidation Whether or not to enable backend validation.
 		 */
-		Instance(bool enableValidation);
+		Instance(bool enableValidation)
+			: mEnableValidation(enableValidation)
+		{
+			std::filesystem::path workingDirectory = std::filesystem::current_path();
+			if (!std::filesystem::exists(workingDirectory.string() + "\\Flint"))
+				std::filesystem::create_directory(workingDirectory.string() + "\\Flint");
+
+			std::filesystem::path flintRuntimeDirectory = workingDirectory.string() + "\\Flint";
+			if (!std::filesystem::exists(flintRuntimeDirectory.string() + "\\Cache"))
+				std::filesystem::create_directory(flintRuntimeDirectory.string() + "\\Cache");
+
+			if (!std::filesystem::exists(flintRuntimeDirectory.string() + "\\Shaders"))
+				std::filesystem::create_directory(flintRuntimeDirectory.string() + "\\Shaders");
+		}
 
 		/**
 		 * Create a new device object.
@@ -27,7 +41,7 @@ namespace Flint
 		 * @param flags The device flags.
 		 * @return The created device object.
 		 */
-		virtual std::unique_ptr<Device> CreateDevice(const DeviceFlags flags) = 0;
+		virtual std::unique_ptr<DeviceT> CreateDevice(const DeviceFlags flags) = 0;
 
 		/**
 		 * Create a new display object.
@@ -35,7 +49,7 @@ namespace Flint
 		 * @param extent The display extent.
 		 * @param title The display title.
 		 */
-		virtual std::unique_ptr<Display> CreateDisplay(const FBox2D& extent, const std::string& title) = 0;
+		virtual std::unique_ptr<DisplayT> CreateDisplay(const FBox2D& extent, const std::string& title) = 0;
 
 		/**
 		 * Terminate the instance object.
@@ -53,12 +67,4 @@ namespace Flint
 	protected:
 		bool mEnableValidation = true;
 	};
-
-	/**
-	 * Create a new instance object.
-	 *
-	 * @param enableValidation Whether or not to enable validation. We recommend using validation only in debug stage as it uses more resources.
-	 * @return The instance object reference.
-	 */
-	std::unique_ptr<Instance> CreateInstance(bool enableValidation);
 }

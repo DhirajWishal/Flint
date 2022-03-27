@@ -46,8 +46,8 @@ namespace Flint
 
 			virtual std::unique_ptr<VulkanSwapChain> CreateSwapChain(VulkanDisplay* pDisplay, uint32_t imageCount, const SwapChainPresentMode presentMode) override;
 
-			virtual std::unique_ptr<VulkanScreenBoundRenderTarget> CreateScreenBoundRenderTarget(VulkanDisplay* pDisplay, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor = FColor4D(0.0f)) override;
-			virtual std::unique_ptr<VulkanOffScreenRenderTarget> CreateOffScreenRenderTarget(const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments) override;
+			virtual std::unique_ptr<VulkanScreenBoundRenderTarget> CreateScreenBoundRenderTarget(VulkanDisplay* pDisplay, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment<VulkanImage>>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor = FColor4D(0.0f)) override;
+			virtual std::unique_ptr<VulkanOffScreenRenderTarget> CreateOffScreenRenderTarget(const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment<VulkanImage>>& imageAttachments) override;
 
 			virtual std::unique_ptr<VulkanBuffer> CreateBuffer(const BufferType type, const uint64_t size, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic) override;
 

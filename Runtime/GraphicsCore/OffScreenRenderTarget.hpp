@@ -14,7 +14,8 @@ namespace Flint
 	 *
 	 * Note: If the render target is intended to be attached to a screen bound render target, make sure to have the same number of buffers as in the screen bound render target.
 	 */
-	class OffScreenRenderTarget : public RenderTarget
+	template<class DeviceT, class ImageT>
+	class OffScreenRenderTarget : public RenderTarget<DeviceT, ImageT>
 	{
 	public:
 		/**
@@ -25,7 +26,10 @@ namespace Flint
 		 * @param bufferCount The frame buffer count.
 		 * @param imageAttachments The image attachments used in the render target.
 		 */
-		OffScreenRenderTarget(Device* pDevice, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments);
+		OffScreenRenderTarget(DeviceT* pDevice, const FBox2D& extent, const uint32_t bufferCount, const std::vector<typename RenderTarget<DeviceT, ImageT>::RenderTargetAttachmentT>& imageAttachments)
+			: RenderTarget(pDevice, extent, bufferCount, imageAttachments)
+		{
+		}
 
 		/**
 		 * Recreate the off screen render target.
