@@ -89,7 +89,7 @@ namespace Flint
 
 			VulkanScreenBoundRenderTarget const& vRenderTarget = pRenderTarget->StaticCast<VulkanScreenBoundRenderTarget>();
 
-			auto const& vSwapChain = std::static_pointer_cast<VulkanSwapChain>(vRenderTarget.GetSwapChain());
+			auto const& vSwapChain = static_cast<VulkanSwapChain*>(vRenderTarget.GetSwapChain());
 			vInFlightSemaphores.emplace_back(vSwapChain->GetInFlightSemaphore());
 			vRenderFinishedSemaphores.emplace_back(vSwapChain->GetRenderFinishedSemaphore());
 
@@ -112,7 +112,7 @@ namespace Flint
 
 			VulkanScreenBoundRenderTarget const& vRenderTarget = pRenderTarget->StaticCast<VulkanScreenBoundRenderTarget>();
 
-			auto const& vSwapChain = std::static_pointer_cast<VulkanSwapChain>(vRenderTarget.GetSwapChain());
+			auto const& vSwapChain = static_cast<VulkanSwapChain*>(vRenderTarget.GetSwapChain());
 			vInFlightSemaphores.emplace_back(vSwapChain->GetInFlightSemaphore());
 			vRenderFinishedSemaphores.emplace_back(vSwapChain->GetRenderFinishedSemaphore());
 

@@ -145,9 +145,9 @@ namespace Flint
 			return std::make_unique<VulkanCommandBufferAllocator>(this, pParentAllocator, bufferCount);
 		}
 
-		std::shared_ptr<SwapChain> VulkanDevice::CreateSwapChain(Display* pDisplay, uint32_t imageCount, const SwapChainPresentMode presentMode)
+		std::unique_ptr<SwapChain> VulkanDevice::CreateSwapChain(Display* pDisplay, uint32_t imageCount, const SwapChainPresentMode presentMode)
 		{
-			return std::make_shared<VulkanSwapChain>(this, pDisplay, imageCount, presentMode);
+			return std::make_unique<VulkanSwapChain>(this, pDisplay, imageCount, presentMode);
 		}
 
 		std::unique_ptr<ScreenBoundRenderTarget> VulkanDevice::CreateScreenBoundRenderTarget(Display* pDisplay, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor)
@@ -207,22 +207,22 @@ namespace Flint
 
 		std::shared_ptr<GeometryStore> VulkanDevice::CreateGeometryStore(const std::vector<ShaderAttribute>& vertexAttributes, uint64_t indexSize, const BufferMemoryProfile profile)
 		{
-			return std::make_shared<GeometryStore>(this, vertexAttributes, indexSize, profile);
+			return std::make_unique<GeometryStore>(this, vertexAttributes, indexSize, profile);
 		}
 
-		std::shared_ptr<HostSynchronizationPrimitive> VulkanDevice::CreateHostSynchronizationPrimitive()
+		std::unique_ptr<HostSynchronizationPrimitive> VulkanDevice::CreateHostSynchronizationPrimitive()
 		{
-			return std::make_shared<VulkanHostSynchronizationPrimitive>(this);
+			return std::make_unique<VulkanHostSynchronizationPrimitive>(this);
 		}
 
-		std::shared_ptr<DeviceSynchronizationPrimitive> VulkanDevice::CreateDeviceSynchronizationPrimitive()
+		std::unique_ptr<DeviceSynchronizationPrimitive> VulkanDevice::CreateDeviceSynchronizationPrimitive()
 		{
-			return std::make_shared<VulkanDeviceSynchronizationPrimitive>(this);
+			return std::make_unique<VulkanDeviceSynchronizationPrimitive>(this);
 		}
 
-		std::shared_ptr<Query> VulkanDevice::CreateQuery(const QueryUsage usage, const uint32_t queryCount)
+		std::unique_ptr<Query> VulkanDevice::CreateQuery(const QueryUsage usage, const uint32_t queryCount)
 		{
-			return std::make_shared<VulkanQuery>(this, usage, queryCount);
+			return std::make_unique<VulkanQuery>(this, usage, queryCount);
 		}
 
 		void VulkanDevice::SubmitGraphicsCommandBuffer(const CommandBuffer* pCommandBuffer, SynchronizationPrimitive* pPrimitive)

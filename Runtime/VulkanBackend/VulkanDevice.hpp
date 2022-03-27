@@ -25,7 +25,7 @@ namespace Flint
 			virtual std::unique_ptr<CommandBufferAllocator> CreateCommandBufferAllocator(const uint32_t bufferCount) override;
 			virtual std::unique_ptr<CommandBufferAllocator> CreateSecondaryCommandBufferAllocator(const uint32_t bufferCount, CommandBufferAllocator* pParentAllocator) override;
 
-			virtual std::shared_ptr<SwapChain> CreateSwapChain(Display* pDisplay, uint32_t imageCount, const SwapChainPresentMode presentMode) override;
+			virtual std::unique_ptr<SwapChain> CreateSwapChain(Display* pDisplay, uint32_t imageCount, const SwapChainPresentMode presentMode) override;
 
 			virtual std::unique_ptr<ScreenBoundRenderTarget> CreateScreenBoundRenderTarget(Display* pDisplay, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor = FColor4D(0.0f)) override;
 			virtual std::unique_ptr<OffScreenRenderTarget> CreateOffScreenRenderTarget(const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments) override;
@@ -46,9 +46,9 @@ namespace Flint
 
 			virtual std::shared_ptr<GeometryStore> CreateGeometryStore(const typename std::vector<ShaderAttribute>& vertexAttributes, uint64_t indexSize, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic) override;
 
-			virtual std::shared_ptr<HostSynchronizationPrimitive> CreateHostSynchronizationPrimitive() override;
-			virtual std::shared_ptr<DeviceSynchronizationPrimitive> CreateDeviceSynchronizationPrimitive() override;
-			virtual std::shared_ptr<Query> CreateQuery(const QueryUsage usage, const uint32_t queryCount) override;
+			virtual std::unique_ptr<HostSynchronizationPrimitive> CreateHostSynchronizationPrimitive() override;
+			virtual std::unique_ptr<DeviceSynchronizationPrimitive> CreateDeviceSynchronizationPrimitive() override;
+			virtual std::unique_ptr<Query> CreateQuery(const QueryUsage usage, const uint32_t queryCount) override;
 
 			virtual void SubmitGraphicsCommandBuffer(const CommandBuffer* pCommandBuffer, SynchronizationPrimitive* pPrimitive = nullptr) override;
 			virtual void SubmitGraphicsCommandBuffers(const std::vector<CommandBuffer*>& pCommandBuffers, SynchronizationPrimitive* pPrimitive = nullptr) override;

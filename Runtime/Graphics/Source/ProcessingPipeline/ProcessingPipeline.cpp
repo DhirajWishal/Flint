@@ -106,7 +106,7 @@ namespace Flint
 		pCommandBuffer->EndBufferRecording();
 
 		// Submit the commands to the device.
-		GetDevice()->SubmitGraphicsCommandBuffer(pCommandBuffer.get(), pHostSynchronizationPrimitives.get());
+		GetDevice()->SubmitGraphicsCommandBuffer(pCommandBuffer.get(), pHostSynchronizationPrimitives);
 
 		// Present the swap chain to the display.
 		if (!pScreenBoundRenderTarget->PresentToDisplay())

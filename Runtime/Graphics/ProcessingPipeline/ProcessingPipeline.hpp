@@ -4,6 +4,7 @@
 #pragma once
 
 #include "GraphicsCore/ScreenBoundRenderTarget.hpp"
+#include "GraphicsCore/HostSynchronizationPrimitive.hpp"
 #include "Nodes/ProcessingNode.hpp"
 
 namespace Flint
@@ -175,14 +176,14 @@ namespace Flint
 		 *
 		 * @return The vector of synchronization primitives.
 		 */
-		std::vector<std::shared_ptr<HostSynchronizationPrimitive>> GetHostSynchronizationPrimitives() const { return pHostSynchronizationPrimitives; }
+		const std::vector<std::unique_ptr<HostSynchronizationPrimitive>>& GetHostSynchronizationPrimitives() const { return pHostSynchronizationPrimitives; }
 
 		/**
 		 * Get the synchronization primitive that is in flight.
 		 *
 		 * @return The synchronization primitive.
 		 */
-		std::shared_ptr<HostSynchronizationPrimitive> GetInFlightHostSynchronizationPrimitive() const { return pHostSynchronizationPrimitives[GetCurrentFrameIndex()]; }
+		HostSynchronizationPrimitive* GetInFlightHostSynchronizationPrimitive() const { return pHostSynchronizationPrimitives[GetCurrentFrameIndex()].get(); }
 
 		/**
 		 * Get all the processing nodes in the pipeline.
@@ -205,7 +206,7 @@ namespace Flint
 		std::vector<std::unique_ptr<Image>> pImageAttachments = {};
 		std::vector<std::shared_ptr<ProcessingNode>> pProcessingNodes = {};
 		std::vector<std::shared_ptr<CommandBuffer>> pCommandBuffers = {};
-		std::vector<std::shared_ptr<HostSynchronizationPrimitive>> pHostSynchronizationPrimitives = {};
+		std::vector<std::unique_ptr<HostSynchronizationPrimitive>> pHostSynchronizationPrimitives = {};
 
 		std::unique_ptr<Display> pDisplay = nullptr;
 

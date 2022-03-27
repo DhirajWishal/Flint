@@ -17,7 +17,7 @@ namespace Flint
 		{
 			OPTICK_EVENT();
 
-			pSwapChain = std::make_shared<VulkanSwapChain>(pDevice, pDisplay, bufferCount, presentMode);
+			pSwapChain = pDevice->CreateSwapChain(pDisplay, bufferCount, presentMode);
 
 			vDependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
 			vDependencies[0].dstSubpass = 0;

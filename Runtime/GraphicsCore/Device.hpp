@@ -111,7 +111,7 @@ namespace Flint
 		 * @param presentMode The swap chain present mode.
 		 * @return The swap chain pointer.
 		 */
-		virtual std::shared_ptr<SwapChain> CreateSwapChain(Display* pDisplay, uint32_t imageCount, const SwapChainPresentMode presentMode) = 0;
+		virtual std::unique_ptr<SwapChain> CreateSwapChain(Display* pDisplay, uint32_t imageCount, const SwapChainPresentMode presentMode) = 0;
 
 		/**
 		 * Create a new screen bound render target.
@@ -256,7 +256,7 @@ namespace Flint
 		 *
 		 * @return The primitive pointer.
 		 */
-		virtual std::shared_ptr<HostSynchronizationPrimitive> CreateHostSynchronizationPrimitive() = 0;
+		virtual std::unique_ptr<HostSynchronizationPrimitive> CreateHostSynchronizationPrimitive() = 0;
 
 		/**
 		 * Create a new device synchronization primitive.
@@ -264,7 +264,7 @@ namespace Flint
 		 *
 		 * @return The primitive pointer.
 		 */
-		virtual std::shared_ptr<DeviceSynchronizationPrimitive> CreateDeviceSynchronizationPrimitive() = 0;
+		virtual std::unique_ptr<DeviceSynchronizationPrimitive> CreateDeviceSynchronizationPrimitive() = 0;
 
 		/**
 		 * Create a new query object.
@@ -273,7 +273,7 @@ namespace Flint
 		 * @param queryCount The number of query primitives.
 		 * @return The query pointer.
 		 */
-		virtual std::shared_ptr<Query> CreateQuery(const QueryUsage usage, const uint32_t queryCount) = 0;
+		virtual std::unique_ptr<Query> CreateQuery(const QueryUsage usage, const uint32_t queryCount) = 0;
 
 	public:
 		/**

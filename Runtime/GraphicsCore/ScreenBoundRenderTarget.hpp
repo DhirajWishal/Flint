@@ -56,7 +56,7 @@ namespace Flint
 		 *
 		 * @return The swap chain pointer.
 		 */
-		std::shared_ptr<SwapChain> GetSwapChain() const { return pSwapChain; }
+		SwapChain* GetSwapChain() const { return pSwapChain.get(); }
 
 		/**
 		 * Get the current image index.
@@ -80,7 +80,7 @@ namespace Flint
 
 	protected:
 		Display* pDisplay = nullptr;
-		std::shared_ptr<SwapChain> pSwapChain = nullptr;
+		std::unique_ptr<SwapChain> pSwapChain = nullptr;
 
 		bool bShouldRecreateResources = false;
 	};
