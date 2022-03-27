@@ -5,17 +5,17 @@
 
 namespace Flint
 {
-	ResourcePackage::ResourcePackage(const std::shared_ptr<ResourcePackager>& pPackager, const std::vector<uint32>& bufferBindings, const std::vector<uint32>& imageBindings)
+	ResourcePackage::ResourcePackage(const std::shared_ptr<ResourcePackager>& pPackager, const std::vector<uint32_t>& bufferBindings, const std::vector<uint32_t>& imageBindings)
 		: pPackager(pPackager)
 	{
-		for (const uint32 binding : bufferBindings)
+		for (const uint32_t binding : bufferBindings)
 			mBufferBindings[binding] = {};
 
-		for (const uint32 binding : imageBindings)
+		for (const uint32_t binding : imageBindings)
 			mImageBindings[binding] = {};
 	}
 
-	void ResourcePackage::BindResource(const uint32 binding, const std::shared_ptr<Buffer>& pBuffer, const uint64 offset)
+	void ResourcePackage::BindResource(const uint32_t binding, const std::shared_ptr<Buffer>& pBuffer, const uint64_t offset)
 	{
 		if (mBufferBindings.find(binding) == mBufferBindings.end())
 			throw std::invalid_argument("Submitted binding is not valid!");
@@ -24,7 +24,7 @@ namespace Flint
 		bIsUpdated = true;
 	}
 
-	void ResourcePackage::BindResource(const uint32 binding, const std::shared_ptr<Image>& pImage, const std::shared_ptr<ImageView>& pImageView, const std::shared_ptr<ImageSampler>& pImageSampler, const ImageUsage usage)
+	void ResourcePackage::BindResource(const uint32_t binding, const std::shared_ptr<Image>& pImage, const std::shared_ptr<ImageView>& pImageView, const std::shared_ptr<ImageSampler>& pImageSampler, const ImageUsage usage)
 	{
 		if (mImageBindings.find(binding) == mImageBindings.end())
 			throw std::invalid_argument("Submitted binding is not valid!");
@@ -45,7 +45,7 @@ namespace Flint
 			resources.clear();
 	}
 
-	const std::vector<BufferBinding> ResourcePackage::GetBufferBindings(const uint32 binding) const
+	const std::vector<BufferBinding> ResourcePackage::GetBufferBindings(const uint32_t binding) const
 	{
 		if (mBufferBindings.find(binding) == mBufferBindings.end())
 			throw std::invalid_argument("Submitted binding is not valid!");
@@ -53,7 +53,7 @@ namespace Flint
 		return mBufferBindings.at(binding);
 	}
 
-	const std::vector<ImageBinding> ResourcePackage::GetImageBindings(const uint32 binding) const
+	const std::vector<ImageBinding> ResourcePackage::GetImageBindings(const uint32_t binding) const
 	{
 		if (mImageBindings.find(binding) == mImageBindings.end())
 			throw std::invalid_argument("Submitted binding is not valid!");

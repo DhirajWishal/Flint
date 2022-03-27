@@ -30,8 +30,8 @@ namespace Flint
 			virtual void BindGraphicsPipeline(const GraphicsPipeline* pGraphicsPipeline) override;
 			virtual void BindComputePipeline(const ComputePipeline* pComputePipeline) override;
 
-			virtual void BindVertexBuffer(const Buffer* pBuffer, const uint64 firstBinding = 0, const uint64 offset = 0) override;
-			virtual void BindIndexBuffer(const Buffer* pBuffer, const uint64 indexSize, const uint64 offset = 0) override;
+			virtual void BindVertexBuffer(const Buffer* pBuffer, const uint64_t firstBinding = 0, const uint64_t offset = 0) override;
+			virtual void BindIndexBuffer(const Buffer* pBuffer, const uint64_t indexSize, const uint64_t offset = 0) override;
 			virtual void BindGeometryStore(const GeometryStore* pGeometryStore) override;
 
 			virtual void BindResourcePackage(const GraphicsPipeline* pPipeline, ResourcePackage* pResourcePackage) override;
@@ -49,12 +49,12 @@ namespace Flint
 			virtual void BindDynamicStates(const ComputePipeline* pPipeline, const DynamicStateContainer* pDynamicStates) override;
 			virtual void BindConstantData(const ComputePipeline* pPipeline, const ConstantData* pConstantData) override;
 
-			virtual void IssueDrawCall(WireFrame& wireFrame, const uint64 firstInstance = 0, const uint64 instanceCount = 1, const DrawCallMode mode = DrawCallMode::Indexed) override;
-			virtual void IssueDrawCall(WireFrame&& wireFrame, const uint64 firstInstance = 0, const uint64 instanceCount = 1, const DrawCallMode mode = DrawCallMode::Indexed) override;
+			virtual void IssueDrawCall(WireFrame& wireFrame, const uint64_t firstInstance = 0, const uint64_t instanceCount = 1, const DrawCallMode mode = DrawCallMode::Indexed) override;
+			virtual void IssueDrawCall(WireFrame&& wireFrame, const uint64_t firstInstance = 0, const uint64_t instanceCount = 1, const DrawCallMode mode = DrawCallMode::Indexed) override;
 			virtual void IssueComputeCall(const FBox3D& groups) override;
 
 			virtual void CopyImage(const Image* pSourceImage, const FBox3D sourceOffset, Image* pDestinationImage, const FBox3D destinationOffset) override;
-			virtual void CopyToSwapChainImage(const Image* pSourceImage, const FBox3D sourceOffset, SwapChain* pSwapChain, const uint32 imageIndex, const FBox3D destinationOffset) override;
+			virtual void CopyToSwapChainImage(const Image* pSourceImage, const FBox3D sourceOffset, SwapChain* pSwapChain, const uint32_t imageIndex, const FBox3D destinationOffset) override;
 
 			virtual void SubmitSecondaryCommandBuffer(const std::shared_ptr<CommandBuffer>& pCommandBuffer) override;
 			virtual void ExecuteSecondaryCommands() override;
@@ -63,9 +63,9 @@ namespace Flint
 
 			virtual void IncludeSwapChain(SwapChain* pSwapChain) override;
 
-			virtual void BeginQuery(const Query* pQuery, const uint32 index, const bool requirePrecision = false) override;
-			virtual void EndQuery(const Query* pQuery, const uint32 index) override;
-			virtual void ResetQuery(const Query* pQuery, const uint32 beginIndex, const uint32 count) override;
+			virtual void BeginQuery(const Query* pQuery, const uint32_t index, const bool requirePrecision = false) override;
+			virtual void EndQuery(const Query* pQuery, const uint32_t index) override;
+			virtual void ResetQuery(const Query* pQuery, const uint32_t beginIndex, const uint32_t count) override;
 
 			virtual void Synchronize() override;
 

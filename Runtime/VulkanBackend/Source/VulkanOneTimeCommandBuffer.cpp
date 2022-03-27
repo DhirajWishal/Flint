@@ -54,7 +54,7 @@ namespace Flint
 			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateFence(vDevice.GetLogicalDevice(), &vFCI, nullptr, &vFence));
 
 			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkQueueSubmit(vDevice.GetQueue().vTransferQueue, 1, &vSI, vFence));
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkWaitForFences(vDevice.GetLogicalDevice(), 1, &vFence, VK_TRUE, std::numeric_limits<uint64>::max()));
+			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkWaitForFences(vDevice.GetLogicalDevice(), 1, &vFence, VK_TRUE, std::numeric_limits<uint64_t>::max()));
 			vDevice.GetDeviceTable().vkDestroyFence(vDevice.GetLogicalDevice(), vFence, nullptr);
 
 			vDevice.GetDeviceTable().vkFreeCommandBuffers(vDevice.GetLogicalDevice(), vPool, 1, vSI.pCommandBuffers);

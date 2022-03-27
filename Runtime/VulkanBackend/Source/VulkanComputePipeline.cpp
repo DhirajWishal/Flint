@@ -44,7 +44,7 @@ namespace Flint
 
 		void VulkanComputePipeline::CreateResourcePackagers()
 		{
-			for (uint32 i = 0; i < vDescriptorSetLayouts.size(); i++)
+			for (uint32_t i = 0; i < vDescriptorSetLayouts.size(); i++)
 				pResourcePackagers.emplace_back(std::make_shared<VulkanResourcePackager>(i, shared_from_this(), vDescriptorSetLayouts[i]));
 		}
 
@@ -53,7 +53,7 @@ namespace Flint
 			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
 
 			// Write cache data.
-			uint64 cacheSize = 0;
+			uint64_t cacheSize = 0;
 			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkGetPipelineCacheData(vDevice.GetLogicalDevice(), vPipelineCache, &cacheSize, nullptr));
 
 			unsigned char* pDataStore = new unsigned char[cacheSize];
@@ -102,7 +102,7 @@ namespace Flint
 
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 			std::vector<VkPushConstantRange> vConstantRanges;
-			std::unordered_map<uint32, DescriptorSetInfo> descriptorSetInfos;
+			std::unordered_map<uint32_t, DescriptorSetInfo> descriptorSetInfos;
 
 			// Resolve compute shader data.
 			VulkanShader& vShader = pShader->StaticCast<VulkanShader>();
@@ -123,7 +123,7 @@ namespace Flint
 				vLayoutCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 				vLayoutCreateInfo.pNext = VK_NULL_HANDLE;
 				vLayoutCreateInfo.flags = 0;
-				vLayoutCreateInfo.bindingCount = static_cast<uint32>(info.second.mLayoutBindings.size());
+				vLayoutCreateInfo.bindingCount = static_cast<uint32_t>(info.second.mLayoutBindings.size());
 				vLayoutCreateInfo.pBindings = info.second.mLayoutBindings.data();
 
 				VkDescriptorSetLayout vDescriptorSetLayout = VK_NULL_HANDLE;
@@ -137,9 +137,9 @@ namespace Flint
 			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 			vCreateInfo.pNext = VK_NULL_HANDLE;
 			vCreateInfo.flags = 0;
-			vCreateInfo.pushConstantRangeCount = static_cast<uint32>(vConstantRanges.size());
+			vCreateInfo.pushConstantRangeCount = static_cast<uint32_t>(vConstantRanges.size());
 			vCreateInfo.pPushConstantRanges = vConstantRanges.data();
-			vCreateInfo.setLayoutCount = static_cast<uint32>(vDescriptorSetLayouts.size());
+			vCreateInfo.setLayoutCount = static_cast<uint32_t>(vDescriptorSetLayouts.size());
 			vCreateInfo.pSetLayouts = vDescriptorSetLayouts.data();
 
 			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreatePipelineLayout(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vPipelineLayout));

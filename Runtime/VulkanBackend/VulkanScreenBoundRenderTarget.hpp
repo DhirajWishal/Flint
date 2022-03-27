@@ -19,21 +19,21 @@ namespace Flint
 		class VulkanScreenBoundRenderTarget final : public ScreenBoundRenderTarget, public std::enable_shared_from_this<VulkanScreenBoundRenderTarget>
 		{
 		public:
-			VulkanScreenBoundRenderTarget(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const uint32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor = FColor4D(0.0f));
+			VulkanScreenBoundRenderTarget(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor = FColor4D(0.0f));
 			~VulkanScreenBoundRenderTarget() { if (!bIsTerminated) Terminate(); }
 
 			virtual bool PrepareNewFrame() override;
 			virtual bool PresentToDisplay() override;
 			virtual void Terminate() override;
 			virtual void Recreate() override;
-			virtual const uint32 GetImageIndex() const override final { return pSwapChain->GetImageIndex(); }
+			virtual const uint32_t GetImageIndex() const override final { return pSwapChain->GetImageIndex(); }
 
 			VkRenderPass GetRenderPass() const { return vRenderTarget.vRenderPass; }
 			const VkFramebuffer GetFramebuffer() const { return vRenderTarget.vFrameBuffers[GetImageIndex()]; }
 
 			const VulkanSwapChain* GetVulkanSwapChain() const { return static_cast<const VulkanSwapChain*>(pSwapChain.get()); }
 
-			const uint32 GetClearScreenValueCount() const { return static_cast<uint32>(vClearValues.size()); }
+			const uint32_t GetClearScreenValueCount() const { return static_cast<uint32_t>(vClearValues.size()); }
 			const VkClearValue* GetClearScreenValues() const { return vClearValues.data(); }
 
 			std::vector<VkClearValue> GetClearScreenValueVector() const { return vClearValues; }

@@ -39,6 +39,6 @@ namespace Flint
 	protected:
 		std::shared_ptr<Shader> pShader = nullptr;
 
-		uint64 mInstanceIndex = 0;
+		uint64_t mInstanceIndex = 0;
 	};
 }

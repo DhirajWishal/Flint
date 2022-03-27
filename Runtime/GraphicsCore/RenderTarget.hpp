@@ -35,7 +35,7 @@ namespace Flint
 		 * @param bufferCount The frame buffer count.
 		 * @param imageAttachments The image attachments used by the render target.
 		 */
-		RenderTarget(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const uint32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments);
+		RenderTarget(const std::shared_ptr<Device>& pDevice, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments);
 
 		/**
 		 * Prepare all the resources for a new frame.
@@ -58,14 +58,14 @@ namespace Flint
 		 * @param index The index of the attachment.
 		 * @return The attachment.
 		 */
-		const RenderTargetAttachment GetAttachment(const uint64 index) const { return mAttachments[index]; }
+		const RenderTargetAttachment GetAttachment(const uint64_t index) const { return mAttachments[index]; }
 
 		/**
 		 * Get the current frame index.
 		 *
 		 * @return The frame index.
 		 */
-		const uint32 GetFrameIndex() const { return mFrameIndex; }
+		const uint32_t GetFrameIndex() const { return mFrameIndex; }
 
 		/**
 		 * Get the render target extent.
@@ -79,7 +79,7 @@ namespace Flint
 		 *
 		 * @return The buffer count.
 		 */
-		const uint32 GetBufferCount() const { return mBufferCount; }
+		const uint32_t GetBufferCount() const { return mBufferCount; }
 
 		/**
 		 * Check if the render target is altered.
@@ -103,8 +103,8 @@ namespace Flint
 		std::vector<RenderTargetAttachment> mAttachments = {};
 
 		FBox2D mExtent = {};
-		uint32 mBufferCount = 0;
-		uint32 mFrameIndex = 0;
+		uint32_t mBufferCount = 0;
+		uint32_t mFrameIndex = 0;
 
 		bool bIsAltered = false;
 	};

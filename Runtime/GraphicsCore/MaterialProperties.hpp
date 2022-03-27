@@ -12,7 +12,7 @@ namespace Flint
 		/**
 		 * Material type enum.
 		 */
-		enum class MaterialType : uint8 {
+		enum class MaterialType : uint8_t {
 			FLOAT,
 			FLOAT_2,
 			FLOAT_3,
@@ -204,7 +204,7 @@ namespace Flint
 		/**
 		 * Texture type enum.
 		 */
-		enum class TextureType : uint8 {
+		enum class TextureType : uint8_t {
 			Undefined,
 			Specular,
 			Diffuse,
@@ -290,7 +290,7 @@ namespace Flint
 			 * @param sampleCount The multi sample count. Default is One.
 			 * @return The image pointer.
 			 */
-			std::shared_ptr<Image> CreateImage(const std::shared_ptr<Device>& pDevice, const ImageType type, const ImageUsage usage, const uint32 layers, const uint32 mipLevels, const MultiSampleCount sampleCount = MultiSampleCount::One);
+			std::shared_ptr<Image> CreateImage(const std::shared_ptr<Device>& pDevice, const ImageType type, const ImageUsage usage, const uint32_t layers, const uint32_t mipLevels, const MultiSampleCount sampleCount = MultiSampleCount::One);
 
 			/**
 			 * Clear texture data.

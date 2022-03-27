@@ -74,13 +74,13 @@ namespace Flint
 
 			if (bHasColorAttachment)
 			{
-				vSD.colorAttachmentCount = static_cast<uint32>(vColorAttachmentRef.size());
+				vSD.colorAttachmentCount = static_cast<uint32_t>(vColorAttachmentRef.size());
 				vSD.pColorAttachments = vColorAttachmentRef.data();
 				vSD.pResolveAttachments = vResolveAttachmentRef.data();
 			}
 			else
 			{
-				vSD.colorAttachmentCount = static_cast<uint32>(vResolveAttachmentRef.size());
+				vSD.colorAttachmentCount = static_cast<uint32_t>(vResolveAttachmentRef.size());
 				vSD.pColorAttachments = vResolveAttachmentRef.data();
 				vSD.pResolveAttachments = vColorAttachmentRef.data();
 			}
@@ -89,11 +89,11 @@ namespace Flint
 			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 			vCreateInfo.flags = 0;
 			vCreateInfo.pNext = VK_NULL_HANDLE;
-			vCreateInfo.attachmentCount = static_cast<uint32>(vDescriptions.size());
+			vCreateInfo.attachmentCount = static_cast<uint32_t>(vDescriptions.size());
 			vCreateInfo.pAttachments = vDescriptions.data();
 			vCreateInfo.subpassCount = 1;
 			vCreateInfo.pSubpasses = &vSD;
-			vCreateInfo.dependencyCount = static_cast<uint32>(vSubpassDependencies.size());
+			vCreateInfo.dependencyCount = static_cast<uint32_t>(vSubpassDependencies.size());
 			vCreateInfo.pDependencies = vSubpassDependencies.data();
 
 			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateRenderPass(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vRenderPass));
@@ -155,7 +155,7 @@ namespace Flint
 					vAR.attachment++;
 				}
 
-				vSD.colorAttachmentCount = static_cast<uint32>(vColorAttachmentRef.size());
+				vSD.colorAttachmentCount = static_cast<uint32_t>(vColorAttachmentRef.size());
 				vSD.pColorAttachments = vColorAttachmentRef.data();
 				vSD.pDepthStencilAttachment = vDepthAttachmentRef.data();
 				vSD.pResolveAttachments = vResolveAttachmentRef.data();
@@ -171,11 +171,11 @@ namespace Flint
 			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 			vCreateInfo.flags = 0;
 			vCreateInfo.pNext = VK_NULL_HANDLE;
-			vCreateInfo.attachmentCount = static_cast<uint32>(vDescriptions.size());
+			vCreateInfo.attachmentCount = static_cast<uint32_t>(vDescriptions.size());
 			vCreateInfo.pAttachments = vDescriptions.data();
-			vCreateInfo.subpassCount = static_cast<uint32>(vSubpassDescriptions.size());
+			vCreateInfo.subpassCount = static_cast<uint32_t>(vSubpassDescriptions.size());
 			vCreateInfo.pSubpasses = vSubpassDescriptions.data();
-			vCreateInfo.dependencyCount = static_cast<uint32>(vSubpassDependencies.size());
+			vCreateInfo.dependencyCount = static_cast<uint32_t>(vSubpassDependencies.size());
 			vCreateInfo.pDependencies = vSubpassDependencies.data();
 
 			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateRenderPass(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vRenderPass));
@@ -186,7 +186,7 @@ namespace Flint
 			vDevice.GetDeviceTable().vkDestroyRenderPass(vDevice.GetLogicalDevice(), vRenderPass, nullptr);
 		}
 
-		void VulkanRenderTarget::CreateFrameBuffer(std::vector<VulkanRenderTargetAttachmentInterface*> pAttachments, const FBox2D& extent, const uint32 bufferCount)
+		void VulkanRenderTarget::CreateFrameBuffer(std::vector<VulkanRenderTargetAttachmentInterface*> pAttachments, const FBox2D& extent, const uint32_t bufferCount)
 		{
 			OPTICK_EVENT();
 
@@ -198,10 +198,10 @@ namespace Flint
 			vCreateInfo.renderPass = vRenderPass;
 			vCreateInfo.width = extent.mWidth;
 			vCreateInfo.height = extent.mHeight;
-			vCreateInfo.attachmentCount = static_cast<uint32>(pAttachments.size());
+			vCreateInfo.attachmentCount = static_cast<uint32_t>(pAttachments.size());
 
 			vFrameBuffers.resize(bufferCount);
-			for (uint32 i = 0; i < bufferCount; i++)
+			for (uint32_t i = 0; i < bufferCount; i++)
 			{
 				std::vector<VkImageView> vAttachments;
 
@@ -231,7 +231,7 @@ namespace Flint
 			vCreateInfo.renderPass = vRenderPass;
 			vCreateInfo.width = extent.mWidth;
 			vCreateInfo.height = extent.mHeight;
-			vCreateInfo.attachmentCount = static_cast<uint32>(vImageViews.size());
+			vCreateInfo.attachmentCount = static_cast<uint32_t>(vImageViews.size());
 			vCreateInfo.pAttachments = vImageViews.data();
 
 			VkFramebuffer vFrameBuffer = VK_NULL_HANDLE;

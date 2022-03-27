@@ -5,7 +5,7 @@
 
 namespace Flint
 {
-	void Scene::Update(const uint64 delta)
+	void Scene::Update(const uint64_t delta)
 	{
 		for (auto const& [index, store] : mGameObjects)
 			mGameObjectUpdateHandlers[index](*store, delta);

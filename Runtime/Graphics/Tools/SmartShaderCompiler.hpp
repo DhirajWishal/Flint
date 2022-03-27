@@ -13,8 +13,8 @@ namespace Flint
 	 */
 	class SmartShaderCompiler
 	{
-		using TIOAttribute = std::pair<ShaderAttribute, uint32>;
-		using TResource = std::pair<ShaderResourceType, uint32>;
+		using TIOAttribute = std::pair<ShaderAttribute, uint32_t>;
+		using TResource = std::pair<ShaderResourceType, uint32_t>;
 
 	public:
 		SmartShaderCompiler() = default;
@@ -25,7 +25,7 @@ namespace Flint
 		 * @param type The attribute type.
 		 * @param location The location in the shader layout.
 		 */
-		void AddInput(const InputAttributeType type, const uint32 location);
+		void AddInput(const InputAttributeType type, const uint32_t location);
 
 		/**
 		 * Add a given output attribute type.
@@ -33,7 +33,7 @@ namespace Flint
 		 * @param type The attribute type.
 		 * @param location The location in the shader layout.
 		 */
-		void AddOutput(const InputAttributeType type, const uint32 location);
+		void AddOutput(const InputAttributeType type, const uint32_t location);
 
 		/**
 		 * Add a uniform to the shader.
@@ -42,7 +42,7 @@ namespace Flint
 		 * @param setIndex The set index of the uniform.
 		 * @param binding The resource binding.
 		 */
-		void AddUniform(const ShaderResourceType type, const uint32 setIndex, const uint32 binding);
+		void AddUniform(const ShaderResourceType type, const uint32_t setIndex, const uint32_t binding);
 
 		/**
 		 * Compile the shader.
@@ -54,6 +54,6 @@ namespace Flint
 		std::vector<TIOAttribute> mInputAttributes = {};
 		std::vector<TIOAttribute> mOutputAttributes = {};
 
-		std::unordered_map<uint32, std::vector<TResource>> mResourceSetMap = {};
+		std::unordered_map<uint32_t, std::vector<TResource>> mResourceSetMap = {};
 	};
 }

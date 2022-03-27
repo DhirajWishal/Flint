@@ -23,7 +23,7 @@ namespace Flint
 		return pProcessingPipeline->GetExtent();
 	}
 
-	uint32 ProcessingNode::GetBufferCount() const
+	uint32_t ProcessingNode::GetBufferCount() const
 	{
 		return pProcessingPipeline->GetBufferCount();
 	}

@@ -10,7 +10,7 @@ namespace Flint
 	/**
 	 * Shader code type enum.
 	 */
-	enum class ShaderCodeType : uint8 {
+	enum class ShaderCodeType : uint8_t {
 		GLSL,
 		HLSL
 	};
@@ -71,7 +71,7 @@ namespace Flint
 		 *
 		 * @return The shader code vector.
 		 */
-		const std::vector<uint32> GetShaderCode() const { return mShaderCode; }
+		const std::vector<uint32_t> GetShaderCode() const { return mShaderCode; }
 
 		/**
 		 * Create the shader object using the shader code.
@@ -82,7 +82,7 @@ namespace Flint
 		std::shared_ptr<Shader> CreateShader(const std::shared_ptr<Device>& pDevice) const;
 
 	private:
-		std::vector<uint32> mShaderCode = {};
+		std::vector<uint32_t> mShaderCode = {};
 		ShaderType mType = ShaderType::Vertex;
 		ShaderCodeType mCodeType = ShaderCodeType::GLSL;
 	};

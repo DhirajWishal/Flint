@@ -60,7 +60,7 @@ namespace Flint
 	 */
 	class Scene final
 	{
-		using UpdateFunction = void(*)(GameObjectStroreInterface&, const uint64);
+		using UpdateFunction = void(*)(GameObjectStroreInterface&, const uint64_t);
 
 		using ObjectMap = std::unordered_map<std::type_index, std::unique_ptr<GameObjectStroreInterface>>;
 		using ObjectUpdateHandlers = std::unordered_map<std::type_index, UpdateFunction>;
@@ -97,7 +97,7 @@ namespace Flint
 		{
 			const auto index = GetTypeIndex<Type>();
 			mGameObjects[index] = std::make_unique<GameObjectStore<Type>>();
-			mGameObjectUpdateHandlers[index] = [](GameObjectStroreInterface& objects, const uint64 delta)
+			mGameObjectUpdateHandlers[index] = [](GameObjectStroreInterface& objects, const uint64_t delta)
 			{
 				auto& store = static_cast<GameObjectStore<Type>&>(objects);
 				for (auto& object : store.GetVector())
@@ -148,7 +148,7 @@ namespace Flint
 		 * 
 		 * @param delta The delta time difference.
 		 */
-		void Update(const uint64 delta);
+		void Update(const uint64_t delta);
 
 	private:
 		/**

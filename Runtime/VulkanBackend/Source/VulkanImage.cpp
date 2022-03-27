@@ -173,7 +173,7 @@ namespace Flint
 			}
 		}
 
-		VulkanImage::VulkanImage(const std::shared_ptr<Device>& pDevice, const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const uint8 layers, const uint32 mipLevels, const void* pImageData, const MultiSampleCount sampleCount)
+		VulkanImage::VulkanImage(const std::shared_ptr<Device>& pDevice, const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const uint8_t layers, const uint32_t mipLevels, const void* pImageData, const MultiSampleCount sampleCount)
 			: Image(pDevice, type, usage, extent, format, layers, mipLevels, pImageData, sampleCount)
 		{
 			Initialize(pImageData);
@@ -203,7 +203,7 @@ namespace Flint
 
 		std::shared_ptr<Buffer> VulkanImage::CopyToBuffer()
 		{
-			std::shared_ptr<VulkanBuffer> pBuffer = std::make_shared<VulkanBuffer>(pDevice, BufferType::Staging, static_cast<uint64>(mExtent.mWidth) * mExtent.mHeight * mExtent.mDepth * Utilities::GetByteDepth(mFormat) * mLayerCount);
+			std::shared_ptr<VulkanBuffer> pBuffer = std::make_shared<VulkanBuffer>(pDevice, BufferType::Staging, static_cast<uint64_t>(mExtent.mWidth) * mExtent.mHeight * mExtent.mDepth * Utilities::GetByteDepth(mFormat) * mLayerCount);
 
 			VkBufferImageCopy vCopy = {};
 			vCopy.bufferOffset = 0;
@@ -235,7 +235,7 @@ namespace Flint
 			return pBuffer;
 		}
 
-		std::shared_ptr<ImageView> VulkanImage::CreateImageView(const uint32 baseLayerIndex, const uint32 layerCount, const uint32 baseMipLevel, const uint32 mipLevels, const ImageUsage usage)
+		std::shared_ptr<ImageView> VulkanImage::CreateImageView(const uint32_t baseLayerIndex, const uint32_t layerCount, const uint32_t baseMipLevel, const uint32_t mipLevels, const ImageUsage usage)
 		{
 			return std::make_shared<VulkanImageView>(pDevice, shared_from_this(), baseLayerIndex, layerCount, baseMipLevel, mipLevels, usage);
 		}
@@ -387,7 +387,7 @@ namespace Flint
 			return vCurrentLayout;
 		}
 
-		VkImageView VulkanImage::GetImageView(uint32 index) const
+		VkImageView VulkanImage::GetImageView(uint32_t index) const
 		{
 			return vImageView;
 		}
@@ -417,7 +417,7 @@ namespace Flint
 			return Helpers::GetComponentMapping(mFormat);
 		}
 
-		VkImageView VulkanImage::CreateLayerBasedImageView(uint32 layerNumber) const
+		VkImageView VulkanImage::CreateLayerBasedImageView(uint32_t layerNumber) const
 		{
 			VkImageView vImageView = VK_NULL_HANDLE;
 
@@ -429,7 +429,7 @@ namespace Flint
 			return vImageView;
 		}
 
-		void VulkanImage::SetImageLayout(VkCommandBuffer vCommandBuffer, VkImageLayout vNewLayout, uint32 layerCount, uint32 layerIndex, const uint32 mipLevels) const
+		void VulkanImage::SetImageLayout(VkCommandBuffer vCommandBuffer, VkImageLayout vNewLayout, uint32_t layerCount, uint32_t layerIndex, const uint32_t mipLevels) const
 		{
 			pDevice->StaticCast<VulkanDevice>().SetImageLayout(vCommandBuffer, vImage, vCurrentLayout, vNewLayout, Utilities::GetVulkanFormat(mFormat), layerCount, layerIndex, mipLevels);
 			vCurrentLayout = vNewLayout;
@@ -486,7 +486,7 @@ namespace Flint
 			}
 
 			// Prepare the queue indexes if the device if the compute and graphics queues are different.
-			std::vector<uint32> queueIndexes = {};
+			std::vector<uint32_t> queueIndexes = {};
 			if (vDevice.IsGraphicsCompatible() && vDevice.IsComputeCompatible())
 			{
 				if (vDevice.GetQueue().mGraphicsFamily != vDevice.GetQueue().mComputeFamily)
@@ -498,7 +498,7 @@ namespace Flint
 				}
 			}
 
-			vCreateInfo.queueFamilyIndexCount = static_cast<uint32>(queueIndexes.size());
+			vCreateInfo.queueFamilyIndexCount = static_cast<uint32_t>(queueIndexes.size());
 			vCreateInfo.pQueueFamilyIndices = queueIndexes.data();
 
 			//FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateImage(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vImage));
@@ -528,7 +528,7 @@ namespace Flint
 				vCurrentLayout = VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
 			}
 
-			for (uint32 i = 0; i < mLayerCount; i++)
+			for (uint32_t i = 0; i < mLayerCount; i++)
 			{
 				VkImageMemoryBarrier barrier{};
 				barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -540,11 +540,11 @@ namespace Flint
 				barrier.subresourceRange.levelCount = 1;
 				barrier.subresourceRange.baseArrayLayer = i;
 
-				int32 mipWidth = static_cast<int32>(mExtent.mWidth);
-				int32 mipHeight = static_cast<int32>(mExtent.mHeight);
-				int32 mipDepth = static_cast<int32>(mExtent.mDepth);
+				int32_t mipWidth = static_cast<int32_t>(mExtent.mWidth);
+				int32_t mipHeight = static_cast<int32_t>(mExtent.mHeight);
+				int32_t mipDepth = static_cast<int32_t>(mExtent.mDepth);
 
-				for (uint32 j = 1; j < mMipLevels; j++)
+				for (uint32_t j = 1; j < mMipLevels; j++)
 				{
 					barrier.subresourceRange.baseMipLevel = j - 1;
 					barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
@@ -631,11 +631,11 @@ namespace Flint
 			barrier.subresourceRange.levelCount = 1;
 			barrier.subresourceRange.baseArrayLayer = 0;
 
-			int32 mipWidth = static_cast<int32>(mExtent.mWidth);
-			int32 mipHeight = static_cast<int32>(mExtent.mHeight);
-			int32 mipDepth = static_cast<int32>(mExtent.mDepth);
+			int32_t mipWidth = static_cast<int32_t>(mExtent.mWidth);
+			int32_t mipHeight = static_cast<int32_t>(mExtent.mHeight);
+			int32_t mipDepth = static_cast<int32_t>(mExtent.mDepth);
 
-			for (uint32 j = 1; j < mMipLevels; j++)
+			for (uint32_t j = 1; j < mMipLevels; j++)
 			{
 				barrier.subresourceRange.baseMipLevel = j - 1;
 				barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
@@ -709,11 +709,11 @@ namespace Flint
 			// Copy data to the device.
 			if (pImageData)
 			{
-				const uint64 size = static_cast<uint64>(mExtent.mWidth) * mExtent.mHeight * mExtent.mDepth * Utilities::GetByteDepth(mFormat) * mLayerCount;
+				const uint64_t size = static_cast<uint64_t>(mExtent.mWidth) * mExtent.mHeight * mExtent.mDepth * Utilities::GetByteDepth(mFormat) * mLayerCount;
 				VulkanBuffer vStagingBuffer(pDevice, BufferType::Staging, size);
 
-				BYTE* pBytes = static_cast<BYTE*>(vStagingBuffer.MapMemory(size));
-				std::copy(static_cast<const BYTE*>(pImageData), static_cast<const BYTE*>(pImageData) + size, pBytes);
+				std::byte* pBytes = static_cast<std::byte*>(vStagingBuffer.MapMemory(size));
+				std::copy(static_cast<const std::byte*>(pImageData), static_cast<const std::byte*>(pImageData) + size, pBytes);
 				vStagingBuffer.UnmapMemory();
 
 				vDevice.SetImageLayout(vImage, vCurrentLayout, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, Utilities::GetVulkanFormat(mFormat), mLayerCount, 0, mMipLevels);

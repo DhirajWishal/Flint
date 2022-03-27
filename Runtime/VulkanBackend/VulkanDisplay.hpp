@@ -36,19 +36,19 @@ namespace Flint
 			virtual void Update() override;
 			virtual void Terminate() override;
 			virtual void ToggleResize() override final { mIsDislayResized = false; }
-			virtual uint32 FindBestBufferCount(const Device* pDevice, const uint32 count = 0) override;
+			virtual uint32_t FindBestBufferCount(const Device* pDevice, const uint32_t count = 0) override;
 			virtual PixelFormat GetBestSwapChainFormat(const Device* pDevice) override;
 			virtual void SetTitle(const std::string& title) override;
 			virtual void SetExtent(FBox2D newExtent) override;
 
 			VkSurfaceFormatKHR ChooseSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 			VkPresentModeKHR ChoosePresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
-			VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, uint32 width, uint32 height);
+			VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, uint32_t width, uint32_t height);
 			VkSurfaceCapabilitiesKHR GetSurfaceCapabilities(VulkanDevice const& device) const;
-			uint32 FindSupporterBufferCount(VulkanDevice& device, const uint32 count) const;
+			uint32_t FindSupporterBufferCount(VulkanDevice& device, const uint32_t count) const;
 
-			void ActivateKey(uint32 scanCode, uint32 action, SpecialCharacter character);
-			void ActivateMouseButton(uint32 scanCode, uint32 action, SpecialCharacter character);
+			void ActivateKey(uint32_t scanCode, uint32_t action, SpecialCharacter character);
+			void ActivateMouseButton(uint32_t scanCode, uint32_t action, SpecialCharacter character);
 			void SetMousePosition(float x, float y);
 			void SetMouseScroll(float x, float y);
 			void SetCursorWithinDisplay(bool value);
@@ -66,7 +66,7 @@ namespace Flint
 			void SetupMaps();
 
 		private:
-			std::unordered_map<uint32, KeyCode> mKeyMap = {};
+			std::unordered_map<uint32_t, KeyCode> mKeyMap = {};
 			std::vector<MouseButton> mButtonMap = {};
 			std::vector<EventAction> mActionMap = {};
 

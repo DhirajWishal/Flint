@@ -34,7 +34,7 @@ namespace Flint
 		Iterator Find(const Key& key)
 		{
 			Iterator begin = mEntries.begin();
-			uint64 count = mEntries.size(), step = 0;
+			uint64_t count = mEntries.size(), step = 0;
 
 			while (count > 0)
 			{
@@ -60,7 +60,7 @@ namespace Flint
 		ConstIterator Find(const Key& key) const
 		{
 			ConstIterator begin = mEntries.begin();
-			uint64 count = mEntries.size(), step = 0;
+			uint64_t count = mEntries.size(), step = 0;
 
 			while (count > 0)
 			{
@@ -167,14 +167,14 @@ namespace Flint
 		 *
 		 * @return The size.
 		 */
-		const uint64 Size() const { return mEntries.size(); }
+		const uint64_t Size() const { return mEntries.size(); }
 
 		/**
 		 * Get the capacity of the map.
 		 *
 		 * @return The capacity.
 		 */
-		const uint64 Capacity() const { return mEntries.capacity(); }
+		const uint64_t Capacity() const { return mEntries.capacity(); }
 
 	public:
 		/**

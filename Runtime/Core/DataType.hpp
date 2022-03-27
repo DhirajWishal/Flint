@@ -10,20 +10,6 @@
 
 namespace Flint
 {
-	using uint8 = uint8_t;
-	using uint16 = uint16_t;
-	using uint32 = uint32_t;
-	using uint64 = uint64_t;
-
-	using int8 = int8_t;
-	using int16 = int16_t;
-	using int32 = int32_t;
-	using int64 = int64_t;
-
-	using wchar = wchar_t;
-
-	using BYTE = uint8;
-
 	/**
 	 * Flint extent 2D structure.
 	 *
@@ -103,8 +89,8 @@ namespace Flint
 		float mAlpha = 0.0f;
 	};
 
-	using FBox2D = FExtent2D<uint32>;
-	using FBox3D = FExtent3D<uint32>;
+	using FBox2D = FExtent2D<uint32_t>;
+	using FBox3D = FExtent3D<uint32_t>;
 
 	template<class Type> constexpr bool operator==(const FExtent2D<Type>& lhs, const FExtent2D<Type>& rhs) { return lhs.X == rhs.X && lhs.Y == rhs.Y; }
 	template<class Type> constexpr bool operator!=(const FExtent2D<Type>& lhs, const FExtent2D<Type>& rhs) { return lhs.X != rhs.X || lhs.Y != rhs.Y; }
@@ -112,7 +98,7 @@ namespace Flint
 	template<class Type> constexpr bool operator!=(const FExtent3D<Type>& lhs, const FExtent3D<Type>& rhs) { return lhs.X != rhs.X || lhs.Y != rhs.Y || lhs.Z != rhs.Z; }
 
 	constexpr float CreateColor256(const float color) { return color / 256.0f; }
-	constexpr uint64 BitShiftLeft(const uint64 count) { return static_cast<uint64>(1) << count; }
-	constexpr uint64 BitShiftRight(const uint64 count) { return static_cast<uint64>(1) << count; }
+	constexpr uint64_t BitShiftLeft(const uint64_t count) { return static_cast<uint64_t>(1) << count; }
+	constexpr uint64_t BitShiftRight(const uint64_t count) { return static_cast<uint64_t>(1) << count; }
 	inline std::filesystem::path NormalizePath(std::filesystem::path path) { return path.make_preferred(); }
 }

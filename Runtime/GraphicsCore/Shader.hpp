@@ -48,9 +48,9 @@ namespace Flint
 		 *
 		 * @param pDevice The device pointer.
 		 * @param type The shader type.
-		 * @param code The shader code as a vector of uint32.
+		 * @param code The shader code as a vector of uint32_t.
 		 */
-		Shader(const std::shared_ptr<Device>& pDevice, const ShaderType type, const std::vector<uint32>& code);
+		Shader(const std::shared_ptr<Device>& pDevice, const ShaderType type, const std::vector<uint32_t>& code);
 
 		/**
 		 * Construct the shader using a shader code.
@@ -82,7 +82,7 @@ namespace Flint
 		 *
 		 * @param code The shader code.
 		 */
-		virtual void Reload(const std::vector<uint32>& code) = 0;
+		virtual void Reload(const std::vector<uint32_t>& code) = 0;
 
 		/**
 		 * Reload the shader using the shader code string.

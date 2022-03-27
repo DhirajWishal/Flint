@@ -9,10 +9,10 @@
 
 namespace Flint
 {
-	ProcessingPipeline::ProcessingPipeline(const std::shared_ptr<Device>& pDevice, const FBox2D frameExtent, const std::string& displayTitle, const uint32 pipelineCount, const MultiSampleCount msaaCount, const bool forceColorBuffer, const bool forceDepthBuffer)
+	ProcessingPipeline::ProcessingPipeline(const std::shared_ptr<Device>& pDevice, const FBox2D frameExtent, const std::string& displayTitle, const uint32_t pipelineCount, const MultiSampleCount msaaCount, const bool forceColorBuffer, const bool forceDepthBuffer)
 		: mMultiSampleCount(msaaCount)
 	{
-		uint32 bufferCount = pipelineCount;
+		uint32_t bufferCount = pipelineCount;
 		pDisplay = pDevice->GetInstance()->CreateDisplay(frameExtent, displayTitle);
 
 		// Find the best buffer count if the pipeline count is 0.
@@ -56,7 +56,7 @@ namespace Flint
 
 		// Create the synchronization primitives.
 		pHostSynchronizationPrimitives.reserve(bufferCount);
-		for (uint32 i = 0; i < bufferCount; i++)
+		for (uint32_t i = 0; i < bufferCount; i++)
 			pHostSynchronizationPrimitives.emplace_back(pDevice->CreateHostSynchronizationPrimitive());
 	}
 
@@ -131,7 +131,7 @@ namespace Flint
 		return pScreenBoundRenderTarget->GetAttachments().front().pImage;
 	}
 
-	void ProcessingPipeline::ProcessNodes(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const uint32 frameIndex, const uint32 imageIndex)
+	void ProcessingPipeline::ProcessNodes(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const uint32_t frameIndex, const uint32_t imageIndex)
 	{
 		ProcessingNode* pPreviousNode = nullptr;
 		for (const auto& pNode : pProcessingNodes)

@@ -5,7 +5,7 @@
 
 #include "Core/Reactor/CommandBase.hpp"
 
-#define FLINT_CREATE_IDENTIFIER(name)	enum class name : uint64 {}
+#define FLINT_CREATE_IDENTIFIER(name)	enum class name : uint64_t {}
 
 namespace Flint
 {

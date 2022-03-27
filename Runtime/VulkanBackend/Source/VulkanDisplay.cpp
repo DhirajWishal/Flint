@@ -10,13 +10,13 @@ namespace Flint
 	{
 		namespace _Callbacks
 		{
-			void KeyCallback(GLFWwindow* window, int32 key, int32 scancode, int32 action, int32 mods)
+			void KeyCallback(GLFWwindow* window, int32_t key, int32_t scancode, int32_t action, int32_t mods)
 			{
 				std::shared_ptr<VulkanDisplay> vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window))->shared_from_this();
 				vDisplay->ActivateKey(scancode, action, static_cast<SpecialCharacter>(mods));
 			}
 
-			void TextCallback(GLFWwindow* window, uint32 codepoint)
+			void TextCallback(GLFWwindow* window, uint32_t codepoint)
 			{
 			}
 
@@ -26,7 +26,7 @@ namespace Flint
 				vDisplay->SetMousePosition(static_cast<float>(xOffset), static_cast<float>(yOffset));
 			}
 
-			void MouseButtonCallback(GLFWwindow* window, int32 button, int32 action, int32 mods)
+			void MouseButtonCallback(GLFWwindow* window, int32_t button, int32_t action, int32_t mods)
 			{
 				std::shared_ptr<VulkanDisplay> vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window))->shared_from_this();
 				vDisplay->ActivateMouseButton(button, action, static_cast<SpecialCharacter>(mods));
@@ -38,23 +38,23 @@ namespace Flint
 				vDisplay->SetMouseScroll(static_cast<float>(xOffset), static_cast<float>(yOffset));
 			}
 
-			void MouseCursorEnterCallback(GLFWwindow* window, int32 entered)
+			void MouseCursorEnterCallback(GLFWwindow* window, int32_t entered)
 			{
 				std::shared_ptr<VulkanDisplay> vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window))->shared_from_this();
 				vDisplay->SetCursorWithinDisplay(entered == GLFW_TRUE);
 			}
 
-			void ApplicationDropPathCallback(GLFWwindow* window, int32 count, const char** strings)
+			void ApplicationDropPathCallback(GLFWwindow* window, int32_t count, const char** strings)
 			{
 				std::vector<std::filesystem::path> paths(count);
-				for (uint32 i = 0; i < static_cast<uint32>(count); i++)
+				for (uint32_t i = 0; i < static_cast<uint32_t>(count); i++)
 					paths[i] = strings[i];
 
 				std::shared_ptr<VulkanDisplay> vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window))->shared_from_this();
 				vDisplay->SetDragAndDropPaths(std::move(paths));
 			}
 
-			void ApplicationResizeCallback(GLFWwindow* window, int32 width, int32 height)
+			void ApplicationResizeCallback(GLFWwindow* window, int32_t width, int32_t height)
 			{
 				std::shared_ptr<VulkanDisplay> vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window))->shared_from_this();
 				vDisplay->SetNewExtent(FBox2D(width, height));
@@ -73,7 +73,7 @@ namespace Flint
 			SwapChainSupportDetails supportDetails = {};
 			vkGetPhysicalDeviceSurfaceCapabilitiesKHR(vPhysicalDevice, vSurface, &supportDetails.mCapabilities);
 
-			uint32 formatCount = 0;
+			uint32_t formatCount = 0;
 			vkGetPhysicalDeviceSurfaceFormatsKHR(vPhysicalDevice, vSurface, &formatCount, nullptr);
 
 			if (formatCount != 0)
@@ -82,7 +82,7 @@ namespace Flint
 				vkGetPhysicalDeviceSurfaceFormatsKHR(vPhysicalDevice, vSurface, &formatCount, supportDetails.mFormats.data());
 			}
 
-			uint32 presentModeCount = 0;
+			uint32_t presentModeCount = 0;
 			vkGetPhysicalDeviceSurfacePresentModesKHR(vPhysicalDevice, vSurface, &presentModeCount, nullptr);
 
 			if (presentModeCount != 0)
@@ -103,12 +103,12 @@ namespace Flint
 
 			if (!extent.IsZero())
 			{
-				if (extent.mWidth > static_cast<uint32>(pMode->width) || extent.mHeight > static_cast<uint32>(pMode->height))
+				if (extent.mWidth > static_cast<uint32_t>(pMode->width) || extent.mHeight > static_cast<uint32_t>(pMode->height))
 				{
 					pWindow = glfwCreateWindow(1280, 720, title.c_str(), nullptr, nullptr);
 					glfwMaximizeWindow(pWindow);
 
-					int32 width = 0, height = 0;
+					int32_t width = 0, height = 0;
 					glfwGetWindowSize(pWindow, &width, &height);
 
 					mExtent.mWidth = width;
@@ -160,16 +160,16 @@ namespace Flint
 			bIsTerminated = true;
 		}
 
-		uint32 VulkanDisplay::FindBestBufferCount(const Device* pDevice, const uint32 count)
+		uint32_t VulkanDisplay::FindBestBufferCount(const Device* pDevice, const uint32_t count)
 		{
 			OPTICK_EVENT();
 
 			auto vSurfaceCapabilities = GetSurfaceCapabilities(pDevice->StaticCast<VulkanDevice>());
-			if (count == std::numeric_limits<uint32>::max())
+			if (count == std::numeric_limits<uint32_t>::max())
 				return vSurfaceCapabilities.maxImageCount - 1;
 			else if (count == 0)
 			{
-				uint32 bufferCount = vSurfaceCapabilities.minImageCount + 1;
+				uint32_t bufferCount = vSurfaceCapabilities.minImageCount + 1;
 				if (vSurfaceCapabilities.maxImageCount > 0
 					&& bufferCount > vSurfaceCapabilities.maxImageCount)
 					bufferCount = vSurfaceCapabilities.maxImageCount;
@@ -228,7 +228,7 @@ namespace Flint
 			return bestMode;
 		}
 
-		VkExtent2D VulkanDisplay::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, uint32 width, uint32 height)
+		VkExtent2D VulkanDisplay::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, uint32_t width, uint32_t height)
 		{
 			VkExtent2D actualExtent = {
 				width,
@@ -251,14 +251,14 @@ namespace Flint
 			return vCapabilities;
 		}
 
-		uint32 VulkanDisplay::FindSupporterBufferCount(VulkanDevice& device, const uint32 count) const
+		uint32_t VulkanDisplay::FindSupporterBufferCount(VulkanDevice& device, const uint32_t count) const
 		{
 			auto vSurfaceCapabilities = GetSurfaceCapabilities(device);
-			if (count == std::numeric_limits<uint32>::max())
+			if (count == std::numeric_limits<uint32_t>::max())
 				return vSurfaceCapabilities.maxImageCount - 1;
 			else if (count == 0)
 			{
-				uint32 bufferCount = vSurfaceCapabilities.minImageCount + 1;
+				uint32_t bufferCount = vSurfaceCapabilities.minImageCount + 1;
 				if (vSurfaceCapabilities.maxImageCount > 0
 					&& bufferCount > vSurfaceCapabilities.maxImageCount)
 					bufferCount = vSurfaceCapabilities.maxImageCount;
@@ -269,14 +269,14 @@ namespace Flint
 			return count;
 		}
 
-		void VulkanDisplay::ActivateKey(uint32 scanCode, uint32 action, SpecialCharacter character)
+		void VulkanDisplay::ActivateKey(uint32_t scanCode, uint32_t action, SpecialCharacter character)
 		{
-			mKeyEvents[static_cast<uint8>(mKeyMap[scanCode])].Activate(mActionMap[action], character);
+			mKeyEvents[static_cast<uint8_t>(mKeyMap[scanCode])].Activate(mActionMap[action], character);
 		}
 
-		void VulkanDisplay::ActivateMouseButton(uint32 scanCode, uint32 action, SpecialCharacter character)
+		void VulkanDisplay::ActivateMouseButton(uint32_t scanCode, uint32_t action, SpecialCharacter character)
 		{
-			mMouseButtonEvents[static_cast<uint8>(mButtonMap[scanCode])].Activate(mActionMap[action], character);
+			mMouseButtonEvents[static_cast<uint8_t>(mButtonMap[scanCode])].Activate(mActionMap[action], character);
 		}
 
 		void VulkanDisplay::SetMousePosition(float x, float y)

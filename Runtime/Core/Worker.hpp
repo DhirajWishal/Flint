@@ -126,7 +126,7 @@ namespace Flint
 		 *
 		 * @return The command count.
 		 */
-		uint64 GetAsyncCommandCount() const { return mCommands.size(); }
+		uint64_t GetAsyncCommandCount() const { return mCommands.size(); }
 
 	public:
 		/**

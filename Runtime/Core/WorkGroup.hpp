@@ -20,7 +20,7 @@ namespace Flint
 		 *
 		 * @param groupSize The number of workers in the work group.
 		 */
-		explicit WorkGroup(uint64 groupSize) : mWorkers(groupSize) {}
+		explicit WorkGroup(uint64_t groupSize) : mWorkers(groupSize) {}
 
 		/**
 		 * Constructor.
@@ -29,7 +29,7 @@ namespace Flint
 		 * @param groupSize The number of workers in the work group.
 		 * @param duration The duration to wait for all the workers.
 		 */
-		explicit WorkGroup(uint64 groupSize, std::chrono::milliseconds duration) : mWorkers(groupSize, Worker(duration)) {}
+		explicit WorkGroup(uint64_t groupSize, std::chrono::milliseconds duration) : mWorkers(groupSize, Worker(duration)) {}
 
 		/**
 		 * Issue work to a worker to execute.
@@ -50,21 +50,21 @@ namespace Flint
 		 *
 		 * @return The work group size.
 		 */
-		uint64 GetSize() const { return mWorkers.size(); }
+		uint64_t GetSize() const { return mWorkers.size(); }
 
 		/**
 		 * Resize the work group.
 		 *
 		 * @param size The required size.
 		 */
-		void Resize(uint64 size) { mWorkers.resize(size); }
+		void Resize(uint64_t size) { mWorkers.resize(size); }
 
 		/**
 		 * Get the current index.
 		 * 
 		 * @return The index.
 		 */
-		uint64 GetCurrentIndex() const { return mIndex; }
+		uint64_t GetCurrentIndex() const { return mIndex; }
 
 		/**
 		 * Get a worker from the group.
@@ -72,7 +72,7 @@ namespace Flint
 		 * @param index The index of the worker.
 		 * @return The worker reference.
 		 */
-		Worker& GetWorker(uint64 index) { return mWorkers[index]; }
+		Worker& GetWorker(uint64_t index) { return mWorkers[index]; }
 
 	private:
 		/**
@@ -81,10 +81,10 @@ namespace Flint
 		 * @param index The previous index.
 		 * @return The index.
 		 */
-		uint64 GetNextIndex(uint64 index) const { return index % mWorkers.size(); }
+		uint64_t GetNextIndex(uint64_t index) const { return index % mWorkers.size(); }
 
 	private:
 		std::vector<Worker> mWorkers = {};
-		uint64 mIndex = 0;
+		uint64_t mIndex = 0;
 	};
 }

@@ -12,7 +12,7 @@ namespace Flint
 	/**
 	 * Event action enum.
 	 */
-	enum class EventAction : uint8 {
+	enum class EventAction : uint8_t {
 		Released,
 		Pressed,
 		OnRepeat
@@ -21,7 +21,7 @@ namespace Flint
 	/**
 	 * Key code enum.
 	 */
-	enum class KeyCode : uint8 {
+	enum class KeyCode : uint8_t {
 		Unknown,
 
 		Space,
@@ -88,7 +88,7 @@ namespace Flint
 	/**
 	 * Special characters enum.
 	 */
-	enum class SpecialCharacter : uint8 {
+	enum class SpecialCharacter : uint8_t {
 		Shift = BitShiftLeft(0),
 		Control = BitShiftLeft(1),
 		Alt = BitShiftLeft(2),
@@ -97,13 +97,13 @@ namespace Flint
 		NumLock = BitShiftLeft(5)
 	};
 
-	constexpr SpecialCharacter operator|(const SpecialCharacter& lhs, const SpecialCharacter& rhs) { return SpecialCharacter(static_cast<uint8>(lhs) | static_cast<uint8>(rhs)); }
-	constexpr SpecialCharacter operator&(const SpecialCharacter& lhs, const SpecialCharacter& rhs) { return SpecialCharacter(static_cast<uint8>(lhs) & static_cast<uint8>(rhs)); }
+	constexpr SpecialCharacter operator|(const SpecialCharacter& lhs, const SpecialCharacter& rhs) { return SpecialCharacter(static_cast<uint8_t>(lhs) | static_cast<uint8_t>(rhs)); }
+	constexpr SpecialCharacter operator&(const SpecialCharacter& lhs, const SpecialCharacter& rhs) { return SpecialCharacter(static_cast<uint8_t>(lhs) & static_cast<uint8_t>(rhs)); }
 
 	/**
 	 * Mouse button enum.
 	 */
-	enum class MouseButton : uint8 {
+	enum class MouseButton : uint8_t {
 		ButtonOne, ButtonTwo, ButtonThree, ButtonFour,
 		ButtonFive, ButtonSix, ButtonSeven, ButtonEight,
 
@@ -217,7 +217,7 @@ namespace Flint
 		 * @param count The count that needs to be checked. Default is 0.
 		 * @return The best buffer count integer.
 		 */
-		virtual uint32 FindBestBufferCount(const Device* pDevice, const uint32 count = 0) = 0;
+		virtual uint32_t FindBestBufferCount(const Device* pDevice, const uint32_t count = 0) = 0;
 
 		/**
 		 * Get the best swap chain format.
@@ -287,7 +287,7 @@ namespace Flint
 		 * @param key The key code.
 		 * @return The button event.
 		 */
-		const ButtonEvent GetKeyEvent(KeyCode key) const { return mKeyEvents[static_cast<uint8>(key)]; }
+		const ButtonEvent GetKeyEvent(KeyCode key) const { return mKeyEvents[static_cast<uint8_t>(key)]; }
 
 		/**
 		 * Get a mouse button event from the event store.
@@ -295,7 +295,7 @@ namespace Flint
 		 * @param button The mouse button code.
 		 * @return The button event.
 		 */
-		const ButtonEvent GetMouseButtonEvent(MouseButton button) const { return mMouseButtonEvents[static_cast<uint8>(button)]; }
+		const ButtonEvent GetMouseButtonEvent(MouseButton button) const { return mMouseButtonEvents[static_cast<uint8_t>(button)]; }
 
 		/**
 		 * Get the mouse position.
@@ -339,8 +339,8 @@ namespace Flint
 		std::shared_ptr<Instance> pInstance = nullptr;
 		FBox2D mExtent = {};
 
-		ButtonEvent mKeyEvents[static_cast<uint8>(KeyCode::KeyCodeMax)] = {};
-		ButtonEvent mMouseButtonEvents[static_cast<uint8>(MouseButton::MouseButtonMax)] = {};
+		ButtonEvent mKeyEvents[static_cast<uint8_t>(KeyCode::KeyCodeMax)] = {};
+		ButtonEvent mMouseButtonEvents[static_cast<uint8_t>(MouseButton::MouseButtonMax)] = {};
 
 		float mMousePositionX = 0.0f;
 		float mMousePositionY = 0.0f;

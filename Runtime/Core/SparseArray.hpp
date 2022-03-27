@@ -24,7 +24,7 @@ namespace Flint
 		 * @param data The data to add.
 		 * @return The data index.
 		 */
-		const uint32 push_back(const Type& data)
+		const uint32_t push_back(const Type& data)
 		{
 			mEntries.emplace_back(data);
 			return mCurrentIndex++;
@@ -36,7 +36,7 @@ namespace Flint
 		 * @param data The data to add.
 		 * @return The data index.
 		 */
-		const uint32 push_back(Type&& data)
+		const uint32_t push_back(Type&& data)
 		{
 			mEntries.emplace_back(std::move(data));
 			return mCurrentIndex++;
@@ -48,7 +48,7 @@ namespace Flint
 		 * @param index The index position of the data to access.
 		 * @return The type reference.
 		 */
-		Type& at(const uint32 index) { return mEntries[index]; }
+		Type& at(const uint32_t index) { return mEntries[index]; }
 
 		/**
 		 * Get data from a given index.
@@ -56,7 +56,7 @@ namespace Flint
 		 * @param index The index position of the data to access.
 		 * @return The const type.
 		 */
-		const Type at(const uint32 index) const { return mEntries[index]; }
+		const Type at(const uint32_t index) const { return mEntries[index]; }
 
 		/**
 		 * Remove an element form the array.
@@ -64,21 +64,21 @@ namespace Flint
 		 *
 		 * @param index The index of the element to remove.
 		 */
-		void remove(const uint32 index) { std::_Destroy_in_place(at(index)); }
+		void remove(const uint32_t index) { std::_Destroy_in_place(at(index)); }
 
 		/**
 		 * Get the size of the array.
 		 *
 		 * @return The size of the array.
 		 */
-		const uint64 size() const { return mEntries.size(); }
+		const uint64_t size() const { return mEntries.size(); }
 
 		/**
 		 * Get the capacity of the array.
 		 *
 		 * @return The capacity of the array.
 		 */
-		const uint64 capacity() const { return mEntries.capacity(); }
+		const uint64_t capacity() const { return mEntries.capacity(); }
 
 		/**
 		 * Check if the array is empty.
@@ -122,7 +122,7 @@ namespace Flint
 		 * @param index The index of the element.
 		 * @return The element.
 		 */
-		Type& operator[](const uint32 index)
+		Type& operator[](const uint32_t index)
 		{
 			return at(index);
 		}
@@ -133,13 +133,13 @@ namespace Flint
 		 * @param index The index of the element.
 		 * @return The element.
 		 */
-		const Type operator[](const uint32 index) const
+		const Type operator[](const uint32_t index) const
 		{
 			return at(index);
 		}
 
 	private:
 		std::vector<Type> mEntries;
-		uint32 mCurrentIndex = 0;
+		uint32_t mCurrentIndex = 0;
 	};
 }

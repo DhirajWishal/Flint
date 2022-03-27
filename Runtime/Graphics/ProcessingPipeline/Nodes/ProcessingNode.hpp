@@ -33,7 +33,7 @@ namespace Flint
 		 * @param frameIndex The current frame index.
 		 * @param imageIndex The current image index.
 		 */
-		virtual void Process(ProcessingNode* pPreviousNode, const std::shared_ptr<CommandBuffer>& pCommandBuffer, const uint32 frameIndex, const uint32 imageIndex) = 0;
+		virtual void Process(ProcessingNode* pPreviousNode, const std::shared_ptr<CommandBuffer>& pCommandBuffer, const uint32_t frameIndex, const uint32_t imageIndex) = 0;
 
 	public:
 		/**
@@ -55,7 +55,7 @@ namespace Flint
 		 *
 		 * @return The buffer count.
 		 */
-		uint32 GetBufferCount() const;
+		uint32_t GetBufferCount() const;
 
 		/**
 		 * Get the device to which the pipeline is bound to.

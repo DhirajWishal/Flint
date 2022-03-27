@@ -17,6 +17,6 @@ namespace Flint
 		 * @param seed The hash seed.
 		 * @return The hashed value.
 		 */
-		uint64 HashDataBlock(const void* pDataBlock, const uint64 size, const uint64 seed = 0);
+		uint64_t HashDataBlock(const void* pDataBlock, const uint64_t size, const uint64_t seed = 0);
 	}
 }

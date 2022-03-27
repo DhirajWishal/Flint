@@ -13,8 +13,8 @@ namespace Flint
 		class VulkanResourcePackager final : public ResourcePackager, public std::enable_shared_from_this<VulkanResourcePackager>
 		{
 		public:
-			VulkanResourcePackager(const uint32 setIndex, const std::shared_ptr<GraphicsPipeline>& pPipeline, const VkDescriptorSetLayout vLayout);
-			VulkanResourcePackager(const uint32 setIndex, const std::shared_ptr<ComputePipeline>& pPipeline, const VkDescriptorSetLayout vLayout);
+			VulkanResourcePackager(const uint32_t setIndex, const std::shared_ptr<GraphicsPipeline>& pPipeline, const VkDescriptorSetLayout vLayout);
+			VulkanResourcePackager(const uint32_t setIndex, const std::shared_ptr<ComputePipeline>& pPipeline, const VkDescriptorSetLayout vLayout);
 			~VulkanResourcePackager() { if (!bIsTerminated) Terminate(); }
 
 			virtual std::shared_ptr<ResourcePackage> CreatePackage() override;
@@ -30,7 +30,7 @@ namespace Flint
 
 			VkDescriptorPool vDescriptorPool = VK_NULL_HANDLE;
 			VkDescriptorSetLayout vDescriptorSetLayout = VK_NULL_HANDLE;
-			uint32 mDescriptorSetCount = 0;
+			uint32_t mDescriptorSetCount = 0;
 		};
 	}
 }

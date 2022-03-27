@@ -33,7 +33,7 @@ namespace Flint
 		 * 
 		 * @param delta The time delta.
 		 */
-		virtual void OnUpdate(const uint64 delta) = 0;
+		virtual void OnUpdate(const uint64_t delta) = 0;
 
 		/**
 		 * Get the scene object.

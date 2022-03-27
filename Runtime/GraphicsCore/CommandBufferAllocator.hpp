@@ -24,7 +24,7 @@ namespace Flint
 		 * @param pDevice The device pointer.
 		 * @param bufferCount The number of buffers to allocate.
 		 */
-		CommandBufferAllocator(const std::shared_ptr<Device>& pDevice, const uint32 bufferCount);
+		CommandBufferAllocator(const std::shared_ptr<Device>& pDevice, const uint32_t bufferCount);
 
 		/**
 		 * Construct a secondary command buffer allocator.
@@ -33,7 +33,7 @@ namespace Flint
 		 * @param pParent The parent command buffer allocator.
 		 * @param bufferCount The number of buffers to allocate.
 		 */
-		CommandBufferAllocator(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<CommandBufferAllocator>& pParent, const uint32 bufferCount);
+		CommandBufferAllocator(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<CommandBufferAllocator>& pParent, const uint32_t bufferCount);
 
 		/**
 		 * Create the command buffers.
@@ -55,7 +55,7 @@ namespace Flint
 		 * 
 		 * @return The buffer count.
 		 */
-		const uint32 GetBufferCount() const { return mBufferCount; }
+		const uint32_t GetBufferCount() const { return mBufferCount; }
 
 		/**
 		 * Get the parent command buffer pointer.
@@ -77,7 +77,7 @@ namespace Flint
 		 * @param index The index of the command buffer.
 		 * @return The command buffer pointer.
 		 */
-		const std::shared_ptr<CommandBuffer> GetCommandBuffer(const uint64 index) const { return pCommandBuffers[index]; }
+		const std::shared_ptr<CommandBuffer> GetCommandBuffer(const uint64_t index) const { return pCommandBuffers[index]; }
 
 	protected:
 		/**
@@ -85,12 +85,12 @@ namespace Flint
 		 * 
 		 * @param index The command buffer index.
 		 */
-		void FlagCommandBufferAsTerminated(uint32 index) { pCommandBuffers[index]->Terminate(); }
+		void FlagCommandBufferAsTerminated(uint32_t index) { pCommandBuffers[index]->Terminate(); }
 
 	protected:
 		std::vector<std::shared_ptr<CommandBuffer>> pCommandBuffers = {};
 		std::shared_ptr<CommandBufferAllocator> pParentAllocator = nullptr;
 
-		uint32 mBufferCount = 0;
+		uint32_t mBufferCount = 0;
 	};
 }

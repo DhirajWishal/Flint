@@ -10,9 +10,9 @@ namespace Flint
 {
 	namespace Hasher
 	{
-		uint64 HashDataBlock(const void* pDataBlock, const uint64 size, const uint64 seed)
+		uint64_t HashDataBlock(const void* pDataBlock, const uint64_t size, const uint64_t seed)
 		{
-			return static_cast<uint64>(XXH64(pDataBlock, static_cast<size_t>(size), static_cast<XXH64_hash_t>(seed)));
+			return static_cast<uint64_t>(XXH64(pDataBlock, static_cast<size_t>(size), static_cast<XXH64_hash_t>(seed)));
 		}
 	}
 }

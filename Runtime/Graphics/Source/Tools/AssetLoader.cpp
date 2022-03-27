@@ -96,8 +96,8 @@ namespace Flint
 		{
 			OPTICK_EVENT();
 
-			const uint32 count = pMaterial->GetTextureCount(type);
-			for (uint32 i = 0; i < count; i++)
+			const uint32_t count = pMaterial->GetTextureCount(type);
+			for (uint32_t i = 0; i < count; i++)
 			{
 				aiString path = {};
 
@@ -108,7 +108,7 @@ namespace Flint
 			}
 		}
 
-		void GetColors(const char* pKey, const uint32 type, const uint32 index, Material& material, const aiMaterial* pMaterial)
+		void GetColors(const char* pKey, const uint32_t type, const uint32_t index, Material& material, const aiMaterial* pMaterial)
 		{
 			OPTICK_EVENT();
 
@@ -126,8 +126,8 @@ namespace Flint
 			const std::string_view& basePath,
 			const VertexDescriptor vertexDescriptor,
 			float* pBufferMemory,
-			uint64 vertexOffset,
-			std::vector<uint32>* pIndexes,
+			uint64_t vertexOffset,
+			std::vector<uint32_t>* pIndexes,
 			WireFrame* pWireFrame)
 		{
 			OPTICK_THREAD("Wire Frame Loader");
@@ -148,16 +148,16 @@ namespace Flint
 
 			// Load the textures.
 			{
-				for (uint32 i = 0; i < AI_TEXTURE_TYPE_MAX; i++)
+				for (uint32_t i = 0; i < AI_TEXTURE_TYPE_MAX; i++)
 					Helpers::GetTextures(material, basePath.data(), pMaterial, static_cast<aiTextureType>(i));
 			}
 
 			// Load vertexes.
-			for (uint32 j = 0; j < pMesh->mNumVertices; j++)
+			for (uint32_t j = 0; j < pMesh->mNumVertices; j++)
 			{
 				for (const auto attribute : vertexDescriptor.mAttributes)
 				{
-					const uint64 copyAmount = attribute.mAttributeSize / sizeof(float);
+					const uint64_t copyAmount = attribute.mAttributeSize / sizeof(float);
 
 					switch (attribute.mType)
 					{
@@ -265,21 +265,21 @@ namespace Flint
 			}
 
 			aiFace face = {};
-			for (uint32 j = 0; j < pMesh->mNumFaces; j++)
+			for (uint32_t j = 0; j < pMesh->mNumFaces; j++)
 			{
 				face = pMesh->mFaces[j];
-				for (uint32 k = 0; k < face.mNumIndices; k++)
+				for (uint32_t k = 0; k < face.mNumIndices; k++)
 					pIndexes->push_back(face.mIndices[k]);
 			}
 
-			const uint64 indexCount = pIndexes->size();
+			const uint64_t indexCount = pIndexes->size();
 			(*pWireFrame) = WireFrame(pMesh->mName.C_Str(), vertexOffset, pMesh->mNumVertices, 0, indexCount, material);
 		}
 	}
 
-	const uint64 VertexDescriptor::Size() const
+	const uint64_t VertexDescriptor::Size() const
 	{
-		uint64 size = 0;
+		uint64_t size = 0;
 		for (const auto attribute : mAttributes)
 			size += attribute.mAttributeSize;
 
@@ -308,11 +308,11 @@ namespace Flint
 		if (!pScene)
 			throw std::invalid_argument("Provided asset could not be loaded!");
 
-		const uint64 vertexSize = vertexDescriptor.Size();
-		uint64 vertexCount = 0;
+		const uint64_t vertexSize = vertexDescriptor.Size();
+		uint64_t vertexCount = 0;
 
 		mWireFrames.resize(pScene->mNumMeshes);
-		for (uint32 i = 0; i < pScene->mNumMeshes; i++)
+		for (uint32_t i = 0; i < pScene->mNumMeshes; i++)
 			vertexCount += pScene->mMeshes[i]->mNumVertices;
 
 		const auto pDevice = pGeometryStore->GetDevice();
@@ -320,17 +320,17 @@ namespace Flint
 		const auto pBufferMemory = static_cast<float*>(pVertexStagingBuffer->MapMemory(vertexSize * vertexCount));
 
 		// Load the mesh data.
-		std::vector<std::vector<uint32>> indexData{ pScene->mNumMeshes };
+		std::vector<std::vector<uint32_t>> indexData{ pScene->mNumMeshes };
 
 		{
 			std::vector<std::future<void>> futures;
 			futures.reserve(pScene->mNumMeshes);
 
-			const uint64 vertexFloatCount = vertexDescriptor.Size() / sizeof(float);
+			const uint64_t vertexFloatCount = vertexDescriptor.Size() / sizeof(float);
 			const auto basePath = assetPath.parent_path().string() + LineEnding;
 
-			uint64 vertexOffset = 0;
-			for (uint32 i = 0; i < pScene->mNumMeshes; i++)
+			uint64_t vertexOffset = 0;
+			for (uint32_t i = 0; i < pScene->mNumMeshes; i++)
 			{
 				const auto pMesh = pScene->mMeshes[i];
 				const auto pMaterial = pScene->mMaterials[pMesh->mMaterialIndex];
@@ -346,14 +346,14 @@ namespace Flint
 
 		pVertexStagingBuffer->UnmapMemory();
 
-		uint64 indexCount = 0;
+		uint64_t indexCount = 0;
 		for (auto& indexes : indexData)
 			indexCount += indexes.size();
 
-		const auto pIndexStagingBuffer = pDevice->CreateBuffer(Flint::BufferType::Staging, indexCount * sizeof(uint32));
-		const auto pIndexMemory = static_cast<uint32*>(pIndexStagingBuffer->MapMemory(indexCount * sizeof(uint32)));
+		const auto pIndexStagingBuffer = pDevice->CreateBuffer(Flint::BufferType::Staging, indexCount * sizeof(uint32_t));
+		const auto pIndexMemory = static_cast<uint32_t*>(pIndexStagingBuffer->MapMemory(indexCount * sizeof(uint32_t)));
 
-		uint64 offset = 0;
+		uint64_t offset = 0;
 		for (auto& indexes : indexData)
 		{
 			std::copy(indexes.begin(), indexes.end(), pIndexMemory + offset);
@@ -364,7 +364,7 @@ namespace Flint
 		pIndexStagingBuffer->UnmapMemory();
 
 		const auto [vertexGeometryOffset, indexGeometryOffset] = pGeometryStore->AddGeometry(pVertexStagingBuffer.get(), pIndexStagingBuffer.get());
-		uint64 indexOffset = 0;
+		uint64_t indexOffset = 0;
 		for (auto& wireFrame : mWireFrames)
 		{
 			wireFrame.SetVertexOffset(wireFrame.GetVertexOffset() + vertexGeometryOffset);

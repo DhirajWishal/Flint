@@ -10,13 +10,13 @@ namespace Flint
 		mAtomicCounter++;
 	}
 
-	void CountingSemaphore::Acquire(std::atomic<uint64> count)
+	void CountingSemaphore::Acquire(std::atomic<uint64_t> count)
 	{
 		while (mAtomicCounter != count);
 		mAtomicCounter = 0;
 	}
 
-	bool CountingSemaphore::TryAcquire(std::atomic<uint64> count)
+	bool CountingSemaphore::TryAcquire(std::atomic<uint64_t> count)
 	{
 		if (mAtomicCounter != count)
 			return false;

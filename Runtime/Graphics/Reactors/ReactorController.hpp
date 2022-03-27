@@ -8,11 +8,11 @@
 
 namespace Flint
 {
-	enum class ReactorType : uint8 {
+	enum class ReactorType : uint8_t {
 		Vulkan
 	};
 
-	enum class Status : uint8 {
+	enum class Status : uint8_t {
 		Pending,
 		Executing,
 		Error,

@@ -35,7 +35,7 @@ namespace Flint
 	 * Vertex drawing will draw individual vertexes and would cost more.
 	 * Indexed drawing will use the index buffer to draw and is generally more efficient.
 	 */
-	enum class DrawCallMode : uint8 {
+	enum class DrawCallMode : uint8_t {
 		Vertex,
 		Indexed
 	};
@@ -144,7 +144,7 @@ namespace Flint
 		 * @param firstBinding The first binding of the buffer. Default is 0.
 		 * @param offset The offset of the buffer. Default is 0.
 		 */
-		virtual void BindVertexBuffer(const Buffer* pBuffer, const uint64 firstBinding = 0, const uint64 offset = 0) = 0;
+		virtual void BindVertexBuffer(const Buffer* pBuffer, const uint64_t firstBinding = 0, const uint64_t offset = 0) = 0;
 
 		/**
 		 * Bind a index buffer to the command buffer.
@@ -153,7 +153,7 @@ namespace Flint
 		 * @param indexSize The size of a single index. Acceptable sizes are 1, 2 and 4.
 		 * @param offset The offset of the buffer. Default is 0.
 		 */
-		virtual void BindIndexBuffer(const Buffer* pBuffer, const uint64 indexSize, const uint64 offset = 0) = 0;
+		virtual void BindIndexBuffer(const Buffer* pBuffer, const uint64_t indexSize, const uint64_t offset = 0) = 0;
 
 		/**
 		 * Bind a geometry store to the command buffer.
@@ -282,7 +282,7 @@ namespace Flint
 		 * @param instanceCount The number instances to draw.
 		 * @param mode The draw call mode. Default is Indexed.
 		 */
-		virtual void IssueDrawCall(WireFrame& wireFrame, const uint64 firstInstance = 0, const uint64 instanceCount = 1, const DrawCallMode mode = DrawCallMode::Indexed) = 0;
+		virtual void IssueDrawCall(WireFrame& wireFrame, const uint64_t firstInstance = 0, const uint64_t instanceCount = 1, const DrawCallMode mode = DrawCallMode::Indexed) = 0;
 
 		/**
 		 * Issue a draw call to the command buffer.
@@ -292,7 +292,7 @@ namespace Flint
 		 * @param instanceCount The number instances to draw.
 		 * @param mode The draw call mode. Default is Indexed.
 		 */
-		virtual void IssueDrawCall(WireFrame&& wireFrame, const uint64 firstInstance = 0, const uint64 instanceCount = 1, const DrawCallMode mode = DrawCallMode::Indexed) = 0;
+		virtual void IssueDrawCall(WireFrame&& wireFrame, const uint64_t firstInstance = 0, const uint64_t instanceCount = 1, const DrawCallMode mode = DrawCallMode::Indexed) = 0;
 
 		/**
 		 * Issue the compute call to the command buffer.
@@ -320,7 +320,7 @@ namespace Flint
 		 * @param imageIndex The image index in the swap chain to which the copy is made.
 		 * @param destinationOffset The swap chain image offset to copy data to.
 		 */
-		virtual void CopyToSwapChainImage(const Image* pSourceImage, const FBox3D sourceOffset, SwapChain* pSwapChain, const uint32 imageIndex, const FBox3D destinationOffset) = 0;
+		virtual void CopyToSwapChainImage(const Image* pSourceImage, const FBox3D sourceOffset, SwapChain* pSwapChain, const uint32_t imageIndex, const FBox3D destinationOffset) = 0;
 
 		/**
 		 * Submit a secondary command buffer to be executed.
@@ -361,7 +361,7 @@ namespace Flint
 		 * @param index The index of the query primitive.
 		 * @param requirePrecision Toggle if we need high precision. Default is false.
 		 */
-		virtual void BeginQuery(const Query* pQuery, const uint32 index, const bool requirePrecision = false) = 0;
+		virtual void BeginQuery(const Query* pQuery, const uint32_t index, const bool requirePrecision = false) = 0;
 
 		/**
 		 * End a query recording.
@@ -369,7 +369,7 @@ namespace Flint
 		 * @param pQuery The query to end recording.
 		 * @param index The index of the query primitive.
 		 */
-		virtual void EndQuery(const Query* pQuery, const uint32 index) = 0;
+		virtual void EndQuery(const Query* pQuery, const uint32_t index) = 0;
 
 		/**
 		 * Reset a query recordings.
@@ -379,7 +379,7 @@ namespace Flint
 		 * @param beginIndex The begin query primitive index.
 		 * @param count The number of query primitives to reset.
 		 */
-		virtual void ResetQuery(const Query* pQuery, const uint32 beginIndex, const uint32 count) = 0;
+		virtual void ResetQuery(const Query* pQuery, const uint32_t beginIndex, const uint32_t count) = 0;
 
 		/**
 		 * Add a synchronization command to the command buffer.

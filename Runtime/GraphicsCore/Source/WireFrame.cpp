@@ -5,12 +5,12 @@
 
 namespace Flint
 {
-	WireFrame::WireFrame(const std::string& name, uint64 vertexOffset, uint64 vertexCount, uint64 indexOffset, uint64 indexCount)
+	WireFrame::WireFrame(const std::string& name, uint64_t vertexOffset, uint64_t vertexCount, uint64_t indexOffset, uint64_t indexCount)
 		: mName(name), mVertexOffset(vertexOffset), mVertexCount(vertexCount), mIndexOffset(indexOffset), mIndexCount(indexCount)
 	{
 	}
 
-	WireFrame::WireFrame(const std::string& name, uint64 vertexOffset, uint64 vertexCount, uint64 indexOffset, uint64 indexCount, const Material& material)
+	WireFrame::WireFrame(const std::string& name, uint64_t vertexOffset, uint64_t vertexCount, uint64_t indexOffset, uint64_t indexCount, const Material& material)
 		: mName(name), mVertexOffset(vertexOffset), mVertexCount(vertexCount), mIndexOffset(indexOffset), mIndexCount(indexCount), mMaterial(material)
 	{
 	}

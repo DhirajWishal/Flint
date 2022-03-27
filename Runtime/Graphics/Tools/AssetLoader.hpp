@@ -11,7 +11,7 @@ namespace Flint
 	/**
 	 * Input attribute type enum.
 	 */
-	enum class InputAttributeType : uint8 {
+	enum class InputAttributeType : uint8_t {
 		Undefined,
 		Position,
 		Normal,
@@ -44,9 +44,9 @@ namespace Flint
 	struct VertexAttribute
 	{
 		VertexAttribute() = default;
-		VertexAttribute(uint8 size, InputAttributeType type) : mAttributeSize(size), mType(type) {}
+		VertexAttribute(uint8_t size, InputAttributeType type) : mAttributeSize(size), mType(type) {}
 
-		uint8 mAttributeSize = 0;
+		uint8_t mAttributeSize = 0;
 		InputAttributeType mType = InputAttributeType::Undefined;
 	};
 
@@ -63,7 +63,7 @@ namespace Flint
 		 * 
 		 * @return The size in bytes.
 		 */
-		const uint64 Size() const;
+		const uint64_t Size() const;
 	};
 
 	/**

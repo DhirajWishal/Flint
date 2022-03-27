@@ -13,9 +13,9 @@ namespace Flint
 	struct NextImageInfo
 	{
 		NextImageInfo() = default;
-		NextImageInfo(uint32 index, bool shouldRecreate) : mIndex(index), bShouldRecreate(shouldRecreate) {}
+		NextImageInfo(uint32_t index, bool shouldRecreate) : mIndex(index), bShouldRecreate(shouldRecreate) {}
 
-		uint32 mIndex = 0;
+		uint32_t mIndex = 0;
 		bool bShouldRecreate = 0;
 	};
 
@@ -34,7 +34,7 @@ namespace Flint
 		 * @param imageCount The image count of the swap chain.
 		 * @param presentMode The swap chain present mode. If the requested present mode is not supported, an exception is thrown.
 		 */
-		SwapChain(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, uint32 imageCount, const SwapChainPresentMode presentMode);
+		SwapChain(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Display>& pDisplay, uint32_t imageCount, const SwapChainPresentMode presentMode);
 
 		/**
 		 * Recreate the swap chain.
@@ -48,7 +48,7 @@ namespace Flint
 		 * @param frameIndex The frame index.
 		 * @return The next image info structure.
 		 */
-		virtual NextImageInfo AcquireNextImage(const uint32 frameIndex) = 0;
+		virtual NextImageInfo AcquireNextImage(const uint32_t frameIndex) = 0;
 
 	public:
 		/**
@@ -70,14 +70,14 @@ namespace Flint
 		 *
 		 * @return The image count.
 		 */
-		const uint32 GetImageCount() const { return mImageCount; }
+		const uint32_t GetImageCount() const { return mImageCount; }
 
 		/**
 		 * Get the current image index.
 		 *
 		 * @return The image index.
 		 */
-		const uint32 GetImageIndex() const { return mImageIndex; }
+		const uint32_t GetImageIndex() const { return mImageIndex; }
 
 		/**
 		 * Get the pixel format of the swap chain.
@@ -110,8 +110,8 @@ namespace Flint
 		std::shared_ptr<Display> pDisplay = nullptr;
 
 		FBox2D mExtent = {};
-		uint32 mImageCount = 0;
-		uint32 mImageIndex = 0;
+		uint32_t mImageCount = 0;
+		uint32_t mImageIndex = 0;
 
 		PixelFormat mPixelForamt = PixelFormat::Undefined;
 		SwapChainPresentMode mPresentMode = SwapChainPresentMode::MailBox;

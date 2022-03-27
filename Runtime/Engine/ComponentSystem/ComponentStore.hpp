@@ -20,8 +20,8 @@ namespace Flint
 
 		auto operator<=>(const ComponentIdentifier& other) const = default;
 
-		uint64 mStringHash = 0;
-		uint64 mStringLength = 0;
+		uint64_t mStringHash = 0;
+		uint64_t mStringLength = 0;
 	};
 
 	/**
@@ -97,7 +97,7 @@ namespace Flint
 		 *
 		 * @return The size.
 		 */
-		const uint64 Size() const { return mComponents.Size(); }
+		const uint64_t Size() const { return mComponents.Size(); }
 
 	public:
 		/**

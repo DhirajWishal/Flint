@@ -43,7 +43,7 @@ namespace Flint
 	 * Device flags enum.
 	 * This determines the device characteristics.
 	 */
-	enum class DeviceFlags : uint8 {
+	enum class DeviceFlags : uint8_t {
 		// This flag states to use external device (GPU) if available over integrated.
 		External = BitShiftLeft(0),
 
@@ -57,8 +57,8 @@ namespace Flint
 		ComputeCompatible = BitShiftLeft(3)
 	};
 
-	constexpr DeviceFlags operator|(const DeviceFlags& lhs, const DeviceFlags& rhs) { return DeviceFlags(static_cast<uint8>(lhs) | static_cast<uint8>(rhs)); }
-	constexpr DeviceFlags operator&(const DeviceFlags& lhs, const DeviceFlags& rhs) { return DeviceFlags(static_cast<uint8>(lhs) & static_cast<uint8>(rhs)); }
+	constexpr DeviceFlags operator|(const DeviceFlags& lhs, const DeviceFlags& rhs) { return DeviceFlags(static_cast<uint8_t>(lhs) | static_cast<uint8_t>(rhs)); }
+	constexpr DeviceFlags operator&(const DeviceFlags& lhs, const DeviceFlags& rhs) { return DeviceFlags(static_cast<uint8_t>(lhs) & static_cast<uint8_t>(rhs)); }
 
 	/**
 	 * Flint device object.
@@ -91,7 +91,7 @@ namespace Flint
 		 * @param bufferCount The number of buffers the allocator should create.
 		 * @return The allocator pointer.
 		 */
-		virtual std::shared_ptr<CommandBufferAllocator> CreateCommandBufferAllocator(const uint32 bufferCount) = 0;
+		virtual std::shared_ptr<CommandBufferAllocator> CreateCommandBufferAllocator(const uint32_t bufferCount) = 0;
 
 		/**
 		 * Create a new secondary command buffer allocator.
@@ -100,7 +100,7 @@ namespace Flint
 		 * @param pParentAllocator The parent command buffer allocator pointer.
 		 * @return The command buffer allocator pointer.
 		 */
-		virtual std::shared_ptr<CommandBufferAllocator> CreateSecondaryCommandBufferAllocator(const uint32 bufferCount, const std::shared_ptr<CommandBufferAllocator>& pParentAllocator) = 0;
+		virtual std::shared_ptr<CommandBufferAllocator> CreateSecondaryCommandBufferAllocator(const uint32_t bufferCount, const std::shared_ptr<CommandBufferAllocator>& pParentAllocator) = 0;
 
 		/**
 		 * Create a new swap chain.
@@ -110,7 +110,7 @@ namespace Flint
 		 * @param presentMode The swap chain present mode.
 		 * @return The swap chain pointer.
 		 */
-		virtual std::shared_ptr<SwapChain> CreateSwapChain(const std::shared_ptr<Display>& pDisplay, uint32 imageCount, const SwapChainPresentMode presentMode) = 0;
+		virtual std::shared_ptr<SwapChain> CreateSwapChain(const std::shared_ptr<Display>& pDisplay, uint32_t imageCount, const SwapChainPresentMode presentMode) = 0;
 
 		/**
 		 * Create a new screen bound render target.
@@ -124,7 +124,7 @@ namespace Flint
 		 * @param swapChainClearColor The swap chain's clear color.
 		 * @return The screen bound render target object.
 		 */
-		virtual std::shared_ptr<ScreenBoundRenderTarget> CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const uint32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor = FColor4D(0.0f)) = 0;
+		virtual std::shared_ptr<ScreenBoundRenderTarget> CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor = FColor4D(0.0f)) = 0;
 
 		/**
 		 * Create a new off screen render target.
@@ -135,7 +135,7 @@ namespace Flint
 		 * @param imageAttachments The image attachments which the render target uses.
 		 * @return The render target pointer.
 		 */
-		virtual std::shared_ptr<OffScreenRenderTarget> CreateOffScreenRenderTarget(const FBox2D& extent, const uint32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments) = 0;
+		virtual std::shared_ptr<OffScreenRenderTarget> CreateOffScreenRenderTarget(const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments) = 0;
 
 		/**
 		 * Create a new buffer.
@@ -145,7 +145,7 @@ namespace Flint
 		 * @param profile The memory profile of the buffer. Default is BufferMemoryProfile::Automatic.
 		 * @return The buffer object.
 		 */
-		virtual std::shared_ptr<Buffer> CreateBuffer(const BufferType type, const uint64 size, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic) = 0;
+		virtual std::shared_ptr<Buffer> CreateBuffer(const BufferType type, const uint64_t size, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic) = 0;
 
 		/**
 		 * Create a new image.
@@ -160,7 +160,7 @@ namespace Flint
 		 * @param sampleCount The image multi sample count.
 		 * @return The newly created image.
 		 */
-		virtual std::shared_ptr<Image> CreateImage(const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const uint8 layers, const uint32 mipLevels, const void* pImageData, const MultiSampleCount sampleCount = MultiSampleCount::One) = 0;
+		virtual std::shared_ptr<Image> CreateImage(const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const uint8_t layers, const uint32_t mipLevels, const void* pImageData, const MultiSampleCount sampleCount = MultiSampleCount::One) = 0;
 
 		/**
 		 * Create a new image sampler.
@@ -188,7 +188,7 @@ namespace Flint
 		 * @param code The shade code.
 		 * @return The vertex shader object.
 		 */
-		virtual std::shared_ptr<Shader> CreateShader(const ShaderType type, const std::vector<uint32>& code) = 0;
+		virtual std::shared_ptr<Shader> CreateShader(const ShaderType type, const std::vector<uint32_t>& code) = 0;
 
 		/**
 		 * Create a new shader.
@@ -247,7 +247,7 @@ namespace Flint
 		 * @param profile The memory profile of the geometry store. Default is BufferMemoryProfile::Automatic.
 		 * @return The newly created geometry store pointer.
 		 */
-		virtual std::shared_ptr<GeometryStore> CreateGeometryStore(const std::vector<ShaderAttribute>& vertexAttributes, uint64 indexSize, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic) = 0;
+		virtual std::shared_ptr<GeometryStore> CreateGeometryStore(const std::vector<ShaderAttribute>& vertexAttributes, uint64_t indexSize, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic) = 0;
 
 		/**
 		 * Create a new host synchronization primitive.
@@ -272,7 +272,7 @@ namespace Flint
 		 * @param queryCount The number of query primitives.
 		 * @return The query pointer.
 		 */
-		virtual std::shared_ptr<Query> CreateQuery(const QueryUsage usage, const uint32 queryCount) = 0;
+		virtual std::shared_ptr<Query> CreateQuery(const QueryUsage usage, const uint32_t queryCount) = 0;
 
 	public:
 		/**

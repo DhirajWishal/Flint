@@ -29,7 +29,7 @@ namespace Flint
 		 * @param indexOffset The index offset of the wire frame.
 		 * @param indexCount The number of indexes in the wire frame.
 		 */
-		WireFrame(const std::string& name, uint64 vertexOffset, uint64 vertexCount, uint64 indexOffset, uint64 indexCount);
+		WireFrame(const std::string& name, uint64_t vertexOffset, uint64_t vertexCount, uint64_t indexOffset, uint64_t indexCount);
 
 		/**
 		 * Construct the wire frame.
@@ -41,7 +41,7 @@ namespace Flint
 		 * @param indexCount The number of indexes in the wire frame.
 		 * @param material The material of the wire frame.
 		 */
-		WireFrame(const std::string& name, uint64 vertexOffset, uint64 vertexCount, uint64 indexOffset, uint64 indexCount, const Material& material);
+		WireFrame(const std::string& name, uint64_t vertexOffset, uint64_t vertexCount, uint64_t indexOffset, uint64_t indexCount, const Material& material);
 
 	public:
 		/**
@@ -70,48 +70,48 @@ namespace Flint
 		 *
 		 * @return The vertex offset.
 		 */
-		const uint64 GetVertexOffset() const { return mVertexOffset; }
+		const uint64_t GetVertexOffset() const { return mVertexOffset; }
 
 		/**
 		 * Set the vertex offset.
 		 *
 		 * @param offset The offset to set.
 		 */
-		void SetVertexOffset(const uint64 offset) { mVertexOffset = offset; }
+		void SetVertexOffset(const uint64_t offset) { mVertexOffset = offset; }
 
 		/**
 		 * Get the vertex count of the wire frame.
 		 *
 		 * @return The vertex count.
 		 */
-		const uint64 GetVertexCount() const { return mVertexCount; }
+		const uint64_t GetVertexCount() const { return mVertexCount; }
 
 		/**
 		 * Get the index offset of the wire frame.
 		 *
 		 * @return The index offset.
 		 */
-		const uint64 GetIndexOffset() const { return mIndexOffset; }
+		const uint64_t GetIndexOffset() const { return mIndexOffset; }
 
 		/**
 		 * Set the index offset.
 		 *
 		 * @param offset The offset to set.
 		 */
-		void SetIndexOffset(const uint64 offset) { mIndexOffset = offset; }
+		void SetIndexOffset(const uint64_t offset) { mIndexOffset = offset; }
 
 		/**
 		 * Get the index count of the wire frame.
 		 *
 		 * @return The index count.
 		 */
-		const uint64 GetIndexCount() const { return mIndexCount; }
+		const uint64_t GetIndexCount() const { return mIndexCount; }
 
 	private:
 		std::string mName = "";
 		Material mMaterial = {};
 
-		uint64 mVertexOffset = 0, mVertexCount = 0;
-		uint64 mIndexOffset = 0, mIndexCount = 0;
+		uint64_t mVertexOffset = 0, mVertexCount = 0;
+		uint64_t mIndexOffset = 0, mIndexCount = 0;
 	};
 }

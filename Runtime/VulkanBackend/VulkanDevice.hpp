@@ -22,33 +22,33 @@ namespace Flint
 			virtual bool IsDisplayCompatible(const Display* pDisplay) override;
 			virtual MultiSampleCount GetSupportedMultiSampleCount() const override;
 
-			virtual std::shared_ptr<CommandBufferAllocator> CreateCommandBufferAllocator(const uint32 bufferCount) override;
-			virtual std::shared_ptr<CommandBufferAllocator> CreateSecondaryCommandBufferAllocator(const uint32 bufferCount, const std::shared_ptr<CommandBufferAllocator>& pParentAllocator) override;
+			virtual std::shared_ptr<CommandBufferAllocator> CreateCommandBufferAllocator(const uint32_t bufferCount) override;
+			virtual std::shared_ptr<CommandBufferAllocator> CreateSecondaryCommandBufferAllocator(const uint32_t bufferCount, const std::shared_ptr<CommandBufferAllocator>& pParentAllocator) override;
 
-			virtual std::shared_ptr<SwapChain> CreateSwapChain(const std::shared_ptr<Display>& pDisplay, uint32 imageCount, const SwapChainPresentMode presentMode) override;
+			virtual std::shared_ptr<SwapChain> CreateSwapChain(const std::shared_ptr<Display>& pDisplay, uint32_t imageCount, const SwapChainPresentMode presentMode) override;
 
-			virtual std::shared_ptr<ScreenBoundRenderTarget> CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const uint32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor = FColor4D(0.0f)) override;
-			virtual std::shared_ptr<OffScreenRenderTarget> CreateOffScreenRenderTarget(const FBox2D& extent, const uint32 bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments) override;
+			virtual std::shared_ptr<ScreenBoundRenderTarget> CreateScreenBoundRenderTarget(const std::shared_ptr<Display>& pDisplay, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor = FColor4D(0.0f)) override;
+			virtual std::shared_ptr<OffScreenRenderTarget> CreateOffScreenRenderTarget(const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments) override;
 
-			virtual std::shared_ptr<Buffer> CreateBuffer(const BufferType type, const uint64 size, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic) override;
+			virtual std::shared_ptr<Buffer> CreateBuffer(const BufferType type, const uint64_t size, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic) override;
 
-			virtual std::shared_ptr<Image> CreateImage(const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const uint8 layers, const uint32 mipLevels, const void* pImageData, const MultiSampleCount sampleCount = MultiSampleCount::One) override;
+			virtual std::shared_ptr<Image> CreateImage(const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const uint8_t layers, const uint32_t mipLevels, const void* pImageData, const MultiSampleCount sampleCount = MultiSampleCount::One) override;
 
 			virtual std::shared_ptr<ImageSampler> CreateImageSampler(const ImageSamplerSpecification& specification) override;
 
 			virtual std::shared_ptr<Shader> CreateShader(const ShaderType type, const std::filesystem::path& path) override;
-			virtual std::shared_ptr<Shader> CreateShader(const ShaderType type, const std::vector<uint32>& code) override;
+			virtual std::shared_ptr<Shader> CreateShader(const ShaderType type, const std::vector<uint32_t>& code) override;
 			virtual std::shared_ptr<Shader> CreateShader(const ShaderType type, const std::string& code) override;
 
 			virtual std::shared_ptr<GraphicsPipeline> CreateGraphicsPipeline(const std::string& pipelineName, const std::shared_ptr<ScreenBoundRenderTarget>& pScreenBoundRenderTarget, const std::shared_ptr<Shader>& pVertexShader, const std::shared_ptr<Shader>& pTessellationControlShader, const std::shared_ptr<Shader>& pTessellationEvaluationShader, const std::shared_ptr<Shader>& pGeometryShader, const std::shared_ptr<Shader>& pFragmentShader, const GraphicsPipelineSpecification& specification) override;
 			virtual std::shared_ptr<GraphicsPipeline> CreateGraphicsPipeline(const std::string& pipelineName, const std::shared_ptr<OffScreenRenderTarget>& pOffScreenRenderTarget, const std::shared_ptr<Shader>& pVertexShader, const std::shared_ptr<Shader>& pTessellationControlShader, const std::shared_ptr<Shader>& pTessellationEvaluationShader, const std::shared_ptr<Shader>& pGeometryShader, const std::shared_ptr<Shader>& pFragmentShader, const GraphicsPipelineSpecification& specification) override;
 			virtual std::shared_ptr<ComputePipeline> CreateComputePipeline(const std::string& pipelineName, const std::shared_ptr<Shader>& pShader) override;
 
-			virtual std::shared_ptr<GeometryStore> CreateGeometryStore(const typename std::vector<ShaderAttribute>& vertexAttributes, uint64 indexSize, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic) override;
+			virtual std::shared_ptr<GeometryStore> CreateGeometryStore(const typename std::vector<ShaderAttribute>& vertexAttributes, uint64_t indexSize, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic) override;
 
 			virtual std::shared_ptr<HostSynchronizationPrimitive> CreateHostSynchronizationPrimitive() override;
 			virtual std::shared_ptr<DeviceSynchronizationPrimitive> CreateDeviceSynchronizationPrimitive() override;
-			virtual std::shared_ptr<Query> CreateQuery(const QueryUsage usage, const uint32 queryCount) override;
+			virtual std::shared_ptr<Query> CreateQuery(const QueryUsage usage, const uint32_t queryCount) override;
 
 			virtual void SubmitGraphicsCommandBuffer(const CommandBuffer* pCommandBuffer, SynchronizationPrimitive* pPrimitive = nullptr) override;
 			virtual void SubmitGraphicsCommandBuffers(const std::vector<CommandBuffer*>& pCommandBuffers, SynchronizationPrimitive* pPrimitive = nullptr) override;
@@ -69,8 +69,8 @@ namespace Flint
 			VkSampleCountFlags GetSampleCount() const { return vSampleCount; }
 
 			VkResult CreateImageMemory(const std::vector<VkImage>& vImages, VkMemoryPropertyFlags vMemoryflags, VkDeviceMemory* pDeviceMemory) const;
-			void SetImageLayout(VkCommandBuffer vCommandBuffer, VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, uint32 layerCount = 1, uint32 currentLayer = 0, const uint32 mipLevels = 1, const uint32 currentLevel = 0, VkImageAspectFlags vAspects = VkImageAspectFlagBits::VK_IMAGE_ASPECT_FLAG_BITS_MAX_ENUM) const;
-			void SetImageLayout(VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, uint32 layerCount = 1, uint32 currentLayer = 0, const uint32 mipLevels = 1, const uint32 currentLevel = 0, VkImageAspectFlags vAspects = VkImageAspectFlagBits::VK_IMAGE_ASPECT_FLAG_BITS_MAX_ENUM) const;
+			void SetImageLayout(VkCommandBuffer vCommandBuffer, VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, uint32_t layerCount = 1, uint32_t currentLayer = 0, const uint32_t mipLevels = 1, const uint32_t currentLevel = 0, VkImageAspectFlags vAspects = VkImageAspectFlagBits::VK_IMAGE_ASPECT_FLAG_BITS_MAX_ENUM) const;
+			void SetImageLayout(VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, uint32_t layerCount = 1, uint32_t currentLayer = 0, const uint32_t mipLevels = 1, const uint32_t currentLevel = 0, VkImageAspectFlags vAspects = VkImageAspectFlagBits::VK_IMAGE_ASPECT_FLAG_BITS_MAX_ENUM) const;
 
 			const VmaAllocator GetVmaAllocator() const { return mVmaAllocator; }
 

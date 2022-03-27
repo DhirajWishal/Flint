@@ -7,7 +7,7 @@
 
 namespace Flint
 {
-	enum class RequestStatus : uint8 {
+	enum class RequestStatus : uint8_t {
 		Successful,
 		Pending,
 		Error
