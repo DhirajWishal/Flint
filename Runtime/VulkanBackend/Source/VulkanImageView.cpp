@@ -10,7 +10,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanImageView::VulkanImageView(Device* pDevice, const std::shared_ptr<Image>& pImage, const uint32_t baseLayerIndex, const uint32_t layerCount, const uint32_t baseMipLevel, const uint32_t mipLevels, const ImageUsage usage)
+		VulkanImageView::VulkanImageView(Device* pDevice, const Image* pImage, const uint32_t baseLayerIndex, const uint32_t layerCount, const uint32_t baseMipLevel, const uint32_t mipLevels, const ImageUsage usage)
 			: ImageView(pDevice, pImage, baseLayerIndex, layerCount, baseMipLevel, mipLevels, usage)
 		{
 			OPTICK_EVENT();

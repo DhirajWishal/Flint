@@ -32,9 +32,9 @@ namespace Flint
 
 			virtual std::unique_ptr<Buffer> CreateBuffer(const BufferType type, const uint64_t size, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic) override;
 
-			virtual std::shared_ptr<Image> CreateImage(const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const uint8_t layers, const uint32_t mipLevels, const void* pImageData, const MultiSampleCount sampleCount = MultiSampleCount::One) override;
+			virtual std::unique_ptr<Image> CreateImage(const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const uint8_t layers, const uint32_t mipLevels, const void* pImageData, const MultiSampleCount sampleCount = MultiSampleCount::One) override;
 
-			virtual std::shared_ptr<ImageSampler> CreateImageSampler(const ImageSamplerSpecification& specification) override;
+			virtual std::unique_ptr<ImageSampler> CreateImageSampler(const ImageSamplerSpecification& specification) override;
 
 			virtual std::unique_ptr<Shader> CreateShader(const ShaderType type, const std::filesystem::path& path) override;
 			virtual std::unique_ptr<Shader> CreateShader(const ShaderType type, const std::vector<uint32_t>& code) override;

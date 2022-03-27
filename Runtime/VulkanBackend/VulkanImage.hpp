@@ -10,7 +10,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanImage final : public Image, public VulkanRenderTargetAttachmentInterface, public std::enable_shared_from_this<VulkanImage>
+		class VulkanImage final : public Image, public VulkanRenderTargetAttachmentInterface
 		{
 		public:
 			VulkanImage(Device* pDevice, const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const uint8_t layers, const uint32_t mipLevels, const void* pImageData, const MultiSampleCount sampleCount = MultiSampleCount::One);
@@ -18,7 +18,7 @@ namespace Flint
 
 			virtual void GenerateMipMaps() override;
 			virtual std::unique_ptr<Buffer> CopyToBuffer() override;
-			virtual std::shared_ptr<ImageView> CreateImageView(const uint32_t baseLayerIndex, const uint32_t layerCount, const uint32_t baseMipLevel, const uint32_t mipLevels, const ImageUsage usage) override;
+			virtual std::unique_ptr<ImageView> CreateImageView(const uint32_t baseLayerIndex, const uint32_t layerCount, const uint32_t baseMipLevel, const uint32_t mipLevels, const ImageUsage usage) override;
 			virtual void Terminate() override;
 
 			void CopyFromImage(VkCommandBuffer vCommandBuffer, VkImage vSrcImage, VkImageLayout vSrcLayout, VkOffset3D srcOffset, VkOffset3D dstOffset, VkImageSubresourceLayers subresourceLayers);

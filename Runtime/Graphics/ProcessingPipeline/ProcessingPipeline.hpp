@@ -118,7 +118,7 @@ namespace Flint
 		 *
 		 * @return The color image pointer.
 		 */
-		std::shared_ptr<Image> GetColorBuffer() const;
+		Image* GetColorBuffer() const;
 
 		/**
 		 * Get the depth image from the pipeline.
@@ -126,7 +126,7 @@ namespace Flint
 		 *
 		 * @return The depth image pointer.
 		 */
-		std::shared_ptr<Image> GetDepthBuffer() const;
+		Image* GetDepthBuffer() const;
 
 		/**
 		 * Get the screen bound render target pointer.
@@ -202,6 +202,7 @@ namespace Flint
 		void ProcessNodes(const std::shared_ptr<CommandBuffer>& pCommandBuffer, const uint32_t frameIndex, const uint32_t imageIndex);
 
 	protected:
+		std::vector<std::unique_ptr<Image>> pImageAttachments = {};
 		std::vector<std::shared_ptr<ProcessingNode>> pProcessingNodes = {};
 		std::vector<std::shared_ptr<CommandBuffer>> pCommandBuffers = {};
 		std::vector<std::shared_ptr<HostSynchronizationPrimitive>> pHostSynchronizationPrimitives = {};

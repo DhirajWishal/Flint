@@ -235,9 +235,9 @@ namespace Flint
 			return pBuffer;
 		}
 
-		std::shared_ptr<ImageView> VulkanImage::CreateImageView(const uint32_t baseLayerIndex, const uint32_t layerCount, const uint32_t baseMipLevel, const uint32_t mipLevels, const ImageUsage usage)
+		std::unique_ptr<ImageView> VulkanImage::CreateImageView(const uint32_t baseLayerIndex, const uint32_t layerCount, const uint32_t baseMipLevel, const uint32_t mipLevels, const ImageUsage usage)
 		{
-			return std::make_shared<VulkanImageView>(pDevice, shared_from_this(), baseLayerIndex, layerCount, baseMipLevel, mipLevels, usage);
+			return std::make_unique<VulkanImageView>(pDevice, this, baseLayerIndex, layerCount, baseMipLevel, mipLevels, usage);
 		}
 
 		void VulkanImage::Terminate()

@@ -411,10 +411,10 @@ namespace Flint
 	{
 		RenderTargetAttachment() = default;
 		RenderTargetAttachment(const FColor4D& clearColor) : mClearColor(clearColor) {}
-		RenderTargetAttachment(const std::shared_ptr<Image>& pImage, const FColor4D& clearColor) : pImage(pImage), mClearColor(clearColor) {}
-		RenderTargetAttachment(const std::shared_ptr<Image>& pImage, const DepthClearValues& depthValue) : pImage(pImage), mDepthClearValue(depthValue) {}
+		RenderTargetAttachment(Image* pImage, const FColor4D& clearColor) : pImage(std::move(pImage)), mClearColor(clearColor) {}
+		RenderTargetAttachment(Image* pImage, const DepthClearValues& depthValue) : pImage(std::move(pImage)), mDepthClearValue(depthValue) {}
 
-		std::shared_ptr<Image> pImage = nullptr;
+		Image* pImage = nullptr;
 
 		FColor4D mClearColor = FColor4D(CreateColor256(32.0f), CreateColor256(32.0f), CreateColor256(32.0f), 1.0f);
 		DepthClearValues mDepthClearValue = {};

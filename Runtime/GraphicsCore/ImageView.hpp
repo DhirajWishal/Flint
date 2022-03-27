@@ -25,7 +25,7 @@ namespace Flint
 		 * @param mipLevels The number of mip levels to cover.
 		 * @param usage The image view usage.
 		 */
-		ImageView(Device* pDevice, const std::shared_ptr<Image>& pImage, const uint32_t baseLayerIndex, const uint32_t layerCount, const uint32_t baseMipLevel, const uint32_t mipLevels, const ImageUsage usage);
+		ImageView(Device* pDevice, const Image* pImage, const uint32_t baseLayerIndex, const uint32_t layerCount, const uint32_t baseMipLevel, const uint32_t mipLevels, const ImageUsage usage);
 
 	public:
 		/**
@@ -33,7 +33,7 @@ namespace Flint
 		 *
 		 * @return The image pointer.
 		 */
-		std::shared_ptr<Image> GetParentImage() const { return pParentImage; }
+		const Image* GetParentImage() const { return pParentImage; }
 
 		/**
 		 * Get the base layer index.
@@ -64,7 +64,7 @@ namespace Flint
 		uint32_t GetMipLevels() const { return mMipLevels; }
 
 	protected:
-		std::shared_ptr<Image> pParentImage = nullptr;
+		const Image* pParentImage = nullptr;
 
 		uint32_t mBaseLayerIndex = 0;
 		uint32_t mLayerCount = 0;

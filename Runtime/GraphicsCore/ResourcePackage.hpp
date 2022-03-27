@@ -31,14 +31,12 @@ namespace Flint
 	struct ImageBinding
 	{
 		ImageBinding() = default;
-		ImageBinding(const std::shared_ptr<ImageSampler>& pImageSampler, const std::shared_ptr<ImageView>& pImage, const ImageUsage usage)
-			: pImageSampler(pImageSampler), pImageView(pImage), mUsage(usage) {}
-		ImageBinding(const std::shared_ptr<Image>& pImage, const std::shared_ptr<ImageView>& pImageView, const std::shared_ptr<ImageSampler>& pImageSampler, const ImageUsage usage)
-			: pImage(pImage), pImageView(pImageView), pImageSampler(pImageSampler), mUsage(usage) {}
+		ImageBinding(const ImageSampler* pImageSampler, const ImageView* pImageView, const ImageUsage usage) : pImageSampler(pImageSampler), pImageView(pImageView), mUsage(usage) {}
+		ImageBinding(const Image* pImage, const ImageView* pImageView, const ImageSampler* pImageSampler, const ImageUsage usage) : pImage(pImage), pImageView(pImageView), pImageSampler(pImageSampler), mUsage(usage) {}
 
-		std::shared_ptr<Image> pImage = nullptr;
-		std::shared_ptr<ImageView> pImageView = nullptr;
-		std::shared_ptr<ImageSampler> pImageSampler = nullptr;
+		const Image* pImage = nullptr;
+		const ImageView* pImageView = nullptr;
+		const ImageSampler* pImageSampler = nullptr;
 
 		uint64_t mViewIndex = 0;
 		ImageUsage mUsage = ImageUsage::Graphics;
@@ -87,7 +85,7 @@ namespace Flint
 		 * @param pImageSampler The image sampler pointer.
 		 * @param usage The image usage. This determines what the image usage would be upon binging to the pipeline. Default is Graphics.
 		 */
-		void BindResource(const uint32_t binding, const std::shared_ptr<Image>& pImage, const std::shared_ptr<ImageView>& pImageView, const std::shared_ptr<ImageSampler>& pImageSampler, const ImageUsage usage = ImageUsage::Graphics);
+		void BindResource(const uint32_t binding, const Image* pImage, const ImageView* pImageView, const ImageSampler* pImageSampler, const ImageUsage usage = ImageUsage::Graphics);
 
 		/**
 		 * Clear the buffer resources.

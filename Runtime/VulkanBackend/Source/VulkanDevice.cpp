@@ -165,14 +165,14 @@ namespace Flint
 			return std::make_unique<VulkanBuffer>(this, type, size, profile);
 		}
 
-		std::shared_ptr<Image> VulkanDevice::CreateImage(const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const uint8_t layers, const uint32_t mipLevels, const void* pImageData, const MultiSampleCount sampleCount)
+		std::unique_ptr<Image> VulkanDevice::CreateImage(const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const uint8_t layers, const uint32_t mipLevels, const void* pImageData, const MultiSampleCount sampleCount)
 		{
-			return std::make_shared<VulkanImage>(this, type, usage, extent, format, layers, mipLevels, pImageData, sampleCount);
+			return std::make_unique<VulkanImage>(this, type, usage, extent, format, layers, mipLevels, pImageData, sampleCount);
 		}
 
-		std::shared_ptr<ImageSampler> VulkanDevice::CreateImageSampler(const ImageSamplerSpecification& specification)
+		std::unique_ptr<ImageSampler> VulkanDevice::CreateImageSampler(const ImageSamplerSpecification& specification)
 		{
-			return std::make_shared<VulkanImageSampler>(this, specification);
+			return std::make_unique<VulkanImageSampler>(this, specification);
 		}
 
 		std::unique_ptr<Shader> VulkanDevice::CreateShader(const ShaderType type, const std::filesystem::path& path)

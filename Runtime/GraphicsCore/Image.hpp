@@ -130,7 +130,7 @@ namespace Flint
 		 * @param mipLevels The mip levels to cover.
 		 * @param usage The image usage.
 		 */
-		virtual std::shared_ptr<ImageView> CreateImageView(const uint32_t baseLayerIndex, const uint32_t layerCount, const uint32_t baseMipLevel, const uint32_t mipLevels, const ImageUsage usage) = 0;
+		virtual std::unique_ptr<ImageView> CreateImageView(const uint32_t baseLayerIndex, const uint32_t layerCount, const uint32_t baseMipLevel, const uint32_t mipLevels, const ImageUsage usage) = 0;
 
 		/**
 		 * Get the value of a single pixel.

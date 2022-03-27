@@ -161,7 +161,7 @@ namespace Flint
 		 * @param sampleCount The image multi sample count.
 		 * @return The newly created image.
 		 */
-		virtual std::shared_ptr<Image> CreateImage(const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const uint8_t layers, const uint32_t mipLevels, const void* pImageData, const MultiSampleCount sampleCount = MultiSampleCount::One) = 0;
+		virtual std::unique_ptr<Image> CreateImage(const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const uint8_t layers, const uint32_t mipLevels, const void* pImageData, const MultiSampleCount sampleCount = MultiSampleCount::One) = 0;
 
 		/**
 		 * Create a new image sampler.
@@ -169,7 +169,7 @@ namespace Flint
 		 * @param specification The sampler specification.
 		 * @return The newly created sampler.
 		 */
-		virtual std::shared_ptr<ImageSampler> CreateImageSampler(const ImageSamplerSpecification& specification) = 0;
+		virtual std::unique_ptr<ImageSampler> CreateImageSampler(const ImageSamplerSpecification& specification) = 0;
 
 		/**
 		 * Create a new shader.

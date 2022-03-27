@@ -27,24 +27,32 @@ namespace Flint
 		if (mMultiSampleCount != MultiSampleCount::One || forceColorBuffer)
 		{
 			bContainsColorBuffer = true;
+
+			auto pImage = pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Color, extent, pDisplay->GetBestSwapChainFormat(pDevice), 1, 1, nullptr);
 			attachments.emplace_back(
 				RenderTargetAttachment(
-					pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Color, extent, pDisplay->GetBestSwapChainFormat(pDevice), 1, 1, nullptr),
+					pImage.get(),
 					FColor4D(CreateColor256(32.0f), CreateColor256(32.0f), CreateColor256(32.0f), 1.0f)
 				)
 			);
+
+			pImageAttachments.emplace_back(std::move(pImage));
 		}
 
 		// Add the depth image if required.
 		if (forceDepthBuffer)
 		{
 			bContainsDepthBuffer = true;
+
+			auto pImage = pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Depth, extent, PixelFormat::D24_UNORMAL_S8_UINT, 1, 1, nullptr);
 			attachments.emplace_back(
 				RenderTargetAttachment(
-					pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Depth, extent, PixelFormat::D24_UNORMAL_S8_UINT, 1, 1, nullptr),
+					pImage.get(),
 					DepthClearValues(1.0f, 0)
 				)
 			);
+
+			pImageAttachments.emplace_back(std::move(pImage));
 		}
 
 		// Create the screen bound render target.
@@ -108,7 +116,7 @@ namespace Flint
 		pScreenBoundRenderTarget->IncrementFrameIndex();
 	}
 
-	std::shared_ptr<Image> ProcessingPipeline::GetColorBuffer() const
+	Image* ProcessingPipeline::GetColorBuffer() const
 	{
 		// Get the image if the color attachment is available.
 		if (IsColorImagePresent())
@@ -117,7 +125,7 @@ namespace Flint
 		return nullptr;
 	}
 
-	std::shared_ptr<Image> ProcessingPipeline::GetDepthBuffer() const
+	Image* ProcessingPipeline::GetDepthBuffer() const
 	{
 		// Return if the depth image is not present.
 		if (!IsDepthImagePresent())

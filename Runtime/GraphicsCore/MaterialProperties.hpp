@@ -259,9 +259,9 @@ namespace Flint
 			 * @param pImage The image pointer.
 			 * @param type The texture type.
 			 */
-			TextureImage(const std::shared_ptr<Image>& pImage, const TextureType type) : Property(MaterialType::TEXTURE_IMAGE), pImage(pImage), mType(type) {}
+			TextureImage(std::unique_ptr<Image>&& pImage, const TextureType type) : Property(MaterialType::TEXTURE_IMAGE), pImage(std::move(pImage)), mType(type) {}
 
-			std::shared_ptr<Image> pImage = nullptr;
+			std::unique_ptr<Image> pImage = nullptr;
 			TextureType mType = TextureType::Undefined;
 		};
 
@@ -292,7 +292,7 @@ namespace Flint
 			 * @param sampleCount The multi sample count. Default is One.
 			 * @return The image pointer.
 			 */
-			std::shared_ptr<Image> CreateImage(Device* pDevice, const ImageType type, const ImageUsage usage, const uint32_t layers, const uint32_t mipLevels, const MultiSampleCount sampleCount = MultiSampleCount::One);
+			std::unique_ptr<Image> CreateImage(Device* pDevice, const ImageType type, const ImageUsage usage, const uint32_t layers, const uint32_t mipLevels, const MultiSampleCount sampleCount = MultiSampleCount::One);
 
 			/**
 			 * Clear texture data.

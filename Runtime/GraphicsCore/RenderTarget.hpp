@@ -58,7 +58,7 @@ namespace Flint
 		 * @param index The index of the attachment.
 		 * @return The attachment.
 		 */
-		const RenderTargetAttachment GetAttachment(const uint64_t index) const { return mAttachments[index]; }
+		const RenderTargetAttachment& GetAttachment(const uint64_t index) const { return mAttachments[index]; }
 
 		/**
 		 * Get the current frame index.

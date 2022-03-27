@@ -28,9 +28,9 @@ namespace Flint
 		 * 
 		 * @return The image pointer.
 		 */
-		std::shared_ptr<Image> GetImage() const { return pCubeMap; }
+		Image* GetImage() const { return pCubeMap.get(); }
 
 	private:
-		std::shared_ptr<Image> pCubeMap = nullptr;
+		std::unique_ptr<Image> pCubeMap = nullptr;
 	};
 }

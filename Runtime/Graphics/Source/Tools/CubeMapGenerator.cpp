@@ -19,6 +19,7 @@ namespace Flint
 
 		ImageLoader loader(assetFile);
 		auto pTexture = pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Graphics, loader.GetExtent(), loader.GetPixelFormat(), 1, 1, loader.GetPixelData());
+		auto pTextureView = pTexture->CreateImageView(0, pTexture->GetLayerCount(), 0, pTexture->GetMipLevels(), ImageUsage::Graphics);
 
 		uint32_t length = loader.GetExtent().mWidth / 4;
 		FBox3D extent = FBox3D(length, length, 1);
@@ -27,6 +28,7 @@ namespace Flint
 			mips = Image::GetBestMipLevels(extent);
 
 		pCubeMap = pDevice->CreateImage(ImageType::CubeMap, ImageUsage::Graphics | ImageUsage::Storage, extent, PixelFormat::R16G16B16A16_SFLOAT, 6, mips, nullptr);
+		auto pCubeMapView = pCubeMap->CreateImageView(0, pCubeMap->GetLayerCount(), 0, pCubeMap->GetMipLevels(), ImageUsage::Graphics);
 
 		std::unique_ptr<Shader> pShader = nullptr;
 		if (!std::filesystem::exists(NormalizePath("Flint\\Shaders\\CubeMapGen.fsc")))
@@ -42,12 +44,14 @@ namespace Flint
 		auto pPackage = pPipeline->CreateResourcePackage(0);
 
 		Flint::ImageSamplerSpecification specification = {};
-		pPackage->BindResource(0, pTexture, pTexture->CreateImageView(0, pTexture->GetLayerCount(), 0, pTexture->GetMipLevels(), ImageUsage::Graphics), pDevice->CreateImageSampler(specification));
+		auto pSampler = pDevice->CreateImageSampler(specification);
+
+		pPackage->BindResource(0, pTexture.get(), pTextureView.get(), pSampler.get());
 
 		specification.mAddressModeU = AddressMode::ClampToEdge;
 		specification.mAddressModeV = AddressMode::ClampToEdge;
 		specification.mAddressModeW = AddressMode::ClampToEdge;
-		pPackage->BindResource(1, pCubeMap, pCubeMap->CreateImageView(0, pCubeMap->GetLayerCount(), 0, pCubeMap->GetMipLevels(), ImageUsage::Graphics), pDevice->CreateImageSampler(specification), ImageUsage::Storage);
+		pPackage->BindResource(1, pCubeMap.get(), pCubeMapView.get(), pSampler.get(), ImageUsage::Storage);
 
 		auto pAllocator = pDevice->CreateCommandBufferAllocator(1);
 		auto pCommandBuffers = pAllocator->CreateCommandBuffers();

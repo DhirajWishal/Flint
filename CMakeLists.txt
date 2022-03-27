@@ -137,7 +137,13 @@ add_subdirectory(Runtime/GraphicsCore)
 add_subdirectory(Runtime/VulkanBackend)
 add_subdirectory(Sandbox)
 
-# Set the startup project for Visual Studio
+# Set the startup project for Visual Studio and set multi processor compilation for other projects that we build.
 if (MSVC) 
 	set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT Sandbox)
+	target_compile_options(assimp PRIVATE "/MP")	
+	target_compile_options(glfw PRIVATE "/MP")	
+	target_compile_options(ImGui PRIVATE "/MP")	
+	target_compile_options(optick PRIVATE "/MP")	
+	target_compile_options(SPIRV_Reflect PRIVATE "/MP")	
+	target_compile_options(volk PRIVATE "/MP")	
 endif ()
