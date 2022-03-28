@@ -65,9 +65,9 @@ namespace Flint
 	}
 
 	ShaderCompiler::ShaderCompiler(const std::filesystem::path& shaderFile, const ShaderCodeType codeType, const ShaderType shaderType, std::filesystem::path compilerTool)
-		: mCodeType(codeType), mType(shaderType)
+		: m_CodeType(codeType), m_Type(shaderType)
 	{
-		static std::default_random_engine RandomEngine = {};
+		static std::default_randomengine RandomEngine = {};
 
 		const std::string stage = Helpers::GetShaderStageString(shaderType);
 		const std::string outputFileName = std::to_string(RandomEngine());
@@ -87,8 +87,8 @@ namespace Flint
 		file.seekg(0);
 
 		// Get the shader code.
-		mShaderCode.resize(size);
-		file.read(reinterpret_cast<char*>(mShaderCode.data()), size);
+		m_ShaderCode.resize(size);
+		file.read(reinterpret_cast<char*>(m_ShaderCode.data()), size);
 		file.close();
 
 		// Remove the temporary file.
@@ -96,9 +96,9 @@ namespace Flint
 	}
 
 	ShaderCompiler::ShaderCompiler(const std::string& shaderCode, const ShaderCodeType codeType, const ShaderType shaderType, std::filesystem::path compilerTool)
-		: mCodeType(codeType), mType(shaderType)
+		: m_CodeType(codeType), m_Type(shaderType)
 	{
-		static std::default_random_engine RandomEngine = {};
+		static std::default_randomengine RandomEngine = {};
 
 		const std::string outputFileName = std::to_string(RandomEngine());
 		const std::string stage = Helpers::GetShaderStageString(shaderType);
@@ -123,8 +123,8 @@ namespace Flint
 		file.seekg(0);
 
 		// Get the shader code.
-		mShaderCode.resize(size);
-		file.read(reinterpret_cast<char*>(mShaderCode.data()), size);
+		m_ShaderCode.resize(size);
+		file.read(reinterpret_cast<char*>(m_ShaderCode.data()), size);
 		file.close();
 
 		// Remove the temporary file.
@@ -133,6 +133,6 @@ namespace Flint
 
 	std::unique_ptr<Shader> ShaderCompiler::CreateShader(Device* pDevice) const
 	{
-		return pDevice->CreateShader(mType, GetShaderCode());
+		return pDevice->CreateShader(m_Type, GetShaderCode());
 	}
 }

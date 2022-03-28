@@ -71,15 +71,15 @@ namespace Flint
 		SwapChainSupportDetails SwapChainSupportDetails::Query(VkPhysicalDevice vPhysicalDevice, VkSurfaceKHR vSurface)
 		{
 			SwapChainSupportDetails supportDetails = {};
-			vkGetPhysicalDeviceSurfaceCapabilitiesKHR(vPhysicalDevice, vSurface, &supportDetails.mCapabilities);
+			vkGetPhysicalDeviceSurfaceCapabilitiesKHR(vPhysicalDevice, vSurface, &supportDetails.m_Capabilities);
 
 			uint32_t formatCount = 0;
 			vkGetPhysicalDeviceSurfaceFormatsKHR(vPhysicalDevice, vSurface, &formatCount, nullptr);
 
 			if (formatCount != 0)
 			{
-				supportDetails.mFormats.resize(formatCount);
-				vkGetPhysicalDeviceSurfaceFormatsKHR(vPhysicalDevice, vSurface, &formatCount, supportDetails.mFormats.data());
+				supportDetails.m_Formats.resize(formatCount);
+				vkGetPhysicalDeviceSurfaceFormatsKHR(vPhysicalDevice, vSurface, &formatCount, supportDetails.m_Formats.data());
 			}
 
 			uint32_t presentModeCount = 0;
@@ -87,8 +87,8 @@ namespace Flint
 
 			if (presentModeCount != 0)
 			{
-				supportDetails.mPresentModes.resize(presentModeCount);
-				vkGetPhysicalDeviceSurfacePresentModesKHR(vPhysicalDevice, vSurface, &presentModeCount, supportDetails.mPresentModes.data());
+				supportDetails.m_PresentModes.resize(presentModeCount);
+				vkGetPhysicalDeviceSurfacePresentModesKHR(vPhysicalDevice, vSurface, &presentModeCount, supportDetails.m_PresentModes.data());
 			}
 
 			return supportDetails;
@@ -103,7 +103,7 @@ namespace Flint
 
 			if (!extent.IsZero())
 			{
-				if (extent.mWidth > static_cast<uint32_t>(pMode->width) || extent.mHeight > static_cast<uint32_t>(pMode->height))
+				if (extent.m_Width > static_cast<uint32_t>(pMode->width) || extent.m_Height > static_cast<uint32_t>(pMode->height))
 				{
 					pWindow = glfwCreateWindow(1280, 720, title.c_str(), nullptr, nullptr);
 					glfwMaximizeWindow(pWindow);
@@ -111,11 +111,11 @@ namespace Flint
 					int32_t width = 0, height = 0;
 					glfwGetWindowSize(pWindow, &width, &height);
 
-					mExtent.mWidth = width;
-					mExtent.mHeight = height;
+					m_Extent.m_Width = width;
+					m_Extent.m_Height = height;
 				}
 				else
-					pWindow = glfwCreateWindow(extent.mWidth, extent.mHeight, title.c_str(), nullptr, nullptr);
+					pWindow = glfwCreateWindow(extent.m_Width, extent.m_Height, title.c_str(), nullptr, nullptr);
 			}
 			else
 			{
@@ -125,8 +125,8 @@ namespace Flint
 				glfwWindowHint(GLFW_REFRESH_RATE, pMode->refreshRate);
 
 				pWindow = glfwCreateWindow(pMode->width, pMode->height, title.c_str(), pMonitor, NULL);
-				mExtent.mWidth = pMode->width;
-				mExtent.mHeight = pMode->height;
+				m_Extent.m_Width = pMode->width;
+				m_Extent.m_Height = pMode->height;
 			}
 
 			if (!pWindow)
@@ -183,7 +183,7 @@ namespace Flint
 		PixelFormat VulkanDisplay::GetBestSwapChainFormat(VulkanDevice* pDevice)
 		{
 			SwapChainSupportDetails vSupport = SwapChainSupportDetails::Query(pDevice->GetPhysicalDevice(), GetSurface());
-			VkSurfaceFormatKHR surfaceFormat = ChooseSurfaceFormat(vSupport.mFormats);
+			VkSurfaceFormatKHR surfaceFormat = ChooseSurfaceFormat(vSupport.m_Formats);
 
 			return Utilities::GetPixelFormat(surfaceFormat.format);
 		}
@@ -191,7 +191,7 @@ namespace Flint
 		void VulkanDisplay::SetTitle(const std::string& title)
 		{
 			glfwSetWindowTitle(pWindow, title.c_str());
-			mTitle = title;
+			m_Title = title;
 		}
 
 		void VulkanDisplay::SetExtent(FBox2D newExtent)
@@ -199,8 +199,8 @@ namespace Flint
 			if (newExtent.IsZero())
 				throw std::runtime_error("Window extent should be grater than 0!");
 
-			glfwSetWindowSize(pWindow, static_cast<int>(newExtent.mWidth), static_cast<int>(newExtent.mHeight));
-			mExtent = newExtent;
+			glfwSetWindowSize(pWindow, static_cast<int>(newExtent.m_Width), static_cast<int>(newExtent.m_Height));
+			m_Extent = newExtent;
 		}
 
 		VkSurfaceFormatKHR VulkanDisplay::ChooseSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
@@ -271,187 +271,187 @@ namespace Flint
 
 		void VulkanDisplay::ActivateKey(uint32_t scanCode, uint32_t action, SpecialCharacter character)
 		{
-			mKeyEvents[static_cast<uint8_t>(mKeyMap[scanCode])].Activate(mActionMap[action], character);
+			m_KeyEvents[static_cast<uint8_t>(m_KeyMap[scanCode])].Activate(m_ActionMap[action], character);
 		}
 
 		void VulkanDisplay::ActivateMouseButton(uint32_t scanCode, uint32_t action, SpecialCharacter character)
 		{
-			mMouseButtonEvents[static_cast<uint8_t>(mButtonMap[scanCode])].Activate(mActionMap[action], character);
+			m_MouseButtonEvents[static_cast<uint8_t>(m_ButtonMap[scanCode])].Activate(m_ActionMap[action], character);
 		}
 
 		void VulkanDisplay::SetMousePosition(float x, float y)
 		{
-			mMousePositionX = x;
-			mMousePositionY = y;
+			m_MousePositionX = x;
+			m_MousePositionY = y;
 		}
 
 		void VulkanDisplay::SetMouseScroll(float x, float y)
 		{
-			mMouseScrollUp = x;
-			mMouseScrollDown = y;
+			m_MouseScrollUp = x;
+			m_MouseScrollDown = y;
 		}
 
 		void VulkanDisplay::SetCursorWithinDisplay(bool value)
 		{
-			mIsCursorWithinDisplay = value;
+			m_IsCursorWithinDisplay = value;
 		}
 
 		void VulkanDisplay::SetDragAndDropPaths(std::vector<std::filesystem::path>&& paths)
 		{
-			mDragAndDropPaths = std::move(paths);
+			m_DragAndDropPaths = std::move(paths);
 		}
 
 		void VulkanDisplay::SetupMaps()
 		{
 			OPTICK_EVENT();
 
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_SPACE)] = KeyCode::Space;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_APOSTROPHE)] = KeyCode::Apostrophe;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_COMMA)] = KeyCode::Comma;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_MINUS)] = KeyCode::Minus;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_PERIOD)] = KeyCode::Preiod;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_SLASH)] = KeyCode::Slash;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_SPACE)] = KeyCode::Space;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_APOSTROPHE)] = KeyCode::Apostrophe;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_COMMA)] = KeyCode::Comma;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_MINUS)] = KeyCode::Minus;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_PERIOD)] = KeyCode::Preiod;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_SLASH)] = KeyCode::Slash;
 
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_0)] = KeyCode::KeyZero;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_1)] = KeyCode::KeyOne;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_2)] = KeyCode::KeyTwo;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_3)] = KeyCode::KeyThree;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_4)] = KeyCode::KeyFour;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_5)] = KeyCode::KeyFive;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_6)] = KeyCode::KeySix;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_7)] = KeyCode::KeySeven;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_8)] = KeyCode::KeyEight;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_9)] = KeyCode::KeyNine;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_0)] = KeyCode::KeyZero;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_1)] = KeyCode::KeyOne;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_2)] = KeyCode::KeyTwo;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_3)] = KeyCode::KeyThree;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_4)] = KeyCode::KeyFour;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_5)] = KeyCode::KeyFive;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_6)] = KeyCode::KeySix;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_7)] = KeyCode::KeySeven;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_8)] = KeyCode::KeyEight;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_9)] = KeyCode::KeyNine;
 
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_SEMICOLON)] = KeyCode::Semicolon;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_EQUAL)] = KeyCode::Equal;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_SEMICOLON)] = KeyCode::Semicolon;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_EQUAL)] = KeyCode::Equal;
 
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_A)] = KeyCode::KeyA;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_B)] = KeyCode::KeyB;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_C)] = KeyCode::KeyC;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_D)] = KeyCode::KeyD;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_E)] = KeyCode::KeyE;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_F)] = KeyCode::KeyF;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_G)] = KeyCode::KeyG;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_H)] = KeyCode::KeyH;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_I)] = KeyCode::KeyI;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_J)] = KeyCode::KeyJ;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_K)] = KeyCode::KeyK;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_L)] = KeyCode::KeyL;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_M)] = KeyCode::KeyM;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_N)] = KeyCode::KeyN;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_O)] = KeyCode::KeyO;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_P)] = KeyCode::KeyP;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_Q)] = KeyCode::KeyQ;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_R)] = KeyCode::KeyR;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_S)] = KeyCode::KeyS;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_T)] = KeyCode::KeyT;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_U)] = KeyCode::KeyU;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_V)] = KeyCode::KeyV;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_W)] = KeyCode::KeyW;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_X)] = KeyCode::KeyX;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_Y)] = KeyCode::KeyY;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_Z)] = KeyCode::KeyZ;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_A)] = KeyCode::KeyA;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_B)] = KeyCode::KeyB;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_C)] = KeyCode::KeyC;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_D)] = KeyCode::KeyD;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_E)] = KeyCode::KeyE;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_F)] = KeyCode::KeyF;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_G)] = KeyCode::KeyG;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_H)] = KeyCode::KeyH;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_I)] = KeyCode::KeyI;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_J)] = KeyCode::KeyJ;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_K)] = KeyCode::KeyK;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_L)] = KeyCode::KeyL;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_M)] = KeyCode::KeyM;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_N)] = KeyCode::KeyN;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_O)] = KeyCode::KeyO;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_P)] = KeyCode::KeyP;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_Q)] = KeyCode::KeyQ;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_R)] = KeyCode::KeyR;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_S)] = KeyCode::KeyS;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_T)] = KeyCode::KeyT;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_U)] = KeyCode::KeyU;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_V)] = KeyCode::KeyV;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_W)] = KeyCode::KeyW;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_X)] = KeyCode::KeyX;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_Y)] = KeyCode::KeyY;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_Z)] = KeyCode::KeyZ;
 
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_LEFT_BRACKET)] = KeyCode::LeftBracket;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_BACKSLASH)] = KeyCode::Backslash;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_RIGHT_BRACKET)] = KeyCode::RightBracket;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_GRAVE_ACCENT)] = KeyCode::GraveAccent;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_WORLD_1)] = KeyCode::WordOne;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_WORLD_2)] = KeyCode::WordTwo;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_LEFT_BRACKET)] = KeyCode::LeftBracket;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_BACKSLASH)] = KeyCode::Backslash;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_RIGHT_BRACKET)] = KeyCode::RightBracket;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_GRAVE_ACCENT)] = KeyCode::GraveAccent;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_WORLD_1)] = KeyCode::WordOne;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_WORLD_2)] = KeyCode::WordTwo;
 
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_ESCAPE)] = KeyCode::Escape;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_ENTER)] = KeyCode::Enter;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_TAB)] = KeyCode::Tab;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_BACKSPACE)] = KeyCode::Backspace;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_INSERT)] = KeyCode::Insert;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_DELETE)] = KeyCode::Delete;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_RIGHT)] = KeyCode::Right;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_LEFT)] = KeyCode::Left;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_DOWN)] = KeyCode::Down;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_UP)] = KeyCode::Up;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_PAGE_UP)] = KeyCode::PageUp;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_PAGE_DOWN)] = KeyCode::PageDowm;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_HOME)] = KeyCode::Home;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_CAPS_LOCK)] = KeyCode::CapsLock;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_SCROLL_LOCK)] = KeyCode::ScrollLock;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_NUM_LOCK)] = KeyCode::NumLock;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_PRINT_SCREEN)] = KeyCode::PrintScreen;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_PAUSE)] = KeyCode::Pause;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_ESCAPE)] = KeyCode::Escape;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_ENTER)] = KeyCode::Enter;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_TAB)] = KeyCode::Tab;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_BACKSPACE)] = KeyCode::Backspace;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_INSERT)] = KeyCode::Insert;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_DELETE)] = KeyCode::Delete;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_RIGHT)] = KeyCode::Right;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_LEFT)] = KeyCode::Left;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_DOWN)] = KeyCode::Down;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_UP)] = KeyCode::Up;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_PAGE_UP)] = KeyCode::PageUp;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_PAGE_DOWN)] = KeyCode::PageDowm;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_HOME)] = KeyCode::Home;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_CAPS_LOCK)] = KeyCode::CapsLock;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_SCROLL_LOCK)] = KeyCode::ScrollLock;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_NUM_LOCK)] = KeyCode::NumLock;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_PRINT_SCREEN)] = KeyCode::PrintScreen;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_PAUSE)] = KeyCode::Pause;
 
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_F1)] = KeyCode::F1;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_F2)] = KeyCode::F2;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_F3)] = KeyCode::F3;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_F4)] = KeyCode::F4;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_F5)] = KeyCode::F5;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_F6)] = KeyCode::F6;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_F7)] = KeyCode::F7;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_F8)] = KeyCode::F8;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_F9)] = KeyCode::F9;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_F10)] = KeyCode::F10;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_F11)] = KeyCode::F11;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_F12)] = KeyCode::F12;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_F13)] = KeyCode::F13;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_F14)] = KeyCode::F14;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_F15)] = KeyCode::F15;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_F16)] = KeyCode::F16;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_F17)] = KeyCode::F17;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_F18)] = KeyCode::F18;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_F19)] = KeyCode::F19;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_F20)] = KeyCode::F20;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_F21)] = KeyCode::F21;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_F22)] = KeyCode::F22;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_F23)] = KeyCode::F23;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_F24)] = KeyCode::F24;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_F25)] = KeyCode::F25;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_F1)] = KeyCode::F1;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_F2)] = KeyCode::F2;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_F3)] = KeyCode::F3;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_F4)] = KeyCode::F4;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_F5)] = KeyCode::F5;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_F6)] = KeyCode::F6;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_F7)] = KeyCode::F7;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_F8)] = KeyCode::F8;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_F9)] = KeyCode::F9;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_F10)] = KeyCode::F10;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_F11)] = KeyCode::F11;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_F12)] = KeyCode::F12;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_F13)] = KeyCode::F13;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_F14)] = KeyCode::F14;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_F15)] = KeyCode::F15;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_F16)] = KeyCode::F16;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_F17)] = KeyCode::F17;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_F18)] = KeyCode::F18;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_F19)] = KeyCode::F19;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_F20)] = KeyCode::F20;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_F21)] = KeyCode::F21;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_F22)] = KeyCode::F22;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_F23)] = KeyCode::F23;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_F24)] = KeyCode::F24;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_F25)] = KeyCode::F25;
 
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_KP_0)] = KeyCode::KeyPadZero;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_KP_1)] = KeyCode::KeyPadOne;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_KP_2)] = KeyCode::KeyPadTwo;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_KP_3)] = KeyCode::KeyPadThree;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_KP_4)] = KeyCode::KeyPadFour;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_KP_5)] = KeyCode::KeyPadFive;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_KP_6)] = KeyCode::KeyPadSix;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_KP_7)] = KeyCode::KeyPadSeven;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_KP_8)] = KeyCode::KeyPadEight;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_KP_9)] = KeyCode::KeyPadNine;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_KP_0)] = KeyCode::KeyPadZero;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_KP_1)] = KeyCode::KeyPadOne;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_KP_2)] = KeyCode::KeyPadTwo;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_KP_3)] = KeyCode::KeyPadThree;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_KP_4)] = KeyCode::KeyPadFour;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_KP_5)] = KeyCode::KeyPadFive;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_KP_6)] = KeyCode::KeyPadSix;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_KP_7)] = KeyCode::KeyPadSeven;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_KP_8)] = KeyCode::KeyPadEight;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_KP_9)] = KeyCode::KeyPadNine;
 
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_KP_DECIMAL)] = KeyCode::KeyPadDecimal;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_KP_DIVIDE)] = KeyCode::KeyPadDivide;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_KP_MULTIPLY)] = KeyCode::KeyPadMultiply;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_KP_SUBTRACT)] = KeyCode::KeyPadSubtract;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_KP_ADD)] = KeyCode::KeyPadAdd;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_KP_ENTER)] = KeyCode::KeyPadEnter;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_KP_EQUAL)] = KeyCode::KeyPadEqual;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_LEFT_SHIFT)] = KeyCode::LeftShift;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_LEFT_CONTROL)] = KeyCode::LeftControl;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_LEFT_ALT)] = KeyCode::LeftAlt;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_LEFT_SUPER)] = KeyCode::LeftSuper;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_RIGHT_SHIFT)] = KeyCode::RightShift;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_RIGHT_CONTROL)] = KeyCode::RightControl;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_RIGHT_ALT)] = KeyCode::RightAlt;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_RIGHT_SUPER)] = KeyCode::RightSuper;
-			mKeyMap[glfwGetKeyScancode(GLFW_KEY_MENU)] = KeyCode::Menu;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_KP_DECIMAL)] = KeyCode::KeyPadDecimal;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_KP_DIVIDE)] = KeyCode::KeyPadDivide;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_KP_MULTIPLY)] = KeyCode::KeyPadMultiply;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_KP_SUBTRACT)] = KeyCode::KeyPadSubtract;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_KP_ADD)] = KeyCode::KeyPadAdd;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_KP_ENTER)] = KeyCode::KeyPadEnter;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_KP_EQUAL)] = KeyCode::KeyPadEqual;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_LEFT_SHIFT)] = KeyCode::LeftShift;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_LEFT_CONTROL)] = KeyCode::LeftControl;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_LEFT_ALT)] = KeyCode::LeftAlt;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_LEFT_SUPER)] = KeyCode::LeftSuper;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_RIGHT_SHIFT)] = KeyCode::RightShift;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_RIGHT_CONTROL)] = KeyCode::RightControl;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_RIGHT_ALT)] = KeyCode::RightAlt;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_RIGHT_SUPER)] = KeyCode::RightSuper;
+			m_KeyMap[glfwGetKeyScancode(GLFW_KEY_MENU)] = KeyCode::Menu;
 
-			mButtonMap.resize(12);
-			mButtonMap[GLFW_MOUSE_BUTTON_1] = MouseButton::ButtonOne;
-			mButtonMap[GLFW_MOUSE_BUTTON_2] = MouseButton::ButtonTwo;
-			mButtonMap[GLFW_MOUSE_BUTTON_3] = MouseButton::ButtonThree;
-			mButtonMap[GLFW_MOUSE_BUTTON_4] = MouseButton::ButtonFour;
-			mButtonMap[GLFW_MOUSE_BUTTON_5] = MouseButton::ButtonFive;
-			mButtonMap[GLFW_MOUSE_BUTTON_6] = MouseButton::ButtonSix;
-			mButtonMap[GLFW_MOUSE_BUTTON_7] = MouseButton::ButtonSeven;
-			mButtonMap[GLFW_MOUSE_BUTTON_8] = MouseButton::ButtonEight;
+			m_ButtonMap.resize(12);
+			m_ButtonMap[GLFW_MOUSE_BUTTON_1] = MouseButton::ButtonOne;
+			m_ButtonMap[GLFW_MOUSE_BUTTON_2] = MouseButton::ButtonTwo;
+			m_ButtonMap[GLFW_MOUSE_BUTTON_3] = MouseButton::ButtonThree;
+			m_ButtonMap[GLFW_MOUSE_BUTTON_4] = MouseButton::ButtonFour;
+			m_ButtonMap[GLFW_MOUSE_BUTTON_5] = MouseButton::ButtonFive;
+			m_ButtonMap[GLFW_MOUSE_BUTTON_6] = MouseButton::ButtonSix;
+			m_ButtonMap[GLFW_MOUSE_BUTTON_7] = MouseButton::ButtonSeven;
+			m_ButtonMap[GLFW_MOUSE_BUTTON_8] = MouseButton::ButtonEight;
 
-			mButtonMap[GLFW_MOUSE_BUTTON_LAST] = MouseButton::Last;
-			mButtonMap[GLFW_MOUSE_BUTTON_LEFT] = MouseButton::Left;
-			mButtonMap[GLFW_MOUSE_BUTTON_RIGHT] = MouseButton::Right;
-			mButtonMap[GLFW_MOUSE_BUTTON_MIDDLE] = MouseButton::Middle;
+			m_ButtonMap[GLFW_MOUSE_BUTTON_LAST] = MouseButton::Last;
+			m_ButtonMap[GLFW_MOUSE_BUTTON_LEFT] = MouseButton::Left;
+			m_ButtonMap[GLFW_MOUSE_BUTTON_RIGHT] = MouseButton::Right;
+			m_ButtonMap[GLFW_MOUSE_BUTTON_MIDDLE] = MouseButton::Middle;
 
-			mActionMap.resize(3);
-			mActionMap[GLFW_RELEASE] = EventAction::Released;
-			mActionMap[GLFW_PRESS] = EventAction::Pressed;
-			mActionMap[GLFW_REPEAT] = EventAction::OnRepeat;
+			m_ActionMap.resize(3);
+			m_ActionMap[GLFW_RELEASE] = EventAction::Released;
+			m_ActionMap[GLFW_PRESS] = EventAction::Pressed;
+			m_ActionMap[GLFW_REPEAT] = EventAction::OnRepeat;
 		}
 	}
 }

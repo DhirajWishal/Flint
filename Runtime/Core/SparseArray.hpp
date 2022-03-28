@@ -26,8 +26,8 @@ namespace Flint
 		 */
 		const uint32_t push_back(const Type& data)
 		{
-			mEntries.emplace_back(data);
-			return mCurrentIndex++;
+			m_Entries.emplace_back(data);
+			return m_CurrentIndex++;
 		}
 
 		/**
@@ -38,8 +38,8 @@ namespace Flint
 		 */
 		const uint32_t push_back(Type&& data)
 		{
-			mEntries.emplace_back(std::move(data));
-			return mCurrentIndex++;
+			m_Entries.emplace_back(std::move(data));
+			return m_CurrentIndex++;
 		}
 
 		/**
@@ -48,7 +48,7 @@ namespace Flint
 		 * @param index The index position of the data to access.
 		 * @return The type reference.
 		 */
-		Type& at(const uint32_t index) { return mEntries[index]; }
+		Type& at(const uint32_t index) { return m_Entries[index]; }
 
 		/**
 		 * Get data from a given index.
@@ -56,7 +56,7 @@ namespace Flint
 		 * @param index The index position of the data to access.
 		 * @return The const type.
 		 */
-		const Type at(const uint32_t index) const { return mEntries[index]; }
+		const Type at(const uint32_t index) const { return m_Entries[index]; }
 
 		/**
 		 * Remove an element form the array.
@@ -71,49 +71,49 @@ namespace Flint
 		 *
 		 * @return The size of the array.
 		 */
-		const uint64_t size() const { return mEntries.size(); }
+		const uint64_t size() const { return m_Entries.size(); }
 
 		/**
 		 * Get the capacity of the array.
 		 *
 		 * @return The capacity of the array.
 		 */
-		const uint64_t capacity() const { return mEntries.capacity(); }
+		const uint64_t capacity() const { return m_Entries.capacity(); }
 
 		/**
 		 * Check if the array is empty.
 		 *
 		 * @return The boolean value.
 		 */
-		const bool empty() const { return mEntries.empty(); }
+		const bool empty() const { return m_Entries.empty(); }
 
 		/**
 		 * Get the begin iterator.
 		 *
 		 * @return The vector iterator.
 		 */
-		typename std::vector<Type>::iterator begin() { return mEntries.begin(); }
+		typename std::vector<Type>::iterator begin() { return m_Entries.begin(); }
 
 		/**
 		 * Get the end iterator.
 		 *
 		 * @return The vector iterator.
 		 */
-		typename std::vector<Type>::iterator end() { return mEntries.end(); }
+		typename std::vector<Type>::iterator end() { return m_Entries.end(); }
 
 		/**
 		 * Get the begin iterator.
 		 *
 		 * @return The vector iterator.
 		 */
-		typename std::vector<Type>::const_iterator begin() const { return mEntries.begin(); }
+		typename std::vector<Type>::const_iterator begin() const { return m_Entries.begin(); }
 
 		/**
 		 * Get the end iterator.
 		 *
 		 * @return The vector iterator.
 		 */
-		typename std::vector<Type>::const_iterator end() const { return mEntries.end(); }
+		typename std::vector<Type>::const_iterator end() const { return m_Entries.end(); }
 
 	public:
 		/**
@@ -139,7 +139,7 @@ namespace Flint
 		}
 
 	private:
-		std::vector<Type> mEntries;
-		uint32_t mCurrentIndex = 0;
+		std::vector<Type> m_Entries;
+		uint32_t m_CurrentIndex = 0;
 	};
 }

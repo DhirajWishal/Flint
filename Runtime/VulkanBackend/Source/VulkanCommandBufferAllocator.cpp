@@ -17,7 +17,7 @@ namespace Flint
 			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 			vCreateInfo.pNext = VK_NULL_HANDLE;
 			vCreateInfo.flags = VkCommandPoolCreateFlagBits::VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-			vCreateInfo.queueFamilyIndex = pDevice->GetQueue().mTransferFamily.value();
+			vCreateInfo.queueFamilyIndex = pDevice->GetQueue().m_TransferFamily.value();
 
 			FLINT_VK_ASSERT(pDevice->GetDeviceTable().vkCreateCommandPool(pDevice->GetLogicalDevice(), &vCreateInfo, nullptr, &vCommandPool));
 		}
@@ -31,7 +31,7 @@ namespace Flint
 			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 			vCreateInfo.pNext = VK_NULL_HANDLE;
 			vCreateInfo.flags = VkCommandPoolCreateFlagBits::VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-			vCreateInfo.queueFamilyIndex = pDevice->GetQueue().mTransferFamily.value();
+			vCreateInfo.queueFamilyIndex = pDevice->GetQueue().m_TransferFamily.value();
 
 			FLINT_VK_ASSERT(pDevice->GetDeviceTable().vkCreateCommandPool(pDevice->GetLogicalDevice(), &vCreateInfo, nullptr, &vCommandPool));
 		}
@@ -45,15 +45,15 @@ namespace Flint
 			vAllocateInfo.pNext = VK_NULL_HANDLE;
 			vAllocateInfo.level = VkCommandBufferLevel::VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 			vAllocateInfo.commandPool = vCommandPool;
-			vAllocateInfo.commandBufferCount = mBufferCount;
+			vAllocateInfo.commandBufferCount = m_BufferCount;
 
 			if (pParentAllocator)
 				vAllocateInfo.level = VkCommandBufferLevel::VK_COMMAND_BUFFER_LEVEL_SECONDARY;
 
-			std::vector<VkCommandBuffer> vCommandBuffers(mBufferCount);
+			std::vector<VkCommandBuffer> vCommandBuffers(m_BufferCount);
 			FLINT_VK_ASSERT(pDevice->GetDeviceTable().vkAllocateCommandBuffers(pDevice->GetLogicalDevice(), &vAllocateInfo, vCommandBuffers.data()));
 
-			pCommandBuffers.reserve(mBufferCount);
+			pCommandBuffers.reserve(m_BufferCount);
 			for (const auto vCommandBuffer : vCommandBuffers)
 				pCommandBuffers.emplace_back(std::make_shared<VulkanCommandBuffer>(this, vCommandBuffer));
 
@@ -62,19 +62,19 @@ namespace Flint
 
 		std::unique_ptr<VulkanCommandBufferAllocator> VulkanCommandBufferAllocator::CreateChildAllocator()
 		{
-			return std::make_unique<VulkanCommandBufferAllocator>(pDevice, this, mBufferCount);
+			return std::make_unique<VulkanCommandBufferAllocator>(pDevice, this, m_BufferCount);
 		}
 
 		void VulkanCommandBufferAllocator::Terminate()
 		{
-			std::vector<VkCommandBuffer> vCommandBuffers(mBufferCount);
-			for (uint32_t i = 0; i < mBufferCount; i++)
+			std::vector<VkCommandBuffer> vCommandBuffers(m_BufferCount);
+			for (uint32_t i = 0; i < m_BufferCount; i++)
 			{
 				vCommandBuffers[i] = pCommandBuffers[i]->GetVulkanCommandBuffer();
 				FlagCommandBufferAsTerminated(i);
 			}
 
-			pDevice->GetDeviceTable().vkFreeCommandBuffers(pDevice->GetLogicalDevice(), vCommandPool, mBufferCount, vCommandBuffers.data());
+			pDevice->GetDeviceTable().vkFreeCommandBuffers(pDevice->GetLogicalDevice(), vCommandPool, m_BufferCount, vCommandBuffers.data());
 			pDevice->GetDeviceTable().vkDestroyCommandPool(pDevice->GetLogicalDevice(), vCommandPool, nullptr);
 		}
 	}

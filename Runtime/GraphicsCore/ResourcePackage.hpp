@@ -16,12 +16,12 @@ namespace Flint
 	struct BufferBinding
 	{
 		BufferBinding() = default;
-		BufferBinding(const BufferT* pBuffer, const uint64_t offset) : pBuffer(pBuffer), mOffset(offset) {}
+		BufferBinding(const BufferT* pBuffer, const uint64_t offset) : pBuffer(pBuffer), m_Offset(offset) {}
 
 		const BufferT* pBuffer = nullptr;
-		uint64_t mOffset = 0;
+		uint64_t m_Offset = 0;
 
-		const bool operator==(const BufferBinding& other) const { return pBuffer == other.pBuffer && mOffset == other.mOffset; }
+		const bool operator==(const BufferBinding& other) const { return pBuffer == other.pBuffer && m_Offset == other.m_Offset; }
 	};
 
 	/**
@@ -31,17 +31,17 @@ namespace Flint
 	struct ImageBinding
 	{
 		ImageBinding() = default;
-		ImageBinding(const ImageSamplerT* pImageSampler, const ImageViewT* pImageView, const ImageUsage usage) : pImageSampler(pImageSampler), pImageView(pImageView), mUsage(usage) {}
-		ImageBinding(const ImageT* pImage, const ImageViewT* pImageView, const ImageSamplerT* pImageSampler, const ImageUsage usage) : pImage(pImage), pImageView(pImageView), pImageSampler(pImageSampler), mUsage(usage) {}
+		ImageBinding(const ImageSamplerT* pImageSampler, const ImageViewT* pImageView, const ImageUsage usage) : pImageSampler(pImageSampler), pImageView(pImageView), m_Usage(usage) {}
+		ImageBinding(const ImageT* pImage, const ImageViewT* pImageView, const ImageSamplerT* pImageSampler, const ImageUsage usage) : pImage(pImage), pImageView(pImageView), pImageSampler(pImageSampler), m_Usage(usage) {}
 
 		const Image* pImage = nullptr;
 		const ImageViewT* pImageView = nullptr;
 		const ImageSamplerT* pImageSampler = nullptr;
 
-		uint64_t mViewIndex = 0;
-		ImageUsage mUsage = ImageUsage::Graphics;
+		uint64_t m_ViewIndex = 0;
+		ImageUsage m_Usage = ImageUsage::Graphics;
 
-		const bool operator==(const ImageBinding& other) const { return pImage == other.pImage && pImageView == other.pImageView && pImageSampler == other.pImageSampler && mViewIndex == other.mViewIndex; }
+		const bool operator==(const ImageBinding& other) const { return pImage == other.pImage && pImageView == other.pImageView && pImageSampler == other.pImageSampler && m_ViewIndex == other.m_ViewIndex; }
 	};
 
 	/**
@@ -68,10 +68,10 @@ namespace Flint
 			: pPackager(pPackager)
 		{
 			for (const uint32_t binding : bufferBindings)
-				mBufferBindings[binding] = {};
+				m_BufferBindings[binding] = {};
 
 			for (const uint32_t binding : imageBindings)
-				mImageBindings[binding] = {};
+				m_ImageBindings[binding] = {};
 		}
 
 		/**
@@ -88,10 +88,10 @@ namespace Flint
 		 */
 		void BindResource(const uint32_t binding, const BufferT* pBuffer, const uint64_t offset = 0)
 		{
-			if (mBufferBindings.find(binding) == mBufferBindings.end())
+			if (m_BufferBindings.find(binding) == m_BufferBindings.end())
 				throw std::invalid_argument("Submitted binding is not valid!");
 
-			mBufferBindings[binding].emplace_back(BufferBindingT(pBuffer, offset));
+			m_BufferBindings[binding].emplace_back(BufferBindingT(pBuffer, offset));
 			bIsUpdated = true;
 		}
 
@@ -106,10 +106,10 @@ namespace Flint
 		 */
 		void BindResource(const uint32_t binding, const ImageT* pImage, const ImageViewT* pImageView, const ImageSamplerT* pImageSampler, const ImageUsage usage = ImageUsage::Graphics)
 		{
-			if (mImageBindings.find(binding) == mImageBindings.end())
+			if (m_ImageBindings.find(binding) == m_ImageBindings.end())
 				throw std::invalid_argument("Submitted binding is not valid!");
 
-			mImageBindings[binding].emplace_back(ImageBindingT(pImage, pImageView, pImageSampler, usage));
+			m_ImageBindings[binding].emplace_back(ImageBindingT(pImage, pImageView, pImageSampler, usage));
 			bIsUpdated = true;
 		}
 
@@ -118,7 +118,7 @@ namespace Flint
 		 */
 		void ClearBufferResources()
 		{
-			for (auto& [binding, resources] : mBufferBindings)
+			for (auto& [binding, resources] : m_BufferBindings)
 				resources.clear();
 		}
 
@@ -127,7 +127,7 @@ namespace Flint
 		 */
 		void ClearImageResources()
 		{
-			for (auto& [binding, resources] : mImageBindings)
+			for (auto& [binding, resources] : m_ImageBindings)
 				resources.clear();
 		}
 
@@ -137,7 +137,7 @@ namespace Flint
 		 *
 		 * @return The binding map.
 		 */
-		const std::unordered_map<uint32_t, std::vector<BufferBindingT>> GetBufferBindingMap() const { return mBufferBindings; }
+		const std::unordered_map<uint32_t, std::vector<BufferBindingT>> GetBufferBindingMap() const { return m_BufferBindings; }
 
 		/**
 		 * Get a buffer bindings.
@@ -147,10 +147,10 @@ namespace Flint
 		 */
 		const std::vector<BufferBindingT> GetBufferBindings(const uint32_t binding) const
 		{
-			if (mBufferBindings.find(binding) == mBufferBindings.end())
+			if (m_BufferBindings.find(binding) == m_BufferBindings.end())
 				throw std::invalid_argument("Submitted binding is not valid!");
 
-			return mBufferBindings.at(binding);
+			return m_BufferBindings.at(binding);
 		}
 
 		/**
@@ -158,7 +158,7 @@ namespace Flint
 		 *
 		 * @return The binding map.
 		 */
-		const std::unordered_map<uint32_t, std::vector<ImageBindingT>> GetImageBindingMap() const { return mImageBindings; }
+		const std::unordered_map<uint32_t, std::vector<ImageBindingT>> GetImageBindingMap() const { return m_ImageBindings; }
 
 		/**
 		 * Get a image bindings.
@@ -168,17 +168,17 @@ namespace Flint
 		 */
 		const std::vector<ImageBindingT> GetImageBindings(const uint32_t binding) const
 		{
-			if (mImageBindings.find(binding) == mImageBindings.end())
+			if (m_ImageBindings.find(binding) == m_ImageBindings.end())
 				throw std::invalid_argument("Submitted binding is not valid!");
 
-			return mImageBindings.at(binding);
+			return m_ImageBindings.at(binding);
 		}
 
 	protected:
 		std::shared_ptr<ResourcePackagerT> pPackager = nullptr;
 
-		std::unordered_map<uint32_t, std::vector<BufferBindingT>> mBufferBindings = {};
-		std::unordered_map<uint32_t, std::vector<ImageBindingT>> mImageBindings = {};
+		std::unordered_map<uint32_t, std::vector<BufferBindingT>> m_BufferBindings = {};
+		std::unordered_map<uint32_t, std::vector<ImageBindingT>> m_ImageBindings = {};
 
 		bool bIsUpdated = true;
 	};

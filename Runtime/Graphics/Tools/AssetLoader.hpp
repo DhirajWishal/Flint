@@ -45,10 +45,10 @@ namespace Flint
 	struct VertexAttribute
 	{
 		VertexAttribute() = default;
-		VertexAttribute(uint8_t size, InputAttributeType type) : mAttributeSize(size), mType(type) {}
+		VertexAttribute(uint8_t size, InputAttributeType type) : m_AttributeSize(size), m_Type(type) {}
 
-		uint8_t mAttributeSize = 0;
-		InputAttributeType mType = InputAttributeType::Undefined;
+		uint8_t m_AttributeSize = 0;
+		InputAttributeType m_Type = InputAttributeType::Undefined;
 	};
 
 	/**
@@ -57,7 +57,7 @@ namespace Flint
 	 */
 	struct VertexDescriptor
 	{
-		std::vector<VertexAttribute> mAttributes = {};
+		std::vector<VertexAttribute> m_Attributes = {};
 
 		/**
 		 * Get the size of the vertex.
@@ -89,13 +89,13 @@ namespace Flint
 		 *
 		 * @return The vector of wire frames.
 		 */
-		const std::vector<WireFrame> GetWireFrames() const { return mWireFrames; }
+		const std::vector<WireFrame> GetWireFrames() const { return m_WireFrames; }
 
 	private:
-		std::vector<WireFrame> mWireFrames = {};
+		std::vector<WireFrame> m_WireFrames = {};
 
 		std::shared_ptr<GeometryStore> pGeometryStore = nullptr;
-		VertexDescriptor mDescriptor = {};
+		VertexDescriptor m_Descriptor = {};
 	};
 
 	namespace Defaults

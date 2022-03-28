@@ -22,9 +22,9 @@ namespace Flint
 			bool IsComplete() const;
 
 		public:
-			std::optional<uint32_t> mGraphicsFamily = {};
-			std::optional<uint32_t> mComputeFamily = {};
-			std::optional<uint32_t> mTransferFamily = {};
+			std::optional<uint32_t> m_GraphicsFamily = {};
+			std::optional<uint32_t> m_ComputeFamily = {};
+			std::optional<uint32_t> m_TransferFamily = {};
 
 			VkQueue vGraphicsQueue = VK_NULL_HANDLE;
 			VkQueue vComputeQueue = VK_NULL_HANDLE;

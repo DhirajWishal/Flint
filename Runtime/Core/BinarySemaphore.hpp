@@ -43,6 +43,6 @@ namespace Flint
 		bool TryAcquire();
 
 	private:
-		std::atomic<bool> mAtomicBool = false;
+		std::atomic<bool> m_AtomicBool = false;
 	};
 }

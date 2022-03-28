@@ -41,6 +41,6 @@ namespace Flint
 		bool TryAcquire(std::atomic<uint64_t> count);
 
 	private:
-		std::atomic<uint64_t> mAtomicCounter = 0;
+		std::atomic<uint64_t> m_AtomicCounter = 0;
 	};
 }

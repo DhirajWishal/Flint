@@ -18,14 +18,14 @@ namespace Flint
 				const auto resourceMap = vShader.GetShaderResources();
 				if (!resourceMap.empty())
 				{
-					const auto resources = resourceMap.at(mSetIndex);
-					mResources.insert(resources.begin(), resources.end());
+					const auto resources = resourceMap.at(m_SetIndex);
+					m_Resources.insert(resources.begin(), resources.end());
 				}
 
 				const auto descriptorSetMap = vShader.GetDescriptorSetMap();
 				if (!descriptorSetMap.empty())
 				{
-					const auto poolSizes = descriptorSetMap.at(mSetIndex).mPoolSizes;
+					const auto poolSizes = descriptorSetMap.at(m_SetIndex).m_PoolSizes;
 					vPoolSizes.insert(vPoolSizes.end(), poolSizes.begin(), poolSizes.end());
 				}
 			}
@@ -38,14 +38,14 @@ namespace Flint
 				const auto resourceMap = vShader.GetShaderResources();
 				if (!resourceMap.empty())
 				{
-					const auto resources = resourceMap.at(mSetIndex);
-					mResources.insert(resources.begin(), resources.end());
+					const auto resources = resourceMap.at(m_SetIndex);
+					m_Resources.insert(resources.begin(), resources.end());
 				}
 
 				const auto descriptorSetMap = vShader.GetDescriptorSetMap();
 				if (!descriptorSetMap.empty())
 				{
-					const auto poolSizes = descriptorSetMap.at(mSetIndex).mPoolSizes;
+					const auto poolSizes = descriptorSetMap.at(m_SetIndex).m_PoolSizes;
 					vPoolSizes.insert(vPoolSizes.end(), poolSizes.begin(), poolSizes.end());
 				}
 			}
@@ -58,14 +58,14 @@ namespace Flint
 				const auto resourceMap = vShader.GetShaderResources();
 				if (!resourceMap.empty())
 				{
-					const auto resources = resourceMap.at(mSetIndex);
-					mResources.insert(resources.begin(), resources.end());
+					const auto resources = resourceMap.at(m_SetIndex);
+					m_Resources.insert(resources.begin(), resources.end());
 				}
 
 				const auto descriptorSetMap = vShader.GetDescriptorSetMap();
 				if (!descriptorSetMap.empty())
 				{
-					const auto poolSizes = descriptorSetMap.at(mSetIndex).mPoolSizes;
+					const auto poolSizes = descriptorSetMap.at(m_SetIndex).m_PoolSizes;
 					vPoolSizes.insert(vPoolSizes.end(), poolSizes.begin(), poolSizes.end());
 				}
 			}
@@ -78,14 +78,14 @@ namespace Flint
 				const auto resourceMap = vShader.GetShaderResources();
 				if (!resourceMap.empty())
 				{
-					const auto resources = resourceMap.at(mSetIndex);
-					mResources.insert(resources.begin(), resources.end());
+					const auto resources = resourceMap.at(m_SetIndex);
+					m_Resources.insert(resources.begin(), resources.end());
 				}
 
 				const auto descriptorSetMap = vShader.GetDescriptorSetMap();
 				if (!descriptorSetMap.empty())
 				{
-					const auto poolSizes = descriptorSetMap.at(mSetIndex).mPoolSizes;
+					const auto poolSizes = descriptorSetMap.at(m_SetIndex).m_PoolSizes;
 					vPoolSizes.insert(vPoolSizes.end(), poolSizes.begin(), poolSizes.end());
 				}
 			}
@@ -98,14 +98,14 @@ namespace Flint
 				const auto resourceMap = vShader.GetShaderResources();
 				if (!resourceMap.empty())
 				{
-					const auto resources = resourceMap.at(mSetIndex);
-					mResources.insert(resources.begin(), resources.end());
+					const auto resources = resourceMap.at(m_SetIndex);
+					m_Resources.insert(resources.begin(), resources.end());
 				}
 
 				const auto descriptorSetMap = vShader.GetDescriptorSetMap();
 				if (!descriptorSetMap.empty())
 				{
-					const auto poolSizes = descriptorSetMap.at(mSetIndex).mPoolSizes;
+					const auto poolSizes = descriptorSetMap.at(m_SetIndex).m_PoolSizes;
 					vPoolSizes.insert(vPoolSizes.end(), poolSizes.begin(), poolSizes.end());
 				}
 			}
@@ -119,21 +119,21 @@ namespace Flint
 			const auto resourceMap = vShader.GetShaderResources();
 			if (!resourceMap.empty())
 			{
-				const auto resources = resourceMap.at(mSetIndex);
-				mResources.insert(resources.begin(), resources.end());
+				const auto resources = resourceMap.at(m_SetIndex);
+				m_Resources.insert(resources.begin(), resources.end());
 			}
 
 			const auto descriptorSetMap = vShader.GetDescriptorSetMap();
 			if (!descriptorSetMap.empty())
 			{
-				const auto poolSizes = descriptorSetMap.at(mSetIndex).mPoolSizes;
+				const auto poolSizes = descriptorSetMap.at(m_SetIndex).m_PoolSizes;
 				vPoolSizes.insert(vPoolSizes.end(), poolSizes.begin(), poolSizes.end());
 			}
 		}
 
 		std::shared_ptr<VulkanResourcePackage> VulkanResourcePackager::CreatePackage()
 		{
-			mDescriptorSetCount++;
+			m_DescriptorSetCount++;
 			CreateDescriptorPool();
 			return CreateResourcePackage();
 		}
@@ -157,7 +157,7 @@ namespace Flint
 			vPoolCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 			vPoolCreateInfo.pNext = VK_NULL_HANDLE;
 			vPoolCreateInfo.flags = 0;
-			vPoolCreateInfo.maxSets = mDescriptorSetCount;
+			vPoolCreateInfo.maxSets = m_DescriptorSetCount;
 			vPoolCreateInfo.poolSizeCount = static_cast<uint32_t>(vPoolSizes.size());
 			vPoolCreateInfo.pPoolSizes = vPoolSizes.data();
 
@@ -167,7 +167,7 @@ namespace Flint
 		std::shared_ptr<VulkanResourcePackage> VulkanResourcePackager::CreateResourcePackage()
 		{
 			std::vector<uint32_t> buffers, images;
-			for (const auto binding : mResources)
+			for (const auto binding : m_Resources)
 			{
 				if (binding.second == ShaderResourceType::Sampler ||
 					binding.second == ShaderResourceType::SampledImage ||
@@ -178,17 +178,17 @@ namespace Flint
 					buffers.emplace_back(binding.first);
 			}
 
-			std::vector<VkDescriptorSet> vDescriptorSets(mDescriptorSetCount);
+			std::vector<VkDescriptorSet> vDescriptorSets(m_DescriptorSetCount);
 
 			// Allocate the descriptor sets.
 			{
-				std::vector<VkDescriptorSetLayout> vDescriptorSetLayouts(mDescriptorSetCount, vDescriptorSetLayout);
+				std::vector<VkDescriptorSetLayout> vDescriptorSetLayouts(m_DescriptorSetCount, vDescriptorSetLayout);
 
 				VkDescriptorSetAllocateInfo vAllocateInfo = {};
 				vAllocateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
 				vAllocateInfo.pNext = VK_NULL_HANDLE;
 				vAllocateInfo.descriptorPool = vDescriptorPool;
-				vAllocateInfo.descriptorSetCount = mDescriptorSetCount;
+				vAllocateInfo.descriptorSetCount = m_DescriptorSetCount;
 				vAllocateInfo.pSetLayouts = vDescriptorSetLayouts.data();
 
 				FLINT_VK_ASSERT(GetDevice()->GetDeviceTable().vkAllocateDescriptorSets(GetDevice()->GetLogicalDevice(), &vAllocateInfo, vDescriptorSets.data()));

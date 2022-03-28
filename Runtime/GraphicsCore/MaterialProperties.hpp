@@ -36,12 +36,12 @@ namespace Flint
 		class Property : public FObject
 		{
 		public:
-			Property(const MaterialType type) : mType(type) {}
+			Property(const MaterialType type) : m_Type(type) {}
 
-			const MaterialType GetType() const { return mType; }
+			const MaterialType GetType() const { return m_Type; }
 
 		protected:
-			MaterialType mType = MaterialType::FLOAT;
+			MaterialType m_Type = MaterialType::FLOAT;
 		};
 
 		/**
@@ -55,9 +55,9 @@ namespace Flint
 			 *
 			 * @param value The value to store.
 			 */
-			Float(const float value) : Property(MaterialType::FLOAT), mValue(value) {}
+			Float(const float value) : Property(MaterialType::FLOAT), m_Value(value) {}
 
-			float mValue = 0.0f;
+			float m_Value = 0.0f;
 		};
 
 		/**
@@ -73,11 +73,11 @@ namespace Flint
 			 */
 			Float2(const float values[2]) : Property(MaterialType::FLOAT_2)
 			{
-				mValues[0] = values[0];
-				mValues[1] = values[1];
+				m_Values[0] = values[0];
+				m_Values[1] = values[1];
 			}
 
-			float mValues[2] = {};
+			float m_Values[2] = {};
 		};
 
 		/**
@@ -93,12 +93,12 @@ namespace Flint
 			 */
 			Float3(const float values[3]) : Property(MaterialType::FLOAT_3)
 			{
-				mValues[0] = values[0];
-				mValues[1] = values[1];
-				mValues[2] = values[2];
+				m_Values[0] = values[0];
+				m_Values[1] = values[1];
+				m_Values[2] = values[2];
 			}
 
-			float mValues[3] = {};
+			float m_Values[3] = {};
 		};
 
 		/**
@@ -114,13 +114,13 @@ namespace Flint
 			 */
 			Float4(const float values[4]) : Property(MaterialType::FLOAT_4)
 			{
-				mValues[0] = values[0];
-				mValues[1] = values[1];
-				mValues[2] = values[2];
-				mValues[3] = values[3];
+				m_Values[0] = values[0];
+				m_Values[1] = values[1];
+				m_Values[2] = values[2];
+				m_Values[3] = values[3];
 			}
 
-			float mValues[4] = {};
+			float m_Values[4] = {};
 		};
 
 		/**
@@ -134,9 +134,9 @@ namespace Flint
 			 *
 			 * @param value The value to store.
 			 */
-			Double(const double value) : Property(MaterialType::DOUBLE), mValue(value) {}
+			Double(const double value) : Property(MaterialType::DOUBLE), m_Value(value) {}
 
-			double mValue = 0.0f;
+			double m_Value = 0.0f;
 		};
 
 		/**
@@ -152,11 +152,11 @@ namespace Flint
 			 */
 			Double2(const double values[2]) : Property(MaterialType::DOUBLE_2)
 			{
-				mValues[0] = values[0];
-				mValues[1] = values[1];
+				m_Values[0] = values[0];
+				m_Values[1] = values[1];
 			}
 
-			double mValues[2] = {};
+			double m_Values[2] = {};
 		};
 
 		/**
@@ -172,12 +172,12 @@ namespace Flint
 			 */
 			Double3(const double values[3]) : Property(MaterialType::DOUBLE_3)
 			{
-				mValues[0] = values[0];
-				mValues[1] = values[1];
-				mValues[2] = values[2];
+				m_Values[0] = values[0];
+				m_Values[1] = values[1];
+				m_Values[2] = values[2];
 			}
 
-			double mValues[3] = {};
+			double m_Values[3] = {};
 		};
 
 		/**
@@ -193,13 +193,13 @@ namespace Flint
 			 */
 			Double4(const double values[4]) : Property(MaterialType::DOUBLE_4)
 			{
-				mValues[0] = values[0];
-				mValues[1] = values[1];
-				mValues[2] = values[2];
-				mValues[3] = values[3];
+				m_Values[0] = values[0];
+				m_Values[1] = values[1];
+				m_Values[2] = values[2];
+				m_Values[3] = values[3];
 			}
 
-			double mValues[4] = {};
+			double m_Values[4] = {};
 		};
 
 		/**
@@ -240,10 +240,10 @@ namespace Flint
 			 * @param path The path of the texture file.
 			 * @param type The texture type.
 			 */
-			TexturePath(const std::filesystem::path& path, const TextureType type) : Property(MaterialType::TEXTURE_PATH), mTexturePath(path), mType(type) {}
+			TexturePath(const std::filesystem::path& path, const TextureType type) : Property(MaterialType::TEXTURE_PATH), m_TexturePath(path), m_Type(type) {}
 
-			std::filesystem::path mTexturePath = {};
-			TextureType mType = TextureType::Undefined;
+			std::filesystem::path m_TexturePath = {};
+			TextureType m_Type = TextureType::Undefined;
 		};
 
 		/**
@@ -260,10 +260,10 @@ namespace Flint
 			 * @param pImage The image pointer.
 			 * @param type The texture type.
 			 */
-			TextureImage(std::unique_ptr<ImageT>&& pImage, const TextureType type) : Property(MaterialType::TEXTURE_IMAGE), pImage(std::move(pImage)), mType(type) {}
+			TextureImage(std::unique_ptr<ImageT>&& pImage, const TextureType type) : Property(MaterialType::TEXTURE_IMAGE), pImage(std::move(pImage)), m_Type(type) {}
 
 			std::unique_ptr<ImageT> pImage = nullptr;
-			TextureType mType = TextureType::Undefined;
+			TextureType m_Type = TextureType::Undefined;
 		};
 
 		/**
@@ -281,7 +281,7 @@ namespace Flint
 			 * @param format The image format.
 			 * @param type The texture type.
 			 */
-			TextureData(unsigned char* pData, const FBox3D extent, const PixelFormat format, const TextureType type) : Property(MaterialType::TEXTURE_DATA), pPixelData(pData), mExtent(extent), mPixelFormat(format), mType(type) {}
+			TextureData(unsigned char* pData, const FBox3D extent, const PixelFormat format, const TextureType type) : Property(MaterialType::TEXTURE_DATA), pPixelData(pData), m_Extent(extent), m_PixelFormat(format), m_Type(type) {}
 
 			/**
 			 * Create the image using the loaded data.
@@ -302,10 +302,10 @@ namespace Flint
 			void Clear();
 
 		public:
-			FBox3D mExtent = {};
+			FBox3D m_Extent = {};
 			unsigned char* pPixelData = nullptr;
-			PixelFormat mPixelFormat = PixelFormat::Undefined;
-			TextureType mType = TextureType::Undefined;
+			PixelFormat m_PixelFormat = PixelFormat::Undefined;
+			TextureType m_Type = TextureType::Undefined;
 		};
 	}
 }

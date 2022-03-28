@@ -10,52 +10,52 @@ namespace Flint
 	Worker::Worker()
 	{
 		// Setup the thread.
-		mWorkerThread = std::jthread([this]() { WorkerFunction(mCommands, mMutex, mConditionVariable, mWaitDuration, bShouldRun); });
-		mWaitDuration = 500ms;
+		m_WorkerThread = std::jthread([this]() { WorkerFunction(m_Commands, m_Mutex, m_ConditionVariable, m_WaitDuration, bShouldRun); });
+		m_WaitDuration = 500ms;
 	}
 
-	Worker::Worker(std::chrono::milliseconds duration) : mWaitDuration(duration)
+	Worker::Worker(std::chrono::milliseconds duration) : m_WaitDuration(duration)
 	{
 		// Setup the thread.
-		mWorkerThread = std::jthread([this]() { WorkerFunction(mCommands, mMutex, mConditionVariable, mWaitDuration, bShouldRun); });
+		m_WorkerThread = std::jthread([this]() { WorkerFunction(m_Commands, m_Mutex, m_ConditionVariable, m_WaitDuration, bShouldRun); });
 	}
 
-	Worker::Worker(const Worker& other) : mCommands(other.mCommands), mWaitDuration(other.mWaitDuration)
+	Worker::Worker(const Worker& other) : m_Commands(other.m_Commands), m_WaitDuration(other.m_WaitDuration)
 	{
 		// Setup the thread.
-		mWorkerThread = std::jthread([this]() { WorkerFunction(mCommands, mMutex, mConditionVariable, mWaitDuration, bShouldRun); });
+		m_WorkerThread = std::jthread([this]() { WorkerFunction(m_Commands, m_Mutex, m_ConditionVariable, m_WaitDuration, bShouldRun); });
 	}
 
-	Worker::Worker(Worker&& other) : mCommands(std::move(other.mCommands)), mWaitDuration(std::move(other.mWaitDuration))
+	Worker::Worker(Worker&& other) : m_Commands(std::move(other.m_Commands)), m_WaitDuration(std::move(other.m_WaitDuration))
 	{
 		other.bShouldRun = false;
-		other.mWorkerThread.join();
+		other.m_WorkerThread.join();
 
 		// Setup the thread.
-		mWorkerThread = std::jthread([this]() { WorkerFunction(mCommands, mMutex, mConditionVariable, mWaitDuration, bShouldRun); });
+		m_WorkerThread = std::jthread([this]() { WorkerFunction(m_Commands, m_Mutex, m_ConditionVariable, m_WaitDuration, bShouldRun); });
 	}
 
 	Worker::~Worker()
 	{
 		// Stop the thread from looping and wait till it finishes.
 		bShouldRun = false;
-		mWorkerThread.join();
+		m_WorkerThread.join();
 	}
 
 	Worker& Worker::operator=(const Worker& other)
 	{
-		mCommands = other.mCommands;
-		mWaitDuration = other.mWaitDuration;
+		m_Commands = other.m_Commands;
+		m_WaitDuration = other.m_WaitDuration;
 		return *this;
 	}
 
 	Worker& Worker::operator=(Worker&& other)
 	{
-		mCommands = std::move(other.mCommands);
-		mWaitDuration = std::move(other.mWaitDuration);
+		m_Commands = std::move(other.m_Commands);
+		m_WaitDuration = std::move(other.m_WaitDuration);
 
 		other.bShouldRun = false;
-		other.mWorkerThread.join();
+		other.m_WorkerThread.join();
 
 		return *this;
 	}

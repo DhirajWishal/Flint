@@ -11,9 +11,9 @@ namespace Flint
 		std::unique_ptr<Image> Flint::MaterialProperties::TextureData::CreateImage(Device* pDevice, const ImageType type, const ImageUsage usage, const uint32_t layers, const uint32_t mipLevels, const MultiSampleCount sampleCount)
 		{
 			if (mipLevels != 0)
-				return pDevice->CreateImage(type, usage, mExtent, mPixelFormat, layers, mipLevels, pPixelData, sampleCount);
+				return pDevice->CreateImage(type, usage, m_Extent, m_PixelFormat, layers, mipLevels, pPixelData, sampleCount);
 			else
-				return pDevice->CreateImage(type, usage, mExtent, mPixelFormat, layers, Image::GetBestMipLevels(mExtent), pPixelData, sampleCount);
+				return pDevice->CreateImage(type, usage, m_Extent, m_PixelFormat, layers, Image::GetBestMipLevels(m_Extent), pPixelData, sampleCount);
 		}
 		
 		void TextureData::Clear()

@@ -15,7 +15,7 @@ namespace Flint
 			vPoolCI.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 			vPoolCI.flags = 0;
 			vPoolCI.pNext = VK_NULL_HANDLE;
-			vPoolCI.queueFamilyIndex = vDevice.GetQueue().mTransferFamily.value();
+			vPoolCI.queueFamilyIndex = vDevice.GetQueue().m_TransferFamily.value();
 
 			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateCommandPool(vDevice.GetLogicalDevice(), &vPoolCI, nullptr, &vPool));
 

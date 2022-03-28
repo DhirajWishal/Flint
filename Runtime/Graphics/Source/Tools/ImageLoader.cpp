@@ -16,15 +16,15 @@ namespace Flint
 		if (stbi_is_hdr(assetFile.string().c_str()))
 		{
 			pPixelData = reinterpret_cast<unsigned char*>(stbi_loadf(assetFile.string().c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha));
-			mPixelFormat = PixelFormat::R32G32B32A32_SFLOAT;
+			m_PixelFormat = PixelFormat::R32G32B32A32_SFLOAT;
 		}
 		else
 		{
 			pPixelData = stbi_load(assetFile.string().c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
-			mPixelFormat = PixelFormat::R8G8B8A8_SRGB;
+			m_PixelFormat = PixelFormat::R8G8B8A8_SRGB;
 		}
 
-		mExtent = FBox3D(texWidth, texHeight, 1);
+		m_Extent = FBox3D(texWidth, texHeight, 1);
 	}
 
 	ImageLoader::ImageLoader(const std::vector<std::filesystem::path>& assetFiles)
@@ -47,11 +47,11 @@ namespace Flint
 			offset += imageSize;
 		}
 
-		mExtent = FBox3D(texWidth, texHeight, 1);
-		mPixelFormat = PixelFormat::R8G8B8A8_SRGB;
+		m_Extent = FBox3D(texWidth, texHeight, 1);
+		m_PixelFormat = PixelFormat::R8G8B8A8_SRGB;
 	}
 
-	ImageLoader::ImageLoader(ImageLoader&& other) : pPixelData(other.pPixelData), mExtent(other.mExtent), mPixelFormat(other.mPixelFormat)
+	ImageLoader::ImageLoader(ImageLoader&& other) : pPixelData(other.pPixelData), m_Extent(other.m_Extent), m_PixelFormat(other.m_PixelFormat)
 	{
 		other.pPixelData = nullptr;
 	}
@@ -65,14 +65,14 @@ namespace Flint
 	std::unique_ptr<Image> ImageLoader::CreateImage(Device* pDevice, const ImageType type, const ImageUsage usage, const uint32_t layers, const uint32_t mipLevels, const MultiSampleCount sampleCount) const
 	{
 		if (mipLevels != 0)
-			return pDevice->CreateImage(type, usage, mExtent, mPixelFormat, layers, mipLevels, pPixelData, sampleCount);
+			return pDevice->CreateImage(type, usage, m_Extent, m_PixelFormat, layers, mipLevels, pPixelData, sampleCount);
 		else
-			return pDevice->CreateImage(type, usage, mExtent, mPixelFormat, layers, Image::GetBestMipLevels(mExtent), pPixelData, sampleCount);
+			return pDevice->CreateImage(type, usage, m_Extent, m_PixelFormat, layers, Image::GetBestMipLevels(m_Extent), pPixelData, sampleCount);
 	}
 
 	MaterialProperties::TextureData ImageLoader::GetAsTextureData(const MaterialProperties::TextureType type)
 	{
-		auto data = MaterialProperties::TextureData(pPixelData, mExtent, mPixelFormat, type);
+		auto data = MaterialProperties::TextureData(pPixelData, m_Extent, m_PixelFormat, type);
 		pPixelData = nullptr;
 
 		return data;
@@ -81,8 +81,8 @@ namespace Flint
 	ImageLoader& ImageLoader::operator=(ImageLoader&& other)
 	{
 		pPixelData = other.pPixelData;
-		mExtent = other.mExtent;
-		mPixelFormat = other.mPixelFormat;
+		m_Extent = other.m_Extent;
+		m_PixelFormat = other.m_PixelFormat;
 
 		other.pPixelData = nullptr;
 		return *this;

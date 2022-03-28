@@ -35,7 +35,7 @@ namespace Flint
 		 * @param imageAttachments The image attachments used by the render target.
 		 */
 		RenderTarget(DeviceT* pDevice, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachmentT>& imageAttachments)
-			: DeviceBoundObject(pDevice), mExtent(extent), mBufferCount(bufferCount), mAttachments(imageAttachments)
+			: DeviceBoundObject(pDevice), m_Extent(extent), m_BufferCount(bufferCount), m_Attachments(imageAttachments)
 		{
 			if (extent.IsZero())
 				throw std::invalid_argument("Render target width and height should be greater than 0!");
@@ -57,7 +57,7 @@ namespace Flint
 		 *
 		 * @return The attachments.
 		 */
-		const std::vector<RenderTargetAttachmentT> GetAttachments() const { return mAttachments; }
+		const std::vector<RenderTargetAttachmentT> GetAttachments() const { return m_Attachments; }
 
 		/**
 		 * Get a single attachment from the attachments.
@@ -65,28 +65,28 @@ namespace Flint
 		 * @param index The index of the attachment.
 		 * @return The attachment.
 		 */
-		const RenderTargetAttachmentT& GetAttachment(const uint64_t index) const { return mAttachments[index]; }
+		const RenderTargetAttachmentT& GetAttachment(const uint64_t index) const { return m_Attachments[index]; }
 
 		/**
 		 * Get the current frame index.
 		 *
 		 * @return The frame index.
 		 */
-		const uint32_t GetFrameIndex() const { return mFrameIndex; }
+		const uint32_t GetFrameIndex() const { return m_FrameIndex; }
 
 		/**
 		 * Get the render target extent.
 		 *
 		 * @return The extent.
 		 */
-		const FBox2D GetExtent() const { return mExtent; }
+		const FBox2D GetExtent() const { return m_Extent; }
 
 		/**
 		 * Get the render target buffer count.
 		 *
 		 * @return The buffer count.
 		 */
-		const uint32_t GetBufferCount() const { return mBufferCount; }
+		const uint32_t GetBufferCount() const { return m_BufferCount; }
 
 		/**
 		 * Check if the render target is altered.
@@ -104,14 +104,14 @@ namespace Flint
 		 * Increment the frame index.
 		 * If the frame index is bigger than or equal to the buffer count, it is rolled back to 0.
 		 */
-		void IncrementFrameIndex() { mFrameIndex++; if (mFrameIndex >= mBufferCount) mFrameIndex = 0; }
+		void IncrementFrameIndex() { m_FrameIndex++; if (m_FrameIndex >= m_BufferCount) m_FrameIndex = 0; }
 
 	protected:
-		std::vector<RenderTargetAttachmentT> mAttachments = {};
+		std::vector<RenderTargetAttachmentT> m_Attachments = {};
 
-		FBox2D mExtent = {};
-		uint32_t mBufferCount = 0;
-		uint32_t mFrameIndex = 0;
+		FBox2D m_Extent = {};
+		uint32_t m_BufferCount = 0;
+		uint32_t m_FrameIndex = 0;
 
 		bool bIsAltered = false;
 	};

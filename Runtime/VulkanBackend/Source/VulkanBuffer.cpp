@@ -76,7 +76,7 @@ namespace Flint
 		void VulkanBuffer::Resize(const uint64_t size, const BufferResizeMode mode)
 		{
 			OPTICK_EVENT();
-			const uint64_t oldSize = mSize;
+			const uint64_t oldSize = m_Size;
 
 			if (mode == BufferResizeMode::Copy)
 			{
@@ -86,7 +86,7 @@ namespace Flint
 
 				// Terminate the existing buffer and get the new size.
 				Terminate();
-				mSize = size;
+				m_Size = size;
 
 				// Create the new buffer.
 				CreateBuffer();
@@ -99,7 +99,7 @@ namespace Flint
 			{
 				// Terminate the existing buffer and get the new size.
 				Terminate();
-				mSize += size;
+				m_Size += size;
 
 				// Create the new buffer.
 				CreateBuffer();
@@ -125,7 +125,7 @@ namespace Flint
 		{
 			OPTICK_EVENT();
 
-			if (size + offset > mSize)
+			if (size + offset > m_Size)
 				throw std::range_error("Submitted size and offset goes beyond the buffer dimensions!");
 
 			else if (size <= 0)
@@ -167,7 +167,7 @@ namespace Flint
 			vCreateInfo.queueFamilyIndexCount = 0;
 			vCreateInfo.pQueueFamilyIndices = VK_NULL_HANDLE;
 			vCreateInfo.sharingMode = VkSharingMode::VK_SHARING_MODE_EXCLUSIVE;
-			vCreateInfo.size = static_cast<uint32_t>(mSize);
+			vCreateInfo.size = static_cast<uint32_t>(m_Size);
 			vCreateInfo.usage = vBufferUsage;
 
 			VmaAllocationCreateInfo vmaAllocationCreateInfo = {};

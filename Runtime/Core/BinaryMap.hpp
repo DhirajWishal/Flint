@@ -33,8 +33,8 @@ namespace Flint
 		 */
 		Iterator Find(const Key& key)
 		{
-			Iterator begin = mEntries.begin();
-			uint64_t count = mEntries.size(), step = 0;
+			Iterator begin = m_Entries.begin();
+			uint64_t count = m_Entries.size(), step = 0;
 
 			while (count > 0)
 			{
@@ -59,8 +59,8 @@ namespace Flint
 		 */
 		ConstIterator Find(const Key& key) const
 		{
-			ConstIterator begin = mEntries.begin();
-			uint64_t count = mEntries.size(), step = 0;
+			ConstIterator begin = m_Entries.begin();
+			uint64_t count = m_Entries.size(), step = 0;
 
 			while (count > 0)
 			{
@@ -86,9 +86,9 @@ namespace Flint
 		Value& At(const Key& key)
 		{
 			auto iterator = Find(key);
-			if (iterator == mEntries.end() || iterator->first != key)
+			if (iterator == m_Entries.end() || iterator->first != key)
 			{
-				mEntries.insert(iterator, KeyValue(key, Value()));
+				m_Entries.insert(iterator, KeyValue(key, Value()));
 				return At(key);
 			}
 
@@ -104,7 +104,7 @@ namespace Flint
 		const Value At(const Key& key) const
 		{
 			auto iterator = Find(key);
-			if (iterator == mEntries.end() || iterator->first != key)
+			if (iterator == m_Entries.end() || iterator->first != key)
 				return Value();
 
 			return iterator->second;
@@ -118,7 +118,7 @@ namespace Flint
 		 */
 		void Insert(const Key& key, const Value& value)
 		{
-			mEntries.insert(Find(key), KeyValue(key, value));
+			m_Entries.insert(Find(key), KeyValue(key, value));
 		}
 
 		/**
@@ -129,8 +129,8 @@ namespace Flint
 		void Remove(const Key& key)
 		{
 			auto iterator = Find(key);
-			if (iterator != mEntries.end() && iterator->first == key)
-				mEntries.erase(iterator);
+			if (iterator != m_Entries.end() && iterator->first == key)
+				m_Entries.erase(iterator);
 		}
 
 	public:
@@ -139,42 +139,42 @@ namespace Flint
 		 *
 		 * @return The iterator.
 		 */
-		Iterator begin() { return mEntries.begin(); }
+		Iterator begin() { return m_Entries.begin(); }
 
 		/**
 		 * Begin iterator function.
 		 *
 		 * @return The iterator.
 		 */
-		ConstIterator begin() const { return mEntries.begin(); }
+		ConstIterator begin() const { return m_Entries.begin(); }
 
 		/**
 		 * End iterator function.
 		 *
 		 * @return The iterator.
 		 */
-		Iterator end() { return mEntries.end(); }
+		Iterator end() { return m_Entries.end(); }
 
 		/**
 		 * End iterator function.
 		 *
 		 * @return The iterator.
 		 */
-		ConstIterator end() const { return mEntries.end(); }
+		ConstIterator end() const { return m_Entries.end(); }
 
 		/**
 		 * Get the size of the map.
 		 *
 		 * @return The size.
 		 */
-		const uint64_t Size() const { return mEntries.size(); }
+		const uint64_t Size() const { return m_Entries.size(); }
 
 		/**
 		 * Get the capacity of the map.
 		 *
 		 * @return The capacity.
 		 */
-		const uint64_t Capacity() const { return mEntries.capacity(); }
+		const uint64_t Capacity() const { return m_Entries.capacity(); }
 
 	public:
 		/**
@@ -186,9 +186,9 @@ namespace Flint
 		Value& operator[](const Key& key)
 		{
 			auto iterator = Find(key);
-			if (iterator == mEntries.end() || iterator->first != key)
+			if (iterator == m_Entries.end() || iterator->first != key)
 			{
-				mEntries.insert(iterator, KeyValue(key, Value()));
+				m_Entries.insert(iterator, KeyValue(key, Value()));
 				return operator[](key);
 			}
 
@@ -196,6 +196,6 @@ namespace Flint
 		}
 
 	private:
-		std::vector<KeyValue> mEntries = {};
+		std::vector<KeyValue> m_Entries = {};
 	};
 }

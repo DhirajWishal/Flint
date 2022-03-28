@@ -34,7 +34,7 @@ namespace Flint
 		 * @param profile The memory profile of the buffer. Default is BufferMemoryProfile::Automatic.
 		 */
 		explicit Buffer(DeviceT* pDevice, const BufferType type, const uint64_t size, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic)
-			: DeviceBoundObject(pDevice), mType(type), mSize(size), mMemoryProfile(profile)
+			: DeviceBoundObject(pDevice), m_Type(type), m_Size(size), m_MemoryProfile(profile)
 		{
 			if (type == BufferType::Undefined)
 				throw std::invalid_argument("Buffer type should not be Undefined!");
@@ -114,21 +114,21 @@ namespace Flint
 		 *
 		 * @return The size in bytes.
 		 */
-		const uint64_t GetSize() const { return mSize; }
+		const uint64_t GetSize() const { return m_Size; }
 
 		/**
 		 * Get the buffer type.
 		 *
 		 * @return The buffer type.
 		 */
-		const BufferType GetType() const { return mType; }
+		const BufferType GetType() const { return m_Type; }
 
 		/**
 		 * Get the memory profile of the buffer.
 		 *
 		 * @return The memory profile.
 		 */
-		const BufferMemoryProfile GetMemoryProfile() const { return mMemoryProfile; }
+		const BufferMemoryProfile GetMemoryProfile() const { return m_MemoryProfile; }
 
 		/**
 		 * Check if the buffer is already mapped.
@@ -138,9 +138,9 @@ namespace Flint
 		bool IsMapped() const { return bIsMapped; }
 
 	protected:
-		uint64_t mSize = 0;
-		BufferType mType = BufferType::Undefined;
-		BufferMemoryProfile mMemoryProfile = BufferMemoryProfile::Automatic;
+		uint64_t m_Size = 0;
+		BufferType m_Type = BufferType::Undefined;
+		BufferMemoryProfile m_MemoryProfile = BufferMemoryProfile::Automatic;
 
 		bool bIsMapped = false;
 	};

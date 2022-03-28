@@ -51,9 +51,9 @@ namespace Flint
 		void Compile();
 
 	private:
-		std::vector<TIOAttribute> mInputAttributes = {};
-		std::vector<TIOAttribute> mOutputAttributes = {};
+		std::vector<TIOAttribute> m_InputAttributes = {};
+		std::vector<TIOAttribute> m_OutputAttributes = {};
 
-		std::unordered_map<uint32_t, std::vector<TResource>> mResourceSetMap = {};
+		std::unordered_map<uint32_t, std::vector<TResource>> m_ResourceSetMap = {};
 	};
 }

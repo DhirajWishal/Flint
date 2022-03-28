@@ -11,8 +11,8 @@ namespace Flint
 	{
 		struct DescriptorSetInfo
 		{
-			std::vector<VkDescriptorSetLayoutBinding> mLayoutBindings;
-			std::vector<VkDescriptorPoolSize> mPoolSizes;
+			std::vector<VkDescriptorSetLayoutBinding> m_LayoutBindings;
+			std::vector<VkDescriptorPoolSize> m_PoolSizes;
 		};
 
 		class VulkanShader final : public Shader<VulkanDevice>
@@ -34,18 +34,18 @@ namespace Flint
 			void PerformReflection();
 
 			VkShaderModule GetModule() const { return vModule; }
-			const std::vector<VkPushConstantRange> GetPushConstantRanges() const { return mConstantRanges; }
-			const std::unordered_map<uint32_t, DescriptorSetInfo> GetDescriptorSetMap() const { return mDescriptorSetMap; }
+			const std::vector<VkPushConstantRange> GetPushConstantRanges() const { return m_ConstantRanges; }
+			const std::unordered_map<uint32_t, DescriptorSetInfo> GetDescriptorSetMap() const { return m_DescriptorSetMap; }
 
 		private:
 			void ResolveShaderStage();
 			void CreateShaderModule();
 
 		private:
-			std::vector<uint32_t> mShaderCode;
-			std::vector<VkPushConstantRange> mConstantRanges;
+			std::vector<uint32_t> m_ShaderCode;
+			std::vector<VkPushConstantRange> m_ConstantRanges;
 
-			std::unordered_map<uint32_t, DescriptorSetInfo> mDescriptorSetMap;
+			std::unordered_map<uint32_t, DescriptorSetInfo> m_DescriptorSetMap;
 
 			VkShaderModule vModule = VK_NULL_HANDLE;
 

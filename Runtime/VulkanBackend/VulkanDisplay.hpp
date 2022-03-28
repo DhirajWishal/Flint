@@ -20,9 +20,9 @@ namespace Flint
 
 		struct SwapChainSupportDetails
 		{
-			VkSurfaceCapabilitiesKHR mCapabilities = {};
-			std::vector<VkSurfaceFormatKHR> mFormats = {};
-			std::vector<VkPresentModeKHR> mPresentModes = {};
+			VkSurfaceCapabilitiesKHR m_Capabilities = {};
+			std::vector<VkSurfaceFormatKHR> m_Formats = {};
+			std::vector<VkPresentModeKHR> m_PresentModes = {};
 
 			static SwapChainSupportDetails Query(VkPhysicalDevice vPhysicalDevice, VkSurfaceKHR vSurface);
 		};
@@ -35,7 +35,7 @@ namespace Flint
 
 			virtual void Update() override;
 			virtual void Terminate() override;
-			virtual void ToggleResize() override final { mIsDislayResized = false; }
+			virtual void ToggleResize() override final { m_IsDislayResized = false; }
 			virtual uint32_t FindBestBufferCount(VulkanDevice* pDevice, const uint32_t count = 0) override;
 			virtual PixelFormat GetBestSwapChainFormat(VulkanDevice* pDevice) override;
 			virtual void SetTitle(const std::string& title) override;
@@ -55,9 +55,9 @@ namespace Flint
 			void SetDragAndDropPaths(std::vector<std::filesystem::path>&& paths);
 
 		public:
-			void SetNewExtent(FBox2D extent) { mExtent = extent; }
-			void ToggleClose() { mIsDisplayOpen = false; }
-			void Resized() { mIsDislayResized = true; }
+			void SetNewExtent(FBox2D extent) { m_Extent = extent; }
+			void ToggleClose() { m_IsDisplayOpen = false; }
+			void Resized() { m_IsDislayResized = true; }
 
 		public:
 			VkSurfaceKHR GetSurface() const { return vSurface; }
@@ -66,9 +66,9 @@ namespace Flint
 			void SetupMaps();
 
 		private:
-			std::unordered_map<uint32_t, KeyCode> mKeyMap = {};
-			std::vector<MouseButton> mButtonMap = {};
-			std::vector<EventAction> mActionMap = {};
+			std::unordered_map<uint32_t, KeyCode> m_KeyMap = {};
+			std::vector<MouseButton> m_ButtonMap = {};
+			std::vector<EventAction> m_ActionMap = {};
 
 			GLFWwindow* pWindow = nullptr;
 			VkSurfaceKHR vSurface = VK_NULL_HANDLE;

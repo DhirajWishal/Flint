@@ -33,7 +33,7 @@ namespace Flint
 			vWrite.dstSet = vDescriptorSet;
 
 			// Resolve buffers.
-			for (const auto buffers : mBufferBindings)
+			for (const auto buffers : m_BufferBindings)
 			{
 				vWrite.descriptorCount = static_cast<uint32_t>(buffers.second.size());
 				vWrite.dstArrayElement = 0;
@@ -48,7 +48,7 @@ namespace Flint
 						throw backend_error("Requested buffer at binding location: " + std::to_string(buffers.first) + " is not submitted! Make sure that all the bindings are properly submitted.");
 
 					pBufferInfos[index].buffer = buffer.pBuffer->StaticCast<VulkanBuffer>().GetBuffer();
-					pBufferInfos[index].offset = buffer.mOffset;
+					pBufferInfos[index].offset = buffer.m_Offset;
 					pBufferInfos[index].range = VK_WHOLE_SIZE;
 					index++;
 				}
@@ -59,7 +59,7 @@ namespace Flint
 
 			// Resolve images.
 			vWrite.pBufferInfo = VK_NULL_HANDLE;
-			for (const auto images : mImageBindings)
+			for (const auto images : m_ImageBindings)
 			{
 				vWrite.descriptorCount = static_cast<uint32_t>(images.second.size());
 				vWrite.dstArrayElement = 0;
@@ -78,7 +78,7 @@ namespace Flint
 
 					auto& vImage = image.pImage->StaticCast<VulkanImage>();
 					pImageInfos[index].imageView = image.pImageView->StaticCast<VulkanImageView>().GetImageView();
-					pImageInfos[index].imageLayout = vImage.GetImageLayout(image.mUsage);
+					pImageInfos[index].imageLayout = vImage.GetImageLayout(image.m_Usage);
 					pImageInfos[index].sampler = image.pImageSampler->StaticCast<VulkanImageSampler>().GetSampler();
 					index++;
 				}

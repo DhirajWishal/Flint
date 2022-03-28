@@ -12,31 +12,31 @@
 namespace Flint
 {
 #ifndef FLINT_RELEASE
-	Profiler::Profiler(std::string_view functionSignature) : mFunctionSignature(functionSignature), mStart(std::chrono::high_resolution_clock::now())
+	Profiler::Profiler(std::string_view functionSignature) : m_FunctionSignature(functionSignature), m_Start(std::chrono::high_resolution_clock::now())
 	{
 		//OPTICK_EVENT();
 	}
 
 	Profiler::~Profiler()
 	{
-		mEnd = std::chrono::high_resolution_clock::now();
+		m_End = std::chrono::high_resolution_clock::now();
 		ProfileLogger::GetInstance().WriteContent(*this);
 	}
 
-	AtomicProfileControlBlock::AtomicProfileControlBlock(const std::filesystem::path& filePath) : mProfileFile(filePath)
+	AtomicProfileControlBlock::AtomicProfileControlBlock(const std::filesystem::path& filePath) : m_ProfileFile(filePath)
 	{
-		if (!mProfileFile.is_open())
+		if (!m_ProfileFile.is_open())
 			throw std::runtime_error("Failed to open the profile logger!");
 
-		mProfileFile << "{\"otherData\": {},\"traceEvents\":[";
-		mProfileFile.flush();
+		m_ProfileFile << "{\"otherData\": {},\"traceEvents\":[";
+		m_ProfileFile.flush();
 	}
 
 	AtomicProfileControlBlock::~AtomicProfileControlBlock()
 	{
-		mProfileFile << "]}";
-		mProfileFile.flush();
-		mProfileFile.close();
+		m_ProfileFile << "]}";
+		m_ProfileFile.flush();
+		m_ProfileFile.close();
 	}
 
 	ProfileLogger::ProfileLogger()
@@ -50,13 +50,13 @@ namespace Flint
 	{
 	}
 
-	ProfileLogger ProfileLogger::mInstance;
+	ProfileLogger ProfileLogger::m_Instance;
 
 	void ProfileLogger::WriteContent(const Profiler& profiler)
 	{/*
 		pControlBlock->Lock();
-		uint64_t start = std::chrono::time_point_cast<std::chrono::microseconds>(profiler.mStart).time_since_epoch().count();
-		std::ofstream& file = pControlBlock->mProfileFile;
+		uint64_t start = std::chrono::time_point_cast<std::chrono::microseconds>(profiler.m_Start).time_since_epoch().count();
+		std::ofstream& file = pControlBlock->m_ProfileFile;
 
 		if (GetInstance().bIsFirst)
 			GetInstance().bIsFirst = false;
@@ -65,7 +65,7 @@ namespace Flint
 
 		file << "{";
 		file << "\"cat\":\"function\",";
-		file << "\"dur\":" << (std::chrono::time_point_cast<std::chrono::microseconds>(profiler.mEnd).time_since_epoch().count() - start) << ',';
+		file << "\"dur\":" << (std::chrono::time_point_cast<std::chrono::microseconds>(profiler.m_End).time_since_epoch().count() - start) << ',';
 		file << "\"name\":\"" << profiler.pFunctionSignature << "\",";
 		file << "\"ph\":\"X\",";
 		file << "\"pid\":0,";

@@ -17,6 +17,6 @@ namespace Flint
 		PluginManager() = default;
 
 	protected:
-		std::vector<Plugins::PluginHandle> mPluginHandles = {};
+		std::vector<Plugins::PluginHandle> m_PluginHandles = {};
 	};
 }

@@ -23,7 +23,7 @@ namespace Flint
 		 * @param pPipeline The pipeline pointer.
 		 */
 		ResourcePackager(DeviceT* pDevice, const uint32_t setIndex)
-			: DeviceBoundObject(pDevice), mSetIndex(setIndex)
+			: DeviceBoundObject(pDevice), m_SetIndex(setIndex)
 		{
 			if (!pPipeline)
 				throw std::invalid_argument("The pipeline pointer should not be null!");
@@ -42,19 +42,19 @@ namespace Flint
 		 *
 		 * @return The set index.
 		 */
-		const uint32_t GetSetIndex() const { return mSetIndex; }
+		const uint32_t GetSetIndex() const { return m_SetIndex; }
 
 		/**
 		 * Get the resource map of the packager.
 		 * 
 		 * @return The resource map.
 		 */
-		const std::unordered_map<uint32_t, ShaderResourceType> GetResources() const { return mResources; }
+		const std::unordered_map<uint32_t, ShaderResourceType> GetResources() const { return m_Resources; }
 
 	protected:
 		std::vector<std::shared_ptr<ResourcePackageT>> pPackages = {};
-		std::unordered_map<uint32_t, ShaderResourceType> mResources = {};
+		std::unordered_map<uint32_t, ShaderResourceType> m_Resources = {};
 
-		uint32_t mSetIndex = 0;
+		uint32_t m_SetIndex = 0;
 	};
 }

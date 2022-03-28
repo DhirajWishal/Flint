@@ -34,7 +34,7 @@ namespace Flint
 			const bool ContainPermissions() const { return (Permission & pPlugin->GetPermissions()) == Permission; }
 
 		private:
-			std::filesystem::path mPluginPath = "";
+			std::filesystem::path m_PluginPath = "";
 			PluginInterface* pPlugin = nullptr;
 
 			bool bIsEnabled = true;

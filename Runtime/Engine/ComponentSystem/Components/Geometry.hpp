@@ -15,7 +15,7 @@ namespace Flint
 		 */
 		struct Geometry
 		{
-			std::vector<GraphicsCore::WireFrame> mWireFrames = {};
+			std::vector<GraphicsCore::WireFrame> m_WireFrames = {};
 
 			GeometryStore* pGeometryStore = nullptr;
 		};

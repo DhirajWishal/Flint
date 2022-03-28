@@ -48,10 +48,10 @@ namespace Flint
 		 *
 		 * @return The vector reference.
 		 */
-		std::vector<Type>& GetVector() { return mObjects; }
+		std::vector<Type>& GetVector() { return m_Objects; }
 
 	private:
-		std::vector<Type> mObjects = {};
+		std::vector<Type> m_Objects = {};
 	};
 
 	/**
@@ -80,7 +80,7 @@ namespace Flint
 		template<class Type>
 		bool IsRegistered() const
 		{
-			return mGameObjects.contains(GetTypeIndex<Type>());
+			return m_GameObjects.contains(GetTypeIndex<Type>());
 		}
 
 		/**
@@ -96,8 +96,8 @@ namespace Flint
 		void Register()
 		{
 			const auto index = GetTypeIndex<Type>();
-			mGameObjects[index] = std::make_unique<GameObjectStore<Type>>();
-			mGameObjectUpdateHandlers[index] = [](GameObjectStroreInterface& objects, const uint64_t delta)
+			m_GameObjects[index] = std::make_unique<GameObjectStore<Type>>();
+			m_GameObjectUpdateHandlers[index] = [](GameObjectStroreInterface& objects, const uint64_t delta)
 			{
 				auto& store = static_cast<GameObjectStore<Type>&>(objects);
 				for (auto& object : store.GetVector())
@@ -118,7 +118,7 @@ namespace Flint
 			if (!IsRegistered<Type>())
 				Register<Type>();
 
-			return static_cast<GameObjectStore<Type>&>(*mGameObjects.at(GetTypeIndex<Type>()).get());
+			return static_cast<GameObjectStore<Type>&>(*m_GameObjects.at(GetTypeIndex<Type>()).get());
 		}
 
 		/**
@@ -164,7 +164,7 @@ namespace Flint
 		}
 
 	private:
-		ObjectMap mGameObjects = {};
-		ObjectUpdateHandlers mGameObjectUpdateHandlers = {};
+		ObjectMap m_GameObjects = {};
+		ObjectUpdateHandlers m_GameObjectUpdateHandlers = {};
 	};
 }

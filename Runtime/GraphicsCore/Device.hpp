@@ -45,7 +45,7 @@ namespace Flint
 		 * @param pInstance The instance pointer.
 		 * @param flags The device flags.
 		 */
-		Device(InstanceT* pInstance, const DeviceFlags flags) : pInstance(pInstance), mFlags(flags)
+		Device(InstanceT* pInstance, const DeviceFlags flags) : pInstance(pInstance), m_Flags(flags)
 		{
 			if (!pInstance)
 				throw std::invalid_argument("Instance pointer should not be null!");
@@ -303,14 +303,14 @@ namespace Flint
 		 *
 		 * @return The compatibility status (boolean).
 		 */
-		const bool IsGraphicsCompatible() const { return (mFlags & DeviceFlags::GraphicsCompatible) == DeviceFlags::GraphicsCompatible; }
+		const bool IsGraphicsCompatible() const { return (m_Flags & DeviceFlags::GraphicsCompatible) == DeviceFlags::GraphicsCompatible; }
 
 		/**
 		 * Check if the device is compute compatible.
 		 *
 		 * @return The compatibility status (boolean).
 		 */
-		const bool IsComputeCompatible() const { return (mFlags & DeviceFlags::ComputeCompatible) == DeviceFlags::ComputeCompatible; }
+		const bool IsComputeCompatible() const { return (m_Flags & DeviceFlags::ComputeCompatible) == DeviceFlags::ComputeCompatible; }
 
 	public:
 		/**
@@ -329,6 +329,6 @@ namespace Flint
 
 	protected:
 		InstanceT* pInstance = nullptr;
-		DeviceFlags mFlags = DeviceFlags::External | DeviceFlags::GraphicsCompatible;
+		DeviceFlags m_Flags = DeviceFlags::External | DeviceFlags::GraphicsCompatible;
 	};
 }

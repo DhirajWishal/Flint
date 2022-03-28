@@ -193,8 +193,8 @@ namespace Flint
 			const uint64_t codeSize = shaderFile.tellg();
 			shaderFile.seekg(0);
 
-			mShaderCode.resize(codeSize);
-			shaderFile.read(reinterpret_cast<char*>(mShaderCode.data()), codeSize);
+			m_ShaderCode.resize(codeSize);
+			shaderFile.read(reinterpret_cast<char*>(m_ShaderCode.data()), codeSize);
 
 			shaderFile.close();
 			CreateShaderModule();
@@ -202,15 +202,15 @@ namespace Flint
 		}
 
 		VulkanShader::VulkanShader(VulkanDevice* pDevice, const ShaderType type, const std::vector<uint32_t>& code)
-			: Shader(pDevice, type, code), mShaderCode(code)
+			: Shader(pDevice, type, code), m_ShaderCode(code)
 		{
 			OPTICK_EVENT();
 
 			ResolveShaderStage();
 
 			// Add padding if the code isnt a multiple of 4.
-			for (uint8_t i = 0; i < mShaderCode.size() % 4; i++)
-				mShaderCode.emplace_back(0);
+			for (uint8_t i = 0; i < m_ShaderCode.size() % 4; i++)
+				m_ShaderCode.emplace_back(0);
 
 			CreateShaderModule();
 			PerformReflection();
@@ -223,8 +223,8 @@ namespace Flint
 
 			ResolveShaderStage();
 
-			mShaderCode.resize(code.size());
-			std::copy(code.begin(), code.end(), reinterpret_cast<char*>(mShaderCode.data()));
+			m_ShaderCode.resize(code.size());
+			std::copy(code.begin(), code.end(), reinterpret_cast<char*>(m_ShaderCode.data()));
 
 			CreateShaderModule();
 			PerformReflection();
@@ -237,7 +237,7 @@ namespace Flint
 			if (!cacheFile.is_open())
 				throw std::runtime_error("Unable to open the provided cache file!");
 
-			cacheFile.write(reinterpret_cast<const char*>(mShaderCode.data()), mShaderCode.size());
+			cacheFile.write(reinterpret_cast<const char*>(m_ShaderCode.data()), m_ShaderCode.size());
 			cacheFile.close();
 		}
 
@@ -256,8 +256,8 @@ namespace Flint
 			const uint64_t codeSize = shaderFile.tellg();
 			shaderFile.seekg(0);
 
-			mShaderCode.resize(codeSize);
-			shaderFile.read(reinterpret_cast<char*>(mShaderCode.data()), codeSize);
+			m_ShaderCode.resize(codeSize);
+			shaderFile.read(reinterpret_cast<char*>(m_ShaderCode.data()), codeSize);
 
 			shaderFile.close();
 			CreateShaderModule();
@@ -272,7 +272,7 @@ namespace Flint
 
 			ResolveShaderStage();
 
-			mShaderCode = code;
+			m_ShaderCode = code;
 			CreateShaderModule();
 			PerformReflection();
 		}
@@ -285,8 +285,8 @@ namespace Flint
 
 			ResolveShaderStage();
 
-			mShaderCode.resize(code.size());
-			std::copy(code.begin(), code.end(), reinterpret_cast<char*>(mShaderCode.data()));
+			m_ShaderCode.resize(code.size());
+			std::copy(code.begin(), code.end(), reinterpret_cast<char*>(m_ShaderCode.data()));
 
 			CreateShaderModule();
 			PerformReflection();
@@ -319,8 +319,8 @@ namespace Flint
 			SpvReflectShaderModule sShaderModule = {};
 			uint32_t variableCount = 0;
 
-			//std::vector<uint32_t> shaderCode = mShaderCode;
-			std::vector<uint32_t> shaderCode = std::move(Helpers::ResolvePadding(mShaderCode));
+			//std::vector<uint32_t> shaderCode = m_ShaderCode;
+			std::vector<uint32_t> shaderCode = std::move(Helpers::ResolvePadding(m_ShaderCode));
 			Helpers::ValidateReflection(spvReflectCreateShaderModule(shaderCode.size() * sizeof(uint32_t), shaderCode.data(), &sShaderModule));
 
 			// Resolve shader inputs.
@@ -330,7 +330,7 @@ namespace Flint
 				std::vector<SpvReflectInterfaceVariable*> pInputs(variableCount);
 				Helpers::ValidateReflection(spvReflectEnumerateInputVariables(&sShaderModule, &variableCount, pInputs.data()));
 
-				mInputAttributes.reserve(pInputs.size());
+				m_InputAttributes.reserve(pInputs.size());
 				for (auto& resource : pInputs)
 				{
 					if (resource->format == SpvReflectFormat::SPV_REFLECT_FORMAT_UNDEFINED)
@@ -342,14 +342,14 @@ namespace Flint
 
 					if (resource->built_in > -1)
 					{
-						mInputAttributes.emplace_back(ShaderAttribute(
+						m_InputAttributes.emplace_back(ShaderAttribute(
 							name,
 							resource->location,
 							ShaderAttributeDataType::BUILT_IN));
 					}
 					else
 					{
-						mInputAttributes.emplace_back(ShaderAttribute(
+						m_InputAttributes.emplace_back(ShaderAttribute(
 							name,
 							resource->location,
 							static_cast<ShaderAttributeDataType>(
@@ -360,7 +360,7 @@ namespace Flint
 			}
 
 			// Sort the inputs.
-			std::sort(mInputAttributes.begin(), mInputAttributes.end(), [](const ShaderAttribute& lhs, const ShaderAttribute& rhs) { return lhs.mLocation < rhs.mLocation; });
+			std::sort(m_InputAttributes.begin(), m_InputAttributes.end(), [](const ShaderAttribute& lhs, const ShaderAttribute& rhs) { return lhs.m_Location < rhs.m_Location; });
 
 			// Resolve shader outputs.
 			{
@@ -369,7 +369,7 @@ namespace Flint
 				std::vector<SpvReflectInterfaceVariable*> pOutputs(variableCount);
 				Helpers::ValidateReflection(spvReflectEnumerateOutputVariables(&sShaderModule, &variableCount, pOutputs.data()));
 
-				mInputAttributes.reserve(pOutputs.size());
+				m_InputAttributes.reserve(pOutputs.size());
 				for (auto& resource : pOutputs)
 				{
 					if (resource->format == SpvReflectFormat::SPV_REFLECT_FORMAT_UNDEFINED)
@@ -379,7 +379,7 @@ namespace Flint
 					if (resource->name)
 						name = resource->name;
 
-					mOutputAttributes.emplace_back(ShaderAttribute(
+					m_OutputAttributes.emplace_back(ShaderAttribute(
 						name,
 						resource->location,
 						static_cast<ShaderAttributeDataType>(
@@ -389,7 +389,7 @@ namespace Flint
 			}
 
 			// Sort the outputs.
-			std::sort(mOutputAttributes.begin(), mOutputAttributes.end(), [](const ShaderAttribute& lhs, const ShaderAttribute& rhs) { return lhs.mLocation < rhs.mLocation; });
+			std::sort(m_OutputAttributes.begin(), m_OutputAttributes.end(), [](const ShaderAttribute& lhs, const ShaderAttribute& rhs) { return lhs.m_Location < rhs.m_Location; });
 
 			// Resolve uniforms.
 			{
@@ -412,11 +412,11 @@ namespace Flint
 					vSize.type = vBinding.descriptorType;
 					vSize.descriptorCount = resource->count;
 
-					mDescriptorSetMap[resource->set].mLayoutBindings.emplace_back(vBinding);
-					mDescriptorSetMap[resource->set].mPoolSizes.emplace_back(vSize);
+					m_DescriptorSetMap[resource->set].m_LayoutBindings.emplace_back(vBinding);
+					m_DescriptorSetMap[resource->set].m_PoolSizes.emplace_back(vSize);
 
 					ShaderResourceKey key{ resource->set,vBinding.binding };
-					mResourceMap[resource->set][resource->binding] = Helpers::GetShaderResourceType(resource->descriptor_type);
+					m_ResourceMap[resource->set][resource->binding] = Helpers::GetShaderResourceType(resource->descriptor_type);
 				}
 			}
 
@@ -434,14 +434,14 @@ namespace Flint
 				{
 					vPushConstantRange.size = resource->size;
 					vPushConstantRange.offset = resource->offset;
-					mConstantRanges.emplace_back(vPushConstantRange);
+					m_ConstantRanges.emplace_back(vPushConstantRange);
 				}
 			}
 		}
 
 		void VulkanShader::ResolveShaderStage()
 		{
-			vStageFlags = Utilities::GetShaderStage(mType);
+			vStageFlags = Utilities::GetShaderStage(m_Type);
 		}
 
 		void VulkanShader::CreateShaderModule()
@@ -450,8 +450,8 @@ namespace Flint
 			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
 			vCreateInfo.pNext = VK_NULL_HANDLE;
 			vCreateInfo.flags = 0;
-			vCreateInfo.codeSize = mShaderCode.size();
-			vCreateInfo.pCode = mShaderCode.data();
+			vCreateInfo.codeSize = m_ShaderCode.size();
+			vCreateInfo.pCode = m_ShaderCode.data();
 
 			FLINT_VK_ASSERT(pDevice->GetDeviceTable().vkCreateShaderModule(pDevice->GetLogicalDevice(), &vCreateInfo, nullptr, &vModule));
 		}

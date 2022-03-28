@@ -21,7 +21,7 @@ namespace Flint
 		 * @param enableValidation Whether or not to enable backend validation.
 		 */
 		Instance(bool enableValidation)
-			: mEnableValidation(enableValidation)
+			: m_EnableValidation(enableValidation)
 		{
 			std::filesystem::path workingDirectory = std::filesystem::current_path();
 			if (!std::filesystem::exists(workingDirectory.string() + "\\Flint"))
@@ -62,9 +62,9 @@ namespace Flint
 		 *
 		 * @return Boolean value stating true or false.
 		 */
-		const bool IsValidationEnabled() const noexcept { return mEnableValidation; }
+		const bool IsValidationEnabled() const noexcept { return m_EnableValidation; }
 
 	protected:
-		bool mEnableValidation = true;
+		bool m_EnableValidation = true;
 	};
 }

@@ -32,7 +32,7 @@ namespace Flint
 		 * @param pipelineName The name of the pipeline. This name is given to the pipeline cache object created upon destruction. Make sure that this name is unique.
 		 *	If you wish to not save cache externally, keep this field empty ("").
 		 */
-		Pipeline(DeviceT* pDevice, const std::string& pipelineName) : DeviceBoundObject(pDevice), mPipelineName(pipelineName) {}
+		Pipeline(DeviceT* pDevice, const std::string& pipelineName) : DeviceBoundObject(pDevice), m_PipelineName(pipelineName) {}
 
 		/**
 		 * Reload the shaders.
@@ -57,10 +57,10 @@ namespace Flint
 		void WriteDataToCacheFile(const uint64_t size, unsigned char* pData) const
 		{
 			// Return if the name is empty.
-			if (mPipelineName.empty())
+			if (m_PipelineName.empty())
 				return;
 
-			std::ofstream cacheFile(std::filesystem::current_path().string() + CacheDirectory + mPipelineName + ".fpc", std::ios::out | std::ios::binary);
+			std::ofstream cacheFile(std::filesystem::current_path().string() + CacheDirectory + m_PipelineName + ".fpc", std::ios::out | std::ios::binary);
 
 			if (!cacheFile.is_open())
 				throw std::runtime_error("Failed to write cache data!");
@@ -78,10 +78,10 @@ namespace Flint
 		std::pair<uint64_t, unsigned char*> ReadDataFromCacheFile() const
 		{
 			// Return if the name is empty.
-			if (mPipelineName.empty())
+			if (m_PipelineName.empty())
 				return std::pair<uint64_t, unsigned char*>(0, nullptr);
 
-			std::ifstream cacheFile(std::filesystem::current_path().string() + CacheDirectory + mPipelineName + ".fpc", std::ios::in | std::ios::ate | std::ios::binary);
+			std::ifstream cacheFile(std::filesystem::current_path().string() + CacheDirectory + m_PipelineName + ".fpc", std::ios::in | std::ios::ate | std::ios::binary);
 
 			// If file does not exist, return without an issue.
 			if (!cacheFile.is_open())
@@ -113,7 +113,7 @@ namespace Flint
 		}
 
 	protected:
-		std::string mPipelineName = "";
+		std::string m_PipelineName = "";
 		std::vector<std::shared_ptr<ResourcePackageT>> pResourcePackagers = {};
 
 		bool bShouldPrepareResources = true;

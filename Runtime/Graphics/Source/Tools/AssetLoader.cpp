@@ -133,7 +133,7 @@ namespace Flint
 			OPTICK_THREAD("Wire Frame Loader");
 			OPTICK_EVENT();
 
-			//std::vector<aiMaterialProperty*> pProperties(pMaterial->mProperties, pMaterial->mProperties + pMaterial->mNumProperties);
+			//std::vector<aiMaterialProperty*> pProperties(pMaterial->m_Properties, pMaterial->m_Properties + pMaterial->m_NumProperties);
 			Material material = {};
 
 			// Load colors.
@@ -153,107 +153,107 @@ namespace Flint
 			}
 
 			// Load vertexes.
-			for (uint32_t j = 0; j < pMesh->mNumVertices; j++)
+			for (uint32_t j = 0; j < pMesh->m_NumVertices; j++)
 			{
-				for (const auto attribute : vertexDescriptor.mAttributes)
+				for (const auto attribute : vertexDescriptor.m_Attributes)
 				{
-					const uint64_t copyAmount = attribute.mAttributeSize / sizeof(float);
+					const uint64_t copyAmount = attribute.m_AttributeSize / sizeof(float);
 
-					switch (attribute.mType)
+					switch (attribute.m_Type)
 					{
 					case InputAttributeType::Position:
 						if (pMesh->HasPositions())
-							std::copy(&pMesh->mVertices[j].x, (&pMesh->mVertices[j].x) + copyAmount, pBufferMemory);
+							std::copy(&pMesh->m_Vertices[j].x, (&pMesh->m_Vertices[j].x) + copyAmount, pBufferMemory);
 						break;
 
 					case InputAttributeType::Normal:
 						if (pMesh->HasNormals())
-							std::copy(&pMesh->mNormals[j].x, (&pMesh->mNormals[j].x) + copyAmount, pBufferMemory);
+							std::copy(&pMesh->m_Normals[j].x, (&pMesh->m_Normals[j].x) + copyAmount, pBufferMemory);
 						break;
 
 					case InputAttributeType::ColorZero:
 						if (pMesh->HasVertexColors(0))
-							std::copy(&pMesh->mColors[0][j].r, (&pMesh->mColors[0][j].r) + copyAmount, pBufferMemory);
+							std::copy(&pMesh->m_Colors[0][j].r, (&pMesh->m_Colors[0][j].r) + copyAmount, pBufferMemory);
 						break;
 
 					case InputAttributeType::ColorOne:
 						if (pMesh->HasVertexColors(1))
-							std::copy(&pMesh->mColors[1][j].r, (&pMesh->mColors[1][j].r) + copyAmount, pBufferMemory);
+							std::copy(&pMesh->m_Colors[1][j].r, (&pMesh->m_Colors[1][j].r) + copyAmount, pBufferMemory);
 						break;
 
 					case InputAttributeType::ColorTwo:
 						if (pMesh->HasVertexColors(2))
-							std::copy(&pMesh->mColors[2][j].r, (&pMesh->mColors[1][j].r) + copyAmount, pBufferMemory);
+							std::copy(&pMesh->m_Colors[2][j].r, (&pMesh->m_Colors[1][j].r) + copyAmount, pBufferMemory);
 						break;
 
 					case InputAttributeType::ColorThree:
 						if (pMesh->HasVertexColors(3))
-							std::copy(&pMesh->mColors[3][j].r, (&pMesh->mColors[2][j].r) + copyAmount, pBufferMemory);
+							std::copy(&pMesh->m_Colors[3][j].r, (&pMesh->m_Colors[2][j].r) + copyAmount, pBufferMemory);
 						break;
 
 					case InputAttributeType::TextureCoordinatesZero:
 						if (pMesh->HasTextureCoords(0))
-							std::copy(&pMesh->mTextureCoords[0][j].x, (&pMesh->mTextureCoords[0][j].x) + copyAmount, pBufferMemory);
+							std::copy(&pMesh->m_TextureCoords[0][j].x, (&pMesh->m_TextureCoords[0][j].x) + copyAmount, pBufferMemory);
 						break;
 
 					case InputAttributeType::TextureCoordinatesOne:
 						if (pMesh->HasTextureCoords(1))
-							std::copy(&pMesh->mTextureCoords[1][j].x, (&pMesh->mTextureCoords[1][j].x) + copyAmount, pBufferMemory);
+							std::copy(&pMesh->m_TextureCoords[1][j].x, (&pMesh->m_TextureCoords[1][j].x) + copyAmount, pBufferMemory);
 						break;
 
 					case InputAttributeType::TextureCoordinatesTwo:
 						if (pMesh->HasTextureCoords(2))
-							std::copy(&pMesh->mTextureCoords[2][j].x, (&pMesh->mTextureCoords[2][j].x) + copyAmount, pBufferMemory);
+							std::copy(&pMesh->m_TextureCoords[2][j].x, (&pMesh->m_TextureCoords[2][j].x) + copyAmount, pBufferMemory);
 						break;
 
 					case InputAttributeType::TextureCoordinatesThree:
 						if (pMesh->HasTextureCoords(3))
-							std::copy(&pMesh->mTextureCoords[3][j].x, (&pMesh->mTextureCoords[3][j].x) + copyAmount, pBufferMemory);
+							std::copy(&pMesh->m_TextureCoords[3][j].x, (&pMesh->m_TextureCoords[3][j].x) + copyAmount, pBufferMemory);
 						break;
 
 					case InputAttributeType::TextureCoordinatesFour:
 						if (pMesh->HasTextureCoords(4))
-							std::copy(&pMesh->mTextureCoords[4][j].x, (&pMesh->mTextureCoords[4][j].x) + copyAmount, pBufferMemory);
+							std::copy(&pMesh->m_TextureCoords[4][j].x, (&pMesh->m_TextureCoords[4][j].x) + copyAmount, pBufferMemory);
 						break;
 
 					case InputAttributeType::TextureCoordinatesFive:
 						if (pMesh->HasTextureCoords(5))
-							std::copy(&pMesh->mTextureCoords[5][j].x, (&pMesh->mTextureCoords[5][j].x) + copyAmount, pBufferMemory);
+							std::copy(&pMesh->m_TextureCoords[5][j].x, (&pMesh->m_TextureCoords[5][j].x) + copyAmount, pBufferMemory);
 						break;
 
 					case InputAttributeType::TextureCoordinatesSix:
 						if (pMesh->HasTextureCoords(6))
-							std::copy(&pMesh->mTextureCoords[6][j].x, (&pMesh->mTextureCoords[6][j].x) + copyAmount, pBufferMemory);
+							std::copy(&pMesh->m_TextureCoords[6][j].x, (&pMesh->m_TextureCoords[6][j].x) + copyAmount, pBufferMemory);
 						break;
 
 					case InputAttributeType::TextureCoordinatesSeven:
 						if (pMesh->HasTextureCoords(7))
-							std::copy(&pMesh->mTextureCoords[7][j].x, (&pMesh->mTextureCoords[7][j].x) + copyAmount, pBufferMemory);
+							std::copy(&pMesh->m_TextureCoords[7][j].x, (&pMesh->m_TextureCoords[7][j].x) + copyAmount, pBufferMemory);
 						break;
 
 					case InputAttributeType::UVCoordinates:
 						if (pMesh->HasTextureCoords(0))
-							std::copy(&pMesh->mTextureCoords[0][j].x, (&pMesh->mTextureCoords[0][j].x) + copyAmount, pBufferMemory);
+							std::copy(&pMesh->m_TextureCoords[0][j].x, (&pMesh->m_TextureCoords[0][j].x) + copyAmount, pBufferMemory);
 						break;
 
 					case InputAttributeType::Tangent:
 						if (pMesh->HasTangentsAndBitangents())
-							std::copy(&pMesh->mTangents[j].x, (&pMesh->mTangents[j].x) + copyAmount, pBufferMemory);
+							std::copy(&pMesh->m_Tangents[j].x, (&pMesh->m_Tangents[j].x) + copyAmount, pBufferMemory);
 						break;
 
 					case InputAttributeType::Bitangent:
 						if (pMesh->HasTangentsAndBitangents())
-							std::copy(&pMesh->mBitangents[j].x, (&pMesh->mBitangents[j].x) + copyAmount, pBufferMemory);
+							std::copy(&pMesh->m_Bitangents[j].x, (&pMesh->m_Bitangents[j].x) + copyAmount, pBufferMemory);
 						break;
 
 					case InputAttributeType::BoneID:
 						//if (pMesh->HasPositions())
-						//	std::copy(&pMesh->mVertices[j].x, (&pMesh->mVertices[j].x) + copyAmount, pBufferMemory);
+						//	std::copy(&pMesh->m_Vertices[j].x, (&pMesh->m_Vertices[j].x) + copyAmount, pBufferMemory);
 						break;
 
 					case InputAttributeType::BoneWeight:
 						//if (pMesh->HasPositions())
-						//	std::copy(&pMesh->mVertices[j].x, (&pMesh->mVertices[j].x) + copyAmount, pBufferMemory);
+						//	std::copy(&pMesh->m_Vertices[j].x, (&pMesh->m_Vertices[j].x) + copyAmount, pBufferMemory);
 						break;
 
 					default:
@@ -265,29 +265,29 @@ namespace Flint
 			}
 
 			aiFace face = {};
-			for (uint32_t j = 0; j < pMesh->mNumFaces; j++)
+			for (uint32_t j = 0; j < pMesh->m_NumFaces; j++)
 			{
-				face = pMesh->mFaces[j];
-				for (uint32_t k = 0; k < face.mNumIndices; k++)
-					pIndexes->push_back(face.mIndices[k]);
+				face = pMesh->m_Faces[j];
+				for (uint32_t k = 0; k < face.m_NumIndices; k++)
+					pIndexes->push_back(face.m_Indices[k]);
 			}
 
 			const uint64_t indexCount = pIndexes->size();
-			(*pWireFrame) = WireFrame(pMesh->mName.C_Str(), vertexOffset, pMesh->mNumVertices, 0, indexCount, material);
+			(*pWireFrame) = WireFrame(pMesh->m_Name.C_Str(), vertexOffset, pMesh->m_NumVertices, 0, indexCount, material);
 		}
 	}
 
 	const uint64_t VertexDescriptor::Size() const
 	{
 		uint64_t size = 0;
-		for (const auto attribute : mAttributes)
-			size += attribute.mAttributeSize;
+		for (const auto attribute : m_Attributes)
+			size += attribute.m_AttributeSize;
 
 		return size;
 	}
 
-	AssetLoader::AssetLoader(const std::shared_ptr<VulkanBackend::VulkanGeometryStore>& pGeometryStore, const std::filesystem::path& assetPath, const VertexDescriptor& vertexDescriptor, const bool useMultiThreading)
-		: pGeometryStore(pGeometryStore), mDescriptor(vertexDescriptor)
+	AssetLoader::AssetLoader(const std::shared_ptr<GeometryStore>& pGeometryStore, const std::filesystem::path& assetPath, const VertexDescriptor& vertexDescriptor, const bool useMultiThreading)
+		: pGeometryStore(pGeometryStore), m_Descriptor(vertexDescriptor)
 	{
 		// Validate the geometry store and vertex descriptor.
 		if (pGeometryStore->GetVertexSize() != vertexDescriptor.Size())
@@ -311,36 +311,36 @@ namespace Flint
 		const uint64_t vertexSize = vertexDescriptor.Size();
 		uint64_t vertexCount = 0;
 
-		mWireFrames.resize(pScene->mNumMeshes);
-		for (uint32_t i = 0; i < pScene->mNumMeshes; i++)
-			vertexCount += pScene->mMeshes[i]->mNumVertices;
+		m_WireFrames.resize(pScene->m_NumMeshes);
+		for (uint32_t i = 0; i < pScene->m_NumMeshes; i++)
+			vertexCount += pScene->m_Meshes[i]->m_NumVertices;
 
 		const auto pDevice = pGeometryStore->GetDevice();
 		const auto pVertexStagingBuffer = pDevice->CreateBuffer(Flint::BufferType::Staging, vertexSize * vertexCount);
 		const auto pBufferMemory = static_cast<float*>(pVertexStagingBuffer->MapMemory(vertexSize * vertexCount));
 
 		// Load the mesh data.
-		std::vector<std::vector<uint32_t>> indexData{ pScene->mNumMeshes };
+		std::vector<std::vector<uint32_t>> indexData{ pScene->m_NumMeshes };
 
 		{
 			std::vector<std::future<void>> futures;
-			futures.reserve(pScene->mNumMeshes);
+			futures.reserve(pScene->m_NumMeshes);
 
 			const uint64_t vertexFloatCount = vertexDescriptor.Size() / sizeof(float);
 			const auto basePath = assetPath.parent_path().string() + LineEnding;
 
 			uint64_t vertexOffset = 0;
-			for (uint32_t i = 0; i < pScene->mNumMeshes; i++)
+			for (uint32_t i = 0; i < pScene->m_NumMeshes; i++)
 			{
-				const auto pMesh = pScene->mMeshes[i];
-				const auto pMaterial = pScene->mMaterials[pMesh->mMaterialIndex];
+				const auto pMesh = pScene->m_Meshes[i];
+				const auto pMaterial = pScene->m_Materials[pMesh->m_MaterialIndex];
 
 				if (useMultiThreading)
-					futures.emplace_back(std::async(std::launch::async, Helpers::LoadWireFrame, pMesh, pMaterial, basePath, vertexDescriptor, pBufferMemory + (vertexOffset * vertexFloatCount), vertexOffset, &indexData[i], &mWireFrames[i]));
+					futures.emplace_back(std::async(std::launch::async, Helpers::LoadWireFrame, pMesh, pMaterial, basePath, vertexDescriptor, pBufferMemory + (vertexOffset * vertexFloatCount), vertexOffset, &indexData[i], &m_WireFrames[i]));
 				else
-					Helpers::LoadWireFrame(pMesh, pMaterial, basePath, vertexDescriptor, pBufferMemory + (vertexOffset * vertexFloatCount), vertexOffset, &indexData[i], &mWireFrames[i]);
+					Helpers::LoadWireFrame(pMesh, pMaterial, basePath, vertexDescriptor, pBufferMemory + (vertexOffset * vertexFloatCount), vertexOffset, &indexData[i], &m_WireFrames[i]);
 
-				vertexOffset += pMesh->mNumVertices;
+				vertexOffset += pMesh->m_NumVertices;
 			}
 		}
 
@@ -365,7 +365,7 @@ namespace Flint
 
 		const auto [vertexGeometryOffset, indexGeometryOffset] = pGeometryStore->AddGeometry(pVertexStagingBuffer.get(), pIndexStagingBuffer.get());
 		uint64_t indexOffset = 0;
-		for (auto& wireFrame : mWireFrames)
+		for (auto& wireFrame : m_WireFrames)
 		{
 			wireFrame.SetVertexOffset(wireFrame.GetVertexOffset() + vertexGeometryOffset);
 			wireFrame.SetIndexOffset(indexOffset + indexGeometryOffset);
@@ -381,9 +381,9 @@ namespace Flint
 		VertexDescriptor CreateDefaultVertexDescriptor()
 		{
 			Flint::VertexDescriptor vDescriptor = {};
-			vDescriptor.mAttributes.emplace_back(Flint::VertexAttribute(sizeof(float) * 3, Flint::InputAttributeType::Position));
-			vDescriptor.mAttributes.emplace_back(Flint::VertexAttribute(sizeof(float) * 3, Flint::InputAttributeType::ColorZero));
-			vDescriptor.mAttributes.emplace_back(Flint::VertexAttribute(sizeof(float) * 2, Flint::InputAttributeType::TextureCoordinatesZero));
+			vDescriptor.m_Attributes.emplace_back(Flint::VertexAttribute(sizeof(float) * 3, Flint::InputAttributeType::Position));
+			vDescriptor.m_Attributes.emplace_back(Flint::VertexAttribute(sizeof(float) * 3, Flint::InputAttributeType::ColorZero));
+			vDescriptor.m_Attributes.emplace_back(Flint::VertexAttribute(sizeof(float) * 2, Flint::InputAttributeType::TextureCoordinatesZero));
 
 			return vDescriptor;
 		}
@@ -391,8 +391,8 @@ namespace Flint
 		VertexDescriptor CreateSkyBoxVertexDescriptor()
 		{
 			Flint::VertexDescriptor vDescriptor = {};
-			vDescriptor.mAttributes.emplace_back(Flint::VertexAttribute(sizeof(float) * 3, Flint::InputAttributeType::Position));
-			vDescriptor.mAttributes.emplace_back(Flint::VertexAttribute(sizeof(float) * 2, Flint::InputAttributeType::TextureCoordinatesZero));
+			vDescriptor.m_Attributes.emplace_back(Flint::VertexAttribute(sizeof(float) * 3, Flint::InputAttributeType::Position));
+			vDescriptor.m_Attributes.emplace_back(Flint::VertexAttribute(sizeof(float) * 2, Flint::InputAttributeType::TextureCoordinatesZero));
 
 			return vDescriptor;
 		}

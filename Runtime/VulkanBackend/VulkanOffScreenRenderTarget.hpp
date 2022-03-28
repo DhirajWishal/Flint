@@ -20,9 +20,9 @@ namespace Flint
 			virtual void Terminate() override;
 
 			VkRenderPass GetRenderPass() const { return vRenderTarget.vRenderPass; }
-			const VkFramebuffer GetFramebuffer() const { return vRenderTarget.vFrameBuffers[mFrameIndex]; }
+			const VkFramebuffer GetFramebuffer() const { return vRenderTarget.vFrameBuffers[m_FrameIndex]; }
 
-			const uint32_t GetClearScreenValueCount() const { return static_cast<uint32_t>(mAttachments.size()); }
+			const uint32_t GetClearScreenValueCount() const { return static_cast<uint32_t>(m_Attachments.size()); }
 			const VkClearValue* GetClearScreenValues() const { return vClearValues.data(); }
 
 			std::vector<VkClearValue> GetClearScreenValueVector() const { return vClearValues; }

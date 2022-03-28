@@ -27,7 +27,7 @@ namespace Flint
 		 * @param usage The image view usage.
 		 */
 		ImageView(DeviceT* pDevice, const ImageT* pImage, const uint32_t baseLayerIndex, const uint32_t layerCount, const uint32_t baseMipLevel, const uint32_t mipLevels, const ImageUsage usage)
-			: DeviceBoundObject(pDevice), pParentImage(pImage), mBaseLayerIndex(baseLayerIndex), mLayerCount(layerCount), mBaseMipLevel(baseMipLevel), mMipLevels(mipLevels), mUsage(usage)
+			: DeviceBoundObject(pDevice), pParentImage(pImage), m_BaseLayerIndex(baseLayerIndex), m_LayerCount(layerCount), m_BaseMipLevel(baseMipLevel), m_MipLevels(mipLevels), m_Usage(usage)
 		{
 			if (!pImage)
 				throw std::runtime_error("The image pointer should not be nullptr!");
@@ -46,36 +46,36 @@ namespace Flint
 		 *
 		 * @return The layer index.
 		 */
-		uint32_t GetBaseLayerIndex() const { return mBaseLayerIndex; }
+		uint32_t GetBaseLayerIndex() const { return m_BaseLayerIndex; }
 
 		/**
 		 * Get the layer count.
 		 *
 		 * @return The layer count.
 		 */
-		uint32_t GetLayerCount() const { return mLayerCount; }
+		uint32_t GetLayerCount() const { return m_LayerCount; }
 
 		/**
 		 * Get the base mip level.
 		 *
 		 * @return The mip level
 		 */
-		uint32_t GetBaseMipLevel() const { return mBaseMipLevel; }
+		uint32_t GetBaseMipLevel() const { return m_BaseMipLevel; }
 
 		/**
 		 * Get the mip levels.
 		 *
 		 * @return The mip levels.
 		 */
-		uint32_t GetMipLevels() const { return mMipLevels; }
+		uint32_t GetMipLevels() const { return m_MipLevels; }
 
 	protected:
 		const ImageT* pParentImage = nullptr;
 
-		uint32_t mBaseLayerIndex = 0;
-		uint32_t mLayerCount = 0;
-		uint32_t mBaseMipLevel = 0;
-		uint32_t mMipLevels = 0;
-		ImageUsage mUsage = ImageUsage::Color;
+		uint32_t m_BaseLayerIndex = 0;
+		uint32_t m_LayerCount = 0;
+		uint32_t m_BaseMipLevel = 0;
+		uint32_t m_MipLevels = 0;
+		ImageUsage m_Usage = ImageUsage::Color;
 	};
 }

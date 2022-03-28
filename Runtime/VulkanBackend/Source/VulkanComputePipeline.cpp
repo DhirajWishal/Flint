@@ -103,8 +103,8 @@ namespace Flint
 			for (const auto entry : map)
 			{
 				auto& info = descriptorSetInfos[entry.first];
-				info.mLayoutBindings.insert(info.mLayoutBindings.end(), entry.second.mLayoutBindings.begin(), entry.second.mLayoutBindings.end());
-				info.mPoolSizes.insert(info.mPoolSizes.end(), entry.second.mPoolSizes.begin(), entry.second.mPoolSizes.end());
+				info.m_LayoutBindings.insert(info.m_LayoutBindings.end(), entry.second.m_LayoutBindings.begin(), entry.second.m_LayoutBindings.end());
+				info.m_PoolSizes.insert(info.m_PoolSizes.end(), entry.second.m_PoolSizes.begin(), entry.second.m_PoolSizes.end());
 			}
 
 			Utilities::AddPushConstantRangesToVector(vConstantRanges, *pShader);
@@ -116,8 +116,8 @@ namespace Flint
 				vLayoutCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 				vLayoutCreateInfo.pNext = VK_NULL_HANDLE;
 				vLayoutCreateInfo.flags = 0;
-				vLayoutCreateInfo.bindingCount = static_cast<uint32_t>(info.second.mLayoutBindings.size());
-				vLayoutCreateInfo.pBindings = info.second.mLayoutBindings.data();
+				vLayoutCreateInfo.bindingCount = static_cast<uint32_t>(info.second.m_LayoutBindings.size());
+				vLayoutCreateInfo.pBindings = info.second.m_LayoutBindings.data();
 
 				VkDescriptorSetLayout vDescriptorSetLayout = VK_NULL_HANDLE;
 				FLINT_VK_ASSERT(pDevice->GetDeviceTable().vkCreateDescriptorSetLayout(pDevice->GetLogicalDevice(), &vLayoutCreateInfo, nullptr, &vDescriptorSetLayout));

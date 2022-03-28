@@ -23,6 +23,6 @@ namespace Flint
 	ReactorController::ReactorController(ReactorType type)
 	{
 		//if (type == ReactorType::Vulkan)
-		//	mReactorThread = std::jthread(Reactors::ReactorFunction<VulkanReactor>, mCommandQueue, mResourceMutex);
+		//	m_ReactorThread = std::jthread(Reactors::ReactorFunction<VulkanReactor>, m_CommandQueue, m_ResourceMutex);
 	}
 }

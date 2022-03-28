@@ -242,25 +242,25 @@ namespace Flint
 	struct ImageSamplerSpecification
 	{
 		// If set to 0.0f, the maximum supported will be set.
-		float mMaxAnisotrophy = 0.0f;
+		float m_MaxAnisotrophy = 0.0f;
 
-		float mMaxLevelOfDetail = 0.0f;
-		float mMinLevelOfDetail = 0.0f;
+		float m_MaxLevelOfDetail = 0.0f;
+		float m_MinLevelOfDetail = 0.0f;
 
-		float mMipLODBias = 0.0f;
+		float m_MipLODBias = 0.0f;
 
-		AddressMode mAddressModeU = AddressMode::Repeat;
-		AddressMode mAddressModeV = AddressMode::Repeat;
-		AddressMode mAddressModeW = AddressMode::Repeat;
+		AddressMode m_AddressModeU = AddressMode::Repeat;
+		AddressMode m_AddressModeV = AddressMode::Repeat;
+		AddressMode m_AddressModeW = AddressMode::Repeat;
 
-		BorderColor mBorderColor = BorderColor::OpaqueWhiteFLOAT;
+		BorderColor m_BorderColor = BorderColor::OpaqueWhiteFLOAT;
 
-		CompareOperator mCompareOperator = CompareOperator::Always;
+		CompareOperator m_CompareOperator = CompareOperator::Always;
 
-		ImageFilter mImageMagificationFilter = ImageFilter::Linear;
-		ImageFilter mImageMinificationFilter = ImageFilter::Linear;
+		ImageFilter m_ImageMagificationFilter = ImageFilter::Linear;
+		ImageFilter m_ImageMinificationFilter = ImageFilter::Linear;
 
-		ImageMipMapMode mMipMapMode = ImageMipMapMode::Linear;
+		ImageMipMapMode m_MipMapMode = ImageMipMapMode::Linear;
 
 		bool bEnableAnisotropy = true;
 		bool bEnableCompare = false;
@@ -303,10 +303,10 @@ namespace Flint
 	struct ShaderResource
 	{
 		ShaderResource() = default;
-		ShaderResource(uint32_t setIndex, ShaderResourceType type) : mSetIndex(setIndex), mType(type) {}
+		ShaderResource(uint32_t setIndex, ShaderResourceType type) : m_SetIndex(setIndex), m_Type(type) {}
 
-		uint32_t mSetIndex = 0;
-		ShaderResourceType mType = ShaderResourceType::UniformBuffer;
+		uint32_t m_SetIndex = 0;
+		ShaderResourceType m_Type = ShaderResourceType::UniformBuffer;
 	};
 
 	/**
@@ -315,13 +315,13 @@ namespace Flint
 	struct ShaderAttribute
 	{
 		ShaderAttribute() = default;
-		ShaderAttribute(const std::string& name, uint32_t location, ShaderAttributeDataType type) : mAttributeName(name), mLocation(location), mDataType(type) {}
+		ShaderAttribute(const std::string& name, uint32_t location, ShaderAttributeDataType type) : m_AttributeName(name), m_Location(location), m_DataType(type) {}
 
-		const bool operator==(const ShaderAttribute& other) const { return mAttributeName == other.mAttributeName && mLocation == other.mLocation && mDataType == other.mDataType; }
+		const bool operator==(const ShaderAttribute& other) const { return m_AttributeName == other.m_AttributeName && m_Location == other.m_Location && m_DataType == other.m_DataType; }
 
-		std::string mAttributeName = "";
-		uint32_t mLocation = 0;
-		ShaderAttributeDataType mDataType = ShaderAttributeDataType::VEC3;
+		std::string m_AttributeName = "";
+		uint32_t m_Location = 0;
+		ShaderAttributeDataType m_DataType = ShaderAttributeDataType::VEC3;
 	};
 
 	/**
@@ -330,12 +330,12 @@ namespace Flint
 	struct ShaderResourceKey
 	{
 		ShaderResourceKey() = default;
-		ShaderResourceKey(const uint32_t set, uint32_t binding) : mSetIndex(set), mBindingIndex(binding) {}
+		ShaderResourceKey(const uint32_t set, uint32_t binding) : m_SetIndex(set), m_BindingIndex(binding) {}
 
-		uint32_t mSetIndex = 0;
-		uint32_t mBindingIndex = 0;
+		uint32_t m_SetIndex = 0;
+		uint32_t m_BindingIndex = 0;
 
-		constexpr bool operator==(const ShaderResourceKey& other) const { return mSetIndex == other.mSetIndex && mBindingIndex == other.mBindingIndex; }
+		constexpr bool operator==(const ShaderResourceKey& other) const { return m_SetIndex == other.m_SetIndex && m_BindingIndex == other.m_BindingIndex; }
 	};
 
 	using TShaderResourceMap = std::unordered_map<uint32_t, std::unordered_map<uint32_t, ShaderResourceType>>;
@@ -392,10 +392,10 @@ namespace Flint
 	struct DepthClearValues
 	{
 		DepthClearValues() = default;
-		DepthClearValues(float depth, uint32_t stencil) : mDepth(depth), mStencil(stencil) {}
+		DepthClearValues(float depth, uint32_t stencil) : m_Depth(depth), m_Stencil(stencil) {}
 
-		float mDepth = 0.0f;
-		uint32_t mStencil = 0;
+		float m_Depth = 0.0f;
+		uint32_t m_Stencil = 0;
 	};
 
 	/**
@@ -405,14 +405,14 @@ namespace Flint
 	struct RenderTargetAttachment
 	{
 		RenderTargetAttachment() = default;
-		RenderTargetAttachment(const FColor4D& clearColor) : mClearColor(clearColor) {}
-		RenderTargetAttachment(ImageT* pImage, const FColor4D& clearColor) : pImage(std::move(pImage)), mClearColor(clearColor) {}
-		RenderTargetAttachment(ImageT* pImage, const DepthClearValues& depthValue) : pImage(std::move(pImage)), mDepthClearValue(depthValue) {}
+		RenderTargetAttachment(const FColor4D& clearColor) : m_ClearColor(clearColor) {}
+		RenderTargetAttachment(ImageT* pImage, const FColor4D& clearColor) : pImage(std::move(pImage)), m_ClearColor(clearColor) {}
+		RenderTargetAttachment(ImageT* pImage, const DepthClearValues& depthValue) : pImage(std::move(pImage)), m_DepthClearValue(depthValue) {}
 
 		ImageT* pImage = nullptr;
 
-		FColor4D mClearColor = FColor4D(CreateColor256(32.0f), CreateColor256(32.0f), CreateColor256(32.0f), 1.0f);
-		DepthClearValues mDepthClearValue = {};
+		FColor4D m_ClearColor = FColor4D(CreateColor256(32.0f), CreateColor256(32.0f), CreateColor256(32.0f), 1.0f);
+		DepthClearValues m_DepthClearValue = {};
 	};
 
 	/**
@@ -685,14 +685,14 @@ namespace Flint
 	 */
 	struct ColorBlendAttachment
 	{
-		bool mEnableBlend = false;
-		ColorBlendFactor mSrcBlendFactor = ColorBlendFactor::Zero;
-		ColorBlendFactor mDstBlendFactor = ColorBlendFactor::Zero;
-		ColorBlendFactor mSrcAlphaBlendFactor = ColorBlendFactor::Zero;
-		ColorBlendFactor mDstAlphaBlendFactor = ColorBlendFactor::Zero;
-		ColorBlendOperator mBlendOperator = ColorBlendOperator::Add;
-		ColorBlendOperator mAlphaBlendOperator = ColorBlendOperator::Add;
-		ColorWriteMask mColorWriteMask = ColorWriteMask::R | ColorWriteMask::G | ColorWriteMask::B | ColorWriteMask::A;
+		bool m_EnableBlend = false;
+		ColorBlendFactor m_SrcBlendFactor = ColorBlendFactor::Zero;
+		ColorBlendFactor m_DstBlendFactor = ColorBlendFactor::Zero;
+		ColorBlendFactor m_SrcAlphaBlendFactor = ColorBlendFactor::Zero;
+		ColorBlendFactor m_DstAlphaBlendFactor = ColorBlendFactor::Zero;
+		ColorBlendOperator m_BlendOperator = ColorBlendOperator::Add;
+		ColorBlendOperator m_AlphaBlendOperator = ColorBlendOperator::Add;
+		ColorWriteMask m_ColorWriteMask = ColorWriteMask::R | ColorWriteMask::G | ColorWriteMask::B | ColorWriteMask::A;
 	};
 
 	/**
@@ -702,29 +702,29 @@ namespace Flint
 	struct GraphicsPipelineSpecification {
 		GraphicsPipelineSpecification() = default;
 
-		TShaderAttributeMap mVertexInputAttributeMap = {};
-		std::vector<ColorBlendAttachment> mColorBlendAttachments = { ColorBlendAttachment() };
+		TShaderAttributeMap m_VertexInputAttributeMap = {};
+		std::vector<ColorBlendAttachment> m_ColorBlendAttachments = { ColorBlendAttachment() };
 
-		float mColorBlendConstants[4] = {
+		float m_ColorBlendConstants[4] = {
 			CreateColor256(0), CreateColor256(0),
 			CreateColor256(0), CreateColor256(0)
 		};
-		float mDepthBiasFactor = 0.0f;
-		float mDepthConstantFactor = 0.0f;
-		float mDepthSlopeFactor = 0.0f;
-		float mRasterizerLineWidth = 1.0f;
-		float mMinSampleShading = 1.0f;
+		float m_DepthBiasFactor = 0.0f;
+		float m_DepthConstantFactor = 0.0f;
+		float m_DepthSlopeFactor = 0.0f;
+		float m_RasterizerLineWidth = 1.0f;
+		float m_MinSampleShading = 1.0f;
 
-		uint32_t mTessellationPatchControlPoints = 0;
+		uint32_t m_TessellationPatchControlPoints = 0;
 
-		PrimitiveTopology mPrimitiveTopology = PrimitiveTopology::TriangleList;
-		CullMode mCullMode = CullMode::Back;
-		FrontFace mFrontFace = FrontFace::CounterClockwise;
-		PolygonMode mPolygonMode = PolygonMode::Fill;
-		ColorBlendLogic mColorBlendLogic = ColorBlendLogic::Clear;
-		DepthCompareLogic mDepthCompareLogic = DepthCompareLogic::LessOrEqual;
-		DynamicStateFlags mDynamicStateFlags = DynamicStateFlags(0);
-		MultiSampleCount mRasterizationSamples = MultiSampleCount::One;
+		PrimitiveTopology m_PrimitiveTopology = PrimitiveTopology::TriangleList;
+		CullMode m_CullMode = CullMode::Back;
+		FrontFace m_FrontFace = FrontFace::CounterClockwise;
+		PolygonMode m_PolygonMode = PolygonMode::Fill;
+		ColorBlendLogic m_ColorBlendLogic = ColorBlendLogic::Clear;
+		DepthCompareLogic m_DepthCompareLogic = DepthCompareLogic::LessOrEqual;
+		DynamicStateFlags m_DynamicStateFlags = DynamicStateFlags(0);
+		MultiSampleCount m_RasterizationSamples = MultiSampleCount::One;
 
 		bool bEnablePrimitiveRestart = false;
 		bool bEnableDepthBias = false;
@@ -746,7 +746,7 @@ namespace std
 	{
 		const size_t operator()(const Flint::ShaderAttribute& other) const
 		{
-			return hash<std::string>()(other.mAttributeName) ^ static_cast<uint8_t>(other.mDataType) ^ other.mLocation;
+			return hash<std::string>()(other.m_AttributeName) ^ static_cast<uint8_t>(other.m_DataType) ^ other.m_Location;
 		}
 	};
 

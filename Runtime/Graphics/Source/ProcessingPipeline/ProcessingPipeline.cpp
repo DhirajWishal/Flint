@@ -10,7 +10,7 @@
 namespace Flint
 {
 	ProcessingPipeline::ProcessingPipeline(Device* pDevice, const FBox2D frameExtent, const std::string& displayTitle, const uint32_t pipelineCount, const MultiSampleCount msaaCount, const bool forceColorBuffer, const bool forceDepthBuffer)
-		: mMultiSampleCount(msaaCount)
+		: m_MultiSampleCount(msaaCount)
 	{
 		uint32_t bufferCount = pipelineCount;
 		pDisplay = pDevice->GetInstance()->CreateDisplay(frameExtent, displayTitle);
@@ -20,11 +20,11 @@ namespace Flint
 			bufferCount = pDisplay->FindBestBufferCount(pDevice);
 
 		const auto frameBufferExtent = pDisplay->GetExtent();
-		const FBox3D extent = FBox3D(frameBufferExtent.mWidth, frameBufferExtent.mHeight, 1);
+		const FBox3D extent = FBox3D(frameBufferExtent.m_Width, frameBufferExtent.m_Height, 1);
 		std::vector<RenderTargetAttachment> attachments = {};
 
 		// Check if we need a color buffer.
-		if (mMultiSampleCount != MultiSampleCount::One || forceColorBuffer)
+		if (m_MultiSampleCount != MultiSampleCount::One || forceColorBuffer)
 		{
 			bContainsColorBuffer = true;
 

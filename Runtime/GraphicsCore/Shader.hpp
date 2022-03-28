@@ -15,7 +15,7 @@ namespace std
 	{
 		constexpr size_t operator()(const Flint::ShaderResourceKey& resourceKey) const
 		{
-			return static_cast<size_t>(resourceKey.mSetIndex) << 32 | static_cast<size_t>(resourceKey.mBindingIndex);
+			return static_cast<size_t>(resourceKey.m_SetIndex) << 32 | static_cast<size_t>(resourceKey.m_BindingIndex);
 		}
 	};
 }
@@ -41,7 +41,7 @@ namespace Flint
 		 * @param type The shader type.
 		 * @param path The file path to the asset file.
 		 */
-		Shader(DeviceT* pDevice, const ShaderType type, const std::filesystem::path& path) : DeviceBoundObject(pDevice), mType(type)
+		Shader(DeviceT* pDevice, const ShaderType type, const std::filesystem::path& path) : DeviceBoundObject(pDevice), m_Type(type)
 		{
 			if (type == ShaderType::Undefined)
 				throw std::invalid_argument("Shader type should not be Undefined!");
@@ -58,7 +58,7 @@ namespace Flint
 		 * @param type The shader type.
 		 * @param code The shader code as a vector of uint32_t.
 		 */
-		Shader(DeviceT* pDevice, const ShaderType type, const std::vector<uint32_t>& code) : DeviceBoundObject(pDevice), mType(type)
+		Shader(DeviceT* pDevice, const ShaderType type, const std::vector<uint32_t>& code) : DeviceBoundObject(pDevice), m_Type(type)
 		{
 			if (type == ShaderType::Undefined)
 				throw std::invalid_argument("Shader type should not be Undefined!");
@@ -75,7 +75,7 @@ namespace Flint
 		 * @param type The shader type.
 		 * @param code The shader code as a string.
 		 */
-		Shader(DeviceT* pDevice, const ShaderType type, const std::string& code) : DeviceBoundObject(pDevice), mType(type)
+		Shader(DeviceT* pDevice, const ShaderType type, const std::string& code) : DeviceBoundObject(pDevice), m_Type(type)
 		{
 			if (type == ShaderType::Undefined)
 				throw std::invalid_argument("Shader type should not be Undefined!");
@@ -119,7 +119,7 @@ namespace Flint
 		 *
 		 * @return The shader resources.
 		 */
-		const TShaderResourceMap GetShaderResources() const { return mResourceMap; }
+		const TShaderResourceMap GetShaderResources() const { return m_ResourceMap; }
 
 		/**
 		 * Get shader input attributes.
@@ -127,7 +127,7 @@ namespace Flint
 		 *
 		 * @return The array of input attributes.
 		 */
-		const std::vector<ShaderAttribute> GetInputAttributes() const { return mInputAttributes; }
+		const std::vector<ShaderAttribute> GetInputAttributes() const { return m_InputAttributes; }
 
 		/**
 		 * Get shader output attributes.
@@ -135,14 +135,14 @@ namespace Flint
 		 *
 		 * @return The array of output attributes.
 		 */
-		const std::vector<ShaderAttribute> GetOutputAttributes() const { return mOutputAttributes; }
+		const std::vector<ShaderAttribute> GetOutputAttributes() const { return m_OutputAttributes; }
 
 	protected:
-		TShaderResourceMap mResourceMap;
+		TShaderResourceMap m_ResourceMap;
 
-		std::vector<ShaderAttribute> mInputAttributes = {};
-		std::vector<ShaderAttribute> mOutputAttributes = {};
+		std::vector<ShaderAttribute> m_InputAttributes = {};
+		std::vector<ShaderAttribute> m_OutputAttributes = {};
 
-		ShaderType mType = ShaderType::Undefined;
+		ShaderType m_Type = ShaderType::Undefined;
 	};
 }

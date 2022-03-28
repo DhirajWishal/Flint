@@ -31,9 +31,9 @@ namespace Flint
 
 	private:
 #ifndef FLINT_RELEASE
-		std::string_view mFunctionSignature = {};
-		std::chrono::time_point<std::chrono::high_resolution_clock> mStart = {};
-		std::chrono::time_point<std::chrono::high_resolution_clock> mEnd = {};
+		std::string_view m_FunctionSignature = {};
+		std::chrono::time_point<std::chrono::high_resolution_clock> m_Start = {};
+		std::chrono::time_point<std::chrono::high_resolution_clock> m_End = {};
 
 #endif // !FLINT_RELEASE
 	};
@@ -51,15 +51,15 @@ namespace Flint
 		/**
 		 * Lock the resources.
 		 */
-		void Lock() { while (!mMutex.try_lock()); }
+		void Lock() { while (!m_Mutex.try_lock()); }
 
 		/**
 		 * Unlock the resources.
 		 */
-		void Unlock() { mMutex.unlock(); }
+		void Unlock() { m_Mutex.unlock(); }
 
-		std::ofstream mProfileFile = {};
-		std::mutex mMutex = {};
+		std::ofstream m_ProfileFile = {};
+		std::mutex m_Mutex = {};
 	};
 
 	/**
@@ -72,7 +72,7 @@ namespace Flint
 	{
 		ProfileLogger();
 		~ProfileLogger();
-		static ProfileLogger mInstance;
+		static ProfileLogger m_Instance;
 
 	public:
 		/**
@@ -80,7 +80,7 @@ namespace Flint
 		 *
 		 * @return the instance reference.
 		 */
-		static ProfileLogger& GetInstance() { return mInstance; }
+		static ProfileLogger& GetInstance() { return m_Instance; }
 
 		/**
 		 * Write a profile content to the file.

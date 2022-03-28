@@ -134,7 +134,7 @@ namespace Flint
 		 * @param action The action of the event.
 		 * @param special The special character of the event.
 		 */
-		ButtonEvent(EventAction action, SpecialCharacter special) : mAction(action), mSpecialCharacter(special) {}
+		ButtonEvent(EventAction action, SpecialCharacter special) : m_Action(action), m_SpecialCharacter(special) {}
 
 		/**
 		 * Activate the event.
@@ -142,50 +142,50 @@ namespace Flint
 		 * @param action The action of the event.
 		 * @param special The special character of th event.
 		 */
-		void Activate(EventAction action, SpecialCharacter special) { mAction = action, mSpecialCharacter = special; }
+		void Activate(EventAction action, SpecialCharacter special) { m_Action = action, m_SpecialCharacter = special; }
 
 		/**
 		 * Reset the event back to its defaults.
 		 */
-		void Reset() { mAction = EventAction::Released, mSpecialCharacter = SpecialCharacter(0); }
+		void Reset() { m_Action = EventAction::Released, m_SpecialCharacter = SpecialCharacter(0); }
 
 		/**
 		 * Get the event action.
 		 *
 		 * @return The event action.
 		 */
-		const EventAction GetEventAction() const { return mAction; }
+		const EventAction GetEventAction() const { return m_Action; }
 
 		/**
 		 * Get the special character of the event.
 		 *
 		 * @return The special character.
 		 */
-		const SpecialCharacter GetSpecialCharacter() const { return mSpecialCharacter; }
+		const SpecialCharacter GetSpecialCharacter() const { return m_SpecialCharacter; }
 
 		/**
 		 * Check if the event is released.
 		 *
 		 * @return Boolean value.
 		 */
-		const bool IsReleased() const { return mAction == EventAction::Released; }
+		const bool IsReleased() const { return m_Action == EventAction::Released; }
 
 		/**
 		 * Check if the event is pressed.
 		 *
 		 * @return Boolean value.
 		 */
-		const bool IsPressed() const { return mAction == EventAction::Pressed; }
+		const bool IsPressed() const { return m_Action == EventAction::Pressed; }
 
 		/**
 		 * Check if the event is on repeat.
 		 *
 		 * @return Boolean value.
 		 */
-		const bool IsOnRepeat() const { return mAction == EventAction::OnRepeat; }
+		const bool IsOnRepeat() const { return m_Action == EventAction::OnRepeat; }
 
-		EventAction mAction = EventAction::Released;
-		SpecialCharacter mSpecialCharacter = SpecialCharacter(0);
+		EventAction m_Action = EventAction::Released;
+		SpecialCharacter m_SpecialCharacter = SpecialCharacter(0);
 	};
 
 	/**
@@ -207,7 +207,7 @@ namespace Flint
 		 * @param title The display title.
 		 */
 		Display(InstanceT* pInstance, const FBox2D& extent, const std::string& title) 
-			: pInstance(pInstance), mExtent(extent), mTitle(title)
+			: pInstance(pInstance), m_Extent(extent), m_Title(title)
 		{
 			if (!pInstance)
 				throw std::invalid_argument("Instance pointer should not be null!");
@@ -253,7 +253,7 @@ namespace Flint
 		 *
 		 * @return Boolean value.
 		 */
-		const bool ContainsDragAndDrop() const { return !mDragAndDropPaths.empty(); }
+		const bool ContainsDragAndDrop() const { return !m_DragAndDropPaths.empty(); }
 
 		/**
 		 * Get the drag and drop values.
@@ -263,7 +263,7 @@ namespace Flint
 		 */
 		const std::vector<std::filesystem::path> GetDragAndDropValues()
 		{
-			return std::move(mDragAndDropPaths);
+			return std::move(m_DragAndDropPaths);
 		}
 
 		/**
@@ -271,7 +271,7 @@ namespace Flint
 		 *
 		 * @return The title string.
 		 */
-		const std::string GetTitle() const { return mTitle; }
+		const std::string GetTitle() const { return m_Title; }
 
 		/**
 		 * Set a new window title.
@@ -292,7 +292,7 @@ namespace Flint
 		 *
 		 * @return The extent.
 		 */
-		const FBox2D GetExtent() const { return mExtent; }
+		const FBox2D GetExtent() const { return m_Extent; }
 
 		/**
 		 * Get a key event from the event store.
@@ -300,7 +300,7 @@ namespace Flint
 		 * @param key The key code.
 		 * @return The button event.
 		 */
-		const ButtonEvent GetKeyEvent(KeyCode key) const { return mKeyEvents[static_cast<uint8_t>(key)]; }
+		const ButtonEvent GetKeyEvent(KeyCode key) const { return m_KeyEvents[static_cast<uint8_t>(key)]; }
 
 		/**
 		 * Get a mouse button event from the event store.
@@ -308,61 +308,61 @@ namespace Flint
 		 * @param button The mouse button code.
 		 * @return The button event.
 		 */
-		const ButtonEvent GetMouseButtonEvent(MouseButton button) const { return mMouseButtonEvents[static_cast<uint8_t>(button)]; }
+		const ButtonEvent GetMouseButtonEvent(MouseButton button) const { return m_MouseButtonEvents[static_cast<uint8_t>(button)]; }
 
 		/**
 		 * Get the mouse position.
 		 *
 		 * @return The position.
 		 */
-		const FExtent2D<float> GetMousePosition() const { return FExtent2D<float>(mMousePositionX, mMousePositionY); }
+		const FExtent2D<float> GetMousePosition() const { return FExtent2D<float>(m_MousePositionX, m_MousePositionY); }
 
 		/**
 		 * Get the mouse scroll.
 		 *
 		 * @return The mouse scroll as (up, down).
 		 */
-		const FExtent2D<float> GetMouseScroll() const { return FExtent2D<float>(mMouseScrollUp, mMouseScrollDown); }
+		const FExtent2D<float> GetMouseScroll() const { return FExtent2D<float>(m_MouseScrollUp, m_MouseScrollDown); }
 
 		/**
 		 * Check if the display is open.
 		 *
 		 * @return Boolean value.
 		 */
-		const bool IsOpen() const { return mIsDisplayOpen; }
+		const bool IsOpen() const { return m_IsDisplayOpen; }
 
 		/**
 		 * Check if the display is resized.
 		 *
 		 * @return Boolean value.
 		 */
-		const bool IsDisplayResized() const { return mIsDislayResized; }
+		const bool IsDisplayResized() const { return m_IsDislayResized; }
 
 		/**
 		 * Check if the cursor is within the display.
 		 *
 		 * @return Boolean value.
 		 */
-		const bool IsCursorWithinDisplay() const { return mIsCursorWithinDisplay; }
+		const bool IsCursorWithinDisplay() const { return m_IsCursorWithinDisplay; }
 
 	protected:
-		std::vector<std::filesystem::path> mDragAndDropPaths;
+		std::vector<std::filesystem::path> m_DragAndDropPaths;
 
-		std::string mTitle = "";
+		std::string m_Title = "";
 		InstanceT* pInstance = nullptr;
-		FBox2D mExtent = {};
+		FBox2D m_Extent = {};
 
-		ButtonEvent mKeyEvents[static_cast<uint8_t>(KeyCode::KeyCodeMax)] = {};
-		ButtonEvent mMouseButtonEvents[static_cast<uint8_t>(MouseButton::MouseButtonMax)] = {};
+		ButtonEvent m_KeyEvents[static_cast<uint8_t>(KeyCode::KeyCodeMax)] = {};
+		ButtonEvent m_MouseButtonEvents[static_cast<uint8_t>(MouseButton::MouseButtonMax)] = {};
 
-		float mMousePositionX = 0.0f;
-		float mMousePositionY = 0.0f;
+		float m_MousePositionX = 0.0f;
+		float m_MousePositionY = 0.0f;
 
-		float mMouseScrollUp = 0.0f;
-		float mMouseScrollDown = 0.0f;
+		float m_MouseScrollUp = 0.0f;
+		float m_MouseScrollDown = 0.0f;
 
-		bool mIsDisplayOpen = true;
-		bool mIsDislayResized = false;
-		bool mIsCursorWithinDisplay = false;
+		bool m_IsDisplayOpen = true;
+		bool m_IsDislayResized = false;
+		bool m_IsCursorWithinDisplay = false;
 	};
 }

@@ -24,8 +24,8 @@ namespace Flint
 			 */
 			ScreenBoundScene(GraphicsDevice* pGraphicsDevice, const FBox2D extent, const std::string& title);
 
-			AbstractionObject mDisplay = {};
-			AbstractionObject mRenderTarget = {};
+			AbstractionObject m_Display = {};
+			AbstractionObject m_RenderTarget = {};
 		};
 	}
 }

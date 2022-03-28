@@ -19,18 +19,18 @@ namespace Flint
 	struct FExtent2D
 	{
 		constexpr FExtent2D() = default;
-		constexpr FExtent2D(Type value) : mWidth(value), mHeight(value) {}
-		constexpr FExtent2D(Type width, Type height) : mWidth(width), mHeight(height) {}
+		constexpr FExtent2D(Type value) : m_Width(value), m_Height(value) {}
+		constexpr FExtent2D(Type width, Type height) : m_Width(width), m_Height(height) {}
 
-		constexpr bool IsZero() const { return mWidth == Type() || mHeight == Type(); }
+		constexpr bool IsZero() const { return m_Width == Type() || m_Height == Type(); }
 
 	public:
 		union
 		{
 			struct
 			{
-				Type mWidth;
-				Type mHeight;
+				Type m_Width;
+				Type m_Height;
 			};
 
 			struct
@@ -50,19 +50,19 @@ namespace Flint
 	struct FExtent3D
 	{
 		constexpr FExtent3D() = default;
-		constexpr FExtent3D(Type value) : mWidth(value), mHeight(value), mDepth(value) {}
-		constexpr FExtent3D(Type width, Type height, Type depth) : mWidth(width), mHeight(height), mDepth(depth) {}
+		constexpr FExtent3D(Type value) : m_Width(value), m_Height(value), m_Depth(value) {}
+		constexpr FExtent3D(Type width, Type height, Type depth) : m_Width(width), m_Height(height), m_Depth(depth) {}
 
-		constexpr bool IsZero() const { return mWidth == Type() || mHeight == Type() || mDepth == Type(); }
+		constexpr bool IsZero() const { return m_Width == Type() || m_Height == Type() || m_Depth == Type(); }
 
 	public:
 		union
 		{
 			struct
 			{
-				Type mWidth;
-				Type mHeight;
-				Type mDepth;
+				Type m_Width;
+				Type m_Height;
+				Type m_Depth;
 			};
 
 			struct
@@ -80,13 +80,13 @@ namespace Flint
 	struct FColor4D
 	{
 		constexpr FColor4D() = default;
-		constexpr FColor4D(float value) : mRed(value), mGreen(value), mBlue(value), mAlpha(value) {}
-		constexpr FColor4D(float red, float green, float blue, float alpha) : mRed(red), mGreen(green), mBlue(blue), mAlpha(alpha) {}
+		constexpr FColor4D(float value) : m_Red(value), m_Green(value), m_Blue(value), m_Alpha(value) {}
+		constexpr FColor4D(float red, float green, float blue, float alpha) : m_Red(red), m_Green(green), m_Blue(blue), m_Alpha(alpha) {}
 
-		float mRed = 0.0f;
-		float mGreen = 0.0f;
-		float mBlue = 0.0f;
-		float mAlpha = 0.0f;
+		float m_Red = 0.0f;
+		float m_Green = 0.0f;
+		float m_Blue = 0.0f;
+		float m_Alpha = 0.0f;
 	};
 
 	using FBox2D = FExtent2D<uint32_t>;

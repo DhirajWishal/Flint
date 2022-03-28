@@ -42,6 +42,6 @@ namespace Flint
 	protected:
 		std::unique_ptr<ShaderT> pShader = nullptr;
 
-		uint64_t mInstanceIndex = 0;
+		uint64_t m_InstanceIndex = 0;
 	};
 }

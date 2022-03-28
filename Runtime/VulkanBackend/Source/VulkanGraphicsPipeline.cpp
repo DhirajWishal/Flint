@@ -653,20 +653,20 @@ namespace Flint
 				VkVertexInputAttributeDescription vAttributeDescription = {};
 				VkVertexInputBindingDescription vBindingDescription = {};
 
-				for (const auto binding : mSpecification.mVertexInputAttributeMap)
+				for (const auto binding : m_Specification.m_VertexInputAttributeMap)
 				{
 					vAttributeDescription.binding = binding.first;
 					vAttributeDescription.offset = 0;
 					for (const auto attribute : binding.second)
 					{
-						if (attribute.mDataType == ShaderAttributeDataType::BUILT_IN)
+						if (attribute.m_DataType == ShaderAttributeDataType::BUILT_IN)
 							continue;
 
-						vAttributeDescription.location = attribute.mLocation;
-						vAttributeDescription.format = Helpers::GetFormatFromSize(attribute.mDataType);
+						vAttributeDescription.location = attribute.m_Location;
+						vAttributeDescription.format = Helpers::GetFormatFromSize(attribute.m_DataType);
 
 						vVertexAttributes.emplace_back(vAttributeDescription);
-						vAttributeDescription.offset += static_cast<uint32_t>(attribute.mDataType);
+						vAttributeDescription.offset += static_cast<uint32_t>(attribute.m_DataType);
 					}
 
 					vBindingDescription.binding = binding.first;
@@ -688,27 +688,27 @@ namespace Flint
 			vInputAssemblyStateCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
 			vInputAssemblyStateCreateInfo.pNext = VK_NULL_HANDLE;
 			vInputAssemblyStateCreateInfo.flags = 0;
-			vInputAssemblyStateCreateInfo.primitiveRestartEnable = GET_VK_BOOL(mSpecification.bEnablePrimitiveRestart);
-			vInputAssemblyStateCreateInfo.topology = Helpers::GetPrimitiveTopology(mSpecification.mPrimitiveTopology);
+			vInputAssemblyStateCreateInfo.primitiveRestartEnable = GET_VK_BOOL(m_Specification.bEnablePrimitiveRestart);
+			vInputAssemblyStateCreateInfo.topology = Helpers::GetPrimitiveTopology(m_Specification.m_PrimitiveTopology);
 
 			// Tessellation state.
 			vTessellationStateCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO;
 			vTessellationStateCreateInfo.pNext = VK_NULL_HANDLE;
 			vTessellationStateCreateInfo.flags = 0;
-			vTessellationStateCreateInfo.patchControlPoints = mSpecification.mTessellationPatchControlPoints;
+			vTessellationStateCreateInfo.patchControlPoints = m_Specification.m_TessellationPatchControlPoints;
 
 			// Color blend state.
-			for (const auto attachment : mSpecification.mColorBlendAttachments)
+			for (const auto attachment : m_Specification.m_ColorBlendAttachments)
 			{
 				VkPipelineColorBlendAttachmentState vAttachmentState = {};
-				vAttachmentState.blendEnable = GET_VK_BOOL(attachment.mEnableBlend);
-				vAttachmentState.alphaBlendOp = Helpers::GetBlendOp(attachment.mAlphaBlendOperator);
-				vAttachmentState.colorBlendOp = Helpers::GetBlendOp(attachment.mBlendOperator);
-				vAttachmentState.colorWriteMask = Helpers::GetComponentFlags(attachment.mColorWriteMask);
-				vAttachmentState.srcColorBlendFactor = Helpers::GetBlendFactor(attachment.mSrcBlendFactor);
-				vAttachmentState.srcAlphaBlendFactor = Helpers::GetBlendFactor(attachment.mSrcAlphaBlendFactor);
-				vAttachmentState.dstAlphaBlendFactor = Helpers::GetBlendFactor(attachment.mDstAlphaBlendFactor);
-				vAttachmentState.dstColorBlendFactor = Helpers::GetBlendFactor(attachment.mDstBlendFactor);
+				vAttachmentState.blendEnable = GET_VK_BOOL(attachment.m_EnableBlend);
+				vAttachmentState.alphaBlendOp = Helpers::GetBlendOp(attachment.m_AlphaBlendOperator);
+				vAttachmentState.colorBlendOp = Helpers::GetBlendOp(attachment.m_BlendOperator);
+				vAttachmentState.colorWriteMask = Helpers::GetComponentFlags(attachment.m_ColorWriteMask);
+				vAttachmentState.srcColorBlendFactor = Helpers::GetBlendFactor(attachment.m_SrcBlendFactor);
+				vAttachmentState.srcAlphaBlendFactor = Helpers::GetBlendFactor(attachment.m_SrcAlphaBlendFactor);
+				vAttachmentState.dstAlphaBlendFactor = Helpers::GetBlendFactor(attachment.m_DstAlphaBlendFactor);
+				vAttachmentState.dstColorBlendFactor = Helpers::GetBlendFactor(attachment.m_DstBlendFactor);
 
 				vCBASS.emplace_back(vAttachmentState);
 			}
@@ -716,9 +716,9 @@ namespace Flint
 			vColorBlendStateCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
 			vColorBlendStateCreateInfo.pNext = VK_NULL_HANDLE;
 			vColorBlendStateCreateInfo.flags = 0;
-			vColorBlendStateCreateInfo.logicOp = Helpers::GetLogicOp(mSpecification.mColorBlendLogic);
-			vColorBlendStateCreateInfo.logicOpEnable = GET_VK_BOOL(mSpecification.bEnableColorBlendLogic);
-			std::copy_n(mSpecification.mColorBlendConstants, 4, vColorBlendStateCreateInfo.blendConstants);
+			vColorBlendStateCreateInfo.logicOp = Helpers::GetLogicOp(m_Specification.m_ColorBlendLogic);
+			vColorBlendStateCreateInfo.logicOpEnable = GET_VK_BOOL(m_Specification.bEnableColorBlendLogic);
+			std::copy_n(m_Specification.m_ColorBlendConstants, 4, vColorBlendStateCreateInfo.blendConstants);
 
 			vColorBlendStateCreateInfo.attachmentCount = static_cast<uint32_t>(vCBASS.size());
 			vColorBlendStateCreateInfo.pAttachments = vCBASS.data();
@@ -727,39 +727,39 @@ namespace Flint
 			vRasterizationStateCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
 			vRasterizationStateCreateInfo.pNext = VK_NULL_HANDLE;
 			vRasterizationStateCreateInfo.flags = 0;
-			vRasterizationStateCreateInfo.cullMode = Helpers::GetCullMode(mSpecification.mCullMode);
-			vRasterizationStateCreateInfo.depthBiasEnable = GET_VK_BOOL(mSpecification.bEnableDepthBias);
-			vRasterizationStateCreateInfo.depthBiasClamp = mSpecification.mDepthBiasFactor;
-			vRasterizationStateCreateInfo.depthBiasConstantFactor = mSpecification.mDepthConstantFactor;
-			vRasterizationStateCreateInfo.depthBiasSlopeFactor = mSpecification.mDepthSlopeFactor;
-			vRasterizationStateCreateInfo.depthClampEnable = GET_VK_BOOL(mSpecification.bEnableDepthClamp);
-			vRasterizationStateCreateInfo.frontFace = Helpers::GetFrontFace(mSpecification.mFrontFace);
-			vRasterizationStateCreateInfo.lineWidth = mSpecification.mRasterizerLineWidth;
-			vRasterizationStateCreateInfo.polygonMode = Helpers::GetPolygonMode(mSpecification.mPolygonMode);
-			vRasterizationStateCreateInfo.rasterizerDiscardEnable = GET_VK_BOOL(mSpecification.bEnableRasterizerDiscard);
+			vRasterizationStateCreateInfo.cullMode = Helpers::GetCullMode(m_Specification.m_CullMode);
+			vRasterizationStateCreateInfo.depthBiasEnable = GET_VK_BOOL(m_Specification.bEnableDepthBias);
+			vRasterizationStateCreateInfo.depthBiasClamp = m_Specification.m_DepthBiasFactor;
+			vRasterizationStateCreateInfo.depthBiasConstantFactor = m_Specification.m_DepthConstantFactor;
+			vRasterizationStateCreateInfo.depthBiasSlopeFactor = m_Specification.m_DepthSlopeFactor;
+			vRasterizationStateCreateInfo.depthClampEnable = GET_VK_BOOL(m_Specification.bEnableDepthClamp);
+			vRasterizationStateCreateInfo.frontFace = Helpers::GetFrontFace(m_Specification.m_FrontFace);
+			vRasterizationStateCreateInfo.lineWidth = m_Specification.m_RasterizerLineWidth;
+			vRasterizationStateCreateInfo.polygonMode = Helpers::GetPolygonMode(m_Specification.m_PolygonMode);
+			vRasterizationStateCreateInfo.rasterizerDiscardEnable = GET_VK_BOOL(m_Specification.bEnableRasterizerDiscard);
 
 			// Multisample state.
 			vMultisampleStateCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
 			vMultisampleStateCreateInfo.pNext = VK_NULL_HANDLE;
 			vMultisampleStateCreateInfo.flags = 0;
-			vMultisampleStateCreateInfo.alphaToCoverageEnable = GET_VK_BOOL(mSpecification.bEnableAlphaCoverage);
-			vMultisampleStateCreateInfo.alphaToOneEnable = GET_VK_BOOL(mSpecification.bEnableAlphaToOne);
-			vMultisampleStateCreateInfo.minSampleShading = mSpecification.mMinSampleShading;
+			vMultisampleStateCreateInfo.alphaToCoverageEnable = GET_VK_BOOL(m_Specification.bEnableAlphaCoverage);
+			vMultisampleStateCreateInfo.alphaToOneEnable = GET_VK_BOOL(m_Specification.bEnableAlphaToOne);
+			vMultisampleStateCreateInfo.minSampleShading = m_Specification.m_MinSampleShading;
 			vMultisampleStateCreateInfo.pSampleMask;	// TODO
-			vMultisampleStateCreateInfo.rasterizationSamples = static_cast<VkSampleCountFlagBits>(Helpers::GetSampleCount(mSpecification.mRasterizationSamples));
-			vMultisampleStateCreateInfo.sampleShadingEnable = GET_VK_BOOL(mSpecification.bEnableSampleShading);
+			vMultisampleStateCreateInfo.rasterizationSamples = static_cast<VkSampleCountFlagBits>(Helpers::GetSampleCount(m_Specification.m_RasterizationSamples));
+			vMultisampleStateCreateInfo.sampleShadingEnable = GET_VK_BOOL(m_Specification.bEnableSampleShading);
 
 			// Depth stencil state.
 			vDepthStencilStateCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
 			vDepthStencilStateCreateInfo.pNext = VK_NULL_HANDLE;
 			vDepthStencilStateCreateInfo.flags = 0;
 			vDepthStencilStateCreateInfo.back.compareOp = VK_COMPARE_OP_ALWAYS;
-			vDepthStencilStateCreateInfo.depthTestEnable = GET_VK_BOOL(mSpecification.bEnableDepthTest);
-			vDepthStencilStateCreateInfo.depthWriteEnable = GET_VK_BOOL(mSpecification.bEnableDepthWrite);
-			vDepthStencilStateCreateInfo.depthCompareOp = Helpers::GetCompareOp(mSpecification.mDepthCompareLogic);
+			vDepthStencilStateCreateInfo.depthTestEnable = GET_VK_BOOL(m_Specification.bEnableDepthTest);
+			vDepthStencilStateCreateInfo.depthWriteEnable = GET_VK_BOOL(m_Specification.bEnableDepthWrite);
+			vDepthStencilStateCreateInfo.depthCompareOp = Helpers::GetCompareOp(m_Specification.m_DepthCompareLogic);
 
 			// Dynamic state.
-			vDynamicStates = std::move(Helpers::GetDynamicStates(mSpecification.mDynamicStateFlags));
+			vDynamicStates = std::move(Helpers::GetDynamicStates(m_Specification.m_DynamicStateFlags));
 
 			vDynamicStateCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
 			vDynamicStateCreateInfo.pNext = VK_NULL_HANDLE;
@@ -803,8 +803,8 @@ namespace Flint
 				for (const auto entry : map)
 				{
 					auto& info = descriptorSetInfos[entry.first];
-					info.mLayoutBindings.insert(info.mLayoutBindings.end(), entry.second.mLayoutBindings.begin(), entry.second.mLayoutBindings.end());
-					info.mPoolSizes.insert(info.mPoolSizes.end(), entry.second.mPoolSizes.begin(), entry.second.mPoolSizes.end());
+					info.m_LayoutBindings.insert(info.m_LayoutBindings.end(), entry.second.m_LayoutBindings.begin(), entry.second.m_LayoutBindings.end());
+					info.m_PoolSizes.insert(info.m_PoolSizes.end(), entry.second.m_PoolSizes.begin(), entry.second.m_PoolSizes.end());
 				}
 			}
 
@@ -817,8 +817,8 @@ namespace Flint
 				for (const auto entry : map)
 				{
 					auto& info = descriptorSetInfos[entry.first];
-					info.mLayoutBindings.insert(info.mLayoutBindings.end(), entry.second.mLayoutBindings.begin(), entry.second.mLayoutBindings.end());
-					info.mPoolSizes.insert(info.mPoolSizes.end(), entry.second.mPoolSizes.begin(), entry.second.mPoolSizes.end());
+					info.m_LayoutBindings.insert(info.m_LayoutBindings.end(), entry.second.m_LayoutBindings.begin(), entry.second.m_LayoutBindings.end());
+					info.m_PoolSizes.insert(info.m_PoolSizes.end(), entry.second.m_PoolSizes.begin(), entry.second.m_PoolSizes.end());
 				}
 			}
 
@@ -831,8 +831,8 @@ namespace Flint
 				for (const auto entry : map)
 				{
 					auto& info = descriptorSetInfos[entry.first];
-					info.mLayoutBindings.insert(info.mLayoutBindings.end(), entry.second.mLayoutBindings.begin(), entry.second.mLayoutBindings.end());
-					info.mPoolSizes.insert(info.mPoolSizes.end(), entry.second.mPoolSizes.begin(), entry.second.mPoolSizes.end());
+					info.m_LayoutBindings.insert(info.m_LayoutBindings.end(), entry.second.m_LayoutBindings.begin(), entry.second.m_LayoutBindings.end());
+					info.m_PoolSizes.insert(info.m_PoolSizes.end(), entry.second.m_PoolSizes.begin(), entry.second.m_PoolSizes.end());
 				}
 			}
 
@@ -845,8 +845,8 @@ namespace Flint
 				for (const auto entry : map)
 				{
 					auto& info = descriptorSetInfos[entry.first];
-					info.mLayoutBindings.insert(info.mLayoutBindings.end(), entry.second.mLayoutBindings.begin(), entry.second.mLayoutBindings.end());
-					info.mPoolSizes.insert(info.mPoolSizes.end(), entry.second.mPoolSizes.begin(), entry.second.mPoolSizes.end());
+					info.m_LayoutBindings.insert(info.m_LayoutBindings.end(), entry.second.m_LayoutBindings.begin(), entry.second.m_LayoutBindings.end());
+					info.m_PoolSizes.insert(info.m_PoolSizes.end(), entry.second.m_PoolSizes.begin(), entry.second.m_PoolSizes.end());
 				}
 			}
 
@@ -859,8 +859,8 @@ namespace Flint
 				for (const auto entry : map)
 				{
 					auto& info = descriptorSetInfos[entry.first];
-					info.mLayoutBindings.insert(info.mLayoutBindings.end(), entry.second.mLayoutBindings.begin(), entry.second.mLayoutBindings.end());
-					info.mPoolSizes.insert(info.mPoolSizes.end(), entry.second.mPoolSizes.begin(), entry.second.mPoolSizes.end());
+					info.m_LayoutBindings.insert(info.m_LayoutBindings.end(), entry.second.m_LayoutBindings.begin(), entry.second.m_LayoutBindings.end());
+					info.m_PoolSizes.insert(info.m_PoolSizes.end(), entry.second.m_PoolSizes.begin(), entry.second.m_PoolSizes.end());
 				}
 			}
 
@@ -871,8 +871,8 @@ namespace Flint
 				vLayoutCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 				vLayoutCreateInfo.pNext = VK_NULL_HANDLE;
 				vLayoutCreateInfo.flags = 0;
-				vLayoutCreateInfo.bindingCount = static_cast<uint32_t>(info.second.mLayoutBindings.size());
-				vLayoutCreateInfo.pBindings = info.second.mLayoutBindings.data();
+				vLayoutCreateInfo.bindingCount = static_cast<uint32_t>(info.second.m_LayoutBindings.size());
+				vLayoutCreateInfo.pBindings = info.second.m_LayoutBindings.data();
 
 				VkDescriptorSetLayout vDescriptorSetLayout = VK_NULL_HANDLE;
 				FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateDescriptorSetLayout(vDevice.GetLogicalDevice(), &vLayoutCreateInfo, nullptr, &vDescriptorSetLayout));
@@ -899,8 +899,8 @@ namespace Flint
 
 			// Resolve viewport state.
 			VkRect2D vR2D = {};
-			vR2D.extent.width = static_cast<uint32_t>(pRenderTarget->GetExtent().mWidth);
-			vR2D.extent.height = static_cast<uint32_t>(pRenderTarget->GetExtent().mHeight);
+			vR2D.extent.width = static_cast<uint32_t>(pRenderTarget->GetExtent().m_Width);
+			vR2D.extent.height = static_cast<uint32_t>(pRenderTarget->GetExtent().m_Height);
 			vR2D.offset = { 0, 0 };
 
 			VkViewport vVP = {};

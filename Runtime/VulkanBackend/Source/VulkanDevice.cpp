@@ -114,7 +114,7 @@ namespace Flint
 			OPTICK_EVENT();
 
 			if ((flags & DeviceFlags::GraphicsCompatible) == DeviceFlags::GraphicsCompatible)
-				mDeviceExtensions.emplace_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+				m_DeviceExtensions.emplace_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
 
 			InitializePhysicalDevice();
 			InitializeLogicalDevice();
@@ -125,7 +125,7 @@ namespace Flint
 			OPTICK_EVENT();
 
 			VkBool32 isSupported = VK_FALSE;
-			FLINT_VK_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(GetPhysicalDevice(), GetQueue().mGraphicsFamily.value(), pDisplay->GetSurface(), &isSupported));
+			FLINT_VK_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(GetPhysicalDevice(), GetQueue().m_GraphicsFamily.value(), pDisplay->GetSurface(), &isSupported));
 			return isSupported == VK_TRUE;
 		}
 
@@ -495,13 +495,13 @@ namespace Flint
 			// Iterate through all the candidate devices and find the best device.
 			for (const VkPhysicalDevice& device : devices)
 			{
-				if (Helpers::IsPhysicalDeviceSuitable(device, mDeviceExtensions, mFlags))
+				if (Helpers::IsPhysicalDeviceSuitable(device, m_DeviceExtensions, m_Flags))
 				{
 					vkGetPhysicalDeviceProperties(device, &vPhysicalDeviceProperties);
 
-					if (vPhysicalDeviceProperties.deviceType == VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU && (mFlags & DeviceFlags::External) == DeviceFlags::External)
+					if (vPhysicalDeviceProperties.deviceType == VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU && (m_Flags & DeviceFlags::External) == DeviceFlags::External)
 						vPhysicalDevice = device;
-					else if (vPhysicalDeviceProperties.deviceType == VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU && (mFlags & DeviceFlags::Integrated) == DeviceFlags::Integrated)
+					else if (vPhysicalDeviceProperties.deviceType == VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU && (m_Flags & DeviceFlags::Integrated) == DeviceFlags::Integrated)
 						vPhysicalDevice = device;
 					else
 						vPhysicalDevice = device;
@@ -673,18 +673,18 @@ namespace Flint
 		{
 			OPTICK_EVENT();
 
-			vQueue.Initialize(vPhysicalDevice, mFlags);
+			vQueue.Initialize(vPhysicalDevice, m_Flags);
 
 			std::vector<VkDeviceQueueCreateInfo> vQueueCreateInfos;
 			std::set<uint32_t> uniqueQueueFamilies = {
-				vQueue.mTransferFamily.value()
+				vQueue.m_TransferFamily.value()
 			};
 
-			if (vQueue.mGraphicsFamily.has_value())
-				uniqueQueueFamilies.insert(vQueue.mGraphicsFamily.value());
+			if (vQueue.m_GraphicsFamily.has_value())
+				uniqueQueueFamilies.insert(vQueue.m_GraphicsFamily.value());
 
-			if (vQueue.mComputeFamily.has_value())
-				uniqueQueueFamilies.insert(vQueue.mComputeFamily.value());
+			if (vQueue.m_ComputeFamily.has_value())
+				uniqueQueueFamilies.insert(vQueue.m_ComputeFamily.value());
 
 			float queuePriority = 1.0f;
 			for (uint32_t queueFamily : uniqueQueueFamilies)
@@ -712,8 +712,8 @@ namespace Flint
 			vDeviceCreateInfo.queueCreateInfoCount = static_cast<uint32_t>(vQueueCreateInfos.size());
 			vDeviceCreateInfo.pQueueCreateInfos = vQueueCreateInfos.data();
 			vDeviceCreateInfo.pEnabledFeatures = &vFeatures;
-			vDeviceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(mDeviceExtensions.size());
-			vDeviceCreateInfo.ppEnabledExtensionNames = mDeviceExtensions.data();
+			vDeviceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(m_DeviceExtensions.size());
+			vDeviceCreateInfo.ppEnabledExtensionNames = m_DeviceExtensions.data();
 
 			const std::vector<const char*> validationLayers = pInstance->GetValidationLayers();
 			if (pInstance->IsValidationEnabled())
@@ -726,15 +726,15 @@ namespace Flint
 
 			// Create the logical device.
 			FLINT_VK_ASSERT(vkCreateDevice(vPhysicalDevice, &vDeviceCreateInfo, nullptr, &vLogicalDevice));
-			volkLoadDeviceTable(&mDeviceTable, vLogicalDevice);
+			volkLoadDeviceTable(&m_DeviceTable, vLogicalDevice);
 
-			if ((mFlags & DeviceFlags::GraphicsCompatible) == DeviceFlags::GraphicsCompatible)
-				GetDeviceTable().vkGetDeviceQueue(GetLogicalDevice(), vQueue.mGraphicsFamily.value(), 0, &vQueue.vGraphicsQueue);
+			if ((m_Flags & DeviceFlags::GraphicsCompatible) == DeviceFlags::GraphicsCompatible)
+				GetDeviceTable().vkGetDeviceQueue(GetLogicalDevice(), vQueue.m_GraphicsFamily.value(), 0, &vQueue.vGraphicsQueue);
 
-			if ((mFlags & DeviceFlags::ComputeCompatible) == DeviceFlags::ComputeCompatible)
-				GetDeviceTable().vkGetDeviceQueue(GetLogicalDevice(), vQueue.mComputeFamily.value(), 0, &vQueue.vComputeQueue);
+			if ((m_Flags & DeviceFlags::ComputeCompatible) == DeviceFlags::ComputeCompatible)
+				GetDeviceTable().vkGetDeviceQueue(GetLogicalDevice(), vQueue.m_ComputeFamily.value(), 0, &vQueue.vComputeQueue);
 
-			GetDeviceTable().vkGetDeviceQueue(GetLogicalDevice(), vQueue.mTransferFamily.value(), 0, &vQueue.vTransferQueue);
+			GetDeviceTable().vkGetDeviceQueue(GetLogicalDevice(), vQueue.m_TransferFamily.value(), 0, &vQueue.vTransferQueue);
 
 			// Create the VMA allocator.
 			CreateVmaAllocator();
@@ -785,12 +785,12 @@ namespace Flint
 			const VmaVulkanFunctions functions = GetVulkanFunctions();
 			vmaCreateInfo.pVulkanFunctions = &functions;
 
-			FLINT_VK_ASSERT(vmaCreateAllocator(&vmaCreateInfo, &mVmaAllocator));
+			FLINT_VK_ASSERT(vmaCreateAllocator(&vmaCreateInfo, &m_VmaAllocator));
 		}
 
 		void VulkanDevice::DestroyVmaAllocator() const
 		{
-			vmaDestroyAllocator(mVmaAllocator);
+			vmaDestroyAllocator(m_VmaAllocator);
 		}
 	}
 }

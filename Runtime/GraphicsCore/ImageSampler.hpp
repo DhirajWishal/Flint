@@ -21,16 +21,16 @@ namespace Flint
 		 * @param pDevice The device pointer.
 		 * @param specification The sampler specification.
 		 */
-		ImageSampler(DeviceT* pDevice, const ImageSamplerSpecification& specification) : DeviceBoundObject(pDevice), mSpecification(specification) {}
+		ImageSampler(DeviceT* pDevice, const ImageSamplerSpecification& specification) : DeviceBoundObject(pDevice), m_Specification(specification) {}
 
 		/**
 		 * Get the sampler specification.
 		 *
 		 * @return The specification.
 		 */
-		const ImageSamplerSpecification GetSpecification() const { return mSpecification; }
+		const ImageSamplerSpecification GetSpecification() const { return m_Specification; }
 
 	protected:
-		ImageSamplerSpecification mSpecification = {};
+		ImageSamplerSpecification m_Specification = {};
 	};
 }

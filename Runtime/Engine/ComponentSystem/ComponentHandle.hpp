@@ -17,7 +17,7 @@ namespace Flint
 	public:
 		ComponentHandle() = default;
 		ComponentHandle(const std::shared_ptr<ComponentStore<Type>>& pComponentStore, ComponentIdentifier identifier)
-			: pComponentStore(pComponentStore), mIdentifier(identifier) {}
+			: pComponentStore(pComponentStore), m_Identifier(identifier) {}
 
 		/**
 		 * Get the component from the store.
@@ -26,7 +26,7 @@ namespace Flint
 		 *
 		 * @return The component pointer.
 		 */
-		Type* GetComponent() { return &pComponentStore->Load(mIdentifier); }
+		Type* GetComponent() { return &pComponentStore->Load(m_Identifier); }
 
 		/**
 		 * Get the component from the store.
@@ -35,7 +35,7 @@ namespace Flint
 		 *
 		 * @return The component pointer.
 		 */
-		const Type* GetComponent() const { return &pComponentStore->Load(mIdentifier); }
+		const Type* GetComponent() const { return &pComponentStore->Load(m_Identifier); }
 
 	public:
 		/**
@@ -56,6 +56,6 @@ namespace Flint
 
 	private:
 		std::shared_ptr<ComponentStore<Type>> pComponentStore = nullptr;
-		ComponentIdentifier mIdentifier = {};
+		ComponentIdentifier m_Identifier = {};
 	};
 }

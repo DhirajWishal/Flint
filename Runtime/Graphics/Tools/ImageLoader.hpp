@@ -70,7 +70,7 @@ namespace Flint
 		 *
 		 * @return The extent.
 		 */
-		const FBox3D GetExtent() const { return mExtent; }
+		const FBox3D GetExtent() const { return m_Extent; }
 
 		/**
 		 * Get the pixel data.
@@ -84,11 +84,11 @@ namespace Flint
 		 *
 		 * @return The format.
 		 */
-		const PixelFormat GetPixelFormat() const { return mPixelFormat; }
+		const PixelFormat GetPixelFormat() const { return m_PixelFormat; }
 
 	private:
-		FBox3D mExtent = {};
+		FBox3D m_Extent = {};
 		unsigned char* pPixelData = nullptr;
-		PixelFormat mPixelFormat = PixelFormat::Undefined;
+		PixelFormat m_PixelFormat = PixelFormat::Undefined;
 	};
 }

@@ -39,7 +39,7 @@ namespace Flint
 		 * @param usage The query usage.
 		 * @param queryCount The number of queries this contains.
 		 */
-		Query(DeviceT* pDevice, const QueryUsage usage, const uint32_t queryCount) : DeviceBoundObject(pDevice), mUsage(usage), mQueryCount(queryCount) {}
+		Query(DeviceT* pDevice, const QueryUsage usage, const uint32_t queryCount) : DeviceBoundObject(pDevice), m_Usage(usage), m_QueryCount(queryCount) {}
 
 		/**
 		 * Recreate the query with primitive count.
@@ -67,17 +67,17 @@ namespace Flint
 		 *
 		 * @return The usage enum.
 		 */
-		QueryUsage GetUsage() const { return mUsage; }
+		QueryUsage GetUsage() const { return m_Usage; }
 
 		/**
 		 * Get the number of primitives in the query.
 		 *
 		 * @return The primitive count.
 		 */
-		uint32_t GetQueryCount() const { return mQueryCount; }
+		uint32_t GetQueryCount() const { return m_QueryCount; }
 
 	protected:
-		QueryUsage mUsage = QueryUsage::Occlusion;
-		uint32_t mQueryCount = 0;
+		QueryUsage m_Usage = QueryUsage::Occlusion;
+		uint32_t m_QueryCount = 0;
 	};
 }

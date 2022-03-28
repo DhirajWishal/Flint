@@ -68,7 +68,7 @@ namespace Flint
 		std::future<ReturnType> IssueWork(Function&& function, Arguments&&... arguments)
 		{
 			// Lock the resources.
-			auto uniqueLock = std::unique_lock(mMutex);
+			auto uniqueLock = std::unique_lock(m_Mutex);
 			auto future = std::future<ReturnType>();
 
 			// If the return type is void, we don't need to assign anything to a promise. 
@@ -76,7 +76,7 @@ namespace Flint
 			if constexpr (std::is_void_v<ReturnType>)
 			{
 				// Emplace the lambda to the list.
-				mCommands.emplace_back(
+				m_Commands.emplace_back(
 					[function, arguments...]()
 				{
 					function(arguments...);
@@ -93,7 +93,7 @@ namespace Flint
 				future = pPromise->get_future();
 
 				// Issue the command.
-				mCommands.emplace_back(
+				m_Commands.emplace_back(
 					[pPromise, function, arguments...]()
 				{
 					pPromise->set_value(std::move(function(arguments...)));
@@ -102,7 +102,7 @@ namespace Flint
 			}
 
 			// Notify the thread that we inserted a new command.
-			mConditionVariable.notify_one();
+			m_ConditionVariable.notify_one();
 
 			return future;
 		}
@@ -112,21 +112,21 @@ namespace Flint
 		 *
 		 * @return The duration in milliseconds.
 		 */
-		std::chrono::milliseconds GetWaitDuration() const { return mWaitDuration; }
+		std::chrono::milliseconds GetWaitDuration() const { return m_WaitDuration; }
 
 		/**
 		 * Set the worker thread's wait duration.
 		 *
 		 * @param duration The wait duration to set.
 		 */
-		void SetWaitDuration(const std::chrono::milliseconds duration) { mWaitDuration = duration; }
+		void SetWaitDuration(const std::chrono::milliseconds duration) { m_WaitDuration = duration; }
 
 		/**
 		 * Get the number of work commands waiting in the queue.
 		 *
 		 * @return The command count.
 		 */
-		uint64_t GetAsyncCommandCount() const { return mCommands.size(); }
+		uint64_t GetAsyncCommandCount() const { return m_Commands.size(); }
 
 	public:
 		/**
@@ -159,11 +159,11 @@ namespace Flint
 
 
 	private:
-		std::jthread mWorkerThread = {};
-		std::list<std::function<void()>> mCommands = {};
-		std::mutex mMutex = {};
-		std::condition_variable mConditionVariable = {};
-		std::chrono::milliseconds mWaitDuration = {};
+		std::jthread m_WorkerThread = {};
+		std::list<std::function<void()>> m_Commands = {};
+		std::mutex m_Mutex = {};
+		std::condition_variable m_ConditionVariable = {};
+		std::chrono::milliseconds m_WaitDuration = {};
 		bool bShouldRun = true;
 	};
 }

@@ -6,7 +6,7 @@
 namespace Flint
 {
 	Asset::Asset(const std::vector<WireFrame>& wireFrames, const std::shared_ptr<VulkanBackend::VulkanGeometryStore>& pGeometryStore)
-		: mWireFrames(wireFrames), pGeometryStore(pGeometryStore)
+		: m_WireFrames(wireFrames), pGeometryStore(pGeometryStore)
 	{
 	}
 
@@ -14,11 +14,11 @@ namespace Flint
 		: pGeometryStore(pGeometryStore)
 	{
 		AssetLoader loader(pGeometryStore, assetFile, vertexDescriptor, useMultiThreading);
-		mWireFrames = loader.GetWireFrames();
+		m_WireFrames = loader.GetWireFrames();
 	}
 	
 	void Asset::Clear()
 	{
-		mWireFrames.clear();
+		m_WireFrames.clear();
 	}
 }

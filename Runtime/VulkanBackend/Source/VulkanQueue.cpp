@@ -26,15 +26,15 @@ namespace Flint
 				{
 					// Set graphics family.
 					if (itr->queueFlags & VK_QUEUE_GRAPHICS_BIT && (flags & DeviceFlags::GraphicsCompatible) == DeviceFlags::GraphicsCompatible)
-						mGraphicsFamily = i;
+						m_GraphicsFamily = i;
 
 					// Set compute family.
 					if (itr->queueFlags & VK_QUEUE_COMPUTE_BIT && (flags & DeviceFlags::ComputeCompatible) == DeviceFlags::ComputeCompatible)
-						mComputeFamily = i;
+						m_ComputeFamily = i;
 
 					// Set transfer family.
 					if (itr->queueFlags & VK_QUEUE_TRANSFER_BIT)
-						mTransferFamily = i;
+						m_TransferFamily = i;
 
 					// Escape from the loop if the queues were found.
 					if (IsComplete())
@@ -47,7 +47,7 @@ namespace Flint
 
 		bool VulkanQueue::IsComplete() const
 		{
-			return (mGraphicsFamily.has_value() || mComputeFamily.has_value()) && mTransferFamily.has_value();
+			return (m_GraphicsFamily.has_value() || m_ComputeFamily.has_value()) && m_TransferFamily.has_value();
 		}
 	}
 }

@@ -50,8 +50,8 @@ namespace Flint
 		ReactorController(ReactorType type);
 
 	private:
-		std::jthread mReactorThread;
-		std::deque<std::unique_ptr<Command>> mCommandQueue;
-		std::mutex mResourceMutex;
+		std::jthread m_ReactorThread;
+		std::deque<std::unique_ptr<Command>> m_CommandQueue;
+		std::mutex m_ResourceMutex;
 	};
 }

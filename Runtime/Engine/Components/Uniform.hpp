@@ -24,9 +24,9 @@ namespace Flint
 		 */
 		struct MatrixMVP
 		{
-			glm::mat4 mModel = glm::mat4(1.0f);
-			glm::mat4 mView = glm::mat4(1.0f);
-			glm::mat4 mProjection = glm::mat4(1.0f);
+			glm::mat4 m_Model = glm::mat4(1.0f);
+			glm::mat4 m_View = glm::mat4(1.0f);
+			glm::mat4 m_Projection = glm::mat4(1.0f);
 		};
 
 		/**
@@ -37,7 +37,7 @@ namespace Flint
 			ModelViewProjectionUniform() = default;
 			ModelViewProjectionUniform(Device* pDevice);
 
-			MatrixMVP mMatrix = {};
+			MatrixMVP m_Matrix = {};
 			std::unique_ptr<Buffer> pUniformBuffer = nullptr;
 
 			void UpdateUniform();

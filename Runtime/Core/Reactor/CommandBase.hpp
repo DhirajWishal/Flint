@@ -28,9 +28,9 @@ namespace Flint
 		 *
 		 * @return The status.
 		 */
-		RequestStatus GetStatus() const { return mStatus; }
+		RequestStatus GetStatus() const { return m_Status; }
 
 	protected:
-		std::atomic<RequestStatus> mStatus = RequestStatus::Pending;
+		std::atomic<RequestStatus> m_Status = RequestStatus::Pending;
 	};
 }

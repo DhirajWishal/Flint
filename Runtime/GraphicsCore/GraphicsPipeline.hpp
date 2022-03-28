@@ -46,7 +46,7 @@ namespace Flint
 			, pTessellationEvaluationShader(std::move(pTessellationEvaluationShader))
 			, pGeometryShader(std::move(pGeometryShader))
 			, pFragmentShader(std::move(pFragmentShader))
-			, mSpecification(specification)
+			, m_Specification(specification)
 		{
 			if (!pScreenBoundRenderTarget)
 				throw std::invalid_argument("Render target pointer should not be null!");
@@ -79,7 +79,7 @@ namespace Flint
 			, pTessellationEvaluationShader(std::move(pTessellationEvaluationShader))
 			, pGeometryShader(std::move(pGeometryShader))
 			, pFragmentShader(std::move(pFragmentShader))
-			, mSpecification(specification)
+			, m_Specification(specification)
 		{
 			if (!pOffScreenRenderTarget)
 				throw std::invalid_argument("Render target pointer should not be null!");
@@ -101,7 +101,7 @@ namespace Flint
 		 *
 		 * @return The graphics specification.
 		 */
-		const GraphicsPipelineSpecification GetSpecification() const { return mSpecification; }
+		const GraphicsPipelineSpecification GetSpecification() const { return m_Specification; }
 
 	public:
 		/**
@@ -140,7 +140,7 @@ namespace Flint
 		ShaderT* GetGeometryShader() const { return pGeometryShader.get(); }
 
 	protected:
-		GraphicsPipelineSpecification mSpecification = {};
+		GraphicsPipelineSpecification m_Specification = {};
 
 		const RenderTargetT* pRenderTarget = nullptr;
 

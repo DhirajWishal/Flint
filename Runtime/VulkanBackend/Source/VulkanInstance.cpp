@@ -136,7 +136,7 @@ namespace Flint
 				throw std::runtime_error("Vulkan is not supported! Make sure that the drivers support Vulkan before using the Vulkan Backend.");
 
 			if (enableValidation)
-				mValidationLayers.emplace_back("VK_LAYER_KHRONOS_validation");
+				m_ValidationLayers.emplace_back("VK_LAYER_KHRONOS_validation");
 
 			// Initialize the instance.
 			InitializeInstance();
@@ -194,7 +194,7 @@ namespace Flint
 			OPTICK_EVENT();
 
 			// Check if the validation layers are supported.
-			if (mEnableValidation && !Helpers::CheckValidationLayerSupport(mValidationLayers))
+			if (m_EnableValidation && !Helpers::CheckValidationLayerSupport(m_ValidationLayers))
 				throw std::runtime_error("Validation layers requested but not available!");
 
 			// Application info.
@@ -214,16 +214,16 @@ namespace Flint
 			// Initialize debugger.
 			std::vector<const char*> requiredExtensions;
 			VkDebugUtilsMessengerCreateInfoEXT vDebugCreateInfo = {};
-			if (mEnableValidation)
+			if (m_EnableValidation)
 			{
 				vDebugCreateInfo = Helpers::CreateDebugMessengerCreateInfo();
 
 				// Get and insert the required instance extensions.
-				requiredExtensions = std::move(Helpers::GetRequiredInstanceExtensions(mEnableValidation));
+				requiredExtensions = std::move(Helpers::GetRequiredInstanceExtensions(m_EnableValidation));
 				vCreateInfo.enabledExtensionCount = static_cast<uint32_t>(requiredExtensions.size());
 				vCreateInfo.ppEnabledExtensionNames = requiredExtensions.data();
-				vCreateInfo.enabledLayerCount = static_cast<uint32_t>(mValidationLayers.size());
-				vCreateInfo.ppEnabledLayerNames = mValidationLayers.data();
+				vCreateInfo.enabledLayerCount = static_cast<uint32_t>(m_ValidationLayers.size());
+				vCreateInfo.ppEnabledLayerNames = m_ValidationLayers.data();
 				vCreateInfo.pNext = &vDebugCreateInfo;
 			}
 			else

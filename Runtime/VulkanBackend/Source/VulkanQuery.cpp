@@ -35,10 +35,10 @@ namespace Flint
 		void VulkanQuery::Recreate(const uint32_t queryCount)
 		{
 			// Skip if the two sizes are equal.
-			if (queryCount == mQueryCount)
+			if (queryCount == m_QueryCount)
 				return;
 
-			mQueryCount = queryCount;
+			m_QueryCount = queryCount;
 			Terminate();
 			CreatePool();
 
@@ -78,9 +78,9 @@ namespace Flint
 			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO;
 			vCreateInfo.pNext = VK_NULL_HANDLE;
 			vCreateInfo.flags = 0;
-			vCreateInfo.queryCount = mQueryCount;
+			vCreateInfo.queryCount = m_QueryCount;
 			vCreateInfo.pipelineStatistics;
-			vCreateInfo.queryType = Helpers::GetQueryType(mUsage);
+			vCreateInfo.queryType = Helpers::GetQueryType(m_Usage);
 
 			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
 			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateQueryPool(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vQueryPool));

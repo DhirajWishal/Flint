@@ -21,7 +21,7 @@ namespace Flint
 		auto pTexture = pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Graphics, loader.GetExtent(), loader.GetPixelFormat(), 1, 1, loader.GetPixelData());
 		auto pTextureView = pTexture->CreateImageView(0, pTexture->GetLayerCount(), 0, pTexture->GetMipLevels(), ImageUsage::Graphics);
 
-		uint32_t length = loader.GetExtent().mWidth / 4;
+		uint32_t length = loader.GetExtent().m_Width / 4;
 		FBox3D extent = FBox3D(length, length, 1);
 
 		if (mips == 0)
@@ -48,9 +48,9 @@ namespace Flint
 
 		pPackage->BindResource(0, pTexture.get(), pTextureView.get(), pSampler.get());
 
-		specification.mAddressModeU = AddressMode::ClampToEdge;
-		specification.mAddressModeV = AddressMode::ClampToEdge;
-		specification.mAddressModeW = AddressMode::ClampToEdge;
+		specification.m_AddressModeU = AddressMode::ClampToEdge;
+		specification.m_AddressModeV = AddressMode::ClampToEdge;
+		specification.m_AddressModeW = AddressMode::ClampToEdge;
 		pPackage->BindResource(1, pCubeMap.get(), pCubeMapView.get(), pSampler.get(), ImageUsage::Storage);
 
 		auto pAllocator = pDevice->CreateCommandBufferAllocator(1);

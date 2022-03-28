@@ -13,9 +13,9 @@ namespace Flint
 	struct NextImageInfo
 	{
 		NextImageInfo() = default;
-		NextImageInfo(uint32_t index, bool shouldRecreate) : mIndex(index), bShouldRecreate(shouldRecreate) {}
+		NextImageInfo(uint32_t index, bool shouldRecreate) : m_Index(index), bShouldRecreate(shouldRecreate) {}
 
-		uint32_t mIndex = 0;
+		uint32_t m_Index = 0;
 		bool bShouldRecreate = 0;
 	};
 
@@ -36,7 +36,7 @@ namespace Flint
 		 * @param presentMode The swap chain present mode. If the requested present mode is not supported, an exception is thrown.
 		 */
 		SwapChain(DeviceT* pDevice, DisplayT* pDisplay, uint32_t imageCount, const SwapChainPresentMode presentMode)
-			: DeviceBoundObject(pDevice), pDisplay(pDisplay), mExtent(pDisplay->GetExtent()), mImageCount(imageCount), mPresentMode(presentMode)
+			: DeviceBoundObject(pDevice), pDisplay(pDisplay), m_Extent(pDisplay->GetExtent()), m_ImageCount(imageCount), m_PresentMode(presentMode)
 		{
 			if (!pDisplay)
 				throw std::invalid_argument("Display pointer should not be null!");
@@ -72,35 +72,35 @@ namespace Flint
 		 *
 		 * @return The extent.
 		 */
-		const FBox2D GetExtent() const { return mExtent; }
+		const FBox2D GetExtent() const { return m_Extent; }
 
 		/**
 		 * Get the image count of the swap chain.
 		 *
 		 * @return The image count.
 		 */
-		const uint32_t GetImageCount() const { return mImageCount; }
+		const uint32_t GetImageCount() const { return m_ImageCount; }
 
 		/**
 		 * Get the current image index.
 		 *
 		 * @return The image index.
 		 */
-		const uint32_t GetImageIndex() const { return mImageIndex; }
+		const uint32_t GetImageIndex() const { return m_ImageIndex; }
 
 		/**
 		 * Get the pixel format of the swap chain.
 		 *
 		 * @return The pixel format.
 		 */
-		const PixelFormat GetPixelFormat() const { return mPixelForamt; }
+		const PixelFormat GetPixelFormat() const { return m_PixelForamt; }
 
 		/**
 		 * Get the swap chain present mode.
 		 *
 		 * @return The present mode.
 		 */
-		const SwapChainPresentMode GetPresentMode() const { return mPresentMode; }
+		const SwapChainPresentMode GetPresentMode() const { return m_PresentMode; }
 
 		/**
 		 * Toggle the recreate boolean.
@@ -118,12 +118,12 @@ namespace Flint
 	protected:
 		DisplayT* pDisplay = nullptr;
 
-		FBox2D mExtent = {};
-		uint32_t mImageCount = 0;
-		uint32_t mImageIndex = 0;
+		FBox2D m_Extent = {};
+		uint32_t m_ImageCount = 0;
+		uint32_t m_ImageIndex = 0;
 
-		PixelFormat mPixelForamt = PixelFormat::Undefined;
-		SwapChainPresentMode mPresentMode = SwapChainPresentMode::MailBox;
+		PixelFormat m_PixelForamt = PixelFormat::Undefined;
+		SwapChainPresentMode m_PresentMode = SwapChainPresentMode::MailBox;
 
 		bool bShouldRecreate = false;
 	};

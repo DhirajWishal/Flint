@@ -16,12 +16,12 @@ namespace Flint
 	struct ComponentIdentifier
 	{
 		ComponentIdentifier() = default;
-		explicit ComponentIdentifier(const std::string_view& string) : mStringHash(Hasher::HashDataBlock(string.data(), string.size())), mStringLength(string.size()) {}
+		explicit ComponentIdentifier(const std::string_view& string) : m_StringHash(Hasher::HashDataBlock(string.data(), string.size())), m_StringLength(string.size()) {}
 
 		auto operator<=>(const ComponentIdentifier& other) const = default;
 
-		uint64_t mStringHash = 0;
-		uint64_t mStringLength = 0;
+		uint64_t m_StringHash = 0;
+		uint64_t m_StringLength = 0;
 	};
 
 	/**
@@ -51,7 +51,7 @@ namespace Flint
 		 * @param identifier The component identifier.
 		 * @param data The data to be stored.
 		 */
-		void Store(ComponentIdentifier identifier, const Type& data) { mComponents[identifier] = data; }
+		void Store(ComponentIdentifier identifier, const Type& data) { m_Components[identifier] = data; }
 
 		/**
 		 * Store a component in the store.
@@ -59,7 +59,7 @@ namespace Flint
 		 * @param identifier The component identifier.
 		 * @param data The data to be stored.
 		 */
-		void Store(ComponentIdentifier identifier, Type&& data) { mComponents[identifier] = std::move(data); }
+		void Store(ComponentIdentifier identifier, Type&& data) { m_Components[identifier] = std::move(data); }
 
 		/**
 		 * Load a component from the store.
@@ -67,7 +67,7 @@ namespace Flint
 		 * @param identifier THe component's identifier.
 		 * @return The type reference.
 		 */
-		Type& Load(ComponentIdentifier identifier) { return mComponents.At(identifier); }
+		Type& Load(ComponentIdentifier identifier) { return m_Components.At(identifier); }
 
 		/**
 		 * Load a component from the store.
@@ -75,14 +75,14 @@ namespace Flint
 		 * @param identifier THe component's identifier.
 		 * @return The const type.
 		 */
-		const Type Load(ComponentIdentifier identifier) const { return mComponents.At(identifier); }
+		const Type Load(ComponentIdentifier identifier) const { return m_Components.At(identifier); }
 
 		/**
 		 * Remove an component from the store.
 		 *
 		 * @param identifier The identifier of the component to remove.
 		 */
-		void Remove(ComponentIdentifier identifier) { mComponents.Remove(identifier); }
+		void Remove(ComponentIdentifier identifier) { m_Components.Remove(identifier); }
 
 		/**
 		 * Check if a component is present.
@@ -90,14 +90,14 @@ namespace Flint
 		 * @param identifier The identifier of the component.
 		 * @return The boolean value.
 		 */
-		const bool IsPresent(ComponentIdentifier identifier) const { return mComponents.Find(identifier) != mComponents.end(); }
+		const bool IsPresent(ComponentIdentifier identifier) const { return m_Components.Find(identifier) != m_Components.end(); }
 
 		/**
 		 * Get the size of the store.
 		 *
 		 * @return The size.
 		 */
-		const uint64_t Size() const { return mComponents.Size(); }
+		const uint64_t Size() const { return m_Components.Size(); }
 
 	public:
 		/**
@@ -105,30 +105,30 @@ namespace Flint
 		 * 
 		 * @return The iterator.
 		 */
-		Iterator begin() { return mComponents.begin(); }
+		Iterator begin() { return m_Components.begin(); }
 
 		/**
 		 * Get the begin iterator.
 		 *
 		 * @return The iterator.
 		 */
-		ConstIterator begin() const { return mComponents.begin(); }
+		ConstIterator begin() const { return m_Components.begin(); }
 
 		/**
 		 * Get the end iterator.
 		 *
 		 * @return The iterator.
 		 */
-		Iterator end() { return mComponents.end(); }
+		Iterator end() { return m_Components.end(); }
 
 		/**
 		 * Get the end iterator.
 		 *
 		 * @return The iterator.
 		 */
-		ConstIterator end() const { return mComponents.end(); }
+		ConstIterator end() const { return m_Components.end(); }
 
 	private:
-		BinaryMap<ComponentIdentifier, Type> mComponents = {};
+		BinaryMap<ComponentIdentifier, Type> m_Components = {};
 	};
 }

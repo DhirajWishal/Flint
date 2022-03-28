@@ -27,7 +27,7 @@ namespace Flint
 		class PluginInterface : public FObject
 		{
 		public:
-			PluginInterface(const std::string& name) : mPluginName(name) {}
+			PluginInterface(const std::string& name) : m_PluginName(name) {}
 
 			/**
 			 * Get the required permissions for the plugin.
@@ -37,7 +37,7 @@ namespace Flint
 			virtual PluginPermissions GetPermissions() const = 0;
 
 		protected:
-			std::string mPluginName = "";
+			std::string m_PluginName = "";
 		};
 
 		typedef PluginInterface* (*TCreatePluginFunction)();

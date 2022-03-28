@@ -16,7 +16,7 @@ namespace Flint
 		void ModelViewProjectionUniform::UpdateUniform()
 		{
 			MatrixMVP* pPayload = static_cast<MatrixMVP*>(pUniformBuffer->MapMemory(sizeof(MatrixMVP)));
-			*pPayload = mMatrix;
+			*pPayload = m_Matrix;
 
 			pUniformBuffer->UnmapMemory();
 		}

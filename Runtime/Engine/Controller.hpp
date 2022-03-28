@@ -32,14 +32,14 @@ namespace Flint
 		 * @param identifier The controller identifier.
 		 * @param pClientInterface The client interface pointer which created the controller.
 		 */
-		Controller(const std::string_view& identifier, ClientInterface* pClientInterface) : mIdentifier(identifier), pClientInterface(pClientInterface) {}
+		Controller(const std::string_view& identifier, ClientInterface* pClientInterface) : m_Identifier(identifier), pClientInterface(pClientInterface) {}
 
 		/**
 		 * Get the identifier of the controller.
 		 * 
 		 * @return The string view.
 		 */
-		const std::string_view GetIdentifier() const { return mIdentifier; }
+		const std::string_view GetIdentifier() const { return m_Identifier; }
 
 		/**
 		 * On update function.
@@ -50,7 +50,7 @@ namespace Flint
 		virtual void OnUpdate(const uint64_t delta, const UpdateSpecification specification) = 0;
 
 	public:
-		std::string_view mIdentifier = "";
+		std::string_view m_Identifier = "";
 		ClientInterface* pClientInterface = nullptr;
 	};
 }

@@ -32,7 +32,7 @@ namespace Flint
 
 			const VkSwapchainKHR GetSwapChain() const { return vSwapChain; }
 			const VkSwapchainKHR* GetSwapChainPtr() const { return &vSwapChain; }
-			const uint32_t* GetImageIndexPtr() const { return &mImageIndex; }
+			const uint32_t* GetImageIndexPtr() const { return &m_ImageIndex; }
 
 			const VkSemaphore GetInFlightSemaphore() const { return vCurrentInFlightSemaphore; }
 			const VkSemaphore GetRenderFinishedSemaphore() const { return vCurrentRenderFinishedSemaphore; }

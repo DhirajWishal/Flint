@@ -196,8 +196,8 @@ namespace Flint
 			vCreateInfo.pNext = VK_NULL_HANDLE;
 			vCreateInfo.layers = 1;
 			vCreateInfo.renderPass = vRenderPass;
-			vCreateInfo.width = extent.mWidth;
-			vCreateInfo.height = extent.mHeight;
+			vCreateInfo.width = extent.m_Width;
+			vCreateInfo.height = extent.m_Height;
 			vCreateInfo.attachmentCount = static_cast<uint32_t>(pAttachments.size());
 
 			vFrameBuffers.resize(bufferCount);
@@ -229,8 +229,8 @@ namespace Flint
 			vCreateInfo.pNext = VK_NULL_HANDLE;
 			vCreateInfo.layers = 1;
 			vCreateInfo.renderPass = vRenderPass;
-			vCreateInfo.width = extent.mWidth;
-			vCreateInfo.height = extent.mHeight;
+			vCreateInfo.width = extent.m_Width;
+			vCreateInfo.height = extent.m_Height;
 			vCreateInfo.attachmentCount = static_cast<uint32_t>(vImageViews.size());
 			vCreateInfo.pAttachments = vImageViews.data();
 

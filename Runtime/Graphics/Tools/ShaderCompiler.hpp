@@ -72,7 +72,7 @@ namespace Flint
 		 *
 		 * @return The shader code vector.
 		 */
-		const std::vector<uint32_t> GetShaderCode() const { return mShaderCode; }
+		const std::vector<uint32_t> GetShaderCode() const { return m_ShaderCode; }
 
 		/**
 		 * Create the shader object using the shader code.
@@ -83,8 +83,8 @@ namespace Flint
 		std::unique_ptr<Shader> CreateShader(Device* pDevice) const;
 
 	private:
-		std::vector<uint32_t> mShaderCode = {};
-		ShaderType mType = ShaderType::Vertex;
-		ShaderCodeType mCodeType = ShaderCodeType::GLSL;
+		std::vector<uint32_t> m_ShaderCode = {};
+		ShaderType m_Type = ShaderType::Vertex;
+		ShaderCodeType m_CodeType = ShaderCodeType::GLSL;
 	};
 }

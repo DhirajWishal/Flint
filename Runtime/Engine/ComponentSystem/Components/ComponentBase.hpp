@@ -14,9 +14,9 @@ namespace Flint
 		 */
 		struct ComponentBase
 		{
-			ComponentBase(const std::string_view& name) : mComponentName(name) {}
+			ComponentBase(const std::string_view& name) : m_ComponentName(name) {}
 
-			std::string_view mComponentName = "";
+			std::string_view m_ComponentName = "";
 		};
 	}
 }

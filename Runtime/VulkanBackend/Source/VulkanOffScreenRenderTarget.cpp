@@ -34,24 +34,24 @@ namespace Flint
 			vDependencies[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
 
 			std::vector<VulkanRenderTargetAttachmentInterface*> pAttachmentInferfaces;
-			pAttachmentInferfaces.reserve(mAttachments.size());
-			for (const auto attachment : mAttachments)
+			pAttachmentInferfaces.reserve(m_Attachments.size());
+			for (const auto attachment : m_Attachments)
 			{
 				pAttachmentInferfaces.emplace_back(attachment.pImage);
 
 				VkClearValue vClearValue = {};
 				if ((attachment.pImage->GetUsage() & ImageUsage::Color) == ImageUsage::Color)
 				{
-					vClearValue.color.float32[0] = attachment.mClearColor.mRed;
-					vClearValue.color.float32[1] = attachment.mClearColor.mGreen;
-					vClearValue.color.float32[2] = attachment.mClearColor.mBlue;
-					vClearValue.color.float32[3] = attachment.mClearColor.mAlpha;
+					vClearValue.color.float32[0] = attachment.m_ClearColor.m_Red;
+					vClearValue.color.float32[1] = attachment.m_ClearColor.m_Green;
+					vClearValue.color.float32[2] = attachment.m_ClearColor.m_Blue;
+					vClearValue.color.float32[3] = attachment.m_ClearColor.m_Alpha;
 					vClearAspectFlags.emplace_back(VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT);
 				}
 				else if ((attachment.pImage->GetUsage() & ImageUsage::Depth) == ImageUsage::Depth)
 				{
-					vClearValue.depthStencil.depth = attachment.mDepthClearValue.mDepth;
-					vClearValue.depthStencil.stencil = attachment.mDepthClearValue.mStencil;
+					vClearValue.depthStencil.depth = attachment.m_DepthClearValue.m_Depth;
+					vClearValue.depthStencil.stencil = attachment.m_DepthClearValue.m_Stencil;
 					vClearAspectFlags.emplace_back(VkImageAspectFlagBits::VK_IMAGE_ASPECT_DEPTH_BIT);
 				}
 				else
@@ -70,7 +70,7 @@ namespace Flint
 		
 		void VulkanOffScreenRenderTarget::Recreate(const FBox2D& extent)
 		{
-			mExtent = extent;
+			m_Extent = extent;
 
 			pDevice->WaitIdle();
 
@@ -78,19 +78,19 @@ namespace Flint
 			vRenderTarget.DestroyFrameBuffers();
 
 			std::vector<VulkanRenderTargetAttachmentInterface*> pAttachmentInferfaces;
-			pAttachmentInferfaces.reserve(mAttachments.size());
+			pAttachmentInferfaces.reserve(m_Attachments.size());
 
-			for (auto attachment : mAttachments)
+			for (auto attachment : m_Attachments)
 			{
-				attachment.pImage->StaticCast<VulkanImage>().Recreate(mExtent);
-				pAttachmentInferfaces.emplace_back(&attachment.pImage->StaticCast<VulkanImage>());
+				attachment.pImage->Recreate(m_Extent);
+				pAttachmentInferfaces.emplace_back(attachment.pImage);
 			}
 
 			vRenderTarget.CreateRenderPass(pAttachmentInferfaces, VK_PIPELINE_BIND_POINT_GRAPHICS, vDependencies);
-			vRenderTarget.CreateFrameBuffer(pAttachmentInferfaces, mExtent, mBufferCount);
+			vRenderTarget.CreateFrameBuffer(pAttachmentInferfaces, m_Extent, m_BufferCount);
 
 			vInheritInfo.renderPass = vRenderTarget.vRenderPass;
-			mFrameIndex = 0;
+			m_FrameIndex = 0;
 		}
 
 		bool VulkanOffScreenRenderTarget::PrepareNewFrame()
@@ -106,7 +106,7 @@ namespace Flint
 		
 		const VkCommandBufferInheritanceInfo* VulkanOffScreenRenderTarget::GetVulkanInheritanceInfo() const
 		{
-			vInheritInfo.framebuffer = vRenderTarget.vFrameBuffers[mFrameIndex];
+			vInheritInfo.framebuffer = vRenderTarget.vFrameBuffers[m_FrameIndex];
 			return &vInheritInfo;
 		}
 	}

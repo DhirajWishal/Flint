@@ -7,26 +7,26 @@ namespace Flint
 {
 	BinarySemaphore::BinarySemaphore(const BinarySemaphore& other)
 	{
-		mAtomicBool.store(other.mAtomicBool);
+		m_AtomicBool.store(other.m_AtomicBool);
 	}
 
 	void BinarySemaphore::Release()
 	{
-		mAtomicBool = true;
+		m_AtomicBool = true;
 	}
 
 	void BinarySemaphore::Acquire()
 	{
-		while (mAtomicBool != true);
-		mAtomicBool = false;
+		while (m_AtomicBool != true);
+		m_AtomicBool = false;
 	}
 
 	bool BinarySemaphore::TryAcquire()
 	{
-		if (mAtomicBool != true)
+		if (m_AtomicBool != true)
 			return false;
 
-		mAtomicBool = false;
+		m_AtomicBool = false;
 		return true;
 	}
 }

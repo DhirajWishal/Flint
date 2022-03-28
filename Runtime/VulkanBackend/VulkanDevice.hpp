@@ -8,7 +8,7 @@
 #include "VulkanQueue.hpp"
 #include "GraphicsCore/SynchronizationPrimitive.hpp"
 
-#include <vk_mem_alloc.h>
+#include <vk_memalloc.h>
 
 namespace Flint
 {
@@ -79,7 +79,7 @@ namespace Flint
 			virtual void Terminate() override;
 
 		public:
-			VolkDeviceTable GetDeviceTable() const { return mDeviceTable; }
+			VolkDeviceTable GetDeviceTable() const { return m_DeviceTable; }
 			VkDevice GetLogicalDevice() const noexcept { return vLogicalDevice; }
 			VkPhysicalDevice GetPhysicalDevice() const noexcept { return vPhysicalDevice; }
 
@@ -91,7 +91,7 @@ namespace Flint
 			void SetImageLayout(VkCommandBuffer vCommandBuffer, VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, uint32_t layerCount = 1, uint32_t currentLayer = 0, const uint32_t mipLevels = 1, const uint32_t currentLevel = 0, VkImageAspectFlags vAspects = VkImageAspectFlagBits::VK_IMAGE_ASPECT_FLAG_BITS_MAX_ENUM) const;
 			void SetImageLayout(VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, uint32_t layerCount = 1, uint32_t currentLayer = 0, const uint32_t mipLevels = 1, const uint32_t currentLevel = 0, VkImageAspectFlags vAspects = VkImageAspectFlagBits::VK_IMAGE_ASPECT_FLAG_BITS_MAX_ENUM) const;
 
-			const VmaAllocator GetVmaAllocator() const { return mVmaAllocator; }
+			const VmaAllocator GetVmaAllocator() const { return m_VmaAllocator; }
 
 		private:
 			void InitializePhysicalDevice();
@@ -105,15 +105,15 @@ namespace Flint
 			void DestroyVmaAllocator() const;
 
 		private:
-			VolkDeviceTable mDeviceTable = {};
+			VolkDeviceTable m_DeviceTable = {};
 			VulkanQueue vQueue = {};
 
-			std::vector<const char*> mDeviceExtensions;
+			std::vector<const char*> m_DeviceExtensions;
 
 			VkDevice vLogicalDevice = VK_NULL_HANDLE;
 			VkPhysicalDevice vPhysicalDevice = VK_NULL_HANDLE;
 
-			VmaAllocator mVmaAllocator = VK_NULL_HANDLE;
+			VmaAllocator m_VmaAllocator = VK_NULL_HANDLE;
 
 			VkSampleCountFlags vSampleCount = VkSampleCountFlagBits::VK_SAMPLE_COUNT_64_BIT;
 		};

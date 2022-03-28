@@ -30,7 +30,7 @@ namespace Flint
 		template<class Type>
 		const bool IsRegistered() const
 		{
-			return mComponentStores.contains(typeid(Type));
+			return m_ComponentStores.contains(typeid(Type));
 		}
 
 		/**
@@ -41,7 +41,7 @@ namespace Flint
 		template<class Type>
 		void RegisterComponent()
 		{
-			mComponentStores[typeid(Type)] = std::make_shared<ComponentStore<Type>>();
+			m_ComponentStores[typeid(Type)] = std::make_shared<ComponentStore<Type>>();
 		}
 
 		/**
@@ -57,7 +57,7 @@ namespace Flint
 			if (!IsRegistered<Type>())
 				RegisterComponent<Type>();
 
-			return std::static_pointer_cast<ComponentStore<Type>>(mComponentStores[typeid(Type)]);
+			return std::static_pointer_cast<ComponentStore<Type>>(m_ComponentStores[typeid(Type)]);
 		}
 
 		/**
@@ -73,7 +73,7 @@ namespace Flint
 			if (!IsRegistered<Type>())
 				return nullptr;
 
-			return std::static_pointer_cast<ComponentStore<Type>>(mComponentStores.at(typeid(Type)));
+			return std::static_pointer_cast<ComponentStore<Type>>(m_ComponentStores.at(typeid(Type)));
 		}
 
 
@@ -114,16 +114,16 @@ namespace Flint
 		 * 
 		 * @return The component stores.
 		 */
-		TComponentStore& GetComponentStores() { return mComponentStores; }
+		TComponentStore& GetComponentStores() { return m_ComponentStores; }
 
 		/**
 		 * Get all the component stores.
 		 *
 		 * @return The component stores.
 		 */
-		const TComponentStore GetComponentStores() const { return mComponentStores; }
+		const TComponentStore GetComponentStores() const { return m_ComponentStores; }
 
 	private:
-		TComponentStore mComponentStores = {};
+		TComponentStore m_ComponentStores = {};
 	};
 }

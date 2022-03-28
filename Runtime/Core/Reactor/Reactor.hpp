@@ -26,7 +26,7 @@ namespace Flint
 		 * @param args The additional variadic arguments used by the worker.
 		 */
 		template<class... Args>
-		explicit Reactor(std::function<void(std::list<std::unique_ptr<CommandBase>>&, std::mutex&, Args...)> function, Args&&... args) : mHandler(function, mCommands, mResourceMutex, args...) {}
+		explicit Reactor(std::function<void(std::list<std::unique_ptr<CommandBase>>&, std::mutex&, Args...)> function, Args&&... args) : m_Handler(function, m_Commands, m_ResourceMutex, args...) {}
 
 		/**
 		 * Issue a new command to the worker.
@@ -40,15 +40,15 @@ namespace Flint
 			auto ptr = std::make_unique<Command>(std::forward<Args>(args)...);
 			const auto rawPtr = ptr.get();
 
-			auto guard = std::lock_guard(mResourceMutex);
-			mCommands.emplace_back(std::move(ptr));
+			auto guard = std::lock_guard(m_ResourceMutex);
+			m_Commands.emplace_back(std::move(ptr));
 
 			return rawPtr;
 		}
 
 	protected:
-		std::list<std::unique_ptr<CommandBase>> mCommands = {};
-		std::mutex mResourceMutex = {};
-		std::jthread mHandler;
+		std::list<std::unique_ptr<CommandBase>> m_Commands = {};
+		std::mutex m_ResourceMutex = {};
+		std::jthread m_Handler;
 	};
 }

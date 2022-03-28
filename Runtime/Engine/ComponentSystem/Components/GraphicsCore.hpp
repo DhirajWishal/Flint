@@ -17,7 +17,7 @@ namespace Flint
 		{
 			GraphicsInstance(const bool enableValidation);
 
-			AbstractionObject mInstance = {};
+			AbstractionObject m_Instance = {};
 		};
 
 		/**
@@ -27,7 +27,7 @@ namespace Flint
 		{
 			GraphicsDevice(GraphicsInstance* pInstance, const GraphicsCore::DeviceFlags flags);
 
-			AbstractionObject mDevice = {};
+			AbstractionObject m_Device = {};
 		};
 
 		/**
@@ -37,7 +37,7 @@ namespace Flint
 		{
 			Buffer(GraphicsDevice* pDevice, const GraphicsCore::BufferType type, const uint64_t size, const GraphicsCore::BufferMemoryProfile profile = GraphicsCore::BufferMemoryProfile::Automatic);
 
-			AbstractionObject mBuffer = {};
+			AbstractionObject m_Buffer = {};
 		};
 
 		/**
@@ -74,7 +74,7 @@ namespace Flint
 			Shader(GraphicsDevice* pDevice, const GraphicsCore::ShaderType type, const std::string& code);
 			Shader(GraphicsDevice* pDevice, const GraphicsCore::ShaderType type, const std::vector<uint32_t>& code);
 
-			AbstractionObject mShader = {};
+			AbstractionObject m_Shader = {};
 		};
 
 		/**
@@ -84,7 +84,7 @@ namespace Flint
 		{
 			GeometryStore(GraphicsDevice* pDevice, const GraphicsCore::TShaderAttributeMap& vertexAttributes, uint64_t indexSize, const GraphicsCore::BufferMemoryProfile profile = GraphicsCore::BufferMemoryProfile::Automatic);
 
-			AbstractionObject mGeometryStore = {};
+			AbstractionObject m_GeometryStore = {};
 		};
 	}
 }

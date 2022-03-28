@@ -20,7 +20,7 @@ namespace Flint
 		 *
 		 * @param groupSize The number of workers in the work group.
 		 */
-		explicit WorkGroup(uint64_t groupSize) : mWorkers(groupSize) {}
+		explicit WorkGroup(uint64_t groupSize) : m_Workers(groupSize) {}
 
 		/**
 		 * Constructor.
@@ -29,7 +29,7 @@ namespace Flint
 		 * @param groupSize The number of workers in the work group.
 		 * @param duration The duration to wait for all the workers.
 		 */
-		explicit WorkGroup(uint64_t groupSize, std::chrono::milliseconds duration) : mWorkers(groupSize, Worker(duration)) {}
+		explicit WorkGroup(uint64_t groupSize, std::chrono::milliseconds duration) : m_Workers(groupSize, Worker(duration)) {}
 
 		/**
 		 * Issue work to a worker to execute.
@@ -43,28 +43,28 @@ namespace Flint
 		 * @return A promise object of the function return.
 		 */
 		template<class Function, class... Arguments, class ReturnType = std::invoke_result_t<Function, Arguments...>>
-		std::future<ReturnType> IssueWork(Function&& function, Arguments&&... arguments) { return mWorkers[GetNextIndex(mIndex++)].IssueWork(std::forward<Function>(function), std::forward<Arguments>(arguments)...); }
+		std::future<ReturnType> IssueWork(Function&& function, Arguments&&... arguments) { return m_Workers[GetNextIndex(m_Index++)].IssueWork(std::forward<Function>(function), std::forward<Arguments>(arguments)...); }
 
 		/**
 		 * Get the work group size.
 		 *
 		 * @return The work group size.
 		 */
-		uint64_t GetSize() const { return mWorkers.size(); }
+		uint64_t GetSize() const { return m_Workers.size(); }
 
 		/**
 		 * Resize the work group.
 		 *
 		 * @param size The required size.
 		 */
-		void Resize(uint64_t size) { mWorkers.resize(size); }
+		void Resize(uint64_t size) { m_Workers.resize(size); }
 
 		/**
 		 * Get the current index.
 		 * 
 		 * @return The index.
 		 */
-		uint64_t GetCurrentIndex() const { return mIndex; }
+		uint64_t GetCurrentIndex() const { return m_Index; }
 
 		/**
 		 * Get a worker from the group.
@@ -72,7 +72,7 @@ namespace Flint
 		 * @param index The index of the worker.
 		 * @return The worker reference.
 		 */
-		Worker& GetWorker(uint64_t index) { return mWorkers[index]; }
+		Worker& GetWorker(uint64_t index) { return m_Workers[index]; }
 
 	private:
 		/**
@@ -81,10 +81,10 @@ namespace Flint
 		 * @param index The previous index.
 		 * @return The index.
 		 */
-		uint64_t GetNextIndex(uint64_t index) const { return index % mWorkers.size(); }
+		uint64_t GetNextIndex(uint64_t index) const { return index % m_Workers.size(); }
 
 	private:
-		std::vector<Worker> mWorkers = {};
-		uint64_t mIndex = 0;
+		std::vector<Worker> m_Workers = {};
+		uint64_t m_Index = 0;
 	};
 }

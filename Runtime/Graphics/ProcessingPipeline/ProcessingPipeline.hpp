@@ -69,7 +69,7 @@ namespace Flint
 		 *
 		 * @return The multi sample count.
 		 */
-		MultiSampleCount GetMultiSampleCount() const { return mMultiSampleCount; }
+		MultiSampleCount GetMultiSampleCount() const { return m_MultiSampleCount; }
 
 		/**
 		 * Get the extent of the pipeline.
@@ -213,7 +213,7 @@ namespace Flint
 		std::unique_ptr<ScreenBoundRenderTarget> pScreenBoundRenderTarget = nullptr;
 		std::unique_ptr<CommandBufferAllocator> pCommandBufferAllocator = nullptr;
 
-		MultiSampleCount mMultiSampleCount = MultiSampleCount::One;
+		MultiSampleCount m_MultiSampleCount = MultiSampleCount::One;
 
 		bool bContainsColorBuffer = false;
 		bool bContainsDepthBuffer = false;

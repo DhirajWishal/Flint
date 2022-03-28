@@ -77,8 +77,8 @@ namespace Flint
 		void RegisterIdentifier(const std::string& identifier);
 
 	protected:
-		std::vector<std::string> mRegisteredClasses = {};
-		std::unordered_map<std::string_view, std::shared_ptr<Controller>> mActiveControllers = {};
+		std::vector<std::string> m_RegisteredClasses = {};
+		std::unordered_map<std::string_view, std::shared_ptr<Controller>> m_ActiveControllers = {};
 	};
 
 	/**
@@ -123,6 +123,6 @@ extern "C"																							\
 																									\
 int main()																							\
 {																									\
-	className mApplication{ __VA_ARGS__ };															\
-	mApplication.RunClient();																		\
+	className m_Application{ __VA_ARGS__ };															\
+	m_Application.RunClient();																		\
 }

@@ -9,15 +9,15 @@ namespace Flint
 	class VulkanReactor final
 	{
 	public:
-		VulkanReactor(std::list<std::unique_ptr<CommandBase>>& commands, std::mutex& mutex) : mCommands(commands), mResourceLock(mutex), mInstance(true)
+		VulkanReactor(std::list<std::unique_ptr<CommandBase>>& commands, std::mutex& mutex) : m_Commands(commands), m_ResourceLock(mutex), m_Instance(true)
 		{
 		}
 
 	private:
-		std::list<std::unique_ptr<CommandBase>>& mCommands;
-		std::mutex& mResourceLock;
+		std::list<std::unique_ptr<CommandBase>>& m_Commands;
+		std::mutex& m_ResourceLock;
 
-		VulkanBackend::VulkanInstance mInstance;
+		VulkanBackend::VulkanInstance m_Instance;
 	};
 
 	void VulkanReactorWorker(std::list<std::unique_ptr<CommandBase>>& commands, std::mutex& mutex)

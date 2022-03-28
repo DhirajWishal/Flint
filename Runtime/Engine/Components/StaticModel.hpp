@@ -16,7 +16,7 @@ namespace Flint
 		 */
 		struct StaticModel 
 		{
-			std::vector<WireFrame> mWireFrames = {};
+			std::vector<WireFrame> m_WireFrames = {};
 			std::shared_ptr<GeometryStore> pGeometryStore = nullptr;
 		};
 	}

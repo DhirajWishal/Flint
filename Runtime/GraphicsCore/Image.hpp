@@ -80,8 +80,8 @@ namespace Flint
 	 */
 	 //struct ImageRenderingTargetSpecification
 	 //{
-	 //	LoadOperation mLoadOperation = LoadOperation::DontCare;
-	 //	LoadOperation mStencilLoadOperation = LoadOperation::DontCare;
+	 //	LoadOperation m_LoadOperation = LoadOperation::DontCare;
+	 //	LoadOperation m_StencilLoadOperation = LoadOperation::DontCare;
 	 //
 	 //	bool bShouldStoreOnStore = false;
 	 //	bool bShouldStoreOnStencilStore = false;
@@ -109,18 +109,18 @@ namespace Flint
 		 * @param sampleCount The multi sample count to use.
 		 */
 		Image(DeviceT* pDevice, const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const uint8_t layers, const uint32_t mipLevels, const void* pImageData, const MultiSampleCount sampleCount = MultiSampleCount::One)
-			: DeviceBoundObject(pDevice), mType(type), mUsage(usage), mExtent(extent), mFormat(format), mLayerCount(layers), mMipLevels(mipLevels), mMultiSampleCount(sampleCount)
+			: DeviceBoundObject(pDevice), m_Type(type), m_Usage(usage), m_Extent(extent), m_Format(format), m_LayerCount(layers), m_MipLevels(mipLevels), m_MultiSampleCount(sampleCount)
 		{
-			if (mExtent.IsZero())
+			if (m_Extent.IsZero())
 				throw std::invalid_argument("Image extent should not be 0!");
 
-			if (mFormat == PixelFormat::Undefined)
+			if (m_Format == PixelFormat::Undefined)
 				throw std::invalid_argument("Image pixel format should not be undefined!");
 
-			if (!mLayerCount)
+			if (!m_LayerCount)
 				throw std::invalid_argument("Image layer count should be grater than 0!");
 
-			if (!mMipLevels)
+			if (!m_MipLevels)
 				throw std::invalid_argument("Image mip levels must be grater than 0!");
 		}
 
@@ -160,8 +160,8 @@ namespace Flint
 			std::unique_ptr<BufferT> pStagingBuffer = CopyToBuffer();
 			Type* pPixels = static_cast<Type*>(pStagingBuffer->MapMemory(pStagingBuffer->GetSize()));
 
-			uint64_t row = static_cast<uint64_t>(position.mHeight) * mExtent.mWidth;
-			uint64_t index = row + position.mWidth;
+			uint64_t row = static_cast<uint64_t>(position.m_Height) * m_Extent.m_Width;
+			uint64_t index = row + position.m_Width;
 			Type pixel = pPixels[index];
 
 			pStagingBuffer->UnmapMemory();
@@ -176,56 +176,56 @@ namespace Flint
 		 *
 		 * @return The extent.
 		 */
-		const FBox3D GetExtent() const { return mExtent; }
+		const FBox3D GetExtent() const { return m_Extent; }
 
 		/**
 		 * Get the mip levels of the current image.
 		 *
 		 * @return The mip levels.
 		 */
-		const uint32_t GetMipLevels() const { return mMipLevels; }
+		const uint32_t GetMipLevels() const { return m_MipLevels; }
 
 		/**
 		 * Get the type of the image.
 		 *
 		 * @return The type.
 		 */
-		const ImageType GetType() const { return mType; }
+		const ImageType GetType() const { return m_Type; }
 
 		/**
 		 * Get the image usage.
 		 *
 		 * @return The usage.
 		 */
-		const ImageUsage GetUsage() const { return mUsage; }
+		const ImageUsage GetUsage() const { return m_Usage; }
 
 		/**
 		 * Get the format of the image.
 		 *
 		 * @return The format.
 		 */
-		const PixelFormat GetFormat() const { return mFormat; }
+		const PixelFormat GetFormat() const { return m_Format; }
 
 		/**
 		 * Get the layer count of the image.
 		 *
 		 * @return The layer count.
 		 */
-		const uint8_t GetLayerCount() const { return mLayerCount; }
+		const uint8_t GetLayerCount() const { return m_LayerCount; }
 
 		/**
 		 * Get the image render target specification structure.
 		 *
 		 * @return The image render target specification structure.
 		 */
-		ImageRenderTargetSpecification& GetImageRenderTargetSpecification() { return mImageRenderingTargetSpecification; }
+		ImageRenderTargetSpecification& GetImageRenderTargetSpecification() { return m_ImageRenderingTargetSpecification; }
 
 		/**
 		 * Get the image render target specification structure.
 		 *
 		 * @return The image render target specification structure.
 		 */
-		const ImageRenderTargetSpecification GetImageRenderTargetSpecification() const { return mImageRenderingTargetSpecification; }
+		const ImageRenderTargetSpecification GetImageRenderTargetSpecification() const { return m_ImageRenderingTargetSpecification; }
 
 	public:
 		/**
@@ -236,18 +236,18 @@ namespace Flint
 		 */
 		static uint32_t GetBestMipLevels(const FBox3D extent)
 		{
-			return static_cast<uint32_t>(std::floor(std::log2(std::max(extent.mWidth, extent.mHeight))) + 1);
+			return static_cast<uint32_t>(std::floor(std::log2(std::max(extent.m_Width, extent.m_Height))) + 1);
 		}
 
 	protected:
-		FBox3D mExtent = {};
-		uint32_t mMipLevels = 0;
-		ImageType mType = ImageType::TwoDimension;
-		ImageUsage mUsage = ImageUsage::Graphics;
-		PixelFormat mFormat = PixelFormat::Undefined;
-		MultiSampleCount mMultiSampleCount = MultiSampleCount::One;
-		uint8_t mLayerCount = 1;
+		FBox3D m_Extent = {};
+		uint32_t m_MipLevels = 0;
+		ImageType m_Type = ImageType::TwoDimension;
+		ImageUsage m_Usage = ImageUsage::Graphics;
+		PixelFormat m_Format = PixelFormat::Undefined;
+		MultiSampleCount m_MultiSampleCount = MultiSampleCount::One;
+		uint8_t m_LayerCount = 1;
 
-		ImageRenderTargetSpecification mImageRenderingTargetSpecification = ImageRenderTargetSpecification(0);
+		ImageRenderTargetSpecification m_ImageRenderingTargetSpecification = ImageRenderTargetSpecification(0);
 	};
 }

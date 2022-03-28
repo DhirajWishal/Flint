@@ -49,14 +49,14 @@ namespace Flint
 		 *
 		 * @return The wire frames.
 		 */
-		const std::vector<WireFrame> GetWireFrames() const { return mWireFrames; }
+		const std::vector<WireFrame> GetWireFrames() const { return m_WireFrames; }
 
 		/**
 		 * Get the wire frames stored in the asset.
 		 *
 		 * @return The wire frames.
 		 */
-		std::vector<WireFrame>& GetWireFrames() { return mWireFrames; }
+		std::vector<WireFrame>& GetWireFrames() { return m_WireFrames; }
 
 		/**
 		 * Get the geometry store in which the asset is stored.
@@ -66,7 +66,7 @@ namespace Flint
 		const std::shared_ptr<GeometryStore> GetGeometryStore() const { return pGeometryStore; }
 
 	private:
-		std::vector<WireFrame> mWireFrames = {};
+		std::vector<WireFrame> m_WireFrames = {};
 		std::shared_ptr<GeometryStore> pGeometryStore = nullptr;
 	};
 }

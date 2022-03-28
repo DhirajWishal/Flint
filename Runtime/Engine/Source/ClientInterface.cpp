@@ -7,22 +7,22 @@ namespace Flint
 {
 	std::vector<std::string_view> ClientInterface::GetClassIdentifiers() const
 	{
-		return std::vector<std::string_view>(mRegisteredClasses.begin(), mRegisteredClasses.end());
+		return std::vector<std::string_view>(m_RegisteredClasses.begin(), m_RegisteredClasses.end());
 	}
 
 	void ClientInterface::RegisterIdentifier(const std::string& identifier)
 	{
-		mRegisteredClasses.emplace_back(identifier);
+		m_RegisteredClasses.emplace_back(identifier);
 	}
 	
 	void ClientInterface::ActivateController(const std::string_view& identifier)
 	{
-		mActiveControllers[identifier] = CreateController(identifier);
+		m_ActiveControllers[identifier] = CreateController(identifier);
 	}
 
 	void ClientInterface::DeactivateController(const std::string_view& identifier)
 	{
-		mActiveControllers.erase(identifier);
+		m_ActiveControllers.erase(identifier);
 	}
 
 	void ClientInterface::RunClient()
@@ -31,11 +31,11 @@ namespace Flint
 
 	std::unordered_map<std::string_view, std::shared_ptr<Controller>> ClientInterface::GetActiveControllers()
 	{
-		return mActiveControllers;
+		return m_ActiveControllers;
 	}
 
 	const std::unordered_map<std::string_view, std::shared_ptr<Controller>> ClientInterface::GetActiveControllers() const
 	{
-		return mActiveControllers;
+		return m_ActiveControllers;
 	}
 }
