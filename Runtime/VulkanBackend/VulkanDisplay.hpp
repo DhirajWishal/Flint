@@ -30,7 +30,7 @@ namespace Flint
 		class VulkanDisplay final : public Display<VulkanInstance, VulkanDevice>
 		{
 		public:
-			VulkanDisplay(VulkanInstance* pInstance, const FBox2D& extent, const std::string& title);
+			explicit VulkanDisplay(VulkanInstance* pInstance, const FBox2D& extent, const std::string& title);
 			~VulkanDisplay() { if (!bIsTerminated) Terminate(); }
 
 			virtual void Update() override;

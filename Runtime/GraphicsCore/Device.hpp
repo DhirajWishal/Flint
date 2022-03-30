@@ -45,7 +45,7 @@ namespace Flint
 		 * @param pInstance The instance pointer.
 		 * @param flags The device flags.
 		 */
-		Device(InstanceT* pInstance, const DeviceFlags flags) : pInstance(pInstance), m_Flags(flags)
+		explicit Device(InstanceT* pInstance, const DeviceFlags flags) : pInstance(pInstance), m_Flags(flags)
 		{
 			if (!pInstance)
 				throw std::invalid_argument("Instance pointer should not be null!");

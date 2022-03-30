@@ -303,7 +303,7 @@ namespace Flint
 	struct ShaderResource
 	{
 		ShaderResource() = default;
-		ShaderResource(uint32_t setIndex, ShaderResourceType type) : m_SetIndex(setIndex), m_Type(type) {}
+		explicit ShaderResource(uint32_t setIndex, ShaderResourceType type) : m_SetIndex(setIndex), m_Type(type) {}
 
 		uint32_t m_SetIndex = 0;
 		ShaderResourceType m_Type = ShaderResourceType::UniformBuffer;
@@ -315,7 +315,7 @@ namespace Flint
 	struct ShaderAttribute
 	{
 		ShaderAttribute() = default;
-		ShaderAttribute(const std::string& name, uint32_t location, ShaderAttributeDataType type) : m_AttributeName(name), m_Location(location), m_DataType(type) {}
+		explicit ShaderAttribute(const std::string& name, uint32_t location, ShaderAttributeDataType type) : m_AttributeName(name), m_Location(location), m_DataType(type) {}
 
 		const bool operator==(const ShaderAttribute& other) const { return m_AttributeName == other.m_AttributeName && m_Location == other.m_Location && m_DataType == other.m_DataType; }
 
@@ -330,7 +330,7 @@ namespace Flint
 	struct ShaderResourceKey
 	{
 		ShaderResourceKey() = default;
-		ShaderResourceKey(const uint32_t set, uint32_t binding) : m_SetIndex(set), m_BindingIndex(binding) {}
+		explicit ShaderResourceKey(const uint32_t set, uint32_t binding) : m_SetIndex(set), m_BindingIndex(binding) {}
 
 		uint32_t m_SetIndex = 0;
 		uint32_t m_BindingIndex = 0;
@@ -392,7 +392,7 @@ namespace Flint
 	struct DepthClearValues
 	{
 		DepthClearValues() = default;
-		DepthClearValues(float depth, uint32_t stencil) : m_Depth(depth), m_Stencil(stencil) {}
+		explicit DepthClearValues(float depth, uint32_t stencil) : m_Depth(depth), m_Stencil(stencil) {}
 
 		float m_Depth = 0.0f;
 		uint32_t m_Stencil = 0;
@@ -405,9 +405,9 @@ namespace Flint
 	struct RenderTargetAttachment
 	{
 		RenderTargetAttachment() = default;
-		RenderTargetAttachment(const FColor4D& clearColor) : m_ClearColor(clearColor) {}
-		RenderTargetAttachment(ImageT* pImage, const FColor4D& clearColor) : pImage(std::move(pImage)), m_ClearColor(clearColor) {}
-		RenderTargetAttachment(ImageT* pImage, const DepthClearValues& depthValue) : pImage(std::move(pImage)), m_DepthClearValue(depthValue) {}
+		explicit RenderTargetAttachment(const FColor4D& clearColor) : m_ClearColor(clearColor) {}
+		explicit RenderTargetAttachment(ImageT* pImage, const FColor4D& clearColor) : pImage(std::move(pImage)), m_ClearColor(clearColor) {}
+		explicit RenderTargetAttachment(ImageT* pImage, const DepthClearValues& depthValue) : pImage(std::move(pImage)), m_DepthClearValue(depthValue) {}
 
 		ImageT* pImage = nullptr;
 
@@ -700,8 +700,6 @@ namespace Flint
 	 * This structure describes how the pipeline should handle certain aspects of it.
 	 */
 	struct GraphicsPipelineSpecification {
-		GraphicsPipelineSpecification() = default;
-
 		TShaderAttributeMap m_VertexInputAttributeMap = {};
 		std::vector<ColorBlendAttachment> m_ColorBlendAttachments = { ColorBlendAttachment() };
 

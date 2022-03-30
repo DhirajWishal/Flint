@@ -17,7 +17,7 @@ namespace Flint
 		class VulkanInstance final : public Instance<VulkanDevice, VulkanDisplay>
 		{
 		public:
-			VulkanInstance(bool enableValidation, bool volkInitialized = false);
+			explicit VulkanInstance(bool enableValidation, bool volkInitialized = false);
 			~VulkanInstance() { if (!bIsTerminated) Terminate(); }
 
 			virtual std::unique_ptr<VulkanDevice> CreateDevice(const DeviceFlags flags) override;

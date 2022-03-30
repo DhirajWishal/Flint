@@ -14,7 +14,7 @@ namespace Flint
 		class VulkanResourcePackage final : public ResourcePackage<VulkanResourcePackager, VulkanBuffer, VulkanImage, VulkanImageView, VulkanImageSampler>
 		{
 		public:
-			VulkanResourcePackage(const std::shared_ptr<VulkanResourcePackager>& pPackager, const std::vector<uint32_t>& bufferBindings, const std::vector<uint32_t>& imageBindings, const VkDescriptorSet& vSet);
+			explicit VulkanResourcePackage(const std::shared_ptr<VulkanResourcePackager>& pPackager, const std::vector<uint32_t>& bufferBindings, const std::vector<uint32_t>& imageBindings, const VkDescriptorSet& vSet);
 
 			virtual void PrepareIfNecessary() override;
 

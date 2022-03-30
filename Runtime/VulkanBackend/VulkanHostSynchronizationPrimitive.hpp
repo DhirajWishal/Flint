@@ -13,7 +13,7 @@ namespace Flint
 		class VulkanHostSynchronizationPrimitive final : public HostSynchronizationPrimitive<VulkanDevice>
 		{
 		public:
-			VulkanHostSynchronizationPrimitive(VulkanDevice* pDevice);
+			explicit VulkanHostSynchronizationPrimitive(VulkanDevice* pDevice);
 			~VulkanHostSynchronizationPrimitive() { if (!bIsTerminated) Terminate(); }
 
 			virtual void Wait(const uint64_t timeout = std::numeric_limits<uint64_t>::max()) override;

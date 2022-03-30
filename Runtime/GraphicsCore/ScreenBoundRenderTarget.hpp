@@ -30,7 +30,7 @@ namespace Flint
 		 * @param presentMode The image present mode to the display.
 		 * @param swapChainClearColor The clear colors used for the swap chain. If a color buffer/ attachment is present, this field can be ignored. If not this will be used. Default is FColor4D(0.0f).
 		 */
-		ScreenBoundRenderTarget(DeviceT* pDevice, DisplayT* pDisplay, const FBox2D& extent, const uint32_t bufferCount, const std::vector<typename RenderTarget<DeviceT, ImageT>::RenderTargetAttachmentT>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor = FColor4D(0.0f))
+		explicit ScreenBoundRenderTarget(DeviceT* pDevice, DisplayT* pDisplay, const FBox2D& extent, const uint32_t bufferCount, const std::vector<typename RenderTarget<DeviceT, ImageT>::RenderTargetAttachmentT>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor = FColor4D(0.0f))
 			: RenderTarget(pDevice, extent, bufferCount, imageAttachments), pDisplay(pDisplay)
 		{
 			if (!pDisplay)

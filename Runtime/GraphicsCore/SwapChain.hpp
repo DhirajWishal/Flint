@@ -13,7 +13,7 @@ namespace Flint
 	struct NextImageInfo
 	{
 		NextImageInfo() = default;
-		NextImageInfo(uint32_t index, bool shouldRecreate) : m_Index(index), bShouldRecreate(shouldRecreate) {}
+		explicit NextImageInfo(uint32_t index, bool shouldRecreate) : m_Index(index), bShouldRecreate(shouldRecreate) {}
 
 		uint32_t m_Index = 0;
 		bool bShouldRecreate = 0;
@@ -35,7 +35,7 @@ namespace Flint
 		 * @param imageCount The image count of the swap chain.
 		 * @param presentMode The swap chain present mode. If the requested present mode is not supported, an exception is thrown.
 		 */
-		SwapChain(DeviceT* pDevice, DisplayT* pDisplay, uint32_t imageCount, const SwapChainPresentMode presentMode)
+		explicit SwapChain(DeviceT* pDevice, DisplayT* pDisplay, uint32_t imageCount, const SwapChainPresentMode presentMode)
 			: DeviceBoundObject(pDevice), pDisplay(pDisplay), m_Extent(pDisplay->GetExtent()), m_ImageCount(imageCount), m_PresentMode(presentMode)
 		{
 			if (!pDisplay)

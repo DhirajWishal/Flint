@@ -13,7 +13,7 @@ namespace Flint
 		class VulkanBuffer final : public Buffer<VulkanBuffer, VulkanDevice>
 		{
 		public:
-			VulkanBuffer(VulkanDevice* pDevice, const BufferType type, const uint64_t size, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic);
+			explicit VulkanBuffer(VulkanDevice* pDevice, const BufferType type, const uint64_t size, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic);
 			~VulkanBuffer() { if (!bIsTerminated) Terminate(); }
 
 			virtual void Resize(const uint64_t size, const BufferResizeMode mode) override;

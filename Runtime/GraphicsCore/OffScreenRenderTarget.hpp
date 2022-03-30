@@ -26,7 +26,7 @@ namespace Flint
 		 * @param bufferCount The frame buffer count.
 		 * @param imageAttachments The image attachments used in the render target.
 		 */
-		OffScreenRenderTarget(DeviceT* pDevice, const FBox2D& extent, const uint32_t bufferCount, const std::vector<typename RenderTarget<DeviceT, ImageT>::RenderTargetAttachmentT>& imageAttachments)
+		explicit OffScreenRenderTarget(DeviceT* pDevice, const FBox2D& extent, const uint32_t bufferCount, const std::vector<typename RenderTarget<DeviceT, ImageT>::RenderTargetAttachmentT>& imageAttachments)
 			: RenderTarget(pDevice, extent, bufferCount, imageAttachments)
 		{
 		}

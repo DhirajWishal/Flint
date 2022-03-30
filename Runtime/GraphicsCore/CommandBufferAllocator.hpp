@@ -25,7 +25,7 @@ namespace Flint
 		 * @param pDevice The device pointer.
 		 * @param bufferCount The number of buffers to allocate.
 		 */
-		CommandBufferAllocator(DeviceT* pDevice, const uint32_t bufferCount) : DeviceBoundObject(pDevice), m_BufferCount(bufferCount)
+		explicit CommandBufferAllocator(DeviceT* pDevice, const uint32_t bufferCount) : DeviceBoundObject(pDevice), m_BufferCount(bufferCount)
 		{
 			if (bufferCount == 0)
 				throw std::invalid_argument("Command buffer count should not be 0!");
@@ -38,7 +38,7 @@ namespace Flint
 		 * @param pParent The parent command buffer allocator.
 		 * @param bufferCount The number of buffers to allocate.
 		 */
-		CommandBufferAllocator(DeviceT* pDevice, DerivedT* pParent, const uint32_t bufferCount) : DeviceBoundObject(pDevice), pParentAllocator(pParent), m_BufferCount(bufferCount)
+		explicit CommandBufferAllocator(DeviceT* pDevice, DerivedT* pParent, const uint32_t bufferCount) : DeviceBoundObject(pDevice), pParentAllocator(pParent), m_BufferCount(bufferCount)
 		{
 			if (!pParentAllocator)
 				throw std::invalid_argument("The parent command buffer allocator pointer should not be null!");

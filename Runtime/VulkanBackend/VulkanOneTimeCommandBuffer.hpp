@@ -11,7 +11,7 @@ namespace Flint
 	{
 		class VulkanOneTimeCommandBuffer {
 		public:
-			VulkanOneTimeCommandBuffer(const VulkanDevice& device);
+			explicit VulkanOneTimeCommandBuffer(const VulkanDevice& device);
 			~VulkanOneTimeCommandBuffer();
 
 			operator VkCommandBuffer() const { return vBuffer; }

@@ -16,7 +16,7 @@ namespace Flint
 	struct BufferBinding
 	{
 		BufferBinding() = default;
-		BufferBinding(const BufferT* pBuffer, const uint64_t offset) : pBuffer(pBuffer), m_Offset(offset) {}
+		explicit BufferBinding(const BufferT* pBuffer, const uint64_t offset) : pBuffer(pBuffer), m_Offset(offset) {}
 
 		const BufferT* pBuffer = nullptr;
 		uint64_t m_Offset = 0;
@@ -31,8 +31,8 @@ namespace Flint
 	struct ImageBinding
 	{
 		ImageBinding() = default;
-		ImageBinding(const ImageSamplerT* pImageSampler, const ImageViewT* pImageView, const ImageUsage usage) : pImageSampler(pImageSampler), pImageView(pImageView), m_Usage(usage) {}
-		ImageBinding(const ImageT* pImage, const ImageViewT* pImageView, const ImageSamplerT* pImageSampler, const ImageUsage usage) : pImage(pImage), pImageView(pImageView), pImageSampler(pImageSampler), m_Usage(usage) {}
+		explicit ImageBinding(const ImageSamplerT* pImageSampler, const ImageViewT* pImageView, const ImageUsage usage) : pImageSampler(pImageSampler), pImageView(pImageView), m_Usage(usage) {}
+		explicit ImageBinding(const ImageT* pImage, const ImageViewT* pImageView, const ImageSamplerT* pImageSampler, const ImageUsage usage) : pImage(pImage), pImageView(pImageView), pImageSampler(pImageSampler), m_Usage(usage) {}
 
 		const Image* pImage = nullptr;
 		const ImageViewT* pImageView = nullptr;
@@ -64,7 +64,7 @@ namespace Flint
 		 * @param bufferBindings The buffer bindings.
 		 * @param imageBindings The image bindings.
 		 */
-		ResourcePackage(const std::shared_ptr<ResourcePackagerT>& pPackager, const std::vector<uint32_t>& bufferBindings, const std::vector<uint32_t>& imageBindings)
+		explicit ResourcePackage(const std::shared_ptr<ResourcePackagerT>& pPackager, const std::vector<uint32_t>& bufferBindings, const std::vector<uint32_t>& imageBindings)
 			: pPackager(pPackager)
 		{
 			for (const uint32_t binding : bufferBindings)

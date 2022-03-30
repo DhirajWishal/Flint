@@ -29,7 +29,7 @@ namespace Flint
 		 * @param indexOffset The index offset of the wire frame.
 		 * @param indexCount The number of indexes in the wire frame.
 		 */
-		WireFrame(const std::string& name, uint64_t vertexOffset, uint64_t vertexCount, uint64_t indexOffset, uint64_t indexCount);
+		explicit WireFrame(const std::string& name, uint64_t vertexOffset, uint64_t vertexCount, uint64_t indexOffset, uint64_t indexCount);
 
 		/**
 		 * Construct the wire frame.
@@ -41,7 +41,7 @@ namespace Flint
 		 * @param indexCount The number of indexes in the wire frame.
 		 * @param material The material of the wire frame.
 		 */
-		WireFrame(const std::string& name, uint64_t vertexOffset, uint64_t vertexCount, uint64_t indexOffset, uint64_t indexCount, const Material& material);
+		explicit WireFrame(const std::string& name, uint64_t vertexOffset, uint64_t vertexCount, uint64_t indexOffset, uint64_t indexCount, const Material& material);
 
 	public:
 		/**

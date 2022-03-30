@@ -15,8 +15,8 @@ namespace Flint
 		class VulkanResourcePackager final : public ResourcePackager<VulkanDevice, VulkanResourcePackage>
 		{
 		public:
-			VulkanResourcePackager(const uint32_t setIndex, const VulkanGraphicsPipeline* pPipeline, const VkDescriptorSetLayout vLayout);
-			VulkanResourcePackager(const uint32_t setIndex, const VulkanComputePipeline* pPipeline, const VkDescriptorSetLayout vLayout);
+			explicit VulkanResourcePackager(const uint32_t setIndex, const VulkanGraphicsPipeline* pPipeline, const VkDescriptorSetLayout vLayout);
+			explicit VulkanResourcePackager(const uint32_t setIndex, const VulkanComputePipeline* pPipeline, const VkDescriptorSetLayout vLayout);
 			~VulkanResourcePackager() { if (!bIsTerminated) Terminate(); }
 
 			virtual std::shared_ptr<VulkanResourcePackage> CreatePackage() override;

@@ -41,7 +41,7 @@ namespace Flint
 		 * @param type The shader type.
 		 * @param path The file path to the asset file.
 		 */
-		Shader(DeviceT* pDevice, const ShaderType type, const std::filesystem::path& path) : DeviceBoundObject(pDevice), m_Type(type)
+		explicit Shader(DeviceT* pDevice, const ShaderType type, const std::filesystem::path& path) : DeviceBoundObject(pDevice), m_Type(type)
 		{
 			if (type == ShaderType::Undefined)
 				throw std::invalid_argument("Shader type should not be Undefined!");
@@ -58,7 +58,7 @@ namespace Flint
 		 * @param type The shader type.
 		 * @param code The shader code as a vector of uint32_t.
 		 */
-		Shader(DeviceT* pDevice, const ShaderType type, const std::vector<uint32_t>& code) : DeviceBoundObject(pDevice), m_Type(type)
+		explicit Shader(DeviceT* pDevice, const ShaderType type, const std::vector<uint32_t>& code) : DeviceBoundObject(pDevice), m_Type(type)
 		{
 			if (type == ShaderType::Undefined)
 				throw std::invalid_argument("Shader type should not be Undefined!");
@@ -75,7 +75,7 @@ namespace Flint
 		 * @param type The shader type.
 		 * @param code The shader code as a string.
 		 */
-		Shader(DeviceT* pDevice, const ShaderType type, const std::string& code) : DeviceBoundObject(pDevice), m_Type(type)
+		explicit Shader(DeviceT* pDevice, const ShaderType type, const std::string& code) : DeviceBoundObject(pDevice), m_Type(type)
 		{
 			if (type == ShaderType::Undefined)
 				throw std::invalid_argument("Shader type should not be Undefined!");

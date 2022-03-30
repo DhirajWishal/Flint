@@ -29,7 +29,7 @@ namespace Flint
 		 * @param indexSize The size of a single index in bytes.
 		 * @param profile The memory profile of the buffer. Default is BufferMemoryProfile::Automatic.
 		 */
-		GeometryStore(DeviceT* pDevice, const std::vector<ShaderAttribute>& vertexAttributes, uint64_t indexSize, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic)
+		explicit GeometryStore(DeviceT* pDevice, const std::vector<ShaderAttribute>& vertexAttributes, uint64_t indexSize, const BufferMemoryProfile profile = BufferMemoryProfile::Automatic)
 			: DeviceBoundObject(pDevice), m_VertexAttribtues(vertexAttributes), m_IndexSize(indexSize), m_MemoryProfile(profile)
 		{
 			if (m_VertexAttribtues.empty())

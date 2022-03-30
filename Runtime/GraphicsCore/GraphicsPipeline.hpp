@@ -38,7 +38,7 @@ namespace Flint
 		 * @param pFragmentShader The fragment shader (optional).
 		 * @param specification The pipeline specification.
 		 */
-		GraphicsPipeline(DeviceT* pDevice, const std::string& pipelineName, const ScreenBoundRenderTargetT* pScreenBoundRenderTarget, std::unique_ptr<ShaderT>&& pVertexShader, std::unique_ptr<ShaderT>&& pTessellationControlShader, std::unique_ptr<ShaderT>&& pTessellationEvaluationShader, std::unique_ptr<ShaderT>&& pGeometryShader, std::unique_ptr<ShaderT>&& pFragmentShader, const GraphicsPipelineSpecification& specification)
+		explicit GraphicsPipeline(DeviceT* pDevice, const std::string& pipelineName, const ScreenBoundRenderTargetT* pScreenBoundRenderTarget, std::unique_ptr<ShaderT>&& pVertexShader, std::unique_ptr<ShaderT>&& pTessellationControlShader, std::unique_ptr<ShaderT>&& pTessellationEvaluationShader, std::unique_ptr<ShaderT>&& pGeometryShader, std::unique_ptr<ShaderT>&& pFragmentShader, const GraphicsPipelineSpecification& specification)
 			: Pipeline(pDevice, pipelineName)
 			, pRenderTarget(pScreenBoundRenderTarget)
 			, pVertexShader(std::move(pVertexShader))
@@ -71,7 +71,7 @@ namespace Flint
 		 * @param pFragmentShader The fragment shader (optional).
 		 * @param specification The pipeline specification.
 		 */
-		GraphicsPipeline(DeviceT* pDevice, const std::string& pipelineName, const OffScreenRenderTargetT* pOffScreenRenderTarget, std::unique_ptr<ShaderT>&& pVertexShader, std::unique_ptr<ShaderT>&& pTessellationControlShader, std::unique_ptr<ShaderT>&& pTessellationEvaluationShader, std::unique_ptr<ShaderT>&& pGeometryShader, std::unique_ptr<ShaderT>&& pFragmentShader, const GraphicsPipelineSpecification& specification)
+		explicit GraphicsPipeline(DeviceT* pDevice, const std::string& pipelineName, const OffScreenRenderTargetT* pOffScreenRenderTarget, std::unique_ptr<ShaderT>&& pVertexShader, std::unique_ptr<ShaderT>&& pTessellationControlShader, std::unique_ptr<ShaderT>&& pTessellationEvaluationShader, std::unique_ptr<ShaderT>&& pGeometryShader, std::unique_ptr<ShaderT>&& pFragmentShader, const GraphicsPipelineSpecification& specification)
 			: Pipeline(pDevice, pipelineName)
 			, pRenderTarget(pOffScreenRenderTarget)
 			, pVertexShader(std::move(pVertexShader))

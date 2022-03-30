@@ -20,7 +20,7 @@ namespace Flint
 		 *
 		 * @param enableValidation Whether or not to enable backend validation.
 		 */
-		Instance(bool enableValidation)
+		explicit Instance(bool enableValidation)
 			: m_EnableValidation(enableValidation)
 		{
 			std::filesystem::path workingDirectory = std::filesystem::current_path();

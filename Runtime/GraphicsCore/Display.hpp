@@ -206,7 +206,7 @@ namespace Flint
 		 *				  maximized mode.
 		 * @param title The display title.
 		 */
-		Display(InstanceT* pInstance, const FBox2D& extent, const std::string& title) 
+		explicit Display(InstanceT* pInstance, const FBox2D& extent, const std::string& title)
 			: pInstance(pInstance), m_Extent(extent), m_Title(title)
 		{
 			if (!pInstance)

@@ -13,7 +13,7 @@ namespace Flint
 		class VulkanOffScreenRenderTarget : public OffScreenRenderTarget<VulkanDevice, VulkanImage>
 		{
 		public:
-			VulkanOffScreenRenderTarget(VulkanDevice* pDevice, const FBox2D& extent, const uint32_t bufferCount, const std::vector<typename RenderTarget<VulkanDevice, VulkanImage>::RenderTargetAttachmentT>& imageAttachments);
+			explicit VulkanOffScreenRenderTarget(VulkanDevice* pDevice, const FBox2D& extent, const uint32_t bufferCount, const std::vector<typename RenderTarget<VulkanDevice, VulkanImage>::RenderTargetAttachmentT>& imageAttachments);
 
 			virtual void Recreate(const FBox2D& extent) override;
 			virtual bool PrepareNewFrame() override;

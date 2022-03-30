@@ -15,8 +15,8 @@ namespace Flint
 		class VulkanCommandBufferAllocator final : public CommandBufferAllocator<VulkanCommandBufferAllocator, VulkanDevice, VulkanCommandBuffer>
 		{
 		public:
-			VulkanCommandBufferAllocator(VulkanDevice* pDevice, const uint32_t bufferCount);
-			VulkanCommandBufferAllocator(VulkanDevice* pDevice, VulkanCommandBufferAllocator* pParent, const uint32_t bufferCount);
+			explicit VulkanCommandBufferAllocator(VulkanDevice* pDevice, const uint32_t bufferCount);
+			explicit VulkanCommandBufferAllocator(VulkanDevice* pDevice, VulkanCommandBufferAllocator* pParent, const uint32_t bufferCount);
 			~VulkanCommandBufferAllocator() { if(!bIsTerminated) Terminate(); }
 
 			virtual const std::vector<std::shared_ptr<VulkanCommandBuffer>> CreateCommandBuffers() override;

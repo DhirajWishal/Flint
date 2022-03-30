@@ -35,7 +35,7 @@ namespace Flint
 		class VulkanDevice final : public Device<VulkanDevice, VulkanInstance, VulkanDisplay, VulkanCommandBufferAllocator, VulkanSwapChain, VulkanScreenBoundRenderTarget, VulkanOffScreenRenderTarget, VulkanBuffer, VulkanImage, VulkanImageSampler, VulkanShader, VulkanGraphicsPipeline, VulkanComputePipeline, VulkanGeometryStore, VulkanHostSynchronizationPrimitive, VulkanDeviceSynchronizationPrimitive, VulkanQuery, VulkanCommandBuffer>
 		{
 		public:
-			VulkanDevice(VulkanInstance* pInstance, const DeviceFlags flags);
+			explicit VulkanDevice(VulkanInstance* pInstance, const DeviceFlags flags);
 			~VulkanDevice() { if (!bIsTerminated) Terminate(); }
 
 			virtual bool IsDisplayCompatible(const VulkanDisplay* pDisplay) override;

@@ -20,6 +20,6 @@ namespace Flint
 		 *
 		 * @param pDevice The device pointer.
 		 */
-		CommandSynchronizationPrimitive(DeviceT* pDevice) : SynchronizationPrimitive(pDevice) {}
+		explicit CommandSynchronizationPrimitive(DeviceT* pDevice) : SynchronizationPrimitive(pDevice) {}
 	};
 }

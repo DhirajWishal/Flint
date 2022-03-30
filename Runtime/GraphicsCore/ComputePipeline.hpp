@@ -24,7 +24,7 @@ namespace Flint
 		 * @param pipelineName The name of the pipeline.
 		 * @param pComputeShader The compute shader pointer.
 		 */
-		ComputePipeline(DeviceT* pDevice, const std::string& pipelineName, std::unique_ptr<ShaderT>&& pComputeShader)
+		explicit ComputePipeline(DeviceT* pDevice, const std::string& pipelineName, std::unique_ptr<ShaderT>&& pComputeShader)
 			: Pipeline(pDevice, pipelineName), pShader(std::move(pComputeShader))
 		{
 			if (!pShader)

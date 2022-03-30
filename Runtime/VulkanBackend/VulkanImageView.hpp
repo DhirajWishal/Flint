@@ -13,7 +13,7 @@ namespace Flint
 		class VulkanImageView final : public ImageView<VulkanDevice, VulkanImage>
 		{
 		public:
-			VulkanImageView(VulkanDevice* pDevice, const VulkanImage* pImage, const uint32_t baseLayerIndex, const uint32_t layerCount, const uint32_t baseMipLevel, const uint32_t mipLevels, const ImageUsage usage);
+			explicit VulkanImageView(VulkanDevice* pDevice, const VulkanImage* pImage, const uint32_t baseLayerIndex, const uint32_t layerCount, const uint32_t baseMipLevel, const uint32_t mipLevels, const ImageUsage usage);
 			~VulkanImageView() { if (!bIsTerminated) Terminate(); }
 
 			virtual void Terminate() override;

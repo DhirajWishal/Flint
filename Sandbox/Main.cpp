@@ -3,9 +3,19 @@
 
 #include <iostream>
 
+#include "Graphics/GraphicsEngine.hpp"
+
 int main()
 {
 	std::cout << "Welcome to the Flint sandbox!\n";
+	try
+	{
+		auto pGraphicsEngine = std::make_unique<Flint::GraphicsEngine>(true);
+	}
+	catch (...)
+	{
+		
+	}
 	return 0;
 }
 

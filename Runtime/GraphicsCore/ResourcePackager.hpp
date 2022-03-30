@@ -22,7 +22,7 @@ namespace Flint
 		 *
 		 * @param pPipeline The pipeline pointer.
 		 */
-		ResourcePackager(DeviceT* pDevice, const uint32_t setIndex)
+		explicit ResourcePackager(DeviceT* pDevice, const uint32_t setIndex)
 			: DeviceBoundObject(pDevice), m_SetIndex(setIndex)
 		{
 			if (!pPipeline)

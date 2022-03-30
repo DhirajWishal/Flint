@@ -15,7 +15,7 @@ namespace Flint
 		class VulkanImage final : public Image<VulkanDevice, VulkanBuffer, VulkanImageView>, public VulkanRenderTargetAttachmentInterface
 		{
 		public:
-			VulkanImage(VulkanDevice* pDevice, const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const uint8_t layers, const uint32_t mipLevels, const void* pImageData, const MultiSampleCount sampleCount = MultiSampleCount::One);
+			explicit VulkanImage(VulkanDevice* pDevice, const ImageType type, const ImageUsage usage, const FBox3D& extent, const PixelFormat format, const uint8_t layers, const uint32_t mipLevels, const void* pImageData, const MultiSampleCount sampleCount = MultiSampleCount::One);
 			~VulkanImage() { if (!bIsTerminated) Terminate(); }
 
 			virtual void GenerateMipMaps() override;

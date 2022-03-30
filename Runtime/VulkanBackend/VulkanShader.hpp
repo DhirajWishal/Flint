@@ -18,9 +18,9 @@ namespace Flint
 		class VulkanShader final : public Shader<VulkanDevice>
 		{
 		public:
-			VulkanShader(VulkanDevice* pDevice, const ShaderType type, const std::filesystem::path& path);
-			VulkanShader(VulkanDevice* pDevice, const ShaderType type, const std::vector<uint32_t>& code);
-			VulkanShader(VulkanDevice* pDevice, const ShaderType type, const std::string& code);
+			explicit VulkanShader(VulkanDevice* pDevice, const ShaderType type, const std::filesystem::path& path);
+			explicit VulkanShader(VulkanDevice* pDevice, const ShaderType type, const std::vector<uint32_t>& code);
+			explicit VulkanShader(VulkanDevice* pDevice, const ShaderType type, const std::string& code);
 			~VulkanShader() { if (!bIsTerminated) Terminate(); }
 
 			virtual void CreateCache(const std::filesystem::path& path) const override;

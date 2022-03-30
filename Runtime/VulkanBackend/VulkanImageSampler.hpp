@@ -13,7 +13,7 @@ namespace Flint
 		class VulkanImageSampler final : public ImageSampler<VulkanDevice>
 		{
 		public:
-			VulkanImageSampler(VulkanDevice* pDevice, const ImageSamplerSpecification& specification);
+			explicit VulkanImageSampler(VulkanDevice* pDevice, const ImageSamplerSpecification& specification);
 			~VulkanImageSampler() { if (!bIsTerminated) Terminate(); }
 
 			virtual void Terminate() override;

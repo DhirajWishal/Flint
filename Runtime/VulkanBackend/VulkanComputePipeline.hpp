@@ -13,7 +13,7 @@ namespace Flint
 		class VulkanComputePipeline final : public ComputePipeline<VulkanDevice, RenderTarget<VulkanDevice, VulkanImage>, VulkanResourcePackage, VulkanShader>
 		{
 		public:
-			VulkanComputePipeline(VulkanDevice* pDevice, const std::string& pipelineName, std::unique_ptr<VulkanShader>&& pComputeShader);
+			explicit VulkanComputePipeline(VulkanDevice* pDevice, const std::string& pipelineName, std::unique_ptr<VulkanShader>&& pComputeShader);
 			~VulkanComputePipeline() { if (!bIsTerminated) Terminate(); }
 
 			virtual void ReloadShaders() override;

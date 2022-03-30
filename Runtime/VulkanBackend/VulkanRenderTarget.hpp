@@ -14,7 +14,7 @@ namespace Flint
 		class VulkanRenderTarget
 		{
 		public:
-			VulkanRenderTarget(VulkanDevice& device);
+			explicit VulkanRenderTarget(VulkanDevice& device);
 
 			void Terminate();
 

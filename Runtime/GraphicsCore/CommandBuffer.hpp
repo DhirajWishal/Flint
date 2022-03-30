@@ -46,7 +46,7 @@ namespace Flint
 		 *
 		 * @param pAllocator The command buffer allocator which allocated this object.
 		 */
-		CommandBuffer(CommandBufferAllocatorT* pAllocator) : pAllocator(pAllocator) {}
+		explicit CommandBuffer(CommandBufferAllocatorT* pAllocator) : pAllocator(pAllocator) {}
 
 	public:
 		/**

@@ -24,7 +24,7 @@ namespace Flint
 		class VulkanCommandBuffer final : public CommandBuffer<VulkanCommandBuffer, VulkanCommandBufferAllocator, VulkanScreenBoundRenderTarget, VulkanOffScreenRenderTarget, VulkanGraphicsPipeline, VulkanComputePipeline, VulkanBuffer, VulkanGeometryStore, VulkanResourcePackage, VulkanImage, VulkanSwapChain, VulkanQuery>
 		{
 		public:
-			VulkanCommandBuffer(VulkanCommandBufferAllocator* pAllocator, VkCommandBuffer vCommandBuffer);
+			explicit VulkanCommandBuffer(VulkanCommandBufferAllocator* pAllocator, VkCommandBuffer vCommandBuffer);
 			~VulkanCommandBuffer() { if (!bIsTerminated) Terminate(); }
 
 			virtual void BeginBufferRecording() override;

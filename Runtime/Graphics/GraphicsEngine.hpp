@@ -6,13 +6,15 @@
 #include "GraphicsCore/Instance.hpp"
 #include "GraphicsDevice.hpp"
 
+#include "VulkanBackend/VulkanInstance.hpp"
+
 namespace Flint
 {
 	/**
 	 * Flint graphics engine.
 	 * This object house a single graphics engine instance.
 	 */
-	class GraphicsEngine
+	class GraphicsEngine final
 	{
 	public:
 		/**
@@ -21,30 +23,19 @@ namespace Flint
 		 *
 		 * @param enableValidation Whether or not to enable backend validation.
 		 */
-		GraphicsEngine(bool enableValidation);
+		explicit GraphicsEngine(bool enableValidation);
 
 		/**
-		 * Virtual destructor.
+		 * Destructor.
 		 * This will terminate the instance automatically.
 		 */
-		virtual ~GraphicsEngine();
+		~GraphicsEngine();
 
 		/**
 		 * Create a new graphics device.
 		 *
 		 * @return The graphics device pointer.
 		 */
-		virtual std::shared_ptr<GraphicsDevice> CreateGraphicsDevice() = 0;
-
-	public:
-		/**
-		 * Get the primitive instance pointer.
-		 *
-		 * @return The instance shared pointer.
-		 */
-		std::shared_ptr<Instance> GetPrimitive() const { return pInstance; }
-
-	protected:
-		std::shared_ptr<Instance> pInstance = nullptr;
+		std::shared_ptr<GraphicsDevice> CreateGraphicsDevice();
 	};
 }

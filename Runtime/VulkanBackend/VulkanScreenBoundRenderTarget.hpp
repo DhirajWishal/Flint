@@ -21,7 +21,7 @@ namespace Flint
 		public:
 			using RenderTargetAttachmentT = typename RenderTarget<VulkanDevice, VulkanImage>::RenderTargetAttachmentT;
 
-			VulkanScreenBoundRenderTarget(VulkanDevice* pDevice, VulkanDisplay* pDisplay, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachmentT>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor = FColor4D(0.0f));
+			explicit VulkanScreenBoundRenderTarget(VulkanDevice* pDevice, VulkanDisplay* pDisplay, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachmentT>& imageAttachments, const SwapChainPresentMode presentMode, const FColor4D& swapChainClearColor = FColor4D(0.0f));
 			~VulkanScreenBoundRenderTarget() { if (!bIsTerminated) Terminate(); }
 
 			virtual bool PrepareNewFrame() override;

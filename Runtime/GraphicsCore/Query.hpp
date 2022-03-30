@@ -39,7 +39,7 @@ namespace Flint
 		 * @param usage The query usage.
 		 * @param queryCount The number of queries this contains.
 		 */
-		Query(DeviceT* pDevice, const QueryUsage usage, const uint32_t queryCount) : DeviceBoundObject(pDevice), m_Usage(usage), m_QueryCount(queryCount) {}
+		explicit Query(DeviceT* pDevice, const QueryUsage usage, const uint32_t queryCount) : DeviceBoundObject(pDevice), m_Usage(usage), m_QueryCount(queryCount) {}
 
 		/**
 		 * Recreate the query with primitive count.

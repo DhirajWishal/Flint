@@ -20,7 +20,7 @@ namespace Flint
 		 *
 		 * @param pEngine The engine pointer.
 		 */
-		GraphicsDevice(GraphicsEngine* pEngine);
+		explicit GraphicsDevice(GraphicsEngine* pEngine);
 
 		/**
 		 * Virtual destructor.

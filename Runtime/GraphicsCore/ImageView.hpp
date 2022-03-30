@@ -26,7 +26,7 @@ namespace Flint
 		 * @param mipLevels The number of mip levels to cover.
 		 * @param usage The image view usage.
 		 */
-		ImageView(DeviceT* pDevice, const ImageT* pImage, const uint32_t baseLayerIndex, const uint32_t layerCount, const uint32_t baseMipLevel, const uint32_t mipLevels, const ImageUsage usage)
+		explicit ImageView(DeviceT* pDevice, const ImageT* pImage, const uint32_t baseLayerIndex, const uint32_t layerCount, const uint32_t baseMipLevel, const uint32_t mipLevels, const ImageUsage usage)
 			: DeviceBoundObject(pDevice), pParentImage(pImage), m_BaseLayerIndex(baseLayerIndex), m_LayerCount(layerCount), m_BaseMipLevel(baseMipLevel), m_MipLevels(mipLevels), m_Usage(usage)
 		{
 			if (!pImage)
