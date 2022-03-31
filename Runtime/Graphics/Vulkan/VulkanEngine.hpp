@@ -22,7 +22,29 @@ namespace Flint
 		 */
 		explicit VulkanEngine(bool enableValidation = true);
 
+		/**
+		 * Get the instance pointer.
+		 * 
+		 * @return The Vulkan instance pointer.
+		 */
+		VulkanBackend::VulkanInstance* GetInstance() { return &m_Instance; }
+
+		/**
+		 * Get the instance pointer.
+		 *
+		 * @return The Vulkan instance pointer.
+		 */
+		const VulkanBackend::VulkanInstance* GetInstance() const { return &m_Instance; }
+
+		/**
+		 * Create a new graphics reactor.
+		 * 
+		 * @param The required device flags. Default is external, graphics and compute compatible.
+		 * @return The graphics reactor.
+		 */
+		std::unique_ptr<GraphicsReactor> CreateReactor(DeviceFlags flags = DeviceFlags::External | DeviceFlags::GraphicsCompatible | DeviceFlags::ComputeCompatible) override;
+
 	private:
-		VulkanInstance m_Instance;
+		VulkanBackend::VulkanInstance m_Instance;
 	};
 }

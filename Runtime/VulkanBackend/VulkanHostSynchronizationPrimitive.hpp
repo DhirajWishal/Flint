@@ -20,10 +20,10 @@ namespace Flint
 			virtual void Reset() override;
 			virtual void Terminate() override;
 
-			const VkFence GetFence() const { return vFence; }
+			const VkFence GetFence() const { return m_vFence; }
 
 		private:
-			VkFence vFence = VK_NULL_HANDLE;
+			VkFence m_vFence = VK_NULL_HANDLE;
 		};
 	}
 }

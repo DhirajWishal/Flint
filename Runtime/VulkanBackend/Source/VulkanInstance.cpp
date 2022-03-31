@@ -102,22 +102,22 @@ namespace Flint
 
 			VkDebugUtilsMessengerCreateInfoEXT CreateDebugMessengerCreateInfo()
 			{
-				VkDebugUtilsMessengerCreateInfoEXT vCreateInfo = {};
-				vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-				vCreateInfo.pNext = VK_NULL_HANDLE;
-				vCreateInfo.pUserData = VK_NULL_HANDLE;
-				vCreateInfo.flags = 0;
-				vCreateInfo.pfnUserCallback = DebugCallback;
+				VkDebugUtilsMessengerCreateInfoEXT m_vCreateInfo = {};
+				m_vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+				m_vCreateInfo.pNext = VK_NULL_HANDLE;
+				m_vCreateInfo.pUserData = VK_NULL_HANDLE;
+				m_vCreateInfo.flags = 0;
+				m_vCreateInfo.pfnUserCallback = DebugCallback;
 
-				vCreateInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT
+				m_vCreateInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT
 					| VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT
 					| VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
 
-				vCreateInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
+				m_vCreateInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
 					| VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT
 					| VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
 
-				return vCreateInfo;
+				return m_vCreateInfo;
 			}
 		}
 
@@ -142,7 +142,7 @@ namespace Flint
 			InitializeInstance();
 
 			// Instruct volk to load the instance data.
-			volkLoadInstance(vInstance);
+			volkLoadInstance(m_vInstance);
 
 			// Create the debugger if validation is enabled.
 			if (IsValidationEnabled())
@@ -198,61 +198,61 @@ namespace Flint
 				throw std::runtime_error("Validation layers requested but not available!");
 
 			// Application info.
-			VkApplicationInfo vApplicationInfo = {};
-			vApplicationInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_APPLICATION_INFO;
-			vApplicationInfo.pApplicationName = "Flint Engine";
-			vApplicationInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-			vApplicationInfo.pEngineName = "Flint";
-			vApplicationInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-			vApplicationInfo.apiVersion = VK_API_VERSION_1_3;
+			VkApplicationInfo m_vApplicationInfo = {};
+			m_vApplicationInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_APPLICATION_INFO;
+			m_vApplicationInfo.pApplicationName = "Flint Engine";
+			m_vApplicationInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
+			m_vApplicationInfo.pEngineName = "Flint";
+			m_vApplicationInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
+			m_vApplicationInfo.apiVersion = VK_API_VERSION_1_3;
 
 			// FInstance create info.
-			VkInstanceCreateInfo vCreateInfo = {};
-			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-			vCreateInfo.pApplicationInfo = &vApplicationInfo;
+			VkInstanceCreateInfo m_vCreateInfo = {};
+			m_vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+			m_vCreateInfo.pApplicationInfo = &m_vApplicationInfo;
 
 			// Initialize debugger.
 			std::vector<const char*> requiredExtensions;
-			VkDebugUtilsMessengerCreateInfoEXT vDebugCreateInfo = {};
+			VkDebugUtilsMessengerCreateInfoEXT m_vDebugCreateInfo = {};
 			if (m_EnableValidation)
 			{
-				vDebugCreateInfo = Helpers::CreateDebugMessengerCreateInfo();
+				m_vDebugCreateInfo = Helpers::CreateDebugMessengerCreateInfo();
 
 				// Get and insert the required instance extensions.
 				requiredExtensions = std::move(Helpers::GetRequiredInstanceExtensions(m_EnableValidation));
-				vCreateInfo.enabledExtensionCount = static_cast<uint32_t>(requiredExtensions.size());
-				vCreateInfo.ppEnabledExtensionNames = requiredExtensions.data();
-				vCreateInfo.enabledLayerCount = static_cast<uint32_t>(m_ValidationLayers.size());
-				vCreateInfo.ppEnabledLayerNames = m_ValidationLayers.data();
-				vCreateInfo.pNext = &vDebugCreateInfo;
+				m_vCreateInfo.enabledExtensionCount = static_cast<uint32_t>(requiredExtensions.size());
+				m_vCreateInfo.ppEnabledExtensionNames = requiredExtensions.data();
+				m_vCreateInfo.enabledLayerCount = static_cast<uint32_t>(m_ValidationLayers.size());
+				m_vCreateInfo.ppEnabledLayerNames = m_ValidationLayers.data();
+				m_vCreateInfo.pNext = &m_vDebugCreateInfo;
 			}
 			else
 			{
-				vCreateInfo.enabledLayerCount = 0;
-				vCreateInfo.pNext = nullptr;
+				m_vCreateInfo.enabledLayerCount = 0;
+				m_vCreateInfo.pNext = nullptr;
 			}
 
 			// Create the instance handle.
-			FLINT_VK_ASSERT(vkCreateInstance(&vCreateInfo, nullptr, &vInstance));
+			FLINT_VK_ASSERT(vkCreateInstance(&m_vCreateInfo, nullptr, &m_vInstance));
 		}
 
 		void VulkanInstance::TerminateInstance()
 		{
-			vkDestroyInstance(vInstance, nullptr);
+			vkDestroyInstance(m_vInstance, nullptr);
 		}
 
 		void VulkanInstance::InitializeDebugger()
 		{
-			VkDebugUtilsMessengerCreateInfoEXT vCreateInfo = Helpers::CreateDebugMessengerCreateInfo();
+			VkDebugUtilsMessengerCreateInfoEXT m_vCreateInfo = Helpers::CreateDebugMessengerCreateInfo();
 
-			const auto vkCreateDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(vInstance, "vkCreateDebugUtilsMessengerEXT"));
-			FLINT_VK_ASSERT(vkCreateDebugUtilsMessengerEXT(vInstance, &vCreateInfo, nullptr, &vDebugMessenger));
+			const auto vkCreateDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(m_vInstance, "vkCreateDebugUtilsMessengerEXT"));
+			FLINT_VK_ASSERT(vkCreateDebugUtilsMessengerEXT(m_vInstance, &m_vCreateInfo, nullptr, &m_vDebugMessenger));
 		}
 
 		void VulkanInstance::TerminateDebugger()
 		{
-			const auto vkDestroyDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(vInstance, "vkDestroyDebugUtilsMessengerEXT"));
-			vkDestroyDebugUtilsMessengerEXT(vInstance, vDebugMessenger, nullptr);
+			const auto vkDestroyDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(m_vInstance, "vkDestroyDebugUtilsMessengerEXT"));
+			vkDestroyDebugUtilsMessengerEXT(m_vInstance, m_vDebugMessenger, nullptr);
 		}
 	}
 }

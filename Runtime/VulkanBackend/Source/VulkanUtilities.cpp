@@ -56,38 +56,38 @@ namespace Flint
 				}
 			}
 
-			std::vector<VkImageView> CreateImageViews(const std::vector<VkImage>& vImages, VkFormat imageFormat, VulkanDevice& device, VkImageAspectFlags aspectFlags, VkImageViewType viewType, uint32_t layerCount, uint32_t baseLayerIndex, uint32_t mipLevels, uint32_t baseMipLevel, VkComponentMapping mapping)
+			std::vector<VkImageView> CreateImageViews(const std::vector<VkImage>& m_vImages, VkFormat imageFormat, VulkanDevice& device, VkImageAspectFlags aspectFlags, VkImageViewType viewType, uint32_t layerCount, uint32_t baseLayerIndex, uint32_t mipLevels, uint32_t baseMipLevel, VkComponentMapping mapping)
 			{
-				VkImageViewCreateInfo vCreateInfo = {};
-				vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-				vCreateInfo.flags = 0;
-				vCreateInfo.pNext = VK_NULL_HANDLE;
-				vCreateInfo.viewType = viewType;
-				vCreateInfo.format = imageFormat;
-				vCreateInfo.components = mapping;
-				vCreateInfo.subresourceRange.layerCount = layerCount;
-				vCreateInfo.subresourceRange.baseArrayLayer = baseLayerIndex;
-				vCreateInfo.subresourceRange.levelCount = mipLevels;
-				vCreateInfo.subresourceRange.baseMipLevel = baseMipLevel;
-				vCreateInfo.subresourceRange.aspectMask = aspectFlags;
+				VkImageViewCreateInfo m_vCreateInfo = {};
+				m_vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+				m_vCreateInfo.flags = 0;
+				m_vCreateInfo.pNext = VK_NULL_HANDLE;
+				m_vCreateInfo.viewType = viewType;
+				m_vCreateInfo.format = imageFormat;
+				m_vCreateInfo.components = mapping;
+				m_vCreateInfo.subresourceRange.layerCount = layerCount;
+				m_vCreateInfo.subresourceRange.baseArrayLayer = baseLayerIndex;
+				m_vCreateInfo.subresourceRange.levelCount = mipLevels;
+				m_vCreateInfo.subresourceRange.baseMipLevel = baseMipLevel;
+				m_vCreateInfo.subresourceRange.aspectMask = aspectFlags;
 
-				std::vector<VkImageView> vImageViews(vImages.size());
-				VkImageView* pArray = vImageViews.data();
-				for (auto itr = vImages.begin(); itr != vImages.end(); itr++)
+				std::vector<VkImageView> m_vImageViews(m_vImages.size());
+				VkImageView* pArray = m_vImageViews.data();
+				for (auto itr = m_vImages.begin(); itr != m_vImages.end(); itr++)
 				{
-					vCreateInfo.image = *itr;
-					FLINT_VK_ASSERT(device.GetDeviceTable().vkCreateImageView(device.GetLogicalDevice(), &vCreateInfo, nullptr, pArray));
+					m_vCreateInfo.image = *itr;
+					FLINT_VK_ASSERT(device.GetDeviceTable().vkCreateImageView(device.GetLogicalDevice(), &m_vCreateInfo, nullptr, pArray));
 					pArray++;
 				}
 
-				return vImageViews;
+				return m_vImageViews;
 			}
 
-			VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features, VkPhysicalDevice vPhysicalDevice)
+			VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features, VkPhysicalDevice m_vPhysicalDevice)
 			{
 				for (VkFormat format : candidates) {
 					VkFormatProperties props = {};
-					vkGetPhysicalDeviceFormatProperties(vPhysicalDevice, format, &props);
+					vkGetPhysicalDeviceFormatProperties(m_vPhysicalDevice, format, &props);
 
 					if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features)
 						return format;
@@ -100,18 +100,18 @@ namespace Flint
 				return VkFormat();
 			}
 
-			bool HasStencilComponent(VkFormat vFormat)
+			bool HasStencilComponent(VkFormat m_vFormat)
 			{
-				return vFormat == VK_FORMAT_D32_SFLOAT_S8_UINT || vFormat == VK_FORMAT_D24_UNORM_S8_UINT;
+				return m_vFormat == VK_FORMAT_D32_SFLOAT_S8_UINT || m_vFormat == VK_FORMAT_D24_UNORM_S8_UINT;
 			}
 
-			VkFormat FindDepthFormat(VkPhysicalDevice vPhysicalDevice)
+			VkFormat FindDepthFormat(VkPhysicalDevice m_vPhysicalDevice)
 			{
 				return FindSupportedFormat(
 					{ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
 					VK_IMAGE_TILING_OPTIMAL,
 					VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT,
-					vPhysicalDevice
+					m_vPhysicalDevice
 				);
 			}
 
@@ -464,18 +464,18 @@ namespace Flint
 				if ((usage & ImageUsage::Depth) == ImageUsage::Depth)
 					return VkImageAspectFlagBits::VK_IMAGE_ASPECT_DEPTH_BIT;
 
-				VkImageAspectFlags vFlags = 0;
+				VkImageAspectFlags m_vFlags = 0;
 
 				if ((usage & ImageUsage::Graphics) == ImageUsage::Graphics)
-					vFlags |= VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
+					m_vFlags |= VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
 
 				if ((usage & ImageUsage::Storage) == ImageUsage::Storage)
-					vFlags |= VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
+					m_vFlags |= VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
 
 				if ((usage & ImageUsage::Color) == ImageUsage::Color)
-					vFlags |= VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
+					m_vFlags |= VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
 
-				return vFlags;
+				return m_vFlags;
 			}
 
 			VkAccessFlags GetAccessFlags(VkImageLayout layout)

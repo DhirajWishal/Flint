@@ -18,7 +18,7 @@ namespace Flint
 		public:
 			VulkanQueue() = default;
 
-			void Initialize(VkPhysicalDevice vPhysicalDevice, const DeviceFlags flags);
+			void Initialize(VkPhysicalDevice m_vPhysicalDevice, const DeviceFlags flags);
 			bool IsComplete() const;
 
 		public:
@@ -26,9 +26,9 @@ namespace Flint
 			std::optional<uint32_t> m_ComputeFamily = {};
 			std::optional<uint32_t> m_TransferFamily = {};
 
-			VkQueue vGraphicsQueue = VK_NULL_HANDLE;
-			VkQueue vComputeQueue = VK_NULL_HANDLE;
-			VkQueue vTransferQueue = VK_NULL_HANDLE;
+			VkQueue m_vGraphicsQueue = VK_NULL_HANDLE;
+			VkQueue m_vComputeQueue = VK_NULL_HANDLE;
+			VkQueue m_vTransferQueue = VK_NULL_HANDLE;
 		};
 	}
 }

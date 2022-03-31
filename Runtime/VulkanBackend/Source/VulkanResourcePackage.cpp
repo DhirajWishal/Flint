@@ -12,8 +12,8 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanResourcePackage::VulkanResourcePackage(const std::shared_ptr<VulkanResourcePackager>& pPackager, const std::vector<uint32_t>& bufferBindings, const std::vector<uint32_t>& imageBindings, const VkDescriptorSet& vSet)
-			: ResourcePackage(pPackager, bufferBindings, imageBindings), vDescriptorSet(vSet)
+		VulkanResourcePackage::VulkanResourcePackage(const std::shared_ptr<VulkanResourcePackager>& pPackager, const std::vector<uint32_t>& bufferBindings, const std::vector<uint32_t>& imageBindings, const VkDescriptorSet& m_vSet)
+			: ResourcePackage(pPackager, bufferBindings, imageBindings), m_vDescriptorSet(m_vSet)
 		{
 		}
 
@@ -23,25 +23,25 @@ namespace Flint
 				return;
 
 			const std::unordered_map<uint32_t, ShaderResourceType> resources = pPackager->GetResources();
-			std::vector<VkWriteDescriptorSet> vWrites = {};
+			std::vector<VkWriteDescriptorSet> m_vWrites = {};
 
-			VkWriteDescriptorSet vWrite = {};
-			vWrite.sType = VkStructureType::VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-			vWrite.pNext = VK_NULL_HANDLE;
-			vWrite.pImageInfo = VK_NULL_HANDLE;
-			vWrite.pTexelBufferView = VK_NULL_HANDLE;
-			vWrite.dstSet = vDescriptorSet;
+			VkWriteDescriptorSet m_vWrite = {};
+			m_vWrite.sType = VkStructureType::VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			m_vWrite.pNext = VK_NULL_HANDLE;
+			m_vWrite.pImageInfo = VK_NULL_HANDLE;
+			m_vWrite.pTexelBufferView = VK_NULL_HANDLE;
+			m_vWrite.dstSet = m_vDescriptorSet;
 
 			// Resolve buffers.
 			for (const auto buffers : m_BufferBindings)
 			{
-				vWrite.descriptorCount = static_cast<uint32_t>(buffers.second.size());
-				vWrite.dstArrayElement = 0;
-				vWrite.dstBinding = buffers.first;
-				vWrite.descriptorType = Utilities::GetDescriptorType(resources.at(buffers.first));
+				m_vWrite.descriptorCount = static_cast<uint32_t>(buffers.second.size());
+				m_vWrite.dstArrayElement = 0;
+				m_vWrite.dstBinding = buffers.first;
+				m_vWrite.descriptorType = Utilities::GetDescriptorType(resources.at(buffers.first));
 
 				uint64_t index = 0;
-				VkDescriptorBufferInfo* pBufferInfos = new VkDescriptorBufferInfo[vWrite.descriptorCount];
+				VkDescriptorBufferInfo* pBufferInfos = new VkDescriptorBufferInfo[m_vWrite.descriptorCount];
 				for (const auto buffer : buffers.second)
 				{
 					if (!buffer.pBuffer)
@@ -53,21 +53,21 @@ namespace Flint
 					index++;
 				}
 
-				vWrite.pBufferInfo = pBufferInfos;
-				vWrites.emplace_back(vWrite);
+				m_vWrite.pBufferInfo = pBufferInfos;
+				m_vWrites.emplace_back(m_vWrite);
 			}
 
 			// Resolve images.
-			vWrite.pBufferInfo = VK_NULL_HANDLE;
+			m_vWrite.pBufferInfo = VK_NULL_HANDLE;
 			for (const auto images : m_ImageBindings)
 			{
-				vWrite.descriptorCount = static_cast<uint32_t>(images.second.size());
-				vWrite.dstArrayElement = 0;
-				vWrite.dstBinding = images.first;
-				vWrite.descriptorType = Utilities::GetDescriptorType(resources.at(images.first));
+				m_vWrite.descriptorCount = static_cast<uint32_t>(images.second.size());
+				m_vWrite.dstArrayElement = 0;
+				m_vWrite.dstBinding = images.first;
+				m_vWrite.descriptorType = Utilities::GetDescriptorType(resources.at(images.first));
 
 				uint64_t index = 0;
-				VkDescriptorImageInfo* pImageInfos = new VkDescriptorImageInfo[vWrite.descriptorCount];
+				VkDescriptorImageInfo* pImageInfos = new VkDescriptorImageInfo[m_vWrite.descriptorCount];
 				for (const auto image : images.second)
 				{
 					if (!image.pImage)
@@ -76,35 +76,35 @@ namespace Flint
 					if (!image.pImageSampler)
 						throw backend_error("Requested image sampler at binding location: " + std::to_string(images.first) + " is not submitted! Make sure that all the bindings are properly submitted.");
 
-					auto& vImage = image.pImage->StaticCast<VulkanImage>();
+					auto& m_vImage = image.pImage->StaticCast<VulkanImage>();
 					pImageInfos[index].imageView = image.pImageView->StaticCast<VulkanImageView>().GetImageView();
-					pImageInfos[index].imageLayout = vImage.GetImageLayout(image.m_Usage);
+					pImageInfos[index].imageLayout = m_vImage.GetImageLayout(image.m_Usage);
 					pImageInfos[index].sampler = image.pImageSampler->StaticCast<VulkanImageSampler>().GetSampler();
 					index++;
 				}
 
-				vWrite.pImageInfo = pImageInfos;
-				vWrites.emplace_back(vWrite);
+				m_vWrite.pImageInfo = pImageInfos;
+				m_vWrites.emplace_back(m_vWrite);
 			}
 
-			pPackager->GetDevice()->GetDeviceTable().vkUpdateDescriptorSets(pPackager->GetDevice()->GetLogicalDevice(), static_cast<uint32_t>(vWrites.size()), vWrites.data(), 0, nullptr);
+			pPackager->GetDevice()->GetDeviceTable().vkUpdateDescriptorSets(pPackager->GetDevice()->GetLogicalDevice(), static_cast<uint32_t>(m_vWrites.size()), m_vWrites.data(), 0, nullptr);
 
 			// Delete the allocated memory.
-			for (auto vWriteDelete : vWrites)
+			for (auto m_vWriteDelete : m_vWrites)
 			{
-				if (vWriteDelete.pBufferInfo)
-					delete[] vWriteDelete.pBufferInfo;
+				if (m_vWriteDelete.pBufferInfo)
+					delete[] m_vWriteDelete.pBufferInfo;
 
-				else if (vWriteDelete.pImageInfo)
-					delete[] vWriteDelete.pImageInfo;
+				else if (m_vWriteDelete.pImageInfo)
+					delete[] m_vWriteDelete.pImageInfo;
 			}
 
 			bIsUpdated = false;
 		}
 
-		void VulkanResourcePackage::SetDescriptorSet(const VkDescriptorSet& vSet)
+		void VulkanResourcePackage::SetDescriptorSet(const VkDescriptorSet& m_vSet)
 		{
-			vDescriptorSet = vSet;
+			m_vDescriptorSet = m_vSet;
 			bIsUpdated = true;
 		}
 	}

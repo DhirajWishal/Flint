@@ -33,7 +33,7 @@ namespace Flint
 			VkPipelineShaderStageCreateInfo GetShaderStageCreateInfo() const;
 			void PerformReflection();
 
-			VkShaderModule GetModule() const { return vModule; }
+			VkShaderModule GetModule() const { return m_vModule; }
 			const std::vector<VkPushConstantRange> GetPushConstantRanges() const { return m_ConstantRanges; }
 			const std::unordered_map<uint32_t, DescriptorSetInfo> GetDescriptorSetMap() const { return m_DescriptorSetMap; }
 
@@ -47,9 +47,9 @@ namespace Flint
 
 			std::unordered_map<uint32_t, DescriptorSetInfo> m_DescriptorSetMap;
 
-			VkShaderModule vModule = VK_NULL_HANDLE;
+			VkShaderModule m_vModule = VK_NULL_HANDLE;
 
-			VkShaderStageFlags vStageFlags = VkShaderStageFlagBits::VK_SHADER_STAGE_ALL;
+			VkShaderStageFlags m_vStageFlags = VkShaderStageFlagBits::VK_SHADER_STAGE_ALL;
 		};
 	}
 }

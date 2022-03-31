@@ -12,13 +12,13 @@
 
 namespace Flint
 {
-	CubeMapGenerator::CubeMapGenerator(Device* pDevice, const std::filesystem::path& assetFile, uint32_t mips)
+	CubeMapGenerator::CubeMapGenerator(Device* m_pDevice, const std::filesystem::path& assetFile, uint32_t mips)
 	{
 		if (assetFile.extension().string() != ".hdr")
 			throw std::invalid_argument("Provided asset file is not supported!");
 
 		ImageLoader loader(assetFile);
-		auto pTexture = pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Graphics, loader.GetExtent(), loader.GetPixelFormat(), 1, 1, loader.GetPixelData());
+		auto pTexture = m_pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Graphics, loader.GetExtent(), loader.GetPixelFormat(), 1, 1, loader.GetPixelData());
 		auto pTextureView = pTexture->CreateImageView(0, pTexture->GetLayerCount(), 0, pTexture->GetMipLevels(), ImageUsage::Graphics);
 
 		uint32_t length = loader.GetExtent().m_Width / 4;
@@ -27,24 +27,24 @@ namespace Flint
 		if (mips == 0)
 			mips = Image::GetBestMipLevels(extent);
 
-		pCubeMap = pDevice->CreateImage(ImageType::CubeMap, ImageUsage::Graphics | ImageUsage::Storage, extent, PixelFormat::R16G16B16A16_SFLOAT, 6, mips, nullptr);
+		pCubeMap = m_pDevice->CreateImage(ImageType::CubeMap, ImageUsage::Graphics | ImageUsage::Storage, extent, PixelFormat::R16G16B16A16_SFLOAT, 6, mips, nullptr);
 		auto pCubeMapView = pCubeMap->CreateImageView(0, pCubeMap->GetLayerCount(), 0, pCubeMap->GetMipLevels(), ImageUsage::Graphics);
 
 		std::unique_ptr<Shader> pShader = nullptr;
 		if (!std::filesystem::exists(NormalizePath("Flint\\Shaders\\CubeMapGen.fsc")))
 		{
 			ShaderCompiler shaderCompiler(std::filesystem::path(NormalizePath("E:\\Flint\\Code\\Engine\\Shaders\\CubeMapGen\\Shader.comp")), ShaderCodeType::GLSL, ShaderType::Compute);
-			pShader = shaderCompiler.CreateShader(pDevice);
+			pShader = shaderCompiler.CreateShader(m_pDevice);
 			pShader->CreateCache(NormalizePath("Flint\\Shaders\\CubeMapGen.fsc"));
 		}
 		else
-			pShader = pDevice->CreateShader(ShaderType::Compute, std::filesystem::path(NormalizePath("Flint\\Shaders\\CubeMapGen.fsc")));
+			pShader = m_pDevice->CreateShader(ShaderType::Compute, std::filesystem::path(NormalizePath("Flint\\Shaders\\CubeMapGen.fsc")));
 
-		auto pPipeline = pDevice->CreateComputePipeline("CubeMapGen", std::move(pShader));
+		auto pPipeline = m_pDevice->CreateComputePipeline("CubeMapGen", std::move(pShader));
 		auto pPackage = pPipeline->CreateResourcePackage(0);
 
 		Flint::ImageSamplerSpecification specification = {};
-		auto pSampler = pDevice->CreateImageSampler(specification);
+		auto pSampler = m_pDevice->CreateImageSampler(specification);
 
 		pPackage->BindResource(0, pTexture.get(), pTextureView.get(), pSampler.get());
 
@@ -53,7 +53,7 @@ namespace Flint
 		specification.m_AddressModeW = AddressMode::ClampToEdge;
 		pPackage->BindResource(1, pCubeMap.get(), pCubeMapView.get(), pSampler.get(), ImageUsage::Storage);
 
-		auto pAllocator = pDevice->CreateCommandBufferAllocator(1);
+		auto pAllocator = m_pDevice->CreateCommandBufferAllocator(1);
 		auto pCommandBuffers = pAllocator->CreateCommandBuffers();
 
 		auto pCommandBuffer = pCommandBuffers.front();
@@ -65,7 +65,7 @@ namespace Flint
 
 		pCommandBuffer->EndBufferRecording();
 
-		pDevice->SubmitComputeCommandBuffer(pCommandBuffer.get());
+		m_pDevice->SubmitComputeCommandBuffer(pCommandBuffer.get());
 		pCubeMap->GenerateMipMaps();
 	}
 }

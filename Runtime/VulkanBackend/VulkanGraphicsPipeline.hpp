@@ -22,9 +22,9 @@ namespace Flint
 			virtual void CreateResourcePackagers() override;
 			virtual void Terminate() override;
 
-			const VkPipelineLayout GetPipelineLayout() const { return vPipelineLayout; }
-			const VkPipeline GetPipeline() const { return vPipeline; }
-			const std::vector<VkDescriptorSetLayout> GetDescriptorSetLayouts() const { return vDescriptorSetLayouts; }
+			const VkPipelineLayout GetPipelineLayout() const { return m_vPipelineLayout; }
+			const VkPipeline GetPipeline() const { return m_vPipeline; }
+			const std::vector<VkDescriptorSetLayout> GetDescriptorSetLayouts() const { return m_vDescriptorSetLayouts; }
 
 		private:
 			void SetupDefaults();
@@ -33,28 +33,28 @@ namespace Flint
 			void CreatePipeline();
 
 		private:
-			VkPipelineVertexInputStateCreateInfo vVertexInputStateCreateInfo = {};
-			VkPipelineInputAssemblyStateCreateInfo vInputAssemblyStateCreateInfo = {};
-			VkPipelineTessellationStateCreateInfo vTessellationStateCreateInfo = {};
-			VkPipelineColorBlendStateCreateInfo vColorBlendStateCreateInfo = {};
-			VkPipelineRasterizationStateCreateInfo vRasterizationStateCreateInfo = {};
-			VkPipelineMultisampleStateCreateInfo vMultisampleStateCreateInfo = {};
-			VkPipelineDepthStencilStateCreateInfo vDepthStencilStateCreateInfo = {};
-			VkPipelineDynamicStateCreateInfo vDynamicStateCreateInfo = {};
+			VkPipelineVertexInputStateCreateInfo m_vVertexInputStateCreateInfo = {};
+			VkPipelineInputAssemblyStateCreateInfo m_vInputAssemblyStateCreateInfo = {};
+			VkPipelineTessellationStateCreateInfo m_vTessellationStateCreateInfo = {};
+			VkPipelineColorBlendStateCreateInfo m_vColorBlendStateCreateInfo = {};
+			VkPipelineRasterizationStateCreateInfo m_vRasterizationStateCreateInfo = {};
+			VkPipelineMultisampleStateCreateInfo m_vMultisampleStateCreateInfo = {};
+			VkPipelineDepthStencilStateCreateInfo m_vDepthStencilStateCreateInfo = {};
+			VkPipelineDynamicStateCreateInfo m_vDynamicStateCreateInfo = {};
 
-			std::vector<VkPipelineColorBlendAttachmentState> vCBASS = {};
-			std::vector<VkPipelineShaderStageCreateInfo> vShaderStageCreateInfo = {};
-			std::vector<VkVertexInputAttributeDescription> vVertexAttributes = {};
-			std::vector<VkVertexInputBindingDescription> vVertexBindings = {};
-			std::vector<VkDynamicState> vDynamicStates = {};
+			std::vector<VkPipelineColorBlendAttachmentState> m_vCBASS = {};
+			std::vector<VkPipelineShaderStageCreateInfo> m_vShaderStageCreateInfo = {};
+			std::vector<VkVertexInputAttributeDescription> m_vVertexAttributes = {};
+			std::vector<VkVertexInputBindingDescription> m_vVertexBindings = {};
+			std::vector<VkDynamicState> m_vDynamicStates = {};
 
-			std::vector<VkDescriptorSetLayout> vDescriptorSetLayouts = {};
+			std::vector<VkDescriptorSetLayout> m_vDescriptorSetLayouts = {};
 
-			VkPipelineLayout vPipelineLayout = VK_NULL_HANDLE;
-			VkPipeline vPipeline = VK_NULL_HANDLE;
-			VkPipelineCache vPipelineCache = VK_NULL_HANDLE;
+			VkPipelineLayout m_vPipelineLayout = VK_NULL_HANDLE;
+			VkPipeline m_vPipeline = VK_NULL_HANDLE;
+			VkPipelineCache m_vPipelineCache = VK_NULL_HANDLE;
 
-			VkRenderPass vRenderPass = VK_NULL_HANDLE;
+			VkRenderPass m_vRenderPass = VK_NULL_HANDLE;
 		};
 	}
 }

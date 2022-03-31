@@ -27,7 +27,7 @@ namespace Flint
 		 *
 		 * @param pDevice The device pointer.
 		 */
-		explicit DeviceBoundObject(DeviceT* pDevice) : pDevice(pDevice)
+		explicit DeviceBoundObject(DeviceT* pDevice) : m_pDevice(pDevice)
 		{
 			if (!pDevice)
 				throw std::invalid_argument("Device pointer should not be null!");
@@ -38,7 +38,7 @@ namespace Flint
 		 *
 		 * @return The device pointer.
 		 */
-		DeviceT* GetDevice() const { return pDevice; }
+		DeviceT* GetDevice() const { return m_pDevice; }
 
 		/**
 		 * Terminate the device bound object.
@@ -46,6 +46,6 @@ namespace Flint
 		virtual void Terminate() = 0;
 
 	protected:
-		DeviceT* pDevice = nullptr;
+		DeviceT* m_pDevice = nullptr;
 	};
 }

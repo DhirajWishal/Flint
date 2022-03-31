@@ -30,28 +30,28 @@ namespace Flint
 			virtual void Recreate() override;
 			virtual const uint32_t GetImageIndex() const override final { return pSwapChain->GetImageIndex(); }
 
-			VkRenderPass GetRenderPass() const { return vRenderTarget.vRenderPass; }
-			const VkFramebuffer GetFramebuffer() const { return vRenderTarget.vFrameBuffers[GetImageIndex()]; }
+			VkRenderPass GetRenderPass() const { return m_vRenderTarget.m_vRenderPass; }
+			const VkFramebuffer GetFramebuffer() const { return m_vRenderTarget.m_vFrameBuffers[GetImageIndex()]; }
 
 			const VulkanSwapChain* GetVulkanSwapChain() const { return static_cast<const VulkanSwapChain*>(pSwapChain.get()); }
 
-			const uint32_t GetClearScreenValueCount() const { return static_cast<uint32_t>(vClearValues.size()); }
-			const VkClearValue* GetClearScreenValues() const { return vClearValues.data(); }
+			const uint32_t GetClearScreenValueCount() const { return static_cast<uint32_t>(m_vClearValues.size()); }
+			const VkClearValue* GetClearScreenValues() const { return m_vClearValues.data(); }
 
-			std::vector<VkClearValue> GetClearScreenValueVector() const { return vClearValues; }
-			std::vector<VkImageAspectFlags> GetClearAspectFlags() const { return vClearAspectFlags; }
+			std::vector<VkClearValue> GetClearScreenValueVector() const { return m_vClearValues; }
+			std::vector<VkImageAspectFlags> GetClearAspectFlags() const { return m_vClearAspectFlags; }
 
 			const VkCommandBufferInheritanceInfo* GetVulkanInheritanceInfo() const;
 
 		private:
-			VulkanRenderTarget vRenderTarget;
+			VulkanRenderTarget m_vRenderTarget;
 
-			std::vector<VkSubpassDependency> vDependencies{ 2 };
-			std::atomic<VkCommandBufferInheritanceInfo> vInheritanceInfo = {};
-			mutable VkCommandBufferInheritanceInfo vInheritInfo = {};
+			std::vector<VkSubpassDependency> m_vDependencies{ 2 };
+			std::atomic<VkCommandBufferInheritanceInfo> m_vInheritanceInfo = {};
+			mutable VkCommandBufferInheritanceInfo m_vInheritInfo = {};
 
-			std::vector<VkClearValue> vClearValues = {};
-			std::vector<VkImageAspectFlags> vClearAspectFlags = {};
+			std::vector<VkClearValue> m_vClearValues = {};
+			std::vector<VkImageAspectFlags> m_vClearAspectFlags = {};
 
 			bool bShouldSkip = false;
 		};

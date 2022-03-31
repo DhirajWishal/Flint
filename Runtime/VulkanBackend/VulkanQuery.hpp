@@ -20,13 +20,13 @@ namespace Flint
 			virtual void RequestQueryData(const uint32_t firstQuery, const uint32_t count, const uint64_t dataSize, void* pDataStore, const uint64_t stride, const QueryDataMode dataMode) override;
 			virtual void Terminate() override;
 
-			const VkQueryPool GetQuery() const { return vQueryPool; }
+			const VkQueryPool GetQuery() const { return m_vQueryPool; }
 
 		private:
 			void CreatePool();
 
 		private:
-			VkQueryPool vQueryPool = VK_NULL_HANDLE;
+			VkQueryPool m_vQueryPool = VK_NULL_HANDLE;
 		};
 	}
 }

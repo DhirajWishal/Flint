@@ -21,8 +21,8 @@ namespace Flint
 
 			virtual void Terminate() override;
 
-			const VkPipelineLayout GetPipelineLayout() const { return vPipelineLayout; }
-			const VkPipeline GetPipeline() const { return vPipeline; }
+			const VkPipelineLayout GetPipelineLayout() const { return m_vPipelineLayout; }
+			const VkPipeline GetPipeline() const { return m_vPipeline; }
 
 		private:
 			void CreatePipelineCache();
@@ -30,11 +30,11 @@ namespace Flint
 			void CreatePipeline();
 
 		private:
-			std::vector<VkDescriptorSetLayout> vDescriptorSetLayouts = {};
+			std::vector<VkDescriptorSetLayout> m_vDescriptorSetLayouts = {};
 
-			VkPipelineLayout vPipelineLayout = VK_NULL_HANDLE;
-			VkPipeline vPipeline = VK_NULL_HANDLE;
-			VkPipelineCache vPipelineCache = VK_NULL_HANDLE;
+			VkPipelineLayout m_vPipelineLayout = VK_NULL_HANDLE;
+			VkPipeline m_vPipeline = VK_NULL_HANDLE;
+			VkPipelineCache m_vPipelineCache = VK_NULL_HANDLE;
 		};
 	}
 }

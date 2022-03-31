@@ -22,17 +22,17 @@ namespace Flint
 			virtual void UnmapMemory() override;
 			virtual void Terminate() override;
 
-			VkBuffer GetBuffer() const { return vBuffer; }
-			const VkBuffer* GetBufferAddress() const { return &vBuffer; }
+			VkBuffer GetBuffer() const { return m_vBuffer; }
+			const VkBuffer* GetBufferAddress() const { return &m_vBuffer; }
 
 		private:
 			void CreateBuffer();
 
 		private:
-			VkBuffer vBuffer = VK_NULL_HANDLE;
+			VkBuffer m_vBuffer = VK_NULL_HANDLE;
 			VmaAllocation vmaAllocation = {};
 
-			VkBufferUsageFlags vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_FLAG_BITS_MAX_ENUM;
+			VkBufferUsageFlags m_vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_FLAG_BITS_MAX_ENUM;
 			VmaMemoryUsage vmaMemoryUsage = VmaMemoryUsage::VMA_MEMORY_USAGE_MAX_ENUM;
 		};
 	}

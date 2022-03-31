@@ -5,11 +5,11 @@ layout (location = 0) in vec3 inPosition;
 
 layout (binding = 1) uniform sampler2D skybox;
 
-const vec2 invAtan = vec2(0.1591, 0.3183);
+const vec2 inm_vAtan = vec2(0.1591, 0.3183);
 vec2 SampleSphericalMap(vec3 v)
 {
     vec2 uv = vec2(atan(v.z, v.x), asin(v.y));
-    uv *= invAtan;
+    uv *= inm_vAtan;
     uv += 0.5;
     return uv;
 }

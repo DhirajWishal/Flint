@@ -12,8 +12,8 @@ namespace Flint
 		{
 			void KeyCallback(GLFWwindow* window, int32_t key, int32_t scancode, int32_t action, int32_t mods)
 			{
-				auto vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window));
-				vDisplay->ActivateKey(scancode, action, static_cast<SpecialCharacter>(mods));
+				auto m_vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window));
+				m_vDisplay->ActivateKey(scancode, action, static_cast<SpecialCharacter>(mods));
 			}
 
 			void TextCallback(GLFWwindow* window, uint32_t codepoint)
@@ -22,26 +22,26 @@ namespace Flint
 
 			void CursorPositionCallback(GLFWwindow* window, double xOffset, double yOffset)
 			{
-				auto vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window));
-				vDisplay->SetMousePosition(static_cast<float>(xOffset), static_cast<float>(yOffset));
+				auto m_vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window));
+				m_vDisplay->SetMousePosition(static_cast<float>(xOffset), static_cast<float>(yOffset));
 			}
 
 			void MouseButtonCallback(GLFWwindow* window, int32_t button, int32_t action, int32_t mods)
 			{
-				auto vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window));
-				vDisplay->ActivateMouseButton(button, action, static_cast<SpecialCharacter>(mods));
+				auto m_vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window));
+				m_vDisplay->ActivateMouseButton(button, action, static_cast<SpecialCharacter>(mods));
 			}
 
 			void MouseScrollCallback(GLFWwindow* window, double xOffset, double yOffset)
 			{
-				auto vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window));
-				vDisplay->SetMouseScroll(static_cast<float>(xOffset), static_cast<float>(yOffset));
+				auto m_vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window));
+				m_vDisplay->SetMouseScroll(static_cast<float>(xOffset), static_cast<float>(yOffset));
 			}
 
 			void MouseCursorEnterCallback(GLFWwindow* window, int32_t entered)
 			{
-				auto vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window));
-				vDisplay->SetCursorWithinDisplay(entered == GLFW_TRUE);
+				auto m_vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window));
+				m_vDisplay->SetCursorWithinDisplay(entered == GLFW_TRUE);
 			}
 
 			void ApplicationDropPathCallback(GLFWwindow* window, int32_t count, const char** strings)
@@ -50,45 +50,45 @@ namespace Flint
 				for (uint32_t i = 0; i < static_cast<uint32_t>(count); i++)
 					paths[i] = strings[i];
 
-				auto vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window));
-				vDisplay->SetDragAndDropPaths(std::move(paths));
+				auto m_vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window));
+				m_vDisplay->SetDragAndDropPaths(std::move(paths));
 			}
 
 			void ApplicationResizeCallback(GLFWwindow* window, int32_t width, int32_t height)
 			{
-				auto vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window));
-				vDisplay->SetNewExtent(FBox2D(width, height));
-				vDisplay->Resized();
+				auto m_vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window));
+				m_vDisplay->SetNewExtent(FBox2D(width, height));
+				m_vDisplay->Resized();
 			}
 
 			void WindowCloseCallback(GLFWwindow* window)
 			{
-				auto vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window));
-				vDisplay->ToggleClose();
+				auto m_vDisplay = static_cast<VulkanDisplay*>(glfwGetWindowUserPointer(window));
+				m_vDisplay->ToggleClose();
 			}
 		}
 
-		SwapChainSupportDetails SwapChainSupportDetails::Query(VkPhysicalDevice vPhysicalDevice, VkSurfaceKHR vSurface)
+		SwapChainSupportDetails SwapChainSupportDetails::Query(VkPhysicalDevice m_vPhysicalDevice, VkSurfaceKHR m_vSurface)
 		{
 			SwapChainSupportDetails supportDetails = {};
-			vkGetPhysicalDeviceSurfaceCapabilitiesKHR(vPhysicalDevice, vSurface, &supportDetails.m_Capabilities);
+			vkGetPhysicalDeviceSurfaceCapabilitiesKHR(m_vPhysicalDevice, m_vSurface, &supportDetails.m_Capabilities);
 
 			uint32_t formatCount = 0;
-			vkGetPhysicalDeviceSurfaceFormatsKHR(vPhysicalDevice, vSurface, &formatCount, nullptr);
+			vkGetPhysicalDeviceSurfaceFormatsKHR(m_vPhysicalDevice, m_vSurface, &formatCount, nullptr);
 
 			if (formatCount != 0)
 			{
 				supportDetails.m_Formats.resize(formatCount);
-				vkGetPhysicalDeviceSurfaceFormatsKHR(vPhysicalDevice, vSurface, &formatCount, supportDetails.m_Formats.data());
+				vkGetPhysicalDeviceSurfaceFormatsKHR(m_vPhysicalDevice, m_vSurface, &formatCount, supportDetails.m_Formats.data());
 			}
 
 			uint32_t presentModeCount = 0;
-			vkGetPhysicalDeviceSurfacePresentModesKHR(vPhysicalDevice, vSurface, &presentModeCount, nullptr);
+			vkGetPhysicalDeviceSurfacePresentModesKHR(m_vPhysicalDevice, m_vSurface, &presentModeCount, nullptr);
 
 			if (presentModeCount != 0)
 			{
 				supportDetails.m_PresentModes.resize(presentModeCount);
-				vkGetPhysicalDeviceSurfacePresentModesKHR(vPhysicalDevice, vSurface, &presentModeCount, supportDetails.m_PresentModes.data());
+				vkGetPhysicalDeviceSurfacePresentModesKHR(m_vPhysicalDevice, m_vSurface, &presentModeCount, supportDetails.m_PresentModes.data());
 			}
 
 			return supportDetails;
@@ -142,7 +142,7 @@ namespace Flint
 			glfwSetWindowCloseCallback(pWindow, _Callbacks::WindowCloseCallback);
 			glfwSetWindowSizeCallback(pWindow, _Callbacks::ApplicationResizeCallback);
 
-			FLINT_VK_ASSERT(glfwCreateWindowSurface(pInstance->StaticCast<VulkanInstance>().GetInstance(), pWindow, nullptr, &vSurface));
+			FLINT_VK_ASSERT(glfwCreateWindowSurface(pInstance->StaticCast<VulkanInstance>().GetInstance(), pWindow, nullptr, &m_vSurface));
 
 			SetupMaps();
 		}
@@ -154,25 +154,25 @@ namespace Flint
 
 		void VulkanDisplay::Terminate()
 		{
-			vkDestroySurfaceKHR(pInstance->StaticCast<VulkanInstance>().GetInstance(), vSurface, nullptr);
+			vkDestroySurfaceKHR(pInstance->StaticCast<VulkanInstance>().GetInstance(), m_vSurface, nullptr);
 			glfwDestroyWindow(pWindow);
 
 			bIsTerminated = true;
 		}
 
-		uint32_t VulkanDisplay::FindBestBufferCount(VulkanDevice* pDevice, const uint32_t count)
+		uint32_t VulkanDisplay::FindBestBufferCount(VulkanDevice* m_pDevice, const uint32_t count)
 		{
 			OPTICK_EVENT();
 
-			auto vSurfaceCapabilities = GetSurfaceCapabilities(*pDevice);
+			auto m_vSurfaceCapabilities = GetSurfaceCapabilities(*m_pDevice);
 			if (count == std::numeric_limits<uint32_t>::max())
-				return vSurfaceCapabilities.maxImageCount - 1;
+				return m_vSurfaceCapabilities.maxImageCount - 1;
 			else if (count == 0)
 			{
-				uint32_t bufferCount = vSurfaceCapabilities.minImageCount + 1;
-				if (vSurfaceCapabilities.maxImageCount > 0
-					&& bufferCount > vSurfaceCapabilities.maxImageCount)
-					bufferCount = vSurfaceCapabilities.maxImageCount;
+				uint32_t bufferCount = m_vSurfaceCapabilities.minImageCount + 1;
+				if (m_vSurfaceCapabilities.maxImageCount > 0
+					&& bufferCount > m_vSurfaceCapabilities.maxImageCount)
+					bufferCount = m_vSurfaceCapabilities.maxImageCount;
 
 				return bufferCount;
 			}
@@ -180,10 +180,10 @@ namespace Flint
 			return count;
 		}
 
-		PixelFormat VulkanDisplay::GetBestSwapChainFormat(VulkanDevice* pDevice)
+		PixelFormat VulkanDisplay::GetBestSwapChainFormat(VulkanDevice* m_pDevice)
 		{
-			SwapChainSupportDetails vSupport = SwapChainSupportDetails::Query(pDevice->GetPhysicalDevice(), GetSurface());
-			VkSurfaceFormatKHR surfaceFormat = ChooseSurfaceFormat(vSupport.m_Formats);
+			SwapChainSupportDetails m_vSupport = SwapChainSupportDetails::Query(m_pDevice->GetPhysicalDevice(), GetSurface());
+			VkSurfaceFormatKHR surfaceFormat = ChooseSurfaceFormat(m_vSupport.m_Formats);
 
 			return Utilities::GetPixelFormat(surfaceFormat.format);
 		}
@@ -246,22 +246,22 @@ namespace Flint
 
 		VkSurfaceCapabilitiesKHR VulkanDisplay::GetSurfaceCapabilities(VulkanDevice const& device) const
 		{
-			VkSurfaceCapabilitiesKHR vCapabilities = {};
-			vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device.GetPhysicalDevice(), GetSurface(), &vCapabilities);
-			return vCapabilities;
+			VkSurfaceCapabilitiesKHR m_vCapabilities = {};
+			vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device.GetPhysicalDevice(), GetSurface(), &m_vCapabilities);
+			return m_vCapabilities;
 		}
 
 		uint32_t VulkanDisplay::FindSupporterBufferCount(VulkanDevice& device, const uint32_t count) const
 		{
-			auto vSurfaceCapabilities = GetSurfaceCapabilities(device);
+			auto m_vSurfaceCapabilities = GetSurfaceCapabilities(device);
 			if (count == std::numeric_limits<uint32_t>::max())
-				return vSurfaceCapabilities.maxImageCount - 1;
+				return m_vSurfaceCapabilities.maxImageCount - 1;
 			else if (count == 0)
 			{
-				uint32_t bufferCount = vSurfaceCapabilities.minImageCount + 1;
-				if (vSurfaceCapabilities.maxImageCount > 0
-					&& bufferCount > vSurfaceCapabilities.maxImageCount)
-					bufferCount = vSurfaceCapabilities.maxImageCount;
+				uint32_t bufferCount = m_vSurfaceCapabilities.minImageCount + 1;
+				if (m_vSurfaceCapabilities.maxImageCount > 0
+					&& bufferCount > m_vSurfaceCapabilities.maxImageCount)
+					bufferCount = m_vSurfaceCapabilities.maxImageCount;
 
 				return bufferCount;
 			}

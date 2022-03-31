@@ -8,7 +8,7 @@
 #include "VulkanQueue.hpp"
 #include "GraphicsCore/SynchronizationPrimitive.hpp"
 
-#include <vk_memalloc.h>
+#include <vk_mem_alloc.h>
 
 namespace Flint
 {
@@ -80,16 +80,16 @@ namespace Flint
 
 		public:
 			VolkDeviceTable GetDeviceTable() const { return m_DeviceTable; }
-			VkDevice GetLogicalDevice() const noexcept { return vLogicalDevice; }
-			VkPhysicalDevice GetPhysicalDevice() const noexcept { return vPhysicalDevice; }
+			VkDevice GetLogicalDevice() const noexcept { return m_vLogicalDevice; }
+			VkPhysicalDevice GetPhysicalDevice() const noexcept { return m_vPhysicalDevice; }
 
-			VulkanQueue& GetQueue() { return vQueue; }
-			const VulkanQueue GetQueue() const { return vQueue; }
-			VkSampleCountFlags GetSampleCount() const { return vSampleCount; }
+			VulkanQueue& GetQueue() { return m_vQueue; }
+			const VulkanQueue GetQueue() const { return m_vQueue; }
+			VkSampleCountFlags GetSampleCount() const { return m_vSampleCount; }
 
-			VkResult CreateImageMemory(const std::vector<VkImage>& vImages, VkMemoryPropertyFlags vMemoryflags, VkDeviceMemory* pDeviceMemory) const;
-			void SetImageLayout(VkCommandBuffer vCommandBuffer, VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, uint32_t layerCount = 1, uint32_t currentLayer = 0, const uint32_t mipLevels = 1, const uint32_t currentLevel = 0, VkImageAspectFlags vAspects = VkImageAspectFlagBits::VK_IMAGE_ASPECT_FLAG_BITS_MAX_ENUM) const;
-			void SetImageLayout(VkImage vImage, VkImageLayout vOldLayout, VkImageLayout vNewLayout, VkFormat vFormat, uint32_t layerCount = 1, uint32_t currentLayer = 0, const uint32_t mipLevels = 1, const uint32_t currentLevel = 0, VkImageAspectFlags vAspects = VkImageAspectFlagBits::VK_IMAGE_ASPECT_FLAG_BITS_MAX_ENUM) const;
+			VkResult CreateImageMemory(const std::vector<VkImage>& m_vImages, VkMemoryPropertyFlags m_vMemoryflags, VkDeviceMemory* pDeviceMemory) const;
+			void SetImageLayout(VkCommandBuffer m_vCommandBuffer, VkImage m_vImage, VkImageLayout m_vOldLayout, VkImageLayout m_vNewLayout, VkFormat m_vFormat, uint32_t layerCount = 1, uint32_t currentLayer = 0, const uint32_t mipLevels = 1, const uint32_t currentLevel = 0, VkImageAspectFlags m_vAspects = VkImageAspectFlagBits::VK_IMAGE_ASPECT_FLAG_BITS_MAX_ENUM) const;
+			void SetImageLayout(VkImage m_vImage, VkImageLayout m_vOldLayout, VkImageLayout m_vNewLayout, VkFormat m_vFormat, uint32_t layerCount = 1, uint32_t currentLayer = 0, const uint32_t mipLevels = 1, const uint32_t currentLevel = 0, VkImageAspectFlags m_vAspects = VkImageAspectFlagBits::VK_IMAGE_ASPECT_FLAG_BITS_MAX_ENUM) const;
 
 			const VmaAllocator GetVmaAllocator() const { return m_VmaAllocator; }
 
@@ -106,16 +106,16 @@ namespace Flint
 
 		private:
 			VolkDeviceTable m_DeviceTable = {};
-			VulkanQueue vQueue = {};
+			VulkanQueue m_vQueue = {};
 
 			std::vector<const char*> m_DeviceExtensions;
 
-			VkDevice vLogicalDevice = VK_NULL_HANDLE;
-			VkPhysicalDevice vPhysicalDevice = VK_NULL_HANDLE;
+			VkDevice m_vLogicalDevice = VK_NULL_HANDLE;
+			VkPhysicalDevice m_vPhysicalDevice = VK_NULL_HANDLE;
 
 			VmaAllocator m_VmaAllocator = VK_NULL_HANDLE;
 
-			VkSampleCountFlags vSampleCount = VkSampleCountFlagBits::VK_SAMPLE_COUNT_64_BIT;
+			VkSampleCountFlags m_vSampleCount = VkSampleCountFlagBits::VK_SAMPLE_COUNT_64_BIT;
 		};
 	}
 }

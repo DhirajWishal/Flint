@@ -15,8 +15,8 @@ namespace Flint
 		class VulkanResourcePackager final : public ResourcePackager<VulkanDevice, VulkanResourcePackage>
 		{
 		public:
-			explicit VulkanResourcePackager(const uint32_t setIndex, const VulkanGraphicsPipeline* pPipeline, const VkDescriptorSetLayout vLayout);
-			explicit VulkanResourcePackager(const uint32_t setIndex, const VulkanComputePipeline* pPipeline, const VkDescriptorSetLayout vLayout);
+			explicit VulkanResourcePackager(const uint32_t setIndex, const VulkanGraphicsPipeline* pPipeline, const VkDescriptorSetLayout m_vLayout);
+			explicit VulkanResourcePackager(const uint32_t setIndex, const VulkanComputePipeline* pPipeline, const VkDescriptorSetLayout m_vLayout);
 			~VulkanResourcePackager() { if (!bIsTerminated) Terminate(); }
 
 			virtual std::shared_ptr<VulkanResourcePackage> CreatePackage() override;
@@ -27,11 +27,11 @@ namespace Flint
 			std::shared_ptr<VulkanResourcePackage> CreateResourcePackage();
 
 		private:
-			std::vector<VkDescriptorPoolSize> vPoolSizes;
-			std::vector<VkWriteDescriptorSet> vWrites;
+			std::vector<VkDescriptorPoolSize> m_vPoolSizes;
+			std::vector<VkWriteDescriptorSet> m_vWrites;
 
-			VkDescriptorPool vDescriptorPool = VK_NULL_HANDLE;
-			VkDescriptorSetLayout vDescriptorSetLayout = VK_NULL_HANDLE;
+			VkDescriptorPool m_vDescriptorPool = VK_NULL_HANDLE;
+			VkDescriptorSetLayout m_vDescriptorSetLayout = VK_NULL_HANDLE;
 			uint32_t m_DescriptorSetCount = 0;
 		};
 	}

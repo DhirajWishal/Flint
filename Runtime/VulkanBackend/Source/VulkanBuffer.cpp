@@ -8,39 +8,39 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanBuffer::VulkanBuffer(VulkanDevice* pDevice, const BufferType type, const uint64_t size, const BufferMemoryProfile profile)
-			: Buffer(pDevice, type, size, profile)
+		VulkanBuffer::VulkanBuffer(VulkanDevice* m_pDevice, const BufferType type, const uint64_t size, const BufferMemoryProfile profile)
+			: Buffer(m_pDevice, type, size, profile)
 		{
 			OPTICK_EVENT();
 
 			switch (type)
 			{
 			case Flint::BufferType::Staging:
-				vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+				m_vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 
 				vmaMemoryUsage = VmaMemoryUsage::VMA_MEMORY_USAGE_CPU_TO_GPU;
 				break;
 
 			case Flint::BufferType::Vertex:
-				vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+				m_vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 
 				vmaMemoryUsage = VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY;
 				break;
 
 			case Flint::BufferType::Index:
-				vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+				m_vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
 
 				vmaMemoryUsage = VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY;
 				break;
 
 			case Flint::BufferType::Uniform:
-				vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+				m_vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
 
 				vmaMemoryUsage = VmaMemoryUsage::VMA_MEMORY_USAGE_CPU_TO_GPU;
 				break;
 
 			case Flint::BufferType::Storage:
-				vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
+				m_vBufferUsage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
 
 				vmaMemoryUsage = VmaMemoryUsage::VMA_MEMORY_USAGE_CPU_TO_GPU;
 				break;
@@ -81,7 +81,7 @@ namespace Flint
 			if (mode == BufferResizeMode::Copy)
 			{
 				// Create a stagging buffer to copy data to.
-				auto pStagingBuffer = pDevice->CreateBuffer(BufferType::Staging, oldSize);
+				auto pStagingBuffer = m_pDevice->CreateBuffer(BufferType::Staging, oldSize);
 				pStagingBuffer->CopyFromBuffer(this, oldSize, 0, 0);
 
 				// Terminate the existing buffer and get the new size.
@@ -117,8 +117,8 @@ namespace Flint
 			vBufferCopy.srcOffset = srcOffset;
 			vBufferCopy.dstOffset = dstOffset;
 
-			VulkanOneTimeCommandBuffer vCommandBuffer(*pDevice);
-			pDevice->GetDeviceTable().vkCmdCopyBuffer(vCommandBuffer, pSrcBuffer->StaticCast<VulkanBuffer>().vBuffer, vBuffer, 1, &vBufferCopy);
+			VulkanOneTimeCommandBuffer vCommandBuffer(*m_pDevice);
+			m_pDevice->GetDeviceTable().vkCmdCopyBuffer(vCommandBuffer, pSrcBuffer->StaticCast<VulkanBuffer>().m_vBuffer, m_vBuffer, 1, &vBufferCopy);
 		}
 
 		void* VulkanBuffer::MapMemory(const uint64_t size, const uint64_t offset)
@@ -132,7 +132,7 @@ namespace Flint
 				throw std::range_error("Submitted size is invalid!");
 
 			void* pDataStore = nullptr;
-			FLINT_VK_ASSERT(vmaMapMemory(pDevice->GetVmaAllocator(), vmaAllocation, &pDataStore));
+			FLINT_VK_ASSERT(vmaMapMemory(m_pDevice->GetVmaAllocator(), vmaAllocation, &pDataStore));
 
 			bIsMapped = true;
 			return pDataStore;
@@ -142,7 +142,7 @@ namespace Flint
 		{
 			OPTICK_EVENT();
 
-			vmaUnmapMemory(pDevice->GetVmaAllocator(), vmaAllocation);
+			vmaUnmapMemory(m_pDevice->GetVmaAllocator(), vmaAllocation);
 			bIsMapped = false;
 		}
 
@@ -151,7 +151,7 @@ namespace Flint
 			if (bIsMapped)
 				UnmapMemory();
 
-			vmaDestroyBuffer(pDevice->GetVmaAllocator(), vBuffer, vmaAllocation);
+			vmaDestroyBuffer(m_pDevice->GetVmaAllocator(), m_vBuffer, vmaAllocation);
 
 			bIsTerminated = true;
 		}
@@ -168,12 +168,12 @@ namespace Flint
 			vCreateInfo.pQueueFamilyIndices = VK_NULL_HANDLE;
 			vCreateInfo.sharingMode = VkSharingMode::VK_SHARING_MODE_EXCLUSIVE;
 			vCreateInfo.size = static_cast<uint32_t>(m_Size);
-			vCreateInfo.usage = vBufferUsage;
+			vCreateInfo.usage = m_vBufferUsage;
 
 			VmaAllocationCreateInfo vmaAllocationCreateInfo = {};
 			vmaAllocationCreateInfo.usage = vmaMemoryUsage;
 
-			FLINT_VK_ASSERT(vmaCreateBuffer(pDevice->GetVmaAllocator(), &vCreateInfo, &vmaAllocationCreateInfo, &vBuffer, &vmaAllocation, nullptr));
+			FLINT_VK_ASSERT(vmaCreateBuffer(m_pDevice->GetVmaAllocator(), &vCreateInfo, &vmaAllocationCreateInfo, &m_vBuffer, &vmaAllocation, nullptr));
 		}
 	}
 }

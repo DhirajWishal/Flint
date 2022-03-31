@@ -62,12 +62,12 @@ namespace Flint
 			stbi_image_free(pPixelData);
 	}
 
-	std::unique_ptr<Image> ImageLoader::CreateImage(Device* pDevice, const ImageType type, const ImageUsage usage, const uint32_t layers, const uint32_t mipLevels, const MultiSampleCount sampleCount) const
+	std::unique_ptr<Image> ImageLoader::CreateImage(Device* m_pDevice, const ImageType type, const ImageUsage usage, const uint32_t layers, const uint32_t mipLevels, const MultiSampleCount sampleCount) const
 	{
 		if (mipLevels != 0)
-			return pDevice->CreateImage(type, usage, m_Extent, m_PixelFormat, layers, mipLevels, pPixelData, sampleCount);
+			return m_pDevice->CreateImage(type, usage, m_Extent, m_PixelFormat, layers, mipLevels, pPixelData, sampleCount);
 		else
-			return pDevice->CreateImage(type, usage, m_Extent, m_PixelFormat, layers, Image::GetBestMipLevels(m_Extent), pPixelData, sampleCount);
+			return m_pDevice->CreateImage(type, usage, m_Extent, m_PixelFormat, layers, Image::GetBestMipLevels(m_Extent), pPixelData, sampleCount);
 	}
 
 	MaterialProperties::TextureData ImageLoader::GetAsTextureData(const MaterialProperties::TextureType type)

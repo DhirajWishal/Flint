@@ -7,34 +7,34 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanHostSynchronizationPrimitive::VulkanHostSynchronizationPrimitive(VulkanDevice* pDevice)
-			: HostSynchronizationPrimitive(pDevice)
+		VulkanHostSynchronizationPrimitive::VulkanHostSynchronizationPrimitive(VulkanDevice* m_pDevice)
+			: HostSynchronizationPrimitive(m_pDevice)
 		{
 			OPTICK_EVENT();
 
-			VkFenceCreateInfo vCreateInfo = {};
-			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-			vCreateInfo.pNext = VK_NULL_HANDLE;
-			vCreateInfo.flags = VkFenceCreateFlagBits::VK_FENCE_CREATE_SIGNALED_BIT;
+			VkFenceCreateInfo m_vCreateInfo = {};
+			m_vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+			m_vCreateInfo.pNext = VK_NULL_HANDLE;
+			m_vCreateInfo.flags = VkFenceCreateFlagBits::VK_FENCE_CREATE_SIGNALED_BIT;
 
-			FLINT_VK_ASSERT(pDevice->GetDeviceTable().vkCreateFence(pDevice->GetLogicalDevice(), &vCreateInfo, nullptr, &vFence));
+			FLINT_VK_ASSERT(m_pDevice->GetDeviceTable().vkCreateFence(m_pDevice->GetLogicalDevice(), &m_vCreateInfo, nullptr, &m_vFence));
 		}
 
 		void VulkanHostSynchronizationPrimitive::Wait(const uint64_t timeout)
 		{
 			OPTICK_EVENT();
-			FLINT_VK_ASSERT(pDevice->GetDeviceTable().vkWaitForFences(pDevice->GetLogicalDevice(), 1, &vFence, VK_TRUE, timeout));
+			FLINT_VK_ASSERT(m_pDevice->GetDeviceTable().vkWaitForFences(m_pDevice->GetLogicalDevice(), 1, &m_vFence, VK_TRUE, timeout));
 		}
 
 		void VulkanHostSynchronizationPrimitive::Reset()
 		{
 			OPTICK_EVENT();
-			FLINT_VK_ASSERT(pDevice->GetDeviceTable().vkResetFences(pDevice->GetLogicalDevice(), 1, &vFence));
+			FLINT_VK_ASSERT(m_pDevice->GetDeviceTable().vkResetFences(m_pDevice->GetLogicalDevice(), 1, &m_vFence));
 		}
 
 		void VulkanHostSynchronizationPrimitive::Terminate()
 		{
-			pDevice->GetDeviceTable().vkDestroyFence(pDevice->GetLogicalDevice(), vFence, nullptr);
+			m_pDevice->GetDeviceTable().vkDestroyFence(m_pDevice->GetLogicalDevice(), m_vFence, nullptr);
 			bIsTerminated = true;
 		}
 	}

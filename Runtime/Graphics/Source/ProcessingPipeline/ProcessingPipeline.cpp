@@ -9,15 +9,15 @@
 
 namespace Flint
 {
-	ProcessingPipeline::ProcessingPipeline(Device* pDevice, const FBox2D frameExtent, const std::string& displayTitle, const uint32_t pipelineCount, const MultiSampleCount msaaCount, const bool forceColorBuffer, const bool forceDepthBuffer)
+	ProcessingPipeline::ProcessingPipeline(Device* m_pDevice, const FBox2D frameExtent, const std::string& displayTitle, const uint32_t pipelineCount, const MultiSampleCount msaaCount, const bool forceColorBuffer, const bool forceDepthBuffer)
 		: m_MultiSampleCount(msaaCount)
 	{
 		uint32_t bufferCount = pipelineCount;
-		pDisplay = pDevice->GetInstance()->CreateDisplay(frameExtent, displayTitle);
+		pDisplay = m_pDevice->GetInstance()->CreateDisplay(frameExtent, displayTitle);
 
 		// Find the best buffer count if the pipeline count is 0.
 		if (pipelineCount == 0)
-			bufferCount = pDisplay->FindBestBufferCount(pDevice);
+			bufferCount = pDisplay->FindBestBufferCount(m_pDevice);
 
 		const auto frameBufferExtent = pDisplay->GetExtent();
 		const FBox3D extent = FBox3D(frameBufferExtent.m_Width, frameBufferExtent.m_Height, 1);
@@ -28,7 +28,7 @@ namespace Flint
 		{
 			bContainsColorBuffer = true;
 
-			auto pImage = pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Color, extent, pDisplay->GetBestSwapChainFormat(pDevice), 1, 1, nullptr);
+			auto pImage = m_pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Color, extent, pDisplay->GetBestSwapChainFormat(m_pDevice), 1, 1, nullptr);
 			attachments.emplace_back(
 				RenderTargetAttachment(
 					pImage.get(),
@@ -44,7 +44,7 @@ namespace Flint
 		{
 			bContainsDepthBuffer = true;
 
-			auto pImage = pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Depth, extent, PixelFormat::D24_UNORMAL_S8_UINT, 1, 1, nullptr);
+			auto pImage = m_pDevice->CreateImage(ImageType::TwoDimension, ImageUsage::Depth, extent, PixelFormat::D24_UNORMAL_S8_UINT, 1, 1, nullptr);
 			attachments.emplace_back(
 				RenderTargetAttachment(
 					pImage.get(),
@@ -56,16 +56,16 @@ namespace Flint
 		}
 
 		// Create the screen bound render target.
-		pScreenBoundRenderTarget = pDevice->CreateScreenBoundRenderTarget(pDisplay.get(), frameBufferExtent, bufferCount, attachments, SwapChainPresentMode::MailBox);
+		pScreenBoundRenderTarget = m_pDevice->CreateScreenBoundRenderTarget(pDisplay.get(), frameBufferExtent, bufferCount, attachments, SwapChainPresentMode::MailBox);
 
 		// Create the command buffer allocator and buffers.
-		pCommandBufferAllocator = pDevice->CreateCommandBufferAllocator(bufferCount);
+		pCommandBufferAllocator = m_pDevice->CreateCommandBufferAllocator(bufferCount);
 		pCommandBuffers = pCommandBufferAllocator->CreateCommandBuffers();
 
 		// Create the synchronization primitives.
 		pHostSynchronizationPrimitives.reserve(bufferCount);
 		for (uint32_t i = 0; i < bufferCount; i++)
-			pHostSynchronizationPrimitives.emplace_back(pDevice->CreateHostSynchronizationPrimitive());
+			pHostSynchronizationPrimitives.emplace_back(m_pDevice->CreateHostSynchronizationPrimitive());
 	}
 
 	ProcessingPipeline::~ProcessingPipeline()

@@ -18,10 +18,10 @@ namespace Flint
 
 			virtual void Terminate() override;
 
-			const VkImageView GetImageView() const { return vImageView; }
+			const VkImageView GetImageView() const { return m_vImageView; }
 
 		private:
-			VkImageView vImageView = VK_NULL_HANDLE;
+			VkImageView m_vImageView = VK_NULL_HANDLE;
 		};
 	}
 }

@@ -10,30 +10,30 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanImageView::VulkanImageView(VulkanDevice* pDevice, const VulkanImage* pImage, const uint32_t baseLayerIndex, const uint32_t layerCount, const uint32_t baseMipLevel, const uint32_t mipLevels, const ImageUsage usage)
-			: ImageView(pDevice, pImage, baseLayerIndex, layerCount, baseMipLevel, mipLevels, usage)
+		VulkanImageView::VulkanImageView(VulkanDevice* m_pDevice, const VulkanImage* pImage, const uint32_t baseLayerIndex, const uint32_t layerCount, const uint32_t baseMipLevel, const uint32_t mipLevels, const ImageUsage usage)
+			: ImageView(m_pDevice, pImage, baseLayerIndex, layerCount, baseMipLevel, mipLevels, usage)
 		{
 			OPTICK_EVENT();
 
-			VkImageViewCreateInfo vCreateInfo = {};
-			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-			vCreateInfo.flags = 0;
-			vCreateInfo.pNext = VK_NULL_HANDLE;
-			vCreateInfo.image = pImage->GetImage();
-			vCreateInfo.viewType = pImage->GetImageViewType();
-			vCreateInfo.format = pImage->GetImageFormat();
-			vCreateInfo.components = pImage->GetComponentMapping();
+			VkImageViewCreateInfo m_vCreateInfo = {};
+			m_vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+			m_vCreateInfo.flags = 0;
+			m_vCreateInfo.pNext = VK_NULL_HANDLE;
+			m_vCreateInfo.image = pImage->GetImage();
+			m_vCreateInfo.viewType = pImage->GetImageViewType();
+			m_vCreateInfo.format = pImage->GetImageFormat();
+			m_vCreateInfo.components = pImage->GetComponentMapping();
 
-			vCreateInfo.subresourceRange.layerCount = layerCount;
-			vCreateInfo.subresourceRange.baseArrayLayer = baseLayerIndex;
-			vCreateInfo.subresourceRange.levelCount = mipLevels;
-			vCreateInfo.subresourceRange.baseMipLevel = baseMipLevel;
-			vCreateInfo.subresourceRange.aspectMask = Utilities::GetImageAspectFlags(usage);
+			m_vCreateInfo.subresourceRange.layerCount = layerCount;
+			m_vCreateInfo.subresourceRange.baseArrayLayer = baseLayerIndex;
+			m_vCreateInfo.subresourceRange.levelCount = mipLevels;
+			m_vCreateInfo.subresourceRange.baseMipLevel = baseMipLevel;
+			m_vCreateInfo.subresourceRange.aspectMask = Utilities::GetImageAspectFlags(usage);
 
-			switch (vCreateInfo.subresourceRange.aspectMask)
+			switch (m_vCreateInfo.subresourceRange.aspectMask)
 			{
 			case VK_IMAGE_ASPECT_COLOR_BIT:
-				vCreateInfo.components = { };
+				m_vCreateInfo.components = { };
 				break;
 
 			case VK_IMAGE_ASPECT_DEPTH_BIT:
@@ -64,12 +64,12 @@ namespace Flint
 				throw backend_error("Unsupported usage flag!");
 			}
 
-			FLINT_VK_ASSERT(pDevice->GetDeviceTable().vkCreateImageView(pDevice->GetLogicalDevice(), &vCreateInfo, nullptr, &vImageView));
+			FLINT_VK_ASSERT(m_pDevice->GetDeviceTable().vkCreateImageView(m_pDevice->GetLogicalDevice(), &m_vCreateInfo, nullptr, &m_vImageView));
 		}
 
 		void VulkanImageView::Terminate()
 		{
-			pDevice->GetDeviceTable().vkDestroyImageView(pDevice->GetLogicalDevice(), vImageView, nullptr);
+			m_pDevice->GetDeviceTable().vkDestroyImageView(m_pDevice->GetLogicalDevice(), m_vImageView, nullptr);
 			bIsTerminated = true;
 		}
 	}

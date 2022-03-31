@@ -6,5 +6,5 @@
 
 namespace Flint
 {
-	RenderTarget::RenderTarget(Device* pDevice, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments)
+	RenderTarget::RenderTarget(Device* m_pDevice, const FBox2D& extent, const uint32_t bufferCount, const std::vector<RenderTargetAttachment>& imageAttachments)
 }

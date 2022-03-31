@@ -28,18 +28,18 @@ namespace Flint
 			virtual VkFormat GetImageFormat() const override;
 			virtual VkAttachmentDescription GetAttachmentDescription() const override;
 			virtual VkImageLayout GetAttachmentLayout() const override;
-			virtual VkImageView GetImageView(uint32_t index) const override final { return vImageViews[index]; }
+			virtual VkImageView GetImageView(uint32_t index) const override final { return m_vImageViews[index]; }
 
-			const VkSwapchainKHR GetSwapChain() const { return vSwapChain; }
-			const VkSwapchainKHR* GetSwapChainPtr() const { return &vSwapChain; }
+			const VkSwapchainKHR GetSwapChain() const { return m_vSwapChain; }
+			const VkSwapchainKHR* GetSwapChainPtr() const { return &m_vSwapChain; }
 			const uint32_t* GetImageIndexPtr() const { return &m_ImageIndex; }
 
-			const VkSemaphore GetInFlightSemaphore() const { return vCurrentInFlightSemaphore; }
-			const VkSemaphore GetRenderFinishedSemaphore() const { return vCurrentRenderFinishedSemaphore; }
+			const VkSemaphore GetInFlightSemaphore() const { return m_vCurrentInFlightSemaphore; }
+			const VkSemaphore GetRenderFinishedSemaphore() const { return m_vCurrentRenderFinishedSemaphore; }
 
 			void ToggleClear() { bShouldClear = true; }
 
-			void CopyFromImage(VkCommandBuffer vCommandBuffer, const VkImage vSrcImage, const VkImageLayout vSrcLayout, VkOffset3D srcOffset, VkOffset3D dstOffset, const uint32_t index, const VkImageSubresourceLayers vSrcSubresourceLayer);
+			void CopyFromImage(VkCommandBuffer m_vCommandBuffer, const VkImage m_vSrcImage, const VkImageLayout m_vSrcLayout, VkOffset3D srcOffset, VkOffset3D dstOffset, const uint32_t index, const VkImageSubresourceLayers m_vSrcSubresourceLayer);
 
 		private:
 			void CreateSwapChain();
@@ -49,18 +49,18 @@ namespace Flint
 			void DestroySyncObjects();
 
 		private:
-			std::vector<VkImage> vImages = {};
-			std::vector<VkImageView> vImageViews = {};
+			std::vector<VkImage> m_vImages = {};
+			std::vector<VkImageView> m_vImageViews = {};
 
-			VkSwapchainKHR vSwapChain = VK_NULL_HANDLE;
+			VkSwapchainKHR m_vSwapChain = VK_NULL_HANDLE;
 
-			VkSemaphore vCurrentInFlightSemaphore = VK_NULL_HANDLE;
-			VkSemaphore vCurrentRenderFinishedSemaphore = VK_NULL_HANDLE;
+			VkSemaphore m_vCurrentInFlightSemaphore = VK_NULL_HANDLE;
+			VkSemaphore m_vCurrentRenderFinishedSemaphore = VK_NULL_HANDLE;
 
-			std::vector< VkSemaphore> vInFlightSemaphores = {};
-			std::vector< VkSemaphore> vRenderFinishedSemaphores = {};
+			std::vector< VkSemaphore> m_vInFlightSemaphores = {};
+			std::vector< VkSemaphore> m_vRenderFinishedSemaphores = {};
 
-			VkPresentInfoKHR vPresentInfo = {};
+			VkPresentInfoKHR m_vPresentInfo = {};
 			bool bShouldClear = false;
 		};
 	}

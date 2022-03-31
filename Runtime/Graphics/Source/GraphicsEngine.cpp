@@ -7,16 +7,9 @@ namespace Flint
 {
 	GraphicsEngine::GraphicsEngine(bool enableValidation)
 	{
-		pInstance = std::make_shared<VulkanBackend::VulkanInstance>(enableValidation);
 	}
 
 	GraphicsEngine::~GraphicsEngine()
 	{
-		pInstance->Terminate();
-	}
-
-	std::shared_ptr<GraphicsDevice> GraphicsEngine::CreateGraphicsDevice()
-	{
-		return std::shared_ptr<GraphicsDevice>();
 	}
 }

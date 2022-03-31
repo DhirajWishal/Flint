@@ -315,8 +315,8 @@ namespace Flint
 		for (uint32_t i = 0; i < pScene->m_NumMeshes; i++)
 			vertexCount += pScene->m_Meshes[i]->m_NumVertices;
 
-		const auto pDevice = pGeometryStore->GetDevice();
-		const auto pVertexStagingBuffer = pDevice->CreateBuffer(Flint::BufferType::Staging, vertexSize * vertexCount);
+		const auto m_pDevice = pGeometryStore->GetDevice();
+		const auto pVertexStagingBuffer = m_pDevice->CreateBuffer(Flint::BufferType::Staging, vertexSize * vertexCount);
 		const auto pBufferMemory = static_cast<float*>(pVertexStagingBuffer->MapMemory(vertexSize * vertexCount));
 
 		// Load the mesh data.
@@ -350,7 +350,7 @@ namespace Flint
 		for (auto& indexes : indexData)
 			indexCount += indexes.size();
 
-		const auto pIndexStagingBuffer = pDevice->CreateBuffer(Flint::BufferType::Staging, indexCount * sizeof(uint32_t));
+		const auto pIndexStagingBuffer = m_pDevice->CreateBuffer(Flint::BufferType::Staging, indexCount * sizeof(uint32_t));
 		const auto pIndexMemory = static_cast<uint32_t*>(pIndexStagingBuffer->MapMemory(indexCount * sizeof(uint32_t)));
 
 		uint64_t offset = 0;
@@ -380,21 +380,21 @@ namespace Flint
 	{
 		VertexDescriptor CreateDefaultVertexDescriptor()
 		{
-			Flint::VertexDescriptor vDescriptor = {};
-			vDescriptor.m_Attributes.emplace_back(Flint::VertexAttribute(sizeof(float) * 3, Flint::InputAttributeType::Position));
-			vDescriptor.m_Attributes.emplace_back(Flint::VertexAttribute(sizeof(float) * 3, Flint::InputAttributeType::ColorZero));
-			vDescriptor.m_Attributes.emplace_back(Flint::VertexAttribute(sizeof(float) * 2, Flint::InputAttributeType::TextureCoordinatesZero));
+			Flint::VertexDescriptor m_vDescriptor = {};
+			m_vDescriptor.m_Attributes.emplace_back(Flint::VertexAttribute(sizeof(float) * 3, Flint::InputAttributeType::Position));
+			m_vDescriptor.m_Attributes.emplace_back(Flint::VertexAttribute(sizeof(float) * 3, Flint::InputAttributeType::ColorZero));
+			m_vDescriptor.m_Attributes.emplace_back(Flint::VertexAttribute(sizeof(float) * 2, Flint::InputAttributeType::TextureCoordinatesZero));
 
-			return vDescriptor;
+			return m_vDescriptor;
 		}
 
 		VertexDescriptor CreateSkyBoxVertexDescriptor()
 		{
-			Flint::VertexDescriptor vDescriptor = {};
-			vDescriptor.m_Attributes.emplace_back(Flint::VertexAttribute(sizeof(float) * 3, Flint::InputAttributeType::Position));
-			vDescriptor.m_Attributes.emplace_back(Flint::VertexAttribute(sizeof(float) * 2, Flint::InputAttributeType::TextureCoordinatesZero));
+			Flint::VertexDescriptor m_vDescriptor = {};
+			m_vDescriptor.m_Attributes.emplace_back(Flint::VertexAttribute(sizeof(float) * 3, Flint::InputAttributeType::Position));
+			m_vDescriptor.m_Attributes.emplace_back(Flint::VertexAttribute(sizeof(float) * 2, Flint::InputAttributeType::TextureCoordinatesZero));
 
-			return vDescriptor;
+			return m_vDescriptor;
 		}
 	}
 }

@@ -24,7 +24,7 @@ namespace Flint
 		class VulkanCommandBuffer final : public CommandBuffer<VulkanCommandBuffer, VulkanCommandBufferAllocator, VulkanScreenBoundRenderTarget, VulkanOffScreenRenderTarget, VulkanGraphicsPipeline, VulkanComputePipeline, VulkanBuffer, VulkanGeometryStore, VulkanResourcePackage, VulkanImage, VulkanSwapChain, VulkanQuery>
 		{
 		public:
-			explicit VulkanCommandBuffer(VulkanCommandBufferAllocator* pAllocator, VkCommandBuffer vCommandBuffer);
+			explicit VulkanCommandBuffer(VulkanCommandBufferAllocator* pAllocator, VkCommandBuffer m_vCommandBuffer);
 			~VulkanCommandBuffer() { if (!bIsTerminated) Terminate(); }
 
 			virtual void BeginBufferRecording() override;
@@ -83,21 +83,21 @@ namespace Flint
 			virtual void Terminate() override;
 
 		public:
-			const VkCommandBuffer GetVulkanCommandBuffer() const { return vCommandBuffer; }
+			const VkCommandBuffer GetVulkanCommandBuffer() const { return m_vCommandBuffer; }
 			const VkSubmitInfo GetSubmitInfo() const;
 			const VkSubmitInfo* GetSubmitInfoAddress() const;
 
 		private:
-			std::vector<VkCommandBuffer> vSecondaryCommandBuffers = {};
+			std::vector<VkCommandBuffer> m_vSecondaryCommandBuffers = {};
 
-			std::vector<VkSemaphore> vInFlightSemaphores = {};
-			std::vector<VkSemaphore> vRenderFinishedSemaphores = {};
+			std::vector<VkSemaphore> m_vInFlightSemaphores = {};
+			std::vector<VkSemaphore> m_vRenderFinishedSemaphores = {};
 
-			mutable VkSubmitInfo vSubmitInfo = {};
+			mutable VkSubmitInfo m_vSubmitInfo = {};
 
-			VkCommandBuffer vCommandBuffer = VK_NULL_HANDLE;
+			VkCommandBuffer m_vCommandBuffer = VK_NULL_HANDLE;
 
-			VkSemaphoreWaitFlags vWaitStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+			VkSemaphoreWaitFlags m_vWaitStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 		};
 	}
 }

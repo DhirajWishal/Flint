@@ -137,42 +137,42 @@ namespace Flint
 			}
 		}
 
-		VulkanImageSampler::VulkanImageSampler(VulkanDevice* pDevice, const ImageSamplerSpecification& specification)
-			: ImageSampler(pDevice, specification)
+		VulkanImageSampler::VulkanImageSampler(VulkanDevice* m_pDevice, const ImageSamplerSpecification& specification)
+			: ImageSampler(m_pDevice, specification)
 		{
-			VkSamplerCreateInfo vCreateInfo = {};
-			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-			vCreateInfo.pNext = VK_NULL_HANDLE;
-			vCreateInfo.flags = 0;
-			vCreateInfo.addressModeU = Helpers::GetAddressMode(specification.m_AddressModeU);
-			vCreateInfo.addressModeV = Helpers::GetAddressMode(specification.m_AddressModeV);
-			vCreateInfo.addressModeW = Helpers::GetAddressMode(specification.m_AddressModeW);
-			vCreateInfo.anisotropyEnable = GET_VK_BOOL(specification.bEnableAnisotropy);
-			vCreateInfo.maxAnisotropy = specification.m_MaxAnisotrophy;
-			vCreateInfo.borderColor = Helpers::GetBorderColor(specification.m_BorderColor);
-			vCreateInfo.compareEnable = GET_VK_BOOL(specification.bEnableCompare);
-			vCreateInfo.compareOp = Helpers::GetCompareOperator(specification.m_CompareOperator);
-			vCreateInfo.magFilter = Helpers::GetFilter(specification.m_ImageMagificationFilter);
-			vCreateInfo.minFilter = Helpers::GetFilter(specification.m_ImageMinificationFilter);
-			vCreateInfo.maxLod = specification.m_MaxLevelOfDetail;
-			vCreateInfo.minLod = specification.m_MinLevelOfDetail;
-			vCreateInfo.mipLodBias = specification.m_MipLODBias;
-			vCreateInfo.mipmapMode = Helpers::GetMipMapMode(specification.m_MipMapMode);
-			vCreateInfo.unnormalizedCoordinates = GET_VK_BOOL(specification.bEnableUnnormalizedCoordinates);
+			VkSamplerCreateInfo m_vCreateInfo = {};
+			m_vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+			m_vCreateInfo.pNext = VK_NULL_HANDLE;
+			m_vCreateInfo.flags = 0;
+			m_vCreateInfo.addressModeU = Helpers::GetAddressMode(specification.m_AddressModeU);
+			m_vCreateInfo.addressModeV = Helpers::GetAddressMode(specification.m_AddressModeV);
+			m_vCreateInfo.addressModeW = Helpers::GetAddressMode(specification.m_AddressModeW);
+			m_vCreateInfo.anisotropyEnable = GET_VK_BOOL(specification.bEnableAnisotropy);
+			m_vCreateInfo.maxAnisotropy = specification.m_MaxAnisotrophy;
+			m_vCreateInfo.borderColor = Helpers::GetBorderColor(specification.m_BorderColor);
+			m_vCreateInfo.compareEnable = GET_VK_BOOL(specification.bEnableCompare);
+			m_vCreateInfo.compareOp = Helpers::GetCompareOperator(specification.m_CompareOperator);
+			m_vCreateInfo.magFilter = Helpers::GetFilter(specification.m_ImageMagificationFilter);
+			m_vCreateInfo.minFilter = Helpers::GetFilter(specification.m_ImageMinificationFilter);
+			m_vCreateInfo.maxLod = specification.m_MaxLevelOfDetail;
+			m_vCreateInfo.minLod = specification.m_MinLevelOfDetail;
+			m_vCreateInfo.mipLodBias = specification.m_MipLODBias;
+			m_vCreateInfo.mipmapMode = Helpers::GetMipMapMode(specification.m_MipMapMode);
+			m_vCreateInfo.unnormalizedCoordinates = GET_VK_BOOL(specification.bEnableUnnormalizedCoordinates);
 
-			if (vCreateInfo.maxAnisotropy == 0.0f && specification.bEnableAnisotropy)
+			if (m_vCreateInfo.maxAnisotropy == 0.0f && specification.bEnableAnisotropy)
 			{
-				VkPhysicalDeviceProperties vProperties = {};
-				vkGetPhysicalDeviceProperties(pDevice->GetPhysicalDevice(), &vProperties);
-				vCreateInfo.maxAnisotropy = vProperties.limits.maxSamplerAnisotropy;
+				VkPhysicalDeviceProperties m_vProperties = {};
+				vkGetPhysicalDeviceProperties(m_pDevice->GetPhysicalDevice(), &m_vProperties);
+				m_vCreateInfo.maxAnisotropy = m_vProperties.limits.maxSamplerAnisotropy;
 			}
 
-			FLINT_VK_ASSERT(pDevice->GetDeviceTable().vkCreateSampler(pDevice->GetLogicalDevice(), &vCreateInfo, nullptr, &vSampler));
+			FLINT_VK_ASSERT(m_pDevice->GetDeviceTable().vkCreateSampler(m_pDevice->GetLogicalDevice(), &m_vCreateInfo, nullptr, &m_vSampler));
 		}
 
 		void VulkanImageSampler::Terminate()
 		{
-			pDevice->GetDeviceTable().vkDestroySampler(pDevice->GetLogicalDevice(), vSampler, nullptr);
+			m_pDevice->GetDeviceTable().vkDestroySampler(m_pDevice->GetLogicalDevice(), m_vSampler, nullptr);
 			bIsTerminated = true;
 		}
 	}

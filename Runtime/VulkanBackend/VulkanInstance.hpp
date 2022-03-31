@@ -26,7 +26,7 @@ namespace Flint
 			virtual void Terminate() override;
 
 		public:
-			VkInstance GetInstance() const noexcept { return vInstance; }
+			VkInstance GetInstance() const noexcept { return m_vInstance; }
 			std::vector<const char*> GetValidationLayers() const noexcept { return m_ValidationLayers; }
 
 		private:
@@ -42,8 +42,8 @@ namespace Flint
 		private:
 			std::vector<const char*> m_ValidationLayers;
 
-			VkInstance vInstance = VK_NULL_HANDLE;
-			VkDebugUtilsMessengerEXT vDebugMessenger = VK_NULL_HANDLE;
+			VkInstance m_vInstance = VK_NULL_HANDLE;
+			VkDebugUtilsMessengerEXT m_vDebugMessenger = VK_NULL_HANDLE;
 		};
 	}
 }

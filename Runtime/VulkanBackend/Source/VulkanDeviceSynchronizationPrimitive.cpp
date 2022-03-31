@@ -7,20 +7,20 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanDeviceSynchronizationPrimitive::VulkanDeviceSynchronizationPrimitive(VulkanDevice* pDevice)
-			: DeviceSynchronizationPrimitive(pDevice)
+		VulkanDeviceSynchronizationPrimitive::VulkanDeviceSynchronizationPrimitive(VulkanDevice* m_pDevice)
+			: DeviceSynchronizationPrimitive(m_pDevice)
 		{
-			VkSemaphoreCreateInfo vCreateInfo = {};
-			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-			vCreateInfo.pNext = VK_NULL_HANDLE;
-			vCreateInfo.flags = 0;
+			VkSemaphoreCreateInfo m_vCreateInfo = {};
+			m_vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+			m_vCreateInfo.pNext = VK_NULL_HANDLE;
+			m_vCreateInfo.flags = 0;
 
-			FLINT_VK_ASSERT(pDevice->GetDeviceTable().vkCreateSemaphore(pDevice->GetLogicalDevice(), &vCreateInfo, nullptr, &vSemaphore));
+			FLINT_VK_ASSERT(m_pDevice->GetDeviceTable().vkCreateSemaphore(m_pDevice->GetLogicalDevice(), &m_vCreateInfo, nullptr, &m_vSemaphore));
 		}
 
 		void VulkanDeviceSynchronizationPrimitive::Terminate()
 		{
-			pDevice->GetDeviceTable().vkDestroySemaphore(pDevice->GetLogicalDevice(), vSemaphore, nullptr);
+			m_pDevice->GetDeviceTable().vkDestroySemaphore(m_pDevice->GetLogicalDevice(), m_vSemaphore, nullptr);
 
 			bIsTerminated = true;
 		}

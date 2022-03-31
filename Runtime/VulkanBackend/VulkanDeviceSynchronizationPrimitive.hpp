@@ -18,10 +18,10 @@ namespace Flint
 
 			virtual void Terminate() override;
 
-			const VkSemaphore GetSemaphore() const { return vSemaphore; }
+			const VkSemaphore GetSemaphore() const { return m_vSemaphore; }
 
 		private:
-			VkSemaphore vSemaphore = VK_NULL_HANDLE;
+			VkSemaphore m_vSemaphore = VK_NULL_HANDLE;
 		};
 	}
 }

@@ -8,9 +8,9 @@ namespace Flint
 {
 	namespace Components
 	{
-		ModelViewProjectionUniform::ModelViewProjectionUniform(Device* pDevice)
+		ModelViewProjectionUniform::ModelViewProjectionUniform(Device* m_pDevice)
 		{
-			pUniformBuffer = pDevice->CreateBuffer(BufferType::Uniform, sizeof(MatrixMVP));
+			pUniformBuffer = m_pDevice->CreateBuffer(BufferType::Uniform, sizeof(MatrixMVP));
 		}
 
 		void ModelViewProjectionUniform::UpdateUniform()

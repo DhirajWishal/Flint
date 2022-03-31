@@ -8,7 +8,7 @@ namespace Flint
 	namespace VulkanBackend
 	{
 		VulkanRenderTarget::VulkanRenderTarget(VulkanDevice& device)
-			: vDevice(device)
+			: m_vDevice(device)
 		{
 		}
 
@@ -18,26 +18,26 @@ namespace Flint
 			DestroyFrameBuffers();
 		}
 
-		void VulkanRenderTarget::CreateRenderPass(std::vector<VulkanRenderTargetAttachmentInterface*> pAttachments, VkPipelineBindPoint vBindPoint, const std::vector<VkSubpassDependency>& vSubpassDependencies)
+		void VulkanRenderTarget::CreateRenderPass(std::vector<VulkanRenderTargetAttachmentInterface*> pAttachments, VkPipelineBindPoint m_vBindPoint, const std::vector<VkSubpassDependency>& m_vSubpassDependencies)
 		{
 			OPTICK_EVENT();
 
-			std::vector<VkAttachmentDescription> vDescriptions;
+			std::vector<VkAttachmentDescription> m_vDescriptions;
 
-			std::vector<VkAttachmentReference> vColorAttachmentRef;
-			std::vector<VkAttachmentReference> vTempColorAttachmentRef;
-			std::vector<VkAttachmentReference> vDepthAttachmentRef;
-			std::vector<VkAttachmentReference> vResolveAttachmentRef;
+			std::vector<VkAttachmentReference> m_vColorAttachmentRef;
+			std::vector<VkAttachmentReference> m_vTempColorAttachmentRef;
+			std::vector<VkAttachmentReference> m_vDepthAttachmentRef;
+			std::vector<VkAttachmentReference> m_vResolveAttachmentRef;
 
-			VkAttachmentReference vAR = {};
-			vAR.attachment = 0;
+			VkAttachmentReference m_vAR = {};
+			m_vAR.attachment = 0;
 
-			VkSubpassDescription vSD = {};
-			vSD.flags = 0;
-			vSD.colorAttachmentCount = 0;
-			vSD.inputAttachmentCount = 0;
-			vSD.preserveAttachmentCount = 0;
-			vSD.pipelineBindPoint = vBindPoint;
+			VkSubpassDescription m_vSD = {};
+			m_vSD.flags = 0;
+			m_vSD.colorAttachmentCount = 0;
+			m_vSD.inputAttachmentCount = 0;
+			m_vSD.preserveAttachmentCount = 0;
+			m_vSD.pipelineBindPoint = m_vBindPoint;
 
 			bool bHasColorAttachment = false;
 			for (auto itr = pAttachments.begin(); itr != pAttachments.end(); itr++)
@@ -45,199 +45,199 @@ namespace Flint
 				if (!(*itr))
 					continue;
 
-				vDescriptions.emplace_back((*itr)->GetAttachmentDescription());
-				vAR.layout = (*itr)->GetAttachmentLayout();
+				m_vDescriptions.emplace_back((*itr)->GetAttachmentDescription());
+				m_vAR.layout = (*itr)->GetAttachmentLayout();
 
 				switch ((*itr)->GetAttachmentType())
 				{
 				case Flint::VulkanBackend::RenderTargetAttachmenType::SwapChain:
-					vResolveAttachmentRef.emplace_back(vAR);
+					m_vResolveAttachmentRef.emplace_back(m_vAR);
 					break;
 
 				case Flint::VulkanBackend::RenderTargetAttachmenType::ColorBuffer:
-					vColorAttachmentRef.emplace_back(vAR);
+					m_vColorAttachmentRef.emplace_back(m_vAR);
 					bHasColorAttachment = true;
 					break;
 
 				case Flint::VulkanBackend::RenderTargetAttachmenType::DepthBuffer:
-					vDepthAttachmentRef.emplace_back(vAR);
+					m_vDepthAttachmentRef.emplace_back(m_vAR);
 					break;
 
 				default:
 					throw backend_error("Invalid or Undefined render target attachment type!");
 				}
 
-				vAR.attachment++;
+				m_vAR.attachment++;
 			}
 
-			vSD.pDepthStencilAttachment = vDepthAttachmentRef.data();
+			m_vSD.pDepthStencilAttachment = m_vDepthAttachmentRef.data();
 
 			if (bHasColorAttachment)
 			{
-				vSD.colorAttachmentCount = static_cast<uint32_t>(vColorAttachmentRef.size());
-				vSD.pColorAttachments = vColorAttachmentRef.data();
-				vSD.pResolveAttachments = vResolveAttachmentRef.data();
+				m_vSD.colorAttachmentCount = static_cast<uint32_t>(m_vColorAttachmentRef.size());
+				m_vSD.pColorAttachments = m_vColorAttachmentRef.data();
+				m_vSD.pResolveAttachments = m_vResolveAttachmentRef.data();
 			}
 			else
 			{
-				vSD.colorAttachmentCount = static_cast<uint32_t>(vResolveAttachmentRef.size());
-				vSD.pColorAttachments = vResolveAttachmentRef.data();
-				vSD.pResolveAttachments = vColorAttachmentRef.data();
+				m_vSD.colorAttachmentCount = static_cast<uint32_t>(m_vResolveAttachmentRef.size());
+				m_vSD.pColorAttachments = m_vResolveAttachmentRef.data();
+				m_vSD.pResolveAttachments = m_vColorAttachmentRef.data();
 			}
 
-			VkRenderPassCreateInfo vCreateInfo = {};
-			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-			vCreateInfo.flags = 0;
-			vCreateInfo.pNext = VK_NULL_HANDLE;
-			vCreateInfo.attachmentCount = static_cast<uint32_t>(vDescriptions.size());
-			vCreateInfo.pAttachments = vDescriptions.data();
-			vCreateInfo.subpassCount = 1;
-			vCreateInfo.pSubpasses = &vSD;
-			vCreateInfo.dependencyCount = static_cast<uint32_t>(vSubpassDependencies.size());
-			vCreateInfo.pDependencies = vSubpassDependencies.data();
+			VkRenderPassCreateInfo m_vCreateInfo = {};
+			m_vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+			m_vCreateInfo.flags = 0;
+			m_vCreateInfo.pNext = VK_NULL_HANDLE;
+			m_vCreateInfo.attachmentCount = static_cast<uint32_t>(m_vDescriptions.size());
+			m_vCreateInfo.pAttachments = m_vDescriptions.data();
+			m_vCreateInfo.subpassCount = 1;
+			m_vCreateInfo.pSubpasses = &m_vSD;
+			m_vCreateInfo.dependencyCount = static_cast<uint32_t>(m_vSubpassDependencies.size());
+			m_vCreateInfo.pDependencies = m_vSubpassDependencies.data();
 
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateRenderPass(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vRenderPass));
+			FLINT_VK_ASSERT(m_vDevice.GetDeviceTable().vkCreateRenderPass(m_vDevice.GetLogicalDevice(), &m_vCreateInfo, nullptr, &m_vRenderPass));
 		}
 
-		void VulkanRenderTarget::CreateRenderPassWithMultipleSubpasses(std::vector<std::vector<VulkanRenderTargetAttachmentInterface*>> pSubpasses, VkPipelineBindPoint vBindPoint, const std::vector<VkSubpassDependency>& vSubpassDependencies)
+		void VulkanRenderTarget::CreateRenderPassWithMultipleSubpasses(std::vector<std::vector<VulkanRenderTargetAttachmentInterface*>> pSubpasses, VkPipelineBindPoint m_vBindPoint, const std::vector<VkSubpassDependency>& m_vSubpassDependencies)
 		{
 			OPTICK_EVENT();
 
-			std::vector<VkAttachmentDescription> vDescriptions;
-			std::vector<VkSubpassDescription> vSubpassDescriptions;
+			std::vector<VkAttachmentDescription> m_vDescriptions;
+			std::vector<VkSubpassDescription> m_vSubpassDescriptions;
 
-			std::vector<std::vector<VkAttachmentReference>> vColorAttachmentRefs;
-			std::vector<std::vector<VkAttachmentReference>> vDepthAttachmentRefs;
-			std::vector<std::vector<VkAttachmentReference>> vResolveAttachmentRefs;
+			std::vector<std::vector<VkAttachmentReference>> m_vColorAttachmentRefs;
+			std::vector<std::vector<VkAttachmentReference>> m_vDepthAttachmentRefs;
+			std::vector<std::vector<VkAttachmentReference>> m_vResolveAttachmentRefs;
 
 			for (auto pAttachments : pSubpasses)
 			{
-				std::vector<VkAttachmentReference> vColorAttachmentRef;
-				std::vector<VkAttachmentReference> vDepthAttachmentRef;
-				std::vector<VkAttachmentReference> vResolveAttachmentRef;
+				std::vector<VkAttachmentReference> m_vColorAttachmentRef;
+				std::vector<VkAttachmentReference> m_vDepthAttachmentRef;
+				std::vector<VkAttachmentReference> m_vResolveAttachmentRef;
 
-				VkAttachmentReference vAR = {};
-				vAR.attachment = 0;
+				VkAttachmentReference m_vAR = {};
+				m_vAR.attachment = 0;
 
-				VkSubpassDescription vSD = {};
-				vSD.flags = 0;
-				vSD.colorAttachmentCount = 0;
-				vSD.inputAttachmentCount = 0;
-				vSD.preserveAttachmentCount = 0;
-				vSD.pipelineBindPoint = vBindPoint;
+				VkSubpassDescription m_vSD = {};
+				m_vSD.flags = 0;
+				m_vSD.colorAttachmentCount = 0;
+				m_vSD.inputAttachmentCount = 0;
+				m_vSD.preserveAttachmentCount = 0;
+				m_vSD.pipelineBindPoint = m_vBindPoint;
 
 				for (auto itr = pAttachments.begin(); itr != pAttachments.end(); itr++)
 				{
 					if (!(*itr))
 						continue;
 
-					vDescriptions.emplace_back((*itr)->GetAttachmentDescription());
-					vAR.layout = (*itr)->GetAttachmentLayout();
+					m_vDescriptions.emplace_back((*itr)->GetAttachmentDescription());
+					m_vAR.layout = (*itr)->GetAttachmentLayout();
 
 					switch ((*itr)->GetAttachmentType())
 					{
 					case Flint::VulkanBackend::RenderTargetAttachmenType::SwapChain:
-						vResolveAttachmentRef.emplace_back(vAR);
+						m_vResolveAttachmentRef.emplace_back(m_vAR);
 						break;
 
 					case Flint::VulkanBackend::RenderTargetAttachmenType::ColorBuffer:
-						vColorAttachmentRef.emplace_back(vAR);
+						m_vColorAttachmentRef.emplace_back(m_vAR);
 						break;
 
 					case Flint::VulkanBackend::RenderTargetAttachmenType::DepthBuffer:
-						vDepthAttachmentRef.emplace_back(vAR);
+						m_vDepthAttachmentRef.emplace_back(m_vAR);
 						break;
 
 					default:
 						throw backend_error("Invalid or Undefined render target attachment type!");
 					}
 
-					vAR.attachment++;
+					m_vAR.attachment++;
 				}
 
-				vSD.colorAttachmentCount = static_cast<uint32_t>(vColorAttachmentRef.size());
-				vSD.pColorAttachments = vColorAttachmentRef.data();
-				vSD.pDepthStencilAttachment = vDepthAttachmentRef.data();
-				vSD.pResolveAttachments = vResolveAttachmentRef.data();
+				m_vSD.colorAttachmentCount = static_cast<uint32_t>(m_vColorAttachmentRef.size());
+				m_vSD.pColorAttachments = m_vColorAttachmentRef.data();
+				m_vSD.pDepthStencilAttachment = m_vDepthAttachmentRef.data();
+				m_vSD.pResolveAttachments = m_vResolveAttachmentRef.data();
 
-				vSubpassDescriptions.emplace_back(vSD);
+				m_vSubpassDescriptions.emplace_back(m_vSD);
 
-				vColorAttachmentRefs.emplace_back(std::move(vColorAttachmentRef));
-				vDepthAttachmentRefs.emplace_back(std::move(vDepthAttachmentRef));
-				vResolveAttachmentRefs.emplace_back(std::move(vResolveAttachmentRef));
+				m_vColorAttachmentRefs.emplace_back(std::move(m_vColorAttachmentRef));
+				m_vDepthAttachmentRefs.emplace_back(std::move(m_vDepthAttachmentRef));
+				m_vResolveAttachmentRefs.emplace_back(std::move(m_vResolveAttachmentRef));
 			}
 
-			VkRenderPassCreateInfo vCreateInfo = {};
-			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-			vCreateInfo.flags = 0;
-			vCreateInfo.pNext = VK_NULL_HANDLE;
-			vCreateInfo.attachmentCount = static_cast<uint32_t>(vDescriptions.size());
-			vCreateInfo.pAttachments = vDescriptions.data();
-			vCreateInfo.subpassCount = static_cast<uint32_t>(vSubpassDescriptions.size());
-			vCreateInfo.pSubpasses = vSubpassDescriptions.data();
-			vCreateInfo.dependencyCount = static_cast<uint32_t>(vSubpassDependencies.size());
-			vCreateInfo.pDependencies = vSubpassDependencies.data();
+			VkRenderPassCreateInfo m_vCreateInfo = {};
+			m_vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+			m_vCreateInfo.flags = 0;
+			m_vCreateInfo.pNext = VK_NULL_HANDLE;
+			m_vCreateInfo.attachmentCount = static_cast<uint32_t>(m_vDescriptions.size());
+			m_vCreateInfo.pAttachments = m_vDescriptions.data();
+			m_vCreateInfo.subpassCount = static_cast<uint32_t>(m_vSubpassDescriptions.size());
+			m_vCreateInfo.pSubpasses = m_vSubpassDescriptions.data();
+			m_vCreateInfo.dependencyCount = static_cast<uint32_t>(m_vSubpassDependencies.size());
+			m_vCreateInfo.pDependencies = m_vSubpassDependencies.data();
 
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateRenderPass(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vRenderPass));
+			FLINT_VK_ASSERT(m_vDevice.GetDeviceTable().vkCreateRenderPass(m_vDevice.GetLogicalDevice(), &m_vCreateInfo, nullptr, &m_vRenderPass));
 		}
 
 		void VulkanRenderTarget::DestroyRenderPass()
 		{
-			vDevice.GetDeviceTable().vkDestroyRenderPass(vDevice.GetLogicalDevice(), vRenderPass, nullptr);
+			m_vDevice.GetDeviceTable().vkDestroyRenderPass(m_vDevice.GetLogicalDevice(), m_vRenderPass, nullptr);
 		}
 
 		void VulkanRenderTarget::CreateFrameBuffer(std::vector<VulkanRenderTargetAttachmentInterface*> pAttachments, const FBox2D& extent, const uint32_t bufferCount)
 		{
 			OPTICK_EVENT();
 
-			VkFramebufferCreateInfo vCreateInfo = {};
-			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-			vCreateInfo.flags = 0;
-			vCreateInfo.pNext = VK_NULL_HANDLE;
-			vCreateInfo.layers = 1;
-			vCreateInfo.renderPass = vRenderPass;
-			vCreateInfo.width = extent.m_Width;
-			vCreateInfo.height = extent.m_Height;
-			vCreateInfo.attachmentCount = static_cast<uint32_t>(pAttachments.size());
+			VkFramebufferCreateInfo m_vCreateInfo = {};
+			m_vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+			m_vCreateInfo.flags = 0;
+			m_vCreateInfo.pNext = VK_NULL_HANDLE;
+			m_vCreateInfo.layers = 1;
+			m_vCreateInfo.renderPass = m_vRenderPass;
+			m_vCreateInfo.width = extent.m_Width;
+			m_vCreateInfo.height = extent.m_Height;
+			m_vCreateInfo.attachmentCount = static_cast<uint32_t>(pAttachments.size());
 
-			vFrameBuffers.resize(bufferCount);
+			m_vFrameBuffers.resize(bufferCount);
 			for (uint32_t i = 0; i < bufferCount; i++)
 			{
-				std::vector<VkImageView> vAttachments;
+				std::vector<VkImageView> m_vAttachments;
 
 				for (auto itr = pAttachments.begin(); itr != pAttachments.end(); itr++)
-					vAttachments.emplace_back((*itr)->GetImageView(i));
+					m_vAttachments.emplace_back((*itr)->GetImageView(i));
 
-				vCreateInfo.pAttachments = vAttachments.data();
-				FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateFramebuffer(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vFrameBuffers[i]));
+				m_vCreateInfo.pAttachments = m_vAttachments.data();
+				FLINT_VK_ASSERT(m_vDevice.GetDeviceTable().vkCreateFramebuffer(m_vDevice.GetLogicalDevice(), &m_vCreateInfo, nullptr, &m_vFrameBuffers[i]));
 			}
 		}
 
 		void VulkanRenderTarget::DestroyFrameBuffers()
 		{
-			for (auto itr : vFrameBuffers)
-				vDevice.GetDeviceTable().vkDestroyFramebuffer(vDevice.GetLogicalDevice(), itr, nullptr);
+			for (auto itr : m_vFrameBuffers)
+				m_vDevice.GetDeviceTable().vkDestroyFramebuffer(m_vDevice.GetLogicalDevice(), itr, nullptr);
 
-			vFrameBuffers.clear();
+			m_vFrameBuffers.clear();
 		}
 
-		VkFramebuffer VulkanRenderTarget::CreateVulkanFrameBuffer(const FBox2D& extent, const std::vector<VkImageView>& vImageViews)
+		VkFramebuffer VulkanRenderTarget::CreateVulkanFrameBuffer(const FBox2D& extent, const std::vector<VkImageView>& m_vImageViews)
 		{
-			VkFramebufferCreateInfo vCreateInfo = {};
-			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-			vCreateInfo.flags = 0;
-			vCreateInfo.pNext = VK_NULL_HANDLE;
-			vCreateInfo.layers = 1;
-			vCreateInfo.renderPass = vRenderPass;
-			vCreateInfo.width = extent.m_Width;
-			vCreateInfo.height = extent.m_Height;
-			vCreateInfo.attachmentCount = static_cast<uint32_t>(vImageViews.size());
-			vCreateInfo.pAttachments = vImageViews.data();
+			VkFramebufferCreateInfo m_vCreateInfo = {};
+			m_vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+			m_vCreateInfo.flags = 0;
+			m_vCreateInfo.pNext = VK_NULL_HANDLE;
+			m_vCreateInfo.layers = 1;
+			m_vCreateInfo.renderPass = m_vRenderPass;
+			m_vCreateInfo.width = extent.m_Width;
+			m_vCreateInfo.height = extent.m_Height;
+			m_vCreateInfo.attachmentCount = static_cast<uint32_t>(m_vImageViews.size());
+			m_vCreateInfo.pAttachments = m_vImageViews.data();
 
-			VkFramebuffer vFrameBuffer = VK_NULL_HANDLE;
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateFramebuffer(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vFrameBuffer));
+			VkFramebuffer m_vFrameBuffer = VK_NULL_HANDLE;
+			FLINT_VK_ASSERT(m_vDevice.GetDeviceTable().vkCreateFramebuffer(m_vDevice.GetLogicalDevice(), &m_vCreateInfo, nullptr, &m_vFrameBuffer));
 
-			return vFrameBuffer;
+			return m_vFrameBuffer;
 		}
 	}
 }

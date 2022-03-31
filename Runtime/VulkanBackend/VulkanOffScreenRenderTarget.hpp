@@ -19,26 +19,26 @@ namespace Flint
 			virtual bool PrepareNewFrame() override;
 			virtual void Terminate() override;
 
-			VkRenderPass GetRenderPass() const { return vRenderTarget.vRenderPass; }
-			const VkFramebuffer GetFramebuffer() const { return vRenderTarget.vFrameBuffers[m_FrameIndex]; }
+			VkRenderPass GetRenderPass() const { return m_vRenderTarget.m_vRenderPass; }
+			const VkFramebuffer GetFramebuffer() const { return m_vRenderTarget.m_vFrameBuffers[m_FrameIndex]; }
 
 			const uint32_t GetClearScreenValueCount() const { return static_cast<uint32_t>(m_Attachments.size()); }
-			const VkClearValue* GetClearScreenValues() const { return vClearValues.data(); }
+			const VkClearValue* GetClearScreenValues() const { return m_vClearValues.data(); }
 
-			std::vector<VkClearValue> GetClearScreenValueVector() const { return vClearValues; }
-			std::vector<VkImageAspectFlags> GetClearAspectFlags() const { return vClearAspectFlags; }
+			std::vector<VkClearValue> GetClearScreenValueVector() const { return m_vClearValues; }
+			std::vector<VkImageAspectFlags> GetClearAspectFlags() const { return m_vClearAspectFlags; }
 
 			const VkCommandBufferInheritanceInfo* GetVulkanInheritanceInfo() const;
 
 		protected:
-			VulkanRenderTarget vRenderTarget;
+			VulkanRenderTarget m_vRenderTarget;
 
-			std::vector<VkSubpassDependency> vDependencies{ 2 };
+			std::vector<VkSubpassDependency> m_vDependencies{ 2 };
 			std::unique_ptr<OffScreenRenderTarget> pThisRenderTarget = nullptr;
-			mutable VkCommandBufferInheritanceInfo vInheritInfo = {};
+			mutable VkCommandBufferInheritanceInfo m_vInheritInfo = {};
 
-			std::vector<VkClearValue> vClearValues = {};
-			std::vector<VkImageAspectFlags> vClearAspectFlags = {};
+			std::vector<VkClearValue> m_vClearValues = {};
+			std::vector<VkImageAspectFlags> m_vClearAspectFlags = {};
 		};
 	}
 }

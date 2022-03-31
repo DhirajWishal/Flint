@@ -9,15 +9,15 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		void VulkanQueue::Initialize(VkPhysicalDevice vPhysicalDevice, const DeviceFlags flags)
+		void VulkanQueue::Initialize(VkPhysicalDevice m_vPhysicalDevice, const DeviceFlags flags)
 		{
 			OPTICK_EVENT();
 
 			uint32_t queueFamilyCount = 0;
-			vkGetPhysicalDeviceQueueFamilyProperties(vPhysicalDevice, &queueFamilyCount, nullptr);
+			vkGetPhysicalDeviceQueueFamilyProperties(m_vPhysicalDevice, &queueFamilyCount, nullptr);
 
 			std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
-			vkGetPhysicalDeviceQueueFamilyProperties(vPhysicalDevice, &queueFamilyCount, queueFamilies.data());
+			vkGetPhysicalDeviceQueueFamilyProperties(m_vPhysicalDevice, &queueFamilyCount, queueFamilies.data());
 
 			int32_t i = 0;
 			for (auto itr = queueFamilies.begin(); itr != queueFamilies.end(); itr++, i++)

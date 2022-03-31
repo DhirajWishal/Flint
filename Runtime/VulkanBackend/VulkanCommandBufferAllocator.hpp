@@ -24,7 +24,7 @@ namespace Flint
 			virtual void Terminate() override;
 
 		private:
-			VkCommandPool vCommandPool = VK_NULL_HANDLE;
+			VkCommandPool m_vCommandPool = VK_NULL_HANDLE;
 		};
 	}
 }

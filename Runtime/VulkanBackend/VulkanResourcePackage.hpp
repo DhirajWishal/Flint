@@ -14,18 +14,18 @@ namespace Flint
 		class VulkanResourcePackage final : public ResourcePackage<VulkanResourcePackager, VulkanBuffer, VulkanImage, VulkanImageView, VulkanImageSampler>
 		{
 		public:
-			explicit VulkanResourcePackage(const std::shared_ptr<VulkanResourcePackager>& pPackager, const std::vector<uint32_t>& bufferBindings, const std::vector<uint32_t>& imageBindings, const VkDescriptorSet& vSet);
+			explicit VulkanResourcePackage(const std::shared_ptr<VulkanResourcePackager>& pPackager, const std::vector<uint32_t>& bufferBindings, const std::vector<uint32_t>& imageBindings, const VkDescriptorSet& m_vSet);
 
 			virtual void PrepareIfNecessary() override;
 
-			const VkDescriptorSet GetDescriptorSet() const { return vDescriptorSet; }
-			const VkDescriptorSet* GetDescriptorSetAddress() const { return &vDescriptorSet; }
+			const VkDescriptorSet GetDescriptorSet() const { return m_vDescriptorSet; }
+			const VkDescriptorSet* GetDescriptorSetAddress() const { return &m_vDescriptorSet; }
 
 		public:
-			void SetDescriptorSet(const VkDescriptorSet& vSet);
+			void SetDescriptorSet(const VkDescriptorSet& m_vSet);
 
 		private:
-			VkDescriptorSet vDescriptorSet = VK_NULL_HANDLE;
+			VkDescriptorSet m_vDescriptorSet = VK_NULL_HANDLE;
 		};
 	}
 }

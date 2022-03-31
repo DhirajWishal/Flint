@@ -24,7 +24,7 @@ namespace Flint
 			std::vector<VkSurfaceFormatKHR> m_Formats = {};
 			std::vector<VkPresentModeKHR> m_PresentModes = {};
 
-			static SwapChainSupportDetails Query(VkPhysicalDevice vPhysicalDevice, VkSurfaceKHR vSurface);
+			static SwapChainSupportDetails Query(VkPhysicalDevice m_vPhysicalDevice, VkSurfaceKHR m_vSurface);
 		};
 
 		class VulkanDisplay final : public Display<VulkanInstance, VulkanDevice>
@@ -60,7 +60,7 @@ namespace Flint
 			void Resized() { m_IsDislayResized = true; }
 
 		public:
-			VkSurfaceKHR GetSurface() const { return vSurface; }
+			VkSurfaceKHR GetSurface() const { return m_vSurface; }
 
 		private:
 			void SetupMaps();
@@ -71,7 +71,7 @@ namespace Flint
 			std::vector<EventAction> m_ActionMap = {};
 
 			GLFWwindow* pWindow = nullptr;
-			VkSurfaceKHR vSurface = VK_NULL_HANDLE;
+			VkSurfaceKHR m_vSurface = VK_NULL_HANDLE;
 		};
 	}
 }

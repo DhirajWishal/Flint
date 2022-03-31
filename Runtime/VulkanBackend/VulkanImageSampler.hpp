@@ -18,10 +18,10 @@ namespace Flint
 
 			virtual void Terminate() override;
 
-			const VkSampler GetSampler() const { return vSampler; }
+			const VkSampler GetSampler() const { return m_vSampler; }
 
 		private:
-			VkSampler vSampler = VK_NULL_HANDLE;
+			VkSampler m_vSampler = VK_NULL_HANDLE;
 		};
 	}
 }

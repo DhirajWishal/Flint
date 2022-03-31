@@ -4,7 +4,7 @@
 #pragma once
 
 #include "GraphicsCore/Instance.hpp"
-#include "GraphicsDevice.hpp"
+#include "GraphicsReactor.hpp"
 
 #include "VulkanBackend/VulkanInstance.hpp"
 
@@ -14,7 +14,7 @@ namespace Flint
 	 * Flint graphics engine.
 	 * This object house a single graphics engine instance.
 	 */
-	class GraphicsEngine final
+	class GraphicsEngine
 	{
 	public:
 		/**
@@ -29,13 +29,14 @@ namespace Flint
 		 * Destructor.
 		 * This will terminate the instance automatically.
 		 */
-		~GraphicsEngine();
+		virtual ~GraphicsEngine();
 
 		/**
-		 * Create a new graphics device.
+		 * Create a new graphics reactor.
 		 *
-		 * @return The graphics device pointer.
+		 * @param flags The required device flags. Default is external, graphics and compute compatible.
+		 * @return The graphics reactor.
 		 */
-		std::shared_ptr<GraphicsDevice> CreateGraphicsDevice();
+		virtual std::unique_ptr<GraphicsReactor> CreateReactor(DeviceFlags flags = DeviceFlags::External | DeviceFlags::GraphicsCompatible | DeviceFlags::ComputeCompatible) = 0;
 	};
 }

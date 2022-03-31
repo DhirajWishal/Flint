@@ -26,8 +26,8 @@ namespace Flint
 			}
 		}
 
-		VulkanQuery::VulkanQuery(VulkanDevice* pDevice, const QueryUsage usage, const uint32_t queryCount)
-			: Query(pDevice, usage, queryCount)
+		VulkanQuery::VulkanQuery(VulkanDevice* m_pDevice, const QueryUsage usage, const uint32_t queryCount)
+			: Query(m_pDevice, usage, queryCount)
 		{
 			CreatePool();
 		}
@@ -47,43 +47,43 @@ namespace Flint
 
 		void VulkanQuery::RequestQueryData(const uint32_t firstQuery, const uint32_t count, const uint64_t dataSize, void* pDataStore, const uint64_t stride, const QueryDataMode dataMode)
 		{
-			VkQueryResultFlags vResultFlags = 0;
+			VkQueryResultFlags m_vResultFlags = 0;
 			if (dataMode & QueryDataMode::UI64Result)
-				vResultFlags |= VkQueryResultFlagBits::VK_QUERY_RESULT_64_BIT;
+				m_vResultFlags |= VkQueryResultFlagBits::VK_QUERY_RESULT_64_BIT;
 
 			if (dataMode & QueryDataMode::WaitForResult)
-				vResultFlags |= VkQueryResultFlagBits::VK_QUERY_RESULT_WAIT_BIT;
+				m_vResultFlags |= VkQueryResultFlagBits::VK_QUERY_RESULT_WAIT_BIT;
 
 			if (dataMode & QueryDataMode::Availability)
-				vResultFlags |= VkQueryResultFlagBits::VK_QUERY_RESULT_WITH_AVAILABILITY_BIT;
+				m_vResultFlags |= VkQueryResultFlagBits::VK_QUERY_RESULT_WITH_AVAILABILITY_BIT;
 
 			if (dataMode & QueryDataMode::PartialData)
-				vResultFlags |= VkQueryResultFlagBits::VK_QUERY_RESULT_PARTIAL_BIT;
+				m_vResultFlags |= VkQueryResultFlagBits::VK_QUERY_RESULT_PARTIAL_BIT;
 
-			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkGetQueryPoolResults(vDevice.GetLogicalDevice(), vQueryPool, firstQuery, count, dataSize, pDataStore, stride, vResultFlags));
+			auto& m_vDevice = m_pDevice->StaticCast<VulkanDevice>();
+			FLINT_VK_ASSERT(m_vDevice.GetDeviceTable().vkGetQueryPoolResults(m_vDevice.GetLogicalDevice(), m_vQueryPool, firstQuery, count, dataSize, pDataStore, stride, m_vResultFlags));
 		}
 
 		void VulkanQuery::Terminate()
 		{
-			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
-			vDevice.GetDeviceTable().vkDestroyQueryPool(vDevice.GetLogicalDevice(), vQueryPool, nullptr);
+			auto& m_vDevice = m_pDevice->StaticCast<VulkanDevice>();
+			m_vDevice.GetDeviceTable().vkDestroyQueryPool(m_vDevice.GetLogicalDevice(), m_vQueryPool, nullptr);
 
 			bIsTerminated = true;
 		}
 
 		void VulkanQuery::CreatePool()
 		{
-			VkQueryPoolCreateInfo vCreateInfo = {};
-			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO;
-			vCreateInfo.pNext = VK_NULL_HANDLE;
-			vCreateInfo.flags = 0;
-			vCreateInfo.queryCount = m_QueryCount;
-			vCreateInfo.pipelineStatistics;
-			vCreateInfo.queryType = Helpers::GetQueryType(m_Usage);
+			VkQueryPoolCreateInfo m_vCreateInfo = {};
+			m_vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO;
+			m_vCreateInfo.pNext = VK_NULL_HANDLE;
+			m_vCreateInfo.flags = 0;
+			m_vCreateInfo.queryCount = m_QueryCount;
+			m_vCreateInfo.pipelineStatistics;
+			m_vCreateInfo.queryType = Helpers::GetQueryType(m_Usage);
 
-			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateQueryPool(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vQueryPool));
+			auto& m_vDevice = m_pDevice->StaticCast<VulkanDevice>();
+			FLINT_VK_ASSERT(m_vDevice.GetDeviceTable().vkCreateQueryPool(m_vDevice.GetLogicalDevice(), &m_vCreateInfo, nullptr, &m_vQueryPool));
 		}
 	}
 }

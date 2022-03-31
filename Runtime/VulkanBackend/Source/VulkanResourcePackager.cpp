@@ -8,126 +8,126 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanResourcePackager::VulkanResourcePackager(const uint32_t setIndex, const VulkanGraphicsPipeline* pPipeline, const VkDescriptorSetLayout vLayout)
-			: ResourcePackager(GetDevice(), setIndex), vDescriptorSetLayout(vLayout)
+		VulkanResourcePackager::VulkanResourcePackager(const uint32_t setIndex, const VulkanGraphicsPipeline* pPipeline, const VkDescriptorSetLayout m_vLayout)
+			: ResourcePackager(GetDevice(), setIndex), m_vDescriptorSetLayout(m_vLayout)
 		{
 			// Resolve vertex shader data.
 			{
-				VulkanShader& vShader = *pPipeline->GetVertexShader();
+				VulkanShader& m_vShader = *pPipeline->GetVertexShader();
 
-				const auto resourceMap = vShader.GetShaderResources();
+				const auto resourceMap = m_vShader.GetShaderResources();
 				if (!resourceMap.empty())
 				{
 					const auto resources = resourceMap.at(m_SetIndex);
 					m_Resources.insert(resources.begin(), resources.end());
 				}
 
-				const auto descriptorSetMap = vShader.GetDescriptorSetMap();
+				const auto descriptorSetMap = m_vShader.GetDescriptorSetMap();
 				if (!descriptorSetMap.empty())
 				{
 					const auto poolSizes = descriptorSetMap.at(m_SetIndex).m_PoolSizes;
-					vPoolSizes.insert(vPoolSizes.end(), poolSizes.begin(), poolSizes.end());
+					m_vPoolSizes.insert(m_vPoolSizes.end(), poolSizes.begin(), poolSizes.end());
 				}
 			}
 
 			// Check and resolve fragment shader data.
 			if (pPipeline->GetFragmentShader())
 			{
-				VulkanShader& vShader = *pPipeline->GetFragmentShader();
+				VulkanShader& m_vShader = *pPipeline->GetFragmentShader();
 
-				const auto resourceMap = vShader.GetShaderResources();
+				const auto resourceMap = m_vShader.GetShaderResources();
 				if (!resourceMap.empty())
 				{
 					const auto resources = resourceMap.at(m_SetIndex);
 					m_Resources.insert(resources.begin(), resources.end());
 				}
 
-				const auto descriptorSetMap = vShader.GetDescriptorSetMap();
+				const auto descriptorSetMap = m_vShader.GetDescriptorSetMap();
 				if (!descriptorSetMap.empty())
 				{
 					const auto poolSizes = descriptorSetMap.at(m_SetIndex).m_PoolSizes;
-					vPoolSizes.insert(vPoolSizes.end(), poolSizes.begin(), poolSizes.end());
+					m_vPoolSizes.insert(m_vPoolSizes.end(), poolSizes.begin(), poolSizes.end());
 				}
 			}
 
 			// Check and resolve tessellation control shader data.
 			if (pPipeline->GetTessellationControlShader())
 			{
-				VulkanShader& vShader = *pPipeline->GetTessellationControlShader();
+				VulkanShader& m_vShader = *pPipeline->GetTessellationControlShader();
 
-				const auto resourceMap = vShader.GetShaderResources();
+				const auto resourceMap = m_vShader.GetShaderResources();
 				if (!resourceMap.empty())
 				{
 					const auto resources = resourceMap.at(m_SetIndex);
 					m_Resources.insert(resources.begin(), resources.end());
 				}
 
-				const auto descriptorSetMap = vShader.GetDescriptorSetMap();
+				const auto descriptorSetMap = m_vShader.GetDescriptorSetMap();
 				if (!descriptorSetMap.empty())
 				{
 					const auto poolSizes = descriptorSetMap.at(m_SetIndex).m_PoolSizes;
-					vPoolSizes.insert(vPoolSizes.end(), poolSizes.begin(), poolSizes.end());
+					m_vPoolSizes.insert(m_vPoolSizes.end(), poolSizes.begin(), poolSizes.end());
 				}
 			}
 
 			// Check and resolve tessellation evaluation shader data.
 			if (pPipeline->GetTessellationEvaluationShader())
 			{
-				VulkanShader& vShader = *pPipeline->GetTessellationEvaluationShader();
+				VulkanShader& m_vShader = *pPipeline->GetTessellationEvaluationShader();
 
-				const auto resourceMap = vShader.GetShaderResources();
+				const auto resourceMap = m_vShader.GetShaderResources();
 				if (!resourceMap.empty())
 				{
 					const auto resources = resourceMap.at(m_SetIndex);
 					m_Resources.insert(resources.begin(), resources.end());
 				}
 
-				const auto descriptorSetMap = vShader.GetDescriptorSetMap();
+				const auto descriptorSetMap = m_vShader.GetDescriptorSetMap();
 				if (!descriptorSetMap.empty())
 				{
 					const auto poolSizes = descriptorSetMap.at(m_SetIndex).m_PoolSizes;
-					vPoolSizes.insert(vPoolSizes.end(), poolSizes.begin(), poolSizes.end());
+					m_vPoolSizes.insert(m_vPoolSizes.end(), poolSizes.begin(), poolSizes.end());
 				}
 			}
 
 			// Check and resolve geometry shader data.
 			if (pPipeline->GetGeometryShader())
 			{
-				VulkanShader& vShader = *pPipeline->GetGeometryShader();
+				VulkanShader& m_vShader = *pPipeline->GetGeometryShader();
 
-				const auto resourceMap = vShader.GetShaderResources();
+				const auto resourceMap = m_vShader.GetShaderResources();
 				if (!resourceMap.empty())
 				{
 					const auto resources = resourceMap.at(m_SetIndex);
 					m_Resources.insert(resources.begin(), resources.end());
 				}
 
-				const auto descriptorSetMap = vShader.GetDescriptorSetMap();
+				const auto descriptorSetMap = m_vShader.GetDescriptorSetMap();
 				if (!descriptorSetMap.empty())
 				{
 					const auto poolSizes = descriptorSetMap.at(m_SetIndex).m_PoolSizes;
-					vPoolSizes.insert(vPoolSizes.end(), poolSizes.begin(), poolSizes.end());
+					m_vPoolSizes.insert(m_vPoolSizes.end(), poolSizes.begin(), poolSizes.end());
 				}
 			}
 		}
 
-		VulkanResourcePackager::VulkanResourcePackager(const uint32_t setIndex, const VulkanComputePipeline* pPipeline, const VkDescriptorSetLayout vLayout)
-			: ResourcePackager(GetDevice(), setIndex), vDescriptorSetLayout(vLayout)
+		VulkanResourcePackager::VulkanResourcePackager(const uint32_t setIndex, const VulkanComputePipeline* pPipeline, const VkDescriptorSetLayout m_vLayout)
+			: ResourcePackager(GetDevice(), setIndex), m_vDescriptorSetLayout(m_vLayout)
 		{
-			VulkanShader& vShader = *pPipeline->GetShader();
+			VulkanShader& m_vShader = *pPipeline->GetShader();
 
-			const auto resourceMap = vShader.GetShaderResources();
+			const auto resourceMap = m_vShader.GetShaderResources();
 			if (!resourceMap.empty())
 			{
 				const auto resources = resourceMap.at(m_SetIndex);
 				m_Resources.insert(resources.begin(), resources.end());
 			}
 
-			const auto descriptorSetMap = vShader.GetDescriptorSetMap();
+			const auto descriptorSetMap = m_vShader.GetDescriptorSetMap();
 			if (!descriptorSetMap.empty())
 			{
 				const auto poolSizes = descriptorSetMap.at(m_SetIndex).m_PoolSizes;
-				vPoolSizes.insert(vPoolSizes.end(), poolSizes.begin(), poolSizes.end());
+				m_vPoolSizes.insert(m_vPoolSizes.end(), poolSizes.begin(), poolSizes.end());
 			}
 		}
 
@@ -140,28 +140,28 @@ namespace Flint
 
 		void VulkanResourcePackager::Terminate()
 		{
-			VulkanDevice& vDevice = GetDevice()->StaticCast<VulkanDevice>();
+			VulkanDevice& m_vDevice = GetDevice()->StaticCast<VulkanDevice>();
 
-			if (vDescriptorPool)
-				GetDevice()->GetDeviceTable().vkDestroyDescriptorPool(GetDevice()->GetLogicalDevice(), vDescriptorPool, nullptr);
+			if (m_vDescriptorPool)
+				GetDevice()->GetDeviceTable().vkDestroyDescriptorPool(GetDevice()->GetLogicalDevice(), m_vDescriptorPool, nullptr);
 			
 			bIsTerminated = true;
 		}
 
 		void VulkanResourcePackager::CreateDescriptorPool()
 		{
-			if (vDescriptorPool)
-				GetDevice()->GetDeviceTable().vkDestroyDescriptorPool(GetDevice()->GetLogicalDevice(), vDescriptorPool, nullptr);
+			if (m_vDescriptorPool)
+				GetDevice()->GetDeviceTable().vkDestroyDescriptorPool(GetDevice()->GetLogicalDevice(), m_vDescriptorPool, nullptr);
 
-			VkDescriptorPoolCreateInfo vPoolCreateInfo = {};
-			vPoolCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-			vPoolCreateInfo.pNext = VK_NULL_HANDLE;
-			vPoolCreateInfo.flags = 0;
-			vPoolCreateInfo.maxSets = m_DescriptorSetCount;
-			vPoolCreateInfo.poolSizeCount = static_cast<uint32_t>(vPoolSizes.size());
-			vPoolCreateInfo.pPoolSizes = vPoolSizes.data();
+			VkDescriptorPoolCreateInfo m_vPoolCreateInfo = {};
+			m_vPoolCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+			m_vPoolCreateInfo.pNext = VK_NULL_HANDLE;
+			m_vPoolCreateInfo.flags = 0;
+			m_vPoolCreateInfo.maxSets = m_DescriptorSetCount;
+			m_vPoolCreateInfo.poolSizeCount = static_cast<uint32_t>(m_vPoolSizes.size());
+			m_vPoolCreateInfo.pPoolSizes = m_vPoolSizes.data();
 
-			FLINT_VK_ASSERT(GetDevice()->GetDeviceTable().vkCreateDescriptorPool(GetDevice()->GetLogicalDevice(), &vPoolCreateInfo, nullptr, &vDescriptorPool));
+			FLINT_VK_ASSERT(GetDevice()->GetDeviceTable().vkCreateDescriptorPool(GetDevice()->GetLogicalDevice(), &m_vPoolCreateInfo, nullptr, &m_vDescriptorPool));
 		}
 
 		std::shared_ptr<VulkanResourcePackage> VulkanResourcePackager::CreateResourcePackage()
@@ -178,28 +178,28 @@ namespace Flint
 					buffers.emplace_back(binding.first);
 			}
 
-			std::vector<VkDescriptorSet> vDescriptorSets(m_DescriptorSetCount);
+			std::vector<VkDescriptorSet> m_vDescriptorSets(m_DescriptorSetCount);
 
 			// Allocate the descriptor sets.
 			{
-				std::vector<VkDescriptorSetLayout> vDescriptorSetLayouts(m_DescriptorSetCount, vDescriptorSetLayout);
+				std::vector<VkDescriptorSetLayout> m_vDescriptorSetLayouts(m_DescriptorSetCount, m_vDescriptorSetLayout);
 
-				VkDescriptorSetAllocateInfo vAllocateInfo = {};
-				vAllocateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-				vAllocateInfo.pNext = VK_NULL_HANDLE;
-				vAllocateInfo.descriptorPool = vDescriptorPool;
-				vAllocateInfo.descriptorSetCount = m_DescriptorSetCount;
-				vAllocateInfo.pSetLayouts = vDescriptorSetLayouts.data();
+				VkDescriptorSetAllocateInfo m_vAllocateInfo = {};
+				m_vAllocateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+				m_vAllocateInfo.pNext = VK_NULL_HANDLE;
+				m_vAllocateInfo.descriptorPool = m_vDescriptorPool;
+				m_vAllocateInfo.descriptorSetCount = m_DescriptorSetCount;
+				m_vAllocateInfo.pSetLayouts = m_vDescriptorSetLayouts.data();
 
-				FLINT_VK_ASSERT(GetDevice()->GetDeviceTable().vkAllocateDescriptorSets(GetDevice()->GetLogicalDevice(), &vAllocateInfo, vDescriptorSets.data()));
+				FLINT_VK_ASSERT(GetDevice()->GetDeviceTable().vkAllocateDescriptorSets(GetDevice()->GetLogicalDevice(), &m_vAllocateInfo, m_vDescriptorSets.data()));
 			}
 
 			// Update the existing packages.
 			for (uint64_t i = 0; i < pPackages.size(); i++)
-				pPackages[i]->StaticCast<VulkanResourcePackage>().SetDescriptorSet(vDescriptorSets[i]);
+				pPackages[i]->StaticCast<VulkanResourcePackage>().SetDescriptorSet(m_vDescriptorSets[i]);
 
 			// Create the new package.
-			auto pNewPackage = std::make_shared<VulkanResourcePackage>(this, buffers, images, vDescriptorSets.back());
+			auto pNewPackage = std::make_shared<VulkanResourcePackage>(this, buffers, images, m_vDescriptorSets.back());
 			pPackages.emplace_back(pNewPackage);
 
 			return pNewPackage;

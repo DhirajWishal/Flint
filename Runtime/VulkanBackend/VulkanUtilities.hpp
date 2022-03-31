@@ -20,10 +20,10 @@ namespace Flint
 		namespace Utilities
 		{
 			void CheckResult(VkResult result);
-			std::vector<VkImageView> CreateImageViews(const std::vector<VkImage>& vImages, VkFormat imageFormat, VulkanDevice& device, VkImageAspectFlags aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT, VkImageViewType viewType = VkImageViewType::VK_IMAGE_VIEW_TYPE_2D, uint32_t layerCount = 1, uint32_t baseLayerIndex = 0, uint32_t mipLevels = 1, uint32_t baseMipLevel = 0, VkComponentMapping mapping = VkComponentMapping());
-			VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features, VkPhysicalDevice vPhysicalDevice);
-			bool HasStencilComponent(VkFormat vFormat);
-			VkFormat FindDepthFormat(VkPhysicalDevice vPhysicalDevice);
+			std::vector<VkImageView> CreateImageViews(const std::vector<VkImage>& m_vImages, VkFormat imageFormat, VulkanDevice& device, VkImageAspectFlags aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT, VkImageViewType viewType = VkImageViewType::VK_IMAGE_VIEW_TYPE_2D, uint32_t layerCount = 1, uint32_t baseLayerIndex = 0, uint32_t mipLevels = 1, uint32_t baseMipLevel = 0, VkComponentMapping mapping = VkComponentMapping());
+			VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features, VkPhysicalDevice m_vPhysicalDevice);
+			bool HasStencilComponent(VkFormat m_vFormat);
+			VkFormat FindDepthFormat(VkPhysicalDevice m_vPhysicalDevice);
 			VkDescriptorType GetDescriptorType(ShaderResourceType type);
 			VkShaderStageFlags GetShaderStage(const ShaderType type);
 			PixelFormat GetPixelFormat(VkFormat format);

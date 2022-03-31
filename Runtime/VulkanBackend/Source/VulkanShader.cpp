@@ -21,7 +21,7 @@ namespace Flint
 				return resolvedCode;
 			}
 
-			void ValidateReflection(SpvReflectResult result)
+			void ValidateReflection(Spm_vReflectResult result)
 			{
 				switch (result)
 				{
@@ -84,7 +84,7 @@ namespace Flint
 				}
 			}
 
-			ShaderResourceType GetShaderResourceType(SpvReflectDescriptorType type)
+			ShaderResourceType GetShaderResourceType(Spm_vReflectDescriptorType type)
 			{
 				switch (type)
 				{
@@ -131,7 +131,7 @@ namespace Flint
 				return ShaderResourceType::UniformBuffer;
 			}
 
-			VkDescriptorType GetVkDescriptorType(SpvReflectDescriptorType type)
+			VkDescriptorType GetVkDescriptorType(Spm_vReflectDescriptorType type)
 			{
 				switch (type)
 				{
@@ -179,8 +179,8 @@ namespace Flint
 			}
 		}
 
-		VulkanShader::VulkanShader(VulkanDevice* pDevice, const ShaderType type, const std::filesystem::path& path)
-			: Shader(pDevice, type, path)
+		VulkanShader::VulkanShader(VulkanDevice* m_pDevice, const ShaderType type, const std::filesystem::path& path)
+			: Shader(m_pDevice, type, path)
 		{
 			OPTICK_EVENT();
 
@@ -201,8 +201,8 @@ namespace Flint
 			PerformReflection();
 		}
 
-		VulkanShader::VulkanShader(VulkanDevice* pDevice, const ShaderType type, const std::vector<uint32_t>& code)
-			: Shader(pDevice, type, code), m_ShaderCode(code)
+		VulkanShader::VulkanShader(VulkanDevice* m_pDevice, const ShaderType type, const std::vector<uint32_t>& code)
+			: Shader(m_pDevice, type, code), m_ShaderCode(code)
 		{
 			OPTICK_EVENT();
 
@@ -216,8 +216,8 @@ namespace Flint
 			PerformReflection();
 		}
 
-		VulkanShader::VulkanShader(VulkanDevice* pDevice, const ShaderType type, const std::string& code)
-			: Shader(pDevice, type, code)
+		VulkanShader::VulkanShader(VulkanDevice* m_pDevice, const ShaderType type, const std::string& code)
+			: Shader(m_pDevice, type, code)
 		{
 			OPTICK_EVENT();
 
@@ -294,46 +294,46 @@ namespace Flint
 
 		void VulkanShader::Terminate()
 		{
-			pDevice->GetDeviceTable().vkDestroyShaderModule(pDevice->GetLogicalDevice(), vModule, nullptr);
+			m_pDevice->GetDeviceTable().vkDestroyShaderModule(m_pDevice->GetLogicalDevice(), m_vModule, nullptr);
 			bIsTerminated = true;
 		}
 
 		VkPipelineShaderStageCreateInfo VulkanShader::GetShaderStageCreateInfo() const
 		{
-			VkPipelineShaderStageCreateInfo vCreateInfo = {};
-			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-			vCreateInfo.pNext = VK_NULL_HANDLE;
-			vCreateInfo.flags = 0;
-			vCreateInfo.pSpecializationInfo = VK_NULL_HANDLE;
-			vCreateInfo.pName = "main";
-			vCreateInfo.stage = static_cast<VkShaderStageFlagBits>(vStageFlags);
-			vCreateInfo.module = vModule;
+			VkPipelineShaderStageCreateInfo m_vCreateInfo = {};
+			m_vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+			m_vCreateInfo.pNext = VK_NULL_HANDLE;
+			m_vCreateInfo.flags = 0;
+			m_vCreateInfo.pSpecializationInfo = VK_NULL_HANDLE;
+			m_vCreateInfo.pName = "main";
+			m_vCreateInfo.stage = static_cast<VkShaderStageFlagBits>(m_vStageFlags);
+			m_vCreateInfo.module = m_vModule;
 
-			return vCreateInfo;
+			return m_vCreateInfo;
 		}
 
 		void VulkanShader::PerformReflection()
 		{
 			OPTICK_EVENT();
 
-			SpvReflectShaderModule sShaderModule = {};
+			Spm_vReflectShaderModule sShaderModule = {};
 			uint32_t variableCount = 0;
 
 			//std::vector<uint32_t> shaderCode = m_ShaderCode;
 			std::vector<uint32_t> shaderCode = std::move(Helpers::ResolvePadding(m_ShaderCode));
-			Helpers::ValidateReflection(spvReflectCreateShaderModule(shaderCode.size() * sizeof(uint32_t), shaderCode.data(), &sShaderModule));
+			Helpers::ValidateReflection(spm_vReflectCreateShaderModule(shaderCode.size() * sizeof(uint32_t), shaderCode.data(), &sShaderModule));
 
 			// Resolve shader inputs.
 			{
-				Helpers::ValidateReflection(spvReflectEnumerateInputVariables(&sShaderModule, &variableCount, nullptr));
+				Helpers::ValidateReflection(spm_vReflectEnumerateInputVariables(&sShaderModule, &variableCount, nullptr));
 
-				std::vector<SpvReflectInterfaceVariable*> pInputs(variableCount);
-				Helpers::ValidateReflection(spvReflectEnumerateInputVariables(&sShaderModule, &variableCount, pInputs.data()));
+				std::vector<Spm_vReflectInterfaceVariable*> pInputs(variableCount);
+				Helpers::ValidateReflection(spm_vReflectEnumerateInputVariables(&sShaderModule, &variableCount, pInputs.data()));
 
 				m_InputAttributes.reserve(pInputs.size());
 				for (auto& resource : pInputs)
 				{
-					if (resource->format == SpvReflectFormat::SPV_REFLECT_FORMAT_UNDEFINED)
+					if (resource->format == Spm_vReflectFormat::SPV_REFLECT_FORMAT_UNDEFINED)
 						continue;
 
 					std::string name = "";
@@ -364,15 +364,15 @@ namespace Flint
 
 			// Resolve shader outputs.
 			{
-				Helpers::ValidateReflection(spvReflectEnumerateOutputVariables(&sShaderModule, &variableCount, nullptr));
+				Helpers::ValidateReflection(spm_vReflectEnumerateOutputVariables(&sShaderModule, &variableCount, nullptr));
 
-				std::vector<SpvReflectInterfaceVariable*> pOutputs(variableCount);
-				Helpers::ValidateReflection(spvReflectEnumerateOutputVariables(&sShaderModule, &variableCount, pOutputs.data()));
+				std::vector<Spm_vReflectInterfaceVariable*> pOutputs(variableCount);
+				Helpers::ValidateReflection(spm_vReflectEnumerateOutputVariables(&sShaderModule, &variableCount, pOutputs.data()));
 
 				m_InputAttributes.reserve(pOutputs.size());
 				for (auto& resource : pOutputs)
 				{
-					if (resource->format == SpvReflectFormat::SPV_REFLECT_FORMAT_UNDEFINED)
+					if (resource->format == Spm_vReflectFormat::SPV_REFLECT_FORMAT_UNDEFINED)
 						continue;
 
 					std::string name = "";
@@ -393,67 +393,67 @@ namespace Flint
 
 			// Resolve uniforms.
 			{
-				Helpers::ValidateReflection(spvReflectEnumerateDescriptorBindings(&sShaderModule, &variableCount, nullptr));
+				Helpers::ValidateReflection(spm_vReflectEnumerateDescriptorBindings(&sShaderModule, &variableCount, nullptr));
 
-				std::vector<SpvReflectDescriptorBinding*> pBindings(variableCount);
-				Helpers::ValidateReflection(spvReflectEnumerateDescriptorBindings(&sShaderModule, &variableCount, pBindings.data()));
+				std::vector<Spm_vReflectDescriptorBinding*> pBindings(variableCount);
+				Helpers::ValidateReflection(spm_vReflectEnumerateDescriptorBindings(&sShaderModule, &variableCount, pBindings.data()));
 
-				VkDescriptorSetLayoutBinding vBinding = {};
-				vBinding.stageFlags = vStageFlags;
-				vBinding.pImmutableSamplers = VK_NULL_HANDLE;
+				VkDescriptorSetLayoutBinding m_vBinding = {};
+				m_vBinding.stageFlags = m_vStageFlags;
+				m_vBinding.pImmutableSamplers = VK_NULL_HANDLE;
 
-				VkDescriptorPoolSize vSize = {};
+				VkDescriptorPoolSize m_vSize = {};
 				for (auto& resource : pBindings)
 				{
-					vBinding.descriptorType = Helpers::GetVkDescriptorType(resource->descriptor_type);
-					vBinding.descriptorCount = resource->count;
-					vBinding.binding = resource->binding;
+					m_vBinding.descriptorType = Helpers::GetVkDescriptorType(resource->descriptor_type);
+					m_vBinding.descriptorCount = resource->count;
+					m_vBinding.binding = resource->binding;
 
-					vSize.type = vBinding.descriptorType;
-					vSize.descriptorCount = resource->count;
+					m_vSize.type = m_vBinding.descriptorType;
+					m_vSize.descriptorCount = resource->count;
 
-					m_DescriptorSetMap[resource->set].m_LayoutBindings.emplace_back(vBinding);
-					m_DescriptorSetMap[resource->set].m_PoolSizes.emplace_back(vSize);
+					m_DescriptorSetMap[resource->set].m_LayoutBindings.emplace_back(m_vBinding);
+					m_DescriptorSetMap[resource->set].m_PoolSizes.emplace_back(m_vSize);
 
-					ShaderResourceKey key{ resource->set,vBinding.binding };
+					ShaderResourceKey key{ resource->set,m_vBinding.binding };
 					m_ResourceMap[resource->set][resource->binding] = Helpers::GetShaderResourceType(resource->descriptor_type);
 				}
 			}
 
 			// Resolve push constants.
 			{
-				Helpers::ValidateReflection(spvReflectEnumeratePushConstantBlocks(&sShaderModule, &variableCount, nullptr));
+				Helpers::ValidateReflection(spm_vReflectEnumeratePushConstantBlocks(&sShaderModule, &variableCount, nullptr));
 
-				std::vector<SpvReflectBlockVariable*> pPushConstants(variableCount);
-				Helpers::ValidateReflection(spvReflectEnumeratePushConstantBlocks(&sShaderModule, &variableCount, pPushConstants.data()));
+				std::vector<Spm_vReflectBlockVariable*> pPushConstants(variableCount);
+				Helpers::ValidateReflection(spm_vReflectEnumeratePushConstantBlocks(&sShaderModule, &variableCount, pPushConstants.data()));
 
-				VkPushConstantRange vPushConstantRange = {};
-				vPushConstantRange.stageFlags = vStageFlags;
-				vPushConstantRange.offset = 0;
+				VkPushConstantRange m_vPushConstantRange = {};
+				m_vPushConstantRange.stageFlags = m_vStageFlags;
+				m_vPushConstantRange.offset = 0;
 				for (auto& resource : pPushConstants)
 				{
-					vPushConstantRange.size = resource->size;
-					vPushConstantRange.offset = resource->offset;
-					m_ConstantRanges.emplace_back(vPushConstantRange);
+					m_vPushConstantRange.size = resource->size;
+					m_vPushConstantRange.offset = resource->offset;
+					m_ConstantRanges.emplace_back(m_vPushConstantRange);
 				}
 			}
 		}
 
 		void VulkanShader::ResolveShaderStage()
 		{
-			vStageFlags = Utilities::GetShaderStage(m_Type);
+			m_vStageFlags = Utilities::GetShaderStage(m_Type);
 		}
 
 		void VulkanShader::CreateShaderModule()
 		{
-			VkShaderModuleCreateInfo vCreateInfo = {};
-			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-			vCreateInfo.pNext = VK_NULL_HANDLE;
-			vCreateInfo.flags = 0;
-			vCreateInfo.codeSize = m_ShaderCode.size();
-			vCreateInfo.pCode = m_ShaderCode.data();
+			VkShaderModuleCreateInfo m_vCreateInfo = {};
+			m_vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+			m_vCreateInfo.pNext = VK_NULL_HANDLE;
+			m_vCreateInfo.flags = 0;
+			m_vCreateInfo.codeSize = m_ShaderCode.size();
+			m_vCreateInfo.pCode = m_ShaderCode.data();
 
-			FLINT_VK_ASSERT(pDevice->GetDeviceTable().vkCreateShaderModule(pDevice->GetLogicalDevice(), &vCreateInfo, nullptr, &vModule));
+			FLINT_VK_ASSERT(m_pDevice->GetDeviceTable().vkCreateShaderModule(m_pDevice->GetLogicalDevice(), &m_vCreateInfo, nullptr, &m_vModule));
 		}
 	}
 }

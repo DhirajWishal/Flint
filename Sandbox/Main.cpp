@@ -11,6 +11,7 @@ int main()
 	try
 	{
 		auto pGraphicsEngine = std::make_unique<Flint::GraphicsEngine>(true);
+		auto pGraphicsReactor = pGraphicsEngine->CreateReactor();
 	}
 	catch (...)
 	{
@@ -21,34 +22,36 @@ int main()
 
 /*
 
-class GraphicsObject { ... };
+class GraphicsObject { ... }; 
 
 ...
 
 auto pGraphicsEngine = new Flint::GraphicsEngine(enableValidation);
 auto pGraphicsDisplay = pGraphicsEngine->CreateDisplay(extent, title);
-auto pGraphicsDevice = pGraphicsEngine->CreateDevice(deviceSpecs);
+auto pGraphicsReactor = pGraphicsEngine->CreateDevice(deviceSpecs);
 
-auto pCamera = pGraphicsDevice->CreateCamera<MonoCamera>(startingPos);
+GraphicsReactor();
+
+auto pCamera = pGraphicsReactor->CreateCamera<MonoCamera>(startingPos);
 
 pCamera->MoveUp();
 pCamera->MoveDown();
 ...
 
-auto pTerrain = pGraphicsDevice->CreateObject<Terrain>("terrain", ...);
+auto pTerrain = pGraphicsReactor->CreateObject<Terrain>("terrain", ...);
 pTerrain->BindResource(CameraSetIndex, cameraLocation, pCamera);
 pTerrain->BindResource(textureSet, textureLocation, pGraphicsEngine->LoadTexture("tree_texture.png"));
 pTerrain->Show();
 pTerrain->Hide();
 
-auto pTree = pGraphicsDevice->CreateObject<Tree>("tree", ...);
+auto pTree = pGraphicsReactor->CreateObject<Tree>("tree", ...);
 auto pSecondTree = pTree->Instance(location);
 
-auto pTreeCopy = pGraphicsDevice->CreateObjectFrom(pTree, "copy", ...);
+auto pTreeCopy = pGraphicsReactor->CreateObjectFrom(pTree, "copy", ...);
 pTreeCopy->Show(pSecondTree);	// This will hide the pSecondTree and show the pTreeCopy in that location (where the pSecondTree was).
 
-auto pShadowNode = pGraphicsDevice->CreateProcessingNode(extent, bufferCount);
-auto pDrawNode = pGraphcisDevice->CreateProcessingNode(extent, bufferCount);
+auto pShadowNode = pGraphicsReactor->CreateProcessingNode(extent, bufferCount);
+auto pDrawNode = pGraphicsReactor->CreateProcessingNode(extent, bufferCount);
 
 auto pTarrainInstance = pShadowNode->ToDrawQueue(pTerrain);
 auto pTreeInstance = pShadowNode->ToDrawQueue(pTree);

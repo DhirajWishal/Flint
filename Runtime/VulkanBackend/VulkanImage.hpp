@@ -23,8 +23,8 @@ namespace Flint
 			virtual std::unique_ptr<VulkanImageView> CreateImageView(const uint32_t baseLayerIndex, const uint32_t layerCount, const uint32_t baseMipLevel, const uint32_t mipLevels, const ImageUsage usage) override;
 			virtual void Terminate() override;
 
-			void CopyFromImage(VkCommandBuffer vCommandBuffer, VkImage vSrcImage, VkImageLayout vSrcLayout, VkOffset3D srcOffset, VkOffset3D dstOffset, VkImageSubresourceLayers subresourceLayers);
-			void CopyFromImage(VkImage vSrcImage, VkImageLayout vSrcLayout, VkOffset3D srcOffset, VkOffset3D dstOffset, VkImageSubresourceLayers subresourceLayers);
+			void CopyFromImage(VkCommandBuffer m_vCommandBuffer, VkImage m_vSrcImage, VkImageLayout m_vSrcLayout, VkOffset3D srcOffset, VkOffset3D dstOffset, VkImageSubresourceLayers subresourceLayers);
+			void CopyFromImage(VkImage m_vSrcImage, VkImageLayout m_vSrcLayout, VkOffset3D srcOffset, VkOffset3D dstOffset, VkImageSubresourceLayers subresourceLayers);
 
 		public:
 			virtual void Recreate(const FBox2D& extent);
@@ -42,11 +42,11 @@ namespace Flint
 
 		public:
 			VkImageView CreateLayerBasedImageView(uint32_t layerNumber) const;
-			void SetImageLayout(VkCommandBuffer vCommandBuffer, VkImageLayout vNewLayout, uint32_t layerCount = 1, uint32_t layerIndex = 0, const uint32_t mipLevels = 1) const;
-			void SetImageLayout(VkImageLayout vNewLayout) const;
-			void SetImageLayoutManual(VkCommandBuffer vCommandBuffer, VkImageLayout vNewLayout) const;
+			void SetImageLayout(VkCommandBuffer m_vCommandBuffer, VkImageLayout m_vNewLayout, uint32_t layerCount = 1, uint32_t layerIndex = 0, const uint32_t mipLevels = 1) const;
+			void SetImageLayout(VkImageLayout m_vNewLayout) const;
+			void SetImageLayoutManual(VkCommandBuffer m_vCommandBuffer, VkImageLayout m_vNewLayout) const;
 
-			const VkImage GetImage() const { return vImage; }
+			const VkImage GetImage() const { return m_vImage; }
 
 		private:
 			void CreateImage();
@@ -58,12 +58,12 @@ namespace Flint
 			void Initialize(const void* pImageData);
 
 		private:
-			VkImage vImage = VK_NULL_HANDLE;
-			VkImageView vImageView = VK_NULL_HANDLE;
+			VkImage m_vImage = VK_NULL_HANDLE;
+			VkImageView m_vImageView = VK_NULL_HANDLE;
 
 			VmaAllocation vmaAllocation = {};
 
-			mutable VkImageLayout vCurrentLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+			mutable VkImageLayout m_vCurrentLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 		};
 	}
 }

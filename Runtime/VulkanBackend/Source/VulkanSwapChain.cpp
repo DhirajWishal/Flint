@@ -37,22 +37,22 @@ namespace Flint
 			}
 		}
 
-		VulkanSwapChain::VulkanSwapChain(VulkanDevice* pDevice, VulkanDisplay* pDisplay, uint32_t imageCount, const SwapChainPresentMode presentMode)
-			: SwapChain(pDevice, pDisplay, imageCount, presentMode)
+		VulkanSwapChain::VulkanSwapChain(VulkanDevice* m_pDevice, VulkanDisplay* pDisplay, uint32_t imageCount, const SwapChainPresentMode presentMode)
+			: SwapChain(m_pDevice, pDisplay, imageCount, presentMode)
 		{
 			OPTICK_EVENT();
 
 			CreateSwapChain();
 			CreateSyncObjects();
 
-			vPresentInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-			vPresentInfo.pNext = VK_NULL_HANDLE;
-			vPresentInfo.pResults = VK_NULL_HANDLE;
-			vPresentInfo.swapchainCount = 1;
-			vPresentInfo.pSwapchains = &vSwapChain;
-			vPresentInfo.waitSemaphoreCount = 1;
-			vPresentInfo.pWaitSemaphores = &vCurrentRenderFinishedSemaphore;
-			vPresentInfo.pImageIndices = &m_ImageIndex;
+			m_vPresentInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+			m_vPresentInfo.pNext = VK_NULL_HANDLE;
+			m_vPresentInfo.pResults = VK_NULL_HANDLE;
+			m_vPresentInfo.swapchainCount = 1;
+			m_vPresentInfo.pSwapchains = &m_vSwapChain;
+			m_vPresentInfo.waitSemaphoreCount = 1;
+			m_vPresentInfo.pWaitSemaphores = &m_vCurrentRenderFinishedSemaphore;
+			m_vPresentInfo.pImageIndices = &m_ImageIndex;
 		}
 
 		void VulkanSwapChain::Recreate()
@@ -66,7 +66,7 @@ namespace Flint
 
 			CreateSwapChain();
 
-			vPresentInfo.pSwapchains = &vSwapChain;
+			m_vPresentInfo.pSwapchains = &m_vSwapChain;
 			bShouldRecreate = false;
 			m_ImageIndex = 0;
 		}
@@ -77,14 +77,14 @@ namespace Flint
 
 			NextImageInfo imageInfo = {};
 
-			vCurrentInFlightSemaphore = vInFlightSemaphores[frameIndex];
-			VkResult result = pDevice->StaticCast<VulkanDevice>().GetDeviceTable().vkAcquireNextImageKHR(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), vSwapChain, std::numeric_limits<uint64_t>::max(), vCurrentInFlightSemaphore, VK_NULL_HANDLE, &m_ImageIndex);
+			m_vCurrentInFlightSemaphore = m_vInFlightSemaphores[frameIndex];
+			VkResult result = m_pDevice->StaticCast<VulkanDevice>().GetDeviceTable().vkAcquireNextImageKHR(m_pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), m_vSwapChain, std::numeric_limits<uint64_t>::max(), m_vCurrentInFlightSemaphore, VK_NULL_HANDLE, &m_ImageIndex);
 			if (result == VkResult::VK_ERROR_OUT_OF_DATE_KHR || result == VkResult::VK_SUBOPTIMAL_KHR)
 				imageInfo.bShouldRecreate = true;
 
 			else FLINT_VK_ASSERT(result);
 
-			vCurrentRenderFinishedSemaphore = vRenderFinishedSemaphores[m_ImageIndex];
+			m_vCurrentRenderFinishedSemaphore = m_vRenderFinishedSemaphores[m_ImageIndex];
 			imageInfo.m_Index = m_ImageIndex;
 			return imageInfo;
 		}
@@ -99,7 +99,7 @@ namespace Flint
 
 		VkPresentInfoKHR* VulkanSwapChain::PrepareToPresent()
 		{
-			return &vPresentInfo;
+			return &m_vPresentInfo;
 		}
 
 		VkFormat VulkanSwapChain::GetImageFormat() const
@@ -109,18 +109,18 @@ namespace Flint
 
 		VkAttachmentDescription VulkanSwapChain::GetAttachmentDescription() const
 		{
-			VkAttachmentDescription vDesc = {};
-			vDesc.flags = 0;
-			vDesc.format = GetImageFormat();
-			vDesc.samples = VK_SAMPLE_COUNT_1_BIT;
-			vDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-			vDesc.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-			vDesc.loadOp = bShouldClear ? VkAttachmentLoadOp::VK_ATTACHMENT_LOAD_OP_CLEAR : VkAttachmentLoadOp::VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-			vDesc.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-			vDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-			vDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+			VkAttachmentDescription m_vDesc = {};
+			m_vDesc.flags = 0;
+			m_vDesc.format = GetImageFormat();
+			m_vDesc.samples = VK_SAMPLE_COUNT_1_BIT;
+			m_vDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+			m_vDesc.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+			m_vDesc.loadOp = bShouldClear ? VkAttachmentLoadOp::VK_ATTACHMENT_LOAD_OP_CLEAR : VkAttachmentLoadOp::VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+			m_vDesc.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+			m_vDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+			m_vDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 
-			return vDesc;
+			return m_vDesc;
 		}
 
 		VkImageLayout VulkanSwapChain::GetAttachmentLayout() const
@@ -128,44 +128,44 @@ namespace Flint
 			return VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 		}
 
-		void VulkanSwapChain::CopyFromImage(VkCommandBuffer vCommandBuffer, const VkImage vSrcImage, const VkImageLayout vSrcLayout, VkOffset3D srcOffset, VkOffset3D dstOffset, const uint32_t index, const VkImageSubresourceLayers vSrcSubresourceLayer)
+		void VulkanSwapChain::CopyFromImage(VkCommandBuffer m_vCommandBuffer, const VkImage m_vSrcImage, const VkImageLayout m_vSrcLayout, VkOffset3D srcOffset, VkOffset3D dstOffset, const uint32_t index, const VkImageSubresourceLayers m_vSrcSubresourceLayer)
 		{
-			VkImageCopy vImageCopy = {};
-			vImageCopy.extent.width = m_Extent.m_Width;
-			vImageCopy.extent.height = m_Extent.m_Height;
-			vImageCopy.extent.depth = 1;
-			vImageCopy.srcOffset = srcOffset;
-			vImageCopy.dstOffset = dstOffset;
-			vImageCopy.srcSubresource = vSrcSubresourceLayer;
+			VkImageCopy m_vImageCopy = {};
+			m_vImageCopy.extent.width = m_Extent.m_Width;
+			m_vImageCopy.extent.height = m_Extent.m_Height;
+			m_vImageCopy.extent.depth = 1;
+			m_vImageCopy.srcOffset = srcOffset;
+			m_vImageCopy.dstOffset = dstOffset;
+			m_vImageCopy.srcSubresource = m_vSrcSubresourceLayer;
 
-			vImageCopy.dstSubresource.aspectMask = VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
-			vImageCopy.dstSubresource.baseArrayLayer = 0;
-			vImageCopy.dstSubresource.layerCount = 1;
-			vImageCopy.dstSubresource.mipLevel = 0;
+			m_vImageCopy.dstSubresource.aspectMask = VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
+			m_vImageCopy.dstSubresource.baseArrayLayer = 0;
+			m_vImageCopy.dstSubresource.layerCount = 1;
+			m_vImageCopy.dstSubresource.mipLevel = 0;
 
-			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-			const auto vImage = vImages[index];
-			const auto vFormat = Utilities::GetVulkanFormat(m_PixelForamt);
+			VulkanDevice& m_vDevice = m_pDevice->StaticCast<VulkanDevice>();
+			const auto m_vImage = m_vImages[index];
+			const auto m_vFormat = Utilities::GetVulkanFormat(m_PixelForamt);
 
-			vDevice.SetImageLayout(vCommandBuffer, vImage, VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED, VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, vFormat);
-			vDevice.GetDeviceTable().vkCmdCopyImage(vCommandBuffer, vSrcImage, vSrcLayout, vImage, VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &vImageCopy);
-			vDevice.SetImageLayout(vCommandBuffer, vImage, VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VkImageLayout::VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, vFormat);
-			//vDevice.SetImageLayout(vCommandBuffer, vImage, VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VkImageLayout::VK_IMAGE_LAYOUT_GENERAL, vFormat);
+			m_vDevice.SetImageLayout(m_vCommandBuffer, m_vImage, VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED, VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, m_vFormat);
+			m_vDevice.GetDeviceTable().vkCmdCopyImage(m_vCommandBuffer, m_vSrcImage, m_vSrcLayout, m_vImage, VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &m_vImageCopy);
+			m_vDevice.SetImageLayout(m_vCommandBuffer, m_vImage, VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VkImageLayout::VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, m_vFormat);
+			//m_vDevice.SetImageLayout(m_vCommandBuffer, m_vImage, VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VkImageLayout::VK_IMAGE_LAYOUT_GENERAL, m_vFormat);
 		}
 
 		void VulkanSwapChain::CreateSwapChain()
 		{
 			OPTICK_EVENT();
 
-			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
-			auto& vDisplay = pDisplay->StaticCast<VulkanDisplay>();
+			auto& m_vDevice = m_pDevice->StaticCast<VulkanDevice>();
+			auto& m_vDisplay = pDisplay->StaticCast<VulkanDisplay>();
 
-			SwapChainSupportDetails vSupport = SwapChainSupportDetails::Query(vDevice.GetPhysicalDevice(), vDisplay.GetSurface());
-			VkSurfaceFormatKHR surfaceFormat = vDisplay.ChooseSurfaceFormat(vSupport.m_Formats);
+			SwapChainSupportDetails m_vSupport = SwapChainSupportDetails::Query(m_vDevice.GetPhysicalDevice(), m_vDisplay.GetSurface());
+			VkSurfaceFormatKHR surfaceFormat = m_vDisplay.ChooseSurfaceFormat(m_vSupport.m_Formats);
 
 			bool bPresentModeAvailable = false;
 			VkPresentModeKHR presentMode = Helpers::GetPresentMode(m_PresentMode);
-			for (const auto availablePresentMode : vSupport.m_PresentModes)
+			for (const auto availablePresentMode : m_vSupport.m_PresentModes)
 			{
 				if (availablePresentMode == presentMode)
 				{
@@ -177,9 +177,9 @@ namespace Flint
 			if (!bPresentModeAvailable)
 				throw backend_error("Requested swap chain present mode is not supported!");
 
-			auto vCapabilities = vDisplay.GetSurfaceCapabilities(vDevice);
+			auto m_vCapabilities = m_vDisplay.GetSurfaceCapabilities(m_vDevice);
 
-			VkCompositeAlphaFlagBitsKHR surfaceComposite = static_cast<VkCompositeAlphaFlagBitsKHR>(vCapabilities.supportedCompositeAlpha);
+			VkCompositeAlphaFlagBitsKHR surfaceComposite = static_cast<VkCompositeAlphaFlagBitsKHR>(m_vCapabilities.supportedCompositeAlpha);
 			surfaceComposite = (surfaceComposite & VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR)
 				? VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR
 				: (surfaceComposite & VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR)
@@ -190,106 +190,106 @@ namespace Flint
 
 			m_PixelForamt = Utilities::GetPixelFormat(surfaceFormat.format);
 
-			VkSwapchainCreateInfoKHR vCreateInfo = {};
-			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-			vCreateInfo.pNext = VK_NULL_HANDLE;
-			vCreateInfo.flags = 0;
-			vCreateInfo.surface = vDisplay.GetSurface();
-			vCreateInfo.minImageCount = m_ImageCount;
-			vCreateInfo.imageFormat = surfaceFormat.format;
-			vCreateInfo.imageColorSpace = surfaceFormat.colorSpace;
-			vCreateInfo.imageExtent = { static_cast<uint32_t>(m_Extent.m_Width), static_cast<uint32_t>(m_Extent.m_Height) };
-			vCreateInfo.imageArrayLayers = 1;
-			vCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-			vCreateInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-			vCreateInfo.queueFamilyIndexCount = 0;
-			vCreateInfo.pQueueFamilyIndices = nullptr;
+			VkSwapchainCreateInfoKHR m_vCreateInfo = {};
+			m_vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+			m_vCreateInfo.pNext = VK_NULL_HANDLE;
+			m_vCreateInfo.flags = 0;
+			m_vCreateInfo.surface = m_vDisplay.GetSurface();
+			m_vCreateInfo.minImageCount = m_ImageCount;
+			m_vCreateInfo.imageFormat = surfaceFormat.format;
+			m_vCreateInfo.imageColorSpace = surfaceFormat.colorSpace;
+			m_vCreateInfo.imageExtent = { static_cast<uint32_t>(m_Extent.m_Width), static_cast<uint32_t>(m_Extent.m_Height) };
+			m_vCreateInfo.imageArrayLayers = 1;
+			m_vCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+			m_vCreateInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+			m_vCreateInfo.queueFamilyIndexCount = 0;
+			m_vCreateInfo.pQueueFamilyIndices = nullptr;
 
 			const uint32_t queueFamilyindices[2] = {
-				vDevice.GetQueue().m_GraphicsFamily.value(),
-				vDevice.GetQueue().m_TransferFamily.value()
+				m_vDevice.GetQueue().m_GraphicsFamily.value(),
+				m_vDevice.GetQueue().m_TransferFamily.value()
 			};
 
-			if (vDevice.GetQueue().m_GraphicsFamily != vDevice.GetQueue().m_TransferFamily)
+			if (m_vDevice.GetQueue().m_GraphicsFamily != m_vDevice.GetQueue().m_TransferFamily)
 			{
-				vCreateInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
-				vCreateInfo.queueFamilyIndexCount = 2;
-				vCreateInfo.pQueueFamilyIndices = queueFamilyindices;
+				m_vCreateInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
+				m_vCreateInfo.queueFamilyIndexCount = 2;
+				m_vCreateInfo.pQueueFamilyIndices = queueFamilyindices;
 			}
 
-			vCreateInfo.preTransform = vSupport.m_Capabilities.currentTransform;
-			vCreateInfo.compositeAlpha = surfaceComposite;
-			vCreateInfo.presentMode = presentMode;
-			vCreateInfo.clipped = VK_TRUE;
-			vCreateInfo.oldSwapchain = vSwapChain;
+			m_vCreateInfo.preTransform = m_vSupport.m_Capabilities.currentTransform;
+			m_vCreateInfo.compositeAlpha = surfaceComposite;
+			m_vCreateInfo.presentMode = presentMode;
+			m_vCreateInfo.clipped = VK_TRUE;
+			m_vCreateInfo.oldSwapchain = m_vSwapChain;
 
-			if (!vDevice.IsDisplayCompatible(pDisplay))
+			if (!m_vDevice.IsDisplayCompatible(pDisplay))
 				throw std::runtime_error("Submitted device and display are incompatible!");
 
-			VkSwapchainKHR vNewSwapChain = VK_NULL_HANDLE;
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateSwapchainKHR(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vNewSwapChain));
+			VkSwapchainKHR m_vNewSwapChain = VK_NULL_HANDLE;
+			FLINT_VK_ASSERT(m_vDevice.GetDeviceTable().vkCreateSwapchainKHR(m_vDevice.GetLogicalDevice(), &m_vCreateInfo, nullptr, &m_vNewSwapChain));
 
-			if (vSwapChain != VK_NULL_HANDLE) DestroySwapChain();
-			vSwapChain = vNewSwapChain;
+			if (m_vSwapChain != VK_NULL_HANDLE) DestroySwapChain();
+			m_vSwapChain = m_vNewSwapChain;
 
-			vCreateInfo.minImageCount = 0;
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkGetSwapchainImagesKHR(vDevice.GetLogicalDevice(), vSwapChain, &vCreateInfo.minImageCount, nullptr));
-			vImages.resize(vCreateInfo.minImageCount);
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkGetSwapchainImagesKHR(vDevice.GetLogicalDevice(), vSwapChain, &vCreateInfo.minImageCount, vImages.data()));
+			m_vCreateInfo.minImageCount = 0;
+			FLINT_VK_ASSERT(m_vDevice.GetDeviceTable().vkGetSwapchainImagesKHR(m_vDevice.GetLogicalDevice(), m_vSwapChain, &m_vCreateInfo.minImageCount, nullptr));
+			m_vImages.resize(m_vCreateInfo.minImageCount);
+			FLINT_VK_ASSERT(m_vDevice.GetDeviceTable().vkGetSwapchainImagesKHR(m_vDevice.GetLogicalDevice(), m_vSwapChain, &m_vCreateInfo.minImageCount, m_vImages.data()));
 
-			vImageViews = std::move(Utilities::CreateImageViews(vImages, vCreateInfo.imageFormat, vDevice));
+			m_vImageViews = std::move(Utilities::CreateImageViews(m_vImages, m_vCreateInfo.imageFormat, m_vDevice));
 		}
 
 		void VulkanSwapChain::DestroySwapChain()
 		{
-			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
+			auto& m_vDevice = m_pDevice->StaticCast<VulkanDevice>();
 
 			// Terminate the image views.
-			for (auto itr = vImageViews.begin(); itr != vImageViews.end(); itr++)
-				vDevice.GetDeviceTable().vkDestroyImageView(vDevice.GetLogicalDevice(), *itr, nullptr);
+			for (auto itr = m_vImageViews.begin(); itr != m_vImageViews.end(); itr++)
+				m_vDevice.GetDeviceTable().vkDestroyImageView(m_vDevice.GetLogicalDevice(), *itr, nullptr);
 
 			// Terminate the Swap Chain.
-			vDevice.GetDeviceTable().vkDestroySwapchainKHR(vDevice.GetLogicalDevice(), vSwapChain, nullptr);
+			m_vDevice.GetDeviceTable().vkDestroySwapchainKHR(m_vDevice.GetLogicalDevice(), m_vSwapChain, nullptr);
 
-			vSwapChain = VK_NULL_HANDLE;
-			vImages.clear();
-			vImageViews.clear();
+			m_vSwapChain = VK_NULL_HANDLE;
+			m_vImages.clear();
+			m_vImageViews.clear();
 		}
 
 		void VulkanSwapChain::CreateSyncObjects()
 		{
 			OPTICK_EVENT();
 
-			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
+			auto& m_vDevice = m_pDevice->StaticCast<VulkanDevice>();
 
-			VkSemaphoreCreateInfo vCreateInfo = {};
-			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-			vCreateInfo.pNext = VK_NULL_HANDLE;
-			vCreateInfo.flags = 0;
+			VkSemaphoreCreateInfo m_vCreateInfo = {};
+			m_vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+			m_vCreateInfo.pNext = VK_NULL_HANDLE;
+			m_vCreateInfo.flags = 0;
 
-			vInFlightSemaphores.reserve(vImages.size());
-			vRenderFinishedSemaphores.reserve(vImages.size());
+			m_vInFlightSemaphores.reserve(m_vImages.size());
+			m_vRenderFinishedSemaphores.reserve(m_vImages.size());
 
-			for (uint64_t i = 0; i < vImages.size(); i++)
+			for (uint64_t i = 0; i < m_vImages.size(); i++)
 			{
-				VkSemaphore vSemaphore = VK_NULL_HANDLE;
+				VkSemaphore m_vSemaphore = VK_NULL_HANDLE;
 
-				FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateSemaphore(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vSemaphore));
-				vInFlightSemaphores.emplace_back(vSemaphore);
+				FLINT_VK_ASSERT(m_vDevice.GetDeviceTable().vkCreateSemaphore(m_vDevice.GetLogicalDevice(), &m_vCreateInfo, nullptr, &m_vSemaphore));
+				m_vInFlightSemaphores.emplace_back(m_vSemaphore);
 
-				FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateSemaphore(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vSemaphore));
-				vRenderFinishedSemaphores.emplace_back(vSemaphore);
+				FLINT_VK_ASSERT(m_vDevice.GetDeviceTable().vkCreateSemaphore(m_vDevice.GetLogicalDevice(), &m_vCreateInfo, nullptr, &m_vSemaphore));
+				m_vRenderFinishedSemaphores.emplace_back(m_vSemaphore);
 			}
 		}
 
 		void VulkanSwapChain::DestroySyncObjects()
 		{
-			auto& vDevice = pDevice->StaticCast<VulkanDevice>();
+			auto& m_vDevice = m_pDevice->StaticCast<VulkanDevice>();
 
-			for (uint64_t i = 0; i < vInFlightSemaphores.size(); i++)
+			for (uint64_t i = 0; i < m_vInFlightSemaphores.size(); i++)
 			{
-				vDevice.GetDeviceTable().vkDestroySemaphore(vDevice.GetLogicalDevice(), vInFlightSemaphores[i], nullptr);
-				vDevice.GetDeviceTable().vkDestroySemaphore(vDevice.GetLogicalDevice(), vRenderFinishedSemaphores[i], nullptr);
+				m_vDevice.GetDeviceTable().vkDestroySemaphore(m_vDevice.GetLogicalDevice(), m_vInFlightSemaphores[i], nullptr);
+				m_vDevice.GetDeviceTable().vkDestroySemaphore(m_vDevice.GetLogicalDevice(), m_vRenderFinishedSemaphores[i], nullptr);
 			}
 		}
 	}

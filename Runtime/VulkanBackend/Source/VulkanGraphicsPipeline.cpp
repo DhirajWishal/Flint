@@ -538,12 +538,12 @@ namespace Flint
 			}
 		}
 
-		VulkanGraphicsPipeline::VulkanGraphicsPipeline(VulkanDevice* pDevice, const std::string& pipelineName, const VulkanScreenBoundRenderTarget* pScreenBoundRenderTarget, std::unique_ptr<VulkanShader>&& pVertexShader, std::unique_ptr<VulkanShader>&& pTessellationControlShader, std::unique_ptr<VulkanShader>&& pTessellationEvaluationShader, std::unique_ptr<VulkanShader>&& pGeometryShader, std::unique_ptr<VulkanShader>&& pFragmentShader, const GraphicsPipelineSpecification& specification)
-			: GraphicsPipeline(pDevice, pipelineName, pScreenBoundRenderTarget, std::move(pVertexShader), std::move(pTessellationControlShader), std::move(pTessellationEvaluationShader), std::move(pGeometryShader), std::move(pFragmentShader), specification)
+		VulkanGraphicsPipeline::VulkanGraphicsPipeline(VulkanDevice* m_pDevice, const std::string& pipelineName, const VulkanScreenBoundRenderTarget* pScreenBoundRenderTarget, std::unique_ptr<VulkanShader>&& pVertexShader, std::unique_ptr<VulkanShader>&& pTessellationControlShader, std::unique_ptr<VulkanShader>&& pTessellationEvaluationShader, std::unique_ptr<VulkanShader>&& pGeometryShader, std::unique_ptr<VulkanShader>&& pFragmentShader, const GraphicsPipelineSpecification& specification)
+			: GraphicsPipeline(m_pDevice, pipelineName, pScreenBoundRenderTarget, std::move(pVertexShader), std::move(pTessellationControlShader), std::move(pTessellationEvaluationShader), std::move(pGeometryShader), std::move(pFragmentShader), specification)
 		{
 			OPTICK_EVENT();
 
-			vRenderPass = pScreenBoundRenderTarget->GetRenderPass();
+			m_vRenderPass = pScreenBoundRenderTarget->GetRenderPass();
 
 			SetupDefaults();
 			CreatePipelineLayout();
@@ -551,12 +551,12 @@ namespace Flint
 			CreatePipeline();
 		}
 
-		VulkanGraphicsPipeline::VulkanGraphicsPipeline(VulkanDevice* pDevice, const std::string& pipelineName, const VulkanOffScreenRenderTarget* pOffScreenRenderTarget, std::unique_ptr<VulkanShader>&& pVertexShader, std::unique_ptr<VulkanShader>&& pTessellationControlShader, std::unique_ptr<VulkanShader>&& pTessellationEvaluationShader, std::unique_ptr<VulkanShader>&& pGeometryShader, std::unique_ptr<VulkanShader>&& pFragmentShader, const GraphicsPipelineSpecification& specification)
-			: GraphicsPipeline(pDevice, pipelineName, pOffScreenRenderTarget, std::move(pVertexShader), std::move(pTessellationControlShader), std::move(pTessellationEvaluationShader), std::move(pGeometryShader), std::move(pFragmentShader), specification)
+		VulkanGraphicsPipeline::VulkanGraphicsPipeline(VulkanDevice* m_pDevice, const std::string& pipelineName, const VulkanOffScreenRenderTarget* pOffScreenRenderTarget, std::unique_ptr<VulkanShader>&& pVertexShader, std::unique_ptr<VulkanShader>&& pTessellationControlShader, std::unique_ptr<VulkanShader>&& pTessellationEvaluationShader, std::unique_ptr<VulkanShader>&& pGeometryShader, std::unique_ptr<VulkanShader>&& pFragmentShader, const GraphicsPipelineSpecification& specification)
+			: GraphicsPipeline(m_pDevice, pipelineName, pOffScreenRenderTarget, std::move(pVertexShader), std::move(pTessellationControlShader), std::move(pTessellationEvaluationShader), std::move(pGeometryShader), std::move(pFragmentShader), specification)
 		{
 			OPTICK_EVENT();
 
-			vRenderPass = pOffScreenRenderTarget->GetRenderPass();
+			m_vRenderPass = pOffScreenRenderTarget->GetRenderPass();
 
 			SetupDefaults();
 			CreatePipelineLayout();
@@ -566,17 +566,17 @@ namespace Flint
 
 		void VulkanGraphicsPipeline::ReloadShaders()
 		{
-			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
+			VulkanDevice& m_vDevice = m_pDevice->StaticCast<VulkanDevice>();
 
-			vDevice.GetDeviceTable().vkDestroyPipeline(vDevice.GetLogicalDevice(), vPipeline, nullptr);
+			m_vDevice.GetDeviceTable().vkDestroyPipeline(m_vDevice.GetLogicalDevice(), m_vPipeline, nullptr);
 
-			for (const auto vLayout : vDescriptorSetLayouts)
-				vDevice.GetDeviceTable().vkDestroyDescriptorSetLayout(vDevice.GetLogicalDevice(), vLayout, nullptr);
+			for (const auto m_vLayout : m_vDescriptorSetLayouts)
+				m_vDevice.GetDeviceTable().vkDestroyDescriptorSetLayout(m_vDevice.GetLogicalDevice(), m_vLayout, nullptr);
 
-			vDescriptorSetLayouts.clear();
+			m_vDescriptorSetLayouts.clear();
 			pResourcePackagers.clear();
 
-			vDevice.GetDeviceTable().vkDestroyPipelineLayout(vDevice.GetLogicalDevice(), vPipelineLayout, nullptr);
+			m_vDevice.GetDeviceTable().vkDestroyPipelineLayout(m_vDevice.GetLogicalDevice(), m_vPipelineLayout, nullptr);
 
 			bShouldPrepareResources = true;
 
@@ -591,41 +591,41 @@ namespace Flint
 		{
 			OPTICK_EVENT();
 
-			vRenderPass = pScreenBoundRenderTarget->GetRenderPass();
+			m_vRenderPass = pScreenBoundRenderTarget->GetRenderPass();
 
-			vkDestroyPipeline(pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), vPipeline, nullptr);
+			vkDestroyPipeline(m_pDevice->StaticCast<VulkanDevice>().GetLogicalDevice(), m_vPipeline, nullptr);
 			CreatePipeline();
 		}
 
 		void VulkanGraphicsPipeline::CreateResourcePackagers()
 		{
-			for (uint32_t i = 0; i < vDescriptorSetLayouts.size(); i++)
-				pResourcePackagers.emplace_back(std::make_shared<VulkanResourcePackager>(i, this, vDescriptorSetLayouts[i]));
+			for (uint32_t i = 0; i < m_vDescriptorSetLayouts.size(); i++)
+				pResourcePackagers.emplace_back(std::make_shared<VulkanResourcePackager>(i, this, m_vDescriptorSetLayouts[i]));
 		}
 
 		void VulkanGraphicsPipeline::Terminate()
 		{
-			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
+			VulkanDevice& m_vDevice = m_pDevice->StaticCast<VulkanDevice>();
 
 			// Write cache data.
 			uint64_t cacheSize = 0;
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkGetPipelineCacheData(vDevice.GetLogicalDevice(), vPipelineCache, &cacheSize, nullptr));
+			FLINT_VK_ASSERT(m_vDevice.GetDeviceTable().vkGetPipelineCacheData(m_vDevice.GetLogicalDevice(), m_vPipelineCache, &cacheSize, nullptr));
 
 			unsigned char* pDataStore = new unsigned char[cacheSize];
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkGetPipelineCacheData(vDevice.GetLogicalDevice(), vPipelineCache, &cacheSize, pDataStore));
+			FLINT_VK_ASSERT(m_vDevice.GetDeviceTable().vkGetPipelineCacheData(m_vDevice.GetLogicalDevice(), m_vPipelineCache, &cacheSize, pDataStore));
 
 			WriteDataToCacheFile(cacheSize, pDataStore);
 			delete[] pDataStore;
 
 			// Delete pipeline objects.
-			vDevice.GetDeviceTable().vkDestroyPipeline(vDevice.GetLogicalDevice(), vPipeline, nullptr);
-			vDevice.GetDeviceTable().vkDestroyPipelineLayout(vDevice.GetLogicalDevice(), vPipelineLayout, nullptr);
-			vDevice.GetDeviceTable().vkDestroyPipelineCache(vDevice.GetLogicalDevice(), vPipelineCache, nullptr);
+			m_vDevice.GetDeviceTable().vkDestroyPipeline(m_vDevice.GetLogicalDevice(), m_vPipeline, nullptr);
+			m_vDevice.GetDeviceTable().vkDestroyPipelineLayout(m_vDevice.GetLogicalDevice(), m_vPipelineLayout, nullptr);
+			m_vDevice.GetDeviceTable().vkDestroyPipelineCache(m_vDevice.GetLogicalDevice(), m_vPipelineCache, nullptr);
 
-			for (const auto vLayout : vDescriptorSetLayouts)
-				vDevice.GetDeviceTable().vkDestroyDescriptorSetLayout(vDevice.GetLogicalDevice(), vLayout, nullptr);
+			for (const auto m_vLayout : m_vDescriptorSetLayouts)
+				m_vDevice.GetDeviceTable().vkDestroyDescriptorSetLayout(m_vDevice.GetLogicalDevice(), m_vLayout, nullptr);
 
-			vDescriptorSetLayouts.clear();
+			m_vDescriptorSetLayouts.clear();
 			pResourcePackagers.clear();
 
 			bIsTerminated = true;
@@ -634,138 +634,138 @@ namespace Flint
 		void VulkanGraphicsPipeline::SetupDefaults()
 		{
 			// Resolve shader stages.
-			vShaderStageCreateInfo.emplace_back(pVertexShader->GetShaderStageCreateInfo());
+			m_vShaderStageCreateInfo.emplace_back(pVertexShader->GetShaderStageCreateInfo());
 
 			if (pFragmentShader)
-				vShaderStageCreateInfo.emplace_back(pFragmentShader->GetShaderStageCreateInfo());
+				m_vShaderStageCreateInfo.emplace_back(pFragmentShader->GetShaderStageCreateInfo());
 
 			if (pTessellationControlShader)
-				vShaderStageCreateInfo.emplace_back(pTessellationControlShader->GetShaderStageCreateInfo());
+				m_vShaderStageCreateInfo.emplace_back(pTessellationControlShader->GetShaderStageCreateInfo());
 
 			if (pTessellationEvaluationShader)
-				vShaderStageCreateInfo.emplace_back(pTessellationEvaluationShader->GetShaderStageCreateInfo());
+				m_vShaderStageCreateInfo.emplace_back(pTessellationEvaluationShader->GetShaderStageCreateInfo());
 
 			if (pGeometryShader)
-				vShaderStageCreateInfo.emplace_back(pGeometryShader->GetShaderStageCreateInfo());
+				m_vShaderStageCreateInfo.emplace_back(pGeometryShader->GetShaderStageCreateInfo());
 
 			// Resolve vertex input state.
 			{
-				VkVertexInputAttributeDescription vAttributeDescription = {};
-				VkVertexInputBindingDescription vBindingDescription = {};
+				VkVertexInputAttributeDescription m_vAttributeDescription = {};
+				VkVertexInputBindingDescription m_vBindingDescription = {};
 
 				for (const auto binding : m_Specification.m_VertexInputAttributeMap)
 				{
-					vAttributeDescription.binding = binding.first;
-					vAttributeDescription.offset = 0;
+					m_vAttributeDescription.binding = binding.first;
+					m_vAttributeDescription.offset = 0;
 					for (const auto attribute : binding.second)
 					{
 						if (attribute.m_DataType == ShaderAttributeDataType::BUILT_IN)
 							continue;
 
-						vAttributeDescription.location = attribute.m_Location;
-						vAttributeDescription.format = Helpers::GetFormatFromSize(attribute.m_DataType);
+						m_vAttributeDescription.location = attribute.m_Location;
+						m_vAttributeDescription.format = Helpers::GetFormatFromSize(attribute.m_DataType);
 
-						vVertexAttributes.emplace_back(vAttributeDescription);
-						vAttributeDescription.offset += static_cast<uint32_t>(attribute.m_DataType);
+						m_vVertexAttributes.emplace_back(m_vAttributeDescription);
+						m_vAttributeDescription.offset += static_cast<uint32_t>(attribute.m_DataType);
 					}
 
-					vBindingDescription.binding = binding.first;
-					vBindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-					vBindingDescription.stride = vAttributeDescription.offset;
-					vVertexBindings.emplace_back(vBindingDescription);
+					m_vBindingDescription.binding = binding.first;
+					m_vBindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+					m_vBindingDescription.stride = m_vAttributeDescription.offset;
+					m_vVertexBindings.emplace_back(m_vBindingDescription);
 				}
 			}
 
-			vVertexInputStateCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-			vVertexInputStateCreateInfo.pNext = VK_NULL_HANDLE;
-			vVertexInputStateCreateInfo.flags = 0;
-			vVertexInputStateCreateInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(vVertexAttributes.size());
-			vVertexInputStateCreateInfo.pVertexAttributeDescriptions = vVertexAttributes.data();
-			vVertexInputStateCreateInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(vVertexBindings.size());
-			vVertexInputStateCreateInfo.pVertexBindingDescriptions = vVertexBindings.data();
+			m_vVertexInputStateCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+			m_vVertexInputStateCreateInfo.pNext = VK_NULL_HANDLE;
+			m_vVertexInputStateCreateInfo.flags = 0;
+			m_vVertexInputStateCreateInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(m_vVertexAttributes.size());
+			m_vVertexInputStateCreateInfo.pVertexAttributeDescriptions = m_vVertexAttributes.data();
+			m_vVertexInputStateCreateInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(m_vVertexBindings.size());
+			m_vVertexInputStateCreateInfo.pVertexBindingDescriptions = m_vVertexBindings.data();
 
 			// Input assembly state.
-			vInputAssemblyStateCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-			vInputAssemblyStateCreateInfo.pNext = VK_NULL_HANDLE;
-			vInputAssemblyStateCreateInfo.flags = 0;
-			vInputAssemblyStateCreateInfo.primitiveRestartEnable = GET_VK_BOOL(m_Specification.bEnablePrimitiveRestart);
-			vInputAssemblyStateCreateInfo.topology = Helpers::GetPrimitiveTopology(m_Specification.m_PrimitiveTopology);
+			m_vInputAssemblyStateCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+			m_vInputAssemblyStateCreateInfo.pNext = VK_NULL_HANDLE;
+			m_vInputAssemblyStateCreateInfo.flags = 0;
+			m_vInputAssemblyStateCreateInfo.primitiveRestartEnable = GET_VK_BOOL(m_Specification.bEnablePrimitiveRestart);
+			m_vInputAssemblyStateCreateInfo.topology = Helpers::GetPrimitiveTopology(m_Specification.m_PrimitiveTopology);
 
 			// Tessellation state.
-			vTessellationStateCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO;
-			vTessellationStateCreateInfo.pNext = VK_NULL_HANDLE;
-			vTessellationStateCreateInfo.flags = 0;
-			vTessellationStateCreateInfo.patchControlPoints = m_Specification.m_TessellationPatchControlPoints;
+			m_vTessellationStateCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO;
+			m_vTessellationStateCreateInfo.pNext = VK_NULL_HANDLE;
+			m_vTessellationStateCreateInfo.flags = 0;
+			m_vTessellationStateCreateInfo.patchControlPoints = m_Specification.m_TessellationPatchControlPoints;
 
 			// Color blend state.
 			for (const auto attachment : m_Specification.m_ColorBlendAttachments)
 			{
-				VkPipelineColorBlendAttachmentState vAttachmentState = {};
-				vAttachmentState.blendEnable = GET_VK_BOOL(attachment.m_EnableBlend);
-				vAttachmentState.alphaBlendOp = Helpers::GetBlendOp(attachment.m_AlphaBlendOperator);
-				vAttachmentState.colorBlendOp = Helpers::GetBlendOp(attachment.m_BlendOperator);
-				vAttachmentState.colorWriteMask = Helpers::GetComponentFlags(attachment.m_ColorWriteMask);
-				vAttachmentState.srcColorBlendFactor = Helpers::GetBlendFactor(attachment.m_SrcBlendFactor);
-				vAttachmentState.srcAlphaBlendFactor = Helpers::GetBlendFactor(attachment.m_SrcAlphaBlendFactor);
-				vAttachmentState.dstAlphaBlendFactor = Helpers::GetBlendFactor(attachment.m_DstAlphaBlendFactor);
-				vAttachmentState.dstColorBlendFactor = Helpers::GetBlendFactor(attachment.m_DstBlendFactor);
+				VkPipelineColorBlendAttachmentState m_vAttachmentState = {};
+				m_vAttachmentState.blendEnable = GET_VK_BOOL(attachment.m_EnableBlend);
+				m_vAttachmentState.alphaBlendOp = Helpers::GetBlendOp(attachment.m_AlphaBlendOperator);
+				m_vAttachmentState.colorBlendOp = Helpers::GetBlendOp(attachment.m_BlendOperator);
+				m_vAttachmentState.colorWriteMask = Helpers::GetComponentFlags(attachment.m_ColorWriteMask);
+				m_vAttachmentState.srcColorBlendFactor = Helpers::GetBlendFactor(attachment.m_SrcBlendFactor);
+				m_vAttachmentState.srcAlphaBlendFactor = Helpers::GetBlendFactor(attachment.m_SrcAlphaBlendFactor);
+				m_vAttachmentState.dstAlphaBlendFactor = Helpers::GetBlendFactor(attachment.m_DstAlphaBlendFactor);
+				m_vAttachmentState.dstColorBlendFactor = Helpers::GetBlendFactor(attachment.m_DstBlendFactor);
 
-				vCBASS.emplace_back(vAttachmentState);
+				m_vCBASS.emplace_back(m_vAttachmentState);
 			}
 
-			vColorBlendStateCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-			vColorBlendStateCreateInfo.pNext = VK_NULL_HANDLE;
-			vColorBlendStateCreateInfo.flags = 0;
-			vColorBlendStateCreateInfo.logicOp = Helpers::GetLogicOp(m_Specification.m_ColorBlendLogic);
-			vColorBlendStateCreateInfo.logicOpEnable = GET_VK_BOOL(m_Specification.bEnableColorBlendLogic);
-			std::copy_n(m_Specification.m_ColorBlendConstants, 4, vColorBlendStateCreateInfo.blendConstants);
+			m_vColorBlendStateCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+			m_vColorBlendStateCreateInfo.pNext = VK_NULL_HANDLE;
+			m_vColorBlendStateCreateInfo.flags = 0;
+			m_vColorBlendStateCreateInfo.logicOp = Helpers::GetLogicOp(m_Specification.m_ColorBlendLogic);
+			m_vColorBlendStateCreateInfo.logicOpEnable = GET_VK_BOOL(m_Specification.bEnableColorBlendLogic);
+			std::copy_n(m_Specification.m_ColorBlendConstants, 4, m_vColorBlendStateCreateInfo.blendConstants);
 
-			vColorBlendStateCreateInfo.attachmentCount = static_cast<uint32_t>(vCBASS.size());
-			vColorBlendStateCreateInfo.pAttachments = vCBASS.data();
+			m_vColorBlendStateCreateInfo.attachmentCount = static_cast<uint32_t>(m_vCBASS.size());
+			m_vColorBlendStateCreateInfo.pAttachments = m_vCBASS.data();
 
 			// Rasterization state.
-			vRasterizationStateCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-			vRasterizationStateCreateInfo.pNext = VK_NULL_HANDLE;
-			vRasterizationStateCreateInfo.flags = 0;
-			vRasterizationStateCreateInfo.cullMode = Helpers::GetCullMode(m_Specification.m_CullMode);
-			vRasterizationStateCreateInfo.depthBiasEnable = GET_VK_BOOL(m_Specification.bEnableDepthBias);
-			vRasterizationStateCreateInfo.depthBiasClamp = m_Specification.m_DepthBiasFactor;
-			vRasterizationStateCreateInfo.depthBiasConstantFactor = m_Specification.m_DepthConstantFactor;
-			vRasterizationStateCreateInfo.depthBiasSlopeFactor = m_Specification.m_DepthSlopeFactor;
-			vRasterizationStateCreateInfo.depthClampEnable = GET_VK_BOOL(m_Specification.bEnableDepthClamp);
-			vRasterizationStateCreateInfo.frontFace = Helpers::GetFrontFace(m_Specification.m_FrontFace);
-			vRasterizationStateCreateInfo.lineWidth = m_Specification.m_RasterizerLineWidth;
-			vRasterizationStateCreateInfo.polygonMode = Helpers::GetPolygonMode(m_Specification.m_PolygonMode);
-			vRasterizationStateCreateInfo.rasterizerDiscardEnable = GET_VK_BOOL(m_Specification.bEnableRasterizerDiscard);
+			m_vRasterizationStateCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+			m_vRasterizationStateCreateInfo.pNext = VK_NULL_HANDLE;
+			m_vRasterizationStateCreateInfo.flags = 0;
+			m_vRasterizationStateCreateInfo.cullMode = Helpers::GetCullMode(m_Specification.m_CullMode);
+			m_vRasterizationStateCreateInfo.depthBiasEnable = GET_VK_BOOL(m_Specification.bEnableDepthBias);
+			m_vRasterizationStateCreateInfo.depthBiasClamp = m_Specification.m_DepthBiasFactor;
+			m_vRasterizationStateCreateInfo.depthBiasConstantFactor = m_Specification.m_DepthConstantFactor;
+			m_vRasterizationStateCreateInfo.depthBiasSlopeFactor = m_Specification.m_DepthSlopeFactor;
+			m_vRasterizationStateCreateInfo.depthClampEnable = GET_VK_BOOL(m_Specification.bEnableDepthClamp);
+			m_vRasterizationStateCreateInfo.frontFace = Helpers::GetFrontFace(m_Specification.m_FrontFace);
+			m_vRasterizationStateCreateInfo.lineWidth = m_Specification.m_RasterizerLineWidth;
+			m_vRasterizationStateCreateInfo.polygonMode = Helpers::GetPolygonMode(m_Specification.m_PolygonMode);
+			m_vRasterizationStateCreateInfo.rasterizerDiscardEnable = GET_VK_BOOL(m_Specification.bEnableRasterizerDiscard);
 
 			// Multisample state.
-			vMultisampleStateCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
-			vMultisampleStateCreateInfo.pNext = VK_NULL_HANDLE;
-			vMultisampleStateCreateInfo.flags = 0;
-			vMultisampleStateCreateInfo.alphaToCoverageEnable = GET_VK_BOOL(m_Specification.bEnableAlphaCoverage);
-			vMultisampleStateCreateInfo.alphaToOneEnable = GET_VK_BOOL(m_Specification.bEnableAlphaToOne);
-			vMultisampleStateCreateInfo.minSampleShading = m_Specification.m_MinSampleShading;
-			vMultisampleStateCreateInfo.pSampleMask;	// TODO
-			vMultisampleStateCreateInfo.rasterizationSamples = static_cast<VkSampleCountFlagBits>(Helpers::GetSampleCount(m_Specification.m_RasterizationSamples));
-			vMultisampleStateCreateInfo.sampleShadingEnable = GET_VK_BOOL(m_Specification.bEnableSampleShading);
+			m_vMultisampleStateCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+			m_vMultisampleStateCreateInfo.pNext = VK_NULL_HANDLE;
+			m_vMultisampleStateCreateInfo.flags = 0;
+			m_vMultisampleStateCreateInfo.alphaToCoverageEnable = GET_VK_BOOL(m_Specification.bEnableAlphaCoverage);
+			m_vMultisampleStateCreateInfo.alphaToOneEnable = GET_VK_BOOL(m_Specification.bEnableAlphaToOne);
+			m_vMultisampleStateCreateInfo.minSampleShading = m_Specification.m_MinSampleShading;
+			m_vMultisampleStateCreateInfo.pSampleMask;	// TODO
+			m_vMultisampleStateCreateInfo.rasterizationSamples = static_cast<VkSampleCountFlagBits>(Helpers::GetSampleCount(m_Specification.m_RasterizationSamples));
+			m_vMultisampleStateCreateInfo.sampleShadingEnable = GET_VK_BOOL(m_Specification.bEnableSampleShading);
 
 			// Depth stencil state.
-			vDepthStencilStateCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-			vDepthStencilStateCreateInfo.pNext = VK_NULL_HANDLE;
-			vDepthStencilStateCreateInfo.flags = 0;
-			vDepthStencilStateCreateInfo.back.compareOp = VK_COMPARE_OP_ALWAYS;
-			vDepthStencilStateCreateInfo.depthTestEnable = GET_VK_BOOL(m_Specification.bEnableDepthTest);
-			vDepthStencilStateCreateInfo.depthWriteEnable = GET_VK_BOOL(m_Specification.bEnableDepthWrite);
-			vDepthStencilStateCreateInfo.depthCompareOp = Helpers::GetCompareOp(m_Specification.m_DepthCompareLogic);
+			m_vDepthStencilStateCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+			m_vDepthStencilStateCreateInfo.pNext = VK_NULL_HANDLE;
+			m_vDepthStencilStateCreateInfo.flags = 0;
+			m_vDepthStencilStateCreateInfo.back.compareOp = VK_COMPARE_OP_ALWAYS;
+			m_vDepthStencilStateCreateInfo.depthTestEnable = GET_VK_BOOL(m_Specification.bEnableDepthTest);
+			m_vDepthStencilStateCreateInfo.depthWriteEnable = GET_VK_BOOL(m_Specification.bEnableDepthWrite);
+			m_vDepthStencilStateCreateInfo.depthCompareOp = Helpers::GetCompareOp(m_Specification.m_DepthCompareLogic);
 
 			// Dynamic state.
-			vDynamicStates = std::move(Helpers::GetDynamicStates(m_Specification.m_DynamicStateFlags));
+			m_vDynamicStates = std::move(Helpers::GetDynamicStates(m_Specification.m_DynamicStateFlags));
 
-			vDynamicStateCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-			vDynamicStateCreateInfo.pNext = VK_NULL_HANDLE;
-			vDynamicStateCreateInfo.flags = 0;
-			vDynamicStateCreateInfo.dynamicStateCount = static_cast<uint32_t>(vDynamicStates.size());
-			vDynamicStateCreateInfo.pDynamicStates = vDynamicStates.data();
+			m_vDynamicStateCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+			m_vDynamicStateCreateInfo.pNext = VK_NULL_HANDLE;
+			m_vDynamicStateCreateInfo.flags = 0;
+			m_vDynamicStateCreateInfo.dynamicStateCount = static_cast<uint32_t>(m_vDynamicStates.size());
+			m_vDynamicStateCreateInfo.pDynamicStates = m_vDynamicStates.data();
 		}
 
 		void VulkanGraphicsPipeline::CreatePipelineCache()
@@ -774,15 +774,15 @@ namespace Flint
 
 			const auto [size, pData] = ReadDataFromCacheFile();
 
-			VkPipelineCacheCreateInfo vCreateInfo = {};
-			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
-			vCreateInfo.pNext = VK_NULL_HANDLE;
-			vCreateInfo.flags = 0;
-			vCreateInfo.initialDataSize = size;
-			vCreateInfo.pInitialData = pData;
+			VkPipelineCacheCreateInfo m_vCreateInfo = {};
+			m_vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
+			m_vCreateInfo.pNext = VK_NULL_HANDLE;
+			m_vCreateInfo.flags = 0;
+			m_vCreateInfo.initialDataSize = size;
+			m_vCreateInfo.pInitialData = pData;
 
-			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreatePipelineCache(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vPipelineCache));
+			VulkanDevice& m_vDevice = m_pDevice->StaticCast<VulkanDevice>();
+			FLINT_VK_ASSERT(m_vDevice.GetDeviceTable().vkCreatePipelineCache(m_vDevice.GetLogicalDevice(), &m_vCreateInfo, nullptr, &m_vPipelineCache));
 
 			delete[] pData;
 		}
@@ -791,13 +791,13 @@ namespace Flint
 		{
 			OPTICK_EVENT();
 
-			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-			std::vector<VkPushConstantRange> vConstantRanges;
+			VulkanDevice& m_vDevice = m_pDevice->StaticCast<VulkanDevice>();
+			std::vector<VkPushConstantRange> m_vConstantRanges;
 			std::unordered_map<uint32_t, DescriptorSetInfo> descriptorSetInfos;
 
 			// Resolve vertex shader data.
 			{
-				Utilities::AddPushConstantRangesToVector(vConstantRanges, *pVertexShader);
+				Utilities::AddPushConstantRangesToVector(m_vConstantRanges, *pVertexShader);
 
 				const auto map = pVertexShader->GetDescriptorSetMap();
 				for (const auto entry : map)
@@ -811,7 +811,7 @@ namespace Flint
 			// Check and resolve fragment shader data.
 			if (pFragmentShader)
 			{
-				Utilities::AddPushConstantRangesToVector(vConstantRanges, *pFragmentShader);
+				Utilities::AddPushConstantRangesToVector(m_vConstantRanges, *pFragmentShader);
 
 				const auto map = pFragmentShader->GetDescriptorSetMap();
 				for (const auto entry : map)
@@ -825,7 +825,7 @@ namespace Flint
 			// Check and resolve tessellation control shader data.
 			if (pTessellationControlShader)
 			{
-				Utilities::AddPushConstantRangesToVector(vConstantRanges, *pTessellationControlShader);
+				Utilities::AddPushConstantRangesToVector(m_vConstantRanges, *pTessellationControlShader);
 
 				const auto map = pTessellationControlShader->GetDescriptorSetMap();
 				for (const auto entry : map)
@@ -839,7 +839,7 @@ namespace Flint
 			// Check and resolve tessellation evaluation shader data.
 			if (pTessellationEvaluationShader)
 			{
-				Utilities::AddPushConstantRangesToVector(vConstantRanges, *pTessellationEvaluationShader);
+				Utilities::AddPushConstantRangesToVector(m_vConstantRanges, *pTessellationEvaluationShader);
 
 				const auto map = pTessellationEvaluationShader->GetDescriptorSetMap();
 				for (const auto entry : map)
@@ -853,7 +853,7 @@ namespace Flint
 			// Check and resolve geometry shader data.
 			if (pGeometryShader)
 			{
-				Utilities::AddPushConstantRangesToVector(vConstantRanges, *pGeometryShader);
+				Utilities::AddPushConstantRangesToVector(m_vConstantRanges, *pGeometryShader);
 
 				const auto map = pGeometryShader->GetDescriptorSetMap();
 				for (const auto entry : map)
@@ -867,30 +867,30 @@ namespace Flint
 			// Create descriptor set layouts.
 			for (const auto info : descriptorSetInfos)
 			{
-				VkDescriptorSetLayoutCreateInfo vLayoutCreateInfo = {};
-				vLayoutCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-				vLayoutCreateInfo.pNext = VK_NULL_HANDLE;
-				vLayoutCreateInfo.flags = 0;
-				vLayoutCreateInfo.bindingCount = static_cast<uint32_t>(info.second.m_LayoutBindings.size());
-				vLayoutCreateInfo.pBindings = info.second.m_LayoutBindings.data();
+				VkDescriptorSetLayoutCreateInfo m_vLayoutCreateInfo = {};
+				m_vLayoutCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+				m_vLayoutCreateInfo.pNext = VK_NULL_HANDLE;
+				m_vLayoutCreateInfo.flags = 0;
+				m_vLayoutCreateInfo.bindingCount = static_cast<uint32_t>(info.second.m_LayoutBindings.size());
+				m_vLayoutCreateInfo.pBindings = info.second.m_LayoutBindings.data();
 
-				VkDescriptorSetLayout vDescriptorSetLayout = VK_NULL_HANDLE;
-				FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateDescriptorSetLayout(vDevice.GetLogicalDevice(), &vLayoutCreateInfo, nullptr, &vDescriptorSetLayout));
+				VkDescriptorSetLayout m_vDescriptorSetLayout = VK_NULL_HANDLE;
+				FLINT_VK_ASSERT(m_vDevice.GetDeviceTable().vkCreateDescriptorSetLayout(m_vDevice.GetLogicalDevice(), &m_vLayoutCreateInfo, nullptr, &m_vDescriptorSetLayout));
 
-				vDescriptorSetLayouts.emplace_back(vDescriptorSetLayout);
+				m_vDescriptorSetLayouts.emplace_back(m_vDescriptorSetLayout);
 			}
 
 			// Create pipeline layout.
-			VkPipelineLayoutCreateInfo vCreateInfo = {};
-			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-			vCreateInfo.pNext = VK_NULL_HANDLE;
-			vCreateInfo.flags = 0;
-			vCreateInfo.pushConstantRangeCount = static_cast<uint32_t>(vConstantRanges.size());
-			vCreateInfo.pPushConstantRanges = vConstantRanges.data();
-			vCreateInfo.setLayoutCount = static_cast<uint32_t>(vDescriptorSetLayouts.size());
-			vCreateInfo.pSetLayouts = vDescriptorSetLayouts.data();
+			VkPipelineLayoutCreateInfo m_vCreateInfo = {};
+			m_vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+			m_vCreateInfo.pNext = VK_NULL_HANDLE;
+			m_vCreateInfo.flags = 0;
+			m_vCreateInfo.pushConstantRangeCount = static_cast<uint32_t>(m_vConstantRanges.size());
+			m_vCreateInfo.pPushConstantRanges = m_vConstantRanges.data();
+			m_vCreateInfo.setLayoutCount = static_cast<uint32_t>(m_vDescriptorSetLayouts.size());
+			m_vCreateInfo.pSetLayouts = m_vDescriptorSetLayouts.data();
 
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreatePipelineLayout(vDevice.GetLogicalDevice(), &vCreateInfo, nullptr, &vPipelineLayout));
+			FLINT_VK_ASSERT(m_vDevice.GetDeviceTable().vkCreatePipelineLayout(m_vDevice.GetLogicalDevice(), &m_vCreateInfo, nullptr, &m_vPipelineLayout));
 		}
 
 		void VulkanGraphicsPipeline::CreatePipeline()
@@ -898,52 +898,52 @@ namespace Flint
 			OPTICK_EVENT();
 
 			// Resolve viewport state.
-			VkRect2D vR2D = {};
-			vR2D.extent.width = static_cast<uint32_t>(pRenderTarget->GetExtent().m_Width);
-			vR2D.extent.height = static_cast<uint32_t>(pRenderTarget->GetExtent().m_Height);
-			vR2D.offset = { 0, 0 };
+			VkRect2D m_vR2D = {};
+			m_vR2D.extent.width = static_cast<uint32_t>(pRenderTarget->GetExtent().m_Width);
+			m_vR2D.extent.height = static_cast<uint32_t>(pRenderTarget->GetExtent().m_Height);
+			m_vR2D.offset = { 0, 0 };
 
-			VkViewport vVP = {};
-			vVP.width = static_cast<float>(vR2D.extent.width);
-			vVP.height = static_cast<float>(vR2D.extent.height);
-			vVP.maxDepth = 1.0f;
-			vVP.minDepth = 0.0f;
-			vVP.x = 0.0f;
-			vVP.y = 0.0f;
+			VkViewport m_vVP = {};
+			m_vVP.width = static_cast<float>(m_vR2D.extent.width);
+			m_vVP.height = static_cast<float>(m_vR2D.extent.height);
+			m_vVP.maxDepth = 1.0f;
+			m_vVP.minDepth = 0.0f;
+			m_vVP.x = 0.0f;
+			m_vVP.y = 0.0f;
 
-			VkPipelineViewportStateCreateInfo vViewportStateCreateInfo = {};
-			vViewportStateCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-			vViewportStateCreateInfo.pNext = VK_NULL_HANDLE;
-			vViewportStateCreateInfo.flags = 0;
-			vViewportStateCreateInfo.scissorCount = 1;
-			vViewportStateCreateInfo.pScissors = &vR2D;
-			vViewportStateCreateInfo.viewportCount = 1;
-			vViewportStateCreateInfo.pViewports = &vVP;
+			VkPipelineViewportStateCreateInfo m_vViewportStateCreateInfo = {};
+			m_vViewportStateCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+			m_vViewportStateCreateInfo.pNext = VK_NULL_HANDLE;
+			m_vViewportStateCreateInfo.flags = 0;
+			m_vViewportStateCreateInfo.scissorCount = 1;
+			m_vViewportStateCreateInfo.pScissors = &m_vR2D;
+			m_vViewportStateCreateInfo.viewportCount = 1;
+			m_vViewportStateCreateInfo.pViewports = &m_vVP;
 
 			// Pipeline create info.
-			VkGraphicsPipelineCreateInfo vCreateInfo = {};
-			vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-			vCreateInfo.pNext = VK_NULL_HANDLE;
-			vCreateInfo.flags = 0;
-			vCreateInfo.stageCount = static_cast<uint32_t>(vShaderStageCreateInfo.size());
-			vCreateInfo.pStages = vShaderStageCreateInfo.data();
-			vCreateInfo.pVertexInputState = &vVertexInputStateCreateInfo;
-			vCreateInfo.pInputAssemblyState = &vInputAssemblyStateCreateInfo;
-			vCreateInfo.pTessellationState = &vTessellationStateCreateInfo;
-			vCreateInfo.pViewportState = &vViewportStateCreateInfo;
-			vCreateInfo.pRasterizationState = &vRasterizationStateCreateInfo;
-			vCreateInfo.pMultisampleState = &vMultisampleStateCreateInfo;
-			vCreateInfo.pDepthStencilState = &vDepthStencilStateCreateInfo;
-			vCreateInfo.pColorBlendState = &vColorBlendStateCreateInfo;
-			vCreateInfo.pDynamicState = &vDynamicStateCreateInfo;
-			vCreateInfo.layout = vPipelineLayout;
-			vCreateInfo.renderPass = vRenderPass;
-			vCreateInfo.subpass = 0;	// TODO
-			vCreateInfo.basePipelineHandle = VK_NULL_HANDLE;
-			vCreateInfo.basePipelineIndex = 0;
+			VkGraphicsPipelineCreateInfo m_vCreateInfo = {};
+			m_vCreateInfo.sType = VkStructureType::VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+			m_vCreateInfo.pNext = VK_NULL_HANDLE;
+			m_vCreateInfo.flags = 0;
+			m_vCreateInfo.stageCount = static_cast<uint32_t>(m_vShaderStageCreateInfo.size());
+			m_vCreateInfo.pStages = m_vShaderStageCreateInfo.data();
+			m_vCreateInfo.pVertexInputState = &m_vVertexInputStateCreateInfo;
+			m_vCreateInfo.pInputAssemblyState = &m_vInputAssemblyStateCreateInfo;
+			m_vCreateInfo.pTessellationState = &m_vTessellationStateCreateInfo;
+			m_vCreateInfo.pViewportState = &m_vViewportStateCreateInfo;
+			m_vCreateInfo.pRasterizationState = &m_vRasterizationStateCreateInfo;
+			m_vCreateInfo.pMultisampleState = &m_vMultisampleStateCreateInfo;
+			m_vCreateInfo.pDepthStencilState = &m_vDepthStencilStateCreateInfo;
+			m_vCreateInfo.pColorBlendState = &m_vColorBlendStateCreateInfo;
+			m_vCreateInfo.pDynamicState = &m_vDynamicStateCreateInfo;
+			m_vCreateInfo.layout = m_vPipelineLayout;
+			m_vCreateInfo.renderPass = m_vRenderPass;
+			m_vCreateInfo.subpass = 0;	// TODO
+			m_vCreateInfo.basePipelineHandle = VK_NULL_HANDLE;
+			m_vCreateInfo.basePipelineIndex = 0;
 
-			VulkanDevice& vDevice = pDevice->StaticCast<VulkanDevice>();
-			FLINT_VK_ASSERT(vDevice.GetDeviceTable().vkCreateGraphicsPipelines(vDevice.GetLogicalDevice(), vPipelineCache, 1, &vCreateInfo, nullptr, &vPipeline));
+			VulkanDevice& m_vDevice = m_pDevice->StaticCast<VulkanDevice>();
+			FLINT_VK_ASSERT(m_vDevice.GetDeviceTable().vkCreateGraphicsPipelines(m_vDevice.GetLogicalDevice(), m_vPipelineCache, 1, &m_vCreateInfo, nullptr, &m_vPipeline));
 		}
 	}
 }

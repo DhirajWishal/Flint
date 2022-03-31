@@ -18,23 +18,23 @@ namespace Flint
 
 			void Terminate();
 
-			void CreateRenderPass(std::vector<VulkanRenderTargetAttachmentInterface*> pAttachments, VkPipelineBindPoint vBindPoint, const std::vector<VkSubpassDependency>& vSubpassDependencies);
-			void CreateRenderPassWithMultipleSubpasses(std::vector<std::vector<VulkanRenderTargetAttachmentInterface*>> pSubpasses, VkPipelineBindPoint vBindPoint, const std::vector<VkSubpassDependency>& vSubpassDependencies);
+			void CreateRenderPass(std::vector<VulkanRenderTargetAttachmentInterface*> pAttachments, VkPipelineBindPoint m_vBindPoint, const std::vector<VkSubpassDependency>& m_vSubpassDependencies);
+			void CreateRenderPassWithMultipleSubpasses(std::vector<std::vector<VulkanRenderTargetAttachmentInterface*>> pSubpasses, VkPipelineBindPoint m_vBindPoint, const std::vector<VkSubpassDependency>& m_vSubpassDependencies);
 			void DestroyRenderPass();
 
 			void CreateFrameBuffer(std::vector<VulkanRenderTargetAttachmentInterface*> pAttachments, const FBox2D& extent, const uint32_t bufferCount);
 			void DestroyFrameBuffers();
 
 		public:
-			VkFramebuffer CreateVulkanFrameBuffer(const FBox2D& extent, const std::vector<VkImageView>& vImageViews);
+			VkFramebuffer CreateVulkanFrameBuffer(const FBox2D& extent, const std::vector<VkImageView>& m_vImageViews);
 
 		public:
-			std::vector<VkFramebuffer> vFrameBuffers = {};
+			std::vector<VkFramebuffer> m_vFrameBuffers = {};
 
-			VkRenderPass vRenderPass = VK_NULL_HANDLE;
+			VkRenderPass m_vRenderPass = VK_NULL_HANDLE;
 
 		private:
-			VulkanDevice& vDevice;
+			VulkanDevice& m_vDevice;
 		};
 	}
 }
