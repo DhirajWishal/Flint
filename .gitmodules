@@ -31,3 +31,6 @@
 [submodule "ThirdParty/glTF-Sample-Models"]
 	path = ThirdParty/glTF-Sample-Models
 	url = https://github.com/KhronosGroup/glTF-Sample-Models
+[submodule "ThirdParty/entt"]
+	path = ThirdParty/entt
+	url = https://github.com/skypjack/entt

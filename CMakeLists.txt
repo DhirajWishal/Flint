@@ -25,6 +25,9 @@ set(VULKAN_HEADERS_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/Vulkan-Hea
 set(VMA_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/VulkanMemoryAllocator/include)
 
 # Set the xxHash header include directory.
+set(ENTT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/entt/src)
+
+# Set the entt header include directory.
 set(XXHASH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/xxHash)
 
 # Set up the assimp include, library and binary data.
@@ -115,15 +118,15 @@ target_include_directories(volk PUBLIC ${VULKAN_HEADERS_INCLUDE_DIR})
 add_compile_definitions(
 	$<$<CONFIG:Debug>:FLINT_DEBUG>
 	$<$<CONFIG:Debug>:USE_OPTICK>
-    $<$<CONFIG:Release>:FLINT_RELEASE>
+	$<$<CONFIG:Release>:FLINT_RELEASE>
 
-    $<$<CONFIG:RelWithDebInfo>:FLINT_DEBUG>
-    $<$<CONFIG:RelWithDebInfo>:USE_OPTICK>
-    $<$<CONFIG:MinSizeRel>:FLINT_RELEASE>
+	$<$<CONFIG:RelWithDebInfo>:FLINT_DEBUG>
+	$<$<CONFIG:RelWithDebInfo>:USE_OPTICK>
+	$<$<CONFIG:MinSizeRel>:FLINT_RELEASE>
 	
-    $<$<PLATFORM_ID:Windows>:FLINT_PLATFORM_WINDOWS>
-    $<$<PLATFORM_ID:Linux>:FLINT_PLATFORM_LINUX>
-    $<$<PLATFORM_ID:Darwin>:FLINT_PLATFORM_MAC>
+	$<$<PLATFORM_ID:Windows>:FLINT_PLATFORM_WINDOWS>
+	$<$<PLATFORM_ID:Linux>:FLINT_PLATFORM_LINUX>
+	$<$<PLATFORM_ID:Darwin>:FLINT_PLATFORM_MAC>
 )
 
 # Set the central include directory.
