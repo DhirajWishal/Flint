@@ -40,16 +40,11 @@ set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "We don't need the tests either.")
 # Add the assimp library as a subdirectory.
 add_subdirectory(ThirdParty/assimp)
 
-# Set the GLFW include, library and binary data.
-set(GLFW_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/glfw/include)
+# Set the SDL include, library and binary data.
+set(SDL_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/SDL/include)
 
-# Set the required variables for GLFW.
-set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "Don't build the examples.'")
-set(GLFW_BUILD_TESTS OFF CACHE BOOL "Don't build the tests.")
-set(GLFW_BUILD_DOCS OFF CACHE BOOL "We don't need the docs either.")
-
-# Add the glfw library as a subdirectory.
-add_subdirectory(ThirdParty/glfw)
+# Add the SDL library as a subdirectory.
+add_subdirectory(ThirdParty/SDL)
 
 # Set the GLM include directory.
 # Since this library is a header only library, we don't have to do anything else.
@@ -130,21 +125,16 @@ add_compile_definitions(
 )
 
 # Set the central include directory.
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Runtime)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Engine)
 
-# Finally, lets add our projects.
-add_subdirectory(Runtime/Core)
-add_subdirectory(Runtime/Engine)
-add_subdirectory(Runtime/Graphics)
-add_subdirectory(Runtime/GraphicsCore)
-add_subdirectory(Runtime/VulkanBackend)
-add_subdirectory(Sandbox)
+# Include the main subdirectories.
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/Engine/Core)
 
 # Set the startup project for Visual Studio and set multi processor compilation for other projects that we build.
 if (MSVC) 
 	set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT Sandbox)
 	target_compile_options(assimp PRIVATE "/MP")	
-	target_compile_options(glfw PRIVATE "/MP")	
+	target_compile_options(SDL2 PRIVATE "/MP")	
 	target_compile_options(ImGui PRIVATE "/MP")	
 	target_compile_options(optick PRIVATE "/MP")	
 	target_compile_options(SPIRV_Reflect PRIVATE "/MP")	
