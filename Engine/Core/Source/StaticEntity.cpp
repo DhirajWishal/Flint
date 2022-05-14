@@ -8,10 +8,14 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include <optick.h>
+
 namespace Flint
 {
-	void StaticEntity::LoadModel(std::filesystem::path&& path)
+	void StaticEntity::loadModel(std::filesystem::path&& path)
 	{
+		OPTICK_EVENT();
+
 		// Setup the importer and the load the scene.
 		Assimp::Importer importer = {};
 		const aiScene* pScene = importer.ReadFile(path.string(),

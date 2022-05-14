@@ -14,10 +14,13 @@ jobs:
   # Lets first run on Windows.
   build-windows-latest:
     name: Building on Windows.
-    runs-on: windows-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@3
         with:
           submodules: true
 

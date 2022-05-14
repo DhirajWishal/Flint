@@ -128,6 +128,7 @@ add_compile_definitions(
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Engine)
 
 # Include the main subdirectories.
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/Sandbox)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/Engine/Core)
 
 # Set the startup project for Visual Studio and set multi processor compilation for other projects that we build.

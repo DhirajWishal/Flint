@@ -27,6 +27,6 @@ namespace Flint
 		 * @param path The asset path.
 		 * @throws AssetError If the specified asset could not be loaded.
 		 */
-		void LoadModel(std::filesystem::path&& path);
+		void loadModel(std::filesystem::path&& path);
 	};
 }
