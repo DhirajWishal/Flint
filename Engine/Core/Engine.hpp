@@ -44,7 +44,7 @@ namespace Flint
 
 	/**
 	 * Engine CRTP class.
-	 * This class is the static polymorphic type of the engine and the actual backend class is inherited using this.
+	 * This class is the static polymorphic type of the engine.
 	 *
 	 * @tparam TInstance The instance type.
 	 */
@@ -86,14 +86,14 @@ namespace Flint
 		 *
 		 * @return The instance reference.
 		 */
-		[[nodiscard]] Instance& getInstance() final { return *(m_Instance.as<Instance>()); }
+		[[nodiscard]] Instance& getInstance() final { return *m_Instance.as<Instance>(); }
 
 		/**
 		 * Get the instance.
 		 *
 		 * @return The const instance reference.
 		 */
-		[[nodiscard]] const Instance& getInstance() const final { return *(m_Instance.as<Instance>()); }
+		[[nodiscard]] const Instance& getInstance() const final { return *m_Instance.as<Instance>(); }
 
 	private:
 		TInstance& m_Instance;

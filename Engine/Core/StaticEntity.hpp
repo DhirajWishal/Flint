@@ -25,7 +25,6 @@ namespace Flint
 		 * Load the static entity from an asset file.
 		 *
 		 * @param path The asset path.
-		 * @throws AssetError If the specified asset could not be loaded.
 		 */
 		void loadModel(std::filesystem::path&& path);
 	};

@@ -30,13 +30,12 @@ target_include_directories(
 	${VULKAN_HEADERS_INCLUDE_DIR} 
 	${VOLK_INCLUDE_DIR} 
 	${VMA_INCLUDE_DIR} 
-	${SDL_INCLUDE_DIR} 
 	${SPIRV_REFLECT_INCLUDE_DIR}
 	${SPDLOG_INCLUDE_DIR}
 )
 
 # Add the target links.
-target_link_libraries(VulkanBackend FlintCore volk SDL2)
+target_link_libraries(VulkanBackend FlintCore volk)
 
 # Make sure to specify the C++ standard to C++20.
 set_property(TARGET VulkanBackend PROPERTY CXX_STANDARD 20)
