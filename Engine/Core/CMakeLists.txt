@@ -19,7 +19,11 @@ add_library(
 	"GhostEntity.hpp"
 	"StaticEntity.hpp"
 	"Errors/AssetError.hpp"
- "Instance.hpp" "Errors/BackendError.hpp")
+	"Instance.hpp" 
+	"Errors/BackendError.hpp" 
+	"Engine.hpp" 
+	"FObject.hpp"
+)
 
 # Set the include directories.
 target_include_directories(FlintCore PUBLIC ${XXHASH_INCLUDE_DIR} ${OPTICK_INCLUDE_DIR} ${GLM_INCLUDE_DIR} ${ASSIMP_INCLUDE_DIR})

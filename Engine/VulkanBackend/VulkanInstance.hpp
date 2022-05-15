@@ -46,7 +46,7 @@ namespace Flint
 			 *
 			 * @retrun The instance handle.
 			 */
-			[[nodiscard]] VkInstance getVulkanInstance() const { return m_Instance; }
+			[[nodiscard]] VkInstance getInstance() const { return m_Instance; }
 
 		private:
 			/**

@@ -3,12 +3,14 @@
 
 #pragma once
 
+#include "FObject.hpp"
+
 namespace Flint
 {
 	/**
 	 * Entity class.
 	 */
-	class Entity
+	class Entity : public FObject
 	{
 	public:
 		/**

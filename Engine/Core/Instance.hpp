@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "FObject.hpp"
+
 #include <cstdint>
 #include <string>
 
@@ -25,7 +27,7 @@ namespace Flint
 	 *
 	 * Note that in order to release all the resources in the instance, it needs to be destructed at the very end, after destroying all the other objects.
 	 */
-	class Instance
+	class Instance : public FObject
 	{
 	public:
 		/**

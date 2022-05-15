@@ -5,7 +5,7 @@
 project(
 	VulkanBackend
 	VERSION 1.0.0
-	DESCRIPTION "Core library for Flint."
+	DESCRIPTION "Vulkan graphics backend for Flint"
 )
 
 # Add the library.
@@ -13,8 +13,14 @@ add_library(
 	VulkanBackend
 	STATIC
 
+	"Source/VulkanInstance.cpp"
+	"Source/VulkanEngine.cpp"
+	"Source/vk_mem_alloc.cpp"
+	
 	"VulkanInstance.hpp"
- "Source/VulkanInstance.cpp" "VulkanMacros.hpp")
+	"VulkanMacros.hpp"
+	"VulkanEngine.hpp"
+)
 
 # Set the include directories.
 target_include_directories(
@@ -29,7 +35,7 @@ target_include_directories(
 	${SPDLOG_INCLUDE_DIR}
 )
 
-# Add the optick static library as a target link.
+# Add the target links.
 target_link_libraries(VulkanBackend FlintCore volk SDL2)
 
 # Make sure to specify the C++ standard to C++20.
