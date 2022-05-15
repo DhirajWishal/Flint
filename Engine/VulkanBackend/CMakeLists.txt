@@ -20,7 +20,7 @@ add_library(
 	"VulkanInstance.hpp"
 	"VulkanMacros.hpp"
 	"VulkanEngine.hpp"
-)
+ )
 
 # Set the include directories.
 target_include_directories(

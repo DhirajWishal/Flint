@@ -51,7 +51,7 @@ namespace Flint
 	template<class TInstance>
 	class EngineCRTP : public Engine
 	{
-		static_assert(std::is_base_of_v<Instance, TInstance>, "Invalid Instance type! Make sure that the 'TInstance' type is derived from 'Instance'.");
+		static_assert(std::is_base_of_v<Instance, TInstance>, "Invalid instance type! Make sure that the 'TInstance' type is derived from 'Instance'.");
 
 	public:
 		/**
@@ -86,14 +86,14 @@ namespace Flint
 		 *
 		 * @return The instance reference.
 		 */
-		[[nodiscard]] Instance& getInstance() final { return *m_Instance.as<Instance>(); }
+		[[nodiscard]] Instance& getInstance() final { return *(m_Instance.as<Instance>()); }
 
 		/**
 		 * Get the instance.
 		 *
 		 * @return The const instance reference.
 		 */
-		[[nodiscard]] const Instance& getInstance() const final { return *m_Instance.as<Instance>(); }
+		[[nodiscard]] const Instance& getInstance() const final { return *(m_Instance.as<Instance>()); }
 
 	private:
 		TInstance& m_Instance;

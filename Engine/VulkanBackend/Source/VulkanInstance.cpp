@@ -54,6 +54,7 @@ namespace /* anonymous */
 	std::vector<const char*> GetRequiredInstanceExtensions(bool enableValidation)
 	{
 		std::vector<const char*> extensions;
+		extensions.emplace_back(VK_KHR_SURFACE_EXTENSION_NAME);
 
 		if (enableValidation)
 			extensions.emplace_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
@@ -127,6 +128,22 @@ namespace /* anonymous */
 
 		return createInfo;
 	}
+
+	/**
+	 * Static initializer struct.
+	 * These structs are used to initialize data that are to be initialized just once in the application.
+	 */
+	struct StaticInitializer
+	{
+		/**
+		 * Default constructor.
+		 */
+		StaticInitializer()
+		{
+			// Initialize volk.
+			FLINT_VK_ASSERT(volkInitialize(), "Failed to initialize volk!");
+		}
+	};
 }
 
 namespace Flint
@@ -136,8 +153,8 @@ namespace Flint
 		VulkanInstance::VulkanInstance(std::string&& applicationName, uint32_t applicationVersion, bool enableValidation)
 			: Instance(std::move(applicationName), applicationVersion, BackendAPI::Vulkan, enableValidation)
 		{
-			// First things first, initialize volk.
-			FLINT_VK_ASSERT(volkInitialize(), "Failed to initialize volk!");
+			// Construct the static initializer.
+			static StaticInitializer initializer;
 
 			// Create the instance.
 			createInstance();
