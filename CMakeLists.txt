@@ -109,6 +109,9 @@ add_library(
 # Add the Vulkan headers as a target include directory.
 target_include_directories(volk PUBLIC ${VULKAN_HEADERS_INCLUDE_DIR})
 
+# Add spdlog as a third partry library.
+set(SPDLOG_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/spdlog/include)
+
 # Set global compile definitions.
 add_compile_definitions(
 	$<$<CONFIG:Debug>:FLINT_DEBUG>
@@ -130,6 +133,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Engine)
 # Include the main subdirectories.
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/Sandbox)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/Engine/Core)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/Engine/VulkanBackend)
 
 # Set the startup project for Visual Studio and set multi processor compilation for other projects that we build.
 if (MSVC) 

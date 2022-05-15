@@ -3,20 +3,20 @@
 
 #pragma once
 
-#include "entity.hpp"
+#include "Entity.hpp"
 
-namespace flint
+namespace Flint
 {
 	/**
 	 * Ghost entity class.
 	 * Ghost entities are graphical entities, which does not have a model but can be used to store information such as lighting and other effects.
 	 */
-	class ghost_entity final : public entity
+	class GhostEntity final : public Entity
 	{
 	public:
 		/**
 		 * Default constructor.
 		 */
-		explicit ghost_entity() = default;
+		explicit GhostEntity() = default;
 	};
 }
