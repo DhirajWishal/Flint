@@ -4,7 +4,6 @@
 #pragma once
 
 #include "Engine.hpp"
-#include "EventSummary.hpp"
 
 namespace Flint
 {
@@ -47,47 +46,6 @@ namespace Flint
 		 * @return The const engine reference.
 		 */
 		[[nodiscard]] virtual const Engine& getEngine() const = 0;
-
-		/**
-		 * Get the event summary of the past frame.
-		 *
-		 * @return The event summary.
-		 */
-		[[nodiscard]] const EventSummary& getEventSummary() const { return m_EventSummary; }
-
-	protected:
-		/**
-		 * Poll all the events.
-		 */
-		bool pollEvents();
-
-	private:
-		/**
-		 * Handle the key event.
-		 *
-		 * @param scancode The scancode of the key.
-		 * @param pressed If the key is pressed or not.
-		 */
-		void handleKeyEvent(int32_t scancode, bool pressed);
-
-		/**
-		 * Handle the special characters.
-		 *
-		 * @param characters The special characters.
-		 * @param pressed If the key is pressed or not.
-		 */
-		void handleSpecialCharacter(uint64_t characters, bool pressed);
-
-		/**
-		 * Handle mouse button event.
-		 *
-		 * @param button The button number.
-		 * @param pressed Whether or not the button is pressed.
-		 */
-		void handleMouseButtonEvent(uint8_t button, bool pressed);
-
-	private:
-		EventSummary m_EventSummary = {};
 	};
 
 	/**
@@ -97,6 +55,8 @@ namespace Flint
 	template<class TEngine>
 	class WindowCRTP : public Window
 	{
+		static_assert(std::is_base_of_v<Engine, TEngine>, "Invalid engine type! Make sure that the 'TEngine' type is derived from 'Engine'.");
+
 	public:
 		/**
 		 * Explicit constructor.

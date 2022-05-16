@@ -16,6 +16,8 @@ add_library(
 	"Source/StaticEntity.cpp"
 	"Source/Window.cpp"
 
+	"Source/EventSystem/EventSystem.cpp"
+
 	"Entity.hpp"
 	"GhostEntity.hpp"
 	"StaticEntity.hpp"
@@ -23,12 +25,15 @@ add_library(
 	"Engine.hpp" 
 	"FObject.hpp"
 	"Window.hpp" 
-	"EventSummary.hpp"
-
+	
 	"Errors/AssetError.hpp"
 	"Errors/BackendError.hpp" 
 	
 	"Containers/Bitset.hpp" 
+
+	"EventSystem/EventSystem.hpp"
+	"EventSystem/Keyboard.hpp"
+	"EventSystem/Mouse.hpp"
 )
 
 # Set the include directories.
