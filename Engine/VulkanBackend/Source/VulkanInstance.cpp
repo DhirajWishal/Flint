@@ -12,9 +12,6 @@
 #if defined(FLINT_PLATFORM_WINDOWS)
 #include <vulkan/vulkan_win32.h>
 
-#elif defined(FLINT_PLATFORM_LINUX)
-#include <vulkan/vulkan_xlib.h>
-
 #endif
 
 namespace /* anonymous */
@@ -64,11 +61,50 @@ namespace /* anonymous */
 	{
 		std::vector<const char*> extensions = { VK_KHR_SURFACE_EXTENSION_NAME , VK_KHR_DISPLAY_EXTENSION_NAME };
 
-#ifdef FLINT_PLATFORM_WINDOWS
+#if defined(VK_KHR_ANDROID_SURFACE_EXTENSION_NAME)
+		extensions.emplace_back(VK_KHR_ANDROID_SURFACE_EXTENSION_NAME);
+
+#elif defined(VK_FUCHSIA_IMAGEPIPE_SURFACE_EXTENSION_NAME)
+		extensions.emplace_back(VK_FUCHSIA_IMAGEPIPE_SURFACE_EXTENSION_NAME);
+
+#elif defined(VK_FUCHSIA_IMAGEPIPE_SURFACE_EXTENSION_NAME)
+		extensions.emplace_back(VK_FUCHSIA_IMAGEPIPE_SURFACE_EXTENSION_NAME);
+
+#elif defined(VK_MVK_IOS_SURFACE_EXTENSION_NAME)
+		extensions.emplace_back(VK_MVK_IOS_SURFACE_EXTENSION_NAME);
+
+#elif defined(VK_MVK_MACOS_SURFACE_EXTENSION_NAME)
+		extensions.emplace_back(VK_MVK_MACOS_SURFACE_EXTENSION_NAME);
+
+#elif defined(VK_EXT_METAL_SURFACE_EXTENSION_NAME)
+		extensions.emplace_back(VK_EXT_METAL_SURFACE_EXTENSION_NAME);
+
+#elif defined(VK_NN_VI_SURFACE_EXTENSION_NAME)
+		extensions.emplace_back(VK_NN_VI_SURFACE_EXTENSION_NAME);
+
+#elif defined(VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME)
+		extensions.emplace_back(VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME);
+
+#elif defined(FLINT_PLATFORM_WINDOWS)
 		extensions.emplace_back(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
 
-#else 
+#elif defined(VK_KHR_XCB_SURFACE_EXTENSION_NAME)
+		extensions.emplace_back(VK_KHR_XCB_SURFACE_EXTENSION_NAME);
+
+#elif defined(VK_KHR_XLIB_SURFACE_EXTENSION_NAME)
 		extensions.emplace_back(VK_KHR_XLIB_SURFACE_EXTENSION_NAME);
+
+#elif defined(VK_EXT_DIRECTFB_SURFACE_EXTENSION_NAME)
+		extensions.emplace_back(VK_EXT_DIRECTFB_SURFACE_EXTENSION_NAME);
+
+#elif defined(VK_EXT_ACQUIRE_XLIB_DISPLAY_EXTENSION_NAME)
+		extensions.emplace_back(VK_EXT_ACQUIRE_XLIB_DISPLAY_EXTENSION_NAME);
+
+#elif defined(VK_GGP_STREAM_DESCRIPTOR_SURFACE_EXTENSION_NAME)
+		extensions.emplace_back(VK_GGP_STREAM_DESCRIPTOR_SURFACE_EXTENSION_NAME);
+
+#elif defined(VK_QNX_SCREEN_SURFACE_EXTENSION_NAME)
+		extensions.emplace_back(VK_QNX_SCREEN_SURFACE_EXTENSION_NAME);
 
 #endif
 
