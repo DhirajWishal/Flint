@@ -7,9 +7,12 @@
 
 #include <cstdint>
 #include <string>
+#include <memory>
 
 namespace Flint
 {
+	class Engine;
+
 	/**
 	 * Backend API enum.
 	 */
@@ -73,6 +76,13 @@ namespace Flint
 		 * @return The application version.
 		 */
 		[[nodiscard]] uint32_t getApplicationVersion() const { return m_ApplicationVersion; }
+
+		/**
+		 * Create a new engine.
+		 *
+		 * @return The engine pointer.
+		 */
+		[[nodiscard]] virtual std::unique_ptr<Engine> createEngine() = 0;
 
 	private:
 		const std::string m_ApplicationName;

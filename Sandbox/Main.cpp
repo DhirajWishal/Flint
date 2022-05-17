@@ -17,7 +17,7 @@ int main()
 
 	// Note that the scope is here because the engine needs to be destructed BEFORE destroying the instance.
 	{
-		auto engine = Flint::VulkanBackend::VulkanEngine(instance);
+		auto pEngine = instance.createEngine();
 	}
 
 	return 0;

@@ -145,3 +145,8 @@ if (MSVC)
 	target_compile_options(SPIRV_Reflect PRIVATE "/MP")	
 	target_compile_options(volk PRIVATE "/MP")	
 endif ()
+
+# We need to set these because, it's not MSVC.
+if(NOT MSVC)
+	set(CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_LINK_EXECUTABLE} -ldl")
+endif ()
