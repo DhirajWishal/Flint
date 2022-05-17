@@ -27,7 +27,7 @@ int main()
 	{
 		auto pEngine = instance.createEngine();
 		{
-			auto pWindow = pEngine->createWindow("Sandbox", 1280, 720);
+			auto pWindow = pEngine->createWindow("Sandbox");
 
 			while (!eventSystem.shouldClose())
 			{

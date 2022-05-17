@@ -30,6 +30,9 @@ namespace Flint
 			if (!m_pWindow)
 				throw BackendError("Failed to create the window!");
 
+			// Refresh the size.
+			refreshExtent();
+
 			// Make sure to show the window.
 			SDL_ShowWindow(m_pWindow);
 
@@ -246,9 +249,6 @@ namespace Flint
 
 			m_SwapchainFormat = surfaceFormat.format;
 
-			// Get the extent.
-			const auto imageExtent = VkExtent2D{ m_Width, m_Height };
-
 			// Create the swap chain.
 			VkSwapchainCreateInfoKHR swapchainCreateInfo = {};
 			swapchainCreateInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
@@ -258,7 +258,8 @@ namespace Flint
 			swapchainCreateInfo.minImageCount = m_FrameCount;
 			swapchainCreateInfo.imageFormat = m_SwapchainFormat;
 			swapchainCreateInfo.imageColorSpace = surfaceFormat.colorSpace;
-			swapchainCreateInfo.imageExtent = imageExtent;
+			swapchainCreateInfo.imageExtent.width = m_Width;
+			swapchainCreateInfo.imageExtent.height = m_Height;
 			swapchainCreateInfo.imageArrayLayers = 1;
 			swapchainCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
 			swapchainCreateInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
@@ -392,16 +393,14 @@ namespace Flint
 
 		void VulkanWindow::createFramebuffers()
 		{
-			const auto imageExtent = VkExtent2D{ m_Width, m_Height };
-
 			VkFramebufferCreateInfo frameBufferCreateInfo = {};
 			frameBufferCreateInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 			frameBufferCreateInfo.pNext = VK_NULL_HANDLE;
 			frameBufferCreateInfo.flags = 0;
 			frameBufferCreateInfo.renderPass = m_RenderPass;
 			frameBufferCreateInfo.attachmentCount = 1;
-			frameBufferCreateInfo.width = imageExtent.width;
-			frameBufferCreateInfo.height = imageExtent.height;
+			frameBufferCreateInfo.width = m_Width;
+			frameBufferCreateInfo.height = m_Height;
 			frameBufferCreateInfo.layers = 1;
 
 			// Iterate and create the frame buffers.

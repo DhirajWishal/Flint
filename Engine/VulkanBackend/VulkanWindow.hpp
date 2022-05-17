@@ -62,7 +62,7 @@ namespace Flint
 			 *
 			 * @return The buffer count.
 			 */
-			uint32_t getBestBufferCount() const;
+			[[nodiscard]] uint32_t getBestBufferCount() const;
 
 			/**
 			 * Refresh the extent by getting the latest window extent.
