@@ -57,7 +57,7 @@ namespace Flint
 
 			case SDL_TEXTINPUT:
 				m_Keyboard.m_TextInput = sdlEvent.text.text;
-				break;
+				return EventType::Keyboard;
 
 			case SDL_KEYMAPCHANGED:
 				break;
@@ -81,7 +81,7 @@ namespace Flint
 			case SDL_MOUSEWHEEL:
 				m_Mouse.m_ScrollX = sdlEvent.wheel.preciseX;
 				m_Mouse.m_ScrollY = sdlEvent.wheel.preciseY;
-				break;
+				return EventType::Mouse;
 
 			case SDL_JOYAXISMOTION:
 			case SDL_JOYBALLMOTION:

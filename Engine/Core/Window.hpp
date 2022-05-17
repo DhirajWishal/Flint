@@ -15,9 +15,11 @@ namespace Flint
 	{
 	public:
 		/**
-		 * Default constructor.
+		 * Explicit constructor.
+		 *
+		 * @param engine The engine to which this window is bound to.
 		 */
-		Window();
+		explicit Window(Engine& engine);
 
 		/**
 		 * Default virtual destructor.
@@ -38,68 +40,34 @@ namespace Flint
 		 *
 		 * @return The engine reference.
 		 */
-		[[nodiscard]] virtual Engine& getEngine() = 0;
+		[[nodiscard]] Engine& getEngine() { return m_Engine; }
 
 		/**
 		 * Get the engine to which this window is bound to.
 		 *
 		 * @return The const engine reference.
 		 */
-		[[nodiscard]] virtual const Engine& getEngine() const = 0;
-	};
+		[[nodiscard]] const Engine& getEngine() const { return m_Engine; }
 
-	/**
-	 * Window CRTP class.
-	 * This class is the static polymorphic class for the Window.
-	 */
-	template<class TEngine>
-	class WindowCRTP : public Window
-	{
-		static_assert(std::is_base_of_v<Engine, TEngine>, "Invalid engine type! Make sure that the 'TEngine' type is derived from 'Engine'.");
-
-	public:
 		/**
-		 * Explicit constructor.
+		 * Get the casted engine to which this window is bound to.
 		 *
-		 * @param engine The engine to which this window is bound to.
+		 * @tparam Type The type to cast to.
+		 * @return The type reference.
 		 */
-		explicit WindowCRTP(TEngine& engine) : m_Engine(engine) {}
+		template<class Type>
+		[[nodiscard]] Type& getEngineAs() { return *m_Engine.as<Type>(); }
 
 		/**
-		 * Default virtual destructor.
-		 */
-		virtual ~WindowCRTP() = default;
-
-		/**
-		 * Get the actual engine to which this window is bound to.
+		 * Get the casted engine to which this window is bound to.
 		 *
-		 * @return The engine reference.
+		 * @tparam Type The type to cast to.
+		 * @return The const type reference.
 		 */
-		[[nodiscard]] TEngine& getEngineCRTP() { return m_Engine; }
-
-		/**
-		 * Get the actual engine to which this window is bound to.
-		 *
-		 * @return The const engine reference.
-		 */
-		[[nodiscard]] const TEngine& getEngineCRTP() const { return m_Engine; }
+		template<class Type>
+		[[nodiscard]] const Type& getEngineAs() const { return *m_Engine.as<Type>(); }
 
 	private:
-		/**
-		 * Get the engine to which this window is bound to.
-		 *
-		 * @return The engine reference.
-		 */
-		[[nodiscard]] Engine& getEngine() final { return *m_Engine.as<Engine>(); }
-
-		/**
-		 * Get the engine to which this window is bound to.
-		 *
-		 * @return The const engine reference.
-		 */
-		[[nodiscard]] const Engine& getEngine() const final { return *m_Engine.as<Engine>(); }
-
-	private:
-		TEngine& m_Engine;
+		Engine& m_Engine;
 	};
 }

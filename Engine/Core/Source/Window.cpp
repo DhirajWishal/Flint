@@ -35,7 +35,8 @@ namespace /* anonymous */
 
 namespace Flint
 {
-	Window::Window()
+	Window::Window(Engine& engine)
+		: m_Engine(engine)
 	{
 		// Create the static initializer.
 		static StaticInitializer initializer;

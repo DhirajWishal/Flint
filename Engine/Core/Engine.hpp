@@ -18,9 +18,11 @@ namespace Flint
 	{
 	public:
 		/**
-		 * Default constructor.
+		 * Explicit constructor.
+		 *
+		 * @param instance The instance to create the engine with.
 		 */
-		constexpr Engine() = default;
+		explicit Engine(Instance& instance) : m_Instance(instance) {}
 
 		/**
 		 * Default virtual destructor.
@@ -32,70 +34,36 @@ namespace Flint
 		 *
 		 * @return The instance reference.
 		 */
-		[[nodiscard]] virtual Instance& getInstance() = 0;
+		[[nodiscard]] Instance& getInstance() { return m_Instance; }
 
 		/**
 		 * Get the instance.
 		 *
 		 * @return The const instance reference.
 		 */
-		[[nodiscard]] virtual const Instance& getInstance() const = 0;
-	};
+		[[nodiscard]] const Instance& getInstance() const { return m_Instance; }
 
-	/**
-	 * Engine CRTP class.
-	 * This class is the static polymorphic type of the engine.
-	 *
-	 * @tparam TInstance The instance type.
-	 */
-	template<class TInstance>
-	class EngineCRTP : public Engine
-	{
-		static_assert(std::is_base_of_v<Instance, TInstance>, "Invalid instance type! Make sure that the 'TInstance' type is derived from 'Instance'.");
-
-	public:
 		/**
-		 * Explicit constructor.
+		 * Get the instance casted to another type.
+		 * This is used in inheritance.
 		 *
-		 * @param instance The instance to create the engine with.
+		 * @tparam Type The type to cast to.
+		 * @return The type reference.
 		 */
-		explicit EngineCRTP(TInstance& instance) : m_Instance(instance) {}
+		template<class Type>
+		[[nodiscard]] Type& getInstanceAs() { return *m_Instance.as<Type>(); }
 
 		/**
-		 * Default virtual destructor.
-		 */
-		virtual ~EngineCRTP() = default;
-
-		/**
-		 * Get the actual instance.
+		 * Get the instance casted to another type.
+		 * This is used in inheritance.
 		 *
-		 * @return The instance reference.
+		 * @tparam Type The type to cast to.
+		 * @return The const type reference.
 		 */
-		[[nodiscard]] TInstance& getInstanceCRTP() { return m_Instance; }
-
-		/**
-		 * Get the actual instance.
-		 *
-		 * @return The const instance reference.
-		 */
-		[[nodiscard]] const TInstance& getInstanceCRTP() const { return m_Instance; }
+		template<class Type>
+		[[nodiscard]] const Type& getInstanceAs() const { return *m_Instance.as<Type>(); }
 
 	private:
-		/**
-		 * Get the instance.
-		 *
-		 * @return The instance reference.
-		 */
-		[[nodiscard]] Instance& getInstance() final { return *m_Instance.as<Instance>(); }
-
-		/**
-		 * Get the instance.
-		 *
-		 * @return The const instance reference.
-		 */
-		[[nodiscard]] const Instance& getInstance() const final { return *m_Instance.as<Instance>(); }
-
-	private:
-		TInstance& m_Instance;
+		Instance& m_Instance;
 	};
 }

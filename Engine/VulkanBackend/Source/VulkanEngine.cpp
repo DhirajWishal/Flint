@@ -117,7 +117,7 @@ namespace Flint
 	namespace VulkanBackend
 	{
 		VulkanEngine::VulkanEngine(VulkanInstance& instance)
-			: EngineCRTP(instance)
+			: Engine(instance)
 		{
 			// Select a physical device.
 			selectPhysicalDevice();
@@ -145,14 +145,14 @@ namespace Flint
 
 			// Enumerate physical devices.
 			uint32_t deviceCount = 0;
-			FLINT_VK_ASSERT(vkEnumeratePhysicalDevices(getInstanceCRTP().getInstance(), &deviceCount, nullptr), "Failed to enumerate physical devices.");
+			FLINT_VK_ASSERT(vkEnumeratePhysicalDevices(getInstanceAs<VulkanInstance>().getInstance(), &deviceCount, nullptr), "Failed to enumerate physical devices.");
 
 			// Throw an error if there are no physical devices available.
 			if (deviceCount == 0)
 				throw BackendError("No physical devices found!");
 
 			std::vector<VkPhysicalDevice> candidates(deviceCount);
-			FLINT_VK_ASSERT(vkEnumeratePhysicalDevices(getInstanceCRTP().getInstance(), &deviceCount, candidates.data()), "Failed to enumerate physical devices.");
+			FLINT_VK_ASSERT(vkEnumeratePhysicalDevices(getInstanceAs<VulkanInstance>().getInstance(), &deviceCount, candidates.data()), "Failed to enumerate physical devices.");
 
 			struct Candidate { VkPhysicalDeviceProperties m_Properties; VkPhysicalDevice m_Candidate; };
 			std::array<Candidate, 6> priorityMap = { Candidate() };
@@ -269,11 +269,11 @@ namespace Flint
 			deviceCreateInfo.ppEnabledExtensionNames = m_DeviceExtensions.data();
 			deviceCreateInfo.pEnabledFeatures = &features;
 
-			if (getInstanceCRTP().isValidationEnabled())
+			if (getInstanceAs<VulkanInstance>().isValidationEnabled())
 			{
 				// Get the validation layers and initialize it.
-				deviceCreateInfo.enabledLayerCount = static_cast<uint32_t>(getInstanceCRTP().getValidationLayers().size());
-				deviceCreateInfo.ppEnabledLayerNames = getInstanceCRTP().getValidationLayers().data();
+				deviceCreateInfo.enabledLayerCount = static_cast<uint32_t>(getInstanceAs<VulkanInstance>().getValidationLayers().size());
+				deviceCreateInfo.ppEnabledLayerNames = getInstanceAs<VulkanInstance>().getValidationLayers().data();
 			}
 
 			// Create the device.
@@ -330,7 +330,7 @@ namespace Flint
 			createInfo.physicalDevice = m_PhysicalDevice;
 			createInfo.device = m_LogicalDevice;
 			createInfo.pVulkanFunctions = &functions;
-			createInfo.instance = getInstanceCRTP().getInstance();
+			createInfo.instance = getInstanceAs<VulkanInstance>().getInstance();
 			createInfo.vulkanApiVersion = volkGetInstanceVersion();
 
 			// Create the allocator.

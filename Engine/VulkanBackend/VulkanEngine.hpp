@@ -15,7 +15,7 @@ namespace Flint
 		/**
 		 * Vulkan engine class.
 		 */
-		class VulkanEngine final : public EngineCRTP<VulkanInstance>
+		class VulkanEngine final : public Engine
 		{
 			/**
 			 * Vulkan queue structure.
