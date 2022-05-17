@@ -41,6 +41,21 @@ namespace Flint
 			~VulkanEngine() override;
 
 			/**
+			 * Wait till all the commands have finished execution.
+			 */
+			void waitIdle() override;
+
+			/**
+			 * Create a new window.
+			 * @ref Window.hpp
+			 *
+			 * @param title The window title.
+			 * @param width The width of the window. Default is -1.
+			 * @param height The height of the window. Default is -1.
+			 */
+			[[nodiscard]] std::unique_ptr<Window> createWindow(std::string&& title, uint32_t width = -1, uint32_t height = -1) override;
+
+			/**
 			 * Get the physical device properties.
 			 *
 			 * @return The physical device properties.

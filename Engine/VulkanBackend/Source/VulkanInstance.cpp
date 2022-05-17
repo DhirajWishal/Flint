@@ -9,6 +9,14 @@
 
 #include <spdlog/spdlog.h>
 
+#if defined(FLINT_PLATFORM_WINDOWS)
+#include <vulkan/vulkan_win32.h>
+
+#elif defined(FLINT_PLATFORM_LINUX)
+#include <vulkan/vulkan_xlib.h>
+
+#endif
+
 namespace /* anonymous */
 {
 	/**
@@ -54,9 +62,17 @@ namespace /* anonymous */
 	 */
 	std::vector<const char*> GetRequiredInstanceExtensions(bool enableValidation)
 	{
-		std::vector<const char*> extensions;
-		extensions.emplace_back(VK_KHR_SURFACE_EXTENSION_NAME);
+		std::vector<const char*> extensions = { VK_KHR_SURFACE_EXTENSION_NAME , VK_KHR_DISPLAY_EXTENSION_NAME };
 
+#ifdef FLINT_PLATFORM_WINDOWS
+		extensions.emplace_back(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
+
+#else 
+		extensions.emplace_back(VK_KHR_XLIB_SURFACE_EXTENSION_NAME);
+
+#endif
+
+		// If validation is enabled, we need the following extension.
 		if (enableValidation)
 			extensions.emplace_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 

@@ -35,8 +35,8 @@ namespace /* anonymous */
 
 namespace Flint
 {
-	Window::Window(Engine& engine)
-		: m_Engine(engine)
+	Window::Window(Engine& engine, std::string&& title, uint32_t width /*= -1*/, uint32_t height /*= -1*/)
+		: m_Engine(engine), m_Title(std::move(title)), m_Width(width), m_Height(height)
 	{
 		// Create the static initializer.
 		static StaticInitializer initializer;

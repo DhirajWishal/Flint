@@ -25,3 +25,7 @@ set_property(TARGET Sandbox PROPERTY CXX_STANDARD 20)
 if (MSVC)
 	target_compile_options(Sandbox PRIVATE "/MP")	
 endif ()
+
+# Copy the required files.
+file(GLOB SDL_BUILDS_TO_COPY "${CMAKE_BINARY_DIR}/ThirdParty/SDL/*")
+file(COPY ${SDL_BUILDS_TO_COPY} DESTINATION ${CMAKE_BINARY_DIR}/Sandbox)

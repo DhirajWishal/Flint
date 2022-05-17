@@ -7,6 +7,8 @@
 
 namespace Flint
 {
+	class Window;
+
 	/**
 	 * Engine class.
 	 * This class contains everything that's needed for a single engine instance.
@@ -28,6 +30,11 @@ namespace Flint
 		 * Default virtual destructor.
 		 */
 		virtual ~Engine() = default;
+
+		/**
+		 * Halt the engine till all the commands and everything else is executed.
+		 */
+		virtual void waitIdle() = 0;
 
 		/**
 		 * Get the instance.
@@ -62,6 +69,16 @@ namespace Flint
 		 */
 		template<class Type>
 		[[nodiscard]] const Type& getInstanceAs() const { return *m_Instance.as<Type>(); }
+
+		/**
+		 * Create a new window.
+		 * @ref Window.hpp
+		 *
+		 * @param title The window title.
+		 * @param width The width of the window. Default is -1.
+		 * @param height The height of the window. Default is -1.
+		 */
+		[[nodiscard]] virtual std::unique_ptr<Window> createWindow(std::string&& title, uint32_t width = -1, uint32_t height = -1) = 0;
 
 	private:
 		Instance& m_Instance;

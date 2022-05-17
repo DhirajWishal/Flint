@@ -23,7 +23,7 @@ namespace Flint
 	 * Event system class.
 	 * This contains all the events. To update, call the poll() function and then all the events can be accessed.
 	 *
-	 * Note that the application needs just one instance of this.
+	 * Note that the application needs just one instance of this, and the poll method should be called after creating a Window.
 	 */
 	class EventSystem final
 	{

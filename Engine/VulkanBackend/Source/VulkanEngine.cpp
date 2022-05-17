@@ -3,6 +3,7 @@
 
 #include "VulkanBackend/VulkanEngine.hpp"
 #include "VulkanBackend/VulkanMacros.hpp"
+#include "VulkanBackend/VulkanWindow.hpp"
 
 #include <set>
 #include <array>
@@ -136,6 +137,16 @@ namespace Flint
 
 			// Destroy the logical device.
 			destroyLogicalDevice();
+		}
+
+		void VulkanEngine::waitIdle()
+		{
+			FLINT_VK_ASSERT(getDeviceTable().vkDeviceWaitIdle(m_LogicalDevice), "Failed to wait idle!");
+		}
+
+		std::unique_ptr<Flint::Window> VulkanEngine::createWindow(std::string&& title, uint32_t width /*= -1*/, uint32_t height /*= -1*/)
+		{
+			return std::make_unique<VulkanWindow>(*this, std::move(title), width, height);
 		}
 
 		void VulkanEngine::selectPhysicalDevice()

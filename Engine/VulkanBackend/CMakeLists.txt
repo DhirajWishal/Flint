@@ -16,11 +16,15 @@ add_library(
 	"Source/VulkanInstance.cpp"
 	"Source/VulkanEngine.cpp"
 	"Source/vk_mem_alloc.cpp"
+	"Source/VulkanWindow.cpp" 
+	"Source/VulkanCommandBuffers.cpp"
 	
 	"VulkanInstance.hpp"
 	"VulkanMacros.hpp"
 	"VulkanEngine.hpp"
- )
+	"VulkanWindow.hpp" 
+	"VulkanCommandBuffers.hpp"
+)
 
 # Set the include directories.
 target_include_directories(
