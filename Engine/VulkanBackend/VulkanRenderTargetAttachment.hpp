@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "core/RenderTargetAttachment.hpp"
+#include "Core/RenderTargetAttachment.hpp"
 #include "VulkanEngine.hpp"
 
 namespace Flint

@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "EngineBoundObject.hpp"
+#include "Rasterizer.hpp"
 
 namespace Flint
 {
