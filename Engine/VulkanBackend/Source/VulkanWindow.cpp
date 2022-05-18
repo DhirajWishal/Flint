@@ -26,6 +26,9 @@ namespace Flint
 			// Create the window.
 			m_pWindow = SDL_CreateWindow(getTitle().data(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, getWidth(), getHeight(), windowFlags);
 
+			// Set this class as user data.
+			SDL_SetWindowData(m_pWindow, "this", this);
+
 			// Check if we were able to create the window.
 			if (!m_pWindow)
 				throw BackendError("Failed to create the window!");
@@ -414,8 +417,8 @@ namespace Flint
 
 		void VulkanWindow::destroyFramebuffers()
 		{
-			for (uint32_t i = 0; i < m_FrameCount; i++)
-				getEngineAs<VulkanEngine>().getDeviceTable().vkDestroyFramebuffer(getEngineAs<VulkanEngine>().getLogicalDevice(), m_Framebuffers[i], nullptr);
+			for (const auto framebuffer : m_Framebuffers)
+				getEngineAs<VulkanEngine>().getDeviceTable().vkDestroyFramebuffer(getEngineAs<VulkanEngine>().getLogicalDevice(), framebuffer, nullptr);
 		}
 
 		void VulkanWindow::recreate()

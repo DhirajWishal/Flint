@@ -4,6 +4,7 @@
 #pragma once
 
 #include "Core/Engine.hpp"
+#include "Core/Types.hpp"
 #include "VulkanInstance.hpp"
 
 #include <vk_mem_alloc.h>
@@ -44,6 +45,13 @@ namespace Flint
 			 * Wait till all the commands have finished execution.
 			 */
 			void waitIdle() override;
+
+			/**
+			 * Get the max supported multisample count.
+			 *
+			 * @return The multisample count.
+			 */
+			[[nodiscard]] Multisample getMaximumMultisample() const override;
 
 			/**
 			 * Create a new window.
@@ -153,5 +161,32 @@ namespace Flint
 
 			VmaAllocator m_Allocator = nullptr;
 		};
+
+		namespace Utility
+		{
+			/**
+			 * Get the Vulkan sample count flag bits from multisample.
+			 *
+			 * @param multisample The multisample count.
+			 * @return The Vulkan sample count.
+			 */
+			[[nodiscard]] VkSampleCountFlagBits GetSampleCountFlagBits(Multisample multisample);
+
+			/**
+			 * Get the Vulkan image format from pixel format.
+			 *
+			 * @param format The pixel format.
+			 * @return The Vulkan format.
+			 */
+			[[nodiscard]] VkFormat GetImageFormat(PixelFormat format);
+
+			/**
+			 * Get the pipeline stage flags from access flags.
+			 *
+			 * @param flags Access flags.
+			 * @return The stage flags.
+			 */
+			[[nodiscard]] VkPipelineStageFlags GetPipelineStageFlags(VkAccessFlags flags);
+		}
 	}
 }

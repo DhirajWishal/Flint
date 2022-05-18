@@ -10,6 +10,20 @@ namespace Flint
 	class Window;
 
 	/**
+	 * Multisample enum.
+	 */
+	enum class Multisample : uint8_t
+	{
+		One,
+		Two,
+		Four,
+		Eight,
+		Sixteen,
+		ThirtyTwo,
+		SixtyFour
+	};
+
+	/**
 	 * Engine class.
 	 * This class contains everything that's needed for a single engine instance.
 	 *
@@ -35,6 +49,13 @@ namespace Flint
 		 * Halt the engine till all the commands and everything else is executed.
 		 */
 		virtual void waitIdle() = 0;
+
+		/**
+		 * Get the max supported multisample count.
+		 *
+		 * @return The multisample count.
+		 */
+		[[nodiscard]] virtual Multisample getMaximumMultisample() const = 0;
 
 		/**
 		 * Get the instance.

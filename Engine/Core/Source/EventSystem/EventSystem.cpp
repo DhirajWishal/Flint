@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "Core/EventSystem/EventSystem.hpp"
+#include "Core/Window.hpp"
 
 #include <SDL.h>
 
@@ -37,6 +38,7 @@ namespace Flint
 				break;
 
 			case SDL_WINDOWEVENT:
+				//const auto pWindow = reinterpret_cast<Window*>(SDL_GetWindowData(SDL_GetWindowFromID(sdlEvent.window.windowID), "this"));
 				break;
 
 			case SDL_SYSWMEVENT:

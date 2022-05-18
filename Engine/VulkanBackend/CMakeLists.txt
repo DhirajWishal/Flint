@@ -18,12 +18,20 @@ add_library(
 	"Source/vk_mem_alloc.cpp"
 	"Source/VulkanWindow.cpp" 
 	"Source/VulkanCommandBuffers.cpp"
+	"Source/VulkanRasterizer.cpp" 
+	"Source/VulkanColorAttachment.cpp" 
+	"Source/VulkanDepthAttachment.cpp" 
+	"Source/VulkanRenderTargetAttachment.cpp"
 	
 	"VulkanInstance.hpp"
 	"VulkanMacros.hpp"
 	"VulkanEngine.hpp"
 	"VulkanWindow.hpp" 
 	"VulkanCommandBuffers.hpp"
+	"VulkanRasterizer.hpp" 
+	"VulkanColorAttachment.hpp" 
+	"VulkanDepthAttachment.hpp"
+	"VulkanRenderTargetAttachment.hpp"
 )
 
 # Set the include directories.

@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Engine.hpp"
+#include "EngineBoundObject.hpp"
 
 namespace Flint
 {
@@ -11,7 +11,7 @@ namespace Flint
 	 * Window class.
 	 * This is a special class, as it contains all the processing stages and finally renders the image to the user using the window created as specified.
 	 */
-	class Window : public FObject
+	class Window : public EngineBoundObject
 	{
 	public:
 		/**
@@ -36,38 +36,6 @@ namespace Flint
 		virtual void update() = 0;
 
 		/**
-		 * Get the engine to which this window is bound to.
-		 *
-		 * @return The engine reference.
-		 */
-		[[nodiscard]] Engine& getEngine() { return m_Engine; }
-
-		/**
-		 * Get the engine to which this window is bound to.
-		 *
-		 * @return The const engine reference.
-		 */
-		[[nodiscard]] const Engine& getEngine() const { return m_Engine; }
-
-		/**
-		 * Get the casted engine to which this window is bound to.
-		 *
-		 * @tparam Type The type to cast to.
-		 * @return The type reference.
-		 */
-		template<class Type>
-		[[nodiscard]] Type& getEngineAs() { return *m_Engine.as<Type>(); }
-
-		/**
-		 * Get the casted engine to which this window is bound to.
-		 *
-		 * @tparam Type The type to cast to.
-		 * @return The const type reference.
-		 */
-		template<class Type>
-		[[nodiscard]] const Type& getEngineAs() const { return *m_Engine.as<Type>(); }
-
-		/**
 		 * Get the title of the window.
 		 *
 		 * @return The window title.
@@ -90,7 +58,6 @@ namespace Flint
 
 	private:
 		std::string m_Title;
-		Engine& m_Engine;
 
 	protected:
 		uint32_t m_Width = 0;

@@ -25,6 +25,12 @@ add_library(
 	"Engine.hpp" 
 	"FObject.hpp"
 	"Window.hpp" 
+	"RenderTarget.hpp"
+	"EngineBoundObject.hpp"
+	"Rasterizer.hpp"
+	"RayTracer.hpp"
+	"RenderTargetAttachment.hpp"
+	"Types.hpp"
 	
 	"Errors/AssetError.hpp"
 	"Errors/BackendError.hpp" 
