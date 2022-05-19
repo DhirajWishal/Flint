@@ -242,7 +242,7 @@ namespace Flint
 			applicationInfo.pApplicationName = getApplicationName().data();
 			applicationInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
 			applicationInfo.pEngineName = "FlintEngine";
-			applicationInfo.apiVersion = volkGetInstanceVersion();
+			applicationInfo.apiVersion = VulkanVersion;
 
 			// Setup the instance create info.
 			VkInstanceCreateInfo createInfo = {};

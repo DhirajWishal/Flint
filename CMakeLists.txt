@@ -106,6 +106,17 @@ add_library(
 	${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/volk/volk.c
 )
 
+# We need to set these because, it's not MSVC.
+if(NOT MSVC)
+	set(CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_LINK_EXECUTABLE} -ldl")
+	set(CMAKE_THREAD_LIBS_INIT "-lpthread")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+	set(CMAKE_HAVE_THREADS_LIBRARY 1)
+	set(CMAKE_USE_WIN32_THREADS_INIT 0)
+	set(CMAKE_USE_PTHREADS_INIT 1)
+	set(THREADS_PREFER_PTHREAD_FLAG ON)
+endif ()
+
 # Add the Vulkan headers as a target include directory.
 target_include_directories(volk PUBLIC ${VULKAN_HEADERS_INCLUDE_DIR})
 
@@ -144,15 +155,4 @@ if (MSVC)
 	target_compile_options(optick PRIVATE "/MP")	
 	target_compile_options(SPIRV_Reflect PRIVATE "/MP")	
 	target_compile_options(volk PRIVATE "/MP")	
-endif ()
-
-# We need to set these because, it's not MSVC.
-if(NOT MSVC)
-	set(CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_LINK_EXECUTABLE} -ldl")
-	set(CMAKE_THREAD_LIBS_INIT "-lpthread")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-	set(CMAKE_HAVE_THREADS_LIBRARY 1)
-	set(CMAKE_USE_WIN32_THREADS_INIT 0)
-	set(CMAKE_USE_PTHREADS_INIT 1)
-	set(THREADS_PREFER_PTHREAD_FLAG ON)
 endif ()

@@ -12,7 +12,7 @@ namespace Flint
 			: VulkanRenderTargetAttachment(engine, width, height, AttachmentType::Color, format, multisample)
 		{
 			// Create the image.
-			createImage(VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT);
+			createImage(VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_IMAGE_TILING_OPTIMAL);
 
 			// Create the image view.
 			createImageView(VK_IMAGE_ASPECT_COLOR_BIT);

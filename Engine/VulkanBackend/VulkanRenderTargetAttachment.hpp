@@ -61,8 +61,9 @@ namespace Flint
 			 * Create the image.
 			 *
 			 * @param usageFlags The image usage flags.
+			 * @param tiling The image tiling.
 			 */
-			void createImage(VkImageUsageFlags usageFlags);
+			void createImage(VkImageUsageFlags usageFlags, VkImageTiling tiling);
 
 			/**
 			 * Create the image view.

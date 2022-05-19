@@ -4,10 +4,14 @@
 #pragma once
 
 #include "Instance.hpp"
+#include "Types.hpp"
+
+#include <vector>
 
 namespace Flint
 {
 	class Window;
+	class Rasterizer;
 
 	/**
 	 * Multisample enum.
@@ -49,6 +53,13 @@ namespace Flint
 		 * Halt the engine till all the commands and everything else is executed.
 		 */
 		virtual void waitIdle() = 0;
+
+		/**
+		 * Get the best depth pixel format.
+		 *
+		 * @return The pixel format.
+		 */
+		[[nodiscard]] virtual PixelFormat getBestDepthFormat() const = 0;
 
 		/**
 		 * Get the max supported multisample count.
@@ -100,6 +111,19 @@ namespace Flint
 		 * @param height The height of the window. Default is -1.
 		 */
 		[[nodiscard]] virtual std::unique_ptr<Window> createWindow(std::string&& title, uint32_t width = -1, uint32_t height = -1) = 0;
+
+		/**
+		 * Create a new rasterizer.
+		 * @ref Rasterizer.hpp
+		 * 
+		 * @param width The width of the render target.
+		 * @param height The height of the render target.
+		 * @param frameCount The number of frames in the render target. This is usually set automatically by the Window.
+		 * @param attachmentDescriptions The attachment descriptions.
+		 * @param multisample The multisample count. Default is One.
+		 * @param exclusiveBuffering Whether or not to use one buffer/ attachment per frame. Default is false.
+		 */
+		[[nodiscard]] virtual std::unique_ptr<Rasterizer> createRasterizer(uint32_t width, uint32_t height, uint32_t frameCount, std::vector<AttachmentDescription>&& attachmentDescriptions, Multisample multisample = Multisample::One, bool exclusiveBuffering = false) = 0;
 
 	private:
 		Instance& m_Instance;

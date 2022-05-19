@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Rasterizer.hpp"
+#include "EngineBoundObject.hpp"
 
 namespace Flint
 {
@@ -56,11 +56,19 @@ namespace Flint
 		 */
 		[[nodiscard]] uint32_t getHeight() const { return m_Height; }
 
+		/**
+		 * Get the internal frame count.
+		 *
+		 * @return The frame count.
+		 */
+		[[nodiscard]] uint32_t getFrameCount() const { return m_FrameCount; }
+
 	private:
 		std::string m_Title;
 
 	protected:
 		uint32_t m_Width = 0;
 		uint32_t m_Height = 0;
+		uint32_t m_FrameCount = 0;
 	};
 }

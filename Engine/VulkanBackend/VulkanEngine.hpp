@@ -47,6 +47,13 @@ namespace Flint
 			void waitIdle() override;
 
 			/**
+			 * Get the best depth pixel format.
+			 *
+			 * @return The pixel format.
+			 */
+			[[nodiscard]] PixelFormat getBestDepthFormat() const override;
+
+			/**
 			 * Get the max supported multisample count.
 			 *
 			 * @return The multisample count.
@@ -62,6 +69,19 @@ namespace Flint
 			 * @param height The height of the window. Default is -1.
 			 */
 			[[nodiscard]] std::unique_ptr<Window> createWindow(std::string&& title, uint32_t width = -1, uint32_t height = -1) override;
+
+			/**
+			 * Create a new rasterizer.
+			 * @ref Rasterizer.hpp
+			 *
+			 * @param width The width of the render target.
+			 * @param height The height of the render target.
+			 * @param frameCount The number of frames in the render target. This is usually set automatically by the Window.
+			 * @param attachmentDescriptions The attachment descriptions.
+			 * @param multisample The multisample count. Default is One.
+			 * @param exclusiveBuffering Whether or not to use one buffer/ attachment per frame. Default is false.
+			 */
+			[[nodiscard]] std::unique_ptr<Rasterizer> createRasterizer(uint32_t width, uint32_t height, uint32_t frameCount, std::vector<AttachmentDescription>&& attachmentDescriptions, Multisample multisample = Multisample::One, bool exclusiveBuffering = false) override;
 
 			/**
 			 * Get the physical device properties.
@@ -181,12 +201,45 @@ namespace Flint
 			[[nodiscard]] VkFormat GetImageFormat(PixelFormat format);
 
 			/**
+			 * Get the pixel format from the Vulkan image format.
+			 *
+			 * @param format The Vulkan format.
+			 * @return The pixel format.
+			 */
+			[[nodiscard]] PixelFormat GetPixelFormat(VkFormat format);
+
+			/**
 			 * Get the pipeline stage flags from access flags.
 			 *
 			 * @param flags Access flags.
 			 * @return The stage flags.
 			 */
 			[[nodiscard]] VkPipelineStageFlags GetPipelineStageFlags(VkAccessFlags flags);
+
+			/**
+			 * Find the best supported format available.
+			 *
+			 * @param engine The Vulkan engine.
+			 * @param candidates The format candidates.
+			 * @param tiling The image tiling.
+			 * @param features The format features.
+			 *
+			 */
+			[[nodiscard]] VkFormat FindSupportedFormat(const VulkanEngine& engine, const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+
+			/**
+			 * Check if a format has the stencil component.
+			 *
+			 * @param format The format to check.
+			 */
+			[[nodiscard]] bool HasStencilComponent(VkFormat format);
+
+			/**
+			 * Find the best depth format.
+			 *
+			 * @param engine The Vulkan engine.
+			 */
+			[[nodiscard]] VkFormat FindDepthFormat(const VulkanEngine& engine);
 		}
 	}
 }

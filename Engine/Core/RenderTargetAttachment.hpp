@@ -3,20 +3,10 @@
 
 #pragma once
 
-#include "Types.hpp"
 #include "EngineBoundObject.hpp"
 
 namespace Flint
 {
-	/**
-	 * Attachment type enum.
-	 */
-	enum class AttachmentType : uint8_t
-	{
-		Color,
-		Depth
-	};
-
 	/**
 	 * Render target attachment class.
 	 * This class contains information about a single render target attachment image.
@@ -77,7 +67,7 @@ namespace Flint
 		 */
 		[[nodiscard]] Multisample getMultisample() const { return m_Multisample; }
 
-	private:
+	protected:
 		uint32_t m_Width = 0;
 		uint32_t m_Height = 0;
 

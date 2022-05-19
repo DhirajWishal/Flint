@@ -23,9 +23,10 @@ namespace Flint
 		 * @param frameCount The number of frames in the render target. This is usually set automatically by the Window.
 		 * @param attachmentDescriptions The attachment descriptions.
 		 * @param multisample The multisample count. Default is One.
+		 * @param exclusiveBuffering Whether or not to use one buffer/ attachment per frame. Default is false.
 		 */
-		explicit Rasterizer(Engine& engine, uint32_t width, uint32_t height, uint32_t frameCount, std::vector<AttachmentDescription>&& attachmentDescriptions, Multisample multisample = Multisample::One)
-			: RenderTarget(engine, width, height, frameCount, std::move(attachmentDescriptions), multisample) {}
+		explicit Rasterizer(Engine& engine, uint32_t width, uint32_t height, uint32_t frameCount, std::vector<AttachmentDescription>&& attachmentDescriptions, Multisample multisample = Multisample::One, bool exclusiveBuffering = false)
+			: RenderTarget(engine, width, height, frameCount, std::move(attachmentDescriptions), multisample, exclusiveBuffering) {}
 
 		/**
 		 * Default virtual destructor.

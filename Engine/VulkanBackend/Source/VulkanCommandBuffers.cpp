@@ -4,6 +4,7 @@
 #include "VulkanBackend/VulkanCommandBuffers.hpp"
 #include "VulkanBackend/VulkanMacros.hpp"
 #include "VulkanBackend/VulkanWindow.hpp"
+#include "VulkanBackend/VulkanRasterizer.hpp"
 
 namespace Flint
 {
@@ -88,6 +89,25 @@ namespace Flint
 			m_Engine.getDeviceTable().vkCmdEndRenderPass(m_CurrentCommandBuffer);
 		}
 
+		void VulkanCommandBuffers::bindRenderTarget(const VulkanRasterizer& rasterizer, const std::vector<VkClearValue>& clearColors) const
+		{
+			VkRenderPassBeginInfo renderPassBeginInfo = {};
+			renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+			renderPassBeginInfo.pNext = VK_NULL_HANDLE;
+			renderPassBeginInfo.renderPass = rasterizer.getRenderPass();
+			renderPassBeginInfo.framebuffer = rasterizer.getCurrentFramebuffer();
+			renderPassBeginInfo.renderArea.extent = VkExtent2D{ rasterizer.getWidth(), rasterizer.getHeight() };
+			renderPassBeginInfo.clearValueCount = static_cast<uint32_t>(clearColors.size());
+			renderPassBeginInfo.pClearValues = clearColors.data();
+
+			m_Engine.getDeviceTable().vkCmdBeginRenderPass(m_CurrentCommandBuffer, &renderPassBeginInfo, VkSubpassContents::VK_SUBPASS_CONTENTS_INLINE);
+		}
+
+		void VulkanCommandBuffers::unbindRenderTarget() const
+		{
+			m_Engine.getDeviceTable().vkCmdEndRenderPass(m_CurrentCommandBuffer);
+		}
+
 		void VulkanCommandBuffers::end()
 		{
 			// Just return if we are not recording.
@@ -98,20 +118,37 @@ namespace Flint
 			m_IsRecording = false;
 		}
 
-		void VulkanCommandBuffers::submit(VkSemaphore renderFinishedSemaphore, VkSemaphore inFlightSemaphore)
+		void VulkanCommandBuffers::submit(VkSemaphore renderFinishedSemaphore, VkSemaphore inFlightSemaphore, VkPipelineStageFlags waitStageMask /*= VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT*/)
 		{
-			const VkPipelineStageFlags vWaitStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-
 			// Create the submit info structure.
 			VkSubmitInfo submitInfo = {};
 			submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 			submitInfo.waitSemaphoreCount = 1;
 			submitInfo.pWaitSemaphores = &inFlightSemaphore;
-			submitInfo.pWaitDstStageMask = &vWaitStageMask;
 			submitInfo.commandBufferCount = 1;
 			submitInfo.pCommandBuffers = &m_CurrentCommandBuffer;
+			submitInfo.pWaitDstStageMask = &waitStageMask;
 			submitInfo.signalSemaphoreCount = 1;
 			submitInfo.pSignalSemaphores = &renderFinishedSemaphore;
+
+			// Submit the queue.
+			auto& fence = m_CommandFences[m_CurrentIndex];
+			FLINT_VK_ASSERT(m_Engine.getDeviceTable().vkQueueSubmit(m_Engine.getGraphicsQueue().m_Queue, 1, &submitInfo, fence.m_Fence), "Failed to submit the queue!");
+			fence.m_IsFree = false;
+		}
+
+		void VulkanCommandBuffers::submit(VkPipelineStageFlags waitStageMask /*= VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT*/)
+		{
+			// Create the submit info structure.
+			VkSubmitInfo submitInfo = {};
+			submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+			submitInfo.waitSemaphoreCount = 0;
+			submitInfo.pWaitSemaphores = nullptr;
+			submitInfo.commandBufferCount = 1;
+			submitInfo.pCommandBuffers = &m_CurrentCommandBuffer;
+			submitInfo.pWaitDstStageMask = &waitStageMask;
+			submitInfo.signalSemaphoreCount = 0;
+			submitInfo.pSignalSemaphores = nullptr;
 
 			// Submit the queue.
 			auto& fence = m_CommandFences[m_CurrentIndex];

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "VulkanBackend/VulkanWindow.hpp"
+#include "VulkanBackend/VulkanRasterizer.hpp"
 #include "Core/EventSystem/EventSystem.hpp"
 
 #ifdef FLINT_DEBUG
@@ -28,9 +29,11 @@ int main()
 		auto pEngine = instance.createEngine();
 		{
 			auto pWindow = pEngine->createWindow("Sandbox");
+			auto pRasterizer = pEngine->createRasterizer(1280, 720, pWindow->getFrameCount(), { Flint::Defaults::ColorAttachmentDescription, Flint::Defaults::DepthAttachmentDescription });
 
 			while (!eventSystem.shouldClose())
 			{
+				pRasterizer->update();
 				pWindow->update();
 				const auto events = eventSystem.poll();
 

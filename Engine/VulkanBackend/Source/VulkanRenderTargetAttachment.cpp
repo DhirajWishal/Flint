@@ -17,7 +17,7 @@ namespace Flint
 			destroyImage();
 		}
 
-		void VulkanRenderTargetAttachment::createImage(VkImageUsageFlags usageFlags)
+		void VulkanRenderTargetAttachment::createImage(VkImageUsageFlags usageFlags, VkImageTiling tiling)
 		{
 			// Setup image create info structure.
 			VkImageCreateInfo imageCreateInfo = {};
@@ -28,10 +28,11 @@ namespace Flint
 			imageCreateInfo.format = Utility::GetImageFormat(getFormat());
 			imageCreateInfo.extent.width = getWidth();
 			imageCreateInfo.extent.height = getHeight();
+			imageCreateInfo.extent.depth = 1;
 			imageCreateInfo.mipLevels = 1;
 			imageCreateInfo.arrayLayers = 1;
 			imageCreateInfo.samples = Utility::GetSampleCountFlagBits(getMultisample());
-			imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+			imageCreateInfo.tiling = tiling;
 			imageCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 			imageCreateInfo.queueFamilyIndexCount = 0;
 			imageCreateInfo.pQueueFamilyIndices = nullptr;
@@ -39,13 +40,11 @@ namespace Flint
 			imageCreateInfo.usage =
 				VK_IMAGE_USAGE_TRANSFER_SRC_BIT |	// We might use it to transfer data from this image.
 				VK_IMAGE_USAGE_TRANSFER_DST_BIT |	// We might use it to transfer data to this image.
-				VK_IMAGE_USAGE_SAMPLED_BIT |		// We might use it for rendering purposes.
-				VK_IMAGE_USAGE_STORAGE_BIT |		// We might use it for storage purposes, like for shadow maps.
 				usageFlags;
 
 			// Setup the allocation info.
 			VmaAllocationCreateInfo allocationCreateInfo = {};
-			allocationCreateInfo.usage = VMA_MEMORY_USAGE_GPU_ONLY;
+			allocationCreateInfo.usage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
 
 			// Create the image.
 			FLINT_VK_ASSERT(vmaCreateImage(getEngineAs<VulkanEngine>().getAllocator(), &imageCreateInfo, &allocationCreateInfo, &m_Image, &m_Allocation, nullptr), "Failed to create the image!");

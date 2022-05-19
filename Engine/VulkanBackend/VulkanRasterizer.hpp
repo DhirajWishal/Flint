@@ -5,6 +5,8 @@
 
 #include "Core/Rasterizer.hpp"
 #include "VulkanEngine.hpp"
+#include "VulkanCommandBuffers.hpp"
+#include "VulkanRenderTargetAttachment.hpp"
 
 namespace Flint
 {
@@ -15,6 +17,7 @@ namespace Flint
 		 */
 		class VulkanRasterizer final : public Rasterizer
 		{
+		public:
 			/**
 			 * Explicit constructor.
 			 *
@@ -24,15 +27,65 @@ namespace Flint
 			 * @param frameCount The number of frames in the render target. This is usually set automatically by the Window.
 			 * @param attachmentDescriptions The attachment descriptions.
 			 * @param multisample The multisample count. Default is One.
+			 * @param exclusiveBuffering Whether or not to use one buffer/ attachment per frame. Default is false.
 			 */
-			explicit VulkanRasterizer(Engine& engine, uint32_t width, uint32_t height, uint32_t frameCount, std::vector<AttachmentDescription>&& attachmentDescriptions, Multisample multisample = Multisample::One);
+			explicit VulkanRasterizer(Engine& engine, uint32_t width, uint32_t height, uint32_t frameCount, std::vector<AttachmentDescription>&& attachmentDescriptions, Multisample multisample = Multisample::One, bool exclusiveBuffering = false);
 
 			/**
 			 * Destructor.
 			 */
 			~VulkanRasterizer() override;
 
+			/**
+			 * Update the render target.
+			 * This will perform whatever operation that should be done.
+			 */
+			void update() override;
+
+			/**
+			 * Resize the render target.
+			 *
+			 * @param width The width of the render target.
+			 * @param height The height of the render target.
+			 */
+			void resize(uint32_t width, uint32_t height) override;
+
+			/**
+			 * Get the render target attachment at a given index.
+			 *
+			 * @param index The index of the attachment.
+			 * @return The attachment.
+			 */
+			[[nodiscard]] RenderTargetAttachment& getAttachment(uint32_t index) override;
+
+			/**
+			 * Get the render target attachment at a given index.
+			 *
+			 * @param index The index of the attachment.
+			 * @return The attachment.
+			 */
+			[[nodiscard]] const RenderTargetAttachment& getAttachment(uint32_t index) const override;
+
+			/**
+			 * Get the render pass.
+			 *
+			 * @return The render pass.
+			 */
+			[[nodiscard]] VkRenderPass getRenderPass() const { return m_RenderPass; }
+
+			/**
+			 * Get the current frame buffer.
+			 *
+			 * @return The frame buffer.
+			 */
+			[[nodiscard]] VkFramebuffer getCurrentFramebuffer() const { return m_Framebuffers[m_FrameIndex]; }
+
 		private:
+			/**
+			 * Create the attachments.
+			 */
+			void createAttachments();
+
 			/**
 			 * Create the render pass.
 			 */
@@ -54,7 +107,10 @@ namespace Flint
 			void destroyFramebuffers();
 
 		private:
+			std::vector<std::vector<std::unique_ptr<VulkanRenderTargetAttachment>>> m_pAttachments;
+
 			std::vector<VkFramebuffer> m_Framebuffers;
+			std::unique_ptr<VulkanCommandBuffers> m_pCommandBuffers = nullptr;
 
 			VkRenderPass m_RenderPass = VK_NULL_HANDLE;
 		};

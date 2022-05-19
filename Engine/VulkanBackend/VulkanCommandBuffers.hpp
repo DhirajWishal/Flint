@@ -10,6 +10,7 @@ namespace Flint
 	namespace VulkanBackend
 	{
 		class VulkanWindow;
+		class VulkanRasterizer;
 
 		/**
 		 * Vulkan command buffers class.
@@ -65,6 +66,19 @@ namespace Flint
 			void unbindWindow() const;
 
 			/**
+			 * Bind a rasterizer to the command buffer.
+			 *
+			 * @param rasterizer The rasterizer to bind.
+			 * @param clearColors The clear colors to bind.
+			 */
+			void bindRenderTarget(const VulkanRasterizer& rasterizer, const std::vector<VkClearValue>& clearColors) const;
+
+			/**
+			 * Unbind the bound render target.
+			 */
+			void unbindRenderTarget() const;
+
+			/**
 			 * End recording.
 			 */
 			void end();
@@ -74,8 +88,17 @@ namespace Flint
 			 *
 			 * @param renderFinishedSemaphore The render finished semaphore to be signaled.
 			 * @param inFlightSemaphore The in flight semaphore.
+			 * @param waitStageMask The wait stage mask to wait till completion. Default is color attachment output.
 			 */
-			void submit(VkSemaphore renderFinishedSemaphore, VkSemaphore inFlightSemaphore);
+			void submit(VkSemaphore renderFinishedSemaphore, VkSemaphore inFlightSemaphore, VkPipelineStageFlags waitStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+
+			/**
+			 * Submit the command buffer to the GPU to be executed.
+			 * This does not do any signaling operations.
+			 *
+			 * @param waitStageMask The wait stage mask to wait till completion. Default is color attachment output.
+			 */
+			void submit(VkPipelineStageFlags waitStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
 
 			/**
 			 * Select the next command buffer as the current buffer.

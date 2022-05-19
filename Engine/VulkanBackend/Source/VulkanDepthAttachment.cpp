@@ -12,7 +12,7 @@ namespace Flint
 			: VulkanRenderTargetAttachment(engine, width, height, AttachmentType::Depth, format, multisample)
 		{
 			// Create the image.
-			createImage(VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT);
+			createImage(VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_IMAGE_TILING_OPTIMAL);
 
 			// Create the image view.
 			createImageView(VK_IMAGE_ASPECT_DEPTH_BIT);

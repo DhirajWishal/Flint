@@ -14,6 +14,11 @@ namespace Flint
 	namespace VulkanBackend
 	{
 		/**
+		 * Vulkan API version that we will be using.
+		 */
+		constexpr auto VulkanVersion = VK_API_VERSION_1_3;
+
+		/**
 		 * Vulkan instance class.
 		 * This class contains the Vulkan instance and all it's related information.
 		 */

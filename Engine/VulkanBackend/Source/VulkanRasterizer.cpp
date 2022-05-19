@@ -12,32 +12,169 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanRasterizer::VulkanRasterizer(Engine& engine, uint32_t width, uint32_t height, uint32_t frameCount, std::vector<AttachmentDescription>&& attachmentDescriptions, Multisample multisample /*= Multisample::One*/)
-			: Rasterizer(engine, width, height, frameCount, std::move(attachmentDescriptions), multisample)
+		VulkanRasterizer::VulkanRasterizer(Engine& engine, uint32_t width, uint32_t height, uint32_t frameCount, std::vector<AttachmentDescription>&& attachmentDescriptions, Multisample multisample /*= Multisample::One*/, bool exclusiveBuffering /*= false*/)
+			: Rasterizer(engine, width, height, frameCount, std::move(attachmentDescriptions), multisample, exclusiveBuffering)
 		{
 			// Create the attachments.
-			for (const auto attachment : m_AttachmentDescriptions)
-			{
-				if (attachment.m_Type == AttachmentType::Color)
-					m_pAttachments.emplace_back(std::make_unique<VulkanColorAttachment>(getEngine(), width, height, attachment.m_Format, multisample));
-				else
-					m_pAttachments.emplace_back(std::make_unique<VulkanDepthAttachment>(getEngine(), width, height, attachment.m_Format, multisample));
-			}
+			createAttachments();
 
 			// Create the render pass.
 			createRenderPass();
 
 			// Create frame buffers.
 			createFramebuffers();
+
+			// Create the command buffers.
+			m_pCommandBuffers = std::make_unique<VulkanCommandBuffers>(getEngineAs<VulkanEngine>(), frameCount);
 		}
 
 		VulkanRasterizer::~VulkanRasterizer()
 		{
-			// Create the frame buffers.
-			createFramebuffers();
+			// Wait idle to finish everything we have prior to this.
+			getEngine().waitIdle();
+
+			// Destroy the frame buffers.
+			destroyFramebuffers();
 
 			// Destroy render pass.
 			destroyRenderPass();
+		}
+
+		void VulkanRasterizer::update()
+		{
+			// Begin the command buffer.
+			m_pCommandBuffers->begin();
+
+			// Bind the rasterizer.
+			VkClearValue colorClearValue = {};
+			colorClearValue.color.float32[0] = 0.0f;
+			colorClearValue.color.float32[1] = 0.0f;
+			colorClearValue.color.float32[2] = 0.0f;
+			colorClearValue.color.float32[3] = 1.0f;
+
+			VkClearValue depthClearValue = {};
+			depthClearValue.depthStencil.depth = 1.0f;
+			depthClearValue.depthStencil.stencil = 0;
+
+			m_pCommandBuffers->bindRenderTarget(*this, { colorClearValue, depthClearValue });
+
+			// Unbind the rasterizer.
+			m_pCommandBuffers->unbindRenderTarget();
+
+			// End the command buffer.
+			m_pCommandBuffers->end();
+
+			// Submit and get the next command buffer.
+			m_pCommandBuffers->submit();
+			m_pCommandBuffers->next();
+		}
+
+		void VulkanRasterizer::resize(uint32_t width, uint32_t height)
+		{
+			// Return if we have the same width and height.
+			if (getWidth() == width && getHeight() == height)
+				return;
+
+			// Wait idle to finish everything we have prior to this.
+			getEngine().waitIdle();
+
+			m_Width = width;
+			m_Height = height;
+
+			// Destroy the previous attachments.
+			m_pAttachments.clear();
+
+			// Destroy the frame buffers and render pass.
+			destroyFramebuffers();
+			destroyRenderPass();
+
+			// Create everything again.
+			createAttachments();
+			createRenderPass();
+			createFramebuffers();
+
+			// Reset the indexes.
+			m_FrameIndex = 0;
+			m_pCommandBuffers->resetIndex();
+		}
+
+		Flint::RenderTargetAttachment& VulkanRasterizer::getAttachment(uint32_t index)
+		{
+			return *m_pAttachments[m_ExclusiveBuffering * m_FrameIndex][index];
+		}
+
+		const Flint::RenderTargetAttachment& VulkanRasterizer::getAttachment(uint32_t index) const
+		{
+			return *m_pAttachments[m_ExclusiveBuffering * m_FrameIndex][index];
+		}
+
+		void VulkanRasterizer::createAttachments()
+		{
+			if (m_ExclusiveBuffering)
+				m_pAttachments.resize(m_FrameCount);
+
+			else
+				m_pAttachments.resize(1);
+
+			// Iterate over and create the attachments.
+			for (auto& pAttachment : m_pAttachments)
+			{
+				for (const auto attachment : m_AttachmentDescriptions)
+				{
+					if (attachment.m_Type == AttachmentType::Color)
+					{
+						if (attachment.m_Format == PixelFormat::Undefined)
+						{
+							// Find the best color format and return it.
+							pAttachment.emplace_back(
+								std::make_unique<VulkanColorAttachment>(
+									getEngine(),
+									m_Width,
+									m_Height,
+									Utility::GetPixelFormat(
+										Utility::FindSupportedFormat(
+											getEngineAs<VulkanEngine>(),
+											{ VK_FORMAT_R8G8B8A8_UNORM },
+											VK_IMAGE_TILING_OPTIMAL,
+											VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT |
+											VK_FORMAT_FEATURE_TRANSFER_SRC_BIT |
+											VK_FORMAT_FEATURE_TRANSFER_DST_BIT
+										)
+									),
+									m_Multisample)
+							);
+						}
+						else
+							pAttachment.emplace_back(std::make_unique<VulkanColorAttachment>(getEngine(), m_Width, m_Height, attachment.m_Format, m_Multisample));
+					}
+					else
+					{
+						if (attachment.m_Format == PixelFormat::Undefined)
+						{
+							// Find the best depth format and return it.
+							pAttachment.emplace_back(
+								std::make_unique<VulkanDepthAttachment>(
+									getEngine(),
+									m_Width,
+									m_Height,
+									Utility::GetPixelFormat(
+										Utility::FindSupportedFormat(
+											getEngineAs<VulkanEngine>(),
+											{ VK_FORMAT_D16_UNORM, VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
+											VK_IMAGE_TILING_OPTIMAL,
+											VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT |
+											VK_FORMAT_FEATURE_TRANSFER_SRC_BIT |
+											VK_FORMAT_FEATURE_TRANSFER_DST_BIT
+										)
+									),
+									m_Multisample)
+							);
+						}
+						else
+							pAttachment.emplace_back(std::make_unique<VulkanDepthAttachment>(getEngine(), m_Width, m_Height, attachment.m_Format, m_Multisample));
+					}
+				}
+			}
 		}
 
 		void VulkanRasterizer::createRenderPass()
@@ -48,10 +185,12 @@ namespace Flint
 			std::vector<VkAttachmentDescription> attachmentDescriptions;
 
 			VkAttachmentReference attachmentReference = {};
-			for (const auto& pAttachment : m_pAttachments)
+
+			// Note that here we just need to get them from one attachment, because it's the same for the rest.
+			for (const auto& pAttachment : m_pAttachments[0])
 			{
 				// Get the attachment.
-				const auto pVulkanAttachment = pAttachment->as<VulkanRenderTargetAttachment>();
+				const auto pVulkanAttachment = pAttachment.get();
 				attachmentDescriptions.emplace_back(pVulkanAttachment->getAttachmentDescription());
 
 				// Add it as a color attachment if its a color attachment. If not, as a depth attachment.
@@ -123,30 +262,30 @@ namespace Flint
 
 		void VulkanRasterizer::createFramebuffers()
 		{
-			// Get the image views.
-			std::vector<VkImageView> imageViews;
-			imageViews.reserve(m_pAttachments.size());
-			for (const auto& pAttachment : m_pAttachments)
-			{
-				const auto pVulkanAttachment = pAttachment->as<VulkanRenderTargetAttachment>();
-				imageViews.emplace_back(pVulkanAttachment->getImageView());
-			}
-
 			VkFramebufferCreateInfo frameBufferCreateInfo = {};
 			frameBufferCreateInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 			frameBufferCreateInfo.pNext = VK_NULL_HANDLE;
 			frameBufferCreateInfo.flags = 0;
 			frameBufferCreateInfo.renderPass = m_RenderPass;
-			frameBufferCreateInfo.attachmentCount = 1;
 			frameBufferCreateInfo.width = getWidth();
 			frameBufferCreateInfo.height = getHeight();
 			frameBufferCreateInfo.layers = 1;
-			frameBufferCreateInfo.pAttachments = imageViews.data();
 
 			// Iterate and create the frame buffers.
 			m_Framebuffers.resize(getFrameCount());
 			for (uint8_t i = 0; i < getFrameCount(); i++)
+			{
+				// Get the image views.
+				std::vector<VkImageView> imageViews;
+				imageViews.reserve(m_pAttachments.size());
+				for (const auto& pAttachment : m_pAttachments[m_ExclusiveBuffering * i])
+					imageViews.emplace_back(pAttachment.get()->getImageView());
+
+				frameBufferCreateInfo.attachmentCount = static_cast<uint32_t>(imageViews.size());
+				frameBufferCreateInfo.pAttachments = imageViews.data();
+
 				FLINT_VK_ASSERT(getEngineAs<VulkanEngine>().getDeviceTable().vkCreateFramebuffer(getEngineAs<VulkanEngine>().getLogicalDevice(), &frameBufferCreateInfo, nullptr, &m_Framebuffers[i]), "Failed to create the frame buffer!");
+			}
 		}
 
 		void VulkanRasterizer::destroyFramebuffers()

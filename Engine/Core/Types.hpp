@@ -48,4 +48,38 @@ namespace Flint
 		D24_UNORMAL_S8_UINT,
 		D32_SFLOAT_S8_UINT,
 	};
+
+	/**
+	 * Attachment type enum.
+	 */
+	enum class AttachmentType : uint8_t
+	{
+		Color,
+		Depth
+	};
+
+	/**
+	 * Attachment description structure.
+	 * This structure describes information about a single render target attachment.
+	 */
+	struct AttachmentDescription final
+	{
+		PixelFormat m_Format = PixelFormat::Undefined;	// If set to undefined, the best suitable will be set automatically.
+		AttachmentType m_Type = AttachmentType::Color;
+	};
+
+	namespace Defaults
+	{
+		/**
+		 * Color attachment description variable.
+		 * This can be used to specify a default color attachment.
+		 */
+		constexpr auto ColorAttachmentDescription = AttachmentDescription{ PixelFormat::Undefined, AttachmentType::Color };
+
+		/**
+		 * Depth attachment description variable.
+		 * This can be used to specify a default depth attachment.
+		 */
+		constexpr auto DepthAttachmentDescription = AttachmentDescription{ PixelFormat::Undefined, AttachmentType::Depth };
+	}
 }

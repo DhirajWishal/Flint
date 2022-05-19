@@ -161,7 +161,6 @@ namespace Flint
 
 			VkFormat m_SwapchainFormat = VK_FORMAT_UNDEFINED;
 
-			uint32_t m_FrameCount = 0;
 			uint32_t m_FrameIndex = 0;
 			uint32_t m_ImageIndex = 0;
 
