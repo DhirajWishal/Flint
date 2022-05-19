@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "EngineBoundObject.hpp"
+#include "RenderTarget.hpp"
 
 namespace Flint
 {
@@ -34,6 +34,15 @@ namespace Flint
 		 * This will end the previous frame (if it's not the first frame), and begin the next frame. The user can update all the resources after this call.
 		 */
 		virtual void update() = 0;
+
+		/**
+		 * Add a dependency to the window.
+		 * This dependency will be copied to the frame.
+		 *
+		 * @param pRenderTarget The render target dependency.
+		 * @param attachment The render target's attachment to copy.
+		 */
+		void setDependency(const RenderTarget* pRenderTarget, uint32_t attachment);
 
 		/**
 		 * Get the title of the window.
@@ -67,6 +76,8 @@ namespace Flint
 		std::string m_Title;
 
 	protected:
+		std::pair<const RenderTarget*, uint32_t> m_Dependency;
+
 		uint32_t m_Width = 0;
 		uint32_t m_Height = 0;
 		uint32_t m_FrameCount = 0;

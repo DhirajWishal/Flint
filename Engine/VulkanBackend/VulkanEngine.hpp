@@ -13,6 +13,8 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
+		class VulkanCommandBuffers;
+
 		/**
 		 * Vulkan engine class.
 		 */
@@ -139,6 +141,20 @@ namespace Flint
 			 */
 			[[nodiscard]] VmaAllocator getAllocator() const { return m_Allocator; }
 
+			/**
+			 * Get the utility command buffer.
+			 *
+			 * @return The command buffer reference.
+			 */
+			[[nodiscard]] VulkanCommandBuffers& getUtilityCommandBuffer() { return *m_pUtilityCommandBuffer; }
+
+			/**
+			 * Get the utility command buffer.
+			 *
+			 * @return The const command buffer reference.
+			 */
+			[[nodiscard]] const VulkanCommandBuffers& getUtilityCommandBuffer() const { return *m_pUtilityCommandBuffer; }
+
 		private:
 			/**
 			 * Select the best physical device for the engine.
@@ -165,12 +181,19 @@ namespace Flint
 			 */
 			void destroyVMAAllocator();
 
+			/**
+			 * Create the utility command buffer.
+			 */
+			void createUtilityCommandBuffer();
+
 		private:
 			VkPhysicalDeviceProperties m_PhysicalDeviceProperties = {};
 
 			VolkDeviceTable m_DeviceTable = {};
 
 			std::vector<const char*> m_DeviceExtensions;
+
+			std::unique_ptr<VulkanCommandBuffers> m_pUtilityCommandBuffer = nullptr;
 
 			VulkanQueue m_GraphicsQueue;
 			VulkanQueue m_ComputeQueue;

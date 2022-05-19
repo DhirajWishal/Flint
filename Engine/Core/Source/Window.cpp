@@ -41,4 +41,9 @@ namespace Flint
 		// Create the static initializer.
 		static StaticInitializer initializer;
 	}
+
+	void Window::setDependency(const RenderTarget* pRenderTarget, uint32_t attachment)
+	{
+		m_Dependency = std::make_pair(pRenderTarget, attachment);
+	}
 }

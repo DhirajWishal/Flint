@@ -29,7 +29,8 @@ int main()
 		auto pEngine = instance.createEngine();
 		{
 			auto pWindow = pEngine->createWindow("Sandbox");
-			auto pRasterizer = pEngine->createRasterizer(1280, 720, pWindow->getFrameCount(), { Flint::Defaults::ColorAttachmentDescription, Flint::Defaults::DepthAttachmentDescription });
+			auto pRasterizer = pEngine->createRasterizer(pWindow->getWidth(), pWindow->getHeight(), pWindow->getFrameCount(), { Flint::Defaults::ColorAttachmentDescription, Flint::Defaults::DepthAttachmentDescription });
+			pWindow->setDependency(pRasterizer.get(), 0);
 
 			while (!eventSystem.shouldClose())
 			{

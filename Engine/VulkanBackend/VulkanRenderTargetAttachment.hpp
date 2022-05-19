@@ -50,6 +50,13 @@ namespace Flint
 			[[nodiscard]] virtual VkImageLayout getLayout() const = 0;
 
 			/**
+			 * Get the image.
+			 *
+			 * @return The image.
+			 */
+			[[nodiscard]] VkImage getImage() const { return m_Image; }
+
+			/**
 			 * Get the image view.
 			 *
 			 * @return The image view.

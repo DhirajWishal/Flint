@@ -40,6 +40,6 @@ namespace Flint
 		 * @return The type pointer.
 		 */
 		template<class Type>
-		[[nodiscard]] const Type* as() const { return static_cast<Type*>(this); }
+		[[nodiscard]] const Type* as() const { return static_cast<const Type*>(this); }
 	};
 }

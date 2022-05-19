@@ -5,6 +5,7 @@
 #include "VulkanBackend/VulkanMacros.hpp"
 #include "VulkanBackend/VulkanWindow.hpp"
 #include "VulkanBackend/VulkanRasterizer.hpp"
+#include "VulkanBackend/VulkanCommandBuffers.hpp"
 
 #include <set>
 #include <array>
@@ -129,10 +130,19 @@ namespace Flint
 
 			// Create the VMA allocator.
 			createVMAAllocator();
+
+			// Create the utility command buffer.
+			createUtilityCommandBuffer();
 		}
 
 		VulkanEngine::~VulkanEngine()
 		{
+			// Wait idle to make sure that we don't have anything running at the moment.
+			waitIdle();
+
+			// Destroy the utility command buffer.
+			m_pUtilityCommandBuffer.reset();
+
 			// Destroy the VMA allocator.
 			destroyVMAAllocator();
 
@@ -377,6 +387,11 @@ namespace Flint
 		void VulkanEngine::destroyVMAAllocator()
 		{
 			vmaDestroyAllocator(m_Allocator);
+		}
+
+		void VulkanEngine::createUtilityCommandBuffer()
+		{
+			m_pUtilityCommandBuffer = std::make_unique<VulkanCommandBuffers>(*this);
 		}
 
 		namespace Utility

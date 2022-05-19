@@ -41,6 +41,15 @@ namespace Flint
 			explicit VulkanCommandBuffers(VulkanEngine& engine, uint32_t bufferCount, VkCommandBufferLevel level = VK_COMMAND_BUFFER_LEVEL_PRIMARY);
 
 			/**
+			 * Explicit constructor.
+			 * This will create a utility command buffer.
+			 *
+			 * @param engine The engine to which the command buffer is bound to.
+			 * @param level The command buffer level. Default is primary.
+			 */
+			explicit VulkanCommandBuffers(VulkanEngine& engine, VkCommandBufferLevel level = VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+
+			/**
 			 * Destructor.
 			 */
 			~VulkanCommandBuffers();
@@ -79,6 +88,16 @@ namespace Flint
 			void unbindRenderTarget() const;
 
 			/**
+			 * Change the image layout of an image.
+			 *
+			 * @param image The image to change the layout of.
+			 * @param currentLayout The current layout of the image.
+			 * @param newLayout The new layout to change to.
+			 * @param aspectFlags The image aspect flags.
+			 */
+			void changeImageLayout(VkImage image, VkImageLayout currentLayout, VkImageLayout newLayout, VkImageAspectFlags aspectFlags) const;
+
+			/**
 			 * End recording.
 			 */
 			void end();
@@ -99,6 +118,11 @@ namespace Flint
 			 * @param waitStageMask The wait stage mask to wait till completion. Default is color attachment output.
 			 */
 			void submit(VkPipelineStageFlags waitStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+
+			/**
+			 * Wait till a command buffer finishes execution.
+			 */
+			void finishExecution();
 
 			/**
 			 * Select the next command buffer as the current buffer.
@@ -141,11 +165,6 @@ namespace Flint
 			 * Destroy the fences.
 			 */
 			void destroyFences();
-
-			/**
-			 * Wait till a command buffer finishes execution.
-			 */
-			void finishExecution();
 
 		private:
 			std::vector<VkCommandBuffer> m_CommandBuffers;

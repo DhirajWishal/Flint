@@ -81,6 +81,5 @@ namespace Flint
 		{
 			getEngineAs<VulkanEngine>().getDeviceTable().vkDestroyImageView(getEngineAs<VulkanEngine>().getLogicalDevice(), m_ImageView, nullptr);
 		}
-
 	}
 }

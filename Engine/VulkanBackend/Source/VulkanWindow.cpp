@@ -3,6 +3,7 @@
 
 #include "VulkanBackend/VulkanWindow.hpp"
 #include "VulkanBackend/VulkanMacros.hpp"
+#include "VulkanBackend/VulkanRenderTargetAttachment.hpp"
 
 #include <array>
 
@@ -483,6 +484,49 @@ namespace Flint
 
 			// Unbind the window.
 			m_pCommandBuffers->unbindWindow();
+
+			// If we have a dependency, let's copy it.
+			if (m_Dependency.first)
+			{
+				auto pAttachment = m_Dependency.first->getAttachment(m_Dependency.second).as<VulkanRenderTargetAttachment>();
+
+				VkOffset3D offsets = {};
+				offsets.x = 0;
+				offsets.y = 0;
+				offsets.z = 0;
+
+				VkImageSubresourceLayers subresourceLayers = {};
+				subresourceLayers.baseArrayLayer = 0;
+				subresourceLayers.layerCount = 1;
+				subresourceLayers.mipLevel = 0;
+				subresourceLayers.aspectMask = pAttachment->getType() == AttachmentType::Color ? VK_IMAGE_ASPECT_COLOR_BIT : VK_IMAGE_ASPECT_DEPTH_BIT;
+
+				VkImageCopy imageCopy = {};
+				imageCopy.dstOffset.x = 0;
+				imageCopy.dstOffset.y = 0;
+				imageCopy.dstOffset.z = 0;
+				imageCopy.dstSubresource = subresourceLayers;
+				imageCopy.srcOffset.x = 0;
+				imageCopy.srcOffset.y = 0;
+				imageCopy.srcOffset.z = 0;
+				imageCopy.srcSubresource = subresourceLayers;
+				imageCopy.extent.depth = 1;
+				imageCopy.extent.width = pAttachment->getWidth();
+				imageCopy.extent.height = pAttachment->getHeight();
+
+				const auto currentSwapchainImage = m_SwapchainImages[m_FrameIndex];
+
+				// Prepare to transfer.
+				m_pCommandBuffers->changeImageLayout(pAttachment->getImage(), pAttachment->getLayout(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, subresourceLayers.aspectMask);
+				m_pCommandBuffers->changeImageLayout(currentSwapchainImage, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_ASPECT_COLOR_BIT);
+
+				// Copy the image.
+				getEngineAs<VulkanEngine>().getDeviceTable().vkCmdCopyImage(m_pCommandBuffers->getCurrentBuffer(), pAttachment->getImage(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, currentSwapchainImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &imageCopy);
+
+				// Change back to previous.
+				m_pCommandBuffers->changeImageLayout(pAttachment->getImage(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, pAttachment->getLayout(), subresourceLayers.aspectMask);
+				m_pCommandBuffers->changeImageLayout(currentSwapchainImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_ASPECT_COLOR_BIT);
+			}
 
 			// End the command buffer recording.
 			m_pCommandBuffers->end();

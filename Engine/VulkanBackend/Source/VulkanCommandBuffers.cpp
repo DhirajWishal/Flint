@@ -40,6 +40,36 @@ namespace Flint
 			createFences();
 		}
 
+		VulkanCommandBuffers::VulkanCommandBuffers(VulkanEngine& engine, VkCommandBufferLevel level /*= VK_COMMAND_BUFFER_LEVEL_PRIMARY*/)
+			: m_Engine(engine)
+		{
+			// Create the command pool.
+			VkCommandPoolCreateInfo commandPoolCreateInfo = {};
+			commandPoolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+			commandPoolCreateInfo.pNext = nullptr;
+			commandPoolCreateInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+			commandPoolCreateInfo.queueFamilyIndex = m_Engine.getTransferQueue().m_Family;
+
+			FLINT_VK_ASSERT(m_Engine.getDeviceTable().vkCreateCommandPool(m_Engine.getLogicalDevice(), &commandPoolCreateInfo, nullptr, &m_CommandPool), "Failed to create the command pool!");
+
+			// Allocate the command buffers.
+			VkCommandBufferAllocateInfo allocateInfo = {};
+			allocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+			allocateInfo.pNext = nullptr;
+			allocateInfo.commandPool = m_CommandPool;
+			allocateInfo.level = level;
+			allocateInfo.commandBufferCount = 1;
+
+			m_CommandBuffers.resize(1);
+			FLINT_VK_ASSERT(m_Engine.getDeviceTable().vkAllocateCommandBuffers(m_Engine.getLogicalDevice(), &allocateInfo, m_CommandBuffers.data()), "Failed to allocate command buffers!");
+
+			// Get the current command buffer.
+			m_CurrentCommandBuffer = m_CommandBuffers[m_CurrentIndex];
+
+			// Create the fences.
+			createFences();
+		}
+
 		VulkanCommandBuffers::~VulkanCommandBuffers()
 		{
 			// Free the command buffers and destroy the pool.
@@ -108,6 +138,109 @@ namespace Flint
 			m_Engine.getDeviceTable().vkCmdEndRenderPass(m_CurrentCommandBuffer);
 		}
 
+		void VulkanCommandBuffers::changeImageLayout(VkImage image, VkImageLayout currentLayout, VkImageLayout newLayout, VkImageAspectFlags aspectFlags) const
+		{
+			// Create the memory barrier.
+			VkImageMemoryBarrier memorybarrier = {};
+			memorybarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+			memorybarrier.srcAccessMask = 0;
+			memorybarrier.dstAccessMask = 0;
+			memorybarrier.oldLayout = currentLayout;
+			memorybarrier.newLayout = newLayout;
+			memorybarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+			memorybarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+			memorybarrier.image = image;
+			memorybarrier.subresourceRange.aspectMask = aspectFlags;
+			memorybarrier.subresourceRange.baseMipLevel = 0;
+			memorybarrier.subresourceRange.levelCount = 1;
+			memorybarrier.subresourceRange.baseArrayLayer = 0;
+			memorybarrier.subresourceRange.layerCount = 1;
+
+			// Resolve the source access masks.
+			switch (currentLayout)
+			{
+			case VK_IMAGE_LAYOUT_GENERAL:
+			case VK_IMAGE_LAYOUT_UNDEFINED:
+				memorybarrier.srcAccessMask = 0;
+				break;
+
+			case VK_IMAGE_LAYOUT_PREINITIALIZED:
+				memorybarrier.srcAccessMask = VK_ACCESS_HOST_WRITE_BIT;
+				break;
+
+			case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
+				memorybarrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+				break;
+
+			case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
+				memorybarrier.srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+				break;
+
+			case VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL:
+				memorybarrier.srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT;
+				break;
+
+			case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
+				memorybarrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+				break;
+
+			case VK_IMAGE_LAYOUT_PRESENT_SRC_KHR:
+				//vMB.srcAccessMask = VK_ACCESS_;
+				break;
+
+			case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
+				memorybarrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+				break;
+
+			case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
+				memorybarrier.srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
+				break;
+
+			default:
+				throw BackendError("Unsupported layout transition!");
+			}
+
+			// Resolve the destination access masks.
+			switch (newLayout)
+			{
+			case VK_IMAGE_LAYOUT_UNDEFINED:
+			case VK_IMAGE_LAYOUT_GENERAL:
+			case VK_IMAGE_LAYOUT_PRESENT_SRC_KHR:
+				break;
+
+			case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
+				memorybarrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+				break;
+
+			case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
+				memorybarrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+				break;
+
+			case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
+				memorybarrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+				break;
+
+			case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
+				memorybarrier.dstAccessMask = memorybarrier.dstAccessMask | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+				break;
+
+			case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
+				memorybarrier.srcAccessMask |= VK_ACCESS_HOST_WRITE_BIT | VK_ACCESS_TRANSFER_WRITE_BIT;
+				memorybarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+				break;
+
+			default:
+				BackendError("Unsupported layout transition!");
+			}
+
+			// Resolve the pipeline stages.
+			const auto sourceStage = Utility::GetPipelineStageFlags(memorybarrier.srcAccessMask);
+			const auto destinationStage = Utility::GetPipelineStageFlags(memorybarrier.dstAccessMask);
+
+			// Issue the commands. 
+			m_Engine.getDeviceTable().vkCmdPipelineBarrier(m_CurrentCommandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &memorybarrier);
+		}
+
 		void VulkanCommandBuffers::end()
 		{
 			// Just return if we are not recording.
@@ -156,6 +289,18 @@ namespace Flint
 			fence.m_IsFree = false;
 		}
 
+		void VulkanCommandBuffers::finishExecution()
+		{
+			auto& fence = m_CommandFences[m_CurrentIndex];
+
+			// If the current fence is not free, we can wait.
+			if (!fence.m_IsFree)
+			{
+				FLINT_VK_ASSERT(m_Engine.getDeviceTable().vkWaitForFences(m_Engine.getLogicalDevice(), 1, &m_CommandFences[m_CurrentIndex].m_Fence, VK_TRUE, std::numeric_limits<uint64_t>::max()), "Failed to wait for the fence!");
+				FLINT_VK_ASSERT(m_Engine.getDeviceTable().vkResetFences(m_Engine.getLogicalDevice(), 1, &m_CommandFences[m_CurrentIndex].m_Fence), "Failed to reset fence!");
+			}
+		}
+
 		void VulkanCommandBuffers::next()
 		{
 			m_CurrentIndex = ++m_CurrentIndex % m_CommandBuffers.size();
@@ -185,18 +330,6 @@ namespace Flint
 		{
 			for (const auto fence : m_CommandFences)
 				m_Engine.getDeviceTable().vkDestroyFence(m_Engine.getLogicalDevice(), fence.m_Fence, nullptr);
-		}
-
-		void VulkanCommandBuffers::finishExecution()
-		{
-			auto& fence = m_CommandFences[m_CurrentIndex];
-
-			// If the current fence is not free, we can wait.
-			if (!fence.m_IsFree)
-			{
-				FLINT_VK_ASSERT(m_Engine.getDeviceTable().vkWaitForFences(m_Engine.getLogicalDevice(), 1, &m_CommandFences[m_CurrentIndex].m_Fence, VK_TRUE, std::numeric_limits<uint64_t>::max()), "Failed to wait for the fence!");
-				FLINT_VK_ASSERT(m_Engine.getDeviceTable().vkResetFences(m_Engine.getLogicalDevice(), 1, &m_CommandFences[m_CurrentIndex].m_Fence), "Failed to reset fence!");
-			}
 		}
 	}
 }
