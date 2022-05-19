@@ -333,7 +333,7 @@ namespace Flint
 			attachmentDescription.flags = 0;
 			attachmentDescription.format = m_SwapchainFormat;
 			attachmentDescription.samples = VK_SAMPLE_COUNT_1_BIT;
-			attachmentDescription.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+			attachmentDescription.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;	// TODO: Play around with this so that we don't do anything stupid with the depencency copy.
 			attachmentDescription.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
 			attachmentDescription.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 			attachmentDescription.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -473,18 +473,6 @@ namespace Flint
 			// Begin the command buffer recording.
 			m_pCommandBuffers->begin();
 
-			// Bind the window.
-			VkClearValue clearValue = {};
-			clearValue.color.float32[0] = 0.0f;
-			clearValue.color.float32[1] = 0.0f;
-			clearValue.color.float32[2] = 0.0f;
-			clearValue.color.float32[3] = 1.0f;
-
-			m_pCommandBuffers->bindWindow(*this, { clearValue });
-
-			// Unbind the window.
-			m_pCommandBuffers->unbindWindow();
-
 			// If we have a dependency, let's copy it.
 			if (m_Dependency.first)
 			{
@@ -518,7 +506,7 @@ namespace Flint
 
 				// Prepare to transfer.
 				m_pCommandBuffers->changeImageLayout(pAttachment->getImage(), pAttachment->getLayout(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, subresourceLayers.aspectMask);
-				m_pCommandBuffers->changeImageLayout(currentSwapchainImage, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_ASPECT_COLOR_BIT);
+				m_pCommandBuffers->changeImageLayout(currentSwapchainImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_ASPECT_COLOR_BIT);
 
 				// Copy the image.
 				getEngineAs<VulkanEngine>().getDeviceTable().vkCmdCopyImage(m_pCommandBuffers->getCurrentBuffer(), pAttachment->getImage(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, currentSwapchainImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &imageCopy);
@@ -527,6 +515,18 @@ namespace Flint
 				m_pCommandBuffers->changeImageLayout(pAttachment->getImage(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, pAttachment->getLayout(), subresourceLayers.aspectMask);
 				m_pCommandBuffers->changeImageLayout(currentSwapchainImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_ASPECT_COLOR_BIT);
 			}
+
+			// Bind the window.
+			VkClearValue clearValue = {};
+			clearValue.color.float32[0] = 0.0f;
+			clearValue.color.float32[1] = 0.0f;
+			clearValue.color.float32[2] = 0.0f;
+			clearValue.color.float32[3] = 1.0f;
+
+			m_pCommandBuffers->bindWindow(*this, { clearValue });
+
+			// Unbind the window.
+			m_pCommandBuffers->unbindWindow();
 
 			// End the command buffer recording.
 			m_pCommandBuffers->end();
