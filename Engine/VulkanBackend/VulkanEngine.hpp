@@ -193,7 +193,7 @@ namespace Flint
 
 			std::vector<const char*> m_DeviceExtensions;
 
-			std::unique_ptr<VulkanCommandBuffers> m_pUtilityCommandBuffer = nullptr;
+			VulkanCommandBuffers* m_pUtilityCommandBuffer = nullptr;
 
 			VulkanQueue m_GraphicsQueue;
 			VulkanQueue m_ComputeQueue;

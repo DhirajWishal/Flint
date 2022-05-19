@@ -141,7 +141,7 @@ namespace Flint
 			waitIdle();
 
 			// Destroy the utility command buffer.
-			m_pUtilityCommandBuffer.reset();
+			delete m_pUtilityCommandBuffer;
 
 			// Destroy the VMA allocator.
 			destroyVMAAllocator();
@@ -391,7 +391,7 @@ namespace Flint
 
 		void VulkanEngine::createUtilityCommandBuffer()
 		{
-			m_pUtilityCommandBuffer = std::make_unique<VulkanCommandBuffers>(*this);
+			m_pUtilityCommandBuffer = new VulkanCommandBuffers(*this);
 		}
 
 		namespace Utility
