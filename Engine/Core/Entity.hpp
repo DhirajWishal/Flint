@@ -3,19 +3,21 @@
 
 #pragma once
 
-#include "FObject.hpp"
+#include "EngineBoundObject.hpp"
 
 namespace Flint
 {
 	/**
 	 * Entity class.
 	 */
-	class Entity : public FObject
+	class Entity : public EngineBoundObject
 	{
 	public:
 		/**
-		 * Default constructor.
+		 * Explicit constructor.
+		 *
+		 * @param engine The engine to which the entity is bound to.
 		 */
-		constexpr Entity() = default;
+		explicit Entity(Engine& engine) : EngineBoundObject(engine) {}
 	};
 }

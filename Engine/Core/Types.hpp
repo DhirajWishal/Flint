@@ -82,4 +82,70 @@ namespace Flint
 		 */
 		constexpr auto DepthAttachmentDescription = AttachmentDescription{ PixelFormat::Undefined, AttachmentType::Depth };
 	}
+
+	/**
+	 * Position type enum.
+	 */
+	enum class PositionType : uint8_t
+	{
+		None = 0,	// Nothing is loaded.
+
+		X32Y32 = sizeof(uint32_t) * 2,
+		X32Y32Z32 = sizeof(uint32_t) * 3,
+	};
+
+	/**
+	 * Coordinate type enum.
+	 */
+	enum class CoordinateType : uint8_t
+	{
+		None = 0,	// Nothing is loaded.
+
+		R8G8B8 = sizeof(uint8_t) * 3,
+		R8G8B8A8 = sizeof(uint8_t) * 4,
+
+		U8V8 = sizeof(uint8_t) * 2,
+		U8V8W8 = sizeof(uint8_t) * 3,
+	};
+
+	/**
+	 * Vertex descriptor struct.
+	 * This describes how to load the data.
+	 *
+	 * Note that attributes are processed/ packed in the following definition order. Unknown types will be packed last.
+	 */
+	struct VertexDescriptor final
+	{
+		/**
+		 * Get the stride from the attribute types.
+		 *
+		 * @return The stride.
+		 */
+		[[nodiscard]] uint8_t getStride() const;
+
+	public:
+		PositionType m_Position = PositionType::None;		// Uses X, Y and Z.
+		PositionType m_Normal = PositionType::None;			// Uses X, Y and Z.
+
+		PositionType m_Tangent = PositionType::None;		// Uses X, Y and Z.
+		PositionType m_BiTangent = PositionType::None;		// Uses X, Y and Z.
+
+		CoordinateType m_Color0 = CoordinateType::None;		// Uses R, G, B and A.
+		CoordinateType m_Color1 = CoordinateType::None;		// Uses R, G, B and A.
+		CoordinateType m_Color2 = CoordinateType::None;		// Uses R, G, B and A.
+		CoordinateType m_Color3 = CoordinateType::None;		// Uses R, G, B and A.
+		CoordinateType m_Color4 = CoordinateType::None;		// Uses R, G, B and A.
+		CoordinateType m_Color5 = CoordinateType::None;		// Uses R, G, B and A.
+		CoordinateType m_Color6 = CoordinateType::None;		// Uses R, G, B and A.
+		CoordinateType m_Color7 = CoordinateType::None;		// Uses R, G, B and A.
+
+		CoordinateType m_Texture0 = CoordinateType::None;	// Uses U, V and W.
+		CoordinateType m_Texture1 = CoordinateType::None;	// Uses U, V and W.
+		CoordinateType m_Texture2 = CoordinateType::None;	// Uses U, V and W.
+		CoordinateType m_Texture3 = CoordinateType::None;	// Uses U, V and W.
+		CoordinateType m_Texture4 = CoordinateType::None;	// Uses U, V and W.
+		CoordinateType m_Texture5 = CoordinateType::None;	// Uses U, V and W.
+		CoordinateType m_Texture6 = CoordinateType::None;	// Uses U, V and W.
+		CoordinateType m_Texture7 = CoordinateType::None;	// Uses U, V and W.
+	};
 }

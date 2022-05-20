@@ -4,6 +4,7 @@
 #pragma once
 
 #include "Entity.hpp"
+#include "Geometry.hpp"
 
 #include <filesystem>
 
@@ -17,9 +18,11 @@ namespace Flint
 	{
 	public:
 		/**
-		 * Default constructor.
+		 * Explicit constructor.
+		 *
+		 * @param engine The engine to which the entity is bound to.
 		 */
-		constexpr StaticEntity() = default;
+		explicit StaticEntity(Engine& engine) : Entity(engine) {}
 
 		/**
 		 * Load the static entity from an asset file.
@@ -27,5 +30,8 @@ namespace Flint
 		 * @param path The asset path.
 		 */
 		void loadModel(std::filesystem::path&& path);
+
+	private:
+		Geometry m_Geometry;
 	};
 }

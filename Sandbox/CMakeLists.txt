@@ -29,3 +29,6 @@ endif ()
 # Copy the required files.
 file(GLOB SDL_BUILDS_TO_COPY "${CMAKE_BINARY_DIR}/ThirdParty/SDL/*")
 file(COPY ${SDL_BUILDS_TO_COPY} DESTINATION ${CMAKE_BINARY_DIR}/Sandbox)
+
+file(GLOB ASSIMP_BUILDS_TO_COPY "${CMAKE_BINARY_DIR}/ThirdParty/assimp/bin/*")
+file(COPY ${ASSIMP_BUILDS_TO_COPY} DESTINATION ${CMAKE_BINARY_DIR}/Sandbox)

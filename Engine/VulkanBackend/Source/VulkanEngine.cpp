@@ -6,6 +6,7 @@
 #include "VulkanBackend/VulkanWindow.hpp"
 #include "VulkanBackend/VulkanRasterizer.hpp"
 #include "VulkanBackend/VulkanCommandBuffers.hpp"
+#include "VulkanBackend/VulkanGeometryStore.hpp"
 
 #include <set>
 #include <array>
@@ -131,8 +132,9 @@ namespace Flint
 			// Create the VMA allocator.
 			createVMAAllocator();
 
-			// Create the utility command buffer.
-			createUtilityCommandBuffer();
+			// Create the defaults.
+			m_pUtilityCommandBuffer = new VulkanCommandBuffers(*this);
+			m_pDefaultGeometryStore = new VulkanGeometryStore(*this);
 		}
 
 		VulkanEngine::~VulkanEngine()
@@ -140,8 +142,9 @@ namespace Flint
 			// Wait idle to make sure that we don't have anything running at the moment.
 			waitIdle();
 
-			// Destroy the utility command buffer.
+			// Destroy the defaults.
 			delete m_pUtilityCommandBuffer;
+			delete m_pDefaultGeometryStore;
 
 			// Destroy the VMA allocator.
 			destroyVMAAllocator();
@@ -182,6 +185,21 @@ namespace Flint
 		std::unique_ptr<Flint::Rasterizer> VulkanEngine::createRasterizer(uint32_t width, uint32_t height, uint32_t frameCount, std::vector<AttachmentDescription>&& attachmentDescriptions, Multisample multisample /*= Multisample::One*/, bool exclusiveBuffering /*= false*/)
 		{
 			return std::make_unique<VulkanRasterizer>(*this, width, height, frameCount, std::move(attachmentDescriptions), multisample, exclusiveBuffering);
+		}
+
+		std::unique_ptr<Flint::GeometryStore> VulkanEngine::createGeometryStore()
+		{
+			return std::make_unique<VulkanGeometryStore>(*this);
+		}
+
+		Flint::GeometryStore& VulkanEngine::getDefaultGeometryStore()
+		{
+			return *m_pDefaultGeometryStore;
+		}
+
+		const Flint::GeometryStore& VulkanEngine::getDefaultGeometryStore() const
+		{
+			return *m_pDefaultGeometryStore;
 		}
 
 		void VulkanEngine::selectPhysicalDevice()
@@ -387,11 +405,6 @@ namespace Flint
 		void VulkanEngine::destroyVMAAllocator()
 		{
 			vmaDestroyAllocator(m_Allocator);
-		}
-
-		void VulkanEngine::createUtilityCommandBuffer()
-		{
-			m_pUtilityCommandBuffer = new VulkanCommandBuffers(*this);
 		}
 
 		namespace Utility

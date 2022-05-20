@@ -15,8 +15,10 @@ namespace Flint
 	{
 	public:
 		/**
-		 * Default constructor.
+		 * Explicit constructor.
+		 *
+		 * @param engine The engine to which the entity is bound to.
 		 */
-		explicit GhostEntity() = default;
+		explicit GhostEntity(Engine& engine) : Entity(engine) {}
 	};
 }

@@ -4,6 +4,7 @@
 #include "VulkanBackend/VulkanWindow.hpp"
 #include "VulkanBackend/VulkanRasterizer.hpp"
 #include "Core/EventSystem/EventSystem.hpp"
+#include "Core/StaticEntity.hpp"
 
 #ifdef FLINT_DEBUG
 constexpr auto Validation = true;
@@ -31,6 +32,9 @@ int main()
 			auto pWindow = pEngine->createWindow("Sandbox");
 			auto pRasterizer = pEngine->createRasterizer(pWindow->getWidth(), pWindow->getHeight(), pWindow->getFrameCount(), { Flint::Defaults::ColorAttachmentDescription, Flint::Defaults::DepthAttachmentDescription });
 			pWindow->setDependency(pRasterizer.get(), 0);
+
+			auto entity = Flint::StaticEntity(*pEngine);
+			entity.loadModel(FLINT_GLTF_ASSET_PATH "Sponza/glTF/Sponza.gltf");
 
 			while (!eventSystem.shouldClose())
 			{

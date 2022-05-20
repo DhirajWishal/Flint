@@ -14,6 +14,7 @@ namespace Flint
 	namespace VulkanBackend
 	{
 		class VulkanCommandBuffers;
+		class VulkanGeometryStore;
 
 		/**
 		 * Vulkan engine class.
@@ -69,6 +70,7 @@ namespace Flint
 			 * @param title The window title.
 			 * @param width The width of the window. Default is -1.
 			 * @param height The height of the window. Default is -1.
+			 * @return The created window pointer.
 			 */
 			[[nodiscard]] std::unique_ptr<Window> createWindow(std::string&& title, uint32_t width = -1, uint32_t height = -1) override;
 
@@ -82,8 +84,30 @@ namespace Flint
 			 * @param attachmentDescriptions The attachment descriptions.
 			 * @param multisample The multisample count. Default is One.
 			 * @param exclusiveBuffering Whether or not to use one buffer/ attachment per frame. Default is false.
+			 * @return The created rasterizer pointer.
 			 */
 			[[nodiscard]] std::unique_ptr<Rasterizer> createRasterizer(uint32_t width, uint32_t height, uint32_t frameCount, std::vector<AttachmentDescription>&& attachmentDescriptions, Multisample multisample = Multisample::One, bool exclusiveBuffering = false) override;
+
+			/**
+			 * Create a new geometry store.
+			 *
+			 * @return The created geometry store.
+			 */
+			[[nodiscard]] std::unique_ptr<GeometryStore> createGeometryStore() override;
+
+			/**
+			 * Get the default geometry store.
+			 *
+			 * @return The geometry store reference.
+			 */
+			[[nodiscard]] GeometryStore& getDefaultGeometryStore() override;
+
+			/**
+			 * Get the default geometry store.
+			 *
+			 * @return The geometry store reference.
+			 */
+			[[nodiscard]] const GeometryStore& getDefaultGeometryStore() const override;
 
 			/**
 			 * Get the physical device properties.
@@ -181,11 +205,6 @@ namespace Flint
 			 */
 			void destroyVMAAllocator();
 
-			/**
-			 * Create the utility command buffer.
-			 */
-			void createUtilityCommandBuffer();
-
 		private:
 			VkPhysicalDeviceProperties m_PhysicalDeviceProperties = {};
 
@@ -194,6 +213,7 @@ namespace Flint
 			std::vector<const char*> m_DeviceExtensions;
 
 			VulkanCommandBuffers* m_pUtilityCommandBuffer = nullptr;
+			VulkanGeometryStore* m_pDefaultGeometryStore = nullptr;
 
 			VulkanQueue m_GraphicsQueue;
 			VulkanQueue m_ComputeQueue;

@@ -241,6 +241,16 @@ namespace Flint
 			m_Engine.getDeviceTable().vkCmdPipelineBarrier(m_CurrentCommandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &memorybarrier);
 		}
 
+		void VulkanCommandBuffers::copyBuffer(VkBuffer srcBuffer, uint64_t size, uint64_t srcOffset, VkBuffer dstBuffer, uint64_t dstOffset) const
+		{
+			VkBufferCopy bufferCopy = {};
+			bufferCopy.size = size;
+			bufferCopy.srcOffset = srcOffset;
+			bufferCopy.dstOffset = dstOffset;
+
+			m_Engine.getDeviceTable().vkCmdCopyBuffer(m_CurrentCommandBuffer, srcBuffer, dstBuffer, 1, &bufferCopy);
+		}
+
 		void VulkanCommandBuffers::end()
 		{
 			// Just return if we are not recording.
@@ -270,7 +280,7 @@ namespace Flint
 			fence.m_IsFree = false;
 		}
 
-		void VulkanCommandBuffers::submit(VkPipelineStageFlags waitStageMask /*= VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT*/)
+		void VulkanCommandBuffers::submitGraphics(VkPipelineStageFlags waitStageMask /*= VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT*/)
 		{
 			// Create the submit info structure.
 			VkSubmitInfo submitInfo = {};
@@ -285,8 +295,53 @@ namespace Flint
 
 			// Submit the queue.
 			auto& fence = m_CommandFences[m_CurrentIndex];
-			FLINT_VK_ASSERT(m_Engine.getDeviceTable().vkQueueSubmit(m_Engine.getGraphicsQueue().m_Queue, 1, &submitInfo, fence.m_Fence), "Failed to submit the queue!");
 			fence.m_IsFree = false;
+
+			FLINT_VK_ASSERT(m_Engine.getDeviceTable().vkQueueSubmit(m_Engine.getGraphicsQueue().m_Queue, 1, &submitInfo, fence.m_Fence), "Failed to submit the queue!");
+		}
+
+		void VulkanCommandBuffers::submitTransfer()
+		{
+			const VkPipelineStageFlags waitStageMask = VK_PIPELINE_STAGE_TRANSFER_BIT;
+
+			// Create the submit info structure.
+			VkSubmitInfo submitInfo = {};
+			submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+			submitInfo.waitSemaphoreCount = 0;
+			submitInfo.pWaitSemaphores = nullptr;
+			submitInfo.commandBufferCount = 1;
+			submitInfo.pCommandBuffers = &m_CurrentCommandBuffer;
+			submitInfo.pWaitDstStageMask = &waitStageMask;
+			submitInfo.signalSemaphoreCount = 0;
+			submitInfo.pSignalSemaphores = nullptr;
+
+			// Submit the queue.
+			auto& fence = m_CommandFences[m_CurrentIndex];
+			fence.m_IsFree = false;
+
+			FLINT_VK_ASSERT(m_Engine.getDeviceTable().vkQueueSubmit(m_Engine.getTransferQueue().m_Queue, 1, &submitInfo, fence.m_Fence), "Failed to submit the queue!");
+		}
+
+		void VulkanCommandBuffers::submitCompute()
+		{
+			const VkPipelineStageFlags waitStageMask = VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;
+
+			// Create the submit info structure.
+			VkSubmitInfo submitInfo = {};
+			submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+			submitInfo.waitSemaphoreCount = 0;
+			submitInfo.pWaitSemaphores = nullptr;
+			submitInfo.commandBufferCount = 1;
+			submitInfo.pCommandBuffers = &m_CurrentCommandBuffer;
+			submitInfo.pWaitDstStageMask = &waitStageMask;
+			submitInfo.signalSemaphoreCount = 0;
+			submitInfo.pSignalSemaphores = nullptr;
+
+			// Submit the queue.
+			auto& fence = m_CommandFences[m_CurrentIndex];
+			fence.m_IsFree = false;
+
+			FLINT_VK_ASSERT(m_Engine.getDeviceTable().vkQueueSubmit(m_Engine.getComputeQueue().m_Queue, 1, &submitInfo, fence.m_Fence), "Failed to submit the queue!");
 		}
 
 		void VulkanCommandBuffers::finishExecution()

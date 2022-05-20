@@ -136,6 +136,8 @@ add_compile_definitions(
 	$<$<PLATFORM_ID:Windows>:FLINT_PLATFORM_WINDOWS>
 	$<$<PLATFORM_ID:Linux>:FLINT_PLATFORM_LINUX>
 	$<$<PLATFORM_ID:Darwin>:FLINT_PLATFORM_MAC>
+
+	FLINT_GLTF_ASSET_PATH="${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/glTF-Sample-Models/2.0/"
 )
 
 # Set the central include directory.

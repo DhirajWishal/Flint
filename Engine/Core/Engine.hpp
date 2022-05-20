@@ -12,6 +12,7 @@ namespace Flint
 {
 	class Window;
 	class Rasterizer;
+	class GeometryStore;
 
 	/**
 	 * Multisample enum.
@@ -33,6 +34,8 @@ namespace Flint
 	 *
 	 * Usually an application requires just one instance of this class. But the user isn't restricted to do that in any way. But make sure that the engines are destroyed before
 	 * destroying the instance which is used to create this.
+	 *
+	 * Every engine has a default geometry store. It is advice to use this instead of making a bunch of new ones.
 	 */
 	class Engine : public FObject
 	{
@@ -109,21 +112,44 @@ namespace Flint
 		 * @param title The window title.
 		 * @param width The width of the window. Default is -1.
 		 * @param height The height of the window. Default is -1.
+		 * @return The created window pointer.
 		 */
 		[[nodiscard]] virtual std::unique_ptr<Window> createWindow(std::string&& title, uint32_t width = -1, uint32_t height = -1) = 0;
 
 		/**
 		 * Create a new rasterizer.
 		 * @ref Rasterizer.hpp
-		 * 
+		 *
 		 * @param width The width of the render target.
 		 * @param height The height of the render target.
 		 * @param frameCount The number of frames in the render target. This is usually set automatically by the Window.
 		 * @param attachmentDescriptions The attachment descriptions.
 		 * @param multisample The multisample count. Default is One.
 		 * @param exclusiveBuffering Whether or not to use one buffer/ attachment per frame. Default is false.
+		 * @return The created rasterizer pointer.
 		 */
 		[[nodiscard]] virtual std::unique_ptr<Rasterizer> createRasterizer(uint32_t width, uint32_t height, uint32_t frameCount, std::vector<AttachmentDescription>&& attachmentDescriptions, Multisample multisample = Multisample::One, bool exclusiveBuffering = false) = 0;
+
+		/**
+		 * Create a new geometry store.
+		 *
+		 * @return The created geometry store.
+		 */
+		[[nodiscard]] virtual std::unique_ptr<GeometryStore> createGeometryStore() = 0;
+
+		/**
+		 * Get the default geometry store.
+		 *
+		 * @return The geometry store reference.
+		 */
+		[[nodiscard]] virtual GeometryStore& getDefaultGeometryStore() = 0;
+
+		/**
+		 * Get the default geometry store.
+		 *
+		 * @return The geometry store reference.
+		 */
+		[[nodiscard]] virtual const GeometryStore& getDefaultGeometryStore() const = 0;
 
 	private:
 		Instance& m_Instance;

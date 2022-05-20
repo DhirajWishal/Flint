@@ -98,6 +98,17 @@ namespace Flint
 			void changeImageLayout(VkImage image, VkImageLayout currentLayout, VkImageLayout newLayout, VkImageAspectFlags aspectFlags) const;
 
 			/**
+			 * Copy content from one buffer to another.
+			 *
+			 * @param srcBuffer The source buffer.
+			 * @param size The size to copy.
+			 * @param srcOffset The offset of the source buffer to copy.
+			 * @param dstBuffer The destination buffer.
+			 * @param dstOffset The destination offset.
+			 */
+			void copyBuffer(VkBuffer srcBuffer, uint64_t size, uint64_t srcOffset, VkBuffer dstBuffer, uint64_t dstOffset) const;
+
+			/**
 			 * End recording.
 			 */
 			void end();
@@ -117,7 +128,17 @@ namespace Flint
 			 *
 			 * @param waitStageMask The wait stage mask to wait till completion. Default is color attachment output.
 			 */
-			void submit(VkPipelineStageFlags waitStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+			void submitGraphics(VkPipelineStageFlags waitStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+
+			/**
+			 * Submit transfer commands.
+			 */
+			void submitTransfer();
+
+			/**
+			 * Submit compute commands.
+			 */
+			void submitCompute();
 
 			/**
 			 * Wait till a command buffer finishes execution.

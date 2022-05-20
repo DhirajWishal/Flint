@@ -15,6 +15,7 @@ add_library(
 
 	"Source/StaticEntity.cpp"
 	"Source/Window.cpp"
+	"Source/Geometry.cpp" 
 
 	"Source/EventSystem/EventSystem.cpp"
 
@@ -31,6 +32,7 @@ add_library(
 	"RayTracer.hpp"
 	"RenderTargetAttachment.hpp"
 	"Types.hpp"
+	"GeometryStore.hpp" 
 	
 	"Errors/AssetError.hpp"
 	"Errors/BackendError.hpp" 

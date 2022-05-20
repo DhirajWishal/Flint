@@ -65,7 +65,7 @@ namespace Flint
 			m_pCommandBuffers->end();
 
 			// Submit and get the next command buffer.
-			m_pCommandBuffers->submit();
+			m_pCommandBuffers->submitGraphics();
 			m_pCommandBuffers->next();
 		}
 
