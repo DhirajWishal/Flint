@@ -90,8 +90,8 @@ namespace Flint
 	{
 		None = 0,	// Nothing is loaded.
 
-		X32Y32 = sizeof(uint32_t) * 2,
-		X32Y32Z32 = sizeof(uint32_t) * 3,
+		X32Y32 = sizeof(uint32_t[2]),
+		X32Y32Z32 = sizeof(uint32_t[3]),
 	};
 
 	/**
@@ -101,11 +101,11 @@ namespace Flint
 	{
 		None = 0,	// Nothing is loaded.
 
-		R8G8B8 = sizeof(uint8_t) * 3,
-		R8G8B8A8 = sizeof(uint8_t) * 4,
+		R8G8B8 = sizeof(uint8_t[3]),
+		R8G8B8A8 = sizeof(uint8_t[4]),
 
-		U8V8 = sizeof(uint8_t) * 2,
-		U8V8W8 = sizeof(uint8_t) * 3,
+		U8V8 = sizeof(uint8_t[2]),
+		U8V8W8 = sizeof(uint8_t[3]),
 	};
 
 	/**

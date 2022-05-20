@@ -4,11 +4,16 @@
 #pragma once
 
 #include "EngineBoundObject.hpp"
+#include "Materials.hpp"
+
+#include <variant>
 
 namespace Flint
 {
 	class Geometry;
 	class GeometryStore;
+
+	using MaterialStorage = std::variant<Texture, Color>;
 
 	/**
 	 * Resource buffer view class.
@@ -129,6 +134,16 @@ namespace Flint
 		explicit Mesh(Geometry& geometry, VertexDescriptor descriptor, uint64_t vertexCount, uint64_t vertexOffset, uint64_t indexCount, uint64_t indexOffset);
 
 		/**
+		 * Add a material to the mesh.
+		 * @ref Materials.hpp
+		 *
+		 * @tparam Type The material type.
+		 * @param material The material to add.
+		 */
+		template<class Type>
+		void addMaterial(Type&& material) { m_Materials.emplace_back(std::move(material)); }
+
+		/**
 		 * Map the vertex memory to the local address space.
 		 *
 		 * @return The vertex memory.
@@ -223,6 +238,7 @@ namespace Flint
 		[[nodiscard]] uint64_t getIndexSize() const { return m_IndexCount * sizeof(uint32_t); }
 
 	private:
+		std::vector<MaterialStorage> m_Materials;
 		std::string m_Name;
 
 		Geometry& m_Geometry;

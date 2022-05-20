@@ -11,7 +11,10 @@
 
 #include <optick.h>
 
-#include <execution>
+#ifdef FLINT_PLATFORM_WINDOWS
+#	include <execution>
+
+#endif
 
 namespace /* anonymous */
 {
@@ -75,8 +78,54 @@ namespace /* anonymous */
 	 */
 	void CopyData(const std::byte* pSource, std::byte*& pDestination, uint8_t size)
 	{
+#ifdef FLINT_PLATFORM_WINDOWS
 		std::copy_n(std::execution::unseq, pSource, size, pDestination);
+
+#else 
+		std::copy_n(pSource, size, pDestination);
+
+#endif
 		pDestination += size;
+	}
+
+	/**
+	 * Load color from material.
+	 *
+	 * @param mesh The mesh to load the material to.
+	 * @param pMaterial The material pointer.
+	 * @param pKey The key string.
+	 * @param type The color type.
+	 * @param index The color index.
+	 * @param colorType The flint color type.
+	 */
+	void LoadColorMaterial(Flint::Mesh& mesh, const aiMaterial* pMaterial, const char* pKey, uint32_t type, uint32_t index, Flint::ColorType colorType)
+	{
+		aiColor4D color;
+		if (pMaterial->Get(pKey, type, index, color) == aiReturn::aiReturn_SUCCESS)
+		{
+			auto loadedColor = Flint::Color(color[0], color[1], color[2], color[3], colorType);
+			mesh.addMaterial(std::move(loadedColor));
+		}
+	}
+
+	/**
+	 * Load texture from material.
+	 *
+	 * @param mesh The mesh to load the material to.
+	 * @param pMaterial The material pointer.
+	 * @param type The texture type.
+	 * @param index The texture index.
+	 * @param textureType The flint texture type.
+	 * @param basePath The base path of the file.
+	 */
+	void LoadTextureMaterial(Flint::Mesh& mesh, const aiMaterial* pMaterial, aiTextureType type, uint32_t index, Flint::TextureType textureType, const std::filesystem::path& basePath)
+	{
+		aiString filePath;
+		if (pMaterial->GetTexture(type, index, &filePath) == aiReturn::aiReturn_SUCCESS)
+		{
+			auto material = Flint::Texture(basePath / filePath.C_Str(), textureType);
+			mesh.addMaterial(std::move(material));
+		}
 	}
 
 	/**
@@ -84,12 +133,15 @@ namespace /* anonymous */
 	 *
 	 * @param pScene The scene pointer.
 	 * @param pMesh The mesh pointer.
-	 * @param pVertex The vertex buffer pointer.
-	 * @param pIndex The index buffer pointer.
-	 * @param descriptor The vertex descriptor specifying what to load.
+	 * @param mesh The mesh to load the data to.
+	 * @param basePath The base path of the file.
 	 */
-	void LoadMesh(const aiScene* pScene, const aiMesh* pMesh, std::byte* pVertex, std::byte* pIndex, Flint::VertexDescriptor descriptor)
+	void LoadMesh(const aiScene* pScene, const aiMesh* pMesh, Flint::Mesh& mesh, const std::filesystem::path& basePath)
 	{
+		auto pVertex = mesh.mapVertexMemory();
+		auto pIndex = mesh.mapIndexMemory();
+		const auto descriptor = mesh.getVertexDescriptor();
+
 		// Load the vertex data.
 		for (uint32_t i = 0; i < pMesh->mNumVertices; ++i)
 		{
@@ -136,12 +188,31 @@ namespace /* anonymous */
 				*pIndexData = face.mIndices[j];
 		}
 
+		// Unmap the memory.
+		mesh.unmapVertexMemory();
+		mesh.unmapIndexMemory();
+
 		// Load materials.
 		const auto pMaterial = pScene->mMaterials[pMesh->mMaterialIndex];
-		for (uint32_t i = 0; i < pMaterial->mNumProperties; i++)
-		{
-			const auto pProperty = pMaterial->mProperties[i];
-		}
+
+		// First load the color material.
+		LoadColorMaterial(mesh, pMaterial, AI_MATKEY_COLOR_DIFFUSE, Flint::ColorType::Diffuse);
+		LoadColorMaterial(mesh, pMaterial, AI_MATKEY_COLOR_AMBIENT, Flint::ColorType::Ambient);
+		LoadColorMaterial(mesh, pMaterial, AI_MATKEY_COLOR_SPECULAR, Flint::ColorType::Specular);
+		LoadColorMaterial(mesh, pMaterial, AI_MATKEY_COLOR_EMISSIVE, Flint::ColorType::Emissive);
+		LoadColorMaterial(mesh, pMaterial, AI_MATKEY_COLOR_TRANSPARENT, Flint::ColorType::Transparent);
+		LoadColorMaterial(mesh, pMaterial, AI_MATKEY_COLOR_REFLECTIVE, Flint::ColorType::Reflective);
+		LoadColorMaterial(mesh, pMaterial, AI_MATKEY_BASE_COLOR, Flint::ColorType::Base);
+
+		// Then load the textures.
+		LoadTextureMaterial(mesh, pMaterial, AI_MATKEY_BASE_COLOR_TEXTURE, Flint::TextureType::BaseColor, basePath);
+		LoadTextureMaterial(mesh, pMaterial, AI_MATKEY_ROUGHNESS_TEXTURE, Flint::TextureType::DiffuseRoughness, basePath);
+		LoadTextureMaterial(mesh, pMaterial, AI_MATKEY_SHEEN_COLOR_TEXTURE, Flint::TextureType::SheenColor, basePath);
+		LoadTextureMaterial(mesh, pMaterial, AI_MATKEY_SHEEN_ROUGHNESS_TEXTURE, Flint::TextureType::SheenRoughness, basePath);
+		LoadTextureMaterial(mesh, pMaterial, AI_MATKEY_CLEARCOAT_TEXTURE, Flint::TextureType::ClearCoat, basePath);
+		LoadTextureMaterial(mesh, pMaterial, AI_MATKEY_CLEARCOAT_ROUGHNESS_TEXTURE, Flint::TextureType::ClearCoatRoughness, basePath);
+		LoadTextureMaterial(mesh, pMaterial, AI_MATKEY_CLEARCOAT_NORMAL_TEXTURE, Flint::TextureType::ClearCoatNormal, basePath);
+		LoadTextureMaterial(mesh, pMaterial, AI_MATKEY_TRANSMISSION_TEXTURE, Flint::TextureType::Transmission, basePath);
 	}
 
 	/**
@@ -150,8 +221,9 @@ namespace /* anonymous */
 	 * @param pScene The scene pointer.
 	 * @param pNode The node pointer.
 	 * @param geometry The geometry to load the data to.
+	 * @param basePath The base path of the file.
 	 */
-	void WalkNodeTree(const aiScene* pScene, const aiNode* pNode, Flint::Geometry& geometry)
+	void WalkNodeTree(const aiScene* pScene, const aiNode* pNode, Flint::Geometry& geometry, const std::filesystem::path& basePath)
 	{
 		// Load the meshes.
 		for (uint32_t i = 0; i < pNode->mNumMeshes; i++)
@@ -160,14 +232,12 @@ namespace /* anonymous */
 			const auto [descriptor, vertices, indices] = GetBasicMeshData(pMesh);
 			auto& mesh = geometry.createMesh(descriptor, vertices, indices);
 
-			LoadMesh(pScene, pMesh, mesh.mapVertexMemory(), mesh.mapIndexMemory(), descriptor);
-			mesh.unmapVertexMemory();
-			mesh.unmapIndexMemory();
+			LoadMesh(pScene, pMesh, mesh, basePath);
 		}
 
 		// Walk the children and load all the meshes.
 		for (uint32_t child = 0; child < pNode->mNumChildren; child++)
-			WalkNodeTree(pScene, pNode->mChildren[child], geometry);
+			WalkNodeTree(pScene, pNode->mChildren[child], geometry, basePath);
 	}
 }
 
@@ -207,6 +277,6 @@ namespace Flint
 		m_Geometry = getEngine().getDefaultGeometryStore().createGeometry(vertexSize, indexSize);
 
 		// Walk through the meshes.
-		WalkNodeTree(pScene, pScene->mRootNode, m_Geometry);
+		WalkNodeTree(pScene, pScene->mRootNode, m_Geometry, path.parent_path());
 	}
 }

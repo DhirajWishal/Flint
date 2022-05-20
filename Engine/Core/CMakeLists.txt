@@ -33,6 +33,7 @@ add_library(
 	"RenderTargetAttachment.hpp"
 	"Types.hpp"
 	"GeometryStore.hpp" 
+	"Materials.hpp"
 	
 	"Errors/AssetError.hpp"
 	"Errors/BackendError.hpp" 
