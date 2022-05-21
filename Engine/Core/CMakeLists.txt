@@ -16,6 +16,7 @@ add_library(
 	"Source/StaticEntity.cpp"
 	"Source/Window.cpp"
 	"Source/Geometry.cpp" 
+	"Source/ShaderCode.cpp"
 
 	"Source/EventSystem/EventSystem.cpp"
 
@@ -33,7 +34,8 @@ add_library(
 	"RenderTargetAttachment.hpp"
 	"Types.hpp"
 	"GeometryStore.hpp" 
-	"Materials.hpp"
+	"PipelineManager.hpp"
+	"ShaderCode.hpp" 
 	
 	"Errors/AssetError.hpp"
 	"Errors/BackendError.hpp" 
@@ -55,10 +57,12 @@ target_include_directories(
 	${GLM_INCLUDE_DIR} 
 	${ASSIMP_INCLUDE_DIR} 
 	${SDL_INCLUDE_DIR} 
+	${SPDLOG_INCLUDE_DIR}
+	${SPIRV_REFLECT_INCLUDE_DIR}
 )
 
 # Add the optick static library as a target link.
-target_link_libraries(FlintCore optick assimp SDL2)
+target_link_libraries(FlintCore optick assimp SDL2 SPIRV_Reflect)
 
 # Make sure to specify the C++ standard to C++20.
 set_property(TARGET FlintCore PROPERTY CXX_STANDARD 20)

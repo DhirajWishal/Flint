@@ -23,6 +23,8 @@ add_library(
 	"Source/VulkanDepthAttachment.cpp" 
 	"Source/VulkanRenderTargetAttachment.cpp"
 	"Source/VulkanGeometryStore.cpp"
+	"Source/VulkanPipeline.cpp" 
+	"Source/VulkanGraphicsPipeline.cpp"
 	
 	"VulkanInstance.hpp"
 	"VulkanMacros.hpp"
@@ -34,6 +36,8 @@ add_library(
 	"VulkanDepthAttachment.hpp"
 	"VulkanRenderTargetAttachment.hpp"
 	"VulkanGeometryStore.hpp" 
+	"VulkanGraphicsPipeline.hpp" 
+	"VulkanPipeline.hpp"
 )
 
 # Set the include directories.

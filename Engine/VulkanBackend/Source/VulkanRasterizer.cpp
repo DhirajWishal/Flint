@@ -98,6 +98,16 @@ namespace Flint
 			m_pCommandBuffers->resetIndex();
 		}
 
+		void VulkanRasterizer::render(const Geometry& geometry)
+		{
+			m_Geometries.emplace_back(geometry);
+		}
+
+		void VulkanRasterizer::registerPipeline(const PipelineIdentifier& identifier, std::string&& name, RasterizingPipelineSpecification&& specification)
+		{
+
+		}
+
 		Flint::RenderTargetAttachment& VulkanRasterizer::getAttachment(uint32_t index)
 		{
 			return *m_pAttachments[m_ExclusiveBuffering * m_FrameIndex][index];

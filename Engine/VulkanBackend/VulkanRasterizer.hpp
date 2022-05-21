@@ -51,6 +51,23 @@ namespace Flint
 			void resize(uint32_t width, uint32_t height) override;
 
 			/**
+			 * Add a new geometry to draw.
+			 * Geometries are drawn in the order they are submitted.
+			 *
+			 * @param geometry The geometry to draw.
+			 */
+			void render(const Geometry& geometry) override;
+
+			/**
+			 * Register a new rasterizing pipeline.
+			 *
+			 * @param identifier The identifier to which the pipeline is associated with.
+			 * @param name The name of the pipeline.
+			 * @param specification The pipeline specification.
+			 */
+			void registerPipeline(const PipelineIdentifier& identifier, std::string&& name, RasterizingPipelineSpecification&& specification) override;
+
+			/**
 			 * Get the render target attachment at a given index.
 			 *
 			 * @param index The index of the attachment.

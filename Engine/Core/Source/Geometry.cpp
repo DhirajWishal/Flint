@@ -4,14 +4,40 @@
 #include "Core/Geometry.hpp"
 #include "Core/GeometryStore.hpp"
 
+#define XXH_INLINE_ALL
+#include <xxhash.h>
+
 namespace Flint
 {
+	uint64_t PipelineIdentifier::hash() const
+	{
+		const XXH64_hash_t hashes[] = {
+			XXH64(&m_VertexDescriptor, sizeof(VertexDescriptor), 0),
+			XXH64(m_TextureTypes.data(), sizeof(TextureType) * m_TextureTypes.size(), 0),
+			XXH64(m_ColorTypes.data(), sizeof(ColorType) * m_ColorTypes.size(), 0)
+		};
+
+		return static_cast<uint64_t>(XXH64(hashes, sizeof(hashes), 0));
+	}
 
 	Mesh::Mesh(Geometry& geometry, VertexDescriptor descriptor, uint64_t vertexCount, uint64_t vertexOffset, uint64_t indexCount, uint64_t indexOffset)
 		: m_Geometry(geometry)
-		, m_VertexDescriptor(descriptor), m_VertexCount(vertexCount), m_VertexOffset(vertexOffset)
+		, m_VertexCount(vertexCount), m_VertexOffset(vertexOffset)
 		, m_IndexCount(indexCount), m_IndexOffset(indexOffset)
 	{
+		m_PipelineIdentifier.m_VertexDescriptor = descriptor;
+	}
+
+	void Mesh::addMaterial(std::filesystem::path&& texturePath, TextureType type)
+	{
+		m_TexturePaths.emplace_back(std::move(texturePath));
+		m_PipelineIdentifier.m_TextureTypes.emplace_back(type);
+	}
+
+	void Mesh::addMaterial(float r, float g, float b, float a, ColorType type)
+	{
+		m_Colors.emplace_back(std::array<float, 4>{ r, g, b, a });
+		m_PipelineIdentifier.m_ColorTypes.emplace_back(type);
 	}
 
 	std::byte* Mesh::mapVertexMemory()

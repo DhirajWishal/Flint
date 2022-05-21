@@ -4,16 +4,68 @@
 #pragma once
 
 #include "EngineBoundObject.hpp"
-#include "Materials.hpp"
 
-#include <variant>
+#include <array>
+#include <filesystem>
 
 namespace Flint
 {
 	class Geometry;
 	class GeometryStore;
 
-	using MaterialStorage = std::variant<Texture, Color>;
+	/**
+	 * Texture type enum.
+	 */
+	enum class TextureType : uint8_t
+	{
+		BaseColor,
+		NormalCamera,
+		EmissionColor,
+		Metalness,
+		DiffuseRoughness,
+		AmbientOcclusion,
+		SheenColor,
+		SheenRoughness,
+		ClearCoat,
+		ClearCoatRoughness,
+		ClearCoatNormal,
+		Transmission,
+
+		Unknown
+	};
+
+	/**
+	 * Color type enum.
+	 */
+	enum class ColorType : uint8_t
+	{
+		Diffuse,
+		Ambient,
+		Specular,
+		Emissive,
+		Transparent,
+		Reflective,
+		Base
+	};
+
+	/**
+	 * Pipeline identifier structure.
+	 * This structure defines everything needed to identify a pipeline.
+	 */
+	struct PipelineIdentifier final
+	{
+		/**
+		 * Generate hash for the current identifier.
+		 *
+		 * @return The hash value.
+		 */
+		[[nodiscard]] uint64_t hash() const;
+
+	public:
+		std::vector<TextureType> m_TextureTypes;
+		std::vector<ColorType> m_ColorTypes;
+		VertexDescriptor m_VertexDescriptor;
+	};
 
 	/**
 	 * Resource buffer view class.
@@ -134,14 +186,51 @@ namespace Flint
 		explicit Mesh(Geometry& geometry, VertexDescriptor descriptor, uint64_t vertexCount, uint64_t vertexOffset, uint64_t indexCount, uint64_t indexOffset);
 
 		/**
-		 * Add a material to the mesh.
-		 * @ref Materials.hpp
+		 * Add a texture material to the mesh.
 		 *
-		 * @tparam Type The material type.
-		 * @param material The material to add.
+		 * @param texturePath The path to the texture material to add.
+		 * @param type The texture type.
 		 */
-		template<class Type>
-		void addMaterial(Type&& material) { m_Materials.emplace_back(std::move(material)); }
+		void addMaterial(std::filesystem::path&& texturePath, TextureType type);
+
+		/**
+		 * Add a color material to the mesh.
+		 *
+		 * @param r The red color.
+		 * @param g The green color.
+		 * @param b The blue color.
+		 * @param a The alpha color.
+		 * @param type The color type.
+		 */
+		void addMaterial(float r, float g, float b, float a, ColorType type);
+
+		/**
+		 * Get the texture paths.
+		 *
+		 * @return The paths.
+		 */
+		[[nodiscard]] const std::vector<std::filesystem::path>& getTexturePaths() const { return m_TexturePaths; }
+
+		/**
+		 * Get the texture types.
+		 *
+		 * @return The types
+		 */
+		[[nodiscard]] const std::vector<TextureType>& getTextureTypes() const { return m_PipelineIdentifier.m_TextureTypes; }
+
+		/**
+		 * Get the color materials.
+		 *
+		 * @return The colors.
+		 */
+		[[nodiscard]] const std::vector<std::array<float, 4>>& getColors() const { return m_Colors; }
+
+		/**
+		 * Get the color types.
+		 *
+		 * @return The types.
+		 */
+		[[nodiscard]] const std::vector<ColorType>& getColorTypes() const { return m_PipelineIdentifier.m_ColorTypes; }
 
 		/**
 		 * Map the vertex memory to the local address space.
@@ -168,6 +257,13 @@ namespace Flint
 		void unmapIndexMemory();
 
 		/**
+		 * Get the pipeline identifier.
+		 *
+		 * @return The pipeline identifier.
+		 */
+		[[nodiscard]] const PipelineIdentifier& getPipelineIdentifier() const { return m_PipelineIdentifier; }
+
+		/**
 		 * Get the geometry to which this mesh belongs to.
 		 *
 		 * @return The geometry.
@@ -186,14 +282,14 @@ namespace Flint
 		 *
 		 * @return The descriptor.
 		 */
-		[[nodiscard]] VertexDescriptor getVertexDescriptor() const { return m_VertexDescriptor; }
+		[[nodiscard]] VertexDescriptor getVertexDescriptor() const { return m_PipelineIdentifier.m_VertexDescriptor; }
 
 		/**
 		 * Get the vertex stride.
 		 *
 		 * @return The stride.
 		 */
-		[[nodiscard]] uint64_t getVertexStride() const { return m_VertexDescriptor.getStride(); }
+		[[nodiscard]] uint64_t getVertexStride() const { return m_PipelineIdentifier.m_VertexDescriptor.getStride(); }
 
 		/**
 		 * Get the vertex count.
@@ -214,7 +310,7 @@ namespace Flint
 		 *
 		 * @return The size in bytes.
 		 */
-		[[nodiscard]] uint64_t getVertexSize() const { return m_VertexCount * m_VertexDescriptor.getStride(); }
+		[[nodiscard]] uint64_t getVertexSize() const { return m_VertexCount * m_PipelineIdentifier.m_VertexDescriptor.getStride(); }
 
 		/**
 		 * Get the index count.
@@ -238,7 +334,11 @@ namespace Flint
 		[[nodiscard]] uint64_t getIndexSize() const { return m_IndexCount * sizeof(uint32_t); }
 
 	private:
-		std::vector<MaterialStorage> m_Materials;
+		std::vector<std::filesystem::path> m_TexturePaths;	// Each one of these maps to each one of texture types in the pipeline identifier.
+		std::vector<std::array<float, 4>> m_Colors;			// Each one of these maps to each one of color types in the pipeline identifier.
+
+		PipelineIdentifier m_PipelineIdentifier;
+
 		std::string m_Name;
 
 		Geometry& m_Geometry;
@@ -248,8 +348,6 @@ namespace Flint
 
 		uint64_t m_IndexCount = 0;
 		uint64_t m_IndexOffset = 0;
-
-		VertexDescriptor m_VertexDescriptor;
 	};
 
 	/**
@@ -262,7 +360,7 @@ namespace Flint
 		/**
 		 * Default constructor.
 		 */
-		constexpr Geometry() = default;
+		Geometry() = default;
 
 		/**
 		 * Explicit constructor.
@@ -323,5 +421,26 @@ namespace Flint
 		uint64_t m_VertexOffset = 0;
 		uint64_t m_IndexSize = 0;
 		uint64_t m_IndexOffset = 0;
+	};
+}
+
+namespace std
+{
+	/**
+	 * Hash structure specialization for the mesh.
+	 */
+	template<>
+	struct hash<Flint::Mesh> final
+	{
+		/**
+		 * () Operator.
+		 *
+		 * @param mesh The mesh to generate the hash from.
+		 * @return The hash value.
+		 */
+		uint64_t operator()(const Flint::Mesh& mesh) const
+		{
+
+		}
 	};
 }

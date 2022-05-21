@@ -4,6 +4,7 @@
 #pragma once
 
 #include "RenderTargetAttachment.hpp"
+#include "Geometry.hpp"
 
 namespace Flint
 {
@@ -47,6 +48,14 @@ namespace Flint
 		 * @param height The height of the render target.
 		 */
 		virtual void resize(uint32_t width, uint32_t height) = 0;
+
+		/**
+		 * Add a new geometry to draw.
+		 * Geometries are drawn in the order they are submitted.
+		 *
+		 * @param geometry The geometry to draw.
+		 */
+		virtual void render(const Geometry& geometry) = 0;
 
 		/**
 		 * Get the render target attachment at a given index.
@@ -93,6 +102,7 @@ namespace Flint
 
 	protected:
 		std::vector<AttachmentDescription> m_AttachmentDescriptions;
+		std::vector<Geometry> m_Geometries;
 
 		uint32_t m_Width = 0;
 		uint32_t m_Height = 0;

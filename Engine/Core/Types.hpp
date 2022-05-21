@@ -104,8 +104,14 @@ namespace Flint
 		R8G8B8 = sizeof(uint8_t[3]),
 		R8G8B8A8 = sizeof(uint8_t[4]),
 
+		R32G32B32 = sizeof(float[3]),
+		R32G32B32A32 = sizeof(float[4]),
+
 		U8V8 = sizeof(uint8_t[2]),
 		U8V8W8 = sizeof(uint8_t[3]),
+
+		U32V32 = sizeof(float[2]),
+		U32V32W32 = sizeof(float[3]),
 	};
 
 	/**

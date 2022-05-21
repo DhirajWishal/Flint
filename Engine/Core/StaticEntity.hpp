@@ -31,6 +31,13 @@ namespace Flint
 		 */
 		void loadModel(std::filesystem::path&& path);
 
+		/**
+		 * Get the stored geometry.
+		 *
+		 * @return The geometry.
+		 */
+		[[nodiscard]] const Geometry& getGeometry() const { return m_Geometry; }
+
 	private:
 		Geometry m_Geometry;
 	};

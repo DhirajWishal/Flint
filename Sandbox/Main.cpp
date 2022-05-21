@@ -16,7 +16,7 @@ constexpr auto Validation = false;
 
 // We need to do this because of SDL.
 #ifdef main
-#undef main
+#	undef main
 
 #endif
 
@@ -35,10 +35,12 @@ int main()
 
 			auto entity = Flint::StaticEntity(*pEngine);
 			entity.loadModel(FLINT_GLTF_ASSET_PATH "Sponza/glTF/Sponza.gltf");
+			//entity.loadModel("E:\\Assets\\EU43_Castanea_sativa_Chestnut\\EU43_3.FBX");
 
 			while (!eventSystem.shouldClose())
 			{
 				pRasterizer->update();
+				pRasterizer->render(entity.getGeometry());
 				pWindow->update();
 				const auto events = eventSystem.poll();
 
