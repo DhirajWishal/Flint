@@ -246,16 +246,93 @@ namespace Flint
 	};
 
 	/**
+	 * Bitwise OR operator for the dynamic state flags.
+	 *
+	 * @param lhs The lhs argument.
+	 * @param rhs The rhs argument.
+	 * @return The result.
+	 */
+	constexpr DynamicStateFlags operator|(const DynamicStateFlags& lhs, const DynamicStateFlags& rhs) { return static_cast<DynamicStateFlags>(static_cast<uint8_t>(lhs) | static_cast<uint8_t>(rhs)); }
+
+	/**
+	 * Bitwise And operator for the dynamic state flags.
+	 *
+	 * @param lhs The lhs argument.
+	 * @param rhs The rhs argument.
+	 * @return The result.
+	 */
+	constexpr DynamicStateFlags operator&(const DynamicStateFlags& lhs, const DynamicStateFlags& rhs) { return static_cast<DynamicStateFlags>(static_cast<uint8_t>(lhs) & static_cast<uint8_t>(rhs)); }
+
+	/**
+	 * Vertex attribute type enum.
+	 */
+	enum class VertexAttributeType : uint8_t
+	{
+		Float,		// 32 bit float type.
+
+		Vec2_8,		// Two component, 8 bit vector.
+		Vec2_16,	// Two component, 16 bit vector.
+		Vec2_32,	// Two component, 32 bit vector.
+		Vec2_64,	// Two component, 64 bit vector.
+
+		Vec3_8,		// Three component, 8 bit vector.
+		Vec3_16,	// Three component, 16 bit vector.
+		Vec3_32,	// Three component, 32 bit vector.
+		Vec3_64,	// Three component, 64 bit vector.
+
+		Vec4_8,		// Four component, 8 bit vector.
+		Vec4_16,	// Four component, 16 bit vector.
+		Vec4_32,	// Four component, 32 bit vector.
+		Vec4_64,	// Four component, 64 bit vector.
+	};
+
+	/**
+	 * Get the vertex attributes from a vertex descriptor.
+	 *
+	 * @param descriptor The vertex descriptor.
+	 * @return The attributes.
+	 */
+	[[nodiscard]] std::vector<VertexAttributeType> GetVertexAttributesFromDescriptor(const VertexDescriptor& descriptor);
+
+	/**
 	 * Rasterizing pipeline specification structure.
 	 * This structure defines the rasterizing pipeline.
+	 *
+	 * In the vertex shader, the first few inputs will be dedicated to the vertex descriptor's attributes. The rest will be used for instancing.
+	 * Make sure that all the resources are from set = 0.
 	 */
 	struct RasterizingPipelineSpecification final
 	{
-		ShaderCode m_VertexShader = {};
-		ShaderCode m_TessellationControlShader = {};
-		ShaderCode m_TessellationEvaluationShader = {};
-		ShaderCode m_GeometryShader = {};
-		ShaderCode m_FragmentShader = {};
+		using InputBinding = std::vector<VertexAttributeType>;
+
+		std::filesystem::path m_VertexShader = {};
+		std::filesystem::path m_TessellationControlShader = {};
+		std::filesystem::path m_TessellationEvaluationShader = {};
+		std::filesystem::path m_GeometryShader = {};
+		std::filesystem::path m_FragmentShader = {};
+
+		/**
+		 * Input bindings are used to bind different vertex buffers to the vertex shader when drawing.
+		 * By default, the first binding is for the vertex buffer. Second is for the instance buffer. The rest is user defined.
+		 *
+		 * Example:
+		 * m_InputBindings = {
+		 * 		// Vertex buffer's content.
+		 * 		{
+		 * 			VertexAttributeType::Vec3_32,	// layout(location = 0) in vec3 inPosition;
+		 * 			VertexAttributeType::Vec2_32	// layout(location = 1) in vec2 inTexture;
+		 * 		},
+		 *
+		 * 		// Instance information.
+		 * 		{
+		 * 			VertexAttributeType::Vec3_32,	// layout(location = 2) in vec3 instancePosition;
+		 * 			VertexAttributeType::Vec3_32,	// layout(location = 3) in vec3 instanceRotation;
+		 * 			VertexAttributeType::Vec3_32,	// layout(location = 4) in vec3 instanceScale;
+		 * 			VertexAttributeType::Float		// layout(location = 5) in int instanceID;
+		 * 		}
+		 * };
+		 */
+		std::vector<InputBinding> m_InputBindings = {};
 
 		float m_ColorBlendConstants[4] = {};
 		float m_DepthBiasFactor = 0.0f;

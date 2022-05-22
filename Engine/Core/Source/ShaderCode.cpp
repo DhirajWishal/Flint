@@ -101,7 +101,6 @@ namespace Flint
 
 	void ShaderCode::reflect()
 	{
-
 		uint32_t variableCount = 0;
 		SpvReflectShaderModule shaderModule = {};
 		const auto shaderCode = std::vector<uint32_t>(m_Code.begin(), m_Code.begin() + (m_Code.size() / 4));
@@ -131,9 +130,6 @@ namespace Flint
 						attribute.m_Name = pResource->name;
 
 					attribute.m_Location = pResource->location;
-					attribute.m_Size = (pResource->type_description->traits.numeric.scalar.width / 8) *
-						std::max(pResource->type_description->traits.numeric.vector.component_count, uint32_t(1));
-
 					m_InputAttributes.emplace_back(attribute);
 				}
 			}
@@ -166,9 +162,6 @@ namespace Flint
 						attribute.m_Name = pResource->name;
 
 					attribute.m_Location = pResource->location;
-					attribute.m_Size = (pResource->type_description->traits.numeric.scalar.width / 8) *
-						std::max(pResource->type_description->traits.numeric.vector.component_count, uint32_t(1));
-
 					m_OutputAttributes.emplace_back(attribute);
 				}
 			}

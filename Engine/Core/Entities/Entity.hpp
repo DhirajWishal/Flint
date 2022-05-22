@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "EngineBoundObject.hpp"
+#include "Core/EngineBoundObject.hpp"
 
 namespace Flint
 {

@@ -4,7 +4,7 @@
 #include "VulkanBackend/VulkanWindow.hpp"
 #include "VulkanBackend/VulkanRasterizer.hpp"
 #include "Core/EventSystem/EventSystem.hpp"
-#include "Core/StaticEntity.hpp"
+#include "Core/Entities/StaticEntity.hpp"
 
 #ifdef FLINT_DEBUG
 constexpr auto Validation = true;

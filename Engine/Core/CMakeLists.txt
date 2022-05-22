@@ -13,16 +13,14 @@ add_library(
 	FlintCore
 	STATIC
 
-	"Source/StaticEntity.cpp"
 	"Source/Window.cpp"
 	"Source/Geometry.cpp" 
 	"Source/ShaderCode.cpp"
 
 	"Source/EventSystem/EventSystem.cpp"
 
-	"Entity.hpp"
-	"GhostEntity.hpp"
-	"StaticEntity.hpp"
+	"Source/Entities/StaticEntity.cpp"
+
 	"Instance.hpp" 
 	"Engine.hpp" 
 	"FObject.hpp"
@@ -45,6 +43,10 @@ add_library(
 	"EventSystem/EventSystem.hpp"
 	"EventSystem/Keyboard.hpp"
 	"EventSystem/Mouse.hpp"
+
+	"Entities/Entity.hpp"
+	"Entities/GhostEntity.hpp"
+	"Entities/StaticEntity.hpp"
 )
 
 # Set the include directories.

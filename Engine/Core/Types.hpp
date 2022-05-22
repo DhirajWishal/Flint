@@ -84,34 +84,26 @@ namespace Flint
 	}
 
 	/**
-	 * Position type enum.
+	 * Data type enum.
 	 */
-	enum class PositionType : uint8_t
+	enum class DataType : uint8_t
 	{
-		None = 0,	// Nothing is loaded.
+		None = 0,								// Default type.
 
-		X32Y32 = sizeof(uint32_t[2]),
-		X32Y32Z32 = sizeof(uint32_t[3]),
-	};
+		R8G8B8 = sizeof(uint8_t[3]),			// 8 bit R, G and B components.
+		R8G8B8A8 = sizeof(uint8_t[4]),			// 8 bit R, G, B and A components.
 
-	/**
-	 * Coordinate type enum.
-	 */
-	enum class CoordinateType : uint8_t
-	{
-		None = 0,	// Nothing is loaded.
+		R32G32B32 = sizeof(uint32_t[3]),		// 32 bit R, G and B components.
+		R32G32B32A32 = sizeof(uint32_t[4]),		// 32 bit R, G, B and A components.
 
-		R8G8B8 = sizeof(uint8_t[3]),
-		R8G8B8A8 = sizeof(uint8_t[4]),
+		U8V8 = sizeof(uint8_t[2]),				// 8 bit U and V components.
+		U8V8W8 = sizeof(uint8_t[3]),			// 8 bit U, V and W components.
 
-		R32G32B32 = sizeof(float[3]),
-		R32G32B32A32 = sizeof(float[4]),
+		U32V32 = sizeof(uint32_t[2]),			// 32 bit U and V components.
+		U32V32W32 = sizeof(uint32_t[3]),		// 32 bit U, V and W components.
 
-		U8V8 = sizeof(uint8_t[2]),
-		U8V8W8 = sizeof(uint8_t[3]),
-
-		U32V32 = sizeof(float[2]),
-		U32V32W32 = sizeof(float[3]),
+		X32Y32 = sizeof(uint32_t[2]),			// 32 bit X and Y components.
+		X32Y32Z32 = sizeof(uint32_t[3]),		// 32 bit X, Y and Z components.
 	};
 
 	/**
@@ -130,28 +122,28 @@ namespace Flint
 		[[nodiscard]] uint8_t getStride() const;
 
 	public:
-		PositionType m_Position = PositionType::None;		// Uses X, Y and Z.
-		PositionType m_Normal = PositionType::None;			// Uses X, Y and Z.
+		DataType m_Position = DataType::None;		// Uses X, Y and Z.
+		DataType m_Normal = DataType::None;			// Uses X, Y and Z.
 
-		PositionType m_Tangent = PositionType::None;		// Uses X, Y and Z.
-		PositionType m_BiTangent = PositionType::None;		// Uses X, Y and Z.
+		DataType m_Tangent = DataType::None;		// Uses X, Y and Z.
+		DataType m_BiTangent = DataType::None;		// Uses X, Y and Z.
 
-		CoordinateType m_Color0 = CoordinateType::None;		// Uses R, G, B and A.
-		CoordinateType m_Color1 = CoordinateType::None;		// Uses R, G, B and A.
-		CoordinateType m_Color2 = CoordinateType::None;		// Uses R, G, B and A.
-		CoordinateType m_Color3 = CoordinateType::None;		// Uses R, G, B and A.
-		CoordinateType m_Color4 = CoordinateType::None;		// Uses R, G, B and A.
-		CoordinateType m_Color5 = CoordinateType::None;		// Uses R, G, B and A.
-		CoordinateType m_Color6 = CoordinateType::None;		// Uses R, G, B and A.
-		CoordinateType m_Color7 = CoordinateType::None;		// Uses R, G, B and A.
+		DataType m_Color0 = DataType::None;			// Uses R, G, B and A.
+		DataType m_Color1 = DataType::None;			// Uses R, G, B and A.
+		DataType m_Color2 = DataType::None;			// Uses R, G, B and A.
+		DataType m_Color3 = DataType::None;			// Uses R, G, B and A.
+		DataType m_Color4 = DataType::None;			// Uses R, G, B and A.
+		DataType m_Color5 = DataType::None;			// Uses R, G, B and A.
+		DataType m_Color6 = DataType::None;			// Uses R, G, B and A.
+		DataType m_Color7 = DataType::None;			// Uses R, G, B and A.
 
-		CoordinateType m_Texture0 = CoordinateType::None;	// Uses U, V and W.
-		CoordinateType m_Texture1 = CoordinateType::None;	// Uses U, V and W.
-		CoordinateType m_Texture2 = CoordinateType::None;	// Uses U, V and W.
-		CoordinateType m_Texture3 = CoordinateType::None;	// Uses U, V and W.
-		CoordinateType m_Texture4 = CoordinateType::None;	// Uses U, V and W.
-		CoordinateType m_Texture5 = CoordinateType::None;	// Uses U, V and W.
-		CoordinateType m_Texture6 = CoordinateType::None;	// Uses U, V and W.
-		CoordinateType m_Texture7 = CoordinateType::None;	// Uses U, V and W.
+		DataType m_Texture0 = DataType::None;		// Uses U, V and W.
+		DataType m_Texture1 = DataType::None;		// Uses U, V and W.
+		DataType m_Texture2 = DataType::None;		// Uses U, V and W.
+		DataType m_Texture3 = DataType::None;		// Uses U, V and W.
+		DataType m_Texture4 = DataType::None;		// Uses U, V and W.
+		DataType m_Texture5 = DataType::None;		// Uses U, V and W.
+		DataType m_Texture6 = DataType::None;		// Uses U, V and W.
+		DataType m_Texture7 = DataType::None;		// Uses U, V and W.
 	};
 }

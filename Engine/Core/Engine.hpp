@@ -29,6 +29,24 @@ namespace Flint
 	};
 
 	/**
+	 * Multisample bitwise OR operator.
+	 *
+	 * @param lhs The left hand side argument.
+	 * @param rhs The right hand side argument.
+	 * @return The OR performed multisample count.
+	 */
+	constexpr Multisample operator|(const Multisample& lhs, const Multisample& rhs) { return static_cast<Multisample>(static_cast<uint8_t>(lhs) | static_cast<uint8_t>(rhs)); }
+
+	/**
+	 * Multisample bitwise And operator.
+	 *
+	 * @param lhs The left hand side argument.
+	 * @param rhs The right hand side argument.
+	 * @return The And performed multisample count.
+	 */
+	constexpr Multisample operator&(const Multisample& lhs, const Multisample& rhs) { return static_cast<Multisample>(static_cast<uint8_t>(lhs) & static_cast<uint8_t>(rhs)); }
+
+	/**
 	 * Engine class.
 	 * This class contains everything that's needed for a single engine instance.
 	 *

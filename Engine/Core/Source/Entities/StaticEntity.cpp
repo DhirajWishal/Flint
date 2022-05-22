@@ -1,7 +1,7 @@
 // Copyright 2021-2022 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#include "Core/StaticEntity.hpp"
+#include "Core/Entities/StaticEntity.hpp"
 #include "Core/GeometryStore.hpp"
 #include "Core/Errors/AssetError.hpp"
 
@@ -31,36 +31,36 @@ namespace /* anonymous */
 
 		// Get the vertex information.
 		if (pMesh->HasNormals())
-			descriptor.m_Normal = Flint::PositionType::X32Y32Z32;
+			descriptor.m_Normal = Flint::DataType::X32Y32Z32;
 
 		if (pMesh->HasPositions())
-			descriptor.m_Position = Flint::PositionType::X32Y32Z32;
+			descriptor.m_Position = Flint::DataType::X32Y32Z32;
 
 		if (pMesh->HasTangentsAndBitangents())
 		{
-			descriptor.m_Tangent = Flint::PositionType::X32Y32Z32;
-			descriptor.m_BiTangent = Flint::PositionType::X32Y32Z32;
+			descriptor.m_Tangent = Flint::DataType::X32Y32Z32;
+			descriptor.m_BiTangent = Flint::DataType::X32Y32Z32;
 		}
 
 		// Resolve vertex colors.
-		if (pMesh->HasVertexColors(0)) descriptor.m_Color0 = Flint::CoordinateType::R32G32B32A32;
-		if (pMesh->HasVertexColors(1)) descriptor.m_Color1 = Flint::CoordinateType::R32G32B32A32;
-		if (pMesh->HasVertexColors(2)) descriptor.m_Color2 = Flint::CoordinateType::R32G32B32A32;
-		if (pMesh->HasVertexColors(3)) descriptor.m_Color3 = Flint::CoordinateType::R32G32B32A32;
-		if (pMesh->HasVertexColors(4)) descriptor.m_Color4 = Flint::CoordinateType::R32G32B32A32;
-		if (pMesh->HasVertexColors(5)) descriptor.m_Color5 = Flint::CoordinateType::R32G32B32A32;
-		if (pMesh->HasVertexColors(6)) descriptor.m_Color6 = Flint::CoordinateType::R32G32B32A32;
-		if (pMesh->HasVertexColors(7)) descriptor.m_Color7 = Flint::CoordinateType::R32G32B32A32;
+		if (pMesh->HasVertexColors(0)) descriptor.m_Color0 = Flint::DataType::R32G32B32A32;
+		if (pMesh->HasVertexColors(1)) descriptor.m_Color1 = Flint::DataType::R32G32B32A32;
+		if (pMesh->HasVertexColors(2)) descriptor.m_Color2 = Flint::DataType::R32G32B32A32;
+		if (pMesh->HasVertexColors(3)) descriptor.m_Color3 = Flint::DataType::R32G32B32A32;
+		if (pMesh->HasVertexColors(4)) descriptor.m_Color4 = Flint::DataType::R32G32B32A32;
+		if (pMesh->HasVertexColors(5)) descriptor.m_Color5 = Flint::DataType::R32G32B32A32;
+		if (pMesh->HasVertexColors(6)) descriptor.m_Color6 = Flint::DataType::R32G32B32A32;
+		if (pMesh->HasVertexColors(7)) descriptor.m_Color7 = Flint::DataType::R32G32B32A32;
 
 		// Resolve texture coordinates.
-		if (pMesh->HasTextureCoords(0)) descriptor.m_Texture0 = Flint::CoordinateType::U32V32;
-		if (pMesh->HasTextureCoords(1)) descriptor.m_Texture1 = Flint::CoordinateType::U32V32;
-		if (pMesh->HasTextureCoords(2)) descriptor.m_Texture2 = Flint::CoordinateType::U32V32;
-		if (pMesh->HasTextureCoords(3)) descriptor.m_Texture3 = Flint::CoordinateType::U32V32;
-		if (pMesh->HasTextureCoords(4)) descriptor.m_Texture4 = Flint::CoordinateType::U32V32;
-		if (pMesh->HasTextureCoords(5)) descriptor.m_Texture5 = Flint::CoordinateType::U32V32;
-		if (pMesh->HasTextureCoords(6)) descriptor.m_Texture6 = Flint::CoordinateType::U32V32;
-		if (pMesh->HasTextureCoords(7)) descriptor.m_Texture7 = Flint::CoordinateType::U32V32;
+		if (pMesh->HasTextureCoords(0)) descriptor.m_Texture0 = Flint::DataType::U32V32;
+		if (pMesh->HasTextureCoords(1)) descriptor.m_Texture1 = Flint::DataType::U32V32;
+		if (pMesh->HasTextureCoords(2)) descriptor.m_Texture2 = Flint::DataType::U32V32;
+		if (pMesh->HasTextureCoords(3)) descriptor.m_Texture3 = Flint::DataType::U32V32;
+		if (pMesh->HasTextureCoords(4)) descriptor.m_Texture4 = Flint::DataType::U32V32;
+		if (pMesh->HasTextureCoords(5)) descriptor.m_Texture5 = Flint::DataType::U32V32;
+		if (pMesh->HasTextureCoords(6)) descriptor.m_Texture6 = Flint::DataType::U32V32;
+		if (pMesh->HasTextureCoords(7)) descriptor.m_Texture7 = Flint::DataType::U32V32;
 
 		// Get the index count.
 		for (uint32_t i = 0; i < pMesh->mNumFaces; i++)

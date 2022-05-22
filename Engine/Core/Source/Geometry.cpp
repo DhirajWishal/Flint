@@ -13,6 +13,7 @@ namespace Flint
 	{
 		const XXH64_hash_t hashes[] = {
 			XXH64(&m_VertexDescriptor, sizeof(VertexDescriptor), 0),
+			XXH64(m_InstanceTypes.data(), sizeof(DataType) * m_InstanceTypes.size(), 0),
 			XXH64(m_TextureTypes.data(), sizeof(TextureType) * m_TextureTypes.size(), 0),
 			XXH64(m_ColorTypes.data(), sizeof(ColorType) * m_ColorTypes.size(), 0)
 		};
@@ -38,6 +39,11 @@ namespace Flint
 	{
 		m_Colors.emplace_back(std::array<float, 4>{ r, g, b, a });
 		m_PipelineIdentifier.m_ColorTypes.emplace_back(type);
+	}
+
+	void Mesh::addInstanceType(DataType type)
+	{
+		m_PipelineIdentifier.m_InstanceTypes.emplace_back(type);
 	}
 
 	std::byte* Mesh::mapVertexMemory()

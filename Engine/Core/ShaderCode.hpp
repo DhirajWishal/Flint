@@ -65,8 +65,6 @@ namespace Flint
 	{
 		std::string m_Name;
 		uint32_t m_Location = 0;
-		uint32_t m_Binding = 0;
-		uint32_t m_Size = 0;
 	};
 
 	/**
@@ -82,7 +80,12 @@ namespace Flint
 	 * Shader code class.
 	 * This class contains shader code for a single shader.
 	 *
-	 * Note that flint only supports SPIR-V.
+	 * This class only supports SPIR-V.
+	 *
+	 * Note that inputs, and output attributes are required to be in the ascending order and cannot jump numbers like 1, 4, 5, ..., for example in GLSL:
+	 * layout(location = 0) in vec4 diffuseAlbedo;	// Starts with 0
+	 * layout(location = 1) in vec2 texCoord;
+	 * layout(location = 2) in vec3 cameraSpaceNormal;
 	 */
 	class ShaderCode final
 	{

@@ -4,9 +4,7 @@
 #pragma once
 
 #include "Entity.hpp"
-#include "Geometry.hpp"
-
-#include <filesystem>
+#include "Core/Geometry.hpp"
 
 namespace Flint
 {

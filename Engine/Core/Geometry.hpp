@@ -64,6 +64,7 @@ namespace Flint
 	public:
 		std::vector<TextureType> m_TextureTypes;
 		std::vector<ColorType> m_ColorTypes;
+		std::vector<DataType> m_InstanceTypes;
 		VertexDescriptor m_VertexDescriptor;
 	};
 
@@ -203,6 +204,13 @@ namespace Flint
 		 * @param type The color type.
 		 */
 		void addMaterial(float r, float g, float b, float a, ColorType type);
+
+		/**
+		 * Add a new instance type to the mesh.
+		 *
+		 * @param type The type of the instance data.
+		 */
+		void addInstanceType(DataType type);
 
 		/**
 		 * Get the texture paths.
@@ -421,26 +429,5 @@ namespace Flint
 		uint64_t m_VertexOffset = 0;
 		uint64_t m_IndexSize = 0;
 		uint64_t m_IndexOffset = 0;
-	};
-}
-
-namespace std
-{
-	/**
-	 * Hash structure specialization for the mesh.
-	 */
-	template<>
-	struct hash<Flint::Mesh> final
-	{
-		/**
-		 * () Operator.
-		 *
-		 * @param mesh The mesh to generate the hash from.
-		 * @return The hash value.
-		 */
-		uint64_t operator()(const Flint::Mesh& mesh) const
-		{
-
-		}
 	};
 }
