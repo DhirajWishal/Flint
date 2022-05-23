@@ -27,6 +27,8 @@ if (MSVC)
 endif ()
 
 # Copy the required files.
+file(COPY Shaders DESTINATION ${CMAKE_BINARY_DIR}/Sandbox)
+
 file(GLOB SDL_BUILDS_TO_COPY "${CMAKE_BINARY_DIR}/ThirdParty/SDL/*")
 file(COPY ${SDL_BUILDS_TO_COPY} DESTINATION ${CMAKE_BINARY_DIR}/Sandbox)
 

@@ -39,6 +39,18 @@ int main()
 			pRasterizer->registerGeometry(entity.getGeometry(), [](const Flint::Mesh& mesh)
 				{
 					Flint::MeshRasterizer rasterizer;
+
+					// Setup graphics specification.
+					auto& specification = rasterizer.getSpecification();
+					specification.m_CacheFile = "Debugging.bin";
+					specification.m_VertexShader = Flint::ShaderCode("Shaders/Debugging/vert.spv", Flint::ShaderType::Vertex);
+					specification.m_FragmentShader = Flint::ShaderCode("Shaders/Debugging/frag.spv", Flint::ShaderType::Fragment);
+
+					auto& binding = specification.m_InputBindings.emplace_back(Flint::InputBindingType::VertexData);
+					binding.add(0, Flint::VertexAttributeType::Vec3_32);	// layout (location = 0) in vec3 inPosition;
+					binding.add(1, Flint::VertexAttributeType::Vec3_32);	// layout (location = 1) in vec3 inNormal;
+					binding.add(2, Flint::VertexAttributeType::Vec2_32);	// layout (location = 2) in vec2 inTextureCoordinates;
+
 					return rasterizer;
 				}
 			);

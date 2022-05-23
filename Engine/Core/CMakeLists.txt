@@ -42,6 +42,8 @@ add_library(
 	"Errors/BackendError.hpp" 
 	
 	"Containers/Bitset.hpp" 
+	"Containers/FlatSet.hpp" 
+	"Containers/SparseArray.hpp"
 
 	"EventSystem/EventSystem.hpp"
 	"EventSystem/Keyboard.hpp"

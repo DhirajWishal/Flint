@@ -49,4 +49,15 @@ namespace Flint
 
 		return static_cast<uint64_t>(XXH64(hashes, sizeof(hashes), 0));
 	}
+
+	uint64_t GenerateHash(const MeshRasterizer& meshRasterizer)
+	{
+		const uint64_t hashes[] = {
+			GenerateHash(meshRasterizer.getBindingTable()),
+			GenerateHash(meshRasterizer.getSpecification())
+		};
+
+		return static_cast<uint64_t>(XXH64(hashes, sizeof(hashes), 0));
+	}
+
 }

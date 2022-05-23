@@ -6,6 +6,8 @@
 #include "VulkanBackend/VulkanColorAttachment.hpp"
 #include "VulkanBackend/VulkanDepthAttachment.hpp"
 
+#include "Core/Utility/Hasher.hpp"
+
 #include <array>
 
 namespace Flint
@@ -93,6 +95,10 @@ namespace Flint
 			createRenderPass();
 			createFramebuffers();
 
+			// Recreate the pipelines.
+			for (auto& pipeline : m_Pipelines)
+				pipeline.recreate();
+
 			// Reset the indexes.
 			m_FrameIndex = 0;
 			m_pCommandBuffers->resetIndex();
@@ -104,7 +110,16 @@ namespace Flint
 			m_Rasterizers.reserve(geometry.getMeshes().size());
 
 			for (const auto& mesh : geometry.getMeshes())
-				m_Rasterizers.emplace_back(meshBinder(mesh));
+			{
+				auto meshRasterizer = meshBinder(mesh);
+				const auto pipelineHash = GenerateHash(meshRasterizer);
+
+				// If the pipeline is present, we don't need to create one. If not we need to create a new one.
+				if (!m_PipelineHashes.contains(pipelineHash))
+					m_PipelineHashes.emplace(pipelineHash, m_Pipelines.emplace(getEngineAs<VulkanEngine>(), *this, std::move(meshRasterizer.getSpecification())).first);
+
+				m_Rasterizers.emplace_back(meshRasterizer);
+			}
 		}
 
 		Flint::RenderTargetAttachment& VulkanRasterizer::getAttachment(uint32_t index)

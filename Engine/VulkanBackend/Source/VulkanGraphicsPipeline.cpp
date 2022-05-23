@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "VulkanBackend/VulkanGraphicsPipeline.hpp"
+#include "VulkanBackend/VulkanRasterizer.hpp"
 #include "VulkanBackend/VulkanMacros.hpp"
 
 #ifdef FLINT_PLATFORM_WINDOWS
@@ -354,6 +355,9 @@ namespace Flint
 
 			// Setup the defaults.
 			setupDefaults(std::move(specification));
+
+			// Finally create the pipeline.
+			createPipeline();
 		}
 
 		VulkanGraphicsPipeline::~VulkanGraphicsPipeline()
@@ -364,6 +368,7 @@ namespace Flint
 
 		void VulkanGraphicsPipeline::recreate()
 		{
+			m_Engine.getDeviceTable().vkDestroyPipeline(m_Engine.getLogicalDevice(), m_Pipeline, nullptr);
 			createPipeline();
 		}
 

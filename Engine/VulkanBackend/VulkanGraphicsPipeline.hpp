@@ -5,12 +5,13 @@
 
 #include "Core/Rasterizer.hpp"
 #include "VulkanPipeline.hpp"
-#include "VulkanRasterizer.hpp"
 
 namespace Flint
 {
 	namespace VulkanBackend
 	{
+		class VulkanRasterizer;
+
 		/**
 		 * Vulkan graphics pipeline class.
 		 * This pipeline is used to perform raster graphics.

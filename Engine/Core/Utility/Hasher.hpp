@@ -23,4 +23,13 @@ namespace Flint
 	 * @return The hash value.
 	 */
 	[[nodiscard]] uint64_t GenerateHash(const RasterizingPipelineSpecification& specification);
+
+	/**
+	 * Generate hash for the mesh rasterizer.
+	 * Note that this operation is quite costly.
+	 *
+	 * @param meshRasterizer The mesh rasterizer to generate the hash.
+	 * @return The hash value.
+	 */
+	[[nodiscard]] uint64_t GenerateHash(const MeshRasterizer& meshRasterizer);
 }

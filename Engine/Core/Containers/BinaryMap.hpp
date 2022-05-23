@@ -24,6 +24,7 @@ namespace Flint
 		using value_type = Value;
 		using entry_type = std::pair<key_type, value_type>;
 		using container_type = std::vector<entry_type>;
+		using value_container = std::vector<entry_type>;
 		using iterator = typename container_type::iterator;
 		using const_iterator = typename container_type::const_iterator;
 
@@ -47,6 +48,22 @@ namespace Flint
 		 * Destroy the storage map object.
 		 */
 		~BinaryMap() = default;
+
+		/**
+		 * Insert a new key value pair to the container.
+		 *
+		 * @param key The key value.
+		 * @param value The value to insert.
+		 * @return Pair stating if it's inserted or not.
+		 */
+		template<class... Type>
+		decltype(auto) emplace(const key_type& key, Type&&... value)
+		{
+			if (contains(key))
+				return find(key);
+
+			return m_Container.emplace(find(key), key, std::forward<Type>(value)...);
+		}
 
 		/**
 		 * Get the value stored at a given position using the key.
@@ -175,5 +192,6 @@ namespace Flint
 
 	private:
 		mutable container_type m_Container = {};
+		mutable std::vector<value_type> m_Values;
 	};
 }

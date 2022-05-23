@@ -4,9 +4,13 @@
 #pragma once
 
 #include "Core/Rasterizer.hpp"
+#include "Core/Containers/SparseArray.hpp"
+
 #include "VulkanEngine.hpp"
 #include "VulkanCommandBuffers.hpp"
 #include "VulkanRenderTargetAttachment.hpp"
+#include "VulkanGraphicsPipeline.hpp"
+
 
 namespace Flint
 {
@@ -119,6 +123,9 @@ namespace Flint
 
 		private:
 			std::vector<std::vector<std::unique_ptr<VulkanRenderTargetAttachment>>> m_pAttachments;
+
+			BinaryMap<uint64_t, uint32_t> m_PipelineHashes;
+			SparseArray<VulkanGraphicsPipeline, uint32_t> m_Pipelines;
 
 			std::vector<VkFramebuffer> m_Framebuffers;
 			std::unique_ptr<VulkanCommandBuffers> m_pCommandBuffers = nullptr;
