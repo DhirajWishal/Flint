@@ -49,26 +49,6 @@ namespace Flint
 	};
 
 	/**
-	 * Pipeline identifier structure.
-	 * This structure defines everything needed to identify a pipeline.
-	 */
-	struct PipelineIdentifier final
-	{
-		/**
-		 * Generate hash for the current identifier.
-		 *
-		 * @return The hash value.
-		 */
-		[[nodiscard]] uint64_t hash() const;
-
-	public:
-		std::vector<TextureType> m_TextureTypes;
-		std::vector<ColorType> m_ColorTypes;
-		std::vector<DataType> m_InstanceTypes;
-		VertexDescriptor m_VertexDescriptor;
-	};
-
-	/**
 	 * Resource buffer view class.
 	 * This contains the begin and end pointers of the buffer's data.
 	 */
@@ -224,7 +204,7 @@ namespace Flint
 		 *
 		 * @return The types
 		 */
-		[[nodiscard]] const std::vector<TextureType>& getTextureTypes() const { return m_PipelineIdentifier.m_TextureTypes; }
+		[[nodiscard]] const std::vector<TextureType>& getTextureTypes() const { return m_TextureTypes; }
 
 		/**
 		 * Get the color materials.
@@ -238,7 +218,7 @@ namespace Flint
 		 *
 		 * @return The types.
 		 */
-		[[nodiscard]] const std::vector<ColorType>& getColorTypes() const { return m_PipelineIdentifier.m_ColorTypes; }
+		[[nodiscard]] const std::vector<ColorType>& getColorTypes() const { return m_ColorTypes; }
 
 		/**
 		 * Map the vertex memory to the local address space.
@@ -265,13 +245,6 @@ namespace Flint
 		void unmapIndexMemory();
 
 		/**
-		 * Get the pipeline identifier.
-		 *
-		 * @return The pipeline identifier.
-		 */
-		[[nodiscard]] const PipelineIdentifier& getPipelineIdentifier() const { return m_PipelineIdentifier; }
-
-		/**
 		 * Get the geometry to which this mesh belongs to.
 		 *
 		 * @return The geometry.
@@ -290,14 +263,14 @@ namespace Flint
 		 *
 		 * @return The descriptor.
 		 */
-		[[nodiscard]] VertexDescriptor getVertexDescriptor() const { return m_PipelineIdentifier.m_VertexDescriptor; }
+		[[nodiscard]] VertexDescriptor getVertexDescriptor() const { return m_VertexDescriptor; }
 
 		/**
 		 * Get the vertex stride.
 		 *
 		 * @return The stride.
 		 */
-		[[nodiscard]] uint64_t getVertexStride() const { return m_PipelineIdentifier.m_VertexDescriptor.getStride(); }
+		[[nodiscard]] uint64_t getVertexStride() const { return m_VertexDescriptor.getStride(); }
 
 		/**
 		 * Get the vertex count.
@@ -318,7 +291,7 @@ namespace Flint
 		 *
 		 * @return The size in bytes.
 		 */
-		[[nodiscard]] uint64_t getVertexSize() const { return m_VertexCount * m_PipelineIdentifier.m_VertexDescriptor.getStride(); }
+		[[nodiscard]] uint64_t getVertexSize() const { return m_VertexCount * m_VertexDescriptor.getStride(); }
 
 		/**
 		 * Get the index count.
@@ -342,10 +315,13 @@ namespace Flint
 		[[nodiscard]] uint64_t getIndexSize() const { return m_IndexCount * sizeof(uint32_t); }
 
 	private:
+		std::vector<TextureType> m_TextureTypes;
 		std::vector<std::filesystem::path> m_TexturePaths;	// Each one of these maps to each one of texture types in the pipeline identifier.
+		std::vector<ColorType> m_ColorTypes;
 		std::vector<std::array<float, 4>> m_Colors;			// Each one of these maps to each one of color types in the pipeline identifier.
 
-		PipelineIdentifier m_PipelineIdentifier;
+		std::vector<DataType> m_InstanceTypes;
+		VertexDescriptor m_VertexDescriptor;
 
 		std::string m_Name;
 
@@ -405,6 +381,13 @@ namespace Flint
 		 * @return The geometry store reference.
 		 */
 		[[nodiscard]] const GeometryStore& getGeometryStore() const { return *m_pGeometryStore; }
+
+		/**
+		 * Get all the stored meshes.
+		 *
+		 * @return The meshes.
+		 */
+		[[nodiscard]] const std::vector<Mesh>& getMeshes() const { return m_Meshes; }
 
 		/**
 		 * Begin data streaming.

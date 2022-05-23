@@ -35,12 +35,17 @@ int main()
 
 			auto entity = Flint::StaticEntity(*pEngine);
 			entity.loadModel(FLINT_GLTF_ASSET_PATH "Sponza/glTF/Sponza.gltf");
-			//entity.loadModel("E:\\Assets\\EU43_Castanea_sativa_Chestnut\\EU43_3.FBX");
+			//entity.loadModel("E:\\Assets\\Sponza\\Main\\Main\\NewSponza_Main_Blender_glTF.gltf");
+			pRasterizer->registerGeometry(entity.getGeometry(), [](const Flint::Mesh& mesh)
+				{
+					Flint::MeshRasterizer rasterizer;
+					return rasterizer;
+				}
+			);
 
 			while (!eventSystem.shouldClose())
 			{
 				pRasterizer->update();
-				pRasterizer->render(entity.getGeometry());
 				pWindow->update();
 				const auto events = eventSystem.poll();
 

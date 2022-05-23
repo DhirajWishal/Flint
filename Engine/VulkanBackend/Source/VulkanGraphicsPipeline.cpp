@@ -4,30 +4,53 @@
 #include "VulkanBackend/VulkanGraphicsPipeline.hpp"
 #include "VulkanBackend/VulkanMacros.hpp"
 
+#ifdef FLINT_PLATFORM_WINDOWS
+#	include <execution>
+
+#endif
+
 namespace /* anonymous */
 {
-	//VkFormat GetFormatFromSize(ShaderAttributeDataType type)
-	//{
-	//	switch (type)
-	//	{
-	//	case Flint::ShaderAttributeDataType::VEC1:
-	//		return VkFormat::VK_FORMAT_R32_UINT;
-	//
-	//	case Flint::ShaderAttributeDataType::VEC2:
-	//		return VkFormat::VK_FORMAT_R32G32_SFLOAT;
-	//
-	//	case Flint::ShaderAttributeDataType::VEC3:
-	//		return VkFormat::VK_FORMAT_R32G32B32_SFLOAT;
-	//
-	//	case Flint::ShaderAttributeDataType::VEC4:
-	//		return VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT;
-	//
-	//	default:
-	//		throw Flint::BackendError("Invalid or unsupported shader attribute type!");
-	//	}
-	//
-	//	return VkFormat::VK_FORMAT_UNDEFINED;
-	//}
+	/**
+	 * Get the format from the attribute type.
+	 *
+	 * @param type The type of the attribute.
+	 * @return The Vulkan format.
+	 */
+	VkFormat GetFormat(Flint::VertexAttributeType type)
+	{
+		switch (type)
+		{
+		case Flint::VertexAttributeType::Float:						return VK_FORMAT_R32_SFLOAT;
+		case Flint::VertexAttributeType::Vec2_8:					return VK_FORMAT_R8G8_UINT;
+		case Flint::VertexAttributeType::Vec2_16:					return VK_FORMAT_R16G16_SFLOAT;
+		case Flint::VertexAttributeType::Vec2_32:					return VK_FORMAT_R32G32_SFLOAT;
+		case Flint::VertexAttributeType::Vec2_64:					return VK_FORMAT_R64G64_SFLOAT;
+		case Flint::VertexAttributeType::Vec3_8:					return VK_FORMAT_R8G8B8_UINT;
+		case Flint::VertexAttributeType::Vec3_16:					return VK_FORMAT_R16G16B16_SFLOAT;
+		case Flint::VertexAttributeType::Vec3_32:					return VK_FORMAT_R32G32B32_SFLOAT;
+		case Flint::VertexAttributeType::Vec3_64:					return VK_FORMAT_R64G64B64_SFLOAT;
+		case Flint::VertexAttributeType::Vec4_8:					return VK_FORMAT_R8G8B8A8_UINT;
+		case Flint::VertexAttributeType::Vec4_16:					return VK_FORMAT_R16G16B16A16_SFLOAT;
+		case Flint::VertexAttributeType::Vec4_32:					return VK_FORMAT_R32G32B32A32_SFLOAT;
+		case Flint::VertexAttributeType::Vec4_64:					return VK_FORMAT_R64G64B64A64_SFLOAT;
+		default:													throw Flint::BackendError("Invalid vertex attribute type!");
+		}
+	}
+
+	/**
+	 * Get the vertex input rate.
+	 *
+	 * @param type The binding type.
+	 * @return The input rate.
+	 */
+	VkVertexInputRate GetInputRate(Flint::InputBindingType type)
+	{
+		if (type == Flint::InputBindingType::VertexData)
+			return VK_VERTEX_INPUT_RATE_VERTEX;
+		else
+			return VK_VERTEX_INPUT_RATE_INSTANCE;
+	}
 
 	/**
 	 * Get the primitive topology.
@@ -296,28 +319,308 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanGraphicsPipeline::VulkanGraphicsPipeline(VulkanEngine& engine, std::string&& name, const PipelineIdentifier& identifier, RasterizingPipelineSpecification&& specification)
-			: VulkanPipeline(engine, std::move(name)), m_Specification(specification)
+		VulkanGraphicsPipeline::VulkanGraphicsPipeline(VulkanEngine& engine, VulkanRasterizer& rasterizer, RasterizingPipelineSpecification&& specification)
+			: VulkanPipeline(engine, std::move(specification.m_CacheFile)), m_Rasterizer(rasterizer)
 		{
+			// Resolve shader information.
+			std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
+			std::vector<VkPushConstantRange> pushConstants;
+
+			// Resolve the information in the vertex shader.
+			if (specification.m_VertexShader.getType() != ShaderType::Undefined)
+				resolveShader(specification.m_VertexShader, layoutBindings, pushConstants);
+
+			// Resolve the information in the tessellation control shader.
+			if (specification.m_TessellationControlShader.getType() != ShaderType::Undefined)
+				resolveShader(specification.m_TessellationControlShader, layoutBindings, pushConstants);
+
+			// Resolve the information in the tessellation evaluation shader.
+			if (specification.m_TessellationEvaluationShader.getType() != ShaderType::Undefined)
+				resolveShader(specification.m_TessellationEvaluationShader, layoutBindings, pushConstants);
+
+			// Resolve the information in the geometry shader.
+			if (specification.m_GeometryShader.getType() != ShaderType::Undefined)
+				resolveShader(specification.m_GeometryShader, layoutBindings, pushConstants);
+
+			// Resolve the information in the fragment shader.
+			if (specification.m_FragmentShader.getType() != ShaderType::Undefined)
+				resolveShader(specification.m_FragmentShader, layoutBindings, pushConstants);
+
+			// Create the descriptor set layout.
+			createDescriptorSetLayout(std::move(layoutBindings));
+
+			// Create the pipeline layouts.
+			createPipelineLayout(std::move(pushConstants));
+
+			// Setup the defaults.
+			setupDefaults(std::move(specification));
 		}
 
 		VulkanGraphicsPipeline::~VulkanGraphicsPipeline()
 		{
+			destroyDescriptorSetLayout();
+			destroyShaders();
 		}
 
-		void VulkanGraphicsPipeline::createDescriptorSetLayout()
+		void VulkanGraphicsPipeline::recreate()
 		{
+			createPipeline();
+		}
 
+		void VulkanGraphicsPipeline::resolveShader(const ShaderCode& code, std::vector<VkDescriptorSetLayoutBinding>& layoutBindings, std::vector<VkPushConstantRange>& pushConstants)
+		{
+			// Resolve the descriptors.
+			for (const auto& [name, binding] : code.getBindings())
+			{
+				auto& layoutBinding = layoutBindings.emplace_back();
+				layoutBinding.binding = binding.m_Binding;
+				layoutBinding.descriptorCount = binding.m_Count;
+				layoutBinding.descriptorType = Utility::GetDescriptorType(binding.m_Type);
+				layoutBinding.pImmutableSamplers = nullptr;
+				layoutBinding.stageFlags = Utility::GetShaderStage(code.getType());
+
+				auto& poolSize = m_DescriptorPoolSizes.emplace_back();
+				poolSize.descriptorCount = layoutBinding.descriptorCount;
+				poolSize.type = layoutBinding.descriptorType;
+			}
+
+			// Resolve the push constants.
+			for (const auto& constant : code.getPushConstants())
+			{
+				auto& pushConstant = pushConstants.emplace_back();
+				pushConstant.stageFlags = Utility::GetShaderStage(code.getType());
+				pushConstant.size = constant.m_Size;
+				pushConstant.offset = constant.m_Offset;
+			}
+
+			// Create the shader module.
+			VkShaderModuleCreateInfo createInfo = {};
+			createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+			createInfo.pNext = nullptr;
+			createInfo.flags = 0;
+			createInfo.codeSize = code.getCode().size();
+			createInfo.pCode = code.getCode().data();
+
+			VkShaderModule shaderModule = VK_NULL_HANDLE;
+			FLINT_VK_ASSERT(getEngine().getDeviceTable().vkCreateShaderModule(getEngine().getLogicalDevice(), &createInfo, nullptr, &shaderModule), "Failed to create the shader module!");
+
+			// Create the shader stage info.
+			auto& stageInfo = m_ShaderStageCreateInfo.emplace_back();
+			stageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+			stageInfo.pNext = nullptr;
+			stageInfo.flags = 0;
+			stageInfo.stage = Utility::GetShaderStage(code.getType());
+			stageInfo.module = shaderModule;
+			stageInfo.pSpecializationInfo = nullptr;
+			stageInfo.pName = code.getEntryPoint().data();
+		}
+
+		void VulkanGraphicsPipeline::createDescriptorSetLayout(std::vector<VkDescriptorSetLayoutBinding>&& layoutBindings)
+		{
+			VkDescriptorSetLayoutCreateInfo createInfo = {};
+			createInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+			createInfo.pNext = nullptr;
+			createInfo.flags = 0;
+			createInfo.bindingCount = static_cast<uint32_t>(layoutBindings.size());
+			createInfo.pBindings = layoutBindings.data();
+
+			FLINT_VK_ASSERT(getEngine().getDeviceTable().vkCreateDescriptorSetLayout(getEngine().getLogicalDevice(), &createInfo, nullptr, &m_DescriptorSetLayout), "Failed to create the descriptor set layout!");
 		}
 
 		void VulkanGraphicsPipeline::destroyDescriptorSetLayout()
 		{
-
+			getEngine().getDeviceTable().vkDestroyDescriptorSetLayout(getEngine().getLogicalDevice(), m_DescriptorSetLayout, nullptr);
 		}
 
-		void VulkanGraphicsPipeline::createPipelineLayout()
+		void VulkanGraphicsPipeline::createPipelineLayout(std::vector<VkPushConstantRange>&& pushConstants)
 		{
+			VkPipelineLayoutCreateInfo createInfo = {};
+			createInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+			createInfo.pNext = nullptr;
+			createInfo.flags = 0;
+			createInfo.pushConstantRangeCount = static_cast<uint32_t>(pushConstants.size());
+			createInfo.pPushConstantRanges = pushConstants.data();
+			createInfo.setLayoutCount = 1;
+			createInfo.pSetLayouts = &m_DescriptorSetLayout;
 
+			FLINT_VK_ASSERT(getEngine().getDeviceTable().vkCreatePipelineLayout(m_Engine.getLogicalDevice(), &createInfo, nullptr, &m_PipelineLayout), "Failed to create the pipeline layout!");
+		}
+
+		void VulkanGraphicsPipeline::setupDefaults(RasterizingPipelineSpecification&& specification)
+		{
+			// Setup the input bindings.
+			uint32_t bindingIndex = 0;
+			for (const auto& binding : specification.m_InputBindings)
+			{
+				auto& vertexBinding = m_VertexBindings.emplace_back();
+				vertexBinding.binding = bindingIndex;
+				vertexBinding.inputRate = GetInputRate(binding.m_Type);
+
+				uint32_t offset = 0;
+				for (const auto& attribute : binding.m_Attributes)
+				{
+					auto& vertexAttribute = m_VertexAttributes.emplace_back();
+					vertexAttribute.binding = bindingIndex;
+					vertexAttribute.location = attribute.first;
+					vertexAttribute.offset = offset;
+					vertexAttribute.format = GetFormat(attribute.second);
+					offset += Utility::GetSizeFromFormat(vertexAttribute.format);
+				}
+
+				vertexBinding.stride = offset;
+			}
+
+			m_VertexInputStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+			m_VertexInputStateCreateInfo.pNext = nullptr;
+			m_VertexInputStateCreateInfo.flags = 0;
+			m_VertexInputStateCreateInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(m_VertexAttributes.size());
+			m_VertexInputStateCreateInfo.pVertexAttributeDescriptions = m_VertexAttributes.data();
+			m_VertexInputStateCreateInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(m_VertexBindings.size());
+			m_VertexInputStateCreateInfo.pVertexBindingDescriptions = m_VertexBindings.data();
+
+			// Input assembly state.
+			m_InputAssemblyStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+			m_InputAssemblyStateCreateInfo.pNext = nullptr;
+			m_InputAssemblyStateCreateInfo.flags = 0;
+			m_InputAssemblyStateCreateInfo.primitiveRestartEnable = GET_VK_BOOL(specification.m_EnablePrimitiveRestart);
+			m_InputAssemblyStateCreateInfo.topology = GetPrimitiveTopology(specification.m_PrimitiveTopology);
+
+			// Tessellation state.
+			m_TessellationStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO;
+			m_TessellationStateCreateInfo.pNext = nullptr;
+			m_TessellationStateCreateInfo.flags = 0;
+			m_TessellationStateCreateInfo.patchControlPoints = specification.m_TessellationPatchControlPoints;
+
+			// Color blend state.
+			for (const auto attachment : specification.m_ColorBlendAttachments)
+			{
+				VkPipelineColorBlendAttachmentState vAttachmentState = {};
+				vAttachmentState.blendEnable = GET_VK_BOOL(attachment.m_EnableBlend);
+				vAttachmentState.alphaBlendOp = GetBlendOp(attachment.m_AlphaBlendOperator);
+				vAttachmentState.colorBlendOp = GetBlendOp(attachment.m_BlendOperator);
+				vAttachmentState.colorWriteMask = GetComponentFlags(attachment.m_ColorWriteMask);
+				vAttachmentState.srcColorBlendFactor = GetBlendFactor(attachment.m_SrcBlendFactor);
+				vAttachmentState.srcAlphaBlendFactor = GetBlendFactor(attachment.m_SrcAlphaBlendFactor);
+				vAttachmentState.dstAlphaBlendFactor = GetBlendFactor(attachment.m_DstAlphaBlendFactor);
+				vAttachmentState.dstColorBlendFactor = GetBlendFactor(attachment.m_DstBlendFactor);
+
+				m_CBASS.emplace_back(vAttachmentState);
+			}
+
+			m_ColorBlendStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+			m_ColorBlendStateCreateInfo.pNext = nullptr;
+			m_ColorBlendStateCreateInfo.flags = 0;
+			m_ColorBlendStateCreateInfo.logicOp = GetLogicOp(specification.m_ColorBlendLogic);
+			m_ColorBlendStateCreateInfo.logicOpEnable = GET_VK_BOOL(specification.m_EnableColorBlendLogic);
+
+#ifdef FLINT_PLATFORM_WINDOWS
+			std::copy_n(std::execution::unseq, specification.m_ColorBlendConstants, 4, m_ColorBlendStateCreateInfo.blendConstants);
+
+#else 
+			std::copy_n(specification.m_ColorBlendConstants, 4, m_ColorBlendStateCreateInfo.blendConstants);
+
+#endif
+
+			m_ColorBlendStateCreateInfo.attachmentCount = static_cast<uint32_t>(m_CBASS.size());
+			m_ColorBlendStateCreateInfo.pAttachments = m_CBASS.data();
+
+			// Rasterization state.
+			m_RasterizationStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+			m_RasterizationStateCreateInfo.pNext = nullptr;
+			m_RasterizationStateCreateInfo.flags = 0;
+			m_RasterizationStateCreateInfo.cullMode = GetCullMode(specification.m_CullMode);
+			m_RasterizationStateCreateInfo.depthBiasEnable = GET_VK_BOOL(specification.m_EnableDepthBias);
+			m_RasterizationStateCreateInfo.depthBiasClamp = specification.m_DepthBiasFactor;
+			m_RasterizationStateCreateInfo.depthBiasConstantFactor = specification.m_DepthConstantFactor;
+			m_RasterizationStateCreateInfo.depthBiasSlopeFactor = specification.m_DepthSlopeFactor;
+			m_RasterizationStateCreateInfo.depthClampEnable = GET_VK_BOOL(specification.m_EnableDepthClamp);
+			m_RasterizationStateCreateInfo.frontFace = GetFrontFace(specification.m_FrontFace);
+			m_RasterizationStateCreateInfo.lineWidth = specification.m_RasterizerLineWidth;
+			m_RasterizationStateCreateInfo.polygonMode = GetPolygonMode(specification.m_PolygonMode);
+			m_RasterizationStateCreateInfo.rasterizerDiscardEnable = GET_VK_BOOL(specification.m_EnableRasterizerDiscard);
+
+			// Multisample state.
+			m_MultisampleStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+			m_MultisampleStateCreateInfo.pNext = nullptr;
+			m_MultisampleStateCreateInfo.flags = 0;
+			m_MultisampleStateCreateInfo.alphaToCoverageEnable = GET_VK_BOOL(specification.m_EnableAlphaCoverage);
+			m_MultisampleStateCreateInfo.alphaToOneEnable = GET_VK_BOOL(specification.m_EnableAlphaToOne);
+			m_MultisampleStateCreateInfo.minSampleShading = specification.m_MinSampleShading;
+			m_MultisampleStateCreateInfo.pSampleMask;	// TODO
+			m_MultisampleStateCreateInfo.rasterizationSamples = Utility::GetSampleCountFlagBits(m_Rasterizer.getMultisample());
+			m_MultisampleStateCreateInfo.sampleShadingEnable = GET_VK_BOOL(specification.m_EnableSampleShading);
+
+			// Depth stencil state.
+			m_DepthStencilStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+			m_DepthStencilStateCreateInfo.pNext = nullptr;
+			m_DepthStencilStateCreateInfo.flags = 0;
+			m_DepthStencilStateCreateInfo.back.compareOp = VK_COMPARE_OP_ALWAYS;
+			m_DepthStencilStateCreateInfo.depthTestEnable = GET_VK_BOOL(specification.m_EnableDepthTest);
+			m_DepthStencilStateCreateInfo.depthWriteEnable = GET_VK_BOOL(specification.m_EnableDepthWrite);
+			m_DepthStencilStateCreateInfo.depthCompareOp = GetCompareOp(specification.m_DepthCompareLogic);
+
+			// Dynamic state.
+			m_DynamicStates = std::move(GetDynamicStates(specification.m_DynamicStateFlags));
+
+			m_DynamicStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+			m_DynamicStateCreateInfo.pNext = VK_NULL_HANDLE;
+			m_DynamicStateCreateInfo.flags = 0;
+			m_DynamicStateCreateInfo.dynamicStateCount = static_cast<uint32_t>(m_DynamicStates.size());
+			m_DynamicStateCreateInfo.pDynamicStates = m_DynamicStates.data();
+		}
+
+		void VulkanGraphicsPipeline::createPipeline()
+		{
+			// Resolve viewport state.
+			VkRect2D rect2D = {};
+			rect2D.extent.width = m_Rasterizer.getWidth();
+			rect2D.extent.height = m_Rasterizer.getHeight();
+			rect2D.offset = { 0, 0 };
+
+			VkViewport viewport = {};
+			viewport.width = static_cast<float>(rect2D.extent.width);
+			viewport.height = static_cast<float>(rect2D.extent.height);
+			viewport.maxDepth = 1.0f;
+			viewport.minDepth = 0.0f;
+			viewport.x = 0.0f;
+			viewport.y = 0.0f;
+
+			VkPipelineViewportStateCreateInfo viewportStateCreateInfo = {};
+			viewportStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+			viewportStateCreateInfo.pNext = nullptr;
+			viewportStateCreateInfo.flags = 0;
+			viewportStateCreateInfo.scissorCount = 1;
+			viewportStateCreateInfo.pScissors = &rect2D;
+			viewportStateCreateInfo.viewportCount = 1;
+			viewportStateCreateInfo.pViewports = &viewport;
+
+			// Pipeline create info.
+			VkGraphicsPipelineCreateInfo vCreateInfo = {};
+			vCreateInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+			vCreateInfo.pNext = nullptr;
+			vCreateInfo.flags = 0;
+			vCreateInfo.stageCount = static_cast<uint32_t>(m_ShaderStageCreateInfo.size());
+			vCreateInfo.pStages = m_ShaderStageCreateInfo.data();
+			vCreateInfo.pVertexInputState = &m_VertexInputStateCreateInfo;
+			vCreateInfo.pInputAssemblyState = &m_InputAssemblyStateCreateInfo;
+			vCreateInfo.pTessellationState = &m_TessellationStateCreateInfo;
+			vCreateInfo.pViewportState = &viewportStateCreateInfo;
+			vCreateInfo.pRasterizationState = &m_RasterizationStateCreateInfo;
+			vCreateInfo.pMultisampleState = &m_MultisampleStateCreateInfo;
+			vCreateInfo.pDepthStencilState = &m_DepthStencilStateCreateInfo;
+			vCreateInfo.pColorBlendState = &m_ColorBlendStateCreateInfo;
+			vCreateInfo.pDynamicState = &m_DynamicStateCreateInfo;
+			vCreateInfo.layout = m_PipelineLayout;
+			vCreateInfo.renderPass = m_Rasterizer.getRenderPass();
+			vCreateInfo.subpass = 0;	// TODO
+			vCreateInfo.basePipelineHandle = VK_NULL_HANDLE;
+			vCreateInfo.basePipelineIndex = 0;
+		}
+
+		void VulkanGraphicsPipeline::destroyShaders()
+		{
+			for (const auto& shaders : m_ShaderStageCreateInfo)
+				getEngine().getDeviceTable().vkDestroyShaderModule(getEngine().getLogicalDevice(), shaders.module, nullptr);
 		}
 	}
 }

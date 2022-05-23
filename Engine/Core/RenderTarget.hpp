@@ -50,14 +50,6 @@ namespace Flint
 		virtual void resize(uint32_t width, uint32_t height) = 0;
 
 		/**
-		 * Add a new geometry to draw.
-		 * Geometries are drawn in the order they are submitted.
-		 *
-		 * @param geometry The geometry to draw.
-		 */
-		virtual void render(const Geometry& geometry) = 0;
-
-		/**
 		 * Get the render target attachment at a given index.
 		 *
 		 * @param index The index of the attachment.
@@ -93,6 +85,13 @@ namespace Flint
 		 * @return The frame count.
 		 */
 		[[nodiscard]] uint32_t getFrameCount() const { return m_FrameCount; }
+
+		/**
+		 * Get the multisample count.
+		 *
+		 * @return The multisample count.
+		 */
+		[[nodiscard]] Multisample getMultisample() const { return m_Multisample; }
 
 	protected:
 		/**

@@ -10,8 +10,8 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanPipeline::VulkanPipeline(VulkanEngine& engine, std::string&& name)
-			: m_CacheFile(name + ".bin"), m_Engine(engine)
+		VulkanPipeline::VulkanPipeline(VulkanEngine& engine, std::filesystem::path&& cacheFile)
+			: m_CacheFile(std::move(cacheFile)), m_Engine(engine)
 		{
 			// Load the cache if possible.
 			loadCache();

@@ -5,6 +5,7 @@
 
 #include "Core/Rasterizer.hpp"
 #include "VulkanPipeline.hpp"
+#include "VulkanRasterizer.hpp"
 
 namespace Flint
 {
@@ -21,22 +22,37 @@ namespace Flint
 			 * Explicit constructor.
 			 *
 			 * @param engine The engine to which the pipeline is bound to.
-			 * @param name The name of the pipeline.
-			 * @param identifier The pipeline identifier.
+			 * @param rasterizer The rasterizer to which the pipeline is bound to.
 			 * @param specification The pipeline specification.
 			 */
-			explicit VulkanGraphicsPipeline(VulkanEngine& engine, std::string&& name, const PipelineIdentifier& identifier, RasterizingPipelineSpecification&& specification);
+			explicit VulkanGraphicsPipeline(VulkanEngine& engine, VulkanRasterizer& rasterizer, RasterizingPipelineSpecification&& specification);
 
 			/**
 			 * Destructor.
 			 */
 			~VulkanGraphicsPipeline() override;
 
+			/**
+			 * Recreate the pipeline.
+			 */
+			void recreate();
+
 		private:
 			/**
-			 * Create the descriptor set layout.
+			 * Resolve the shader information.
+			 *
+			 * @param code The shader code.
+			 * @param layoutBinding The descriptor set layout bindings.
+			 * @param pushConstants The push constants.
 			 */
-			void createDescriptorSetLayout();
+			void resolveShader(const ShaderCode& code, std::vector<VkDescriptorSetLayoutBinding>& layoutBindings, std::vector<VkPushConstantRange>& pushConstants);
+
+			/**
+			 * Create the descriptor set layout.
+			 *
+			 * @param layoutBindigns The layout bindings.
+			 */
+			void createDescriptorSetLayout(std::vector<VkDescriptorSetLayoutBinding>&& layoutBindings);
 
 			/**
 			 * Destroy the descriptor set layout.
@@ -45,11 +61,47 @@ namespace Flint
 
 			/**
 			 * Create the pipeline layout.
+			 *
+			 * @param pushConstants The push constants to bind.
 			 */
-			void createPipelineLayout();
+			void createPipelineLayout(std::vector<VkPushConstantRange>&& pushConstants);
+
+			/**
+			 * Setup the default structures.
+			 *
+			 * @param specification The pipeline specification.
+			 */
+			void setupDefaults(RasterizingPipelineSpecification&& specification);
+
+			/**
+			 * Create the pipeline.
+			 */
+			void createPipeline();
+
+			/**
+			 * Destroy the created shaders.
+			 */
+			void destroyShaders();
 
 		private:
-			RasterizingPipelineSpecification m_Specification = {};
+			VkPipelineVertexInputStateCreateInfo m_VertexInputStateCreateInfo = {};
+			VkPipelineInputAssemblyStateCreateInfo m_InputAssemblyStateCreateInfo = {};
+			VkPipelineTessellationStateCreateInfo m_TessellationStateCreateInfo = {};
+			VkPipelineColorBlendStateCreateInfo m_ColorBlendStateCreateInfo = {};
+			VkPipelineRasterizationStateCreateInfo m_RasterizationStateCreateInfo = {};
+			VkPipelineMultisampleStateCreateInfo m_MultisampleStateCreateInfo = {};
+			VkPipelineDepthStencilStateCreateInfo m_DepthStencilStateCreateInfo = {};
+			VkPipelineDynamicStateCreateInfo m_DynamicStateCreateInfo = {};
+
+			std::vector<VkPipelineColorBlendAttachmentState> m_CBASS = {};
+			std::vector<VkPipelineShaderStageCreateInfo> m_ShaderStageCreateInfo = {};
+			std::vector<VkVertexInputAttributeDescription> m_VertexAttributes = {};
+			std::vector<VkVertexInputBindingDescription> m_VertexBindings = {};
+			std::vector<VkDynamicState> m_DynamicStates = {};
+
+			std::vector<VkDescriptorPoolSize> m_DescriptorPoolSizes;
+
+			VulkanRasterizer& m_Rasterizer;
 
 			VkDescriptorSetLayout m_DescriptorSetLayout = VK_NULL_HANDLE;
 			VkDescriptorPool m_DescriptorPool = VK_NULL_HANDLE;

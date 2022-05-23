@@ -283,6 +283,30 @@ namespace Flint
 			 * @param engine The Vulkan engine.
 			 */
 			[[nodiscard]] VkFormat FindDepthFormat(const VulkanEngine& engine);
+
+			/**
+			 * Get the shader stage.
+			 *
+			 * @param type The shader type.
+			 * @return The shader flag bits.
+			 */
+			[[nodiscard]] VkShaderStageFlagBits GetShaderStage(ShaderType type);
+
+			/**
+			 * Get the descriptor type.
+			 *
+			 * @param type The flint descriptor type.
+			 * @return The Vulkan descriptor type.
+			 */
+			[[nodiscard]] VkDescriptorType GetDescriptorType(ResourceType type);
+
+			/**
+			 * Get the size from a format.
+			 *
+			 * @param format The format to get the size of.
+			 * @return The byte size.
+			 */
+			[[nodiscard]] uint8_t GetSizeFromFormat(VkFormat format);
 		}
 	}
 }

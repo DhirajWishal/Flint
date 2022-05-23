@@ -16,10 +16,12 @@ add_library(
 	"Source/Window.cpp"
 	"Source/Geometry.cpp" 
 	"Source/ShaderCode.cpp"
-
+		
 	"Source/EventSystem/EventSystem.cpp"
 
 	"Source/Entities/StaticEntity.cpp"
+
+	"Source/Utility/Hasher.cpp"
 
 	"Instance.hpp" 
 	"Engine.hpp" 
@@ -34,6 +36,7 @@ add_library(
 	"GeometryStore.hpp" 
 	"PipelineManager.hpp"
 	"ShaderCode.hpp" 
+	"MeshRasterizer.hpp"
 	
 	"Errors/AssetError.hpp"
 	"Errors/BackendError.hpp" 
@@ -47,6 +50,9 @@ add_library(
 	"Entities/Entity.hpp"
 	"Entities/GhostEntity.hpp"
 	"Entities/StaticEntity.hpp"
+	"Containers/BinaryMap.hpp" 
+
+	"Utility/Hasher.hpp" 
 )
 
 # Set the include directories.

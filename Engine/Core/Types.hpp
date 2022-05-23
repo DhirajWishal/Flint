@@ -5,6 +5,8 @@
 
 #include <cstdint>
 
+#include "Containers/BinaryMap.hpp"
+
 namespace Flint
 {
 	/**
@@ -145,5 +147,86 @@ namespace Flint
 		DataType m_Texture5 = DataType::None;		// Uses U, V and W.
 		DataType m_Texture6 = DataType::None;		// Uses U, V and W.
 		DataType m_Texture7 = DataType::None;		// Uses U, V and W.
+	};
+
+	/**
+	 * Buffer handle enum.
+	 * This is used to uniquely identify a buffer which is bound to an engine.
+	 */
+	enum class BufferHandle : uintptr_t {};
+
+	/**
+	 * Image handle enum.
+	 * This is used to uniquely identify an image which is bound to an engine.
+	 */
+	enum class ImageHandle : uintptr_t {};
+
+	/**
+	 * Resource binding table structure.
+	 * This defines which resource is bound to which shader resource, and is used to submit the data to the shaders when drawing.
+	 */
+	struct ResourceBindingTable final
+	{
+		/**
+		 * Bind an image to the table.
+		 *
+		 * @param binding The shader binding to which the image is bound to.
+		 * @param handle The image handle.
+		 */
+		void bind(uint32_t binding, ImageHandle handle) { m_Images[binding] = handle; }
+
+		/**
+		 * Bind a buffer to the table.
+		 *
+		 * @param binding The shader binding to which the buffer is bound to.
+		 * @param handle The buffer handle.
+		 */
+		void bind(uint32_t binding, BufferHandle handle) { m_Buffers[binding] = handle; }
+
+	public:
+		BinaryMap<uint32_t, ImageHandle> m_Images;
+		BinaryMap<uint32_t, BufferHandle> m_Buffers;
+	};
+
+	/**
+	 * Shader type enum.
+	 */
+	enum class ShaderType : uint8_t
+	{
+		Undefined,
+
+		Vertex,
+		TessellationControl,
+		TessellationEvaluation,
+		Geometry,
+		Fragment,
+
+		Compute,
+
+		RayGeneration,
+		RayMiss,
+		RayHit,
+		ClosestHit,
+	};
+
+	/**
+	 * Shader resource type enum.
+	 */
+	enum class ResourceType : uint8_t
+	{
+		Undefined,
+
+		Sampler,
+		CombinedImageSampler,
+		SampledImage,
+		StorageImage,
+		UniformTexelBuffer,
+		StorageTexelBuffer,
+		UniformBuffer,
+		StorageBuffer,
+		DynamicUniformBuffer,
+		DynamicStorageBuffer,
+		InputAttachment,
+		AccelerationStructure
 	};
 }

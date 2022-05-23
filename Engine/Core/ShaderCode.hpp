@@ -3,50 +3,13 @@
 
 #pragma once
 
-#include <vector>
-#include <cstdint>
+#include "Types.hpp"
+
 #include <filesystem>
 #include <unordered_map>
 
 namespace Flint
 {
-	/**
-	 * Shader type enum.
-	 */
-	enum class ShaderType : uint8_t
-	{
-		Undefined,
-
-		Vertex,
-		TessellationControl,
-		TessellationEvaluation,
-		Geometry,
-		Fragment,
-
-		Compute,
-	};
-
-	/**
-	 * Shader resource type enum.
-	 */
-	enum class ResourceType : uint8_t
-	{
-		Undefined,
-
-		Sampler,
-		CombinedImageSampler,
-		SampledImage,
-		StorageImage,
-		UniformTexelBuffer,
-		StorageTexelBuffer,
-		UniformBuffer,
-		StorageBuffer,
-		DynamicUniformBuffer,
-		DynamicStorageBuffer,
-		InputAttachment,
-		AccelerationStructure
-	};
-
 	/**
 	 * Resource binding structure.
 	 */
@@ -104,9 +67,19 @@ namespace Flint
 		explicit ShaderCode(std::filesystem::path&& path, ShaderType type);
 
 		/**
-		 * Perform reflection on the shader.
+		 * Set the shader entry point name.
+		 * The entry point will be called by the device to run the shader. By default it is main.
+		 *
+		 * @param name The name of the entry point function.
 		 */
-		void reflect();
+		void setEntryPoint(std::string&& name) { m_EntryPoint = std::move(name); }
+
+		/**
+		 * Get the shader entry point.
+		 *
+		 * @return The entry point name.
+		 */
+		[[nodiscard]] std::string_view getEntryPoint() const { return m_EntryPoint; }
 
 		/**
 		 * Get the loaded shader code.
@@ -151,6 +124,12 @@ namespace Flint
 		[[nodiscard]] ShaderType getType() const { return m_Type; }
 
 	private:
+		/**
+		 * Perform reflection on the shader.
+		 */
+		void reflect();
+
+	private:
 		std::vector<uint32_t> m_Code;
 
 		std::vector<ShaderAttribute> m_InputAttributes;
@@ -159,6 +138,8 @@ namespace Flint
 		std::vector<PushConstant> m_PushConstants;
 
 		std::unordered_map<std::string, ResourceBinding> m_Bindings;
+
+		std::string m_EntryPoint = "main";
 
 		ShaderType m_Type = ShaderType::Undefined;
 	};

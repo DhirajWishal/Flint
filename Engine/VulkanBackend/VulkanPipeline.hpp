@@ -22,9 +22,9 @@ namespace Flint
 			 * Explicit constructor.
 			 *
 			 * @param engine The Vulkan engine.
-			 * @param name The name of the pipeline. This will be used to load and save the pipeline cache.
+			 * @param cacheFile The cache file name.
 			 */
-			explicit VulkanPipeline(VulkanEngine& engine, std::string&& name);
+			explicit VulkanPipeline(VulkanEngine& engine, std::filesystem::path&& cacheFile);
 
 			/**
 			 * Virtual destructor.

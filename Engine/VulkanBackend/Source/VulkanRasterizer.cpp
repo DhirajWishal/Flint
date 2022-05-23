@@ -98,14 +98,13 @@ namespace Flint
 			m_pCommandBuffers->resetIndex();
 		}
 
-		void VulkanRasterizer::render(const Geometry& geometry)
+		void VulkanRasterizer::registerGeometry(const Geometry& geometry, std::function<MeshRasterizer(const Mesh&)>&& meshBinder)
 		{
-			m_Geometries.emplace_back(geometry);
-		}
+			std::vector<MeshRasterizer> m_Rasterizers;
+			m_Rasterizers.reserve(geometry.getMeshes().size());
 
-		void VulkanRasterizer::registerPipeline(const PipelineIdentifier& identifier, std::string&& name, RasterizingPipelineSpecification&& specification)
-		{
-
+			for (const auto& mesh : geometry.getMeshes())
+				m_Rasterizers.emplace_back(meshBinder(mesh));
 		}
 
 		Flint::RenderTargetAttachment& VulkanRasterizer::getAttachment(uint32_t index)

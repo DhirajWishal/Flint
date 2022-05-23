@@ -97,6 +97,9 @@ namespace Flint
 		// Now let's load it.
 		shaderFile.read(reinterpret_cast<char*>(m_Code.data()), fileSize);
 		shaderFile.close();
+
+		// Perform reflection to load everything.
+		reflect();
 	}
 
 	void ShaderCode::reflect()

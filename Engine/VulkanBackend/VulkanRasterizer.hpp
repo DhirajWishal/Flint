@@ -51,21 +51,15 @@ namespace Flint
 			void resize(uint32_t width, uint32_t height) override;
 
 			/**
-			 * Add a new geometry to draw.
-			 * Geometries are drawn in the order they are submitted.
+			 * Register a geometry to the rasterizer.
+			 * You can add the same geometry multiple times if different pipelines are being used.
 			 *
-			 * @param geometry The geometry to draw.
+			 * @param geometry The geometry to add.
+			 * @param meshBinder The special callback that will be called on every single mesh in the geometry, and will be used to create the pipeline for each mesh.
+			 * This is required as each mesh might need it's own pipeline because of the varying materials, inputs and so on. Note that if a pipeline exists for the same
+			 * specification, a new one will not be created, the existing one will be used instead.
 			 */
-			void render(const Geometry& geometry) override;
-
-			/**
-			 * Register a new rasterizing pipeline.
-			 *
-			 * @param identifier The identifier to which the pipeline is associated with.
-			 * @param name The name of the pipeline.
-			 * @param specification The pipeline specification.
-			 */
-			void registerPipeline(const PipelineIdentifier& identifier, std::string&& name, RasterizingPipelineSpecification&& specification) override;
+			void registerGeometry(const Geometry& geometry, std::function<MeshRasterizer(const Mesh&)>&& meshBinder) override;
 
 			/**
 			 * Get the render target attachment at a given index.
