@@ -5,6 +5,7 @@
 
 #include "Core/Rasterizer.hpp"
 #include "VulkanPipeline.hpp"
+#include "VulkanDescriptorSetManager.hpp"
 
 namespace Flint
 {
@@ -16,7 +17,7 @@ namespace Flint
 		 * Vulkan graphics pipeline class.
 		 * This pipeline is used to perform raster graphics.
 		 */
-		class VulkanGraphicsPipeline final : public VulkanPipeline
+		class VulkanGraphicsPipeline final : public VulkanPipeline, public VulkanDescriptorSetManager
 		{
 		public:
 			/**
@@ -47,18 +48,6 @@ namespace Flint
 			 * @param pushConstants The push constants.
 			 */
 			void resolveShader(const ShaderCode& code, std::vector<VkDescriptorSetLayoutBinding>& layoutBindings, std::vector<VkPushConstantRange>& pushConstants);
-
-			/**
-			 * Create the descriptor set layout.
-			 *
-			 * @param layoutBindigns The layout bindings.
-			 */
-			void createDescriptorSetLayout(std::vector<VkDescriptorSetLayoutBinding>&& layoutBindings);
-
-			/**
-			 * Destroy the descriptor set layout.
-			 */
-			void destroyDescriptorSetLayout();
 
 			/**
 			 * Create the pipeline layout.
@@ -100,12 +89,7 @@ namespace Flint
 			std::vector<VkVertexInputBindingDescription> m_VertexBindings = {};
 			std::vector<VkDynamicState> m_DynamicStates = {};
 
-			std::vector<VkDescriptorPoolSize> m_DescriptorPoolSizes;
-
 			VulkanRasterizer& m_Rasterizer;
-
-			VkDescriptorSetLayout m_DescriptorSetLayout = VK_NULL_HANDLE;
-			VkDescriptorPool m_DescriptorPool = VK_NULL_HANDLE;
 		};
 	}
 }

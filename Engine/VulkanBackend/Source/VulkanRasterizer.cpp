@@ -104,21 +104,21 @@ namespace Flint
 			m_pCommandBuffers->resetIndex();
 		}
 
-		void VulkanRasterizer::registerGeometry(const Geometry& geometry, std::function<MeshRasterizer(const Mesh&)>&& meshBinder)
+		void VulkanRasterizer::registerGeometry(const Geometry& geometry, std::function<MeshRasterizer(const Mesh&, const Geometry&)>&& meshBinder)
 		{
-			std::vector<MeshRasterizer> m_Rasterizers;
-			m_Rasterizers.reserve(geometry.getMeshes().size());
+			auto& entry = m_DrawEntries.emplace_back();
+			entry.m_Geometry = geometry;
 
 			for (const auto& mesh : geometry.getMeshes())
 			{
-				auto meshRasterizer = meshBinder(mesh);
-				const auto pipelineHash = GenerateHash(meshRasterizer);
+				auto meshRasterizer = meshBinder(mesh, geometry);
+				const auto pipelineHash = GenerateHash(meshRasterizer.getSpecification());
 
 				// If the pipeline is present, we don't need to create one. If not we need to create a new one.
 				if (!m_PipelineHashes.contains(pipelineHash))
 					m_PipelineHashes.emplace(pipelineHash, m_Pipelines.emplace(getEngineAs<VulkanEngine>(), *this, std::move(meshRasterizer.getSpecification())).first);
 
-				m_Rasterizers.emplace_back(meshRasterizer);
+				entry.m_Rasterizers.emplace_back(meshRasterizer);
 			}
 		}
 

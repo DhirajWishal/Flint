@@ -43,6 +43,6 @@ namespace Flint
 		 * This is required as each mesh might need it's own pipeline because of the varying materials, inputs and so on. Note that if a pipeline exists for the same
 		 * specification, a new one will not be created, the existing one will be used instead.
 		 */
-		virtual void registerGeometry(const Geometry& geometry, std::function<MeshRasterizer(const Mesh&)>&& meshBinder) = 0;
+		virtual void registerGeometry(const Geometry& geometry, std::function<MeshRasterizer(const Mesh&, const Geometry&)>&& meshBinder) = 0;
 	};
 }

@@ -4,7 +4,7 @@
 #pragma once
 
 #include "Entity.hpp"
-#include "Core/Geometry.hpp"
+#include "Core/Loader/GeometryLoader.hpp"
 
 namespace Flint
 {
@@ -26,8 +26,9 @@ namespace Flint
 		 * Load the static entity from an asset file.
 		 *
 		 * @param path The asset path.
+		 * @param loadData The vertex data to load. Default is all.
 		 */
-		void loadModel(std::filesystem::path&& path);
+		void loadModel(std::filesystem::path&& path, VertexData loadData = VertexData::All);
 
 		/**
 		 * Get the stored geometry.

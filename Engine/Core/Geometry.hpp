@@ -6,7 +6,6 @@
 #include "EngineBoundObject.hpp"
 
 #include <array>
-#include <filesystem>
 
 namespace Flint
 {
@@ -157,14 +156,14 @@ namespace Flint
 		/**
 		 * Explicit constructor.
 		 *
-		 * @param geometry The geometry to which this mesh belongs to.
+		 * @param name The name of the mesh.
 		 * @param descriptor The vertex descriptor.
 		 * @param vertexCount The number of vertices to store.
 		 * @param vertexOffset The vertex offset.
 		 * @param indexCount The number of indices to store.
 		 * @param indexOffset The offset of the indices.
 		 */
-		explicit Mesh(Geometry& geometry, VertexDescriptor descriptor, uint64_t vertexCount, uint64_t vertexOffset, uint64_t indexCount, uint64_t indexOffset);
+		explicit Mesh(std::string&& name, VertexDescriptor descriptor, uint64_t vertexCount, uint64_t vertexOffset, uint64_t indexCount, uint64_t indexOffset);
 
 		/**
 		 * Add a texture material to the mesh.
@@ -197,66 +196,51 @@ namespace Flint
 		 *
 		 * @return The paths.
 		 */
-		[[nodiscard]] const std::vector<std::filesystem::path>& getTexturePaths() const { return m_TexturePaths; }
-
-		/**
-		 * Get the texture types.
-		 *
-		 * @return The types
-		 */
-		[[nodiscard]] const std::vector<TextureType>& getTextureTypes() const { return m_TextureTypes; }
+		[[nodiscard]] const std::vector<std::pair<TextureType, std::filesystem::path>>& getTextures() const { return m_Textures; }
 
 		/**
 		 * Get the color materials.
 		 *
 		 * @return The colors.
 		 */
-		[[nodiscard]] const std::vector<std::array<float, 4>>& getColors() const { return m_Colors; }
-
-		/**
-		 * Get the color types.
-		 *
-		 * @return The types.
-		 */
-		[[nodiscard]] const std::vector<ColorType>& getColorTypes() const { return m_ColorTypes; }
+		[[nodiscard]] const std::vector<std::pair<ColorType, std::array<float, 4>>>& getColors() const { return m_Colors; }
 
 		/**
 		 * Map the vertex memory to the local address space.
 		 *
+		 * @param The geometry to which the mesh is bound to.
 		 * @return The vertex memory.
 		 */
-		[[nodiscard]] std::byte* mapVertexMemory();
+		[[nodiscard]] std::byte* mapVertexMemory(Geometry& geometry);
 
 		/**
 		 * Unmap the mapped vertex memory.
+		 *
+		 * @param The geometry to which the mesh is bound to.
 		 */
-		void unmapVertexMemory();
+		void unmapVertexMemory(Geometry& geometry);
 
 		/**
 		 * Map the index memory to the local address space.
 		 *
+		 * @param The geometry to which the mesh is bound to.
 		 * @return The index memory.
 		 */
-		[[nodiscard]] std::byte* mapIndexMemory();
+		[[nodiscard]] std::byte* mapIndexMemory(Geometry& geometry);
 
 		/**
 		 * Unmap the mapped index memory.
+		 *
+		 * @param The geometry to which the mesh is bound to.
 		 */
-		void unmapIndexMemory();
+		void unmapIndexMemory(Geometry& geometry);
 
 		/**
-		 * Get the geometry to which this mesh belongs to.
+		 * Get the name of this mesh.
 		 *
-		 * @return The geometry.
+		 * @return The mesh name.
 		 */
-		[[nodiscard]] Geometry& getGeometry() { return m_Geometry; }
-
-		/**
-		 * Get the geometry to which this mesh belongs to.
-		 *
-		 * @return The geometry.
-		 */
-		[[nodiscard]] const Geometry& getGeometry() const { return m_Geometry; }
+		[[nodiscard]] std::string_view getName() const { return m_Name; }
 
 		/**
 		 * Get the vertex descriptor.
@@ -315,17 +299,13 @@ namespace Flint
 		[[nodiscard]] uint64_t getIndexSize() const { return m_IndexCount * sizeof(uint32_t); }
 
 	private:
-		std::vector<TextureType> m_TextureTypes;
-		std::vector<std::filesystem::path> m_TexturePaths;	// Each one of these maps to each one of texture types in the pipeline identifier.
-		std::vector<ColorType> m_ColorTypes;
-		std::vector<std::array<float, 4>> m_Colors;			// Each one of these maps to each one of color types in the pipeline identifier.
+		std::vector<std::pair<TextureType, std::filesystem::path>> m_Textures;
+		std::vector<std::pair<ColorType, std::array<float, 4>>> m_Colors;
 
 		std::vector<DataType> m_InstanceTypes;
 		VertexDescriptor m_VertexDescriptor;
 
 		std::string m_Name;
-
-		Geometry& m_Geometry;
 
 		uint64_t m_VertexCount = 0;
 		uint64_t m_VertexOffset = 0;
@@ -360,11 +340,12 @@ namespace Flint
 		/**
 		 * Create a new mesh.
 		 *
+		 * @param name The name of the mesh.
 		 * @param descriptor The vertex descriptor.
 		 * @param vertexCount The number of vertices to store.
 		 * @param indexCount The number of indices to store.
 		 */
-		[[nodiscard]] Mesh& createMesh(VertexDescriptor descriptor, uint64_t vertexCount, uint64_t indexCount);
+		[[nodiscard]] Mesh& createMesh(std::string&& name, VertexDescriptor descriptor, uint64_t vertexCount, uint64_t indexCount);
 
 		/**
 		 * Get the geometry store to which this object is bound to.

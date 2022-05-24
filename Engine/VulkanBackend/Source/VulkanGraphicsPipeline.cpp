@@ -321,7 +321,7 @@ namespace Flint
 	namespace VulkanBackend
 	{
 		VulkanGraphicsPipeline::VulkanGraphicsPipeline(VulkanEngine& engine, VulkanRasterizer& rasterizer, RasterizingPipelineSpecification&& specification)
-			: VulkanPipeline(engine, std::move(specification.m_CacheFile)), m_Rasterizer(rasterizer)
+			: VulkanPipeline(engine, std::move(specification.m_CacheFile)), VulkanDescriptorSetManager(engine), m_Rasterizer(rasterizer)
 		{
 			// Resolve shader information.
 			std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
@@ -348,7 +348,7 @@ namespace Flint
 				resolveShader(specification.m_FragmentShader, layoutBindings, pushConstants);
 
 			// Create the descriptor set layout.
-			createDescriptorSetLayout(std::move(layoutBindings));
+			setup(std::move(layoutBindings));
 
 			// Create the pipeline layouts.
 			createPipelineLayout(std::move(pushConstants));
@@ -362,13 +362,12 @@ namespace Flint
 
 		VulkanGraphicsPipeline::~VulkanGraphicsPipeline()
 		{
-			destroyDescriptorSetLayout();
 			destroyShaders();
 		}
 
 		void VulkanGraphicsPipeline::recreate()
 		{
-			m_Engine.getDeviceTable().vkDestroyPipeline(m_Engine.getLogicalDevice(), m_Pipeline, nullptr);
+			getEngine().getDeviceTable().vkDestroyPipeline(getEngine().getLogicalDevice(), m_Pipeline, nullptr);
 			createPipeline();
 		}
 
@@ -384,7 +383,7 @@ namespace Flint
 				layoutBinding.pImmutableSamplers = nullptr;
 				layoutBinding.stageFlags = Utility::GetShaderStage(code.getType());
 
-				auto& poolSize = m_DescriptorPoolSizes.emplace_back();
+				auto& poolSize = m_PoolSizes.emplace_back();
 				poolSize.descriptorCount = layoutBinding.descriptorCount;
 				poolSize.type = layoutBinding.descriptorType;
 			}
@@ -420,23 +419,6 @@ namespace Flint
 			stageInfo.pName = code.getEntryPoint().data();
 		}
 
-		void VulkanGraphicsPipeline::createDescriptorSetLayout(std::vector<VkDescriptorSetLayoutBinding>&& layoutBindings)
-		{
-			VkDescriptorSetLayoutCreateInfo createInfo = {};
-			createInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-			createInfo.pNext = nullptr;
-			createInfo.flags = 0;
-			createInfo.bindingCount = static_cast<uint32_t>(layoutBindings.size());
-			createInfo.pBindings = layoutBindings.data();
-
-			FLINT_VK_ASSERT(getEngine().getDeviceTable().vkCreateDescriptorSetLayout(getEngine().getLogicalDevice(), &createInfo, nullptr, &m_DescriptorSetLayout), "Failed to create the descriptor set layout!");
-		}
-
-		void VulkanGraphicsPipeline::destroyDescriptorSetLayout()
-		{
-			getEngine().getDeviceTable().vkDestroyDescriptorSetLayout(getEngine().getLogicalDevice(), m_DescriptorSetLayout, nullptr);
-		}
-
 		void VulkanGraphicsPipeline::createPipelineLayout(std::vector<VkPushConstantRange>&& pushConstants)
 		{
 			VkPipelineLayoutCreateInfo createInfo = {};
@@ -448,7 +430,7 @@ namespace Flint
 			createInfo.setLayoutCount = 1;
 			createInfo.pSetLayouts = &m_DescriptorSetLayout;
 
-			FLINT_VK_ASSERT(getEngine().getDeviceTable().vkCreatePipelineLayout(m_Engine.getLogicalDevice(), &createInfo, nullptr, &m_PipelineLayout), "Failed to create the pipeline layout!");
+			FLINT_VK_ASSERT(getEngine().getDeviceTable().vkCreatePipelineLayout(getEngine().getLogicalDevice(), &createInfo, nullptr, &m_PipelineLayout), "Failed to create the pipeline layout!");
 		}
 
 		void VulkanGraphicsPipeline::setupDefaults(RasterizingPipelineSpecification&& specification)

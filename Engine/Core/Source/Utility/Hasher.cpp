@@ -10,12 +10,18 @@ namespace Flint
 {
 	uint64_t GenerateHash(const ResourceBindingTable& table)
 	{
-		const XXH64_hash_t hashes[] = {
-			XXH64(table.m_Images.data(), sizeof(BinaryMap<uint32_t, ImageHandle>::entry_type) * table.m_Images.size(), 0),
-			XXH64(table.m_Buffers.data(), sizeof(BinaryMap<uint32_t, BufferHandle>::entry_type) * table.m_Buffers.size(), 0)
-		};
+		// Generate the hashes for the bindings.
+		std::vector<XXH64_hash_t> inputBindingHash;
+		inputBindingHash.reserve(table.m_Images.size() + table.m_Buffers.size());
 
-		return static_cast<uint64_t>(XXH64(hashes, sizeof(hashes), 0));
+		for (const auto& [binding, images] : table.m_Images)
+			inputBindingHash.emplace_back(XXH64(images.data(), sizeof(ImageHandle) * images.size(), 0));
+
+		for (const auto& [binding, buffers] : table.m_Buffers)
+			inputBindingHash.emplace_back(XXH64(buffers.data(), sizeof(BufferHandle) * buffers.size(), 0));
+
+		// Finally combine all of them.
+		return static_cast<uint64_t>(XXH64(inputBindingHash.data(), sizeof(XXH64_hash_t) * inputBindingHash.size(), 0));
 	}
 
 	uint64_t GenerateHash(const RasterizingPipelineSpecification& specification)

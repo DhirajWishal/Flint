@@ -6,8 +6,8 @@
 
 namespace Flint
 {
-	Mesh::Mesh(Geometry& geometry, VertexDescriptor descriptor, uint64_t vertexCount, uint64_t vertexOffset, uint64_t indexCount, uint64_t indexOffset)
-		: m_Geometry(geometry)
+	Mesh::Mesh(std::string&& name, VertexDescriptor descriptor, uint64_t vertexCount, uint64_t vertexOffset, uint64_t indexCount, uint64_t indexOffset)
+		: m_Name(std::move(name))
 		, m_VertexDescriptor(descriptor)
 		, m_VertexCount(vertexCount), m_VertexOffset(vertexOffset)
 		, m_IndexCount(indexCount), m_IndexOffset(indexOffset)
@@ -16,14 +16,12 @@ namespace Flint
 
 	void Mesh::addMaterial(std::filesystem::path&& texturePath, TextureType type)
 	{
-		m_TexturePaths.emplace_back(std::move(texturePath));
-		m_TextureTypes.emplace_back(type);
+		m_Textures.emplace_back(type, std::move(texturePath));
 	}
 
 	void Mesh::addMaterial(float r, float g, float b, float a, ColorType type)
 	{
-		m_Colors.emplace_back(std::array<float, 4>{ r, g, b, a });
-		m_ColorTypes.emplace_back(type);
+		m_Colors.emplace_back(type, std::array<float, 4>{ r, g, b, a });
 	}
 
 	void Mesh::addInstanceType(DataType type)
@@ -31,24 +29,24 @@ namespace Flint
 		m_InstanceTypes.emplace_back(type);
 	}
 
-	std::byte* Mesh::mapVertexMemory()
+	std::byte* Mesh::mapVertexMemory(Geometry& geometry)
 	{
-		return m_Geometry.getGeometryStore().mapVertexData(getVertexSize(), getVertexOffset());
+		return geometry.getGeometryStore().mapVertexData(getVertexSize(), getVertexOffset());
 	}
 
-	void Mesh::unmapVertexMemory()
+	void Mesh::unmapVertexMemory(Geometry& geometry)
 	{
-		m_Geometry.getGeometryStore().unmapVertexData();
+		geometry.getGeometryStore().unmapVertexData();
 	}
 
-	std::byte* Mesh::mapIndexMemory()
+	std::byte* Mesh::mapIndexMemory(Geometry& geometry)
 	{
-		return m_Geometry.getGeometryStore().mapIndexData(getIndexSize(), getIndexOffset());
+		return geometry.getGeometryStore().mapIndexData(getIndexSize(), getIndexOffset());
 	}
 
-	void Mesh::unmapIndexMemory()
+	void Mesh::unmapIndexMemory(Geometry& geometry)
 	{
-		m_Geometry.getGeometryStore().unmapIndexData();
+		geometry.getGeometryStore().unmapIndexData();
 	}
 
 	Geometry::Geometry(GeometryStore& geometryStore, uint64_t vertexSize, uint64_t vertexOffset, uint64_t indexSize, uint64_t indexOffset)
@@ -58,13 +56,13 @@ namespace Flint
 	{
 	}
 
-	Mesh& Geometry::createMesh(VertexDescriptor descriptor, uint64_t vertexCount, uint64_t indexCount)
+	Mesh& Geometry::createMesh(std::string&& name, VertexDescriptor descriptor, uint64_t vertexCount, uint64_t indexCount)
 	{
 		if (m_Meshes.empty())
-			return m_Meshes.emplace_back(*this, descriptor, vertexCount, m_VertexOffset, indexCount, m_IndexOffset);
+			return m_Meshes.emplace_back(std::move(name), descriptor, vertexCount, m_VertexOffset, indexCount, m_IndexOffset);
 
 		const auto& previousMesh = m_Meshes.back();
-		return m_Meshes.emplace_back(*this, descriptor, vertexCount, previousMesh.getVertexSize() + previousMesh.getVertexOffset(), indexCount, previousMesh.getIndexSize() + previousMesh.getIndexOffset());
+		return m_Meshes.emplace_back(std::move(name), descriptor, vertexCount, previousMesh.getVertexSize() + previousMesh.getVertexOffset(), indexCount, previousMesh.getIndexSize() + previousMesh.getIndexOffset());
 	}
 
 	std::vector<Flint::MeshMemory> Geometry::beginStreaming()

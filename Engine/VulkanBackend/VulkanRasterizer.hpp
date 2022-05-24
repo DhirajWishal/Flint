@@ -21,6 +21,16 @@ namespace Flint
 		 */
 		class VulkanRasterizer final : public Rasterizer
 		{
+			/**
+			 * Draw entry structure.
+			 * This structure contains a single draw entry for a geometry.
+			 */
+			struct DrawEntry final
+			{
+				Geometry m_Geometry;
+				std::vector<MeshRasterizer> m_Rasterizers;
+			};
+
 		public:
 			/**
 			 * Explicit constructor.
@@ -63,7 +73,7 @@ namespace Flint
 			 * This is required as each mesh might need it's own pipeline because of the varying materials, inputs and so on. Note that if a pipeline exists for the same
 			 * specification, a new one will not be created, the existing one will be used instead.
 			 */
-			void registerGeometry(const Geometry& geometry, std::function<MeshRasterizer(const Mesh&)>&& meshBinder) override;
+			void registerGeometry(const Geometry& geometry, std::function<MeshRasterizer(const Mesh&, const Geometry&)>&& meshBinder) override;
 
 			/**
 			 * Get the render target attachment at a given index.
@@ -124,7 +134,9 @@ namespace Flint
 		private:
 			std::vector<std::vector<std::unique_ptr<VulkanRenderTargetAttachment>>> m_pAttachments;
 
-			BinaryMap<uint64_t, uint32_t> m_PipelineHashes;
+			std::vector<DrawEntry> m_DrawEntries;
+
+			std::unordered_map<uint64_t, uint32_t> m_PipelineHashes;
 			SparseArray<VulkanGraphicsPipeline, uint32_t> m_Pipelines;
 
 			std::vector<VkFramebuffer> m_Framebuffers;

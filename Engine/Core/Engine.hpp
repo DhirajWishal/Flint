@@ -7,6 +7,7 @@
 #include "Types.hpp"
 
 #include <vector>
+#include <filesystem>
 
 namespace Flint
 {
@@ -168,6 +169,23 @@ namespace Flint
 		 * @return The geometry store reference.
 		 */
 		[[nodiscard]] virtual const GeometryStore& getDefaultGeometryStore() const = 0;
+
+		/**
+		 * Create a new buffer.
+		 *
+		 * @param size The size of the buffer.
+		 * @param usage The buffer usage.
+		 * @return The buffer handle.
+		 */
+		[[nodiscard]] virtual BufferHandle createBuffer(uint64_t size, BufferUsage usage) = 0;
+
+		/**
+		 * Create a new texture image.
+		 *
+		 * @param path The path to the texture file.
+		 * @param usage The image usage.
+		 */
+		[[nodiscard]] virtual ImageHandle createTextureImage(std::filesystem::path&& path, ImageUsage usage) = 0;
 
 	private:
 		Instance& m_Instance;

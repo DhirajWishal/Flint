@@ -11,7 +11,7 @@ namespace Flint
 	/**
 	 * Binary map class.
 	 * This class is an associative container which stores all of its data in a vector.
-	 * Key-value pairs are determined using a binary search, this makes is much more faster than the usual std::unordered_map<,>
+	 * Key-value pairs are determined using a binary search over a vector. This make iterating over this container much more faster than std::unordered_map<,>.
 	 *
 	 * @tparam Key The key type.
 	 * @tparam Value The value type.

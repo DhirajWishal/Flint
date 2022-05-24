@@ -4,7 +4,7 @@
 #include "VulkanBackend/VulkanWindow.hpp"
 #include "VulkanBackend/VulkanRasterizer.hpp"
 #include "Core/EventSystem/EventSystem.hpp"
-#include "Core/Entities/StaticEntity.hpp"
+#include "Core/Loader/GeometryLoader.hpp"
 
 #ifdef FLINT_DEBUG
 constexpr auto Validation = true;
@@ -33,18 +33,19 @@ int main()
 			auto pRasterizer = pEngine->createRasterizer(pWindow->getWidth(), pWindow->getHeight(), pWindow->getFrameCount(), { Flint::Defaults::ColorAttachmentDescription, Flint::Defaults::DepthAttachmentDescription });
 			pWindow->setDependency(pRasterizer.get(), 0);
 
-			auto entity = Flint::StaticEntity(*pEngine);
-			entity.loadModel(FLINT_GLTF_ASSET_PATH "Sponza/glTF/Sponza.gltf");
-			//entity.loadModel("E:\\Assets\\Sponza\\Main\\Main\\NewSponza_Main_Blender_glTF.gltf");
-			pRasterizer->registerGeometry(entity.getGeometry(), [](const Flint::Mesh& mesh)
+			pRasterizer->registerGeometry(Flint::LoadGeometry(pEngine->getDefaultGeometryStore(), FLINT_GLTF_ASSET_PATH "Sponza/glTF/Sponza.gltf", Flint::VertexData::Position | Flint::VertexData::Normal | Flint::VertexData::Texture0),
+				[](const Flint::Mesh& mesh, [[maybe_unused]] const Flint::Geometry& geometry)
 				{
 					Flint::MeshRasterizer rasterizer;
+
+					static auto vertexShader = Flint::ShaderCode("Shaders/Debugging/vert.spv", Flint::ShaderType::Vertex);
+					static auto fragmentShader = Flint::ShaderCode("Shaders/Debugging/frag.spv", Flint::ShaderType::Fragment);
 
 					// Setup graphics specification.
 					auto& specification = rasterizer.getSpecification();
 					specification.m_CacheFile = "Debugging.bin";
-					specification.m_VertexShader = Flint::ShaderCode("Shaders/Debugging/vert.spv", Flint::ShaderType::Vertex);
-					specification.m_FragmentShader = Flint::ShaderCode("Shaders/Debugging/frag.spv", Flint::ShaderType::Fragment);
+					specification.m_VertexShader = vertexShader;
+					specification.m_FragmentShader = fragmentShader;
 
 					auto& binding = specification.m_InputBindings.emplace_back(Flint::InputBindingType::VertexData);
 					binding.add(0, Flint::VertexAttributeType::Vec3_32);	// layout (location = 0) in vec3 inPosition;

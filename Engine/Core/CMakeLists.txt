@@ -23,6 +23,8 @@ add_library(
 
 	"Source/Utility/Hasher.cpp"
 
+	"Source/Loader/GeometryLoader.cpp"
+
 	"Instance.hpp" 
 	"Engine.hpp" 
 	"FObject.hpp"
@@ -34,7 +36,6 @@ add_library(
 	"RenderTargetAttachment.hpp"
 	"Types.hpp"
 	"GeometryStore.hpp" 
-	"PipelineManager.hpp"
 	"ShaderCode.hpp" 
 	"MeshRasterizer.hpp"
 	
@@ -55,6 +56,8 @@ add_library(
 	"Containers/BinaryMap.hpp" 
 
 	"Utility/Hasher.hpp" 
+
+	"Loader/GeometryLoader.hpp" 
 )
 
 # Set the include directories.

@@ -14,15 +14,6 @@
 namespace Flint
 {
 	/**
-	 * Integral type concept.
-	 * This concept will only accept integral type.
-	 *
-	 * @tparam Type The type to be checked.
-	 */
-	template <class Type>
-	concept index_type = std::is_unsigned_v<Type>;
-
-	/**
 	 * Sparse array object.
 	 * This object consists of three main arrays. dense_vector, which contains the actual data. sparse_vector(s) which contains the actual indexes of the data in the dense_vector, and another
 	 * vector containing the reusable indexes. Here we use another vector for this because it's easier to index it rather than iterating over the sparse index array and finding out which
@@ -31,9 +22,11 @@ namespace Flint
 	 * @tparam Type The type of data to store.
 	 * @tparam Index The integral type used to index. Default is uint64_t.
 	 */
-	template <class Type, index_type Index = uint64_t>
+	template <class Type, class Index = uint64_t>
 	class SparseArray final
 	{
+		static_cast<std::is_unsigned_v<Index>, "Invalid 'Index' type! Make sure that this type is an integral and unsigned.")
+
 		using dense_vector = std::vector<Type>;
 		using sparse_vector = std::vector<Index>;
 		using availability_vector = std::vector<bool>;

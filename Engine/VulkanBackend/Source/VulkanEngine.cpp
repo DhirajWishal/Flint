@@ -7,6 +7,7 @@
 #include "VulkanBackend/VulkanRasterizer.hpp"
 #include "VulkanBackend/VulkanCommandBuffers.hpp"
 #include "VulkanBackend/VulkanGeometryStore.hpp"
+#include "VulkanBackend/VulkanBuffer.hpp"
 
 #include <set>
 #include <array>
@@ -200,6 +201,45 @@ namespace Flint
 		const Flint::GeometryStore& VulkanEngine::getDefaultGeometryStore() const
 		{
 			return *m_pDefaultGeometryStore;
+		}
+
+		Flint::BufferHandle VulkanEngine::createBuffer(uint64_t size, BufferUsage usage)
+		{
+			// Resolve the buffer usages.
+			BufferType type = BufferType::Staging;
+			if ((usage & BufferUsage::Uniform) == BufferUsage::Uniform && (usage & BufferUsage::Storage) == BufferUsage::Storage)
+				type = BufferType::General;
+
+			else if ((usage & BufferUsage::Uniform) == BufferUsage::Uniform)
+				type = BufferType::Uniform;
+
+			else if ((usage & BufferUsage::Storage) == BufferUsage::Storage)
+				type = BufferType::Storage;
+
+			return BufferHandle(m_Buffers.emplace(*this, size, type).first);
+		}
+
+		Flint::ImageHandle VulkanEngine::createTextureImage(std::filesystem::path&& path, ImageUsage usage)
+		{
+			return ImageHandle();
+		}
+
+		Flint::VulkanBackend::VulkanBuffer& VulkanEngine::getBuffer(BufferHandle handle)
+		{
+			const auto index = static_cast<uint32_t>(handle);
+			if (m_Buffers.contains(index))
+				return m_Buffers[index];
+
+			throw BackendError("A buffer does not exist for the given handle!");
+		}
+
+		const Flint::VulkanBackend::VulkanBuffer& VulkanEngine::getBuffer(BufferHandle handle) const
+		{
+			const auto index = static_cast<uint32_t>(handle);
+			if (m_Buffers.contains(index))
+				return m_Buffers[index];
+
+			throw BackendError("A buffer does not exist for the given handle!");
 		}
 
 		void VulkanEngine::selectPhysicalDevice()

@@ -7,6 +7,10 @@
 
 #include "Containers/BinaryMap.hpp"
 
+#define FLINT_DEFINE_ENUM_AND_OR(name)																																							\
+	constexpr name operator|(const name& lhs, const name& rhs) { return static_cast<name>(static_cast<std::underlying_type_t<name>>(lhs) | static_cast<std::underlying_type_t<name>>(rhs)); }	\
+	constexpr name operator&(const name& lhs, const name& rhs) { return static_cast<name>(static_cast<std::underlying_type_t<name>>(lhs) & static_cast<std::underlying_type_t<name>>(rhs)); }
+
 namespace Flint
 {
 	/**
@@ -150,10 +154,32 @@ namespace Flint
 	};
 
 	/**
+	 * Buffer usage enum.
+	 */
+	enum class BufferUsage : uint8_t
+	{
+		Uniform = 1 << 0,
+		Storage = 1 << 1,
+	};
+
+	FLINT_DEFINE_ENUM_AND_OR(BufferUsage);
+
+	/**
 	 * Buffer handle enum.
 	 * This is used to uniquely identify a buffer which is bound to an engine.
 	 */
 	enum class BufferHandle : uintptr_t {};
+
+	/**
+	 * Image usage enum.
+	 */
+	enum class ImageUsage : uint8_t
+	{
+		Graphics = 1 << 0,
+		Storage = 1 << 1,
+	};
+
+	FLINT_DEFINE_ENUM_AND_OR(ImageUsage);
 
 	/**
 	 * Image handle enum.
@@ -169,23 +195,25 @@ namespace Flint
 	{
 		/**
 		 * Bind an image to the table.
+		 * If multiple handles are bound to the same binding, it is considered to be an array.
 		 *
 		 * @param binding The shader binding to which the image is bound to.
 		 * @param handle The image handle.
 		 */
-		void bind(uint32_t binding, ImageHandle handle) { m_Images[binding] = handle; }
+		void bind(uint32_t binding, ImageHandle handle) { m_Images[binding].emplace_back(handle); }
 
 		/**
 		 * Bind a buffer to the table.
+		 * If multiple handles are bound to the same binding, it is considered to be an array.
 		 *
 		 * @param binding The shader binding to which the buffer is bound to.
 		 * @param handle The buffer handle.
 		 */
-		void bind(uint32_t binding, BufferHandle handle) { m_Buffers[binding] = handle; }
+		void bind(uint32_t binding, BufferHandle handle) { m_Buffers[binding].emplace_back(handle); }
 
 	public:
-		BinaryMap<uint32_t, ImageHandle> m_Images;
-		BinaryMap<uint32_t, BufferHandle> m_Buffers;
+		BinaryMap<uint32_t, std::vector<ImageHandle>> m_Images;
+		BinaryMap<uint32_t, std::vector<BufferHandle>> m_Buffers;
 	};
 
 	/**

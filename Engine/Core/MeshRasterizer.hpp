@@ -199,23 +199,7 @@ namespace Flint
 		A = 1 << 3,
 	};
 
-	/**
-	 * Color write mask bitwise OR operator.
-	 *
-	 * @param lhs The left hand side argument.
-	 * @param rhs The right hand side argument.
-	 * @return The OR performed color write mask.
-	 */
-	constexpr ColorWriteMask operator|(const ColorWriteMask& lhs, const ColorWriteMask& rhs) { return static_cast<ColorWriteMask>(static_cast<uint8_t>(lhs) | static_cast<uint8_t>(rhs)); }
-
-	/**
-	 * Color write mask bitwise And operator.
-	 *
-	 * @param lhs The left hand side argument.
-	 * @param rhs The right hand side argument.
-	 * @return The And performed color write mask.
-	 */
-	constexpr ColorWriteMask operator&(const ColorWriteMask& lhs, const ColorWriteMask& rhs) { return static_cast<ColorWriteMask>(static_cast<uint8_t>(lhs) & static_cast<uint8_t>(rhs)); }
+	FLINT_DEFINE_ENUM_AND_OR(ColorWriteMask);
 
 	/**
 	 * Color blend attachment structure.
@@ -247,23 +231,7 @@ namespace Flint
 		DepthBounds = 1 << 5
 	};
 
-	/**
-	 * Bitwise OR operator for the dynamic state flags.
-	 *
-	 * @param lhs The lhs argument.
-	 * @param rhs The rhs argument.
-	 * @return The result.
-	 */
-	constexpr DynamicStateFlags operator|(const DynamicStateFlags& lhs, const DynamicStateFlags& rhs) { return static_cast<DynamicStateFlags>(static_cast<uint8_t>(lhs) | static_cast<uint8_t>(rhs)); }
-
-	/**
-	 * Bitwise And operator for the dynamic state flags.
-	 *
-	 * @param lhs The lhs argument.
-	 * @param rhs The rhs argument.
-	 * @return The result.
-	 */
-	constexpr DynamicStateFlags operator&(const DynamicStateFlags& lhs, const DynamicStateFlags& rhs) { return static_cast<DynamicStateFlags>(static_cast<uint8_t>(lhs) & static_cast<uint8_t>(rhs)); }
+	FLINT_DEFINE_ENUM_AND_OR(DynamicStateFlags);
 
 	/**
 	 * Vertex attribute type enum.

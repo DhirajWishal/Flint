@@ -5,6 +5,7 @@
 
 #include "Core/Engine.hpp"
 #include "Core/Types.hpp"
+#include "Core/Containers/SparseArray.hpp"
 #include "VulkanInstance.hpp"
 
 #include <vk_mem_alloc.h>
@@ -15,6 +16,7 @@ namespace Flint
 	{
 		class VulkanCommandBuffers;
 		class VulkanGeometryStore;
+		class VulkanBuffer;
 
 		/**
 		 * Vulkan engine class.
@@ -110,6 +112,24 @@ namespace Flint
 			[[nodiscard]] const GeometryStore& getDefaultGeometryStore() const override;
 
 			/**
+			 * Create a new buffer.
+			 *
+			 * @param size The size of the buffer.
+			 * @param usage The buffer usage.
+			 * @return The buffer handle.
+			 */
+			[[nodiscard]] BufferHandle createBuffer(uint64_t size, BufferUsage usage) override;
+
+			/**
+			 * Create a new texture image.
+			 *
+			 * @param path The path to the texture file.
+			 * @param usage The image usage.
+			 */
+			[[nodiscard]] ImageHandle createTextureImage(std::filesystem::path&& path, ImageUsage usage) override;
+
+		public:
+			/**
 			 * Get the physical device properties.
 			 *
 			 * @return The physical device properties.
@@ -179,6 +199,20 @@ namespace Flint
 			 */
 			[[nodiscard]] const VulkanCommandBuffers& getUtilityCommandBuffer() const { return *m_pUtilityCommandBuffer; }
 
+			/**
+			 * Get the Vulkan buffer using the handle.
+			 *
+			 * @return The buffer.
+			 */
+			[[nodiscard]] VulkanBuffer& getBuffer(BufferHandle handle);
+
+			/**
+			 * Get the Vulkan buffer using the handle.
+			 *
+			 * @return The buffer.
+			 */
+			[[nodiscard]] const VulkanBuffer& getBuffer(BufferHandle handle) const;
+
 		private:
 			/**
 			 * Select the best physical device for the engine.
@@ -207,6 +241,8 @@ namespace Flint
 
 		private:
 			VkPhysicalDeviceProperties m_PhysicalDeviceProperties = {};
+
+			SparseArray<VulkanBuffer, uint32_t> m_Buffers;
 
 			VolkDeviceTable m_DeviceTable = {};
 
