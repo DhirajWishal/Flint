@@ -26,8 +26,10 @@ namespace Flint
 			 * @param engine The engine to which the pipeline is bound to.
 			 * @param rasterizer The rasterizer to which the pipeline is bound to.
 			 * @param specification The pipeline specification.
+			 * @param inputBindings The input bindings of the vertex shader.
+			 * @param inputAttributes The input attributes of the vertex shader.
 			 */
-			explicit VulkanGraphicsPipeline(VulkanEngine& engine, VulkanRasterizer& rasterizer, RasterizingPipelineSpecification&& specification);
+			explicit VulkanGraphicsPipeline(VulkanEngine& engine, VulkanRasterizer& rasterizer, RasterizingPipelineSpecification&& specification, std::vector<VkVertexInputBindingDescription>&& inputBindings, std::vector<VkVertexInputAttributeDescription>&& inputAttributes);
 
 			/**
 			 * Destructor.
@@ -44,10 +46,11 @@ namespace Flint
 			 * Resolve the shader information.
 			 *
 			 * @param code The shader code.
+			 * @param stageFlag The shader stage flag.
 			 * @param layoutBinding The descriptor set layout bindings.
 			 * @param pushConstants The push constants.
 			 */
-			void resolveShader(const ShaderCode& code, std::vector<VkDescriptorSetLayoutBinding>& layoutBindings, std::vector<VkPushConstantRange>& pushConstants);
+			void resolveShader(const Shader& code, VkShaderStageFlagBits stageFlag, std::vector<VkDescriptorSetLayoutBinding>& layoutBindings, std::vector<VkPushConstantRange>& pushConstants);
 
 			/**
 			 * Create the pipeline layout.
@@ -85,8 +88,8 @@ namespace Flint
 
 			std::vector<VkPipelineColorBlendAttachmentState> m_CBASS = {};
 			std::vector<VkPipelineShaderStageCreateInfo> m_ShaderStageCreateInfo = {};
-			std::vector<VkVertexInputAttributeDescription> m_VertexAttributes = {};
 			std::vector<VkVertexInputBindingDescription> m_VertexBindings = {};
+			std::vector<VkVertexInputAttributeDescription> m_VertexAttributes = {};
 			std::vector<VkDynamicState> m_DynamicStates = {};
 
 			VulkanRasterizer& m_Rasterizer;

@@ -3,9 +3,10 @@
 
 #pragma once
 
-#include <cstdint>
-
 #include "Containers/BinaryMap.hpp"
+
+#include <cstdint>
+#include <array>
 
 #define FLINT_DEFINE_ENUM_AND_OR(name)																																							\
 	constexpr name operator|(const name& lhs, const name& rhs) { return static_cast<name>(static_cast<std::underlying_type_t<name>>(lhs) | static_cast<std::underlying_type_t<name>>(rhs)); }	\
@@ -96,62 +97,125 @@ namespace Flint
 	{
 		None = 0,								// Default type.
 
-		R8G8B8 = sizeof(uint8_t[3]),			// 8 bit R, G and B components.
-		R8G8B8A8 = sizeof(uint8_t[4]),			// 8 bit R, G, B and A components.
+		Float,		// 32 bit float type.
 
-		R32G32B32 = sizeof(uint32_t[3]),		// 32 bit R, G and B components.
-		R32G32B32A32 = sizeof(uint32_t[4]),		// 32 bit R, G, B and A components.
+		Vec2_8,		// Two component, 8 bit vector.
+		Vec2_16,	// Two component, 16 bit vector.
+		Vec2_32,	// Two component, 32 bit vector.
+		Vec2_64,	// Two component, 64 bit vector.
 
-		U8V8 = sizeof(uint8_t[2]),				// 8 bit U and V components.
-		U8V8W8 = sizeof(uint8_t[3]),			// 8 bit U, V and W components.
+		Vec3_8,		// Three component, 8 bit vector.
+		Vec3_16,	// Three component, 16 bit vector.
+		Vec3_32,	// Three component, 32 bit vector.
+		Vec3_64,	// Three component, 64 bit vector.
 
-		U32V32 = sizeof(uint32_t[2]),			// 32 bit U and V components.
-		U32V32W32 = sizeof(uint32_t[3]),		// 32 bit U, V and W components.
+		Vec4_8,		// Four component, 8 bit vector.
+		Vec4_16,	// Four component, 16 bit vector.
+		Vec4_32,	// Four component, 32 bit vector.
+		Vec4_64,	// Four component, 64 bit vector.
 
-		X32Y32 = sizeof(uint32_t[2]),			// 32 bit X and Y components.
-		X32Y32Z32 = sizeof(uint32_t[3]),		// 32 bit X, Y and Z components.
+		Max			// Maximum size of the enum.
 	};
 
 	/**
-	 * Vertex descriptor struct.
-	 * This describes how to load the data.
-	 *
-	 * Note that attributes are processed/ packed in the following definition order. Unknown types will be packed last.
+	 * Data type size array.
+	 * This contains all the sizes of the data types in the DataType enum.
 	 */
-	struct VertexDescriptor final
+	constexpr std::array<uint8_t, static_cast<std::underlying_type_t<DataType>>(DataType::Max)> DataTypeSize =
 	{
-		/**
-		 * Get the stride from the attribute types.
-		 *
-		 * @return The stride.
-		 */
-		[[nodiscard]] uint8_t getStride() const;
+		0,
 
-	public:
-		DataType m_Position = DataType::None;		// Uses X, Y and Z.
-		DataType m_Normal = DataType::None;			// Uses X, Y and Z.
+		sizeof(float),
 
-		DataType m_Tangent = DataType::None;		// Uses X, Y and Z.
-		DataType m_BiTangent = DataType::None;		// Uses X, Y and Z.
+		sizeof(uint8_t[2]),
+		sizeof(uint16_t[2]),
+		sizeof(uint32_t[2]),
+		sizeof(uint64_t[2]),
 
-		DataType m_Color0 = DataType::None;			// Uses R, G, B and A.
-		DataType m_Color1 = DataType::None;			// Uses R, G, B and A.
-		DataType m_Color2 = DataType::None;			// Uses R, G, B and A.
-		DataType m_Color3 = DataType::None;			// Uses R, G, B and A.
-		DataType m_Color4 = DataType::None;			// Uses R, G, B and A.
-		DataType m_Color5 = DataType::None;			// Uses R, G, B and A.
-		DataType m_Color6 = DataType::None;			// Uses R, G, B and A.
-		DataType m_Color7 = DataType::None;			// Uses R, G, B and A.
+		sizeof(uint8_t[3]),
+		sizeof(uint16_t[3]),
+		sizeof(uint32_t[3]),
+		sizeof(uint64_t[3]),
 
-		DataType m_Texture0 = DataType::None;		// Uses U, V and W.
-		DataType m_Texture1 = DataType::None;		// Uses U, V and W.
-		DataType m_Texture2 = DataType::None;		// Uses U, V and W.
-		DataType m_Texture3 = DataType::None;		// Uses U, V and W.
-		DataType m_Texture4 = DataType::None;		// Uses U, V and W.
-		DataType m_Texture5 = DataType::None;		// Uses U, V and W.
-		DataType m_Texture6 = DataType::None;		// Uses U, V and W.
-		DataType m_Texture7 = DataType::None;		// Uses U, V and W.
+		sizeof(uint8_t[4]),
+		sizeof(uint16_t[4]),
+		sizeof(uint32_t[4]),
+		sizeof(uint64_t[4]),
 	};
+
+	/**
+	 * Vertex attribute enum.
+	 */
+	enum class VertexAttribute : uint8_t
+	{
+		Position,
+		Normal,
+
+		Tangent,
+		BiTangent,
+
+		Color0,
+		Color1,
+		Color2,
+		Color3,
+		Color4,
+		Color5,
+		Color6,
+		Color7,
+
+		Texture0,
+		Texture1,
+		Texture2,
+		Texture3,
+		Texture4,
+		Texture5,
+		Texture6,
+		Texture7,
+
+		Max
+	};
+
+	/**
+	 * Vertex descriptor type.
+	 * This defines all the types in a vertex.
+	 */
+	using VertexDescriptor = std::array<DataType, static_cast<std::underlying_type_t<VertexAttribute>>(VertexAttribute::Max)>;
+
+	/**
+	 * Instance attribute enum.
+	 */
+	enum class InstanceAttribute : uint8_t
+	{
+		Position,
+		Rotation,
+		Scale,
+		GeometryID,
+
+		Max
+	};
+
+	/**
+	 * Instance descriptor type.
+	 * This defines all the types in an instance.
+	 */
+	using InstanceDescriptor = std::array<DataType, static_cast<std::underlying_type_t<InstanceAttribute>>(InstanceAttribute::Max)>;
+
+	/**
+	 * Get the stride from the vertex or instance descriptor.
+	 *
+	 * @tparam Size The size of the array.
+	 * @param descriptor The descriptor.
+	 * @return The stride (the descriptor size).
+	 */
+	template<uint8_t Size>
+	constexpr uint8_t GetStride(const std::array<DataType, Size>& descriptor) noexcept
+	{
+		uint8_t stride = 0;
+		for (const auto type : descriptor)
+			stride += static_cast<std::underlying_type_t<DataType>>(type);
+
+		return stride;
+	}
 
 	/**
 	 * Buffer usage enum.
@@ -214,27 +278,6 @@ namespace Flint
 	public:
 		BinaryMap<uint32_t, std::vector<ImageHandle>> m_Images;
 		BinaryMap<uint32_t, std::vector<BufferHandle>> m_Buffers;
-	};
-
-	/**
-	 * Shader type enum.
-	 */
-	enum class ShaderType : uint8_t
-	{
-		Undefined,
-
-		Vertex,
-		TessellationControl,
-		TessellationEvaluation,
-		Geometry,
-		Fragment,
-
-		Compute,
-
-		RayGeneration,
-		RayMiss,
-		RayHit,
-		ClosestHit,
 	};
 
 	/**

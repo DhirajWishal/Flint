@@ -15,7 +15,6 @@ add_library(
 
 	"Source/Window.cpp"
 	"Source/Geometry.cpp" 
-	"Source/ShaderCode.cpp"
 		
 	"Source/EventSystem/EventSystem.cpp"
 
@@ -24,6 +23,8 @@ add_library(
 	"Source/Utility/Hasher.cpp"
 
 	"Source/Loader/GeometryLoader.cpp"
+
+	"Source/Shaders/Shader.cpp"
 
 	"Instance.hpp" 
 	"Engine.hpp" 
@@ -36,8 +37,6 @@ add_library(
 	"RenderTargetAttachment.hpp"
 	"Types.hpp"
 	"GeometryStore.hpp" 
-	"ShaderCode.hpp" 
-	"MeshRasterizer.hpp"
 	
 	"Errors/AssetError.hpp"
 	"Errors/BackendError.hpp" 
@@ -58,6 +57,9 @@ add_library(
 	"Utility/Hasher.hpp" 
 
 	"Loader/GeometryLoader.hpp" 
+
+	"Shaders/Shader.hpp"
+	"Shaders/VertexShader.hpp"
 )
 
 # Set the include directories.

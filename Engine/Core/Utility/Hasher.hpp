@@ -3,7 +3,8 @@
 
 #pragma once
 
-#include "Core/MeshRasterizer.hpp"
+#include "Core/Rasterizer.hpp"
+#include "Core/Geometry.hpp"
 
 namespace Flint
 {
@@ -25,11 +26,10 @@ namespace Flint
 	[[nodiscard]] uint64_t GenerateHash(const RasterizingPipelineSpecification& specification);
 
 	/**
-	 * Generate hash for the mesh rasterizer.
-	 * Note that this operation is quite costly.
+	 * Generate hash for a mesh.
 	 *
-	 * @param meshRasterizer The mesh rasterizer to generate the hash.
+	 * @param mesh The mesh to generate the hash.
 	 * @return The hash value.
 	 */
-	[[nodiscard]] uint64_t GenerateHash(const MeshRasterizer& meshRasterizer);
+	[[nodiscard]] uint64_t GenerateHash(const Mesh& mesh);
 }

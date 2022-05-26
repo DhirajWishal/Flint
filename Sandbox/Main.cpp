@@ -20,6 +20,20 @@ constexpr auto Validation = false;
 
 #endif
 
+[[nodiscard]] Flint::RasterizingPipelineSpecification GetSpecification()
+{
+	Flint::RasterizingPipelineSpecification specification;
+	specification.m_CacheFile = "Debugging.bin";
+	specification.m_VertexShader = Flint::VertexShader("Shaders/Debugging/vert.spv");
+	specification.m_FragmentShader = Flint::FragmentShader("Shaders/Debugging/frag.spv");
+
+	specification.m_VertexShader.addVertexInput(0, Flint::VertexAttribute::Position, Flint::DataType::Vec3_32);	// layout (location = 0) in vec3 inPosition;
+	specification.m_VertexShader.addVertexInput(1, Flint::VertexAttribute::Normal, Flint::DataType::Vec3_32);	// layout (location = 1) in vec3 inNormal;
+	specification.m_VertexShader.addVertexInput(2, Flint::VertexAttribute::Texture0, Flint::DataType::Vec2_32);	// layout (location = 2) in vec2 inTextureCoordinates;
+
+	return specification;
+}
+
 int main()
 {
 	auto instance = Flint::VulkanBackend::VulkanInstance("Sandbox", 1, Validation);
@@ -34,25 +48,17 @@ int main()
 			pWindow->setDependency(pRasterizer.get(), 0);
 
 			pRasterizer->registerGeometry(Flint::LoadGeometry(pEngine->getDefaultGeometryStore(), FLINT_GLTF_ASSET_PATH "Sponza/glTF/Sponza.gltf", Flint::VertexData::Position | Flint::VertexData::Normal | Flint::VertexData::Texture0),
-				[](const Flint::Mesh& mesh, [[maybe_unused]] const Flint::Geometry& geometry)
+				GetSpecification(),
+				[](const Flint::Mesh& mesh, [[maybe_unused]] const Flint::Geometry& geometry, const std::vector<Flint::ResourceBinding>& bindings)
 				{
-					Flint::MeshRasterizer rasterizer;
+					Flint::ResourceBindingTable bindingTable;
 
-					static auto vertexShader = Flint::ShaderCode("Shaders/Debugging/vert.spv", Flint::ShaderType::Vertex);
-					static auto fragmentShader = Flint::ShaderCode("Shaders/Debugging/frag.spv", Flint::ShaderType::Fragment);
+					for (const auto& binding : bindings)
+					{
+						// Do the binding stuff here.
+					}
 
-					// Setup graphics specification.
-					auto& specification = rasterizer.getSpecification();
-					specification.m_CacheFile = "Debugging.bin";
-					specification.m_VertexShader = vertexShader;
-					specification.m_FragmentShader = fragmentShader;
-
-					auto& binding = specification.m_InputBindings.emplace_back(Flint::InputBindingType::VertexData);
-					binding.add(0, Flint::VertexAttributeType::Vec3_32);	// layout (location = 0) in vec3 inPosition;
-					binding.add(1, Flint::VertexAttributeType::Vec3_32);	// layout (location = 1) in vec3 inNormal;
-					binding.add(2, Flint::VertexAttributeType::Vec2_32);	// layout (location = 2) in vec2 inTextureCoordinates;
-
-					return rasterizer;
+					return bindingTable;
 				}
 			);
 

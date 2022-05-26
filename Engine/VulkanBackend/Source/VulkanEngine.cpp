@@ -602,24 +602,6 @@ namespace Flint
 				);
 			}
 
-			VkShaderStageFlagBits GetShaderStage(ShaderType type)
-			{
-				switch (type)
-				{
-				case Flint::ShaderType::Vertex:									return VK_SHADER_STAGE_VERTEX_BIT;
-				case Flint::ShaderType::TessellationControl:					return VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
-				case Flint::ShaderType::TessellationEvaluation:					return VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
-				case Flint::ShaderType::Geometry:								return VK_SHADER_STAGE_GEOMETRY_BIT;
-				case Flint::ShaderType::Fragment:								return VK_SHADER_STAGE_FRAGMENT_BIT;
-				case Flint::ShaderType::Compute:								return VK_SHADER_STAGE_COMPUTE_BIT;
-				case Flint::ShaderType::RayGeneration:							return VK_SHADER_STAGE_RAYGEN_BIT_KHR;
-				case Flint::ShaderType::RayMiss:								return VK_SHADER_STAGE_MISS_BIT_KHR;
-				case Flint::ShaderType::RayHit:									return VK_SHADER_STAGE_ANY_HIT_BIT_KHR;
-				case Flint::ShaderType::ClosestHit:								return VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
-				default:														throw Flint::BackendError("Invalid or Undefined shader type!");
-				}
-			}
-
 			VkDescriptorType GetDescriptorType(Flint::ResourceType type)
 			{
 				switch (type)
@@ -909,6 +891,27 @@ namespace Flint
 				}
 
 				return 0;
+			}
+
+			VkFormat GetVkFormat(Flint::DataType type)
+			{
+				switch (type)
+				{
+				case Flint::DataType::Float:									return VK_FORMAT_R32_SFLOAT;
+				case Flint::DataType::Vec2_8:									return VK_FORMAT_R8G8_UINT;
+				case Flint::DataType::Vec2_16:									return VK_FORMAT_R16G16_SFLOAT;
+				case Flint::DataType::Vec2_32:									return VK_FORMAT_R32G32_SFLOAT;
+				case Flint::DataType::Vec2_64:									return VK_FORMAT_R64G64_SFLOAT;
+				case Flint::DataType::Vec3_8:									return VK_FORMAT_R8G8B8_UINT;
+				case Flint::DataType::Vec3_16:									return VK_FORMAT_R16G16B16_SFLOAT;
+				case Flint::DataType::Vec3_32:									return VK_FORMAT_R32G32B32_SFLOAT;
+				case Flint::DataType::Vec3_64:									return VK_FORMAT_R64G64B64_SFLOAT;
+				case Flint::DataType::Vec4_8:									return VK_FORMAT_R8G8B8A8_UINT;
+				case Flint::DataType::Vec4_16:									return VK_FORMAT_R16G16B16A16_SFLOAT;
+				case Flint::DataType::Vec4_32:									return VK_FORMAT_R32G32B32A32_SFLOAT;
+				case Flint::DataType::Vec4_64:									return VK_FORMAT_R64G64B64A64_SFLOAT;
+				default:														throw Flint::BackendError("Invalid vertex attribute type!");
+				}
 			}
 		}
 	}

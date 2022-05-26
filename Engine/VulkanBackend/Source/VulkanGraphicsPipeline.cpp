@@ -13,47 +13,6 @@
 namespace /* anonymous */
 {
 	/**
-	 * Get the format from the attribute type.
-	 *
-	 * @param type The type of the attribute.
-	 * @return The Vulkan format.
-	 */
-	VkFormat GetFormat(Flint::VertexAttributeType type)
-	{
-		switch (type)
-		{
-		case Flint::VertexAttributeType::Float:						return VK_FORMAT_R32_SFLOAT;
-		case Flint::VertexAttributeType::Vec2_8:					return VK_FORMAT_R8G8_UINT;
-		case Flint::VertexAttributeType::Vec2_16:					return VK_FORMAT_R16G16_SFLOAT;
-		case Flint::VertexAttributeType::Vec2_32:					return VK_FORMAT_R32G32_SFLOAT;
-		case Flint::VertexAttributeType::Vec2_64:					return VK_FORMAT_R64G64_SFLOAT;
-		case Flint::VertexAttributeType::Vec3_8:					return VK_FORMAT_R8G8B8_UINT;
-		case Flint::VertexAttributeType::Vec3_16:					return VK_FORMAT_R16G16B16_SFLOAT;
-		case Flint::VertexAttributeType::Vec3_32:					return VK_FORMAT_R32G32B32_SFLOAT;
-		case Flint::VertexAttributeType::Vec3_64:					return VK_FORMAT_R64G64B64_SFLOAT;
-		case Flint::VertexAttributeType::Vec4_8:					return VK_FORMAT_R8G8B8A8_UINT;
-		case Flint::VertexAttributeType::Vec4_16:					return VK_FORMAT_R16G16B16A16_SFLOAT;
-		case Flint::VertexAttributeType::Vec4_32:					return VK_FORMAT_R32G32B32A32_SFLOAT;
-		case Flint::VertexAttributeType::Vec4_64:					return VK_FORMAT_R64G64B64A64_SFLOAT;
-		default:													throw Flint::BackendError("Invalid vertex attribute type!");
-		}
-	}
-
-	/**
-	 * Get the vertex input rate.
-	 *
-	 * @param type The binding type.
-	 * @return The input rate.
-	 */
-	VkVertexInputRate GetInputRate(Flint::InputBindingType type)
-	{
-		if (type == Flint::InputBindingType::VertexData)
-			return VK_VERTEX_INPUT_RATE_VERTEX;
-		else
-			return VK_VERTEX_INPUT_RATE_INSTANCE;
-	}
-
-	/**
 	 * Get the primitive topology.
 	 *
 	 * @param topology The flint primitive topology.
@@ -320,32 +279,18 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanGraphicsPipeline::VulkanGraphicsPipeline(VulkanEngine& engine, VulkanRasterizer& rasterizer, RasterizingPipelineSpecification&& specification)
-			: VulkanPipeline(engine, std::move(specification.m_CacheFile)), VulkanDescriptorSetManager(engine), m_Rasterizer(rasterizer)
+		VulkanGraphicsPipeline::VulkanGraphicsPipeline(VulkanEngine& engine, VulkanRasterizer& rasterizer, RasterizingPipelineSpecification&& specification, std::vector<VkVertexInputBindingDescription>&& inputBindings, std::vector<VkVertexInputAttributeDescription>&& inputAttributes)
+			: VulkanPipeline(engine, std::move(specification.m_CacheFile)), VulkanDescriptorSetManager(engine), m_Rasterizer(rasterizer), m_VertexBindings(std::move(inputBindings)), m_VertexAttributes(std::move(inputAttributes))
 		{
 			// Resolve shader information.
 			std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
 			std::vector<VkPushConstantRange> pushConstants;
 
 			// Resolve the information in the vertex shader.
-			if (specification.m_VertexShader.getType() != ShaderType::Undefined)
-				resolveShader(specification.m_VertexShader, layoutBindings, pushConstants);
-
-			// Resolve the information in the tessellation control shader.
-			if (specification.m_TessellationControlShader.getType() != ShaderType::Undefined)
-				resolveShader(specification.m_TessellationControlShader, layoutBindings, pushConstants);
-
-			// Resolve the information in the tessellation evaluation shader.
-			if (specification.m_TessellationEvaluationShader.getType() != ShaderType::Undefined)
-				resolveShader(specification.m_TessellationEvaluationShader, layoutBindings, pushConstants);
-
-			// Resolve the information in the geometry shader.
-			if (specification.m_GeometryShader.getType() != ShaderType::Undefined)
-				resolveShader(specification.m_GeometryShader, layoutBindings, pushConstants);
+			resolveShader(specification.m_VertexShader, VK_SHADER_STAGE_VERTEX_BIT, layoutBindings, pushConstants);
 
 			// Resolve the information in the fragment shader.
-			if (specification.m_FragmentShader.getType() != ShaderType::Undefined)
-				resolveShader(specification.m_FragmentShader, layoutBindings, pushConstants);
+			resolveShader(specification.m_FragmentShader, VK_SHADER_STAGE_FRAGMENT_BIT, layoutBindings, pushConstants);
 
 			// Create the descriptor set layout.
 			setup(std::move(layoutBindings));
@@ -371,17 +316,17 @@ namespace Flint
 			createPipeline();
 		}
 
-		void VulkanGraphicsPipeline::resolveShader(const ShaderCode& code, std::vector<VkDescriptorSetLayoutBinding>& layoutBindings, std::vector<VkPushConstantRange>& pushConstants)
+		void VulkanGraphicsPipeline::resolveShader(const Shader& code, VkShaderStageFlagBits stageFlag, std::vector<VkDescriptorSetLayoutBinding>& layoutBindings, std::vector<VkPushConstantRange>& pushConstants)
 		{
 			// Resolve the descriptors.
-			for (const auto& [name, binding] : code.getBindings())
+			for (const auto& binding : code.getBindings())
 			{
 				auto& layoutBinding = layoutBindings.emplace_back();
 				layoutBinding.binding = binding.m_Binding;
 				layoutBinding.descriptorCount = binding.m_Count;
 				layoutBinding.descriptorType = Utility::GetDescriptorType(binding.m_Type);
 				layoutBinding.pImmutableSamplers = nullptr;
-				layoutBinding.stageFlags = Utility::GetShaderStage(code.getType());
+				layoutBinding.stageFlags = stageFlag;
 
 				auto& poolSize = m_PoolSizes.emplace_back();
 				poolSize.descriptorCount = layoutBinding.descriptorCount;
@@ -392,7 +337,7 @@ namespace Flint
 			for (const auto& constant : code.getPushConstants())
 			{
 				auto& pushConstant = pushConstants.emplace_back();
-				pushConstant.stageFlags = Utility::GetShaderStage(code.getType());
+				pushConstant.stageFlags = stageFlag;
 				pushConstant.size = constant.m_Size;
 				pushConstant.offset = constant.m_Offset;
 			}
@@ -413,7 +358,7 @@ namespace Flint
 			stageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 			stageInfo.pNext = nullptr;
 			stageInfo.flags = 0;
-			stageInfo.stage = Utility::GetShaderStage(code.getType());
+			stageInfo.stage = stageFlag;
 			stageInfo.module = shaderModule;
 			stageInfo.pSpecializationInfo = nullptr;
 			stageInfo.pName = code.getEntryPoint().data();
@@ -436,27 +381,6 @@ namespace Flint
 		void VulkanGraphicsPipeline::setupDefaults(RasterizingPipelineSpecification&& specification)
 		{
 			// Setup the input bindings.
-			uint32_t bindingIndex = 0;
-			for (const auto& binding : specification.m_InputBindings)
-			{
-				auto& vertexBinding = m_VertexBindings.emplace_back();
-				vertexBinding.binding = bindingIndex;
-				vertexBinding.inputRate = GetInputRate(binding.m_Type);
-
-				uint32_t offset = 0;
-				for (const auto& attribute : binding.m_Attributes)
-				{
-					auto& vertexAttribute = m_VertexAttributes.emplace_back();
-					vertexAttribute.binding = bindingIndex;
-					vertexAttribute.location = attribute.first;
-					vertexAttribute.offset = offset;
-					vertexAttribute.format = GetFormat(attribute.second);
-					offset += Utility::GetSizeFromFormat(vertexAttribute.format);
-				}
-
-				vertexBinding.stride = offset;
-			}
-
 			m_VertexInputStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 			m_VertexInputStateCreateInfo.pNext = nullptr;
 			m_VertexInputStateCreateInfo.flags = 0;

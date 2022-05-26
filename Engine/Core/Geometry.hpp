@@ -185,25 +185,25 @@ namespace Flint
 		void addMaterial(float r, float g, float b, float a, ColorType type);
 
 		/**
-		 * Add a new instance type to the mesh.
+		 * Set the instance descriptor to the mesh.
 		 *
-		 * @param type The type of the instance data.
+		 * @param descriptor The instance descriptor..
 		 */
-		void addInstanceType(DataType type);
+		void setInstanceType(InstanceDescriptor&& descriptor);
 
 		/**
 		 * Get the texture paths.
 		 *
 		 * @return The paths.
 		 */
-		[[nodiscard]] const std::vector<std::pair<TextureType, std::filesystem::path>>& getTextures() const { return m_Textures; }
+		[[nodiscard]] const std::vector<std::pair<TextureType, std::filesystem::path>>& getTextures() const noexcept { return m_Textures; }
 
 		/**
 		 * Get the color materials.
 		 *
 		 * @return The colors.
 		 */
-		[[nodiscard]] const std::vector<std::pair<ColorType, std::array<float, 4>>>& getColors() const { return m_Colors; }
+		[[nodiscard]] const std::vector<std::pair<ColorType, std::array<float, 4>>>& getColors() const noexcept { return m_Colors; }
 
 		/**
 		 * Map the vertex memory to the local address space.
@@ -240,70 +240,79 @@ namespace Flint
 		 *
 		 * @return The mesh name.
 		 */
-		[[nodiscard]] std::string_view getName() const { return m_Name; }
+		[[nodiscard]] std::string_view getName() const noexcept { return m_Name; }
 
 		/**
 		 * Get the vertex descriptor.
 		 *
 		 * @return The descriptor.
 		 */
-		[[nodiscard]] VertexDescriptor getVertexDescriptor() const { return m_VertexDescriptor; }
+		[[nodiscard]] VertexDescriptor getVertexDescriptor() const noexcept { return m_VertexDescriptor; }
+
+		/**
+		 * Get the instance descriptor.
+		 *
+		 * @return The descriptor.
+		 */
+		[[nodiscard]] InstanceDescriptor getInstanceDescriptor() const noexcept { return m_InstanceDescriptor; }
 
 		/**
 		 * Get the vertex stride.
 		 *
 		 * @return The stride.
 		 */
-		[[nodiscard]] uint64_t getVertexStride() const { return m_VertexDescriptor.getStride(); }
+		[[nodiscard]] uint64_t getVertexStride() const noexcept { return GetStride(m_VertexDescriptor); }
 
 		/**
 		 * Get the vertex count.
 		 *
 		 * @return The count.
 		 */
-		[[nodiscard]] uint64_t getVertexCount() const { return m_VertexCount; }
+		[[nodiscard]] uint64_t getVertexCount() const noexcept { return m_VertexCount; }
 
 		/**
 		 * Get the vertex offset.
 		 *
 		 * @return The offset.
 		 */
-		[[nodiscard]] uint64_t getVertexOffset() const { return m_VertexOffset; }
+		[[nodiscard]] uint64_t getVertexOffset() const noexcept { return m_VertexOffset; }
 
 		/**
 		 * Get the total vertex size.
 		 *
 		 * @return The size in bytes.
 		 */
-		[[nodiscard]] uint64_t getVertexSize() const { return m_VertexCount * m_VertexDescriptor.getStride(); }
+		[[nodiscard]] uint64_t getVertexSize() const noexcept { return m_VertexCount * GetStride(m_VertexDescriptor); }
 
 		/**
 		 * Get the index count.
 		 *
 		 * @return The count.
 		 */
-		[[nodiscard]] uint64_t getIndexCount() const { return m_IndexCount; }
+		[[nodiscard]] uint64_t getIndexCount() const noexcept { return m_IndexCount; }
 
 		/**
 		 * Get the index offset.
 		 *
 		 * @return The offset.
 		 */
-		[[nodiscard]] uint64_t getIndexOffset() const { return m_IndexOffset; }
+		[[nodiscard]] uint64_t getIndexOffset() const noexcept { return m_IndexOffset; }
 
 		/**
 		 * Get the total index size.
 		 *
 		 * @return The size in bytes.
 		 */
-		[[nodiscard]] uint64_t getIndexSize() const { return m_IndexCount * sizeof(uint32_t); }
+		[[nodiscard]] uint64_t getIndexSize() const noexcept { return m_IndexCount * sizeof(uint32_t); }
 
 	private:
+		VertexDescriptor m_VertexDescriptor;
+		InstanceDescriptor m_InstanceDescriptor;
+
 		std::vector<std::pair<TextureType, std::filesystem::path>> m_Textures;
 		std::vector<std::pair<ColorType, std::array<float, 4>>> m_Colors;
 
 		std::vector<DataType> m_InstanceTypes;
-		VertexDescriptor m_VertexDescriptor;
 
 		std::string m_Name;
 
@@ -324,7 +333,7 @@ namespace Flint
 		/**
 		 * Default constructor.
 		 */
-		Geometry() = default;
+		constexpr Geometry() = default;
 
 		/**
 		 * Explicit constructor.
@@ -353,7 +362,7 @@ namespace Flint
 		 *
 		 * @return The geometry store reference.
 		 */
-		[[nodiscard]] GeometryStore& getGeometryStore() { return *m_pGeometryStore; }
+		[[nodiscard]] GeometryStore& getGeometryStore() noexcept { return *m_pGeometryStore; }
 
 		/**
 		 * Get the geometry store to which this object is bound to.
@@ -361,14 +370,14 @@ namespace Flint
 		 *
 		 * @return The geometry store reference.
 		 */
-		[[nodiscard]] const GeometryStore& getGeometryStore() const { return *m_pGeometryStore; }
+		[[nodiscard]] const GeometryStore& getGeometryStore() const noexcept { return *m_pGeometryStore; }
 
 		/**
 		 * Get all the stored meshes.
 		 *
 		 * @return The meshes.
 		 */
-		[[nodiscard]] const std::vector<Mesh>& getMeshes() const { return m_Meshes; }
+		[[nodiscard]] const std::vector<Mesh>& getMeshes() const noexcept { return m_Meshes; }
 
 		/**
 		 * Begin data streaming.

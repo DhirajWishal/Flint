@@ -1,7 +1,7 @@
 // Copyright 2021-2022 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#include "Core/ShaderCode.hpp"
+#include "Core/Shaders/Shader.hpp"
 #include "Core/Errors/AssetError.hpp"
 
 #include <spirv_reflect.h>
@@ -72,16 +72,12 @@ namespace /* anonymous */
 	}
 }
 
+
 namespace Flint
 {
-	ShaderCode::ShaderCode(std::filesystem::path&& path, ShaderType type)
-		: m_Type(type)
+	Shader::Shader(std::filesystem::path&& file)
 	{
-		// Validate the type.
-		if (m_Type == ShaderType::Undefined)
-			throw AssetError("Invalid shader type!");
-
-		std::fstream shaderFile(path, std::ios::in | std::ios::ate | std::ios::binary);
+		std::fstream shaderFile(file, std::ios::in | std::ios::ate | std::ios::binary);
 
 		// Check if we opened the file.
 		if (!shaderFile.is_open())
@@ -98,116 +94,56 @@ namespace Flint
 		shaderFile.read(reinterpret_cast<char*>(m_Code.data()), fileSize);
 		shaderFile.close();
 
-		// Perform reflection to load everything.
+		// Perform reflection over the shader code.
 		reflect();
 	}
 
-	void ShaderCode::reflect()
+	void Shader::setEntryPoint(std::string&& name) noexcept
 	{
-		uint32_t variableCount = 0;
+		m_EntryPoint = std::move(name);
+	}
+
+	void Shader::reflect()
+	{
 		SpvReflectShaderModule shaderModule = {};
 		const auto shaderCode = std::vector<uint32_t>(m_Code.begin(), m_Code.begin() + (m_Code.size() / 4));
 		ValidateReflection(spvReflectCreateShaderModule(shaderCode.size() * sizeof(uint32_t), shaderCode.data(), &shaderModule));
 
-		// Resolve shader inputs.
-		{
-			ValidateReflection(spvReflectEnumerateInputVariables(&shaderModule, &variableCount, nullptr));
-
-			std::vector<SpvReflectInterfaceVariable*> pInputs(variableCount);
-			ValidateReflection(spvReflectEnumerateInputVariables(&shaderModule, &variableCount, pInputs.data()));
-
-			m_InputAttributes.reserve(pInputs.size());
-
-			// Iterate through the attributes and load them.
-			for (auto& pResource : pInputs)
-			{
-				if (pResource->format == SpvReflectFormat::SPV_REFLECT_FORMAT_UNDEFINED)
-					continue;
-
-				// If the type is not a built in one, we can proceed to add them.
-				if (pResource->built_in == -1)
-				{
-					ShaderAttribute attribute;
-
-					if (pResource->name)
-						attribute.m_Name = pResource->name;
-
-					attribute.m_Location = pResource->location;
-					m_InputAttributes.emplace_back(attribute);
-				}
-			}
-		}
-
-		// Sort the inputs.
-		std::sort(m_InputAttributes.begin(), m_InputAttributes.end(), [](const ShaderAttribute& lhs, const ShaderAttribute& rhs) { return lhs.m_Location < rhs.m_Location; });
-
-		// Resolve shader outputs.
-		{
-			ValidateReflection(spvReflectEnumerateOutputVariables(&shaderModule, &variableCount, nullptr));
-
-			std::vector<SpvReflectInterfaceVariable*> pOutputs(variableCount);
-			ValidateReflection(spvReflectEnumerateOutputVariables(&shaderModule, &variableCount, pOutputs.data()));
-
-			m_OutputAttributes.reserve(pOutputs.size());
-
-			// Iterate through the attributes and load them.
-			for (auto& pResource : pOutputs)
-			{
-				if (pResource->format == SpvReflectFormat::SPV_REFLECT_FORMAT_UNDEFINED)
-					continue;
-
-				// If the type is not a built in one, we can proceed to add them.
-				if (pResource->built_in == -1)
-				{
-					ShaderAttribute attribute;
-
-					if (pResource->name)
-						attribute.m_Name = pResource->name;
-
-					attribute.m_Location = pResource->location;
-					m_OutputAttributes.emplace_back(attribute);
-				}
-			}
-		}
-
-		// Sort the outputs.
-		std::sort(m_OutputAttributes.begin(), m_OutputAttributes.end(), [](const ShaderAttribute& lhs, const ShaderAttribute& rhs) { return lhs.m_Location < rhs.m_Location; });
-
 		// Resolve uniforms.
 		{
+			uint32_t variableCount = 0;
 			ValidateReflection(spvReflectEnumerateDescriptorBindings(&shaderModule, &variableCount, nullptr));
 
 			std::vector<SpvReflectDescriptorBinding*> pBindings(variableCount);
 			ValidateReflection(spvReflectEnumerateDescriptorBindings(&shaderModule, &variableCount, pBindings.data()));
 
 			// Iterate over the resources and setup the bindings.
-			for (auto& pResource : pBindings)
+			m_Bindings.reserve(pBindings.size());
+			for (const auto& pResource : pBindings)
 			{
-				ResourceBinding binding;
-				binding.m_Binding = pResource->binding;
+				auto& binding = m_Bindings.emplace_back();
 				binding.m_Set = pResource->set;
+				binding.m_Binding = pResource->binding;
 				binding.m_Count = pResource->count;
 				binding.m_Type = GetResourceType(pResource->descriptor_type);
-
-				m_Bindings[pResource->name] = binding;
 			}
 		}
 
 		// Resolve push constants.
 		{
+			uint32_t variableCount = 0;
 			ValidateReflection(spvReflectEnumeratePushConstantBlocks(&shaderModule, &variableCount, nullptr));
 
 			std::vector<SpvReflectBlockVariable*> pPushConstants(variableCount);
 			ValidateReflection(spvReflectEnumeratePushConstantBlocks(&shaderModule, &variableCount, pPushConstants.data()));
 
-			PushConstant pushConstant = {};
-
 			// Iterate over the push constants and setup.
-			for (auto& resource : pPushConstants)
+			m_PushConstants.reserve(pPushConstants.size());
+			for (const auto& resource : pPushConstants)
 			{
+				auto& pushConstant = m_PushConstants.emplace_back();
 				pushConstant.m_Size = resource->size;
 				pushConstant.m_Offset = resource->offset;
-				m_PushConstants.emplace_back(pushConstant);
 			}
 		}
 	}

@@ -14,15 +14,11 @@ namespace Flint
 	class GeometryStore : public EngineBoundObject
 	{
 	public:
-		/**
-		 * Explicit constructor.
-		 *
-		 * @param engine The engine reference.
-		 */
-		explicit GeometryStore(Engine& engine) : EngineBoundObject(engine) {}
+		// We are using the same constructor(s) as the super class.
+		using EngineBoundObject::EngineBoundObject;
 
 		/**
-		 * Default virtual destructor.
+		 * Virtual default destructor.
 		 */
 		virtual ~GeometryStore() = default;
 

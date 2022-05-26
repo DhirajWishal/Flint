@@ -25,7 +25,7 @@ namespace Flint
 	template <class Type, class Index = uint64_t>
 	class SparseArray final
 	{
-		static_cast<std::is_unsigned_v<Index>, "Invalid 'Index' type! Make sure that this type is an integral and unsigned.")
+		static_assert(std::is_unsigned_v<Index>, "Invalid 'Index' type! Make sure that this type is an integral and unsigned.");
 
 		using dense_vector = std::vector<Type>;
 		using sparse_vector = std::vector<Index>;

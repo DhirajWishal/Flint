@@ -8,8 +8,6 @@
 
 #include "Core/Utility/Hasher.hpp"
 
-#include <array>
-
 namespace Flint
 {
 	namespace VulkanBackend
@@ -104,21 +102,94 @@ namespace Flint
 			m_pCommandBuffers->resetIndex();
 		}
 
-		void VulkanRasterizer::registerGeometry(const Geometry& geometry, std::function<MeshRasterizer(const Mesh&, const Geometry&)>&& meshBinder)
+		void VulkanRasterizer::registerGeometry(const Geometry& geometry, RasterizingPipelineSpecification&& specification, std::function<ResourceBindingTable(const Mesh&, const Geometry&, const std::vector<ResourceBinding>&)>&& meshBinder)
 		{
 			auto& entry = m_DrawEntries.emplace_back();
 			entry.m_Geometry = geometry;
 
+			const auto pipelineHash = GenerateHash(specification);
+			auto resourceBindings = specification.m_VertexShader.getBindings();
+			resourceBindings.insert(resourceBindings.end(), specification.m_FragmentShader.getBindings().begin(), specification.m_FragmentShader.getBindings().end());
+
 			for (const auto& mesh : geometry.getMeshes())
 			{
-				auto meshRasterizer = meshBinder(mesh, geometry);
-				const auto pipelineHash = GenerateHash(meshRasterizer.getSpecification());
+				const auto meshHash = GenerateHash(mesh);
+				auto bindingTable = meshBinder(mesh, geometry, resourceBindings);
+
+				std::vector<VkVertexInputBindingDescription> bindingDescriptions;
+				std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
+
+				// Validate the vertex inputs and generate the descriptions if possible.
+				if (specification.m_VertexShader.hasVertexInputs())
+				{
+					auto& vertexBinding = bindingDescriptions.emplace_back();
+					vertexBinding.binding = 0;
+					vertexBinding.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+					vertexBinding.stride = mesh.getVertexStride();
+
+					uint32_t offset = 0;
+					const auto descriptor = mesh.getVertexDescriptor();
+					auto descriptorIterator = descriptor.begin();
+					for (const auto& attribute : specification.m_VertexShader.getVertexInputs())
+					{
+						// Iterate the iterator till we get to the right attribute.
+						while (*descriptorIterator != attribute.m_DataType)
+						{
+							// Throw an error if we reached the end, because that means that we don't have what it needs to build the pipeline.
+							if (descriptorIterator == descriptor.end())
+								throw BackendError("One or more required attributes, or attributes with the required type was not found! Make sure that the mesh(s) contain the required attributes.");
+
+							offset += DataTypeSize[static_cast<std::underlying_type_t<DataType>>(*descriptorIterator)];
+							++descriptorIterator;
+						}
+
+						auto& vertexAttribute = attributeDescriptions.emplace_back();
+						vertexAttribute.binding = vertexBinding.binding;
+						vertexAttribute.location = attribute.m_Location;
+						vertexAttribute.offset = offset;
+						vertexAttribute.format = Utility::GetVkFormat(attribute.m_DataType);
+						offset += DataTypeSize[static_cast<std::underlying_type_t<DataType>>(attribute.m_DataType)];
+					}
+				}
+
+				// Validate the instance inputs and generate the descriptions if possible.
+				if (specification.m_VertexShader.hasInstanceInputs())
+				{
+					auto& vertexBinding = bindingDescriptions.emplace_back();
+					vertexBinding.binding = 1;
+					vertexBinding.inputRate = VK_VERTEX_INPUT_RATE_INSTANCE;
+					vertexBinding.stride = GetStride(mesh.getInstanceDescriptor());
+
+					uint32_t offset = 0;
+					const auto descriptor = mesh.getInstanceDescriptor();
+					auto descriptorIterator = descriptor.begin();
+					for (const auto& attribute : specification.m_VertexShader.getInstanceInputs())
+					{
+						// Iterate the iterator till we get to the right attribute.
+						while (*descriptorIterator != attribute.m_DataType)
+						{
+							// Throw an error if we reached the end, because that means that we don't have what it needs to build the pipeline.
+							if (descriptorIterator == descriptor.end())
+								throw BackendError("One or more required attributes, or attributes with the required type was not found! Make sure that the mesh(s) contain the required attributes.");
+
+							offset += DataTypeSize[static_cast<std::underlying_type_t<DataType>>(*descriptorIterator)];
+							++descriptorIterator;
+						}
+
+						auto& vertexAttribute = attributeDescriptions.emplace_back();
+						vertexAttribute.binding = vertexBinding.binding;
+						vertexAttribute.location = attribute.m_Location;
+						vertexAttribute.offset = offset;
+						vertexAttribute.format = Utility::GetVkFormat(attribute.m_DataType);
+						offset += DataTypeSize[static_cast<std::underlying_type_t<DataType>>(attribute.m_DataType)];
+					}
+				}
 
 				// If the pipeline is present, we don't need to create one. If not we need to create a new one.
 				if (!m_PipelineHashes.contains(pipelineHash))
-					m_PipelineHashes.emplace(pipelineHash, m_Pipelines.emplace(getEngineAs<VulkanEngine>(), *this, std::move(meshRasterizer.getSpecification())).first);
+					m_PipelineHashes.emplace(pipelineHash, m_Pipelines.emplace(getEngineAs<VulkanEngine>(), *this, std::move(specification), std::move(bindingDescriptions), std::move(attributeDescriptions)).first);
 
-				entry.m_Rasterizers.emplace_back(meshRasterizer);
+				entry.m_BindingTables.emplace_back(std::move(bindingTable));
 			}
 		}
 

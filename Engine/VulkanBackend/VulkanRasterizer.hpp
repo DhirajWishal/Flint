@@ -28,7 +28,7 @@ namespace Flint
 			struct DrawEntry final
 			{
 				Geometry m_Geometry;
-				std::vector<MeshRasterizer> m_Rasterizers;
+				std::vector<ResourceBindingTable> m_BindingTables;
 			};
 
 		public:
@@ -69,11 +69,12 @@ namespace Flint
 			 * You can add the same geometry multiple times if different pipelines are being used.
 			 *
 			 * @param geometry The geometry to add.
+			 * @param specification The pipeline specification to use.
 			 * @param meshBinder The special callback that will be called on every single mesh in the geometry, and will be used to create the pipeline for each mesh.
 			 * This is required as each mesh might need it's own pipeline because of the varying materials, inputs and so on. Note that if a pipeline exists for the same
 			 * specification, a new one will not be created, the existing one will be used instead.
 			 */
-			void registerGeometry(const Geometry& geometry, std::function<MeshRasterizer(const Mesh&, const Geometry&)>&& meshBinder) override;
+			void registerGeometry(const Geometry& geometry, RasterizingPipelineSpecification&& specification, std::function<ResourceBindingTable(const Mesh&, const Geometry&, const std::vector<ResourceBinding>&)>&& meshBinder) override;
 
 			/**
 			 * Get the render target attachment at a given index.

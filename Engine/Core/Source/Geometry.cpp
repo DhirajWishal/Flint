@@ -24,9 +24,9 @@ namespace Flint
 		m_Colors.emplace_back(type, std::array<float, 4>{ r, g, b, a });
 	}
 
-	void Mesh::addInstanceType(DataType type)
+	void Mesh::setInstanceType(InstanceDescriptor&& descriptor)
 	{
-		m_InstanceTypes.emplace_back(type);
+		m_InstanceDescriptor = std::move(descriptor);
 	}
 
 	std::byte* Mesh::mapVertexMemory(Geometry& geometry)
@@ -83,36 +83,5 @@ namespace Flint
 	{
 		m_pGeometryStore->unmapVertexData();
 		m_pGeometryStore->unmapIndexData();
-	}
-
-	uint8_t VertexDescriptor::getStride() const
-	{
-		uint8_t stride = 0;
-
-		stride += static_cast<uint8_t>(m_Position);
-		stride += static_cast<uint8_t>(m_Normal);
-
-		stride += static_cast<uint8_t>(m_Tangent);
-		stride += static_cast<uint8_t>(m_BiTangent);
-
-		stride += static_cast<uint8_t>(m_Color0);
-		stride += static_cast<uint8_t>(m_Color1);
-		stride += static_cast<uint8_t>(m_Color2);
-		stride += static_cast<uint8_t>(m_Color3);
-		stride += static_cast<uint8_t>(m_Color4);
-		stride += static_cast<uint8_t>(m_Color5);
-		stride += static_cast<uint8_t>(m_Color6);
-		stride += static_cast<uint8_t>(m_Color7);
-
-		stride += static_cast<uint8_t>(m_Texture0);
-		stride += static_cast<uint8_t>(m_Texture1);
-		stride += static_cast<uint8_t>(m_Texture2);
-		stride += static_cast<uint8_t>(m_Texture3);
-		stride += static_cast<uint8_t>(m_Texture4);
-		stride += static_cast<uint8_t>(m_Texture5);
-		stride += static_cast<uint8_t>(m_Texture6);
-		stride += static_cast<uint8_t>(m_Texture7);
-
-		return stride;
 	}
 }

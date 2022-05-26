@@ -14,20 +14,11 @@ namespace Flint
 	class RayTracer : public RenderTarget
 	{
 	public:
+		// We are using the same constructor(s) as the super class.
+		using RenderTarget::RenderTarget;
+		
 		/**
-		 * Explicit constructor.
-		 *
-		 * @param engine The engine reference.
-		 * @param width The width of the render target.
-		 * @param height The height of the render target.
-		 * @param attachmentDescriptions The attachment descriptions.
-		 * @param multisample The multisample count. Default is One.
-		 */
-		explicit RayTracer(Engine& engine, uint32_t width, uint32_t height, std::vector<AttachmentDescription>&& attachmentDescriptions, Multisample multisample = Multisample::One)
-			: RenderTarget(engine, std::move(attachmentDescriptions), width, height, multisample) {}
-
-		/**
-		 * Default virtual destructor.
+		 * Virtual default destructor.
 		 */
 		virtual ~RayTracer() = default;
 	};
