@@ -121,6 +121,16 @@ namespace Flint
 			[[nodiscard]] BufferHandle createBuffer(uint64_t size, BufferUsage usage) override;
 
 			/**
+			 * Copy data to a buffer.
+			 *
+			 * @param handle The buffer handle.
+			 * @param pData The data to copy.
+			 * @param size The size of the data to copy.
+			 * @param offset The buffer's offset to copy to.
+			 */
+			[[nodiscard]] void copyToBuffer(BufferHandle handle, const std::byte* pData, uint64_t size, uint64_t offset = 0) override;
+
+			/**
 			 * Create a new texture image.
 			 *
 			 * @param path The path to the texture file.

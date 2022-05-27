@@ -252,10 +252,8 @@ namespace Flint
 			m_Engine.getDeviceTable().vkCmdCopyBuffer(m_CurrentCommandBuffer, srcBuffer, dstBuffer, 1, &bufferCopy);
 		}
 
-		void VulkanCommandBuffers::bindGeometryStore(const VulkanGeometryStore& geometryStore) const noexcept
+		void VulkanCommandBuffers::bindIndexBuffer(const VulkanGeometryStore& geometryStore) const noexcept
 		{
-			const VkDeviceSize offset = 0;
-			m_Engine.getDeviceTable().vkCmdBindVertexBuffers(m_CurrentCommandBuffer, 0, 1, geometryStore.getVertexBufferPtr(), &offset);
 			m_Engine.getDeviceTable().vkCmdBindIndexBuffer(m_CurrentCommandBuffer, geometryStore.getIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
 		}
 
@@ -273,8 +271,7 @@ namespace Flint
 		{
 			const VkDeviceSize offset = mesh.getVertexOffset();
 			m_Engine.getDeviceTable().vkCmdBindVertexBuffers(m_CurrentCommandBuffer, 0, 1, geometryStore.getVertexBufferPtr(), &offset);
-			m_Engine.getDeviceTable().vkCmdBindIndexBuffer(m_CurrentCommandBuffer, geometryStore.getIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
-			m_Engine.getDeviceTable().vkCmdDrawIndexed(m_CurrentCommandBuffer, static_cast<uint32_t>(mesh.getIndexCount()), 1, static_cast<uint32_t>(mesh.getOffsetIndexCount()), static_cast<uint32_t>(mesh.getOffsetVertexCount()), 0);
+			m_Engine.getDeviceTable().vkCmdDrawIndexed(m_CurrentCommandBuffer, static_cast<uint32_t>(mesh.getIndexCount()), 1, static_cast<uint32_t>(mesh.getOffsetIndexCount()), 0, 0);
 		}
 
 		void VulkanCommandBuffers::end()

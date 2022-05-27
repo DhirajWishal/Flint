@@ -76,7 +76,7 @@ target_include_directories(
 	${SPIRV_REFLECT_INCLUDE_DIR}
 )
 
-# Add the optick static library as a target link.
+# Add the target links.
 target_link_libraries(FlintCore optick assimp SDL2 SPIRV_Reflect)
 
 # Make sure to specify the C++ standard to C++20.

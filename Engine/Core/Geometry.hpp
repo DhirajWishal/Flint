@@ -261,7 +261,7 @@ namespace Flint
 		 *
 		 * @return The stride.
 		 */
-		[[nodiscard]] uint64_t getVertexStride() const noexcept { return GetStride(m_VertexDescriptor); }
+		[[nodiscard]] uint64_t getVertexStride() const noexcept { return static_cast<uint64_t>(GetStride(m_VertexDescriptor)); }
 
 		/**
 		 * Get the vertex count.
@@ -290,7 +290,7 @@ namespace Flint
 		 *
 		 * @return The size in bytes.
 		 */
-		[[nodiscard]] uint64_t getVertexSize() const noexcept { return m_VertexCount * GetStride(m_VertexDescriptor); }
+		[[nodiscard]] uint64_t getVertexSize() const noexcept { return m_VertexCount * getVertexStride(); }
 
 		/**
 		 * Get the index count.
@@ -333,10 +333,10 @@ namespace Flint
 		std::string m_Name;
 
 		uint64_t m_VertexCount = 0;
-		uint64_t m_VertexOffset = 0;
+		uint64_t m_VertexOffset = 0;	// Bytes
 
 		uint64_t m_IndexCount = 0;
-		uint64_t m_IndexOffset = 0;
+		uint64_t m_IndexOffset = 0;		// Bytes
 	};
 
 	/**
@@ -349,7 +349,7 @@ namespace Flint
 		/**
 		 * Default constructor.
 		 */
-		constexpr Geometry() = default;
+		Geometry() = default;
 
 		/**
 		 * Explicit constructor.

@@ -23,7 +23,7 @@ namespace /* anonymous */
 	std::tuple<Flint::VertexDescriptor, uint64_t, uint64_t> GetBasicMeshData(const aiMesh* pMesh, Flint::VertexData loadData)
 	{
 		Flint::VertexDescriptor descriptor = {};
-		uint64_t vertices = 0, indices = 0;
+		uint64_t vertices = pMesh->mNumVertices, indices = 0;
 
 		// Get the vertex information.
 		if (pMesh->HasPositions() && Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::Position))		descriptor[Flint::EnumToInt(Flint::VertexAttribute::Position)] = Flint::DataType::Vec3_32;
@@ -59,7 +59,7 @@ namespace /* anonymous */
 		for (uint32_t i = 0; i < pMesh->mNumFaces; i++)
 			indices += pMesh->mFaces[i].mNumIndices;
 
-		return std::make_tuple(descriptor, pMesh->mNumVertices, indices);
+		return std::make_tuple(descriptor, vertices, indices);
 	}
 
 	/**
@@ -171,7 +171,6 @@ namespace /* anonymous */
 		auto& mesh = geometry.createMesh(pMesh->mName.C_Str(), descriptor, vertices, indices);
 
 		auto pVertex = reinterpret_cast<float*>(mesh.mapVertexMemory(geometry));
-		auto pIndex = mesh.mapIndexMemory(geometry);
 
 		// Load the vertex data.
 		for (uint32_t i = 0; i < pMesh->mNumVertices; ++i)
@@ -209,18 +208,19 @@ namespace /* anonymous */
 			CopyDataUV(pMesh->mTextureCoords[7][i], pVertex, Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::Texture7));
 		}
 
+		// Unmap the memory.
+		mesh.unmapVertexMemory(geometry);
+
 		// Load the index data.
-		aiFace face = {};
-		uint32_t* pIndexData = reinterpret_cast<uint32_t*>(pIndex);
+		uint32_t* pIndexData = reinterpret_cast<uint32_t*>(mesh.mapIndexMemory(geometry));
 		for (uint32_t i = 0; i < pMesh->mNumFaces; ++i)
 		{
-			face = pMesh->mFaces[i];
-			for (uint32_t j = 0; j < face.mNumIndices; ++j, ++pIndexData)
-				*pIndexData = face.mIndices[j];
+			const auto face = pMesh->mFaces[i];
+			for (uint32_t j = 0; j < face.mNumIndices; ++j)
+				(*pIndexData++) = static_cast<uint32_t>(face.mIndices[j]);
 		}
 
 		// Unmap the memory.
-		mesh.unmapVertexMemory(geometry);
 		mesh.unmapIndexMemory(geometry);
 
 		// Load materials.

@@ -59,6 +59,10 @@ namespace Flint
 
 			m_pCommandBuffers->bindRenderTarget(*this, { colorClearValue, depthClearValue });
 
+			// Bind the index buffer.
+			const auto& defaultGeometryStore = *getEngineAs<VulkanEngine>().getDefaultGeometryStore().as<VulkanGeometryStore>();
+			m_pCommandBuffers->bindIndexBuffer(defaultGeometryStore);
+
 			// Bind the resources.
 			for (const auto& [hash, group] : m_Pipelines)
 			{
@@ -78,7 +82,7 @@ namespace Flint
 						m_pCommandBuffers->bindDescriptor(pipeline, descriptorSet);
 
 						// Draw the mesh
-						m_pCommandBuffers->drawMesh(*getEngineAs<VulkanEngine>().getDefaultGeometryStore().as<VulkanGeometryStore>(), mesh);
+						m_pCommandBuffers->drawMesh(defaultGeometryStore, mesh);
 					}
 				}
 			}
@@ -176,7 +180,9 @@ namespace Flint
 						vertexAttribute.location = attribute.m_Location;
 						vertexAttribute.offset = offset;
 						vertexAttribute.format = Utility::GetVkFormat(attribute.m_DataType);
+
 						offset += DataTypeSize[EnumToInt(attribute.m_DataType)];
+						++descriptorIterator;
 					}
 				}
 
@@ -209,7 +215,9 @@ namespace Flint
 						vertexAttribute.location = attribute.m_Location;
 						vertexAttribute.offset = offset;
 						vertexAttribute.format = Utility::GetVkFormat(attribute.m_DataType);
+
 						offset += DataTypeSize[EnumToInt(attribute.m_DataType)];
+						++descriptorIterator;
 					}
 				}
 

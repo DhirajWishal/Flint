@@ -113,11 +113,11 @@ namespace Flint
 			void copyBuffer(VkBuffer srcBuffer, uint64_t size, uint64_t srcOffset, VkBuffer dstBuffer, uint64_t dstOffset) const noexcept;
 
 			/**
-			 * Bind a geometry store the current command buffer.
+			 * Bind an index buffer from a geometry store to the current command buffer.
 			 *
 			 * @param geometryStore The geometry store to bind.
 			 */
-			void bindGeometryStore(const VulkanGeometryStore& geometryStore) const noexcept;
+			void bindIndexBuffer(const VulkanGeometryStore& geometryStore) const noexcept;
 
 			/**
 			 * Bind a graphics pipeline to the command buffer.

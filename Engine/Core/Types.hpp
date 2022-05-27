@@ -225,7 +225,7 @@ namespace Flint
 	{
 		uint8_t stride = 0;
 		for (const auto type : descriptor)
-			stride += EnumToInt(type);
+			stride += DataTypeSize[EnumToInt(type)];
 
 		return stride;
 	}

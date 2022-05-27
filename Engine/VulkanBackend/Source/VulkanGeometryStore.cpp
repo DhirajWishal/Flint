@@ -41,12 +41,14 @@ namespace Flint
 		{
 			std::byte* pDataPointer = nullptr;
 			FLINT_VK_ASSERT(vmaMapMemory(getEngineAs<VulkanEngine>().getAllocator(), m_VertexBuffer.m_Allocation, reinterpret_cast<void**>(&pDataPointer)), "Failed to map the buffer memory!");
+			FLINT_VK_ASSERT(vmaInvalidateAllocation(getEngineAs<VulkanEngine>().getAllocator(), m_VertexBuffer.m_Allocation, 0, VK_WHOLE_SIZE), "Failed to invalidate memory!");
 
 			return pDataPointer + offset;
 		}
 
 		void VulkanGeometryStore::unmapVertexData()
 		{
+			FLINT_VK_ASSERT(vmaFlushAllocation(getEngineAs<VulkanEngine>().getAllocator(), m_VertexBuffer.m_Allocation, 0, VK_WHOLE_SIZE), "Failed to flush memory!");
 			vmaUnmapMemory(getEngineAs<VulkanEngine>().getAllocator(), m_VertexBuffer.m_Allocation);
 		}
 
@@ -54,12 +56,14 @@ namespace Flint
 		{
 			std::byte* pDataPointer = nullptr;
 			FLINT_VK_ASSERT(vmaMapMemory(getEngineAs<VulkanEngine>().getAllocator(), m_IndexBuffer.m_Allocation, reinterpret_cast<void**>(&pDataPointer)), "Failed to map the buffer memory!");
+			FLINT_VK_ASSERT(vmaInvalidateAllocation(getEngineAs<VulkanEngine>().getAllocator(), m_IndexBuffer.m_Allocation, 0, VK_WHOLE_SIZE), "Failed to invalidate memory!");
 
 			return pDataPointer + offset;
 		}
 
 		void VulkanGeometryStore::unmapIndexData()
 		{
+			FLINT_VK_ASSERT(vmaFlushAllocation(getEngineAs<VulkanEngine>().getAllocator(), m_IndexBuffer.m_Allocation, 0, VK_WHOLE_SIZE), "Failed to flush memory!");
 			vmaUnmapMemory(getEngineAs<VulkanEngine>().getAllocator(), m_IndexBuffer.m_Allocation);
 		}
 

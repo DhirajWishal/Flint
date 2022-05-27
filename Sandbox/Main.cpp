@@ -5,6 +5,8 @@
 #include "VulkanBackend/VulkanRasterizer.hpp"
 #include "Core/EventSystem/EventSystem.hpp"
 #include "Core/Loader/GeometryLoader.hpp"
+#include "Engine/Camera/MonoCamera.hpp"
+#include "Engine/Utility/FrameTimer.hpp"
 
 #ifdef FLINT_DEBUG
 constexpr auto Validation = true;
@@ -47,7 +49,9 @@ int main()
 			auto pRasterizer = pEngine->createRasterizer(pWindow->getWidth(), pWindow->getHeight(), pWindow->getFrameCount(), { Flint::Defaults::ColorAttachmentDescription, Flint::Defaults::DepthAttachmentDescription });
 			pWindow->setDependency(pRasterizer.get(), 0);
 
-			auto buffer = pEngine->createBuffer(sizeof(float[3][4][4]), Flint::BufferUsage::Uniform);
+			auto buffer = pEngine->createBuffer(sizeof(float[2][4][4]), Flint::BufferUsage::Uniform);
+			auto camera = Flint::MonoCamera(glm::vec3(0.0f), static_cast<float>(pWindow->getWidth()) / pWindow->getHeight());
+			camera.m_MovementBias = 50;
 
 			pRasterizer->registerGeometry(Flint::LoadGeometry(pEngine->getDefaultGeometryStore(), FLINT_GLTF_ASSET_PATH "Sponza/glTF/Sponza.gltf", Flint::VertexData::Position | Flint::VertexData::Normal | Flint::VertexData::Texture0),
 				GetSpecification(),
@@ -65,16 +69,32 @@ int main()
 				}
 			);
 
+			Flint::FrameTimer timer;
 			while (!eventSystem.shouldClose())
 			{
-				pRasterizer->update();
 				pWindow->update();
+
+				const auto duration = timer.tick();
 				const auto events = eventSystem.poll();
 
-				if (events != Flint::EventType::None)
+				if (events == Flint::EventType::Keyboard)
 				{
-					// handle all the events here.
+					if (eventSystem.keyboard().m_KeyW)
+						camera.moveForward(duration.count());
+
+					if (eventSystem.keyboard().m_KeyS)
+						camera.moveBackward(duration.count());
+
+					if (eventSystem.keyboard().m_KeyA)
+						camera.moveLeft(duration.count());
+
+					if (eventSystem.keyboard().m_KeyD)
+						camera.moveRight(duration.count());
 				}
+
+				camera.update();
+				camera.copyToBuffer(*pEngine, buffer);
+				pRasterizer->update();
 			}
 		}
 	}

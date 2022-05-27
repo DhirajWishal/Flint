@@ -12,6 +12,11 @@
 #include <set>
 #include <array>
 
+#ifdef FLINT_PLATFORM_WINDOWS
+#	include <execution>
+
+#endif
+
 namespace /* anonymous */
 {
 	/**
@@ -218,6 +223,22 @@ namespace Flint
 				type = BufferType::Storage;
 
 			return BufferHandle(m_Buffers.emplace(*this, size, type).first);
+		}
+
+		void VulkanEngine::copyToBuffer(BufferHandle handle, const std::byte* pData, uint64_t size, uint64_t offset /*= 0*/)
+		{
+			auto& buffer = getBuffer(handle);
+			auto pDestination = buffer.mapMemory();
+
+#ifdef FLINT_PLATFORM_WINDOWS
+			std::copy_n(std::execution::unseq, pData, size, pDestination);
+
+#else
+			std::copy_n(pData, size, pDestination);
+
+#endif
+
+			buffer.unmapMemory();
 		}
 
 		Flint::ImageHandle VulkanEngine::createTextureImage(std::filesystem::path&& path, ImageUsage usage)
