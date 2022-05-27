@@ -10,8 +10,8 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanPipeline::VulkanPipeline(VulkanEngine& engine, std::filesystem::path&& cacheFile)
-			: m_CacheFile(std::move(cacheFile)), m_Engine(engine)
+		VulkanPipeline::VulkanPipeline(VulkanEngine& engine, const std::filesystem::path& cacheFile)
+			: m_CacheFile(cacheFile), m_Engine(engine)
 		{
 			// Load the cache if possible.
 			loadCache();
@@ -33,17 +33,20 @@ namespace Flint
 			// Load data from file.
 			std::fstream cacheFile(m_CacheFile, std::ios::in | std::ios::ate | std::ios::binary);
 
+			uint64_t size = 0;
+			std::unique_ptr<uint8_t[]> buffer;
+
 			// If file does not exist, return without an issue.
-			if (!cacheFile.is_open())
-				return;
+			if (cacheFile.is_open())
+			{
+				size = cacheFile.tellg();
+				cacheFile.seekg(0);
 
-			const uint64_t size = cacheFile.tellg();
-			cacheFile.seekg(0);
+				buffer = std::make_unique<uint8_t[]>(size);
+				cacheFile.read(reinterpret_cast<char*>(buffer.get()), size);
 
-			auto buffer = std::make_unique<uint8_t[]>(size);
-			cacheFile.read(reinterpret_cast<char*>(buffer.get()), size);
-
-			cacheFile.close();
+				cacheFile.close();
+			}
 
 			// Create the pipeline cache.
 			VkPipelineCacheCreateInfo createInfo = {};

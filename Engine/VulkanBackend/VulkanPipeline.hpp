@@ -24,7 +24,7 @@ namespace Flint
 			 * @param engine The Vulkan engine.
 			 * @param cacheFile The cache file name.
 			 */
-			explicit VulkanPipeline(VulkanEngine& engine, std::filesystem::path&& cacheFile);
+			explicit VulkanPipeline(VulkanEngine& engine, const std::filesystem::path& cacheFile);
 
 			/**
 			 * Virtual destructor.
@@ -37,14 +37,28 @@ namespace Flint
 			 *
 			 * @return The Vulkan engine.
 			 */
-			[[nodiscard]] VulkanEngine& getEngine() { return m_Engine; }
+			[[nodiscard]] VulkanEngine& getEngine() noexcept { return m_Engine; }
 
 			/**
 			 * Get the engine.
 			 *
 			 * @return The Vulkan engine.
 			 */
-			[[nodiscard]] const VulkanEngine& getEngine() const { return m_Engine; }
+			[[nodiscard]] const VulkanEngine& getEngine() const noexcept { return m_Engine; }
+
+			/**
+			 * Get the backend pipeline handle.
+			 *
+			 * @return The pipeline.
+			 */
+			[[nodiscard]] VkPipeline getPipeline() const noexcept { return m_Pipeline; }
+
+			/**
+			 * Get the pipeline layout.
+			 *
+			 * @return The pipeline layout.
+			 */
+			[[nodiscard]] VkPipelineLayout getPipelineLayout() const noexcept { return m_PipelineLayout; }
 
 		private:
 			/**

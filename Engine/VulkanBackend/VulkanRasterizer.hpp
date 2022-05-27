@@ -11,7 +11,6 @@
 #include "VulkanRenderTargetAttachment.hpp"
 #include "VulkanGraphicsPipeline.hpp"
 
-
 namespace Flint
 {
 	namespace VulkanBackend
@@ -23,12 +22,23 @@ namespace Flint
 		{
 			/**
 			 * Draw entry structure.
-			 * This structure contains a single draw entry for a geometry.
 			 */
 			struct DrawEntry final
 			{
 				Geometry m_Geometry;
 				std::vector<ResourceBindingTable> m_BindingTables;
+			};
+
+			/**
+			 * Pipeline group structure.
+			 * This contains a single set of pipelines.
+			 */
+			struct PipelineGroup final
+			{
+				std::unordered_map<uint64_t, uint32_t> m_MeshPipelineHashes;	// mesh -> pipeline
+				SparseArray<std::unique_ptr<VulkanGraphicsPipeline>, uint32_t> m_pPipelines;
+
+				std::vector<DrawEntry> m_DrawEntries;
 			};
 
 		public:
@@ -133,12 +143,8 @@ namespace Flint
 			void destroyFramebuffers();
 
 		private:
+			std::unordered_map<uint64_t, PipelineGroup> m_Pipelines;
 			std::vector<std::vector<std::unique_ptr<VulkanRenderTargetAttachment>>> m_pAttachments;
-
-			std::vector<DrawEntry> m_DrawEntries;
-
-			std::unordered_map<uint64_t, uint32_t> m_PipelineHashes;
-			SparseArray<VulkanGraphicsPipeline, uint32_t> m_Pipelines;
 
 			std::vector<VkFramebuffer> m_Framebuffers;
 			std::unique_ptr<VulkanCommandBuffers> m_pCommandBuffers = nullptr;

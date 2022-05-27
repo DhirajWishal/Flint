@@ -51,4 +51,9 @@ namespace Flint
 
 		return static_cast<uint64_t>(XXH64(hashes, sizeof(hashes), 0));
 	}
+
+	uint64_t GenerateHash(const VertexDescriptor& descriptor)
+	{
+		return static_cast<uint64_t>(XXH64(descriptor.data(), sizeof(DataType) * descriptor.size(), 0));
+	}
 }

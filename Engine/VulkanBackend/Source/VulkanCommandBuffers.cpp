@@ -5,6 +5,7 @@
 #include "VulkanBackend/VulkanMacros.hpp"
 #include "VulkanBackend/VulkanWindow.hpp"
 #include "VulkanBackend/VulkanRasterizer.hpp"
+#include "VulkanBackend/VulkanGeometryStore.hpp"
 
 namespace Flint
 {
@@ -100,7 +101,7 @@ namespace Flint
 			m_IsRecording = true;
 		}
 
-		void VulkanCommandBuffers::bindWindow(const VulkanWindow& window, const std::vector<VkClearValue>& clearColors) const
+		void VulkanCommandBuffers::bindWindow(const VulkanWindow& window, const std::vector<VkClearValue>& clearColors) const noexcept
 		{
 			VkRenderPassBeginInfo renderPassBeginInfo = {};
 			renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -119,7 +120,7 @@ namespace Flint
 			m_Engine.getDeviceTable().vkCmdEndRenderPass(m_CurrentCommandBuffer);
 		}
 
-		void VulkanCommandBuffers::bindRenderTarget(const VulkanRasterizer& rasterizer, const std::vector<VkClearValue>& clearColors) const
+		void VulkanCommandBuffers::bindRenderTarget(const VulkanRasterizer& rasterizer, const std::vector<VkClearValue>& clearColors) const noexcept
 		{
 			VkRenderPassBeginInfo renderPassBeginInfo = {};
 			renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -241,7 +242,7 @@ namespace Flint
 			m_Engine.getDeviceTable().vkCmdPipelineBarrier(m_CurrentCommandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &memorybarrier);
 		}
 
-		void VulkanCommandBuffers::copyBuffer(VkBuffer srcBuffer, uint64_t size, uint64_t srcOffset, VkBuffer dstBuffer, uint64_t dstOffset) const
+		void VulkanCommandBuffers::copyBuffer(VkBuffer srcBuffer, uint64_t size, uint64_t srcOffset, VkBuffer dstBuffer, uint64_t dstOffset) const noexcept
 		{
 			VkBufferCopy bufferCopy = {};
 			bufferCopy.size = size;
@@ -249,6 +250,31 @@ namespace Flint
 			bufferCopy.dstOffset = dstOffset;
 
 			m_Engine.getDeviceTable().vkCmdCopyBuffer(m_CurrentCommandBuffer, srcBuffer, dstBuffer, 1, &bufferCopy);
+		}
+
+		void VulkanCommandBuffers::bindGeometryStore(const VulkanGeometryStore& geometryStore) const noexcept
+		{
+			const VkDeviceSize offset = 0;
+			m_Engine.getDeviceTable().vkCmdBindVertexBuffers(m_CurrentCommandBuffer, 0, 1, geometryStore.getVertexBufferPtr(), &offset);
+			m_Engine.getDeviceTable().vkCmdBindIndexBuffer(m_CurrentCommandBuffer, geometryStore.getIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
+		}
+
+		void VulkanCommandBuffers::bindGraphicsPipeline(const VulkanGraphicsPipeline& pipeline) const noexcept
+		{
+			m_Engine.getDeviceTable().vkCmdBindPipeline(m_CurrentCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getPipeline());
+		}
+
+		void VulkanCommandBuffers::bindDescriptor(const VulkanGraphicsPipeline& pipeline, VkDescriptorSet descriptorSet) const noexcept
+		{
+			m_Engine.getDeviceTable().vkCmdBindDescriptorSets(m_CurrentCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getPipelineLayout(), 0, 1, &descriptorSet, 0, nullptr);
+		}
+
+		void VulkanCommandBuffers::drawMesh(const VulkanGeometryStore& geometryStore, const Mesh& mesh) const noexcept
+		{
+			const VkDeviceSize offset = mesh.getVertexOffset();
+			m_Engine.getDeviceTable().vkCmdBindVertexBuffers(m_CurrentCommandBuffer, 0, 1, geometryStore.getVertexBufferPtr(), &offset);
+			m_Engine.getDeviceTable().vkCmdBindIndexBuffer(m_CurrentCommandBuffer, geometryStore.getIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
+			m_Engine.getDeviceTable().vkCmdDrawIndexed(m_CurrentCommandBuffer, static_cast<uint32_t>(mesh.getIndexCount()), 1, static_cast<uint32_t>(mesh.getOffsetIndexCount()), static_cast<uint32_t>(mesh.getOffsetVertexCount()), 0);
 		}
 
 		void VulkanCommandBuffers::end()

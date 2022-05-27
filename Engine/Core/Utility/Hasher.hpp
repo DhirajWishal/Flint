@@ -32,4 +32,12 @@ namespace Flint
 	 * @return The hash value.
 	 */
 	[[nodiscard]] uint64_t GenerateHash(const Mesh& mesh);
+
+	/**
+	 * Generate hash for the vertex descriptor.
+	 *
+	 * @param descriptor The vertex descriptor.
+	 * @return The hash.
+	 */
+	[[nodiscard]] uint64_t GenerateHash(const VertexDescriptor& descriptor);
 }

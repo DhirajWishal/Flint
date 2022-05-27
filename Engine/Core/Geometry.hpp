@@ -278,6 +278,14 @@ namespace Flint
 		[[nodiscard]] uint64_t getVertexOffset() const noexcept { return m_VertexOffset; }
 
 		/**
+		 * Get the offset vertex count.
+		 * This is the number of vertexes before this mesh.
+		 *
+		 * @return The count.
+		 */
+		[[nodiscard]] uint64_t getOffsetVertexCount() const noexcept { return m_VertexOffset / getVertexStride(); }
+
+		/**
 		 * Get the total vertex size.
 		 *
 		 * @return The size in bytes.
@@ -297,6 +305,14 @@ namespace Flint
 		 * @return The offset.
 		 */
 		[[nodiscard]] uint64_t getIndexOffset() const noexcept { return m_IndexOffset; }
+
+		/**
+		 * Get the index offset count.
+		 * This is the number of indexes before this index.
+		 *
+		 * @return The count.
+		 */
+		[[nodiscard]] uint64_t getOffsetIndexCount() const noexcept { return m_IndexOffset / sizeof(uint32_t); }
 
 		/**
 		 * Get the total index size.
@@ -392,6 +408,34 @@ namespace Flint
 		 * This will send the data to the GPU.
 		 */
 		void endStreaming();
+
+		/**
+		 * Get the total vertex size.
+		 *
+		 * @return The size.
+		 */
+		[[nodiscard]] uint64_t getVertexSize() const noexcept { return m_VertexSize; }
+
+		/**
+		 * Get the total vertex offset.
+		 *
+		 * @return The offset.
+		 */
+		[[nodiscard]] uint64_t getVertexOffset() const noexcept { return m_VertexOffset; }
+
+		/**
+		 * Get the total index size.
+		 *
+		 * @return The size.
+		 */
+		[[nodiscard]] uint64_t getIndexSize() const noexcept { return m_IndexSize; }
+
+		/**
+		 * Get the total index offset.
+		 *
+		 * @return The offset.
+		 */
+		[[nodiscard]] uint64_t getIndexOffset() const noexcept { return m_IndexOffset; }
 
 	private:
 		std::vector<Mesh> m_Meshes;

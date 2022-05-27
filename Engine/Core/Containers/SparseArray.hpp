@@ -184,7 +184,7 @@ namespace Flint
 		[[nodiscard]] constexpr bool contains(const Index& index) const
 		{
 			if (index < m_SparseArray.size())
-				return m_SparseArray[index] > invalid_index;
+				return m_SparseArray[index] != invalid_index;
 
 			return false;
 		}

@@ -73,6 +73,20 @@ namespace Flint
 			 */
 			void unmapIndexData() override;
 
+			/**
+			 * Get the vertex buffer pointer.
+			 *
+			 * @return The vertex buffer pointer.
+			 */
+			[[nodiscard]] const VkBuffer* getVertexBufferPtr() const noexcept { return &m_VertexBuffer.m_Buffer; }
+
+			/**
+			 * Get the index buffer.
+			 *
+			 * @return The index buffer.
+			 */
+			[[nodiscard]] VkBuffer getIndexBuffer() const noexcept { return m_IndexBuffer.m_Buffer; }
+
 		private:
 			/**
 			 * Extend the internal buffers.

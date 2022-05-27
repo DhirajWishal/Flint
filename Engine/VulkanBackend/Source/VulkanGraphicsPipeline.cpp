@@ -279,8 +279,8 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanGraphicsPipeline::VulkanGraphicsPipeline(VulkanEngine& engine, VulkanRasterizer& rasterizer, RasterizingPipelineSpecification&& specification, std::vector<VkVertexInputBindingDescription>&& inputBindings, std::vector<VkVertexInputAttributeDescription>&& inputAttributes)
-			: VulkanPipeline(engine, std::move(specification.m_CacheFile)), VulkanDescriptorSetManager(engine), m_Rasterizer(rasterizer), m_VertexBindings(std::move(inputBindings)), m_VertexAttributes(std::move(inputAttributes))
+		VulkanGraphicsPipeline::VulkanGraphicsPipeline(VulkanEngine& engine, VulkanRasterizer& rasterizer, const RasterizingPipelineSpecification& specification, std::vector<VkVertexInputBindingDescription>&& inputBindings, std::vector<VkVertexInputAttributeDescription>&& inputAttributes)
+			: VulkanPipeline(engine, specification.m_CacheFile), VulkanDescriptorSetManager(engine), m_Rasterizer(rasterizer), m_VertexBindings(std::move(inputBindings)), m_VertexAttributes(std::move(inputAttributes))
 		{
 			// Resolve shader information.
 			std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
@@ -378,7 +378,7 @@ namespace Flint
 			FLINT_VK_ASSERT(getEngine().getDeviceTable().vkCreatePipelineLayout(getEngine().getLogicalDevice(), &createInfo, nullptr, &m_PipelineLayout), "Failed to create the pipeline layout!");
 		}
 
-		void VulkanGraphicsPipeline::setupDefaults(RasterizingPipelineSpecification&& specification)
+		void VulkanGraphicsPipeline::setupDefaults(const RasterizingPipelineSpecification& specification)
 		{
 			// Setup the input bindings.
 			m_VertexInputStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -506,26 +506,28 @@ namespace Flint
 			viewportStateCreateInfo.pViewports = &viewport;
 
 			// Pipeline create info.
-			VkGraphicsPipelineCreateInfo vCreateInfo = {};
-			vCreateInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-			vCreateInfo.pNext = nullptr;
-			vCreateInfo.flags = 0;
-			vCreateInfo.stageCount = static_cast<uint32_t>(m_ShaderStageCreateInfo.size());
-			vCreateInfo.pStages = m_ShaderStageCreateInfo.data();
-			vCreateInfo.pVertexInputState = &m_VertexInputStateCreateInfo;
-			vCreateInfo.pInputAssemblyState = &m_InputAssemblyStateCreateInfo;
-			vCreateInfo.pTessellationState = &m_TessellationStateCreateInfo;
-			vCreateInfo.pViewportState = &viewportStateCreateInfo;
-			vCreateInfo.pRasterizationState = &m_RasterizationStateCreateInfo;
-			vCreateInfo.pMultisampleState = &m_MultisampleStateCreateInfo;
-			vCreateInfo.pDepthStencilState = &m_DepthStencilStateCreateInfo;
-			vCreateInfo.pColorBlendState = &m_ColorBlendStateCreateInfo;
-			vCreateInfo.pDynamicState = &m_DynamicStateCreateInfo;
-			vCreateInfo.layout = m_PipelineLayout;
-			vCreateInfo.renderPass = m_Rasterizer.getRenderPass();
-			vCreateInfo.subpass = 0;	// TODO
-			vCreateInfo.basePipelineHandle = VK_NULL_HANDLE;
-			vCreateInfo.basePipelineIndex = 0;
+			VkGraphicsPipelineCreateInfo createInfo = {};
+			createInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+			createInfo.pNext = nullptr;
+			createInfo.flags = 0;
+			createInfo.stageCount = static_cast<uint32_t>(m_ShaderStageCreateInfo.size());
+			createInfo.pStages = m_ShaderStageCreateInfo.data();
+			createInfo.pVertexInputState = &m_VertexInputStateCreateInfo;
+			createInfo.pInputAssemblyState = &m_InputAssemblyStateCreateInfo;
+			createInfo.pTessellationState = &m_TessellationStateCreateInfo;
+			createInfo.pViewportState = &viewportStateCreateInfo;
+			createInfo.pRasterizationState = &m_RasterizationStateCreateInfo;
+			createInfo.pMultisampleState = &m_MultisampleStateCreateInfo;
+			createInfo.pDepthStencilState = &m_DepthStencilStateCreateInfo;
+			createInfo.pColorBlendState = &m_ColorBlendStateCreateInfo;
+			createInfo.pDynamicState = &m_DynamicStateCreateInfo;
+			createInfo.layout = m_PipelineLayout;
+			createInfo.renderPass = m_Rasterizer.getRenderPass();
+			createInfo.subpass = 0;	// TODO
+			createInfo.basePipelineHandle = VK_NULL_HANDLE;
+			createInfo.basePipelineIndex = 0;
+
+			FLINT_VK_ASSERT(getEngine().getDeviceTable().vkCreateGraphicsPipelines(getEngine().getLogicalDevice(), m_PipelineCache, 1, &createInfo, nullptr, &m_Pipeline), "Failed to create the pipeline!");
 		}
 
 		void VulkanGraphicsPipeline::destroyShaders()

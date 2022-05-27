@@ -146,6 +146,7 @@ namespace Flint
 			// Destroy the defaults.
 			delete m_pUtilityCommandBuffer;
 			delete m_pDefaultGeometryStore;
+			m_Buffers.clear();
 
 			// Destroy the VMA allocator.
 			destroyVMAAllocator();
@@ -226,7 +227,7 @@ namespace Flint
 
 		Flint::VulkanBackend::VulkanBuffer& VulkanEngine::getBuffer(BufferHandle handle)
 		{
-			const auto index = static_cast<uint32_t>(handle);
+			const auto index = EnumToInt(handle);
 			if (m_Buffers.contains(index))
 				return m_Buffers[index];
 
@@ -235,7 +236,7 @@ namespace Flint
 
 		const Flint::VulkanBackend::VulkanBuffer& VulkanEngine::getBuffer(BufferHandle handle) const
 		{
-			const auto index = static_cast<uint32_t>(handle);
+			const auto index = EnumToInt(handle);
 			if (m_Buffers.contains(index))
 				return m_Buffers[index];
 

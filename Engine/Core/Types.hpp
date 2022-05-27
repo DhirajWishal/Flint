@@ -8,12 +8,25 @@
 #include <cstdint>
 #include <array>
 
-#define FLINT_DEFINE_ENUM_AND_OR(name)																																							\
-	constexpr name operator|(const name& lhs, const name& rhs) { return static_cast<name>(static_cast<std::underlying_type_t<name>>(lhs) | static_cast<std::underlying_type_t<name>>(rhs)); }	\
-	constexpr name operator&(const name& lhs, const name& rhs) { return static_cast<name>(static_cast<std::underlying_type_t<name>>(lhs) & static_cast<std::underlying_type_t<name>>(rhs)); }
+#define FLINT_DEFINE_ENUM_AND_OR(name)																											\
+	constexpr name operator|(const name& lhs, const name& rhs) { return static_cast<name>(::Flint::EnumToInt(lhs) | ::Flint::EnumToInt(rhs)); }	\
+	constexpr name operator&(const name& lhs, const name& rhs) { return static_cast<name>(::Flint::EnumToInt(lhs) & ::Flint::EnumToInt(rhs)); }
 
 namespace Flint
 {
+	/**
+	 * Convert an enum to integer.
+	 *
+	 * @tparam Type The type of the enum.
+	 * @param value The value to convert.
+	 * @return The integer value it holds.
+	 */
+	template<class Type>
+	[[nodiscard]] constexpr std::underlying_type_t<Type> EnumToInt(const Type value) noexcept
+	{
+		return static_cast<std::underlying_type_t<Type>>(value);
+	}
+
 	/**
 	 * Pixel format enum.
 	 */
@@ -121,7 +134,7 @@ namespace Flint
 	 * Data type size array.
 	 * This contains all the sizes of the data types in the DataType enum.
 	 */
-	constexpr std::array<uint8_t, static_cast<std::underlying_type_t<DataType>>(DataType::Max)> DataTypeSize =
+	constexpr std::array<uint8_t, EnumToInt(DataType::Max)> DataTypeSize =
 	{
 		0,
 
@@ -179,7 +192,7 @@ namespace Flint
 	 * Vertex descriptor type.
 	 * This defines all the types in a vertex.
 	 */
-	using VertexDescriptor = std::array<DataType, static_cast<std::underlying_type_t<VertexAttribute>>(VertexAttribute::Max)>;
+	using VertexDescriptor = std::array<DataType, EnumToInt(VertexAttribute::Max)>;
 
 	/**
 	 * Instance attribute enum.
@@ -198,7 +211,7 @@ namespace Flint
 	 * Instance descriptor type.
 	 * This defines all the types in an instance.
 	 */
-	using InstanceDescriptor = std::array<DataType, static_cast<std::underlying_type_t<InstanceAttribute>>(InstanceAttribute::Max)>;
+	using InstanceDescriptor = std::array<DataType, EnumToInt(InstanceAttribute::Max)>;
 
 	/**
 	 * Get the stride from the vertex or instance descriptor.
@@ -212,7 +225,7 @@ namespace Flint
 	{
 		uint8_t stride = 0;
 		for (const auto type : descriptor)
-			stride += static_cast<std::underlying_type_t<DataType>>(type);
+			stride += EnumToInt(type);
 
 		return stride;
 	}

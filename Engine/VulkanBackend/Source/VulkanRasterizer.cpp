@@ -5,6 +5,7 @@
 #include "VulkanBackend/VulkanMacros.hpp"
 #include "VulkanBackend/VulkanColorAttachment.hpp"
 #include "VulkanBackend/VulkanDepthAttachment.hpp"
+#include "VulkanBackend/VulkanGeometryStore.hpp"
 
 #include "Core/Utility/Hasher.hpp"
 
@@ -58,6 +59,30 @@ namespace Flint
 
 			m_pCommandBuffers->bindRenderTarget(*this, { colorClearValue, depthClearValue });
 
+			// Bind the resources.
+			for (const auto& [hash, group] : m_Pipelines)
+			{
+				for (const auto& entry : group.m_DrawEntries)
+				{
+					const auto& meshses = entry.m_Geometry.getMeshes();
+					for (uint32_t i = 0; i < entry.m_BindingTables.size(); ++i)
+					{
+						const auto& mesh = meshses[i];
+						const auto meshHash = GenerateHash(mesh);
+						const auto& bindingTable = entry.m_BindingTables[i];
+						const auto& pipeline = *group.m_pPipelines[group.m_MeshPipelineHashes.at(meshHash)];
+						const auto& descriptorSet = pipeline.getDescriptorSet(bindingTable);
+
+						// Bind the pipeline.
+						m_pCommandBuffers->bindGraphicsPipeline(pipeline);
+						m_pCommandBuffers->bindDescriptor(pipeline, descriptorSet);
+
+						// Draw the mesh
+						m_pCommandBuffers->drawMesh(*getEngineAs<VulkanEngine>().getDefaultGeometryStore().as<VulkanGeometryStore>(), mesh);
+					}
+				}
+			}
+
 			// Unbind the rasterizer.
 			m_pCommandBuffers->unbindRenderTarget();
 
@@ -94,8 +119,11 @@ namespace Flint
 			createFramebuffers();
 
 			// Recreate the pipelines.
-			for (auto& pipeline : m_Pipelines)
-				pipeline.recreate();
+			for (auto& [hash, group] : m_Pipelines)
+			{
+				for (auto& pipeline : group.m_pPipelines)
+					pipeline->recreate();
+			}
 
 			// Reset the indexes.
 			m_FrameIndex = 0;
@@ -104,16 +132,16 @@ namespace Flint
 
 		void VulkanRasterizer::registerGeometry(const Geometry& geometry, RasterizingPipelineSpecification&& specification, std::function<ResourceBindingTable(const Mesh&, const Geometry&, const std::vector<ResourceBinding>&)>&& meshBinder)
 		{
-			auto& entry = m_DrawEntries.emplace_back();
-			entry.m_Geometry = geometry;
+			auto& group = m_Pipelines[GenerateHash(specification)];
+			auto& drawEntry = group.m_DrawEntries.emplace_back();
+			drawEntry.m_Geometry = geometry;
 
-			const auto pipelineHash = GenerateHash(specification);
 			auto resourceBindings = specification.m_VertexShader.getBindings();
 			resourceBindings.insert(resourceBindings.end(), specification.m_FragmentShader.getBindings().begin(), specification.m_FragmentShader.getBindings().end());
 
 			for (const auto& mesh : geometry.getMeshes())
 			{
-				const auto meshHash = GenerateHash(mesh);
+				// Get the binding table.
 				auto bindingTable = meshBinder(mesh, geometry, resourceBindings);
 
 				std::vector<VkVertexInputBindingDescription> bindingDescriptions;
@@ -139,7 +167,7 @@ namespace Flint
 							if (descriptorIterator == descriptor.end())
 								throw BackendError("One or more required attributes, or attributes with the required type was not found! Make sure that the mesh(s) contain the required attributes.");
 
-							offset += DataTypeSize[static_cast<std::underlying_type_t<DataType>>(*descriptorIterator)];
+							offset += DataTypeSize[EnumToInt(*descriptorIterator)];
 							++descriptorIterator;
 						}
 
@@ -148,7 +176,7 @@ namespace Flint
 						vertexAttribute.location = attribute.m_Location;
 						vertexAttribute.offset = offset;
 						vertexAttribute.format = Utility::GetVkFormat(attribute.m_DataType);
-						offset += DataTypeSize[static_cast<std::underlying_type_t<DataType>>(attribute.m_DataType)];
+						offset += DataTypeSize[EnumToInt(attribute.m_DataType)];
 					}
 				}
 
@@ -172,7 +200,7 @@ namespace Flint
 							if (descriptorIterator == descriptor.end())
 								throw BackendError("One or more required attributes, or attributes with the required type was not found! Make sure that the mesh(s) contain the required attributes.");
 
-							offset += DataTypeSize[static_cast<std::underlying_type_t<DataType>>(*descriptorIterator)];
+							offset += DataTypeSize[EnumToInt(*descriptorIterator)];
 							++descriptorIterator;
 						}
 
@@ -181,15 +209,18 @@ namespace Flint
 						vertexAttribute.location = attribute.m_Location;
 						vertexAttribute.offset = offset;
 						vertexAttribute.format = Utility::GetVkFormat(attribute.m_DataType);
-						offset += DataTypeSize[static_cast<std::underlying_type_t<DataType>>(attribute.m_DataType)];
+						offset += DataTypeSize[EnumToInt(attribute.m_DataType)];
 					}
 				}
 
 				// If the pipeline is present, we don't need to create one. If not we need to create a new one.
-				if (!m_PipelineHashes.contains(pipelineHash))
-					m_PipelineHashes.emplace(pipelineHash, m_Pipelines.emplace(getEngineAs<VulkanEngine>(), *this, std::move(specification), std::move(bindingDescriptions), std::move(attributeDescriptions)).first);
+				const auto meshHash = GenerateHash(mesh);
+				if (!group.m_MeshPipelineHashes.contains(meshHash))
+					group.m_MeshPipelineHashes.emplace(meshHash, group.m_pPipelines.emplace(std::make_unique<VulkanGraphicsPipeline>(getEngineAs<VulkanEngine>(), *this, specification, std::move(bindingDescriptions), std::move(attributeDescriptions))).first);
 
-				entry.m_BindingTables.emplace_back(std::move(bindingTable));
+				// Register the binding table.
+				group.m_pPipelines[group.m_MeshPipelineHashes[meshHash]]->registerTable(bindingTable);
+				drawEntry.m_BindingTables.emplace_back(bindingTable);
 			}
 		}
 

@@ -75,8 +75,16 @@ namespace Flint
 				VkDescriptorSet descriptorSet = VK_NULL_HANDLE;
 				FLINT_VK_ASSERT(m_Engine.getDeviceTable().vkAllocateDescriptorSets(m_Engine.getLogicalDevice(), &allocateInfo, &descriptorSet), "Failed to allocate descriptor set!");
 
+				// Set the destination set.
+				for (auto& copyInfo : table.m_CopyDescriptorSets)
+					copyInfo.dstSet = descriptorSet;
+
 				m_Engine.getDeviceTable().vkUpdateDescriptorSets(m_Engine.getLogicalDevice(), 0, nullptr, static_cast<uint32_t>(table.m_CopyDescriptorSets.size()), table.m_CopyDescriptorSets.data());
 				table.m_DescriptorSet = descriptorSet;
+
+				// Set the source set.
+				for (auto& copyInfo : table.m_CopyDescriptorSets)
+					copyInfo.srcSet = descriptorSet;
 			}
 
 			// Delete the old descriptor set.
@@ -138,7 +146,7 @@ namespace Flint
 					auto& writeDescriptorSet = writeDescriptorSets.emplace_back();
 					writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 					writeDescriptorSet.pNext = nullptr;
-					writeDescriptorSet.dstSet = 0;
+					writeDescriptorSet.dstSet = descriptorSet;
 					writeDescriptorSet.dstBinding = binding;
 					writeDescriptorSet.descriptorCount = bufferCount;
 					writeDescriptorSet.descriptorType = m_DescriptorTypeMap[binding];
@@ -152,7 +160,7 @@ namespace Flint
 					copySet.sType = VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET;
 					copySet.pNext = nullptr;
 					copySet.dstSet = 0;
-					copySet.srcSet = 0;
+					copySet.srcSet = descriptorSet;
 					copySet.descriptorCount = bufferCount;
 					copySet.dstBinding = binding;
 					copySet.dstArrayElement = i;

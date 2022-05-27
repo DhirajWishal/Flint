@@ -7,10 +7,14 @@
 
 namespace Flint
 {
+	class Mesh;
+
 	namespace VulkanBackend
 	{
 		class VulkanWindow;
 		class VulkanRasterizer;
+		class VulkanGeometryStore;
+		class VulkanGraphicsPipeline;
 
 		/**
 		 * Vulkan command buffers class.
@@ -67,7 +71,7 @@ namespace Flint
 			 * @param window The window to bind.
 			 * @param clearColors The clear colors to bind.
 			 */
-			void bindWindow(const VulkanWindow& window, const std::vector<VkClearValue>& clearColors) const;
+			void bindWindow(const VulkanWindow& window, const std::vector<VkClearValue>& clearColors) const noexcept;
 
 			/**
 			 * Unbind the currently bound window.
@@ -80,7 +84,7 @@ namespace Flint
 			 * @param rasterizer The rasterizer to bind.
 			 * @param clearColors The clear colors to bind.
 			 */
-			void bindRenderTarget(const VulkanRasterizer& rasterizer, const std::vector<VkClearValue>& clearColors) const;
+			void bindRenderTarget(const VulkanRasterizer& rasterizer, const std::vector<VkClearValue>& clearColors) const noexcept;
 
 			/**
 			 * Unbind the bound render target.
@@ -106,7 +110,37 @@ namespace Flint
 			 * @param dstBuffer The destination buffer.
 			 * @param dstOffset The destination offset.
 			 */
-			void copyBuffer(VkBuffer srcBuffer, uint64_t size, uint64_t srcOffset, VkBuffer dstBuffer, uint64_t dstOffset) const;
+			void copyBuffer(VkBuffer srcBuffer, uint64_t size, uint64_t srcOffset, VkBuffer dstBuffer, uint64_t dstOffset) const noexcept;
+
+			/**
+			 * Bind a geometry store the current command buffer.
+			 *
+			 * @param geometryStore The geometry store to bind.
+			 */
+			void bindGeometryStore(const VulkanGeometryStore& geometryStore) const noexcept;
+
+			/**
+			 * Bind a graphics pipeline to the command buffer.
+			 *
+			 * @param pipeline The pipeline to bind.
+			 */
+			void bindGraphicsPipeline(const VulkanGraphicsPipeline& pipeline) const noexcept;
+
+			/**
+			 * Bind a graphics descriptor to the command buffer.
+			 *
+			 * @param pipeline The pipeline to which the descriptor is bound to.
+			 * @param descriptorSet The descriptor set to bind.
+			 */
+			void bindDescriptor(const VulkanGraphicsPipeline& pipeline, VkDescriptorSet descriptorSet) const noexcept;
+
+			/**
+			 * Draw a mesh.
+			 *
+			 * @param geometryStore The geometry store to bind.
+			 * @param mesh The mesh to draw.
+			 */
+			void drawMesh(const VulkanGeometryStore& geometryStore, const Mesh& mesh) const noexcept;
 
 			/**
 			 * End recording.

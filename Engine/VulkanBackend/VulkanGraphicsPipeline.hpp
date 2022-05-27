@@ -29,7 +29,7 @@ namespace Flint
 			 * @param inputBindings The input bindings of the vertex shader.
 			 * @param inputAttributes The input attributes of the vertex shader.
 			 */
-			explicit VulkanGraphicsPipeline(VulkanEngine& engine, VulkanRasterizer& rasterizer, RasterizingPipelineSpecification&& specification, std::vector<VkVertexInputBindingDescription>&& inputBindings, std::vector<VkVertexInputAttributeDescription>&& inputAttributes);
+			explicit VulkanGraphicsPipeline(VulkanEngine& engine, VulkanRasterizer& rasterizer, const RasterizingPipelineSpecification& specification, std::vector<VkVertexInputBindingDescription>&& inputBindings, std::vector<VkVertexInputAttributeDescription>&& inputAttributes);
 
 			/**
 			 * Destructor.
@@ -64,7 +64,7 @@ namespace Flint
 			 *
 			 * @param specification The pipeline specification.
 			 */
-			void setupDefaults(RasterizingPipelineSpecification&& specification);
+			void setupDefaults(const RasterizingPipelineSpecification& specification);
 
 			/**
 			 * Create the pipeline.

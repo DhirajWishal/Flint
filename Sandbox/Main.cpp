@@ -47,15 +47,18 @@ int main()
 			auto pRasterizer = pEngine->createRasterizer(pWindow->getWidth(), pWindow->getHeight(), pWindow->getFrameCount(), { Flint::Defaults::ColorAttachmentDescription, Flint::Defaults::DepthAttachmentDescription });
 			pWindow->setDependency(pRasterizer.get(), 0);
 
+			auto buffer = pEngine->createBuffer(sizeof(float[3][4][4]), Flint::BufferUsage::Uniform);
+
 			pRasterizer->registerGeometry(Flint::LoadGeometry(pEngine->getDefaultGeometryStore(), FLINT_GLTF_ASSET_PATH "Sponza/glTF/Sponza.gltf", Flint::VertexData::Position | Flint::VertexData::Normal | Flint::VertexData::Texture0),
 				GetSpecification(),
-				[](const Flint::Mesh& mesh, [[maybe_unused]] const Flint::Geometry& geometry, const std::vector<Flint::ResourceBinding>& bindings)
+				[buffer](const Flint::Mesh& mesh, [[maybe_unused]] const Flint::Geometry& geometry, const std::vector<Flint::ResourceBinding>& bindings)
 				{
 					Flint::ResourceBindingTable bindingTable;
 
 					for (const auto& binding : bindings)
 					{
-						// Do the binding stuff here.
+						if (binding.m_Type == Flint::ResourceType::UniformBuffer)
+							bindingTable.bind(binding.m_Binding, buffer);
 					}
 
 					return bindingTable;

@@ -26,34 +26,34 @@ namespace /* anonymous */
 		uint64_t vertices = 0, indices = 0;
 
 		// Get the vertex information.
-		if (pMesh->HasPositions() && (loadData & Flint::VertexData::Position) == Flint::VertexData::Position)		descriptor[static_cast<std::underlying_type_t<Flint::VertexAttribute>>(Flint::VertexAttribute::Position)] = Flint::DataType::Vec3_32;
-		if (pMesh->HasNormals() && (loadData & Flint::VertexData::Normal) == Flint::VertexData::Normal)				descriptor[static_cast<std::underlying_type_t<Flint::VertexAttribute>>(Flint::VertexAttribute::Normal)] = Flint::DataType::Vec3_32;
+		if (pMesh->HasPositions() && Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::Position))		descriptor[Flint::EnumToInt(Flint::VertexAttribute::Position)] = Flint::DataType::Vec3_32;
+		if (pMesh->HasNormals() && Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::Normal))			descriptor[Flint::EnumToInt(Flint::VertexAttribute::Normal)] = Flint::DataType::Vec3_32;
 
 		if (pMesh->HasTangentsAndBitangents())
 		{
-			if ((loadData & Flint::VertexData::Tangent) == Flint::VertexData::Tangent)								descriptor[static_cast<std::underlying_type_t<Flint::VertexAttribute>>(Flint::VertexAttribute::Tangent)] = Flint::DataType::Vec3_32;
-			if ((loadData & Flint::VertexData::BiTangent) == Flint::VertexData::BiTangent)							descriptor[static_cast<std::underlying_type_t<Flint::VertexAttribute>>(Flint::VertexAttribute::BiTangent)] = Flint::DataType::Vec3_32;
+			if (Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::Tangent))								descriptor[Flint::EnumToInt(Flint::VertexAttribute::Tangent)] = Flint::DataType::Vec3_32;
+			if (Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::BiTangent))							descriptor[Flint::EnumToInt(Flint::VertexAttribute::BiTangent)] = Flint::DataType::Vec3_32;
 		}
 
 		// Resolve vertex colors.
-		if (pMesh->HasVertexColors(0) && (loadData & Flint::VertexData::Color0) == Flint::VertexData::Color0)		descriptor[static_cast<std::underlying_type_t<Flint::VertexAttribute>>(Flint::VertexAttribute::Color0)] = Flint::DataType::Vec4_32;
-		if (pMesh->HasVertexColors(1) && (loadData & Flint::VertexData::Color1) == Flint::VertexData::Color1)		descriptor[static_cast<std::underlying_type_t<Flint::VertexAttribute>>(Flint::VertexAttribute::Color1)] = Flint::DataType::Vec4_32;
-		if (pMesh->HasVertexColors(2) && (loadData & Flint::VertexData::Color2) == Flint::VertexData::Color2)		descriptor[static_cast<std::underlying_type_t<Flint::VertexAttribute>>(Flint::VertexAttribute::Color2)] = Flint::DataType::Vec4_32;
-		if (pMesh->HasVertexColors(3) && (loadData & Flint::VertexData::Color3) == Flint::VertexData::Color3)		descriptor[static_cast<std::underlying_type_t<Flint::VertexAttribute>>(Flint::VertexAttribute::Color3)] = Flint::DataType::Vec4_32;
-		if (pMesh->HasVertexColors(4) && (loadData & Flint::VertexData::Color4) == Flint::VertexData::Color4)		descriptor[static_cast<std::underlying_type_t<Flint::VertexAttribute>>(Flint::VertexAttribute::Color4)] = Flint::DataType::Vec4_32;
-		if (pMesh->HasVertexColors(5) && (loadData & Flint::VertexData::Color5) == Flint::VertexData::Color5)		descriptor[static_cast<std::underlying_type_t<Flint::VertexAttribute>>(Flint::VertexAttribute::Color5)] = Flint::DataType::Vec4_32;
-		if (pMesh->HasVertexColors(6) && (loadData & Flint::VertexData::Color6) == Flint::VertexData::Color6)		descriptor[static_cast<std::underlying_type_t<Flint::VertexAttribute>>(Flint::VertexAttribute::Color6)] = Flint::DataType::Vec4_32;
-		if (pMesh->HasVertexColors(7) && (loadData & Flint::VertexData::Color7) == Flint::VertexData::Color7)		descriptor[static_cast<std::underlying_type_t<Flint::VertexAttribute>>(Flint::VertexAttribute::Color7)] = Flint::DataType::Vec4_32;
+		if (pMesh->HasVertexColors(0) && Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::Color0))		descriptor[Flint::EnumToInt(Flint::VertexAttribute::Color0)] = Flint::DataType::Vec4_32;
+		if (pMesh->HasVertexColors(1) && Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::Color1))		descriptor[Flint::EnumToInt(Flint::VertexAttribute::Color1)] = Flint::DataType::Vec4_32;
+		if (pMesh->HasVertexColors(2) && Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::Color2))		descriptor[Flint::EnumToInt(Flint::VertexAttribute::Color2)] = Flint::DataType::Vec4_32;
+		if (pMesh->HasVertexColors(3) && Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::Color3))		descriptor[Flint::EnumToInt(Flint::VertexAttribute::Color3)] = Flint::DataType::Vec4_32;
+		if (pMesh->HasVertexColors(4) && Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::Color4))		descriptor[Flint::EnumToInt(Flint::VertexAttribute::Color4)] = Flint::DataType::Vec4_32;
+		if (pMesh->HasVertexColors(5) && Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::Color5))		descriptor[Flint::EnumToInt(Flint::VertexAttribute::Color5)] = Flint::DataType::Vec4_32;
+		if (pMesh->HasVertexColors(6) && Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::Color6))		descriptor[Flint::EnumToInt(Flint::VertexAttribute::Color6)] = Flint::DataType::Vec4_32;
+		if (pMesh->HasVertexColors(7) && Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::Color7))		descriptor[Flint::EnumToInt(Flint::VertexAttribute::Color7)] = Flint::DataType::Vec4_32;
 
 		// Resolve texture coordinates.
-		if (pMesh->HasTextureCoords(0) && (loadData & Flint::VertexData::Texture0) == Flint::VertexData::Texture0) descriptor[static_cast<std::underlying_type_t<Flint::VertexAttribute>>(Flint::VertexAttribute::Texture0)] = Flint::DataType::Vec2_32;
-		if (pMesh->HasTextureCoords(1) && (loadData & Flint::VertexData::Texture1) == Flint::VertexData::Texture1) descriptor[static_cast<std::underlying_type_t<Flint::VertexAttribute>>(Flint::VertexAttribute::Texture1)] = Flint::DataType::Vec2_32;
-		if (pMesh->HasTextureCoords(2) && (loadData & Flint::VertexData::Texture2) == Flint::VertexData::Texture2) descriptor[static_cast<std::underlying_type_t<Flint::VertexAttribute>>(Flint::VertexAttribute::Texture2)] = Flint::DataType::Vec2_32;
-		if (pMesh->HasTextureCoords(3) && (loadData & Flint::VertexData::Texture3) == Flint::VertexData::Texture3) descriptor[static_cast<std::underlying_type_t<Flint::VertexAttribute>>(Flint::VertexAttribute::Texture3)] = Flint::DataType::Vec2_32;
-		if (pMesh->HasTextureCoords(4) && (loadData & Flint::VertexData::Texture4) == Flint::VertexData::Texture4) descriptor[static_cast<std::underlying_type_t<Flint::VertexAttribute>>(Flint::VertexAttribute::Texture4)] = Flint::DataType::Vec2_32;
-		if (pMesh->HasTextureCoords(5) && (loadData & Flint::VertexData::Texture5) == Flint::VertexData::Texture5) descriptor[static_cast<std::underlying_type_t<Flint::VertexAttribute>>(Flint::VertexAttribute::Texture5)] = Flint::DataType::Vec2_32;
-		if (pMesh->HasTextureCoords(6) && (loadData & Flint::VertexData::Texture6) == Flint::VertexData::Texture6) descriptor[static_cast<std::underlying_type_t<Flint::VertexAttribute>>(Flint::VertexAttribute::Texture6)] = Flint::DataType::Vec2_32;
-		if (pMesh->HasTextureCoords(7) && (loadData & Flint::VertexData::Texture7) == Flint::VertexData::Texture7) descriptor[static_cast<std::underlying_type_t<Flint::VertexAttribute>>(Flint::VertexAttribute::Texture7)] = Flint::DataType::Vec2_32;
+		if (pMesh->HasTextureCoords(0) && Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::Texture0))	descriptor[Flint::EnumToInt(Flint::VertexAttribute::Texture0)] = Flint::DataType::Vec2_32;
+		if (pMesh->HasTextureCoords(1) && Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::Texture1))	descriptor[Flint::EnumToInt(Flint::VertexAttribute::Texture1)] = Flint::DataType::Vec2_32;
+		if (pMesh->HasTextureCoords(2) && Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::Texture2))	descriptor[Flint::EnumToInt(Flint::VertexAttribute::Texture2)] = Flint::DataType::Vec2_32;
+		if (pMesh->HasTextureCoords(3) && Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::Texture3))	descriptor[Flint::EnumToInt(Flint::VertexAttribute::Texture3)] = Flint::DataType::Vec2_32;
+		if (pMesh->HasTextureCoords(4) && Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::Texture4))	descriptor[Flint::EnumToInt(Flint::VertexAttribute::Texture4)] = Flint::DataType::Vec2_32;
+		if (pMesh->HasTextureCoords(5) && Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::Texture5))	descriptor[Flint::EnumToInt(Flint::VertexAttribute::Texture5)] = Flint::DataType::Vec2_32;
+		if (pMesh->HasTextureCoords(6) && Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::Texture6))	descriptor[Flint::EnumToInt(Flint::VertexAttribute::Texture6)] = Flint::DataType::Vec2_32;
+		if (pMesh->HasTextureCoords(7) && Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::Texture7))	descriptor[Flint::EnumToInt(Flint::VertexAttribute::Texture7)] = Flint::DataType::Vec2_32;
 
 		// Get the index count.
 		for (uint32_t i = 0; i < pMesh->mNumFaces; i++)
@@ -67,16 +67,35 @@ namespace /* anonymous */
 	 *
 	 * @param source The source data.
 	 * @param pDestination The destination data pointer.
-	 * @param type The amount of data to copy.
+	 * @param shouldCopy Whether we need to copy or not.
 	 */
-	void CopyData(const aiVector3D& source, float*& pDestination, Flint::DataType type) noexcept
+	void CopyData(const aiVector3D& source, float*& pDestination, bool shouldCopy) noexcept
 	{
-		// Fill default data if required.
-		if (type != Flint::DataType::None)
+		if (shouldCopy)
 		{
-			*(pDestination++) = source[0];
-			*(pDestination++) = source[1];
-			*(pDestination++) = source[2];
+			pDestination[0] = source[0];
+			pDestination[1] = source[1];
+			pDestination[2] = source[2];
+
+			pDestination += 3;
+		}
+	}
+
+	/**
+	 * Copy UV data from a 3D vector to the destination.
+	 *
+	 * @param source The source data.
+	 * @param pDestination The destination data pointer.
+	 * @param shouldCopy Whether we need to copy or not.
+	 */
+	void CopyDataUV(const aiVector3D& source, float*& pDestination, bool shouldCopy, bool shouldDefault = false) noexcept
+	{
+		if (shouldCopy)
+		{
+			pDestination[0] = source[0];
+			pDestination[1] = source[1];
+
+			pDestination += 2;
 		}
 	}
 
@@ -85,17 +104,18 @@ namespace /* anonymous */
 	 *
 	 * @param source The source data.
 	 * @param pDestination The destination data pointer.
-	 * @param type The amount of data to copy.
+	 * @param shouldCopy Whether we need to copy or not.
 	 */
-	void CopyData(const aiColor4D& source, float*& pDestination, Flint::DataType type) noexcept
+	void CopyData(const aiColor4D& source, float*& pDestination, bool shouldCopy, bool shouldDefault = false) noexcept
 	{
-		// Fill default data if required.
-		if (type != Flint::DataType::None)
+		if (shouldCopy)
 		{
-			*(pDestination++) = source[0];
-			*(pDestination++) = source[1];
-			*(pDestination++) = source[2];
-			*(pDestination++) = source[3];
+			pDestination[0] = source[0];
+			pDestination[1] = source[1];
+			pDestination[2] = source[2];
+			pDestination[3] = source[3];
+
+			pDestination += 4;
 		}
 	}
 
@@ -157,36 +177,36 @@ namespace /* anonymous */
 		for (uint32_t i = 0; i < pMesh->mNumVertices; ++i)
 		{
 			// Copy position.
-			CopyData(pMesh->mVertices[i], pVertex, descriptor[static_cast<std::underlying_type_t<Flint::VertexAttribute>>(Flint::VertexAttribute::Position)]);
+			CopyData(pMesh->mVertices[i], pVertex, Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::Position));
 
 			// Copy normal.
-			CopyData(pMesh->mNormals[i], pVertex, descriptor[static_cast<std::underlying_type_t<Flint::VertexAttribute>>(Flint::VertexAttribute::Normal)]);
+			CopyData(pMesh->mNormals[i], pVertex, Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::Normal));
 
-			// COpy tangent.
-			CopyData(pMesh->mTangents[i], pVertex, descriptor[static_cast<std::underlying_type_t<Flint::VertexAttribute>>(Flint::VertexAttribute::Tangent)]);
+			// Copy tangent.
+			CopyData(pMesh->mTangents[i], pVertex, Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::Tangent));
 
-			// COpy bi-tangent.
-			CopyData(pMesh->mBitangents[i], pVertex, descriptor[static_cast<std::underlying_type_t<Flint::VertexAttribute>>(Flint::VertexAttribute::BiTangent)]);
+			// Copy bi-tangent.
+			CopyData(pMesh->mBitangents[i], pVertex, Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::BiTangent));
 
 			// Copy colors.
-			CopyData(pMesh->mColors[0][i], pVertex, descriptor[static_cast<std::underlying_type_t<Flint::VertexAttribute>>(Flint::VertexAttribute::Color0)]);
-			CopyData(pMesh->mColors[1][i], pVertex, descriptor[static_cast<std::underlying_type_t<Flint::VertexAttribute>>(Flint::VertexAttribute::Color1)]);
-			CopyData(pMesh->mColors[2][i], pVertex, descriptor[static_cast<std::underlying_type_t<Flint::VertexAttribute>>(Flint::VertexAttribute::Color2)]);
-			CopyData(pMesh->mColors[3][i], pVertex, descriptor[static_cast<std::underlying_type_t<Flint::VertexAttribute>>(Flint::VertexAttribute::Color3)]);
-			CopyData(pMesh->mColors[4][i], pVertex, descriptor[static_cast<std::underlying_type_t<Flint::VertexAttribute>>(Flint::VertexAttribute::Color4)]);
-			CopyData(pMesh->mColors[5][i], pVertex, descriptor[static_cast<std::underlying_type_t<Flint::VertexAttribute>>(Flint::VertexAttribute::Color5)]);
-			CopyData(pMesh->mColors[6][i], pVertex, descriptor[static_cast<std::underlying_type_t<Flint::VertexAttribute>>(Flint::VertexAttribute::Color6)]);
-			CopyData(pMesh->mColors[7][i], pVertex, descriptor[static_cast<std::underlying_type_t<Flint::VertexAttribute>>(Flint::VertexAttribute::Color7)]);
+			CopyData(pMesh->mColors[0][i], pVertex, Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::Color0));
+			CopyData(pMesh->mColors[1][i], pVertex, Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::Color1));
+			CopyData(pMesh->mColors[2][i], pVertex, Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::Color2));
+			CopyData(pMesh->mColors[3][i], pVertex, Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::Color3));
+			CopyData(pMesh->mColors[4][i], pVertex, Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::Color4));
+			CopyData(pMesh->mColors[5][i], pVertex, Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::Color5));
+			CopyData(pMesh->mColors[6][i], pVertex, Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::Color6));
+			CopyData(pMesh->mColors[7][i], pVertex, Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::Color7));
 
 			// Copy texture coordinates.
-			CopyData(pMesh->mTextureCoords[0][i], pVertex, descriptor[static_cast<std::underlying_type_t<Flint::VertexAttribute>>(Flint::VertexAttribute::Texture0)]);
-			CopyData(pMesh->mTextureCoords[1][i], pVertex, descriptor[static_cast<std::underlying_type_t<Flint::VertexAttribute>>(Flint::VertexAttribute::Texture1)]);
-			CopyData(pMesh->mTextureCoords[2][i], pVertex, descriptor[static_cast<std::underlying_type_t<Flint::VertexAttribute>>(Flint::VertexAttribute::Texture2)]);
-			CopyData(pMesh->mTextureCoords[3][i], pVertex, descriptor[static_cast<std::underlying_type_t<Flint::VertexAttribute>>(Flint::VertexAttribute::Texture3)]);
-			CopyData(pMesh->mTextureCoords[4][i], pVertex, descriptor[static_cast<std::underlying_type_t<Flint::VertexAttribute>>(Flint::VertexAttribute::Texture4)]);
-			CopyData(pMesh->mTextureCoords[5][i], pVertex, descriptor[static_cast<std::underlying_type_t<Flint::VertexAttribute>>(Flint::VertexAttribute::Texture5)]);
-			CopyData(pMesh->mTextureCoords[6][i], pVertex, descriptor[static_cast<std::underlying_type_t<Flint::VertexAttribute>>(Flint::VertexAttribute::Texture6)]);
-			CopyData(pMesh->mTextureCoords[7][i], pVertex, descriptor[static_cast<std::underlying_type_t<Flint::VertexAttribute>>(Flint::VertexAttribute::Texture7)]);
+			CopyDataUV(pMesh->mTextureCoords[0][i], pVertex, Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::Texture0));
+			CopyDataUV(pMesh->mTextureCoords[1][i], pVertex, Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::Texture1));
+			CopyDataUV(pMesh->mTextureCoords[2][i], pVertex, Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::Texture2));
+			CopyDataUV(pMesh->mTextureCoords[3][i], pVertex, Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::Texture3));
+			CopyDataUV(pMesh->mTextureCoords[4][i], pVertex, Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::Texture4));
+			CopyDataUV(pMesh->mTextureCoords[5][i], pVertex, Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::Texture5));
+			CopyDataUV(pMesh->mTextureCoords[6][i], pVertex, Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::Texture6));
+			CopyDataUV(pMesh->mTextureCoords[7][i], pVertex, Flint::EnumToInt(loadData) & Flint::EnumToInt(Flint::VertexData::Texture7));
 		}
 
 		// Load the index data.
@@ -273,8 +293,8 @@ namespace Flint
 		{
 			const auto [descriptor, vertices, indices] = GetBasicMeshData(pScene->mMeshes[i], vertexData);
 
-			vertexSize += GetStride(descriptor) * vertices;
-			indexSize += sizeof(uint32_t) * indices;
+			vertexSize += vertices * GetStride(descriptor);
+			indexSize += indices * sizeof(uint32_t);
 		}
 
 		// Create the geometry.
