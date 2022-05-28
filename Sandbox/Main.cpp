@@ -58,12 +58,7 @@ int main()
 				[buffer](const Flint::Mesh& mesh, [[maybe_unused]] const Flint::Geometry& geometry, const std::vector<Flint::ResourceBinding>& bindings)
 				{
 					Flint::ResourceBindingTable bindingTable;
-
-					for (const auto& binding : bindings)
-					{
-						if (binding.m_Type == Flint::ResourceType::UniformBuffer)
-							bindingTable.bind(binding.m_Binding, buffer);
-					}
+					bindingTable.bind(0, buffer);
 
 					return bindingTable;
 				}
@@ -96,6 +91,8 @@ int main()
 				camera.copyToBuffer(*pEngine, buffer);
 				pRasterizer->update();
 			}
+
+			const auto ss = timer.tick();
 		}
 	}
 

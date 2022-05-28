@@ -34,12 +34,12 @@ namespace Flint
 				 * Explicit constructor.
 				 *
 				 * @param copies The descriptor set copies.
-				 * @param set The descriptor set.
+				 * @param sets The descriptor sets.
 				 */
-				explicit DescriptorSet(std::vector<VkCopyDescriptorSet>&& copies, VkDescriptorSet set) : m_CopyDescriptorSets(std::move(copies)), m_DescriptorSet(set) {}
+				explicit DescriptorSet(std::vector<VkCopyDescriptorSet>&& copies, std::vector<VkDescriptorSet>&& sets) : m_CopyDescriptorSets(std::move(copies)), m_DescriptorSets(sets) {}
 
 				std::vector<VkCopyDescriptorSet> m_CopyDescriptorSets;
-				VkDescriptorSet m_DescriptorSet = VK_NULL_HANDLE;
+				std::vector<VkDescriptorSet> m_DescriptorSets;
 			};
 
 		public:
@@ -48,7 +48,7 @@ namespace Flint
 			 *
 			 * @param engine The engine to which the manager is bound to.
 			 */
-			explicit VulkanDescriptorSetManager(VulkanEngine& engine);
+			explicit VulkanDescriptorSetManager(VulkanEngine& engine, uint8_t frameCount);
 
 			/**
 			 * Destructor.
@@ -75,19 +75,10 @@ namespace Flint
 			 * Note that this will not create new descriptor sets.
 			 *
 			 * @param table the table to get the descriptor set from.
+			 * @param frameIndex The frame index of the descriptor.
 			 * @return The descriptor set.
 			 */
-			[[nodiscard]] VkDescriptorSet getDescriptorSet(const ResourceBindingTable& table) const;
-
-		private:
-			/**
-			 * Copy the descriptor set from the source to destination.
-			 *
-			 * @param source The source descriptor.
-			 * @param destination The destination descriptor.
-			 * @param table The table to generate the copy data.
-			 */
-			void copyDescriptorSet(VkDescriptorSet source, VkDescriptorSet destination, const ResourceBindingTable& table) const;
+			[[nodiscard]] VkDescriptorSet getDescriptorSet(const ResourceBindingTable& table, uint32_t frameIndex) const;
 
 		protected:
 			std::vector<VkDescriptorPoolSize> m_PoolSizes;
@@ -100,6 +91,7 @@ namespace Flint
 
 		private:
 			VulkanEngine& m_Engine;
+			const uint8_t m_FrameCount = 0;
 		};
 	}
 }

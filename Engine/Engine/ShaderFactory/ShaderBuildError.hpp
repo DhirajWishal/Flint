@@ -8,10 +8,10 @@
 namespace Flint
 {
 	/**
-	 * Asset error class.
-	 * This class is thrown if there was any error in the backend.
+	 * Shader builder error class.
+	 * This error is thrown if an error has been occurred in the shader builder.
 	 */
-	class BackendError final : public std::runtime_error
+	class ShaderBuilderError final : public std::runtime_error
 	{
 	public:
 		using std::runtime_error::runtime_error;

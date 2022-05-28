@@ -14,18 +14,6 @@ namespace Flint
 	class AssetError final : public std::runtime_error
 	{
 	public:
-		/**
-		 * Explicit constructor.
-		 *
-		 * @param message The message to be thrown.
-		 */
-		explicit AssetError(const std::string& message) : std::runtime_error(message.c_str()) {}
-
-		/**
-		 * Explicit constructor.
-		 * 
-		 * @param message The message to be thrown.
-		 */
-		explicit AssetError(const char* message) : std::runtime_error(message) {}
+		using std::runtime_error::runtime_error;
 	};
 }

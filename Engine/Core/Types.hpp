@@ -12,6 +12,8 @@
 	constexpr name operator|(const name& lhs, const name& rhs) { return static_cast<name>(::Flint::EnumToInt(lhs) | ::Flint::EnumToInt(rhs)); }	\
 	constexpr name operator&(const name& lhs, const name& rhs) { return static_cast<name>(::Flint::EnumToInt(lhs) & ::Flint::EnumToInt(rhs)); }
 
+#define FLINT_DEFINE_HANDLE(name)	enum class name : uintptr_t {}
+
 namespace Flint
 {
 	/**
@@ -220,10 +222,10 @@ namespace Flint
 	 * @param descriptor The descriptor.
 	 * @return The stride (the descriptor size).
 	 */
-	template<uint8_t Size>
-	constexpr uint8_t GetStride(const std::array<DataType, Size>& descriptor) noexcept
+	template<uint64_t Size>
+	constexpr uint64_t GetStride(const std::array<DataType, Size>& descriptor) noexcept
 	{
-		uint8_t stride = 0;
+		uint64_t stride = 0;
 		for (const auto type : descriptor)
 			stride += DataTypeSize[EnumToInt(type)];
 
@@ -245,7 +247,7 @@ namespace Flint
 	 * Buffer handle enum.
 	 * This is used to uniquely identify a buffer which is bound to an engine.
 	 */
-	enum class BufferHandle : uintptr_t {};
+	FLINT_DEFINE_HANDLE(BufferHandle);
 
 	/**
 	 * Image usage enum.
@@ -262,7 +264,31 @@ namespace Flint
 	 * Image handle enum.
 	 * This is used to uniquely identify an image which is bound to an engine.
 	 */
-	enum class ImageHandle : uintptr_t {};
+	FLINT_DEFINE_HANDLE(ImageHandle);
+
+	/**
+	 * Image view handle enum.
+	 */
+	FLINT_DEFINE_HANDLE(ImageViewHandle);
+
+	/**
+	 * Image sampler handle enum.
+	 */
+	FLINT_DEFINE_HANDLE(ImageSamplerHandle);
+
+	enum class ImageViewType : uint8_t
+	{
+
+	};
+
+	/**
+	 * Image binding specification.
+	 * This describes how the image should be bound and rendered.
+	 */
+	struct ImageBindingSpecification final
+	{
+
+	};
 
 	/**
 	 * Resource binding table structure.

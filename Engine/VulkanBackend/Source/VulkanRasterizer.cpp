@@ -75,7 +75,7 @@ namespace Flint
 						const auto meshHash = GenerateHash(mesh);
 						const auto& bindingTable = entry.m_BindingTables[i];
 						const auto& pipeline = *group.m_pPipelines[group.m_MeshPipelineHashes.at(meshHash)];
-						const auto& descriptorSet = pipeline.getDescriptorSet(bindingTable);
+						const auto& descriptorSet = pipeline.getDescriptorSet(bindingTable, m_FrameIndex);
 
 						// Bind the pipeline.
 						m_pCommandBuffers->bindGraphicsPipeline(pipeline);

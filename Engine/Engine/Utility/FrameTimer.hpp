@@ -28,7 +28,7 @@ namespace Flint
 		 *
 		 * @return The duration.
 		 */
-		Duration tick();
+		[[nodiscard]] Duration tick();
 
 	private:
 		TimePoint m_PreviousFrame;

@@ -15,10 +15,19 @@ add_library(
 
 	"Source/Camera/Camera.cpp" 
 	"Source/Camera/MonoCamera.cpp"
+	
+	"Source/Utility/FrameTimer.cpp"
 
+	"Source/ShaderFactory/ShaderBuilder.cpp"
+	
 	"Camera/Camera.hpp"
 	"Camera/MonoCamera.hpp"
- "Source/Utility/FrameTimer.cpp")
+	
+	"Utility/FrameTimer.hpp"
+
+	"ShaderFactory/ShaderBuilder.hpp"
+	"ShaderFactory/ShaderBuildError.hpp"
+)
 
 # Set the include directories.
 target_include_directories(

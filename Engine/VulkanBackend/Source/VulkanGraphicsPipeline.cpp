@@ -280,7 +280,7 @@ namespace Flint
 	namespace VulkanBackend
 	{
 		VulkanGraphicsPipeline::VulkanGraphicsPipeline(VulkanEngine& engine, VulkanRasterizer& rasterizer, const RasterizingPipelineSpecification& specification, std::vector<VkVertexInputBindingDescription>&& inputBindings, std::vector<VkVertexInputAttributeDescription>&& inputAttributes)
-			: VulkanPipeline(engine, specification.m_CacheFile), VulkanDescriptorSetManager(engine), m_Rasterizer(rasterizer), m_VertexBindings(std::move(inputBindings)), m_VertexAttributes(std::move(inputAttributes))
+			: VulkanPipeline(engine, specification.m_CacheFile), VulkanDescriptorSetManager(engine, rasterizer.getFrameCount()), m_Rasterizer(rasterizer), m_VertexBindings(std::move(inputBindings)), m_VertexAttributes(std::move(inputAttributes))
 		{
 			// Resolve shader information.
 			std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
