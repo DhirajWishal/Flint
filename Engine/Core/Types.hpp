@@ -30,6 +30,19 @@ namespace Flint
 	}
 
 	/**
+	 * Convert an integer to an enum.
+	 *
+	 * @tparam Type The type of the data.
+	 * @param value The value to convert.
+	 * @return The converted enum.
+	 */
+	template<class Type>
+	[[nodiscard]] constexpr Type IntToEnum(const std::underlying_type_t<Type> value) noexcept
+	{
+		return static_cast<Type>(value);
+	}
+
+	/**
 	 * Pixel format enum.
 	 */
 	enum class PixelFormat : uint8_t

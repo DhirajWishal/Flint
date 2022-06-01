@@ -37,6 +37,7 @@ add_library(
 	"RenderTargetAttachment.hpp"
 	"Types.hpp"
 	"GeometryStore.hpp" 
+	"Backend.hpp" 
 	
 	"Errors/AssetError.hpp"
 	"Errors/BackendError.hpp" 
@@ -44,6 +45,8 @@ add_library(
 	"Containers/Bitset.hpp" 
 	"Containers/FlatSet.hpp" 
 	"Containers/SparseArray.hpp"
+	"Containers/BinaryMap.hpp" 
+	"Containers/Reactor.hpp" 
 
 	"EventSystem/EventSystem.hpp"
 	"EventSystem/Keyboard.hpp"
@@ -52,7 +55,6 @@ add_library(
 	"Entities/Entity.hpp"
 	"Entities/GhostEntity.hpp"
 	"Entities/StaticEntity.hpp"
-	"Containers/BinaryMap.hpp" 
 
 	"Utility/Hasher.hpp" 
 

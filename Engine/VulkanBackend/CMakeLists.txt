@@ -27,6 +27,7 @@ add_library(
 	"Source/VulkanGraphicsPipeline.cpp"
 	"Source/VulkanDescriptorSetManager.cpp"
 	"Source/VulkanBuffer.cpp"
+	"Source/VulkanBackend.cpp"
 	
 	"VulkanInstance.hpp"
 	"VulkanMacros.hpp"
@@ -42,6 +43,7 @@ add_library(
 	"VulkanPipeline.hpp"
 	"VulkanDescriptorSetManager.hpp" 
 	"VulkanBuffer.hpp"
+	"VulkanBackend.hpp"
 )
 
 # Set the include directories.

@@ -8,6 +8,8 @@
 #include "Engine/Camera/MonoCamera.hpp"
 #include "Engine/Utility/FrameTimer.hpp"
 
+#include "Engine/GraphicsEngine.hpp"
+
 #ifdef FLINT_DEBUG
 constexpr auto Validation = true;
 
@@ -38,6 +40,10 @@ constexpr auto Validation = false;
 
 int main()
 {
+	{
+		auto engine = Flint::GraphicsEngine("Sandbox", 1, Validation, Flint::BackendAPI::Vulkan);
+	}
+
 	auto instance = Flint::VulkanBackend::VulkanInstance("Sandbox", 1, Validation);
 	auto eventSystem = Flint::EventSystem();
 

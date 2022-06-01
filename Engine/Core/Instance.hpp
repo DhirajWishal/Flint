@@ -4,6 +4,7 @@
 #pragma once
 
 #include "FObject.hpp"
+#include "Types.hpp"
 
 #include <cstdint>
 #include <string>
@@ -18,8 +19,11 @@ namespace Flint
 	 */
 	enum class BackendAPI : uint8_t
 	{
-		Vulkan
+		Vulkan = 1 << 0,
+		DirectX_12 = 1 << 1
 	};
+
+	FLINT_DEFINE_ENUM_AND_OR(BackendAPI);
 
 	/**
 	 * Instance class.

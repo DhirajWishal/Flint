@@ -13,12 +13,16 @@ add_library(
 	FlintEngine
 	STATIC
 
+	"Source/GraphicsEngine.cpp"
+
 	"Source/Camera/Camera.cpp" 
 	"Source/Camera/MonoCamera.cpp"
 	
 	"Source/Utility/FrameTimer.cpp"
 
 	"Source/ShaderFactory/ShaderBuilder.cpp"
+
+	"GraphicsEngine.hpp"
 	
 	"Camera/Camera.hpp"
 	"Camera/MonoCamera.hpp"
@@ -27,6 +31,8 @@ add_library(
 
 	"ShaderFactory/ShaderBuilder.hpp"
 	"ShaderFactory/ShaderBuildError.hpp"
+
+	"Errors/InvalidBackend.hpp"
 )
 
 # Set the include directories.
