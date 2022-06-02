@@ -10,8 +10,8 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanPipeline::VulkanPipeline(VulkanEngine& engine, const std::filesystem::path& cacheFile)
-			: m_CacheFile(cacheFile), m_Engine(engine)
+		VulkanPipeline::VulkanPipeline(VulkanDevice& device, const std::filesystem::path& cacheFile)
+			: m_CacheFile(cacheFile), m_Device(device)
 		{
 			// Load the cache if possible.
 			loadCache();
@@ -23,9 +23,9 @@ namespace Flint
 			saveCache();
 
 			// Destroy the resources.
-			m_Engine.getDeviceTable().vkDestroyPipeline(m_Engine.getLogicalDevice(), m_Pipeline, nullptr);
-			m_Engine.getDeviceTable().vkDestroyPipelineCache(m_Engine.getLogicalDevice(), m_PipelineCache, nullptr);
-			m_Engine.getDeviceTable().vkDestroyPipelineLayout(m_Engine.getLogicalDevice(), m_PipelineLayout, nullptr);
+			m_Device.getDeviceTable().vkDestroyPipeline(m_Device.getLogicalDevice(), m_Pipeline, nullptr);
+			m_Device.getDeviceTable().vkDestroyPipelineCache(m_Device.getLogicalDevice(), m_PipelineCache, nullptr);
+			m_Device.getDeviceTable().vkDestroyPipelineLayout(m_Device.getLogicalDevice(), m_PipelineLayout, nullptr);
 		}
 
 		void VulkanPipeline::loadCache()
@@ -56,7 +56,7 @@ namespace Flint
 			createInfo.initialDataSize = size;
 			createInfo.pInitialData = buffer.get();
 
-			FLINT_VK_ASSERT(m_Engine.getDeviceTable().vkCreatePipelineCache(m_Engine.getLogicalDevice(), &createInfo, nullptr, &m_PipelineCache), "Failed to create the pipeline cache!");
+			FLINT_VK_ASSERT(m_Device.getDeviceTable().vkCreatePipelineCache(m_Device.getLogicalDevice(), &createInfo, nullptr, &m_PipelineCache), "Failed to create the pipeline cache!");
 		}
 
 		void VulkanPipeline::saveCache()
@@ -67,10 +67,10 @@ namespace Flint
 
 			// Load cache data.
 			size_t cacheSize = 0;
-			FLINT_VK_ASSERT(m_Engine.getDeviceTable().vkGetPipelineCacheData(m_Engine.getLogicalDevice(), m_PipelineCache, &cacheSize, nullptr), "Failed to get the pipeline cache size!");
+			FLINT_VK_ASSERT(m_Device.getDeviceTable().vkGetPipelineCacheData(m_Device.getLogicalDevice(), m_PipelineCache, &cacheSize, nullptr), "Failed to get the pipeline cache size!");
 
 			auto buffer = std::make_unique<uint8_t[]>(cacheSize);
-			FLINT_VK_ASSERT(m_Engine.getDeviceTable().vkGetPipelineCacheData(m_Engine.getLogicalDevice(), m_PipelineCache, &cacheSize, buffer.get()), "Failed to get the pipeline cache data!");
+			FLINT_VK_ASSERT(m_Device.getDeviceTable().vkGetPipelineCacheData(m_Device.getLogicalDevice(), m_PipelineCache, &cacheSize, buffer.get()), "Failed to get the pipeline cache data!");
 
 			// Write to file.
 			std::fstream cacheFile(m_CacheFile, std::ios::out | std::ios::binary);

@@ -5,7 +5,6 @@
 #include "VulkanBackend/VulkanMacros.hpp"
 #include "VulkanBackend/VulkanColorAttachment.hpp"
 #include "VulkanBackend/VulkanDepthAttachment.hpp"
-#include "VulkanBackend/VulkanGeometryStore.hpp"
 
 #include "Core/Utility/Hasher.hpp"
 
@@ -13,8 +12,8 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanRasterizer::VulkanRasterizer(Engine& engine, uint32_t width, uint32_t height, uint32_t frameCount, std::vector<AttachmentDescription>&& attachmentDescriptions, Multisample multisample /*= Multisample::One*/, bool exclusiveBuffering /*= false*/)
-			: Rasterizer(engine, width, height, frameCount, std::move(attachmentDescriptions), multisample, exclusiveBuffering)
+		VulkanRasterizer::VulkanRasterizer(VulkanDevice& device, uint32_t width, uint32_t height, uint32_t frameCount, std::vector<AttachmentDescription>&& attachmentDescriptions, Multisample multisample /*= Multisample::One*/, bool exclusiveBuffering /*= false*/)
+			: Rasterizer(device, width, height, frameCount, std::move(attachmentDescriptions), multisample, exclusiveBuffering)
 		{
 			// Create the attachments.
 			createAttachments();
@@ -26,13 +25,13 @@ namespace Flint
 			createFramebuffers();
 
 			// Create the command buffers.
-			m_pCommandBuffers = std::make_unique<VulkanCommandBuffers>(getEngineAs<VulkanEngine>(), frameCount);
+			m_pCommandBuffers = std::make_unique<VulkanCommandBuffers>(getDevice(), frameCount);
 		}
 
 		VulkanRasterizer::~VulkanRasterizer()
 		{
 			// Wait idle to finish everything we have prior to this.
-			getEngine().waitIdle();
+			getDevice().waitIdle();
 
 			// Destroy the frame buffers.
 			destroyFramebuffers();
@@ -59,34 +58,6 @@ namespace Flint
 
 			m_pCommandBuffers->bindRenderTarget(*this, { colorClearValue, depthClearValue });
 
-			// Bind the index buffer.
-			const auto& defaultGeometryStore = *getEngineAs<VulkanEngine>().getDefaultGeometryStore().as<VulkanGeometryStore>();
-			m_pCommandBuffers->bindIndexBuffer(defaultGeometryStore);
-
-			// Bind the resources.
-			for (const auto& [hash, group] : m_Pipelines)
-			{
-				for (const auto& entry : group.m_DrawEntries)
-				{
-					const auto& meshses = entry.m_Geometry.getMeshes();
-					for (uint32_t i = 0; i < entry.m_BindingTables.size(); ++i)
-					{
-						const auto& mesh = meshses[i];
-						const auto meshHash = GenerateHash(mesh);
-						const auto& bindingTable = entry.m_BindingTables[i];
-						const auto& pipeline = *group.m_pPipelines[group.m_MeshPipelineHashes.at(meshHash)];
-						const auto& descriptorSet = pipeline.getDescriptorSet(bindingTable, m_FrameIndex);
-
-						// Bind the pipeline.
-						m_pCommandBuffers->bindGraphicsPipeline(pipeline);
-						m_pCommandBuffers->bindDescriptor(pipeline, descriptorSet);
-
-						// Draw the mesh
-						m_pCommandBuffers->drawMesh(defaultGeometryStore, mesh);
-					}
-				}
-			}
-
 			// Unbind the rasterizer.
 			m_pCommandBuffers->unbindRenderTarget();
 
@@ -105,7 +76,7 @@ namespace Flint
 				return;
 
 			// Wait idle to finish everything we have prior to this.
-			getEngine().waitIdle();
+			getDevice().waitIdle();
 
 			m_Width = width;
 			m_Height = height;
@@ -122,122 +93,17 @@ namespace Flint
 			createRenderPass();
 			createFramebuffers();
 
-			// Recreate the pipelines.
-			for (auto& [hash, group] : m_Pipelines)
-			{
-				for (auto& pipeline : group.m_pPipelines)
-					pipeline->recreate();
-			}
-
 			// Reset the indexes.
 			m_FrameIndex = 0;
 			m_pCommandBuffers->resetIndex();
 		}
 
-		void VulkanRasterizer::registerGeometry(const Geometry& geometry, RasterizingPipelineSpecification&& specification, std::function<ResourceBindingTable(const Mesh&, const Geometry&, const std::vector<ResourceBinding>&)>&& meshBinder)
-		{
-			auto& group = m_Pipelines[GenerateHash(specification)];
-			auto& drawEntry = group.m_DrawEntries.emplace_back();
-			drawEntry.m_Geometry = geometry;
-
-			auto resourceBindings = specification.m_VertexShader.getBindings();
-			resourceBindings.insert(resourceBindings.end(), specification.m_FragmentShader.getBindings().begin(), specification.m_FragmentShader.getBindings().end());
-
-			for (const auto& mesh : geometry.getMeshes())
-			{
-				// Get the binding table.
-				auto bindingTable = meshBinder(mesh, geometry, resourceBindings);
-
-				std::vector<VkVertexInputBindingDescription> bindingDescriptions;
-				std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
-
-				// Validate the vertex inputs and generate the descriptions if possible.
-				if (specification.m_VertexShader.hasVertexInputs())
-				{
-					auto& vertexBinding = bindingDescriptions.emplace_back();
-					vertexBinding.binding = 0;
-					vertexBinding.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-					vertexBinding.stride = mesh.getVertexStride();
-
-					uint32_t offset = 0;
-					const auto descriptor = mesh.getVertexDescriptor();
-					auto descriptorIterator = descriptor.begin();
-					for (const auto& attribute : specification.m_VertexShader.getVertexInputs())
-					{
-						// Iterate the iterator till we get to the right attribute.
-						while (*descriptorIterator != attribute.m_DataType)
-						{
-							// Throw an error if we reached the end, because that means that we don't have what it needs to build the pipeline.
-							if (descriptorIterator == descriptor.end())
-								throw BackendError("One or more required attributes, or attributes with the required type was not found! Make sure that the mesh(s) contain the required attributes.");
-
-							offset += DataTypeSize[EnumToInt(*descriptorIterator)];
-							++descriptorIterator;
-						}
-
-						auto& vertexAttribute = attributeDescriptions.emplace_back();
-						vertexAttribute.binding = vertexBinding.binding;
-						vertexAttribute.location = attribute.m_Location;
-						vertexAttribute.offset = offset;
-						vertexAttribute.format = Utility::GetVkFormat(attribute.m_DataType);
-
-						offset += DataTypeSize[EnumToInt(attribute.m_DataType)];
-						++descriptorIterator;
-					}
-				}
-
-				// Validate the instance inputs and generate the descriptions if possible.
-				if (specification.m_VertexShader.hasInstanceInputs())
-				{
-					auto& vertexBinding = bindingDescriptions.emplace_back();
-					vertexBinding.binding = 1;
-					vertexBinding.inputRate = VK_VERTEX_INPUT_RATE_INSTANCE;
-					vertexBinding.stride = GetStride(mesh.getInstanceDescriptor());
-
-					uint32_t offset = 0;
-					const auto descriptor = mesh.getInstanceDescriptor();
-					auto descriptorIterator = descriptor.begin();
-					for (const auto& attribute : specification.m_VertexShader.getInstanceInputs())
-					{
-						// Iterate the iterator till we get to the right attribute.
-						while (*descriptorIterator != attribute.m_DataType)
-						{
-							// Throw an error if we reached the end, because that means that we don't have what it needs to build the pipeline.
-							if (descriptorIterator == descriptor.end())
-								throw BackendError("One or more required attributes, or attributes with the required type was not found! Make sure that the mesh(s) contain the required attributes.");
-
-							offset += DataTypeSize[EnumToInt(*descriptorIterator)];
-							++descriptorIterator;
-						}
-
-						auto& vertexAttribute = attributeDescriptions.emplace_back();
-						vertexAttribute.binding = vertexBinding.binding;
-						vertexAttribute.location = attribute.m_Location;
-						vertexAttribute.offset = offset;
-						vertexAttribute.format = Utility::GetVkFormat(attribute.m_DataType);
-
-						offset += DataTypeSize[EnumToInt(attribute.m_DataType)];
-						++descriptorIterator;
-					}
-				}
-
-				// If the pipeline is present, we don't need to create one. If not we need to create a new one.
-				const auto meshHash = GenerateHash(mesh);
-				if (!group.m_MeshPipelineHashes.contains(meshHash))
-					group.m_MeshPipelineHashes.emplace(meshHash, group.m_pPipelines.emplace(std::make_unique<VulkanGraphicsPipeline>(getEngineAs<VulkanEngine>(), *this, specification, std::move(bindingDescriptions), std::move(attributeDescriptions))).first);
-
-				// Register the binding table.
-				group.m_pPipelines[group.m_MeshPipelineHashes[meshHash]]->registerTable(bindingTable);
-				drawEntry.m_BindingTables.emplace_back(bindingTable);
-			}
-		}
-
-		Flint::RenderTargetAttachment& VulkanRasterizer::getAttachment(uint32_t index)
+		Flint::RenderTargetAttachment<VulkanDevice>& VulkanRasterizer::getAttachment(uint32_t index)
 		{
 			return *m_pAttachments[m_ExclusiveBuffering * m_FrameIndex][index];
 		}
 
-		const Flint::RenderTargetAttachment& VulkanRasterizer::getAttachment(uint32_t index) const
+		const Flint::RenderTargetAttachment<VulkanDevice>& VulkanRasterizer::getAttachment(uint32_t index) const
 		{
 			return *m_pAttachments[m_ExclusiveBuffering * m_FrameIndex][index];
 		}
@@ -262,12 +128,12 @@ namespace Flint
 							// Find the best color format and return it.
 							pAttachment.emplace_back(
 								std::make_unique<VulkanColorAttachment>(
-									getEngine(),
+									getDevice(),
 									m_Width,
 									m_Height,
 									Utility::GetPixelFormat(
 										Utility::FindSupportedFormat(
-											getEngineAs<VulkanEngine>(),
+											getDevice(),
 											{ VK_FORMAT_R8G8B8A8_UNORM },
 											VK_IMAGE_TILING_OPTIMAL,
 											VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT |
@@ -279,7 +145,7 @@ namespace Flint
 							);
 						}
 						else
-							pAttachment.emplace_back(std::make_unique<VulkanColorAttachment>(getEngine(), m_Width, m_Height, attachment.m_Format, m_Multisample));
+							pAttachment.emplace_back(std::make_unique<VulkanColorAttachment>(getDevice(), m_Width, m_Height, attachment.m_Format, m_Multisample));
 					}
 					else
 					{
@@ -288,12 +154,12 @@ namespace Flint
 							// Find the best depth format and return it.
 							pAttachment.emplace_back(
 								std::make_unique<VulkanDepthAttachment>(
-									getEngine(),
+									getDevice(),
 									m_Width,
 									m_Height,
 									Utility::GetPixelFormat(
 										Utility::FindSupportedFormat(
-											getEngineAs<VulkanEngine>(),
+											getDevice(),
 											{ VK_FORMAT_D16_UNORM, VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
 											VK_IMAGE_TILING_OPTIMAL,
 											VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT |
@@ -305,7 +171,7 @@ namespace Flint
 							);
 						}
 						else
-							pAttachment.emplace_back(std::make_unique<VulkanDepthAttachment>(getEngine(), m_Width, m_Height, attachment.m_Format, m_Multisample));
+							pAttachment.emplace_back(std::make_unique<VulkanDepthAttachment>(getDevice(), m_Width, m_Height, attachment.m_Format, m_Multisample));
 					}
 				}
 			}
@@ -386,12 +252,12 @@ namespace Flint
 			renderPassCreateInfo.dependencyCount = 2;
 			renderPassCreateInfo.pDependencies = subpassDependencies.data();
 
-			FLINT_VK_ASSERT(getEngineAs<VulkanEngine>().getDeviceTable().vkCreateRenderPass(getEngineAs<VulkanEngine>().getLogicalDevice(), &renderPassCreateInfo, nullptr, &m_RenderPass), "Failed to create render pass!");
+			FLINT_VK_ASSERT(getDevice().getDeviceTable().vkCreateRenderPass(getDevice().getLogicalDevice(), &renderPassCreateInfo, nullptr, &m_RenderPass), "Failed to create render pass!");
 		}
 
 		void VulkanRasterizer::destroyRenderPass()
 		{
-			getEngineAs<VulkanEngine>().getDeviceTable().vkDestroyRenderPass(getEngineAs<VulkanEngine>().getLogicalDevice(), m_RenderPass, nullptr);
+			getDevice().getDeviceTable().vkDestroyRenderPass(getDevice().getLogicalDevice(), m_RenderPass, nullptr);
 		}
 
 		void VulkanRasterizer::createFramebuffers()
@@ -418,14 +284,14 @@ namespace Flint
 				frameBufferCreateInfo.attachmentCount = static_cast<uint32_t>(imageViews.size());
 				frameBufferCreateInfo.pAttachments = imageViews.data();
 
-				FLINT_VK_ASSERT(getEngineAs<VulkanEngine>().getDeviceTable().vkCreateFramebuffer(getEngineAs<VulkanEngine>().getLogicalDevice(), &frameBufferCreateInfo, nullptr, &m_Framebuffers[i]), "Failed to create the frame buffer!");
+				FLINT_VK_ASSERT(getDevice().getDeviceTable().vkCreateFramebuffer(getDevice().getLogicalDevice(), &frameBufferCreateInfo, nullptr, &m_Framebuffers[i]), "Failed to create the frame buffer!");
 			}
 		}
 
 		void VulkanRasterizer::destroyFramebuffers()
 		{
 			for (const auto framebuffer : m_Framebuffers)
-				getEngineAs<VulkanEngine>().getDeviceTable().vkDestroyFramebuffer(getEngineAs<VulkanEngine>().getLogicalDevice(), framebuffer, nullptr);
+				getDevice().getDeviceTable().vkDestroyFramebuffer(getDevice().getLogicalDevice(), framebuffer, nullptr);
 		}
 	}
 }

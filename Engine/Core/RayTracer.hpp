@@ -11,11 +11,12 @@ namespace Flint
 	 * Ray tracer class.
 	 * This class performs ray tracing to the bound entities.
 	 */
-	class RayTracer : public RenderTarget
+	template<class TDevice>
+	class RayTracer : public RenderTarget<TDevice>
 	{
 	public:
 		// We are using the same constructor(s) as the super class.
-		using RenderTarget::RenderTarget;
+		using RenderTarget<TDevice>::RenderTarget;
 		
 		/**
 		 * Virtual default destructor.

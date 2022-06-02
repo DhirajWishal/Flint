@@ -19,13 +19,13 @@ namespace Flint
 			/**
 			 * Explicit constructor.
 			 *
-			 * @param engine The engine reference.
+			 * @param device The device reference.
 			 * @param width The width of the attachment.
 			 * @param height The height of the attachment.
 			 * @param format The format of the attachment.
 			 * @param multisample The multisample count to use.
 			 */
-			explicit VulkanDepthAttachment(Engine& engine, uint32_t width, uint32_t height, PixelFormat format, Multisample multisample);
+			explicit VulkanDepthAttachment(VulkanDevice& device, uint32_t width, uint32_t height, PixelFormat format, Multisample multisample);
 
 			/**
 			 * Destructor.

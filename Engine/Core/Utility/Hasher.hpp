@@ -4,7 +4,6 @@
 #pragma once
 
 #include "Core/Rasterizer.hpp"
-#include "Core/Geometry.hpp"
 
 namespace Flint
 {
@@ -24,14 +23,6 @@ namespace Flint
 	 * @return The hash value.
 	 */
 	[[nodiscard]] uint64_t GenerateHash(const RasterizingPipelineSpecification& specification);
-
-	/**
-	 * Generate hash for a mesh.
-	 *
-	 * @param mesh The mesh to generate the hash.
-	 * @return The hash value.
-	 */
-	[[nodiscard]] uint64_t GenerateHash(const Mesh& mesh);
 
 	/**
 	 * Generate hash for the vertex descriptor.

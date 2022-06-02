@@ -13,8 +13,8 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanWindow::VulkanWindow(VulkanEngine& engine, std::string&& title, uint32_t width /*= -1*/, uint32_t height /*= -1*/)
-			: Window(engine, std::move(title), width, height)
+		VulkanWindow::VulkanWindow(VulkanDevice& device, std::string&& title, uint32_t width /*= -1*/, uint32_t height /*= -1*/)
+			: Window(device, std::move(title), width, height)
 		{
 			// Resolve the flags.
 			uint32_t windowFlags = SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE;
@@ -47,7 +47,7 @@ namespace Flint
 			m_FrameCount = getBestBufferCount();
 
 			// Create the command buffer.
-			m_pCommandBuffers = std::make_unique<VulkanCommandBuffers>(engine, m_FrameCount);
+			m_pCommandBuffers = std::make_unique<VulkanCommandBuffers>(device, m_FrameCount);
 
 			// Create the swapchain.
 			createSwapchain();
@@ -65,7 +65,7 @@ namespace Flint
 		VulkanWindow::~VulkanWindow()
 		{
 			// Wait till we finish whatever we are running.
-			getEngineAs<VulkanEngine>().waitIdle();
+			getDevice().waitIdle();
 
 			// Destroy the semaphores.
 			destroySyncObjects();
@@ -104,7 +104,7 @@ namespace Flint
 				return;
 
 			// Acquire the next swapchain image.
-			const auto result = getEngineAs<VulkanEngine>().getDeviceTable().vkAcquireNextImageKHR(getEngineAs<VulkanEngine>().getLogicalDevice(), m_Swapchain, std::numeric_limits<uint64_t>::max(), m_InFlightSemaphores[m_FrameIndex], VK_NULL_HANDLE, &m_ImageIndex);
+			const auto result = getDevice().getDeviceTable().vkAcquireNextImageKHR(getDevice().getLogicalDevice(), m_Swapchain, std::numeric_limits<uint64_t>::max(), m_InFlightSemaphores[m_FrameIndex], VK_NULL_HANDLE, &m_ImageIndex);
 			if (result == VkResult::VK_ERROR_OUT_OF_DATE_KHR || result == VkResult::VK_SUBOPTIMAL_KHR)
 			{
 				recreate();
@@ -120,7 +120,7 @@ namespace Flint
 		{
 			// Get the surface capabilities.
 			VkSurfaceCapabilitiesKHR surfaceCapabilities = {};
-			FLINT_VK_ASSERT(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(getEngineAs<VulkanEngine>().getPhysicalDevice(), m_Surface, &surfaceCapabilities), "Failed to get the surface capabilities!");
+			FLINT_VK_ASSERT(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(getDevice().getPhysicalDevice(), m_Surface, &surfaceCapabilities), "Failed to get the surface capabilities!");
 
 			// Resolve the best buffer count.
 			uint32_t bufferCount = surfaceCapabilities.minImageCount + 1;
@@ -141,23 +141,23 @@ namespace Flint
 
 		void VulkanWindow::createSurface()
 		{
-			if (SDL_Vulkan_CreateSurface(m_pWindow, getEngine().getInstanceAs<VulkanInstance>().getInstance(), &m_Surface) == SDL_FALSE)
+			if (SDL_Vulkan_CreateSurface(m_pWindow, getDevice().getInstance().getInstance(), &m_Surface) == SDL_FALSE)
 				throw BackendError("Failed to create the window surface!");
 		}
 
 		void VulkanWindow::destroySurface()
 		{
-			vkDestroySurfaceKHR(getEngine().getInstanceAs<VulkanInstance>().getInstance(), m_Surface, nullptr);
+			vkDestroySurfaceKHR(getDevice().getInstance().getInstance(), m_Surface, nullptr);
 		}
 
 		void VulkanWindow::clearSwapchain()
 		{
 			// Terminate the image views.
 			for (auto view : m_SwapchainImageViews)
-				getEngineAs<VulkanEngine>().getDeviceTable().vkDestroyImageView(getEngineAs<VulkanEngine>().getLogicalDevice(), view, nullptr);
+				getDevice().getDeviceTable().vkDestroyImageView(getDevice().getLogicalDevice(), view, nullptr);
 
 			// Now we can destroy the swapchain.
-			getEngineAs<VulkanEngine>().getDeviceTable().vkDestroySwapchainKHR(getEngineAs<VulkanEngine>().getLogicalDevice(), m_Swapchain, nullptr);
+			getDevice().getDeviceTable().vkDestroySwapchainKHR(getDevice().getLogicalDevice(), m_Swapchain, nullptr);
 
 			// Clean the variables.
 			m_Swapchain = VK_NULL_HANDLE;
@@ -187,7 +187,7 @@ namespace Flint
 			for (auto itr = m_SwapchainImages.begin(); itr != m_SwapchainImages.end(); ++itr, ++pArray)
 			{
 				viewCreateInfo.image = *itr;
-				FLINT_VK_ASSERT(getEngineAs<VulkanEngine>().getDeviceTable().vkCreateImageView(getEngineAs<VulkanEngine>().getLogicalDevice(), &viewCreateInfo, nullptr, pArray), "Failed to create the swapchain image view!");
+				FLINT_VK_ASSERT(getDevice().getDeviceTable().vkCreateImageView(getDevice().getLogicalDevice(), &viewCreateInfo, nullptr, pArray), "Failed to create the swapchain image view!");
 			}
 		}
 
@@ -195,27 +195,27 @@ namespace Flint
 		{
 			// Get the surface capabilities.
 			VkSurfaceCapabilitiesKHR surfaceCapabilities = {};
-			FLINT_VK_ASSERT(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(getEngineAs<VulkanEngine>().getPhysicalDevice(), m_Surface, &surfaceCapabilities), "Failed to get the surface capabilities!");
+			FLINT_VK_ASSERT(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(getDevice().getPhysicalDevice(), m_Surface, &surfaceCapabilities), "Failed to get the surface capabilities!");
 
 			// Get the surface formats.
 			uint32_t formatCount = 0;
-			FLINT_VK_ASSERT(vkGetPhysicalDeviceSurfaceFormatsKHR(getEngineAs<VulkanEngine>().getPhysicalDevice(), m_Surface, &formatCount, nullptr), "Failed to get the surface format count!");
+			FLINT_VK_ASSERT(vkGetPhysicalDeviceSurfaceFormatsKHR(getDevice().getPhysicalDevice(), m_Surface, &formatCount, nullptr), "Failed to get the surface format count!");
 
 			if (formatCount == 0)
 				throw BackendError("No suitable surface formats found!");
 
 			std::vector<VkSurfaceFormatKHR> surfaceFormats(formatCount);
-			FLINT_VK_ASSERT(vkGetPhysicalDeviceSurfaceFormatsKHR(getEngineAs<VulkanEngine>().getPhysicalDevice(), m_Surface, &formatCount, surfaceFormats.data()), "Failed to get the surface formats!");
+			FLINT_VK_ASSERT(vkGetPhysicalDeviceSurfaceFormatsKHR(getDevice().getPhysicalDevice(), m_Surface, &formatCount, surfaceFormats.data()), "Failed to get the surface formats!");
 
 			// Get the present modes.
 			uint32_t presentModeCount = 0;
-			FLINT_VK_ASSERT(vkGetPhysicalDeviceSurfacePresentModesKHR(getEngineAs<VulkanEngine>().getPhysicalDevice(), m_Surface, &presentModeCount, nullptr), "Failed to get the surface present mode count!");
+			FLINT_VK_ASSERT(vkGetPhysicalDeviceSurfacePresentModesKHR(getDevice().getPhysicalDevice(), m_Surface, &presentModeCount, nullptr), "Failed to get the surface present mode count!");
 
 			if (presentModeCount == 0)
 				throw BackendError("No suitable present formats found!");
 
 			std::vector<VkPresentModeKHR> presentModes(presentModeCount);
-			FLINT_VK_ASSERT(vkGetPhysicalDeviceSurfacePresentModesKHR(getEngineAs<VulkanEngine>().getPhysicalDevice(), m_Surface, &presentModeCount, presentModes.data()), "Failed to get the surface present modes!");
+			FLINT_VK_ASSERT(vkGetPhysicalDeviceSurfacePresentModesKHR(getDevice().getPhysicalDevice(), m_Surface, &presentModeCount, presentModes.data()), "Failed to get the surface present modes!");
 
 			// Check if we have the present mode we need.
 			bool bPresentModeAvailable = false;
@@ -277,8 +277,8 @@ namespace Flint
 
 			// Resolve the queue families if the two queues are different.
 			uint32_t queueFamilyindices[2] = {
-					getEngineAs<VulkanEngine>().getGraphicsQueue().m_Family,
-					getEngineAs<VulkanEngine>().getTransferQueue().m_Family
+					getDevice().getGraphicsQueue().m_Family,
+					getDevice().getTransferQueue().m_Family
 			};
 
 			if (queueFamilyindices[0] != queueFamilyindices[1])
@@ -288,11 +288,11 @@ namespace Flint
 				swapchainCreateInfo.pQueueFamilyIndices = queueFamilyindices;
 			}
 
-			FLINT_VK_ASSERT(getEngineAs<VulkanEngine>().getDeviceTable().vkCreateSwapchainKHR(getEngineAs<VulkanEngine>().getLogicalDevice(), &swapchainCreateInfo, nullptr, &m_Swapchain), "Failed to create the swapchain!");
+			FLINT_VK_ASSERT(getDevice().getDeviceTable().vkCreateSwapchainKHR(getDevice().getLogicalDevice(), &swapchainCreateInfo, nullptr, &m_Swapchain), "Failed to create the swapchain!");
 
 			// Get the image views.
 			m_SwapchainImages.resize(swapchainCreateInfo.minImageCount);
-			FLINT_VK_ASSERT(getEngineAs<VulkanEngine>().getDeviceTable().vkGetSwapchainImagesKHR(getEngineAs<VulkanEngine>().getLogicalDevice(), m_Swapchain, &swapchainCreateInfo.minImageCount, m_SwapchainImages.data()), "Failed to get the swapchain images!");
+			FLINT_VK_ASSERT(getDevice().getDeviceTable().vkGetSwapchainImagesKHR(getDevice().getLogicalDevice(), m_Swapchain, &swapchainCreateInfo.minImageCount, m_SwapchainImages.data()), "Failed to get the swapchain images!");
 
 			// Finally we can resolve the swapchain image views.
 			resolveImageViews();
@@ -312,8 +312,8 @@ namespace Flint
 			// Iterate over and create the semaphores.
 			for (uint8_t i = 0; i < m_FrameCount; i++)
 			{
-				FLINT_VK_ASSERT(getEngineAs<VulkanEngine>().getDeviceTable().vkCreateSemaphore(getEngineAs<VulkanEngine>().getLogicalDevice(), &createInfo, nullptr, &m_RenderFinishedSemaphores.emplace_back()), "Failed to create the frame buffer!");
-				FLINT_VK_ASSERT(getEngineAs<VulkanEngine>().getDeviceTable().vkCreateSemaphore(getEngineAs<VulkanEngine>().getLogicalDevice(), &createInfo, nullptr, &m_InFlightSemaphores.emplace_back()), "Failed to create the frame buffer!");
+				FLINT_VK_ASSERT(getDevice().getDeviceTable().vkCreateSemaphore(getDevice().getLogicalDevice(), &createInfo, nullptr, &m_RenderFinishedSemaphores.emplace_back()), "Failed to create the frame buffer!");
+				FLINT_VK_ASSERT(getDevice().getDeviceTable().vkCreateSemaphore(getDevice().getLogicalDevice(), &createInfo, nullptr, &m_InFlightSemaphores.emplace_back()), "Failed to create the frame buffer!");
 			}
 		}
 
@@ -321,8 +321,8 @@ namespace Flint
 		{
 			for (uint32_t i = 0; i < m_FrameCount; i++)
 			{
-				getEngineAs<VulkanEngine>().getDeviceTable().vkDestroySemaphore(getEngineAs<VulkanEngine>().getLogicalDevice(), m_RenderFinishedSemaphores[i], nullptr);
-				getEngineAs<VulkanEngine>().getDeviceTable().vkDestroySemaphore(getEngineAs<VulkanEngine>().getLogicalDevice(), m_InFlightSemaphores[i], nullptr);
+				getDevice().getDeviceTable().vkDestroySemaphore(getDevice().getLogicalDevice(), m_RenderFinishedSemaphores[i], nullptr);
+				getDevice().getDeviceTable().vkDestroySemaphore(getDevice().getLogicalDevice(), m_InFlightSemaphores[i], nullptr);
 			}
 		}
 
@@ -387,12 +387,12 @@ namespace Flint
 			renderPassCreateInfo.dependencyCount = 2;
 			renderPassCreateInfo.pDependencies = subpassDependencies.data();
 
-			FLINT_VK_ASSERT(getEngineAs<VulkanEngine>().getDeviceTable().vkCreateRenderPass(getEngineAs<VulkanEngine>().getLogicalDevice(), &renderPassCreateInfo, nullptr, &m_RenderPass), "Failed to create render pass!");
+			FLINT_VK_ASSERT(getDevice().getDeviceTable().vkCreateRenderPass(getDevice().getLogicalDevice(), &renderPassCreateInfo, nullptr, &m_RenderPass), "Failed to create render pass!");
 		}
 
 		void VulkanWindow::destroyRenderPass()
 		{
-			getEngineAs<VulkanEngine>().getDeviceTable().vkDestroyRenderPass(getEngineAs<VulkanEngine>().getLogicalDevice(), m_RenderPass, nullptr);
+			getDevice().getDeviceTable().vkDestroyRenderPass(getDevice().getLogicalDevice(), m_RenderPass, nullptr);
 		}
 
 		void VulkanWindow::createFramebuffers()
@@ -412,14 +412,14 @@ namespace Flint
 			for (uint8_t i = 0; i < m_FrameCount; i++)
 			{
 				frameBufferCreateInfo.pAttachments = &m_SwapchainImageViews[i];
-				FLINT_VK_ASSERT(getEngineAs<VulkanEngine>().getDeviceTable().vkCreateFramebuffer(getEngineAs<VulkanEngine>().getLogicalDevice(), &frameBufferCreateInfo, nullptr, &m_Framebuffers[i]), "Failed to create the frame buffer!");
+				FLINT_VK_ASSERT(getDevice().getDeviceTable().vkCreateFramebuffer(getDevice().getLogicalDevice(), &frameBufferCreateInfo, nullptr, &m_Framebuffers[i]), "Failed to create the frame buffer!");
 			}
 		}
 
 		void VulkanWindow::destroyFramebuffers()
 		{
 			for (const auto framebuffer : m_Framebuffers)
-				getEngineAs<VulkanEngine>().getDeviceTable().vkDestroyFramebuffer(getEngineAs<VulkanEngine>().getLogicalDevice(), framebuffer, nullptr);
+				getDevice().getDeviceTable().vkDestroyFramebuffer(getDevice().getLogicalDevice(), framebuffer, nullptr);
 		}
 
 		void VulkanWindow::recreate()
@@ -432,19 +432,19 @@ namespace Flint
 			}
 
 			// Wait till we finish whatever we are running.
-			getEngineAs<VulkanEngine>().waitIdle();
+			getDevice().waitIdle();
 
 			// Get the new extent.
 			refreshExtent();
 
 			// Destroy the previous stuff.
-			getEngineAs<VulkanEngine>().getDeviceTable().vkDestroyRenderPass(getEngineAs<VulkanEngine>().getLogicalDevice(), m_RenderPass, nullptr);
+			getDevice().getDeviceTable().vkDestroyRenderPass(getDevice().getLogicalDevice(), m_RenderPass, nullptr);
 
 			for (uint32_t i = 0; i < m_FrameCount; i++)
 			{
-				getEngineAs<VulkanEngine>().getDeviceTable().vkDestroyFramebuffer(getEngineAs<VulkanEngine>().getLogicalDevice(), m_Framebuffers[i], nullptr);
-				getEngineAs<VulkanEngine>().getDeviceTable().vkDestroySemaphore(getEngineAs<VulkanEngine>().getLogicalDevice(), m_RenderFinishedSemaphores[i], nullptr);
-				getEngineAs<VulkanEngine>().getDeviceTable().vkDestroySemaphore(getEngineAs<VulkanEngine>().getLogicalDevice(), m_InFlightSemaphores[i], nullptr);
+				getDevice().getDeviceTable().vkDestroyFramebuffer(getDevice().getLogicalDevice(), m_Framebuffers[i], nullptr);
+				getDevice().getDeviceTable().vkDestroySemaphore(getDevice().getLogicalDevice(), m_RenderFinishedSemaphores[i], nullptr);
+				getDevice().getDeviceTable().vkDestroySemaphore(getDevice().getLogicalDevice(), m_InFlightSemaphores[i], nullptr);
 			}
 
 			m_RenderFinishedSemaphores.clear();
@@ -452,7 +452,7 @@ namespace Flint
 
 			// Make sure to destroy the old surface!
 			clearSwapchain();
-			vkDestroySurfaceKHR(getEngineAs<VulkanEngine>().getInstanceAs<VulkanInstance>().getInstance(), m_Surface, nullptr);
+			vkDestroySurfaceKHR(getDevice().getInstance().getInstance(), m_Surface, nullptr);
 
 			// Now we can redo it.
 			createSurface();
@@ -509,7 +509,7 @@ namespace Flint
 				m_pCommandBuffers->changeImageLayout(currentSwapchainImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_ASPECT_COLOR_BIT);
 
 				// Copy the image.
-				getEngineAs<VulkanEngine>().getDeviceTable().vkCmdCopyImage(m_pCommandBuffers->getCurrentBuffer(), pAttachment->getImage(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, currentSwapchainImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &imageCopy);
+				getDevice().getDeviceTable().vkCmdCopyImage(m_pCommandBuffers->getCurrentBuffer(), pAttachment->getImage(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, currentSwapchainImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &imageCopy);
 
 				// Change back to previous.
 				m_pCommandBuffers->changeImageLayout(pAttachment->getImage(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, pAttachment->getLayout(), subresourceLayers.aspectMask);
@@ -554,7 +554,7 @@ namespace Flint
 			presentInfo.pResults = VK_NULL_HANDLE;
 
 			// Present it to the surface.
-			const auto result = getEngineAs<VulkanEngine>().getDeviceTable().vkQueuePresentKHR(getEngineAs<VulkanEngine>().getTransferQueue().m_Queue, &presentInfo);
+			const auto result = getDevice().getDeviceTable().vkQueuePresentKHR(getDevice().getTransferQueue().m_Queue, &presentInfo);
 			if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
 				recreate();
 

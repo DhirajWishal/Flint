@@ -4,6 +4,7 @@
 #pragma once
 
 #include "RenderTarget.hpp"
+#include "StaticInitializer.hpp"
 
 namespace Flint
 {
@@ -11,18 +12,24 @@ namespace Flint
 	 * Window class.
 	 * This is a special class, as it contains all the processing stages and finally renders the image to the user using the window created as specified.
 	 */
-	class Window : public EngineBoundObject
+	template<class TDevice>
+	class Window : public DeviceBoundObject<TDevice>
 	{
 	public:
 		/**
 		 * Explicit constructor.
 		 *
-		 * @param engine The engine to which this window is bound to.
+		 * @param device The device to which this window is bound to.
 		 * @param title The window title.
 		 * @param width The width of the window. If set to 0 then the window is opened maximized. If set to -1, the window is open in full screen mode.
 		 * @param height The height of the window. Same as the width, if set to 0 then the window is opened maximized. If set to -1, the window is open in full screen mode.
 		 */
-		explicit Window(Engine& engine, std::string&& title, uint32_t width = -1, uint32_t height = -1);
+		explicit Window(TDevice& device, std::string&& title, uint32_t width = -1, uint32_t height = -1)
+			: DeviceBoundObject<TDevice>(device), m_Title(std::move(title)), m_Width(width), m_Height(height)
+		{
+			// Initialize the static content.
+			static StaticInitializer initializer;
+		}
 
 		/**
 		 * Default virtual destructor.
@@ -42,7 +49,7 @@ namespace Flint
 		 * @param pRenderTarget The render target dependency.
 		 * @param attachment The render target's attachment to copy.
 		 */
-		void setDependency(const RenderTarget* pRenderTarget, uint32_t attachment);
+		void setDependency(const RenderTarget<TDevice>* pRenderTarget, uint32_t attachment) { m_Dependency = std::make_pair(pRenderTarget, attachment); }
 
 		/**
 		 * Get the title of the window.
@@ -76,7 +83,7 @@ namespace Flint
 		std::string m_Title;
 
 	protected:
-		std::pair<const RenderTarget*, uint32_t> m_Dependency;
+		std::pair<const RenderTarget<TDevice>*, uint32_t> m_Dependency;
 
 		uint32_t m_Width = 0;
 		uint32_t m_Height = 0;

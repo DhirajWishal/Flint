@@ -6,7 +6,7 @@
 #include "Core/Rasterizer.hpp"
 #include "Core/Containers/SparseArray.hpp"
 
-#include "VulkanEngine.hpp"
+#include "VulkanDevice.hpp"
 #include "VulkanCommandBuffers.hpp"
 #include "VulkanRenderTargetAttachment.hpp"
 #include "VulkanGraphicsPipeline.hpp"
@@ -18,34 +18,13 @@ namespace Flint
 		/**
 		 * Vulkan rasterizer class.
 		 */
-		class VulkanRasterizer final : public Rasterizer
+		class VulkanRasterizer final : public Rasterizer<VulkanDevice>
 		{
-			/**
-			 * Draw entry structure.
-			 */
-			struct DrawEntry final
-			{
-				Geometry m_Geometry;
-				std::vector<ResourceBindingTable> m_BindingTables;
-			};
-
-			/**
-			 * Pipeline group structure.
-			 * This contains a single set of pipelines.
-			 */
-			struct PipelineGroup final
-			{
-				std::unordered_map<uint64_t, uint32_t> m_MeshPipelineHashes;	// mesh -> pipeline
-				SparseArray<std::unique_ptr<VulkanGraphicsPipeline>, uint32_t> m_pPipelines;
-
-				std::vector<DrawEntry> m_DrawEntries;
-			};
-
 		public:
 			/**
 			 * Explicit constructor.
 			 *
-			 * @param engine The engine reference.
+			 * @param device The device reference.
 			 * @param width The width of the render target.
 			 * @param height The height of the render target.
 			 * @param frameCount The number of frames in the render target. This is usually set automatically by the Window.
@@ -53,7 +32,7 @@ namespace Flint
 			 * @param multisample The multisample count. Default is One.
 			 * @param exclusiveBuffering Whether or not to use one buffer/ attachment per frame. Default is false.
 			 */
-			explicit VulkanRasterizer(Engine& engine, uint32_t width, uint32_t height, uint32_t frameCount, std::vector<AttachmentDescription>&& attachmentDescriptions, Multisample multisample = Multisample::One, bool exclusiveBuffering = false);
+			explicit VulkanRasterizer(VulkanDevice& device, uint32_t width, uint32_t height, uint32_t frameCount, std::vector<AttachmentDescription>&& attachmentDescriptions, Multisample multisample = Multisample::One, bool exclusiveBuffering = false);
 
 			/**
 			 * Destructor.
@@ -75,16 +54,12 @@ namespace Flint
 			void resize(uint32_t width, uint32_t height) override;
 
 			/**
-			 * Register a geometry to the rasterizer.
-			 * You can add the same geometry multiple times if different pipelines are being used.
+			 * Get the render target attachment at a given index.
 			 *
-			 * @param geometry The geometry to add.
-			 * @param specification The pipeline specification to use.
-			 * @param meshBinder The special callback that will be called on every single mesh in the geometry, and will be used to create the pipeline for each mesh.
-			 * This is required as each mesh might need it's own pipeline because of the varying materials, inputs and so on. Note that if a pipeline exists for the same
-			 * specification, a new one will not be created, the existing one will be used instead.
+			 * @param index The index of the attachment.
+			 * @return The attachment.
 			 */
-			void registerGeometry(const Geometry& geometry, RasterizingPipelineSpecification&& specification, std::function<ResourceBindingTable(const Mesh&, const Geometry&, const std::vector<ResourceBinding>&)>&& meshBinder) override;
+			[[nodiscard]] RenderTargetAttachment<VulkanDevice>& getAttachment(uint32_t index) override;
 
 			/**
 			 * Get the render target attachment at a given index.
@@ -92,15 +67,7 @@ namespace Flint
 			 * @param index The index of the attachment.
 			 * @return The attachment.
 			 */
-			[[nodiscard]] RenderTargetAttachment& getAttachment(uint32_t index) override;
-
-			/**
-			 * Get the render target attachment at a given index.
-			 *
-			 * @param index The index of the attachment.
-			 * @return The attachment.
-			 */
-			[[nodiscard]] const RenderTargetAttachment& getAttachment(uint32_t index) const override;
+			[[nodiscard]] const RenderTargetAttachment<VulkanDevice>& getAttachment(uint32_t index) const override;
 
 			/**
 			 * Get the render pass.
@@ -143,7 +110,6 @@ namespace Flint
 			void destroyFramebuffers();
 
 		private:
-			std::unordered_map<uint64_t, PipelineGroup> m_Pipelines;
 			std::vector<std::vector<std::unique_ptr<VulkanRenderTargetAttachment>>> m_pAttachments;
 
 			std::vector<VkFramebuffer> m_Framebuffers;

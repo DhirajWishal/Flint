@@ -47,7 +47,7 @@ namespace Flint
 			allocationCreateInfo.usage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
 
 			// Create the image.
-			FLINT_VK_ASSERT(vmaCreateImage(getEngineAs<VulkanEngine>().getAllocator(), &imageCreateInfo, &allocationCreateInfo, &m_Image, &m_Allocation, nullptr), "Failed to create the image!");
+			FLINT_VK_ASSERT(vmaCreateImage(getDevice().getAllocator(), &imageCreateInfo, &allocationCreateInfo, &m_Image, &m_Allocation, nullptr), "Failed to create the image!");
 		}
 
 		void VulkanRenderTargetAttachment::createImageView(VkImageAspectFlags aspectFlags)
@@ -69,17 +69,17 @@ namespace Flint
 			imageViewCreateInfo.subresourceRange.baseArrayLayer = 0;
 			imageViewCreateInfo.subresourceRange.layerCount = 1;
 
-			FLINT_VK_ASSERT(getEngineAs<VulkanEngine>().getDeviceTable().vkCreateImageView(getEngineAs<VulkanEngine>().getLogicalDevice(), &imageViewCreateInfo, nullptr, &m_ImageView), "Failed to create the image view!");
+			FLINT_VK_ASSERT(getDevice().getDeviceTable().vkCreateImageView(getDevice().getLogicalDevice(), &imageViewCreateInfo, nullptr, &m_ImageView), "Failed to create the image view!");
 		}
 
 		void VulkanRenderTargetAttachment::destroyImage()
 		{
-			vmaDestroyImage(getEngineAs<VulkanEngine>().getAllocator(), m_Image, m_Allocation);
+			vmaDestroyImage(getDevice().getAllocator(), m_Image, m_Allocation);
 		}
 
 		void VulkanRenderTargetAttachment::destroyImageView()
 		{
-			getEngineAs<VulkanEngine>().getDeviceTable().vkDestroyImageView(getEngineAs<VulkanEngine>().getLogicalDevice(), m_ImageView, nullptr);
+			getDevice().getDeviceTable().vkDestroyImageView(getDevice().getLogicalDevice(), m_ImageView, nullptr);
 		}
 	}
 }

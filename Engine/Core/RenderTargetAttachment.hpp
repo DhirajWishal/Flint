@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "EngineBoundObject.hpp"
+#include "DeviceBoundObject.hpp"
 
 namespace Flint
 {
@@ -11,21 +11,22 @@ namespace Flint
 	 * Render target attachment class.
 	 * This class contains information about a single render target attachment image.
 	 */
-	class RenderTargetAttachment : public EngineBoundObject
+	template<class TDevice>
+	class RenderTargetAttachment : public DeviceBoundObject<TDevice>
 	{
 	public:
 		/**
 		 * Explicit constructor.
 		 *
-		 * @param engine The engine reference.
+		 * @param device The device reference.
 		 * @param width The width of the attachment.
 		 * @param height The height of the attachment.
 		 * @param type The type of the attachment.
 		 * @param format The format of the attachment.
 		 * @param multisample The multisample count to use.
 		 */
-		explicit RenderTargetAttachment(Engine& engine, uint32_t width, uint32_t height, AttachmentType type, PixelFormat format, Multisample multisample)
-			: EngineBoundObject(engine), m_Width(width), m_Height(height), m_Type(type), m_Format(format), m_Multisample(multisample) {}
+		explicit RenderTargetAttachment(TDevice& device, uint32_t width, uint32_t height, AttachmentType type, PixelFormat format, Multisample multisample)
+			: DeviceBoundObject<TDevice>(device), m_Width(width), m_Height(height), m_Type(type), m_Format(format), m_Multisample(multisample) {}
 
 		/**
 		 * Default virtual destructor.

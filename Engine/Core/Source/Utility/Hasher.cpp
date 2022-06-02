@@ -39,19 +39,6 @@ namespace Flint
 		return static_cast<uint64_t>(XXH64(hashes, sizeof(hashes), 0));
 	}
 
-	uint64_t GenerateHash(const Mesh& mesh)
-	{
-		const auto vertex = mesh.getVertexDescriptor();
-		const auto instance = mesh.getInstanceDescriptor();
-
-		const XXH64_hash_t hashes[] = {
-			XXH64(vertex.data(), vertex.size() * sizeof(DataType), 0),
-			XXH64(instance.data(), instance.size() * sizeof(DataType), 0)
-		};
-
-		return static_cast<uint64_t>(XXH64(hashes, sizeof(hashes), 0));
-	}
-
 	uint64_t GenerateHash(const VertexDescriptor& descriptor)
 	{
 		return static_cast<uint64_t>(XXH64(descriptor.data(), sizeof(DataType) * descriptor.size(), 0));

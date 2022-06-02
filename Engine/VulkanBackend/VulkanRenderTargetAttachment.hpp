@@ -4,7 +4,7 @@
 #pragma once
 
 #include "Core/RenderTargetAttachment.hpp"
-#include "VulkanEngine.hpp"
+#include "VulkanDevice.hpp"
 
 namespace Flint
 {
@@ -14,21 +14,21 @@ namespace Flint
 		 * Vulkan depth attachment class.
 		 * This contains the depth image and other utility methods.
 		 */
-		class VulkanRenderTargetAttachment : public RenderTargetAttachment
+		class VulkanRenderTargetAttachment : public RenderTargetAttachment<VulkanDevice>
 		{
 		public:
 			/**
 			 * Explicit constructor.
 			 *
-			 * @param engine The engine reference.
+			 * @param device The device reference.
 			 * @param width The width of the attachment.
 			 * @param height The height of the attachment.
 			 * @param type The type of the attachment.
 			 * @param format The format of the attachment.
 			 * @param multisample The multisample count to use.
 			 */
-			explicit VulkanRenderTargetAttachment(Engine& engine, uint32_t width, uint32_t height, AttachmentType type, PixelFormat format, Multisample multisample)
-				: RenderTargetAttachment(engine, width, height, type, format, multisample) {}
+			explicit VulkanRenderTargetAttachment(VulkanDevice& device, uint32_t width, uint32_t height, AttachmentType type, PixelFormat format, Multisample multisample)
+				: RenderTargetAttachment(device, width, height, type, format, multisample) {}
 
 			/**
 			 * Virtual destructor.

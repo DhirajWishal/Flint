@@ -4,7 +4,6 @@
 #include "VulkanBackend/VulkanWindow.hpp"
 #include "VulkanBackend/VulkanRasterizer.hpp"
 #include "Core/EventSystem/EventSystem.hpp"
-#include "Core/Loader/GeometryLoader.hpp"
 #include "Engine/Camera/MonoCamera.hpp"
 #include "Engine/Utility/FrameTimer.hpp"
 
@@ -40,69 +39,42 @@ constexpr auto Validation = false;
 
 int main()
 {
-	{
-		auto engine = Flint::GraphicsEngine("Sandbox", 1, Validation, Flint::BackendAPI::Vulkan);
-		auto device = engine.createDevice();
-		engine.destroyDevice(device.get());
-	}
+	auto engine = Flint::GraphicsEngine("Sandbox", 1, Validation, Flint::BackendAPI::Vulkan);
+	auto device = engine.createDevice();
+	engine.destroyDevice(device.get());
 
-	auto instance = Flint::VulkanBackend::VulkanInstance("Sandbox", 1, Validation);
 	auto eventSystem = Flint::EventSystem();
 
-	// Note that the scope is here because the engine needs to be destructed BEFORE destroying the instance.
 	{
-		auto pEngine = instance.createEngine();
+		auto camera = Flint::MonoCamera(glm::vec3(0.0f), static_cast<float>(1280) / 720);
+		camera.m_MovementBias = 50;
+
+		Flint::FrameTimer timer;
+		while (!eventSystem.shouldClose())
 		{
-			auto pWindow = pEngine->createWindow("Sandbox");
-			auto pRasterizer = pEngine->createRasterizer(pWindow->getWidth(), pWindow->getHeight(), pWindow->getFrameCount(), { Flint::Defaults::ColorAttachmentDescription, Flint::Defaults::DepthAttachmentDescription });
-			pWindow->setDependency(pRasterizer.get(), 0);
 
-			auto buffer = pEngine->createBuffer(sizeof(float[2][4][4]), Flint::BufferUsage::Uniform);
-			auto camera = Flint::MonoCamera(glm::vec3(0.0f), static_cast<float>(pWindow->getWidth()) / pWindow->getHeight());
-			camera.m_MovementBias = 50;
+			const auto duration = timer.tick();
+			const auto events = eventSystem.poll();
 
-			pRasterizer->registerGeometry(
-				Flint::LoadGeometry(pEngine->getDefaultGeometryStore(), FLINT_GLTF_ASSET_PATH "Sponza/glTF/Sponza.gltf", Flint::VertexData::Position | Flint::VertexData::Normal | Flint::VertexData::Texture0),
-				GetSpecification(),
-				[buffer](const Flint::Mesh& mesh, [[maybe_unused]] const Flint::Geometry& geometry, [[maybe_unused]] const std::vector<Flint::ResourceBinding>& bindings)
-				{
-					Flint::ResourceBindingTable bindingTable;
-					bindingTable.bind(0, buffer);
-
-					return bindingTable;
-				}
-			);
-
-			Flint::FrameTimer timer;
-			while (!eventSystem.shouldClose())
+			if (events == Flint::EventType::Keyboard)
 			{
-				pWindow->update();
+				if (eventSystem.keyboard().m_KeyW)
+					camera.moveForward(duration.count());
 
-				const auto duration = timer.tick();
-				const auto events = eventSystem.poll();
+				if (eventSystem.keyboard().m_KeyS)
+					camera.moveBackward(duration.count());
 
-				if (events == Flint::EventType::Keyboard)
-				{
-					if (eventSystem.keyboard().m_KeyW)
-						camera.moveForward(duration.count());
+				if (eventSystem.keyboard().m_KeyA)
+					camera.moveLeft(duration.count());
 
-					if (eventSystem.keyboard().m_KeyS)
-						camera.moveBackward(duration.count());
-
-					if (eventSystem.keyboard().m_KeyA)
-						camera.moveLeft(duration.count());
-
-					if (eventSystem.keyboard().m_KeyD)
-						camera.moveRight(duration.count());
-				}
-
-				camera.update();
-				camera.copyToBuffer(*pEngine, buffer);
-				pRasterizer->update();
+				if (eventSystem.keyboard().m_KeyD)
+					camera.moveRight(duration.count());
 			}
 
-			const auto ss = timer.tick();
+			camera.update();
 		}
+
+		const auto ss = timer.tick();
 	}
 
 	return 0;

@@ -30,9 +30,4 @@ namespace Flint
 		m_Matrix.m_Projection = glm::perspective(glm::radians(m_FieldOfView), m_AspectRatio, m_NearPlane, m_FarPlane);
 		m_Matrix.m_Projection[1][1] *= -1.0f;
 	}
-
-	void MonoCamera::copyToBuffer(Engine& engine, BufferHandle buffer) const
-	{
-		engine.copyToBuffer(buffer, reinterpret_cast<const std::byte*>(&m_Matrix), sizeof(Matrix));
-	}
 }

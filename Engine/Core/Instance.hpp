@@ -81,13 +81,6 @@ namespace Flint
 		 */
 		[[nodiscard]] uint32_t getApplicationVersion() const { return m_ApplicationVersion; }
 
-		/**
-		 * Create a new engine.
-		 *
-		 * @return The engine pointer.
-		 */
-		[[nodiscard]] virtual std::unique_ptr<Engine> createEngine() = 0;
-
 	private:
 		const std::string m_ApplicationName;
 		const uint32_t m_ApplicationVersion;

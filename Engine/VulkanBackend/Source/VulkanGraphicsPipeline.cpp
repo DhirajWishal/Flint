@@ -279,8 +279,8 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanGraphicsPipeline::VulkanGraphicsPipeline(VulkanEngine& engine, VulkanRasterizer& rasterizer, const RasterizingPipelineSpecification& specification, std::vector<VkVertexInputBindingDescription>&& inputBindings, std::vector<VkVertexInputAttributeDescription>&& inputAttributes)
-			: VulkanPipeline(engine, specification.m_CacheFile), VulkanDescriptorSetManager(engine, rasterizer.getFrameCount()), m_Rasterizer(rasterizer), m_VertexBindings(std::move(inputBindings)), m_VertexAttributes(std::move(inputAttributes))
+		VulkanGraphicsPipeline::VulkanGraphicsPipeline(VulkanDevice& device, VulkanRasterizer& rasterizer, const RasterizingPipelineSpecification& specification, std::vector<VkVertexInputBindingDescription>&& inputBindings, std::vector<VkVertexInputAttributeDescription>&& inputAttributes)
+			: VulkanPipeline(device, specification.m_CacheFile), VulkanDescriptorSetManager(device, rasterizer.getFrameCount()), m_Rasterizer(rasterizer), m_VertexBindings(std::move(inputBindings)), m_VertexAttributes(std::move(inputAttributes))
 		{
 			// Resolve shader information.
 			std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
@@ -312,7 +312,7 @@ namespace Flint
 
 		void VulkanGraphicsPipeline::recreate()
 		{
-			getEngine().getDeviceTable().vkDestroyPipeline(getEngine().getLogicalDevice(), m_Pipeline, nullptr);
+			getDevice().getDeviceTable().vkDestroyPipeline(getDevice().getLogicalDevice(), m_Pipeline, nullptr);
 			createPipeline();
 		}
 
@@ -351,7 +351,7 @@ namespace Flint
 			createInfo.pCode = code.getCode().data();
 
 			VkShaderModule shaderModule = VK_NULL_HANDLE;
-			FLINT_VK_ASSERT(getEngine().getDeviceTable().vkCreateShaderModule(getEngine().getLogicalDevice(), &createInfo, nullptr, &shaderModule), "Failed to create the shader module!");
+			FLINT_VK_ASSERT(getDevice().getDeviceTable().vkCreateShaderModule(getDevice().getLogicalDevice(), &createInfo, nullptr, &shaderModule), "Failed to create the shader module!");
 
 			// Create the shader stage info.
 			auto& stageInfo = m_ShaderStageCreateInfo.emplace_back();
@@ -375,7 +375,7 @@ namespace Flint
 			createInfo.setLayoutCount = 1;
 			createInfo.pSetLayouts = &m_DescriptorSetLayout;
 
-			FLINT_VK_ASSERT(getEngine().getDeviceTable().vkCreatePipelineLayout(getEngine().getLogicalDevice(), &createInfo, nullptr, &m_PipelineLayout), "Failed to create the pipeline layout!");
+			FLINT_VK_ASSERT(getDevice().getDeviceTable().vkCreatePipelineLayout(getDevice().getLogicalDevice(), &createInfo, nullptr, &m_PipelineLayout), "Failed to create the pipeline layout!");
 		}
 
 		void VulkanGraphicsPipeline::setupDefaults(const RasterizingPipelineSpecification& specification)
@@ -527,13 +527,13 @@ namespace Flint
 			createInfo.basePipelineHandle = VK_NULL_HANDLE;
 			createInfo.basePipelineIndex = 0;
 
-			FLINT_VK_ASSERT(getEngine().getDeviceTable().vkCreateGraphicsPipelines(getEngine().getLogicalDevice(), m_PipelineCache, 1, &createInfo, nullptr, &m_Pipeline), "Failed to create the pipeline!");
+			FLINT_VK_ASSERT(getDevice().getDeviceTable().vkCreateGraphicsPipelines(getDevice().getLogicalDevice(), m_PipelineCache, 1, &createInfo, nullptr, &m_Pipeline), "Failed to create the pipeline!");
 		}
 
 		void VulkanGraphicsPipeline::destroyShaders()
 		{
 			for (const auto& shaders : m_ShaderStageCreateInfo)
-				getEngine().getDeviceTable().vkDestroyShaderModule(getEngine().getLogicalDevice(), shaders.module, nullptr);
+				getDevice().getDeviceTable().vkDestroyShaderModule(getDevice().getLogicalDevice(), shaders.module, nullptr);
 		}
 	}
 }

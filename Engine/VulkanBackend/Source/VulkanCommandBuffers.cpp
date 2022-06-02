@@ -5,23 +5,22 @@
 #include "VulkanBackend/VulkanMacros.hpp"
 #include "VulkanBackend/VulkanWindow.hpp"
 #include "VulkanBackend/VulkanRasterizer.hpp"
-#include "VulkanBackend/VulkanGeometryStore.hpp"
 
 namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanCommandBuffers::VulkanCommandBuffers(VulkanEngine& engine, uint32_t bufferCount, VkCommandBufferLevel level /*= VK_COMMAND_BUFFER_LEVEL_PRIMARY*/)
-			: m_Engine(engine)
+		VulkanCommandBuffers::VulkanCommandBuffers(VulkanDevice& device, uint32_t bufferCount, VkCommandBufferLevel level /*= VK_COMMAND_BUFFER_LEVEL_PRIMARY*/)
+			: m_Device(device)
 		{
 			// Create the command pool.
 			VkCommandPoolCreateInfo commandPoolCreateInfo = {};
 			commandPoolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 			commandPoolCreateInfo.pNext = nullptr;
 			commandPoolCreateInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-			commandPoolCreateInfo.queueFamilyIndex = m_Engine.getGraphicsQueue().m_Family;
+			commandPoolCreateInfo.queueFamilyIndex = m_Device.getGraphicsQueue().m_Family;
 
-			FLINT_VK_ASSERT(m_Engine.getDeviceTable().vkCreateCommandPool(m_Engine.getLogicalDevice(), &commandPoolCreateInfo, nullptr, &m_CommandPool), "Failed to create the command pool!");
+			FLINT_VK_ASSERT(m_Device.getDeviceTable().vkCreateCommandPool(m_Device.getLogicalDevice(), &commandPoolCreateInfo, nullptr, &m_CommandPool), "Failed to create the command pool!");
 
 			// Allocate the command buffers.
 			VkCommandBufferAllocateInfo allocateInfo = {};
@@ -32,7 +31,7 @@ namespace Flint
 			allocateInfo.commandBufferCount = bufferCount;
 
 			m_CommandBuffers.resize(bufferCount);
-			FLINT_VK_ASSERT(m_Engine.getDeviceTable().vkAllocateCommandBuffers(m_Engine.getLogicalDevice(), &allocateInfo, m_CommandBuffers.data()), "Failed to allocate command buffers!");
+			FLINT_VK_ASSERT(m_Device.getDeviceTable().vkAllocateCommandBuffers(m_Device.getLogicalDevice(), &allocateInfo, m_CommandBuffers.data()), "Failed to allocate command buffers!");
 
 			// Get the current command buffer.
 			m_CurrentCommandBuffer = m_CommandBuffers[m_CurrentIndex];
@@ -41,17 +40,17 @@ namespace Flint
 			createFences();
 		}
 
-		VulkanCommandBuffers::VulkanCommandBuffers(VulkanEngine& engine, VkCommandBufferLevel level /*= VK_COMMAND_BUFFER_LEVEL_PRIMARY*/)
-			: m_Engine(engine)
+		VulkanCommandBuffers::VulkanCommandBuffers(VulkanDevice& device, VkCommandBufferLevel level /*= VK_COMMAND_BUFFER_LEVEL_PRIMARY*/)
+			: m_Device(device)
 		{
 			// Create the command pool.
 			VkCommandPoolCreateInfo commandPoolCreateInfo = {};
 			commandPoolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 			commandPoolCreateInfo.pNext = nullptr;
 			commandPoolCreateInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-			commandPoolCreateInfo.queueFamilyIndex = m_Engine.getTransferQueue().m_Family;
+			commandPoolCreateInfo.queueFamilyIndex = m_Device.getTransferQueue().m_Family;
 
-			FLINT_VK_ASSERT(m_Engine.getDeviceTable().vkCreateCommandPool(m_Engine.getLogicalDevice(), &commandPoolCreateInfo, nullptr, &m_CommandPool), "Failed to create the command pool!");
+			FLINT_VK_ASSERT(m_Device.getDeviceTable().vkCreateCommandPool(m_Device.getLogicalDevice(), &commandPoolCreateInfo, nullptr, &m_CommandPool), "Failed to create the command pool!");
 
 			// Allocate the command buffers.
 			VkCommandBufferAllocateInfo allocateInfo = {};
@@ -62,7 +61,7 @@ namespace Flint
 			allocateInfo.commandBufferCount = 1;
 
 			m_CommandBuffers.resize(1);
-			FLINT_VK_ASSERT(m_Engine.getDeviceTable().vkAllocateCommandBuffers(m_Engine.getLogicalDevice(), &allocateInfo, m_CommandBuffers.data()), "Failed to allocate command buffers!");
+			FLINT_VK_ASSERT(m_Device.getDeviceTable().vkAllocateCommandBuffers(m_Device.getLogicalDevice(), &allocateInfo, m_CommandBuffers.data()), "Failed to allocate command buffers!");
 
 			// Get the current command buffer.
 			m_CurrentCommandBuffer = m_CommandBuffers[m_CurrentIndex];
@@ -74,8 +73,8 @@ namespace Flint
 		VulkanCommandBuffers::~VulkanCommandBuffers()
 		{
 			// Free the command buffers and destroy the pool.
-			m_Engine.getDeviceTable().vkFreeCommandBuffers(m_Engine.getLogicalDevice(), m_CommandPool, static_cast<uint32_t>(m_CommandBuffers.size()), m_CommandBuffers.data());
-			m_Engine.getDeviceTable().vkDestroyCommandPool(m_Engine.getLogicalDevice(), m_CommandPool, nullptr);
+			m_Device.getDeviceTable().vkFreeCommandBuffers(m_Device.getLogicalDevice(), m_CommandPool, static_cast<uint32_t>(m_CommandBuffers.size()), m_CommandBuffers.data());
+			m_Device.getDeviceTable().vkDestroyCommandPool(m_Device.getLogicalDevice(), m_CommandPool, nullptr);
 
 			// Destroy the fences.
 			destroyFences();
@@ -97,7 +96,7 @@ namespace Flint
 			finishExecution();
 
 			// Now we can create the command buffer.
-			FLINT_VK_ASSERT(m_Engine.getDeviceTable().vkBeginCommandBuffer(m_CurrentCommandBuffer, &beginInfo), "Failed to begin command buffer recording!");
+			FLINT_VK_ASSERT(m_Device.getDeviceTable().vkBeginCommandBuffer(m_CurrentCommandBuffer, &beginInfo), "Failed to begin command buffer recording!");
 			m_IsRecording = true;
 		}
 
@@ -112,12 +111,12 @@ namespace Flint
 			renderPassBeginInfo.clearValueCount = static_cast<uint32_t>(clearColors.size());
 			renderPassBeginInfo.pClearValues = clearColors.data();
 
-			m_Engine.getDeviceTable().vkCmdBeginRenderPass(m_CurrentCommandBuffer, &renderPassBeginInfo, VkSubpassContents::VK_SUBPASS_CONTENTS_INLINE);
+			m_Device.getDeviceTable().vkCmdBeginRenderPass(m_CurrentCommandBuffer, &renderPassBeginInfo, VkSubpassContents::VK_SUBPASS_CONTENTS_INLINE);
 		}
 
 		void VulkanCommandBuffers::unbindWindow() const
 		{
-			m_Engine.getDeviceTable().vkCmdEndRenderPass(m_CurrentCommandBuffer);
+			m_Device.getDeviceTable().vkCmdEndRenderPass(m_CurrentCommandBuffer);
 		}
 
 		void VulkanCommandBuffers::bindRenderTarget(const VulkanRasterizer& rasterizer, const std::vector<VkClearValue>& clearColors) const noexcept
@@ -131,12 +130,12 @@ namespace Flint
 			renderPassBeginInfo.clearValueCount = static_cast<uint32_t>(clearColors.size());
 			renderPassBeginInfo.pClearValues = clearColors.data();
 
-			m_Engine.getDeviceTable().vkCmdBeginRenderPass(m_CurrentCommandBuffer, &renderPassBeginInfo, VkSubpassContents::VK_SUBPASS_CONTENTS_INLINE);
+			m_Device.getDeviceTable().vkCmdBeginRenderPass(m_CurrentCommandBuffer, &renderPassBeginInfo, VkSubpassContents::VK_SUBPASS_CONTENTS_INLINE);
 		}
 
 		void VulkanCommandBuffers::unbindRenderTarget() const
 		{
-			m_Engine.getDeviceTable().vkCmdEndRenderPass(m_CurrentCommandBuffer);
+			m_Device.getDeviceTable().vkCmdEndRenderPass(m_CurrentCommandBuffer);
 		}
 
 		void VulkanCommandBuffers::changeImageLayout(VkImage image, VkImageLayout currentLayout, VkImageLayout newLayout, VkImageAspectFlags aspectFlags) const
@@ -239,7 +238,7 @@ namespace Flint
 			const auto destinationStage = Utility::GetPipelineStageFlags(memorybarrier.dstAccessMask);
 
 			// Issue the commands. 
-			m_Engine.getDeviceTable().vkCmdPipelineBarrier(m_CurrentCommandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &memorybarrier);
+			m_Device.getDeviceTable().vkCmdPipelineBarrier(m_CurrentCommandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &memorybarrier);
 		}
 
 		void VulkanCommandBuffers::copyBuffer(VkBuffer srcBuffer, uint64_t size, uint64_t srcOffset, VkBuffer dstBuffer, uint64_t dstOffset) const noexcept
@@ -249,29 +248,17 @@ namespace Flint
 			bufferCopy.srcOffset = srcOffset;
 			bufferCopy.dstOffset = dstOffset;
 
-			m_Engine.getDeviceTable().vkCmdCopyBuffer(m_CurrentCommandBuffer, srcBuffer, dstBuffer, 1, &bufferCopy);
-		}
-
-		void VulkanCommandBuffers::bindIndexBuffer(const VulkanGeometryStore& geometryStore) const noexcept
-		{
-			m_Engine.getDeviceTable().vkCmdBindIndexBuffer(m_CurrentCommandBuffer, geometryStore.getIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
+			m_Device.getDeviceTable().vkCmdCopyBuffer(m_CurrentCommandBuffer, srcBuffer, dstBuffer, 1, &bufferCopy);
 		}
 
 		void VulkanCommandBuffers::bindGraphicsPipeline(const VulkanGraphicsPipeline& pipeline) const noexcept
 		{
-			m_Engine.getDeviceTable().vkCmdBindPipeline(m_CurrentCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getPipeline());
+			m_Device.getDeviceTable().vkCmdBindPipeline(m_CurrentCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getPipeline());
 		}
 
 		void VulkanCommandBuffers::bindDescriptor(const VulkanGraphicsPipeline& pipeline, VkDescriptorSet descriptorSet) const noexcept
 		{
-			m_Engine.getDeviceTable().vkCmdBindDescriptorSets(m_CurrentCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getPipelineLayout(), 0, 1, &descriptorSet, 0, nullptr);
-		}
-
-		void VulkanCommandBuffers::drawMesh(const VulkanGeometryStore& geometryStore, const Mesh& mesh) const noexcept
-		{
-			const VkDeviceSize offset = mesh.getVertexOffset();
-			m_Engine.getDeviceTable().vkCmdBindVertexBuffers(m_CurrentCommandBuffer, 0, 1, geometryStore.getVertexBufferPtr(), &offset);
-			m_Engine.getDeviceTable().vkCmdDrawIndexed(m_CurrentCommandBuffer, static_cast<uint32_t>(mesh.getIndexCount()), 1, static_cast<uint32_t>(mesh.getOffsetIndexCount()), 0, 0);
+			m_Device.getDeviceTable().vkCmdBindDescriptorSets(m_CurrentCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getPipelineLayout(), 0, 1, &descriptorSet, 0, nullptr);
 		}
 
 		void VulkanCommandBuffers::end()
@@ -280,7 +267,7 @@ namespace Flint
 			if (!m_IsRecording)
 				return;
 
-			FLINT_VK_ASSERT(m_Engine.getDeviceTable().vkEndCommandBuffer(m_CurrentCommandBuffer), "Failed to end command buffer recording!");
+			FLINT_VK_ASSERT(m_Device.getDeviceTable().vkEndCommandBuffer(m_CurrentCommandBuffer), "Failed to end command buffer recording!");
 			m_IsRecording = false;
 		}
 
@@ -299,7 +286,7 @@ namespace Flint
 
 			// Submit the queue.
 			auto& fence = m_CommandFences[m_CurrentIndex];
-			FLINT_VK_ASSERT(m_Engine.getDeviceTable().vkQueueSubmit(m_Engine.getGraphicsQueue().m_Queue, 1, &submitInfo, fence.m_Fence), "Failed to submit the queue!");
+			FLINT_VK_ASSERT(m_Device.getDeviceTable().vkQueueSubmit(m_Device.getGraphicsQueue().m_Queue, 1, &submitInfo, fence.m_Fence), "Failed to submit the queue!");
 			fence.m_IsFree = false;
 		}
 
@@ -320,7 +307,7 @@ namespace Flint
 			auto& fence = m_CommandFences[m_CurrentIndex];
 			fence.m_IsFree = false;
 
-			FLINT_VK_ASSERT(m_Engine.getDeviceTable().vkQueueSubmit(m_Engine.getGraphicsQueue().m_Queue, 1, &submitInfo, fence.m_Fence), "Failed to submit the queue!");
+			FLINT_VK_ASSERT(m_Device.getDeviceTable().vkQueueSubmit(m_Device.getGraphicsQueue().m_Queue, 1, &submitInfo, fence.m_Fence), "Failed to submit the queue!");
 		}
 
 		void VulkanCommandBuffers::submitTransfer()
@@ -342,7 +329,7 @@ namespace Flint
 			auto& fence = m_CommandFences[m_CurrentIndex];
 			fence.m_IsFree = false;
 
-			FLINT_VK_ASSERT(m_Engine.getDeviceTable().vkQueueSubmit(m_Engine.getTransferQueue().m_Queue, 1, &submitInfo, fence.m_Fence), "Failed to submit the queue!");
+			FLINT_VK_ASSERT(m_Device.getDeviceTable().vkQueueSubmit(m_Device.getTransferQueue().m_Queue, 1, &submitInfo, fence.m_Fence), "Failed to submit the queue!");
 		}
 
 		void VulkanCommandBuffers::submitCompute()
@@ -364,7 +351,7 @@ namespace Flint
 			auto& fence = m_CommandFences[m_CurrentIndex];
 			fence.m_IsFree = false;
 
-			FLINT_VK_ASSERT(m_Engine.getDeviceTable().vkQueueSubmit(m_Engine.getComputeQueue().m_Queue, 1, &submitInfo, fence.m_Fence), "Failed to submit the queue!");
+			FLINT_VK_ASSERT(m_Device.getDeviceTable().vkQueueSubmit(m_Device.getComputeQueue().m_Queue, 1, &submitInfo, fence.m_Fence), "Failed to submit the queue!");
 		}
 
 		void VulkanCommandBuffers::finishExecution()
@@ -374,8 +361,8 @@ namespace Flint
 			// If the current fence is not free, we can wait.
 			if (!fence.m_IsFree)
 			{
-				FLINT_VK_ASSERT(m_Engine.getDeviceTable().vkWaitForFences(m_Engine.getLogicalDevice(), 1, &m_CommandFences[m_CurrentIndex].m_Fence, VK_TRUE, std::numeric_limits<uint64_t>::max()), "Failed to wait for the fence!");
-				FLINT_VK_ASSERT(m_Engine.getDeviceTable().vkResetFences(m_Engine.getLogicalDevice(), 1, &m_CommandFences[m_CurrentIndex].m_Fence), "Failed to reset fence!");
+				FLINT_VK_ASSERT(m_Device.getDeviceTable().vkWaitForFences(m_Device.getLogicalDevice(), 1, &m_CommandFences[m_CurrentIndex].m_Fence, VK_TRUE, std::numeric_limits<uint64_t>::max()), "Failed to wait for the fence!");
+				FLINT_VK_ASSERT(m_Device.getDeviceTable().vkResetFences(m_Device.getLogicalDevice(), 1, &m_CommandFences[m_CurrentIndex].m_Fence), "Failed to reset fence!");
 			}
 		}
 
@@ -401,13 +388,13 @@ namespace Flint
 
 			m_CommandFences.reserve(m_CommandBuffers.size());
 			for (uint32_t i = 0; i < m_CommandBuffers.size(); i++)
-				FLINT_VK_ASSERT(m_Engine.getDeviceTable().vkCreateFence(m_Engine.getLogicalDevice(), &createInfo, nullptr, &m_CommandFences.emplace_back().m_Fence), "Failed to create fence!");
+				FLINT_VK_ASSERT(m_Device.getDeviceTable().vkCreateFence(m_Device.getLogicalDevice(), &createInfo, nullptr, &m_CommandFences.emplace_back().m_Fence), "Failed to create fence!");
 		}
 
 		void VulkanCommandBuffers::destroyFences()
 		{
 			for (const auto fence : m_CommandFences)
-				m_Engine.getDeviceTable().vkDestroyFence(m_Engine.getLogicalDevice(), fence.m_Fence, nullptr);
+				m_Device.getDeviceTable().vkDestroyFence(m_Device.getLogicalDevice(), fence.m_Fence, nullptr);
 		}
 	}
 }

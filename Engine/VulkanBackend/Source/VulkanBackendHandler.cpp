@@ -79,7 +79,7 @@ namespace Flint
 					return false;
 
 				case CommandStorage::IndexOf<Commands::CreateDevice>():
-					std::get<Commands::CreateDevice>(variant).m_Promise.set_value(IntToEnum<DeviceHandle>(m_pEngines.emplace(std::make_unique<VulkanEngine>(m_Instance)).first));
+					std::get<Commands::CreateDevice>(variant).m_Promise.set_value(IntToEnum<DeviceHandle>(m_pEngines.emplace(std::make_unique<VulkanDevice>(m_Instance)).first));
 					break;
 
 				case CommandStorage::IndexOf<Commands::DestroyDevice>():

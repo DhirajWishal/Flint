@@ -9,8 +9,8 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanBuffer::VulkanBuffer(VulkanEngine& engine, uint64_t size, BufferType type)
-			: m_Engine(engine), m_Size(size), m_Type(type)
+		VulkanBuffer::VulkanBuffer(VulkanDevice& device, uint64_t size, BufferType type)
+			: m_Device(device), m_Size(size), m_Type(type)
 		{
 			// Validate the inputs.
 			if (m_Size == 0)
@@ -64,7 +64,7 @@ namespace Flint
 			vmaAllocationCreateInfo.flags = vmaFlags;
 			vmaAllocationCreateInfo.usage = memoryUsage;
 
-			FLINT_VK_ASSERT(vmaCreateBuffer(m_Engine.getAllocator(), &crateInfo, &vmaAllocationCreateInfo, &m_Buffer, &m_Allocation, nullptr), "Failed to create the buffer!");
+			FLINT_VK_ASSERT(vmaCreateBuffer(m_Device.getAllocator(), &crateInfo, &vmaAllocationCreateInfo, &m_Buffer, &m_Allocation, nullptr), "Failed to create the buffer!");
 
 			// Set the descriptor buffer info.
 			m_DescriptorBufferInfo.buffer = m_Buffer;
@@ -74,13 +74,13 @@ namespace Flint
 
 		VulkanBuffer::~VulkanBuffer()
 		{
-			vmaDestroyBuffer(m_Engine.getAllocator(), m_Buffer, m_Allocation);
+			vmaDestroyBuffer(m_Device.getAllocator(), m_Buffer, m_Allocation);
 		}
 
 		std::byte* VulkanBuffer::mapMemory()
 		{
 			std::byte* pDataPointer = nullptr;
-			FLINT_VK_ASSERT(vmaMapMemory(m_Engine.getAllocator(), m_Allocation, reinterpret_cast<void**>(&pDataPointer)), "Failed to map the buffer memory!");
+			FLINT_VK_ASSERT(vmaMapMemory(m_Device.getAllocator(), m_Allocation, reinterpret_cast<void**>(&pDataPointer)), "Failed to map the buffer memory!");
 
 			m_IsMapped = true;
 			return pDataPointer;
@@ -91,7 +91,7 @@ namespace Flint
 			// We only need to unmap if we have mapped the memory.
 			if (m_IsMapped)
 			{
-				vmaUnmapMemory(m_Engine.getAllocator(), m_Allocation);
+				vmaUnmapMemory(m_Device.getAllocator(), m_Allocation);
 				m_IsMapped = false;
 			}
 		}
@@ -110,7 +110,7 @@ namespace Flint
 
 
 			// Copy the buffer.
-			auto vCommandBuffer = m_Engine.getUtilityCommandBuffer();
+			auto vCommandBuffer = m_Device.getUtilityCommandBuffer();
 			vCommandBuffer.begin();
 			vCommandBuffer.copyBuffer(buffer.m_Buffer, buffer.getSize(), srcOffset, m_Buffer, dstOffset);
 			vCommandBuffer.end();

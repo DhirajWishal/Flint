@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Core/Engine.hpp"
+#include "Core/Device.hpp"
 #include "Camera.hpp"
 
 namespace Flint
@@ -41,10 +41,14 @@ namespace Flint
 		/**
 		 * Copy the matrix to a uniform buffer.
 		 *
-		 * @param engine The engine which owns the buffer.
+		 * @param device The device which owns the buffer.
 		 * @param buffer The buffer to copy the data to.
 		 */
-		void copyToBuffer(Engine& engine, BufferHandle buffer) const;
+		template<class TDevice>
+		void copyToBuffer(TDevice& device, BufferHandle buffer) const
+		{
+			device.copyToBuffer(buffer, reinterpret_cast<const std::byte*>(&m_Matrix), sizeof(Matrix));
+		}
 
 	public:
 		Matrix m_Matrix;

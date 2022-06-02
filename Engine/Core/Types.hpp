@@ -258,7 +258,7 @@ namespace Flint
 
 	/**
 	 * Buffer handle enum.
-	 * This is used to uniquely identify a buffer which is bound to an engine.
+	 * This is used to uniquely identify a buffer which is bound to a device.
 	 */
 	FLINT_DEFINE_HANDLE(BufferHandle);
 
@@ -275,7 +275,7 @@ namespace Flint
 
 	/**
 	 * Image handle enum.
-	 * This is used to uniquely identify an image which is bound to an engine.
+	 * This is used to uniquely identify an image which is bound to a device.
 	 */
 	FLINT_DEFINE_HANDLE(ImageHandle);
 

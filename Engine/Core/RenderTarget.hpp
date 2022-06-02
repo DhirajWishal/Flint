@@ -4,7 +4,6 @@
 #pragma once
 
 #include "RenderTargetAttachment.hpp"
-#include "Geometry.hpp"
 
 namespace Flint
 {
@@ -13,13 +12,14 @@ namespace Flint
 	 * These are special objects, and entities are spawned into these. Once spawned, they are rendered to a custom texture which then can be used for other
 	 * purposes.
 	 */
-	class RenderTarget : public EngineBoundObject
+	template<class TDevice>
+	class RenderTarget : public DeviceBoundObject<TDevice>
 	{
 	public:
 		/**
 		 * Explicit constructor.
 		 *
-		 * @param engine The engine reference.
+		 * @param device The device reference.
 		 * @param width The width of the render target.
 		 * @param height The height of the render target.
 		 * @param frameCount The number of frames in the render target. This is usually set automatically by the Window.
@@ -27,8 +27,8 @@ namespace Flint
 		 * @param multisample The multisample count. Default is One.
 		 * @param exclusiveBuffering Whether or not to use one buffer/ attachment per frame. Default is false.
 		 */
-		explicit RenderTarget(Engine& engine, uint32_t width, uint32_t height, uint32_t frameCount, std::vector<AttachmentDescription>&& attachmentDescriptions, Multisample multisample = Multisample::One, bool exclusiveBuffering = false)
-			: EngineBoundObject(engine), m_AttachmentDescriptions(std::move(attachmentDescriptions)), m_Width(width), m_Height(height), m_FrameCount(frameCount), m_Multisample(multisample), m_ExclusiveBuffering(exclusiveBuffering) {}
+		explicit RenderTarget(TDevice& device, uint32_t width, uint32_t height, uint32_t frameCount, std::vector<AttachmentDescription>&& attachmentDescriptions, Multisample multisample = Multisample::One, bool exclusiveBuffering = false)
+			: DeviceBoundObject<TDevice>(device), m_AttachmentDescriptions(std::move(attachmentDescriptions)), m_Width(width), m_Height(height), m_FrameCount(frameCount), m_Multisample(multisample), m_ExclusiveBuffering(exclusiveBuffering) {}
 
 		/**
 		 * Default virtual destructor.
@@ -55,7 +55,7 @@ namespace Flint
 		 * @param index The index of the attachment.
 		 * @return The attachment.
 		 */
-		[[nodiscard]] virtual RenderTargetAttachment& getAttachment(uint32_t index) = 0;
+		[[nodiscard]] virtual RenderTargetAttachment<TDevice>& getAttachment(uint32_t index) = 0;
 
 		/**
 		 * Get the render target attachment at a given index.
@@ -63,7 +63,7 @@ namespace Flint
 		 * @param index The index of the attachment.
 		 * @return The attachment.
 		 */
-		[[nodiscard]] virtual const RenderTargetAttachment& getAttachment(uint32_t index) const = 0;
+		[[nodiscard]] virtual const RenderTargetAttachment<TDevice>& getAttachment(uint32_t index) const = 0;
 
 		/**
 		 * Get the width of the render target.
@@ -101,7 +101,6 @@ namespace Flint
 
 	protected:
 		std::vector<AttachmentDescription> m_AttachmentDescriptions;
-		std::vector<Geometry> m_Geometries;
 
 		uint32_t m_Width = 0;
 		uint32_t m_Height = 0;

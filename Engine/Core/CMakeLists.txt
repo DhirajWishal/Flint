@@ -12,32 +12,27 @@ project(
 add_library(
 	FlintCore
 	STATIC
-
-	"Source/Window.cpp"
-	"Source/Geometry.cpp" 
+	 
+	"Source/StaticInitializer.cpp"
 		
 	"Source/EventSystem/EventSystem.cpp"
 
-	"Source/Entities/StaticEntity.cpp"
-
 	"Source/Utility/Hasher.cpp"
-
-	"Source/Loader/GeometryLoader.cpp"
 
 	"Source/Shaders/Shader.cpp"
 
 	"Instance.hpp" 
-	"Engine.hpp" 
+	"Device.hpp" 
 	"FObject.hpp"
 	"Window.hpp" 
 	"RenderTarget.hpp"
-	"EngineBoundObject.hpp"
+	"DeviceBoundObject.hpp"
 	"Rasterizer.hpp"
 	"RayTracer.hpp"
 	"RenderTargetAttachment.hpp"
 	"Types.hpp"
-	"GeometryStore.hpp" 
 	"Backend.hpp" 
+	"StaticInitializer.hpp"
 	
 	"Errors/AssetError.hpp"
 	"Errors/BackendError.hpp" 
@@ -52,13 +47,7 @@ add_library(
 	"EventSystem/Keyboard.hpp"
 	"EventSystem/Mouse.hpp"
 
-	"Entities/Entity.hpp"
-	"Entities/GhostEntity.hpp"
-	"Entities/StaticEntity.hpp"
-
 	"Utility/Hasher.hpp" 
-
-	"Loader/GeometryLoader.hpp" 
 
 	"Shaders/Shader.hpp"
 	"Shaders/VertexShader.hpp"

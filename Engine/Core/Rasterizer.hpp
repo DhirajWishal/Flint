@@ -284,27 +284,16 @@ namespace Flint
 	 * Rasterizer class.
 	 * This class performs rasterization to the bound entities.
 	 */
-	class Rasterizer : public RenderTarget
+	template<class TDevice>
+	class Rasterizer : public RenderTarget<TDevice>
 	{
 	public:
 		// We are using the same constructor(s) as the super class.
-		using RenderTarget::RenderTarget;
+		using RenderTarget<TDevice>::RenderTarget;
 
 		/**
 		 * Virtual default destructor.
 		 */
 		virtual ~Rasterizer() = default;
-
-		/**
-		 * Register a geometry to the rasterizer.
-		 * You can add the same geometry multiple times if different pipelines are being used.
-		 *
-		 * @param geometry The geometry to add.
-		 * @param specification The pipeline specification to use.
-		 * @param meshBinder The special callback that will be called on every single mesh in the geometry, and will be used to create the pipeline for each mesh.
-		 * This is required as each mesh might need it's own pipeline because of the varying materials, inputs and so on. Note that if a pipeline exists for the same
-		 * specification, a new one will not be created, the existing one will be used instead.
-		 */
-		virtual void registerGeometry(const Geometry& geometry, RasterizingPipelineSpecification&& specification, std::function<ResourceBindingTable(const Mesh&, const Geometry&, const std::vector<ResourceBinding>&)>&& meshBinder) = 0;
 	};
 }

@@ -8,8 +8,8 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanDepthAttachment::VulkanDepthAttachment(Engine& engine, uint32_t width, uint32_t height, PixelFormat format, Multisample multisample)
-			: VulkanRenderTargetAttachment(engine, width, height, AttachmentType::Depth, format, multisample)
+		VulkanDepthAttachment::VulkanDepthAttachment(VulkanDevice& device, uint32_t width, uint32_t height, PixelFormat format, Multisample multisample)
+			: VulkanRenderTargetAttachment(device, width, height, AttachmentType::Depth, format, multisample)
 		{
 			// Create the image.
 			createImage(VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_IMAGE_TILING_OPTIMAL);

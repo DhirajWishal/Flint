@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "VulkanEngine.hpp"
+#include "VulkanDevice.hpp"
 
 namespace Flint
 {
@@ -38,20 +38,20 @@ namespace Flint
 			/**
 			 * Explicit constructor.
 			 *
-			 * @param engine The engine to which the command buffer is bound to.
+			 * @param device The device to which the command buffer is bound to.
 			 * @param bufferCount The number of command buffers.
 			 * @param level The command buffer level. Default is primary.
 			 */
-			explicit VulkanCommandBuffers(VulkanEngine& engine, uint32_t bufferCount, VkCommandBufferLevel level = VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+			explicit VulkanCommandBuffers(VulkanDevice& device, uint32_t bufferCount, VkCommandBufferLevel level = VK_COMMAND_BUFFER_LEVEL_PRIMARY);
 
 			/**
 			 * Explicit constructor.
 			 * This will create a utility command buffer.
 			 *
-			 * @param engine The engine to which the command buffer is bound to.
+			 * @param device The device to which the command buffer is bound to.
 			 * @param level The command buffer level. Default is primary.
 			 */
-			explicit VulkanCommandBuffers(VulkanEngine& engine, VkCommandBufferLevel level = VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+			explicit VulkanCommandBuffers(VulkanDevice& device, VkCommandBufferLevel level = VK_COMMAND_BUFFER_LEVEL_PRIMARY);
 
 			/**
 			 * Destructor.
@@ -113,13 +113,6 @@ namespace Flint
 			void copyBuffer(VkBuffer srcBuffer, uint64_t size, uint64_t srcOffset, VkBuffer dstBuffer, uint64_t dstOffset) const noexcept;
 
 			/**
-			 * Bind an index buffer from a geometry store to the current command buffer.
-			 *
-			 * @param geometryStore The geometry store to bind.
-			 */
-			void bindIndexBuffer(const VulkanGeometryStore& geometryStore) const noexcept;
-
-			/**
 			 * Bind a graphics pipeline to the command buffer.
 			 *
 			 * @param pipeline The pipeline to bind.
@@ -133,15 +126,6 @@ namespace Flint
 			 * @param descriptorSet The descriptor set to bind.
 			 */
 			void bindDescriptor(const VulkanGraphicsPipeline& pipeline, VkDescriptorSet descriptorSet) const noexcept;
-
-			/**
-			 * Draw a mesh.
-			 *
-			 * @param geometryStore The geometry store to bind.
-			 * @param mesh The mesh to draw.
-			 */
-			void drawMesh(const VulkanGeometryStore& geometryStore, const Mesh& mesh) const noexcept;
-
 			/**
 			 * End recording.
 			 */
@@ -225,7 +209,7 @@ namespace Flint
 			std::vector<VkCommandBuffer> m_CommandBuffers;
 			std::vector<Fence> m_CommandFences;
 
-			VulkanEngine& m_Engine;
+			VulkanDevice& m_Device;
 			VkCommandPool m_CommandPool = VK_NULL_HANDLE;
 			VkCommandBuffer m_CurrentCommandBuffer = VK_NULL_HANDLE;
 

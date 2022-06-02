@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "VulkanEngine.hpp"
+#include "VulkanDevice.hpp"
 
 #include <filesystem>
 
@@ -21,10 +21,10 @@ namespace Flint
 			/**
 			 * Explicit constructor.
 			 *
-			 * @param engine The Vulkan engine.
+			 * @param device The Vulkan engine.
 			 * @param cacheFile The cache file name.
 			 */
-			explicit VulkanPipeline(VulkanEngine& engine, const std::filesystem::path& cacheFile);
+			explicit VulkanPipeline(VulkanDevice& device, const std::filesystem::path& cacheFile);
 
 			/**
 			 * Virtual destructor.
@@ -37,14 +37,14 @@ namespace Flint
 			 *
 			 * @return The Vulkan engine.
 			 */
-			[[nodiscard]] VulkanEngine& getEngine() noexcept { return m_Engine; }
+			[[nodiscard]] VulkanDevice& getDevice() noexcept { return m_Device; }
 
 			/**
 			 * Get the engine.
 			 *
 			 * @return The Vulkan engine.
 			 */
-			[[nodiscard]] const VulkanEngine& getEngine() const noexcept { return m_Engine; }
+			[[nodiscard]] const VulkanDevice& getDevice() const noexcept { return m_Device; }
 
 			/**
 			 * Get the backend pipeline handle.
@@ -75,7 +75,7 @@ namespace Flint
 		protected:
 			std::filesystem::path m_CacheFile;
 
-			VulkanEngine& m_Engine;
+			VulkanDevice& m_Device;
 
 			VkPipeline m_Pipeline = VK_NULL_HANDLE;
 			VkPipelineLayout m_PipelineLayout = VK_NULL_HANDLE;

@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Core/Engine.hpp"
+#include "Core/Device.hpp"
 #include "Core/Types.hpp"
 #include "Core/Containers/SparseArray.hpp"
 #include "VulkanInstance.hpp"
@@ -21,7 +21,7 @@ namespace Flint
 		/**
 		 * Vulkan engine class.
 		 */
-		class VulkanEngine final : public Engine
+		class VulkanDevice final : public Device<VulkanInstance>
 		{
 			/**
 			 * Vulkan queue structure.
@@ -39,12 +39,12 @@ namespace Flint
 			 *
 			 * @param instance The instance used to create the object.
 			 */
-			explicit VulkanEngine(VulkanInstance& instance);
+			explicit VulkanDevice(VulkanInstance& instance);
 
 			/**
 			 * Destructor.
 			 */
-			~VulkanEngine() override;
+			~VulkanDevice() override;
 
 			/**
 			 * Wait till all the commands have finished execution.
@@ -64,52 +64,6 @@ namespace Flint
 			 * @return The multisample count.
 			 */
 			[[nodiscard]] Multisample getMaximumMultisample() const override;
-
-			/**
-			 * Create a new window.
-			 * @ref Window.hpp
-			 *
-			 * @param title The window title.
-			 * @param width The width of the window. Default is -1.
-			 * @param height The height of the window. Default is -1.
-			 * @return The created window pointer.
-			 */
-			[[nodiscard]] std::unique_ptr<Window> createWindow(std::string&& title, uint32_t width = -1, uint32_t height = -1) override;
-
-			/**
-			 * Create a new rasterizer.
-			 * @ref Rasterizer.hpp
-			 *
-			 * @param width The width of the render target.
-			 * @param height The height of the render target.
-			 * @param frameCount The number of frames in the render target. This is usually set automatically by the Window.
-			 * @param attachmentDescriptions The attachment descriptions.
-			 * @param multisample The multisample count. Default is One.
-			 * @param exclusiveBuffering Whether or not to use one buffer/ attachment per frame. Default is false.
-			 * @return The created rasterizer pointer.
-			 */
-			[[nodiscard]] std::unique_ptr<Rasterizer> createRasterizer(uint32_t width, uint32_t height, uint32_t frameCount, std::vector<AttachmentDescription>&& attachmentDescriptions, Multisample multisample = Multisample::One, bool exclusiveBuffering = false) override;
-
-			/**
-			 * Create a new geometry store.
-			 *
-			 * @return The created geometry store.
-			 */
-			[[nodiscard]] std::unique_ptr<GeometryStore> createGeometryStore() override;
-
-			/**
-			 * Get the default geometry store.
-			 *
-			 * @return The geometry store reference.
-			 */
-			[[nodiscard]] GeometryStore& getDefaultGeometryStore() override;
-
-			/**
-			 * Get the default geometry store.
-			 *
-			 * @return The geometry store reference.
-			 */
-			[[nodiscard]] const GeometryStore& getDefaultGeometryStore() const override;
 
 			/**
 			 * Create a new buffer.
@@ -259,7 +213,6 @@ namespace Flint
 			std::vector<const char*> m_DeviceExtensions;
 
 			VulkanCommandBuffers* m_pUtilityCommandBuffer = nullptr;
-			VulkanGeometryStore* m_pDefaultGeometryStore = nullptr;
 
 			VulkanQueue m_GraphicsQueue;
 			VulkanQueue m_ComputeQueue;
@@ -308,13 +261,13 @@ namespace Flint
 			/**
 			 * Find the best supported format available.
 			 *
-			 * @param engine The Vulkan engine.
+			 * @param device The Vulkan engine.
 			 * @param candidates The format candidates.
 			 * @param tiling The image tiling.
 			 * @param features The format features.
 			 *
 			 */
-			[[nodiscard]] VkFormat FindSupportedFormat(const VulkanEngine& engine, const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+			[[nodiscard]] VkFormat FindSupportedFormat(const VulkanDevice& device, const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
 
 			/**
 			 * Check if a format has the stencil component.
@@ -326,9 +279,9 @@ namespace Flint
 			/**
 			 * Find the best depth format.
 			 *
-			 * @param engine The Vulkan engine.
+			 * @param device The Vulkan engine.
 			 */
-			[[nodiscard]] VkFormat FindDepthFormat(const VulkanEngine& engine);
+			[[nodiscard]] VkFormat FindDepthFormat(const VulkanDevice& device);
 
 			/**
 			 * Get the descriptor type.

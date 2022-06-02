@@ -3,7 +3,6 @@
 
 #include "VulkanBackend/VulkanInstance.hpp"
 #include "VulkanBackend/VulkanMacros.hpp"
-#include "VulkanBackend/VulkanEngine.hpp"
 
 #include <sstream>
 
@@ -225,11 +224,6 @@ namespace Flint
 
 			// Destroy the instance.
 			destroyInstance();
-		}
-
-		std::unique_ptr<Flint::Engine> VulkanInstance::createEngine()
-		{
-			return std::make_unique<VulkanEngine>(*this);
 		}
 
 		void VulkanInstance::createInstance()

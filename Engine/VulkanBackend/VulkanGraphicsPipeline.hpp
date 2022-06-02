@@ -23,13 +23,13 @@ namespace Flint
 			/**
 			 * Explicit constructor.
 			 *
-			 * @param engine The engine to which the pipeline is bound to.
+			 * @param device The device to which the pipeline is bound to.
 			 * @param rasterizer The rasterizer to which the pipeline is bound to.
 			 * @param specification The pipeline specification.
 			 * @param inputBindings The input bindings of the vertex shader.
 			 * @param inputAttributes The input attributes of the vertex shader.
 			 */
-			explicit VulkanGraphicsPipeline(VulkanEngine& engine, VulkanRasterizer& rasterizer, const RasterizingPipelineSpecification& specification, std::vector<VkVertexInputBindingDescription>&& inputBindings, std::vector<VkVertexInputAttributeDescription>&& inputAttributes);
+			explicit VulkanGraphicsPipeline(VulkanDevice& device, VulkanRasterizer& rasterizer, const RasterizingPipelineSpecification& specification, std::vector<VkVertexInputBindingDescription>&& inputBindings, std::vector<VkVertexInputAttributeDescription>&& inputAttributes);
 
 			/**
 			 * Destructor.

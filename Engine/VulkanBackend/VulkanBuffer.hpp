@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "VulkanEngine.hpp"
+#include "VulkanDevice.hpp"
 
 namespace Flint
 {
@@ -48,11 +48,11 @@ namespace Flint
 			/**
 			 * Explicit constructor.
 			 *
-			 * @param engine The engine to which the buffer is bound to.
+			 * @param device The device to which the buffer is bound to.
 			 * @param size The size of the buffer.
 			 * @param type The buffer type.
 			 */
-			explicit VulkanBuffer(VulkanEngine& engine, uint64_t size, BufferType type);
+			explicit VulkanBuffer(VulkanDevice& device, uint64_t size, BufferType type);
 
 			/**
 			 * Destructor.
@@ -111,7 +111,7 @@ namespace Flint
 		private:
 			VkDescriptorBufferInfo m_DescriptorBufferInfo = {};
 
-			VulkanEngine& m_Engine;
+			VulkanDevice& m_Device;
 
 			VkBuffer m_Buffer = VK_NULL_HANDLE;
 			VmaAllocation m_Allocation = nullptr;

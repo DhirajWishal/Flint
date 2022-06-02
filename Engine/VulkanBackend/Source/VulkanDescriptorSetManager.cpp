@@ -10,17 +10,17 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanDescriptorSetManager::VulkanDescriptorSetManager(VulkanEngine& engine, uint8_t frameCount)
-			: m_Engine(engine), m_FrameCount(frameCount)
+		VulkanDescriptorSetManager::VulkanDescriptorSetManager(VulkanDevice& device, uint8_t frameCount)
+			: m_Device(device), m_FrameCount(frameCount)
 		{
 		}
 
 		VulkanDescriptorSetManager::~VulkanDescriptorSetManager()
 		{
-			m_Engine.getDeviceTable().vkDestroyDescriptorSetLayout(m_Engine.getLogicalDevice(), m_DescriptorSetLayout, nullptr);
+			m_Device.getDeviceTable().vkDestroyDescriptorSetLayout(m_Device.getLogicalDevice(), m_DescriptorSetLayout, nullptr);
 
 			if (m_DescriptorPool != VK_NULL_HANDLE)
-				m_Engine.getDeviceTable().vkDestroyDescriptorPool(m_Engine.getLogicalDevice(), m_DescriptorPool, nullptr);
+				m_Device.getDeviceTable().vkDestroyDescriptorPool(m_Device.getLogicalDevice(), m_DescriptorPool, nullptr);
 		}
 
 		void VulkanDescriptorSetManager::setup(std::vector<VkDescriptorSetLayoutBinding>&& layoutBindings)
@@ -37,7 +37,7 @@ namespace Flint
 			createInfo.bindingCount = static_cast<uint32_t>(layoutBindings.size());
 			createInfo.pBindings = layoutBindings.data();
 
-			FLINT_VK_ASSERT(m_Engine.getDeviceTable().vkCreateDescriptorSetLayout(m_Engine.getLogicalDevice(), &createInfo, nullptr, &m_DescriptorSetLayout), "Failed to create the descriptor set layout!");
+			FLINT_VK_ASSERT(m_Device.getDeviceTable().vkCreateDescriptorSetLayout(m_Device.getLogicalDevice(), &createInfo, nullptr, &m_DescriptorSetLayout), "Failed to create the descriptor set layout!");
 		}
 
 		void VulkanDescriptorSetManager::registerTable(const ResourceBindingTable& table)
@@ -59,7 +59,7 @@ namespace Flint
 			createInfo.pPoolSizes = m_PoolSizes.data();
 
 			VkDescriptorPool descriptorPool = VK_NULL_HANDLE;
-			FLINT_VK_ASSERT(m_Engine.getDeviceTable().vkCreateDescriptorPool(m_Engine.getLogicalDevice(), &createInfo, nullptr, &descriptorPool), "Failed to create the descriptor pool!");
+			FLINT_VK_ASSERT(m_Device.getDeviceTable().vkCreateDescriptorPool(m_Device.getLogicalDevice(), &createInfo, nullptr, &descriptorPool), "Failed to create the descriptor pool!");
 
 			// Allocate the descriptor sets.
 			VkDescriptorSetAllocateInfo allocateInfo = {};
@@ -75,13 +75,13 @@ namespace Flint
 				for (uint8_t i = 0; i < m_FrameCount; i++)
 				{
 					VkDescriptorSet descriptorSet = VK_NULL_HANDLE;
-					FLINT_VK_ASSERT(m_Engine.getDeviceTable().vkAllocateDescriptorSets(m_Engine.getLogicalDevice(), &allocateInfo, &descriptorSet), "Failed to allocate descriptor set!");
+					FLINT_VK_ASSERT(m_Device.getDeviceTable().vkAllocateDescriptorSets(m_Device.getLogicalDevice(), &allocateInfo, &descriptorSet), "Failed to allocate descriptor set!");
 
 					// Set the destination set.
 					for (auto& copyInfo : table.m_CopyDescriptorSets)
 						copyInfo.dstSet = descriptorSet;
 
-					m_Engine.getDeviceTable().vkUpdateDescriptorSets(m_Engine.getLogicalDevice(), 0, nullptr, static_cast<uint32_t>(table.m_CopyDescriptorSets.size()), table.m_CopyDescriptorSets.data());
+					m_Device.getDeviceTable().vkUpdateDescriptorSets(m_Device.getLogicalDevice(), 0, nullptr, static_cast<uint32_t>(table.m_CopyDescriptorSets.size()), table.m_CopyDescriptorSets.data());
 					table.m_DescriptorSets[i] = descriptorSet;
 
 					// Set the source set.
@@ -92,7 +92,7 @@ namespace Flint
 
 			// Delete the old descriptor set.
 			if (m_DescriptorPool != VK_NULL_HANDLE)
-				m_Engine.getDeviceTable().vkDestroyDescriptorPool(m_Engine.getLogicalDevice(), m_DescriptorPool, nullptr);
+				m_Device.getDeviceTable().vkDestroyDescriptorPool(m_Device.getLogicalDevice(), m_DescriptorPool, nullptr);
 			m_DescriptorPool = descriptorPool;
 
 			// Now we can create the new ones.
@@ -101,7 +101,7 @@ namespace Flint
 
 			allocateInfo.descriptorSetCount = m_FrameCount;
 			allocateInfo.pSetLayouts = layouts.data();
-			FLINT_VK_ASSERT(m_Engine.getDeviceTable().vkAllocateDescriptorSets(m_Engine.getLogicalDevice(), &allocateInfo, descriptorSets.data()), "Failed to allocate descriptor set!");
+			FLINT_VK_ASSERT(m_Device.getDeviceTable().vkAllocateDescriptorSets(m_Device.getLogicalDevice(), &allocateInfo, descriptorSets.data()), "Failed to allocate descriptor set!");
 
 			std::vector<VkWriteDescriptorSet> writeDescriptorSets;
 			std::vector<VkCopyDescriptorSet> copyDescriptorSets;
@@ -158,7 +158,7 @@ namespace Flint
 					writeDescriptorSet.descriptorCount = bufferCount;
 					writeDescriptorSet.descriptorType = m_DescriptorTypeMap[binding];
 					writeDescriptorSet.dstArrayElement = i;
-					writeDescriptorSet.pBufferInfo = m_Engine.getBuffer(buffers[i]).getDescriptorBufferInfo();
+					writeDescriptorSet.pBufferInfo = m_Device.getBuffer(buffers[i]).getDescriptorBufferInfo();
 					writeDescriptorSet.pImageInfo = nullptr;
 					writeDescriptorSet.pTexelBufferView = nullptr;
 
@@ -177,7 +177,7 @@ namespace Flint
 			}
 
 			// Update the descriptor sets with the data.
-			m_Engine.getDeviceTable().vkUpdateDescriptorSets(m_Engine.getLogicalDevice(), static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
+			m_Device.getDeviceTable().vkUpdateDescriptorSets(m_Device.getLogicalDevice(), static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
 
 			// Copy the descriptors to the rest.
 			for (uint8_t i = 1; i < m_FrameCount; i++)
@@ -185,7 +185,7 @@ namespace Flint
 				for (auto& copy : copyDescriptorSets)
 					copy.dstSet = descriptorSets[i];
 
-				m_Engine.getDeviceTable().vkUpdateDescriptorSets(m_Engine.getLogicalDevice(), 0, nullptr, static_cast<uint32_t>(copyDescriptorSets.size()), copyDescriptorSets.data());
+				m_Device.getDeviceTable().vkUpdateDescriptorSets(m_Device.getLogicalDevice(), 0, nullptr, static_cast<uint32_t>(copyDescriptorSets.size()), copyDescriptorSets.data());
 			}
 
 			// Delete the allocated memory.

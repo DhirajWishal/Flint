@@ -14,7 +14,7 @@ add_library(
 	STATIC
 
 	"Source/VulkanInstance.cpp"
-	"Source/VulkanEngine.cpp"
+	"Source/VulkanDevice.cpp"
 	"Source/vk_mem_alloc.cpp"
 	"Source/VulkanWindow.cpp" 
 	"Source/VulkanCommandBuffers.cpp"
@@ -22,7 +22,6 @@ add_library(
 	"Source/VulkanColorAttachment.cpp" 
 	"Source/VulkanDepthAttachment.cpp" 
 	"Source/VulkanRenderTargetAttachment.cpp"
-	"Source/VulkanGeometryStore.cpp"
 	"Source/VulkanPipeline.cpp" 
 	"Source/VulkanGraphicsPipeline.cpp"
 	"Source/VulkanDescriptorSetManager.cpp"
@@ -32,14 +31,13 @@ add_library(
 	
 	"VulkanInstance.hpp"
 	"VulkanMacros.hpp"
-	"VulkanEngine.hpp"
+	"VulkanDevice.hpp"
 	"VulkanWindow.hpp" 
 	"VulkanCommandBuffers.hpp"
 	"VulkanRasterizer.hpp" 
 	"VulkanColorAttachment.hpp" 
 	"VulkanDepthAttachment.hpp"
 	"VulkanRenderTargetAttachment.hpp"
-	"VulkanGeometryStore.hpp" 
 	"VulkanGraphicsPipeline.hpp" 
 	"VulkanPipeline.hpp"
 	"VulkanDescriptorSetManager.hpp" 

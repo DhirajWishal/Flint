@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "VulkanEngine.hpp"
+#include "VulkanDevice.hpp"
 
 #include "Core/Commands.hpp"
 #include "Core/Containers/SparseArray.hpp"
@@ -59,7 +59,7 @@ namespace Flint
 			std::unique_lock<std::mutex> m_Lock;
 
 		private:
-			SparseArray<std::unique_ptr<VulkanEngine>, uint8_t> m_pEngines;
+			SparseArray<std::unique_ptr<VulkanDevice>, uint8_t> m_pEngines;
 		};
 	}
 }

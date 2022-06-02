@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "VulkanEngine.hpp"
+#include "VulkanDevice.hpp"
 
 namespace Flint
 {
@@ -18,12 +18,12 @@ namespace Flint
 			/**
 			 * Explicit constructor.
 			 *
-			 * @param engine The engine reference.
+			 * @param device The device reference.
 			 */
-			explicit VulkanImage(VulkanEngine& engine);
+			explicit VulkanImage(VulkanDevice& device);
 
 		private:
-			VulkanEngine& m_Engine;
+			VulkanDevice& m_Device;
 
 			VkImage m_Image = VK_NULL_HANDLE;
 			VmaAllocation m_Allocation = nullptr;

@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "VulkanEngine.hpp"
+#include "VulkanDevice.hpp"
 
 #include <unordered_map>
 
@@ -28,7 +28,7 @@ namespace Flint
 				/**
 				 * Default constructor.
 				 */
-				constexpr DescriptorSet() = default;
+				DescriptorSet() = default;
 
 				/**
 				 * Explicit constructor.
@@ -46,9 +46,9 @@ namespace Flint
 			/**
 			 * Explicit constructor.
 			 *
-			 * @param engine The engine to which the manager is bound to.
+			 * @param device The device to which the manager is bound to.
 			 */
-			explicit VulkanDescriptorSetManager(VulkanEngine& engine, uint8_t frameCount);
+			explicit VulkanDescriptorSetManager(VulkanDevice& device, uint8_t frameCount);
 
 			/**
 			 * Destructor.
@@ -90,7 +90,7 @@ namespace Flint
 			VkDescriptorPool m_DescriptorPool = VK_NULL_HANDLE;
 
 		private:
-			VulkanEngine& m_Engine;
+			VulkanDevice& m_Device;
 			const uint8_t m_FrameCount = 0;
 		};
 	}

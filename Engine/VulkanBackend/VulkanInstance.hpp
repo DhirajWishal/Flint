@@ -53,13 +53,6 @@ namespace Flint
 			 */
 			[[nodiscard]] VkInstance getInstance() const { return m_Instance; }
 
-			/**
-			 * Create the new Vulkan engine.
-			 *
-			 * @return The engine pointer.
-			 */
-			[[nodiscard]] virtual std::unique_ptr<Engine> createEngine() override;
-
 		private:
 			/**
 			 * Create the Vulkan instance.

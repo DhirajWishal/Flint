@@ -1,12 +1,11 @@
 // Copyright 2021-2022 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#include "VulkanBackend/VulkanEngine.hpp"
+#include "VulkanBackend/VulkanDevice.hpp"
 #include "VulkanBackend/VulkanMacros.hpp"
 #include "VulkanBackend/VulkanWindow.hpp"
 #include "VulkanBackend/VulkanRasterizer.hpp"
 #include "VulkanBackend/VulkanCommandBuffers.hpp"
-#include "VulkanBackend/VulkanGeometryStore.hpp"
 #include "VulkanBackend/VulkanBuffer.hpp"
 
 #include <set>
@@ -126,8 +125,8 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanEngine::VulkanEngine(VulkanInstance& instance)
-			: Engine(instance)
+		VulkanDevice::VulkanDevice(VulkanInstance& instance)
+			: Device(instance)
 		{
 			// Select a physical device.
 			selectPhysicalDevice();
@@ -140,17 +139,16 @@ namespace Flint
 
 			// Create the defaults.
 			m_pUtilityCommandBuffer = new VulkanCommandBuffers(*this);
-			m_pDefaultGeometryStore = new VulkanGeometryStore(*this);
 		}
 
-		VulkanEngine::~VulkanEngine()
+		VulkanDevice::~VulkanDevice()
 		{
 			// Wait idle to make sure that we don't have anything running at the moment.
 			waitIdle();
 
 			// Destroy the defaults.
 			delete m_pUtilityCommandBuffer;
-			delete m_pDefaultGeometryStore;
+
 			m_Buffers.clear();
 
 			// Destroy the VMA allocator.
@@ -160,17 +158,17 @@ namespace Flint
 			destroyLogicalDevice();
 		}
 
-		void VulkanEngine::waitIdle()
+		void VulkanDevice::waitIdle()
 		{
 			FLINT_VK_ASSERT(getDeviceTable().vkDeviceWaitIdle(m_LogicalDevice), "Failed to wait idle!");
 		}
 
-		Flint::PixelFormat VulkanEngine::getBestDepthFormat() const
+		Flint::PixelFormat VulkanDevice::getBestDepthFormat() const
 		{
 			return Utility::GetPixelFormat(Utility::FindDepthFormat(*this));
 		}
 
-		Flint::Multisample VulkanEngine::getMaximumMultisample() const
+		Flint::Multisample VulkanDevice::getMaximumMultisample() const
 		{
 			const VkSampleCountFlags counts = m_PhysicalDeviceProperties.limits.framebufferColorSampleCounts & m_PhysicalDeviceProperties.limits.framebufferDepthSampleCounts;
 
@@ -184,32 +182,7 @@ namespace Flint
 			return Multisample::One;
 		}
 
-		std::unique_ptr<Flint::Window> VulkanEngine::createWindow(std::string&& title, uint32_t width /*= -1*/, uint32_t height /*= -1*/)
-		{
-			return std::make_unique<VulkanWindow>(*this, std::move(title), width, height);
-		}
-
-		std::unique_ptr<Flint::Rasterizer> VulkanEngine::createRasterizer(uint32_t width, uint32_t height, uint32_t frameCount, std::vector<AttachmentDescription>&& attachmentDescriptions, Multisample multisample /*= Multisample::One*/, bool exclusiveBuffering /*= false*/)
-		{
-			return std::make_unique<VulkanRasterizer>(*this, width, height, frameCount, std::move(attachmentDescriptions), multisample, exclusiveBuffering);
-		}
-
-		std::unique_ptr<Flint::GeometryStore> VulkanEngine::createGeometryStore()
-		{
-			return std::make_unique<VulkanGeometryStore>(*this);
-		}
-
-		Flint::GeometryStore& VulkanEngine::getDefaultGeometryStore()
-		{
-			return *m_pDefaultGeometryStore;
-		}
-
-		const Flint::GeometryStore& VulkanEngine::getDefaultGeometryStore() const
-		{
-			return *m_pDefaultGeometryStore;
-		}
-
-		Flint::BufferHandle VulkanEngine::createBuffer(uint64_t size, BufferUsage usage)
+		Flint::BufferHandle VulkanDevice::createBuffer(uint64_t size, BufferUsage usage)
 		{
 			// Resolve the buffer usages.
 			BufferType type = BufferType::Staging;
@@ -225,7 +198,7 @@ namespace Flint
 			return BufferHandle(m_Buffers.emplace(*this, size, type).first);
 		}
 
-		void VulkanEngine::copyToBuffer(BufferHandle handle, const std::byte* pData, uint64_t size, uint64_t offset /*= 0*/)
+		void VulkanDevice::copyToBuffer(BufferHandle handle, const std::byte* pData, uint64_t size, uint64_t offset /*= 0*/)
 		{
 			auto& buffer = getBuffer(handle);
 			auto pDestination = buffer.mapMemory();
@@ -241,12 +214,12 @@ namespace Flint
 			buffer.unmapMemory();
 		}
 
-		Flint::ImageHandle VulkanEngine::createTextureImage(std::filesystem::path&& path, ImageUsage usage)
+		Flint::ImageHandle VulkanDevice::createTextureImage(std::filesystem::path&& path, ImageUsage usage)
 		{
 			return ImageHandle();
 		}
 
-		Flint::VulkanBackend::VulkanBuffer& VulkanEngine::getBuffer(BufferHandle handle)
+		Flint::VulkanBackend::VulkanBuffer& VulkanDevice::getBuffer(BufferHandle handle)
 		{
 			const auto index = EnumToInt(handle);
 			if (m_Buffers.contains(index))
@@ -255,7 +228,7 @@ namespace Flint
 			throw BackendError("A buffer does not exist for the given handle!");
 		}
 
-		const Flint::VulkanBackend::VulkanBuffer& VulkanEngine::getBuffer(BufferHandle handle) const
+		const Flint::VulkanBackend::VulkanBuffer& VulkanDevice::getBuffer(BufferHandle handle) const
 		{
 			const auto index = EnumToInt(handle);
 			if (m_Buffers.contains(index))
@@ -264,7 +237,7 @@ namespace Flint
 			throw BackendError("A buffer does not exist for the given handle!");
 		}
 
-		void VulkanEngine::selectPhysicalDevice()
+		void VulkanDevice::selectPhysicalDevice()
 		{
 			// Set up the device extensions.
 			m_DeviceExtensions.emplace_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
@@ -272,14 +245,14 @@ namespace Flint
 
 			// Enumerate physical devices.
 			uint32_t deviceCount = 0;
-			FLINT_VK_ASSERT(vkEnumeratePhysicalDevices(getInstanceAs<VulkanInstance>().getInstance(), &deviceCount, nullptr), "Failed to enumerate physical devices.");
+			FLINT_VK_ASSERT(vkEnumeratePhysicalDevices(getInstance().getInstance(), &deviceCount, nullptr), "Failed to enumerate physical devices.");
 
 			// Throw an error if there are no physical devices available.
 			if (deviceCount == 0)
 				throw BackendError("No physical devices found!");
 
 			std::vector<VkPhysicalDevice> candidates(deviceCount);
-			FLINT_VK_ASSERT(vkEnumeratePhysicalDevices(getInstanceAs<VulkanInstance>().getInstance(), &deviceCount, candidates.data()), "Failed to enumerate physical devices.");
+			FLINT_VK_ASSERT(vkEnumeratePhysicalDevices(getInstance().getInstance(), &deviceCount, candidates.data()), "Failed to enumerate physical devices.");
 
 			struct Candidate { VkPhysicalDeviceProperties m_Properties; VkPhysicalDevice m_Candidate; };
 			std::array<Candidate, 6> priorityMap = { Candidate() };
@@ -351,7 +324,7 @@ namespace Flint
 			m_TransferQueue.m_Family = GetQueueFamily(m_PhysicalDevice, VK_QUEUE_TRANSFER_BIT);
 		}
 
-		void VulkanEngine::createLogicalDevice()
+		void VulkanDevice::createLogicalDevice()
 		{
 			// Setup device queues.
 			constexpr float priority = 1.0f;
@@ -396,11 +369,11 @@ namespace Flint
 			deviceCreateInfo.ppEnabledExtensionNames = m_DeviceExtensions.data();
 			deviceCreateInfo.pEnabledFeatures = &features;
 
-			if (getInstanceAs<VulkanInstance>().isValidationEnabled())
+			if (getInstance().isValidationEnabled())
 			{
 				// Get the validation layers and initialize it.
-				deviceCreateInfo.enabledLayerCount = static_cast<uint32_t>(getInstanceAs<VulkanInstance>().getValidationLayers().size());
-				deviceCreateInfo.ppEnabledLayerNames = getInstanceAs<VulkanInstance>().getValidationLayers().data();
+				deviceCreateInfo.enabledLayerCount = static_cast<uint32_t>(getInstance().getValidationLayers().size());
+				deviceCreateInfo.ppEnabledLayerNames = getInstance().getValidationLayers().data();
 			}
 
 			// Create the device.
@@ -415,12 +388,12 @@ namespace Flint
 			vkGetDeviceQueue(m_LogicalDevice, m_TransferQueue.m_Family, 0, &m_TransferQueue.m_Queue);
 		}
 
-		void VulkanEngine::destroyLogicalDevice()
+		void VulkanDevice::destroyLogicalDevice()
 		{
 			vkDestroyDevice(m_LogicalDevice, nullptr);
 		}
 
-		void VulkanEngine::createVMAAllocator()
+		void VulkanDevice::createVMAAllocator()
 		{
 			// Setup the Vulkan functions needed by VMA.
 			VmaVulkanFunctions functions = {};
@@ -457,14 +430,14 @@ namespace Flint
 			createInfo.physicalDevice = m_PhysicalDevice;
 			createInfo.device = m_LogicalDevice;
 			createInfo.pVulkanFunctions = &functions;
-			createInfo.instance = getInstanceAs<VulkanInstance>().getInstance();
+			createInfo.instance = getInstance().getInstance();
 			createInfo.vulkanApiVersion = VulkanVersion;
 
 			// Create the allocator.
 			FLINT_VK_ASSERT(vmaCreateAllocator(&createInfo, &m_Allocator), "Failed to create the allocator!");
 		}
 
-		void VulkanEngine::destroyVMAAllocator()
+		void VulkanDevice::destroyVMAAllocator()
 		{
 			vmaDestroyAllocator(m_Allocator);
 		}
@@ -592,12 +565,12 @@ namespace Flint
 				}
 			}
 
-			VkFormat FindSupportedFormat(const VulkanEngine& engine, const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features)
+			VkFormat FindSupportedFormat(const VulkanDevice& device, const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features)
 			{
 				for (VkFormat format : candidates)
 				{
 					VkFormatProperties props = {};
-					vkGetPhysicalDeviceFormatProperties(engine.getPhysicalDevice(), format, &props);
+					vkGetPhysicalDeviceFormatProperties(device.getPhysicalDevice(), format, &props);
 
 					if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features)
 						return format;
@@ -614,10 +587,10 @@ namespace Flint
 				return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT;
 			}
 
-			VkFormat FindDepthFormat(const VulkanEngine& engine)
+			VkFormat FindDepthFormat(const VulkanDevice& device)
 			{
 				return FindSupportedFormat(
-					engine,
+					device,
 					{ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
 					VK_IMAGE_TILING_OPTIMAL,
 					VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT

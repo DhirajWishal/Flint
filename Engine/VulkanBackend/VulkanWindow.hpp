@@ -18,18 +18,18 @@ namespace Flint
 		 * The processing pipeline goes like this,
 		 *		Processing stage 1 > Processing stage 2 > Processing stage 3 > Copy color attachment 1 to Swapchain > Present the swapchain.
 		 */
-		class VulkanWindow final : public Window
+		class VulkanWindow final : public Window<VulkanDevice>
 		{
 		public:
 			/**
 			 * Explicit constructor.
 			 *
-			 * @param engine The engine to which this window is bound to.
+			 * @param device The device to which this window is bound to.
 			 * @param title The window title.
 			 * @param width The width of the window. If set to 0 then the window is opened maximized. If set to -1, the window is open in full screen mode.
 			 * @param height The height of the window. Same as the width, if set to 0 then the window is opened maximized. If set to -1, the window is open in full screen mode.
 			 */
-			explicit VulkanWindow(VulkanEngine& engine, std::string&& title, uint32_t width = -1, uint32_t height = -1);
+			explicit VulkanWindow(VulkanDevice& device, std::string&& title, uint32_t width = -1, uint32_t height = -1);
 
 			/**
 			 * Destructor.
