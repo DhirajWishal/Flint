@@ -43,12 +43,31 @@ namespace Flint
 		return BackendAPI::Vulkan;
 	}
 
+	std::future<Flint::DeviceHandle> GraphicsEngine::createDevice()
+	{
+		Commands::CreateDevice command;
+		auto future = command.m_Promise.get_future();
+
+		issueCommand(std::move(command));
+		return future;
+	}
+
+	std::future<void> GraphicsEngine::destroyDevice(DeviceHandle handle)
+	{
+		Commands::DestroyDevice command;
+		command.m_DeviceHandle = handle;
+		auto future = command.m_Promise.get_future();
+
+		issueCommand(std::move(command));
+		return future;
+	}
+
 	void GraphicsEngine::issueCommand(CommandVariant&& variant)
 	{
 		// Issue the command to the queue.
 		{
 			auto lock = std::scoped_lock(m_ResouceMutex);
-			m_Commands.emplace_back(std::move(variant));
+			m_Commands.push(std::move(variant));
 		}
 
 		// Notify that we have a command ready.

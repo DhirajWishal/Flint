@@ -11,7 +11,7 @@
 namespace Flint
 {
 	/**
-	 * Graphcis engine class.
+	 * Graphics engine class.
 	 * This contains all the commands and other utilities to communicate with the backend.
 	 */
 	class GraphicsEngine final
@@ -38,6 +38,22 @@ namespace Flint
 		 * @return The Backend API.
 		 */
 		[[nodiscard]] static BackendAPI GetSupportedBackends();
+
+	public:
+		/**
+		 * Create a new graphics device.
+		 *
+		 * @return The device future.
+		 */
+		std::future<DeviceHandle> createDevice();
+
+		/**
+		 * Destroy a device.
+		 *
+		 * @param handle The device handle to destroy.
+		 * @return The future containing the result.
+		 */
+		std::future<void> destroyDevice(DeviceHandle handle);
 
 	private:
 		/**

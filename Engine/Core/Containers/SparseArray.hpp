@@ -65,7 +65,7 @@ namespace Flint
 		 *
 		 * @tparam Types The variadic argument types.
 		 * @param data The data to emplace.
-		 * @return constexpr std::pair<Index, std::reference_wrapper<Type>> The index position of the emplaced data and the emplaced data reference.
+		 * @return constexpr std::pair<Index, std::reference_wrapper<Type>> The index position of the emplaced data and the emplaced data pointer.
 		 */
 		template <class... Types>
 		[[nodiscard]] constexpr std::pair<Index, Type*> emplace(Types &&...data)

@@ -42,6 +42,8 @@ int main()
 {
 	{
 		auto engine = Flint::GraphicsEngine("Sandbox", 1, Validation, Flint::BackendAPI::Vulkan);
+		auto device = engine.createDevice();
+		engine.destroyDevice(device.get());
 	}
 
 	auto instance = Flint::VulkanBackend::VulkanInstance("Sandbox", 1, Validation);
@@ -59,9 +61,10 @@ int main()
 			auto camera = Flint::MonoCamera(glm::vec3(0.0f), static_cast<float>(pWindow->getWidth()) / pWindow->getHeight());
 			camera.m_MovementBias = 50;
 
-			pRasterizer->registerGeometry(Flint::LoadGeometry(pEngine->getDefaultGeometryStore(), FLINT_GLTF_ASSET_PATH "Sponza/glTF/Sponza.gltf", Flint::VertexData::Position | Flint::VertexData::Normal | Flint::VertexData::Texture0),
+			pRasterizer->registerGeometry(
+				Flint::LoadGeometry(pEngine->getDefaultGeometryStore(), FLINT_GLTF_ASSET_PATH "Sponza/glTF/Sponza.gltf", Flint::VertexData::Position | Flint::VertexData::Normal | Flint::VertexData::Texture0),
 				GetSpecification(),
-				[buffer](const Flint::Mesh& mesh, [[maybe_unused]] const Flint::Geometry& geometry, const std::vector<Flint::ResourceBinding>& bindings)
+				[buffer](const Flint::Mesh& mesh, [[maybe_unused]] const Flint::Geometry& geometry, [[maybe_unused]] const std::vector<Flint::ResourceBinding>& bindings)
 				{
 					Flint::ResourceBindingTable bindingTable;
 					bindingTable.bind(0, buffer);
