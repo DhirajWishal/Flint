@@ -477,11 +477,7 @@ namespace Flint
 			if (m_Dependency.first)
 			{
 				auto pAttachment = m_Dependency.first->getAttachment(m_Dependency.second).as<VulkanRenderTargetAttachment>();
-
-				VkOffset3D offsets = {};
-				offsets.x = 0;
-				offsets.y = 0;
-				offsets.z = 0;
+				const auto currentSwapchainImage = m_SwapchainImages[m_FrameIndex];
 
 				VkImageSubresourceLayers subresourceLayers = {};
 				subresourceLayers.baseArrayLayer = 0;
@@ -489,27 +485,46 @@ namespace Flint
 				subresourceLayers.mipLevel = 0;
 				subresourceLayers.aspectMask = pAttachment->getType() == AttachmentType::Color ? VK_IMAGE_ASPECT_COLOR_BIT : VK_IMAGE_ASPECT_DEPTH_BIT;
 
-				VkImageCopy imageCopy = {};
-				imageCopy.dstOffset.x = 0;
-				imageCopy.dstOffset.y = 0;
-				imageCopy.dstOffset.z = 0;
-				imageCopy.dstSubresource = subresourceLayers;
-				imageCopy.srcOffset.x = 0;
-				imageCopy.srcOffset.y = 0;
-				imageCopy.srcOffset.z = 0;
-				imageCopy.srcSubresource = subresourceLayers;
-				imageCopy.extent.depth = 1;
-				imageCopy.extent.width = pAttachment->getWidth();
-				imageCopy.extent.height = pAttachment->getHeight();
-
-				const auto currentSwapchainImage = m_SwapchainImages[m_FrameIndex];
-
 				// Prepare to transfer.
 				m_pCommandBuffers->changeImageLayout(pAttachment->getImage(), pAttachment->getLayout(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, subresourceLayers.aspectMask);
 				m_pCommandBuffers->changeImageLayout(currentSwapchainImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_ASPECT_COLOR_BIT);
 
-				// Copy the image.
-				getDevice().getDeviceTable().vkCmdCopyImage(m_pCommandBuffers->getCurrentBuffer(), pAttachment->getImage(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, currentSwapchainImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &imageCopy);
+				// If the attachment's size is not equal to the size of the window, we need to either upscale or downscale the image.
+				if (pAttachment->getWidth() != getWidth() || pAttachment->getHeight() != getHeight())
+				{
+					// Later we can use an upscaling technology like DLSS or FidelityFX.
+
+					VkImageBlit imageBlit = {};
+					imageBlit.srcOffsets[0].z = imageBlit.srcOffsets[0].y = imageBlit.srcOffsets[0].x = 0;
+					imageBlit.srcOffsets[1].x = static_cast<int32_t>(pAttachment->getWidth());
+					imageBlit.srcOffsets[1].y = static_cast<int32_t>(pAttachment->getHeight());
+					imageBlit.srcOffsets[1].z = 1;
+					imageBlit.srcSubresource = subresourceLayers;
+					imageBlit.dstOffsets[0].z = imageBlit.dstOffsets[0].y = imageBlit.dstOffsets[0].x = 0;
+					imageBlit.dstOffsets[1].x = static_cast<int32_t>(getWidth());
+					imageBlit.dstOffsets[1].y = static_cast<int32_t>(getHeight());
+					imageBlit.dstOffsets[1].z = 1;
+					imageBlit.dstSubresource = subresourceLayers;
+
+					// Copy the image.
+					getDevice().getDeviceTable().vkCmdBlitImage(m_pCommandBuffers->getCurrentBuffer(), pAttachment->getImage(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, currentSwapchainImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &imageBlit, VK_FILTER_LINEAR);
+				}
+
+				// Else we can just perform a copy.
+				else
+				{
+					VkImageCopy imageCopy = {};
+					imageCopy.srcOffset.z = imageCopy.srcOffset.y = imageCopy.srcOffset.x = 0;
+					imageCopy.srcSubresource = subresourceLayers;
+					imageCopy.dstOffset.z = imageCopy.dstOffset.y = imageCopy.dstOffset.x = 0;
+					imageCopy.dstSubresource = subresourceLayers;
+					imageCopy.extent.width = pAttachment->getWidth();
+					imageCopy.extent.height = pAttachment->getHeight();
+					imageCopy.extent.depth = 1;
+
+					// Copy the image.
+					getDevice().getDeviceTable().vkCmdCopyImage(m_pCommandBuffers->getCurrentBuffer(), pAttachment->getImage(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, currentSwapchainImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &imageCopy);
+				}
 
 				// Change back to previous.
 				m_pCommandBuffers->changeImageLayout(pAttachment->getImage(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, pAttachment->getLayout(), subresourceLayers.aspectMask);
@@ -523,7 +538,7 @@ namespace Flint
 			clearValue.color.float32[2] = 0.0f;
 			clearValue.color.float32[3] = 1.0f;
 
-			m_pCommandBuffers->bindWindow(*this, { clearValue });
+			m_pCommandBuffers->bindWindow(*this, clearValue);
 
 			// Unbind the window.
 			m_pCommandBuffers->unbindWindow();

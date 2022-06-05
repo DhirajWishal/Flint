@@ -62,6 +62,39 @@ namespace Flint
 		return future;
 	}
 
+	std::future<Flint::WindowHandle> GraphicsEngine::createWindow(DeviceHandle handle, std::string&& title, uint32_t width /*= -1*/, uint32_t height /*= -1*/)
+	{
+		Commands::CreateWindow command;
+		command.m_DeviceHandle = handle;
+		command.m_Title = std::move(title);
+		command.m_Width = width;
+		command.m_Height = height;
+		auto future = command.m_Promise.get_future();
+
+		issueCommand(std::move(command));
+		return future;
+	}
+
+	std::future<void> GraphicsEngine::updateWindow(WindowHandle handle)
+	{
+		Commands::UpdateWindow command;
+		command.m_WindowHandle = handle;
+		auto future = command.m_Promise.get_future();
+
+		issueCommand(std::move(command));
+		return future;
+	}
+
+	std::future<void> GraphicsEngine::destroyWindow(WindowHandle handle)
+	{
+		Commands::DestroyWindow command;
+		command.m_WindowHandle = handle;
+		auto future = command.m_Promise.get_future();
+
+		issueCommand(std::move(command));
+		return future;
+	}
+
 	void GraphicsEngine::issueCommand(CommandVariant&& variant)
 	{
 		// Issue the command to the queue.

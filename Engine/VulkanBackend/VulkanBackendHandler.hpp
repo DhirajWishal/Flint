@@ -4,6 +4,7 @@
 #pragma once
 
 #include "VulkanDevice.hpp"
+#include "VulkanRasterizer.hpp"
 
 #include "Core/Commands.hpp"
 #include "Core/Containers/SparseArray.hpp"
@@ -49,6 +50,55 @@ namespace Flint
 			 */
 			bool executeCommand(CommandVariant&& variant);
 
+			/**
+			 * Create a new device.
+			 *
+			 * @param command The command which was submitted by the client.
+			 */
+			void createDevice(Commands::CreateDevice&& command);
+
+			/**
+			 * Destroy a device.
+			 *
+			 * @parm command The command which was sent by the client.
+			 */
+			void destroyDevice(Commands::DestroyDevice&& command);
+
+			/**
+			 * Create a new window.
+			 *
+			 * @param command The command which was submitted by the client.
+			 */
+			void createWindow(Commands::CreateWindow&& command);
+
+			/**
+			 * Update a window.
+			 * 
+			 * @param command The command which was submitted by the client.
+			 */
+			void updateWindow(Commands::UpdateWindow&& command);
+
+			/**
+			 * Destroy a window.
+			 *
+			 * @parm command The command which was sent by the client.
+			 */
+			void destroyWindow(Commands::DestroyWindow&& command);
+
+			/**
+			 * Create a new rasterizer.
+			 *
+			 * @param command The command which was submitted by the client.
+			 */
+			void createRasterizer(Commands::CreateRasterizer&& command);
+
+			/**
+			 * Destroy a rasterizer.
+			 *
+			 * @parm command The command which was sent by the client.
+			 */
+			void destroyRasterizer(Commands::DestroyRasterizer&& command);
+
 		private:
 			VulkanInstance m_Instance;
 
@@ -59,7 +109,9 @@ namespace Flint
 			std::unique_lock<std::mutex> m_Lock;
 
 		private:
-			SparseArray<std::unique_ptr<VulkanDevice>, uint8_t> m_pEngines;
+			SparseArray<std::unique_ptr<VulkanDevice>, std::underlying_type_t<DeviceHandle>> m_pDevices;
+			SparseArray<std::unique_ptr<VulkanWindow>, std::underlying_type_t<WindowHandle>> m_pWindows;
+			SparseArray<std::unique_ptr<VulkanRasterizer>, std::underlying_type_t<RasterizerHandle>> m_pRasterizers;
 		};
 	}
 }

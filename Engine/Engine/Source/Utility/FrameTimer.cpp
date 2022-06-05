@@ -13,4 +13,9 @@ namespace Flint
 
 		return diff;
 	}
+
+	uint32_t FrameTimer::FramesPerSecond(const Duration duration)
+	{
+		return Duration::period::den / duration.count();
+	}
 }

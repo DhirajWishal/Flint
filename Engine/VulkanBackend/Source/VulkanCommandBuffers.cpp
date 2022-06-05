@@ -100,7 +100,7 @@ namespace Flint
 			m_IsRecording = true;
 		}
 
-		void VulkanCommandBuffers::bindWindow(const VulkanWindow& window, const std::vector<VkClearValue>& clearColors) const noexcept
+		void VulkanCommandBuffers::bindWindow(const VulkanWindow& window, const VkClearValue& clearColors) const noexcept
 		{
 			VkRenderPassBeginInfo renderPassBeginInfo = {};
 			renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -108,8 +108,8 @@ namespace Flint
 			renderPassBeginInfo.renderPass = window.getRenderPass();
 			renderPassBeginInfo.framebuffer = window.getCurrentFramebuffer();
 			renderPassBeginInfo.renderArea.extent = VkExtent2D{ window.getWidth(), window.getHeight() };
-			renderPassBeginInfo.clearValueCount = static_cast<uint32_t>(clearColors.size());
-			renderPassBeginInfo.pClearValues = clearColors.data();
+			renderPassBeginInfo.clearValueCount = 1;
+			renderPassBeginInfo.pClearValues = &clearColors;
 
 			m_Device.getDeviceTable().vkCmdBeginRenderPass(m_CurrentCommandBuffer, &renderPassBeginInfo, VkSubpassContents::VK_SUBPASS_CONTENTS_INLINE);
 		}

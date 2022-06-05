@@ -69,9 +69,9 @@ namespace Flint
 			 * Bind a window to the command buffer.
 			 *
 			 * @param window The window to bind.
-			 * @param clearColors The clear colors to bind.
+			 * @param clearColor The clear color to bind.
 			 */
-			void bindWindow(const VulkanWindow& window, const std::vector<VkClearValue>& clearColors) const noexcept;
+			void bindWindow(const VulkanWindow& window, const VkClearValue& clearColor) const noexcept;
 
 			/**
 			 * Unbind the currently bound window.

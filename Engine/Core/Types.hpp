@@ -352,4 +352,20 @@ namespace Flint
 		InputAttachment,
 		AccelerationStructure
 	};
+
+	/**
+	 * Multisample enum.
+	 */
+	enum class Multisample : uint8_t
+	{
+		One = 1 << 0,
+		Two = 1 << 1,
+		Four = 1 << 2,
+		Eight = 1 << 3,
+		Sixteen = 1 << 4,
+		ThirtyTwo = 1 << 5,
+		SixtyFour = 1 << 6
+	};
+
+	FLINT_DEFINE_ENUM_AND_OR(Multisample);
 }

@@ -5,14 +5,17 @@
 
 #include "Types.hpp"
 
-#include <future>
 #include <deque>
+#include <array>
+#include <future>
 #include <variant>
 
 namespace Flint
 {
 	FLINT_DEFINE_HANDLE(InstanceHandle);
 	FLINT_DEFINE_HANDLE(DeviceHandle);
+	FLINT_DEFINE_HANDLE(WindowHandle);
+	FLINT_DEFINE_HANDLE(RasterizerHandle);
 
 	namespace Commands
 	{
@@ -37,6 +40,13 @@ namespace Flint
 		};
 
 		/**
+		 * Synchronize command.
+		 * This command can be used to synchronize the backend and the parent thread.
+		 * Synchronization can also be done using any other command, but this is there for explicitness.
+		 */
+		struct Synchronize final : public Command<void> {};
+
+		/**
 		 * Terminate command.
 		 */
 		struct Terminate final : public Command<void> {};
@@ -53,6 +63,60 @@ namespace Flint
 		{
 			DeviceHandle m_DeviceHandle;
 		};
+
+		/**
+		 * Create window command.
+		 */
+		struct CreateWindow final : public Command<WindowHandle>
+		{
+			std::string m_Title;
+
+			DeviceHandle m_DeviceHandle;
+
+			uint32_t m_Width = -1;
+			uint32_t m_Height = -1;
+		};
+
+		/**
+		 * Update a window command.
+		 */
+		struct UpdateWindow final : public Command<void>
+		{
+			WindowHandle m_WindowHandle;
+		};
+
+		/**
+		 * Destroy window command.
+		 */
+		struct DestroyWindow final : public Command<void>
+		{
+			WindowHandle m_WindowHandle;
+		};
+
+		/**
+		 * Create rasterizer command.
+		 */
+		struct CreateRasterizer final : public Command<RasterizerHandle>
+		{
+			std::vector<AttachmentDescription> m_AttachmentDescriptions;
+
+			DeviceHandle m_DeviceHandle;
+			uint32_t m_Width;
+			uint32_t m_Height;
+			uint32_t m_FrameCount;
+
+			Multisample m_MultisampleCount = Multisample::One;
+
+			bool m_ExclusiveBuffering = false;
+		};
+
+		/**
+		 * Destroy rasterizer command.
+		 */
+		struct DestroyRasterizer final : public Command<void>
+		{
+			RasterizerHandle m_RasterizerHandle;
+		};
 	}
 
 	/**
@@ -60,9 +124,15 @@ namespace Flint
 	 * We send commands using variants because it's just easier to do it that way especially that all the commands are in the form of PODs.
 	 */
 	using CommandVariant = std::variant<
+		Commands::Synchronize,
 		Commands::Terminate,
 		Commands::CreateDevice,
-		Commands::DestroyDevice
+		Commands::DestroyDevice,
+		Commands::CreateWindow,
+		Commands::UpdateWindow,
+		Commands::DestroyWindow,
+		Commands::CreateRasterizer,
+		Commands::DestroyRasterizer
 	>;
 
 	/**

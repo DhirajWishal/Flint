@@ -30,6 +30,14 @@ namespace Flint
 		 */
 		[[nodiscard]] Duration tick();
 
+		/**
+		 * Convert a duration to frames per second.
+		 *
+		 * @param duration The duration of the frame.
+		 * @return The frames per second.
+		 */
+		[[nodiscard]] static uint32_t FramesPerSecond(const Duration duration);
+
 	private:
 		TimePoint m_PreviousFrame;
 	};

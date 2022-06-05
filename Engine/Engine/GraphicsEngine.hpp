@@ -55,6 +55,31 @@ namespace Flint
 		 */
 		std::future<void> destroyDevice(DeviceHandle handle);
 
+		/**
+		 * Create a new window.
+		 *
+		 * @param handle The device handle.
+		 * @param title The title of the window.
+		 * @param width The width of the window. Default is -1 (which is for full screen).
+		 * @param height The height of the window. Default is -1 (which is for full screen).
+		 */
+		std::future<WindowHandle> createWindow(DeviceHandle handle, std::string&& title, uint32_t width = -1, uint32_t height = -1);
+
+		/**
+		 * Update a window.
+		 *
+		 * @param handle The window handle to update.
+		 */
+		std::future<void> updateWindow(WindowHandle handle);
+
+		/**
+		 * Destroy a created window.
+		 *
+		 * @param handle The window handle.
+		 * @return The future containing the result.
+		 */
+		std::future<void> destroyWindow(WindowHandle handle);
+
 	private:
 		/**
 		 * Issue a command to the system.

@@ -1,13 +1,14 @@
 // Copyright 2021-2022 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#include "VulkanBackend/VulkanWindow.hpp"
-#include "VulkanBackend/VulkanRasterizer.hpp"
 #include "Core/EventSystem/EventSystem.hpp"
 #include "Engine/Camera/MonoCamera.hpp"
 #include "Engine/Utility/FrameTimer.hpp"
 
 #include "Engine/GraphicsEngine.hpp"
+
+#include <spdlog/spdlog.h>
+#include <spdlog/fmt/chrono.h>
 
 #ifdef FLINT_DEBUG
 constexpr auto Validation = true;
@@ -23,36 +24,23 @@ constexpr auto Validation = false;
 
 #endif
 
-[[nodiscard]] Flint::RasterizingPipelineSpecification GetSpecification()
-{
-	Flint::RasterizingPipelineSpecification specification;
-	specification.m_CacheFile = "Debugging.bin";
-	specification.m_VertexShader = Flint::VertexShader("Shaders/Debugging/vert.spv");
-	specification.m_FragmentShader = Flint::FragmentShader("Shaders/Debugging/frag.spv");
-
-	specification.m_VertexShader.addVertexInput(0, Flint::VertexAttribute::Position, Flint::DataType::Vec3_32);	// layout (location = 0) in vec3 inPosition;
-	specification.m_VertexShader.addVertexInput(1, Flint::VertexAttribute::Normal, Flint::DataType::Vec3_32);	// layout (location = 1) in vec3 inNormal;
-	specification.m_VertexShader.addVertexInput(2, Flint::VertexAttribute::Texture0, Flint::DataType::Vec2_32);	// layout (location = 2) in vec2 inTextureCoordinates;
-
-	return specification;
-}
-
 int main()
 {
 	auto engine = Flint::GraphicsEngine("Sandbox", 1, Validation, Flint::BackendAPI::Vulkan);
 	auto device = engine.createDevice();
-	engine.destroyDevice(device.get());
-
-	auto eventSystem = Flint::EventSystem();
+	auto window = engine.createWindow(device.get(), "Sandbox");
 
 	{
 		auto camera = Flint::MonoCamera(glm::vec3(0.0f), static_cast<float>(1280) / 720);
 		camera.m_MovementBias = 50;
 
 		Flint::FrameTimer timer;
+		Flint::EventSystem eventSystem;
+
+		const auto windowHandle = window.get();
 		while (!eventSystem.shouldClose())
 		{
-
+			auto update = engine.updateWindow(windowHandle);
 			const auto duration = timer.tick();
 			const auto events = eventSystem.poll();
 
@@ -71,6 +59,9 @@ int main()
 					camera.moveRight(duration.count());
 			}
 
+			spdlog::info("Frame rate: {}", Flint::FrameTimer::FramesPerSecond(duration), " ns");
+
+			update.wait();
 			camera.update();
 		}
 
