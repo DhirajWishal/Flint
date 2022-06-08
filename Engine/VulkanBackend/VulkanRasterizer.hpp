@@ -18,7 +18,7 @@ namespace Flint
 		/**
 		 * Vulkan rasterizer class.
 		 */
-		class VulkanRasterizer final : public Rasterizer<VulkanDevice>
+		class VulkanRasterizer final : public Core::Rasterizer<VulkanDevice, VulkanRenderTargetAttachment>
 		{
 		public:
 			/**
@@ -32,7 +32,7 @@ namespace Flint
 			 * @param multisample The multisample count. Default is One.
 			 * @param exclusiveBuffering Whether or not to use one buffer/ attachment per frame. Default is false.
 			 */
-			explicit VulkanRasterizer(VulkanDevice& device, uint32_t width, uint32_t height, uint32_t frameCount, std::vector<AttachmentDescription>&& attachmentDescriptions, Multisample multisample = Multisample::One, bool exclusiveBuffering = false);
+			explicit VulkanRasterizer(VulkanDevice& device, uint32_t width, uint32_t height, uint32_t frameCount, std::vector<Core::AttachmentDescription>&& attachmentDescriptions, Core::Multisample multisample = Core::Multisample::One, bool exclusiveBuffering = false);
 
 			/**
 			 * Destructor.
@@ -59,7 +59,7 @@ namespace Flint
 			 * @param index The index of the attachment.
 			 * @return The attachment.
 			 */
-			[[nodiscard]] RenderTargetAttachment<VulkanDevice>& getAttachment(uint32_t index) override;
+			[[nodiscard]] VulkanRenderTargetAttachment& getAttachment(uint32_t index) override;
 
 			/**
 			 * Get the render target attachment at a given index.
@@ -67,7 +67,7 @@ namespace Flint
 			 * @param index The index of the attachment.
 			 * @return The attachment.
 			 */
-			[[nodiscard]] const RenderTargetAttachment<VulkanDevice>& getAttachment(uint32_t index) const override;
+			[[nodiscard]] const VulkanRenderTargetAttachment& getAttachment(uint32_t index) const override;
 
 			/**
 			 * Get the render pass.

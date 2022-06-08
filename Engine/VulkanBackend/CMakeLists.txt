@@ -44,6 +44,9 @@ add_library(
 	"VulkanBuffer.hpp"
 	"VulkanBackend.hpp"
 	"VulkanBackendHandler.hpp"
+	"VulkanRasterizingProgram.hpp"
+
+	"Exporter.hpp"
 )
 
 # Set the include directories.

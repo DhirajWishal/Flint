@@ -98,14 +98,14 @@ namespace Flint
 		 */
 		struct CreateRasterizer final : public Command<RasterizerHandle>
 		{
-			std::vector<AttachmentDescription> m_AttachmentDescriptions;
+			std::vector<Core::AttachmentDescription> m_AttachmentDescriptions;
 
 			DeviceHandle m_DeviceHandle;
 			uint32_t m_Width;
 			uint32_t m_Height;
 			uint32_t m_FrameCount;
 
-			Multisample m_MultisampleCount = Multisample::One;
+			Core::Multisample m_MultisampleCount = Core::Multisample::One;
 
 			bool m_ExclusiveBuffering = false;
 		};

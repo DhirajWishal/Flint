@@ -277,8 +277,8 @@ namespace Flint
 
 			// Resolve the queue families if the two queues are different.
 			uint32_t queueFamilyindices[2] = {
-					getDevice().getGraphicsQueue().m_Family,
-					getDevice().getTransferQueue().m_Family
+				getDevice().getGraphicsQueue().m_Family,
+				getDevice().getTransferQueue().m_Family
 			};
 
 			if (queueFamilyindices[0] != queueFamilyindices[1])
@@ -483,7 +483,7 @@ namespace Flint
 				subresourceLayers.baseArrayLayer = 0;
 				subresourceLayers.layerCount = 1;
 				subresourceLayers.mipLevel = 0;
-				subresourceLayers.aspectMask = pAttachment->getType() == AttachmentType::Color ? VK_IMAGE_ASPECT_COLOR_BIT : VK_IMAGE_ASPECT_DEPTH_BIT;
+				subresourceLayers.aspectMask = pAttachment->getType() == Core::AttachmentType::Color ? VK_IMAGE_ASPECT_COLOR_BIT : VK_IMAGE_ASPECT_DEPTH_BIT;
 
 				// Prepare to transfer.
 				m_pCommandBuffers->changeImageLayout(pAttachment->getImage(), pAttachment->getLayout(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, subresourceLayers.aspectMask);

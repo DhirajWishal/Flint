@@ -12,7 +12,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanRasterizer::VulkanRasterizer(VulkanDevice& device, uint32_t width, uint32_t height, uint32_t frameCount, std::vector<AttachmentDescription>&& attachmentDescriptions, Multisample multisample /*= Multisample::One*/, bool exclusiveBuffering /*= false*/)
+		VulkanRasterizer::VulkanRasterizer(VulkanDevice& device, uint32_t width, uint32_t height, uint32_t frameCount, std::vector<Core::AttachmentDescription>&& attachmentDescriptions, Core::Multisample multisample /*= Multisample::One*/, bool exclusiveBuffering /*= false*/)
 			: Rasterizer(device, width, height, frameCount, std::move(attachmentDescriptions), multisample, exclusiveBuffering)
 		{
 			// Create the attachments.
@@ -98,12 +98,12 @@ namespace Flint
 			m_pCommandBuffers->resetIndex();
 		}
 
-		Flint::RenderTargetAttachment<VulkanDevice>& VulkanRasterizer::getAttachment(uint32_t index)
+		Flint::VulkanBackend::VulkanRenderTargetAttachment& VulkanRasterizer::getAttachment(uint32_t index)
 		{
 			return *m_pAttachments[m_ExclusiveBuffering * m_FrameIndex][index];
 		}
 
-		const Flint::RenderTargetAttachment<VulkanDevice>& VulkanRasterizer::getAttachment(uint32_t index) const
+		const Flint::VulkanBackend::VulkanRenderTargetAttachment& VulkanRasterizer::getAttachment(uint32_t index) const
 		{
 			return *m_pAttachments[m_ExclusiveBuffering * m_FrameIndex][index];
 		}
@@ -121,9 +121,9 @@ namespace Flint
 			{
 				for (const auto attachment : m_AttachmentDescriptions)
 				{
-					if (attachment.m_Type == AttachmentType::Color)
+					if (attachment.m_Type == Core::AttachmentType::Color)
 					{
-						if (attachment.m_Format == PixelFormat::Undefined)
+						if (attachment.m_Format == Core::PixelFormat::Undefined)
 						{
 							// Find the best color format and return it.
 							pAttachment.emplace_back(
@@ -149,7 +149,7 @@ namespace Flint
 					}
 					else
 					{
-						if (attachment.m_Format == PixelFormat::Undefined)
+						if (attachment.m_Format == Core::PixelFormat::Undefined)
 						{
 							// Find the best depth format and return it.
 							pAttachment.emplace_back(
@@ -194,7 +194,7 @@ namespace Flint
 				attachmentDescriptions.emplace_back(pVulkanAttachment->getAttachmentDescription());
 
 				// Add it as a color attachment if its a color attachment. If not, as a depth attachment.
-				if (pVulkanAttachment->getType() == AttachmentType::Color)
+				if (pVulkanAttachment->getType() == Core::AttachmentType::Color)
 				{
 					attachmentReference.layout = pVulkanAttachment->getLayout();
 					colorAttachments.emplace_back(attachmentReference);

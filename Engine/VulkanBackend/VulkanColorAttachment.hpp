@@ -25,7 +25,7 @@ namespace Flint
 			 * @param format The format of the attachment.
 			 * @param multisample The multisample count to use.
 			 */
-			explicit VulkanColorAttachment(VulkanDevice& device, uint32_t width, uint32_t height, PixelFormat format, Multisample multisample);
+			explicit VulkanColorAttachment(VulkanDevice& device, uint32_t width, uint32_t height, Core::PixelFormat format, Core::Multisample multisample);
 
 			/**
 			 * Destructor.

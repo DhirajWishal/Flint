@@ -14,7 +14,7 @@ namespace Flint
 		 * Vulkan depth attachment class.
 		 * This contains the depth image and other utility methods.
 		 */
-		class VulkanRenderTargetAttachment : public RenderTargetAttachment<VulkanDevice>
+		class VulkanRenderTargetAttachment : public Core::RenderTargetAttachment<VulkanDevice>
 		{
 		public:
 			/**
@@ -27,7 +27,7 @@ namespace Flint
 			 * @param format The format of the attachment.
 			 * @param multisample The multisample count to use.
 			 */
-			explicit VulkanRenderTargetAttachment(VulkanDevice& device, uint32_t width, uint32_t height, AttachmentType type, PixelFormat format, Multisample multisample)
+			explicit VulkanRenderTargetAttachment(VulkanDevice& device, uint32_t width, uint32_t height, Core::AttachmentType type, Core::PixelFormat format, Core::Multisample multisample)
 				: RenderTargetAttachment(device, width, height, type, format, multisample) {}
 
 			/**

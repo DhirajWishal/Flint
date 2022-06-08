@@ -45,7 +45,7 @@ namespace Flint
 		 * @param buffer The buffer to copy the data to.
 		 */
 		template<class TDevice>
-		void copyToBuffer(TDevice& device, BufferHandle buffer) const
+		void copyToBuffer(TDevice& device, Core::BufferHandle buffer) const
 		{
 			device.copyToBuffer(buffer, reinterpret_cast<const std::byte*>(&m_Matrix), sizeof(Matrix));
 		}

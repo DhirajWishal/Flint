@@ -21,7 +21,7 @@ namespace Flint
 		/**
 		 * Vulkan engine class.
 		 */
-		class VulkanDevice final : public Device<VulkanInstance>
+		class VulkanDevice final : public Core::Device<VulkanInstance>
 		{
 			/**
 			 * Vulkan queue structure.
@@ -56,14 +56,14 @@ namespace Flint
 			 *
 			 * @return The pixel format.
 			 */
-			[[nodiscard]] PixelFormat getBestDepthFormat() const override;
+			[[nodiscard]] Core::PixelFormat getBestDepthFormat() const override;
 
 			/**
 			 * Get the max supported multisample count.
 			 *
 			 * @return The multisample count.
 			 */
-			[[nodiscard]] Multisample getMaximumMultisample() const override;
+			[[nodiscard]] Core::Multisample getMaximumMultisample() const override;
 
 			/**
 			 * Create a new buffer.
@@ -72,7 +72,7 @@ namespace Flint
 			 * @param usage The buffer usage.
 			 * @return The buffer handle.
 			 */
-			[[nodiscard]] BufferHandle createBuffer(uint64_t size, BufferUsage usage) override;
+			[[nodiscard]] Core::BufferHandle createBuffer(uint64_t size, Core::BufferUsage usage) override;
 
 			/**
 			 * Copy data to a buffer.
@@ -82,7 +82,7 @@ namespace Flint
 			 * @param size The size of the data to copy.
 			 * @param offset The buffer's offset to copy to.
 			 */
-			[[nodiscard]] void copyToBuffer(BufferHandle handle, const std::byte* pData, uint64_t size, uint64_t offset = 0) override;
+			[[nodiscard]] void copyToBuffer(Core::BufferHandle handle, const std::byte* pData, uint64_t size, uint64_t offset = 0) override;
 
 			/**
 			 * Create a new texture image.
@@ -90,7 +90,7 @@ namespace Flint
 			 * @param path The path to the texture file.
 			 * @param usage The image usage.
 			 */
-			[[nodiscard]] ImageHandle createTextureImage(std::filesystem::path&& path, ImageUsage usage) override;
+			[[nodiscard]] Core::ImageHandle createTextureImage(std::filesystem::path&& path, Core::ImageUsage usage) override;
 
 		public:
 			/**
@@ -168,14 +168,14 @@ namespace Flint
 			 *
 			 * @return The buffer.
 			 */
-			[[nodiscard]] VulkanBuffer& getBuffer(BufferHandle handle);
+			[[nodiscard]] VulkanBuffer& getBuffer(Core::BufferHandle handle);
 
 			/**
 			 * Get the Vulkan buffer using the handle.
 			 *
 			 * @return The buffer.
 			 */
-			[[nodiscard]] const VulkanBuffer& getBuffer(BufferHandle handle) const;
+			[[nodiscard]] const VulkanBuffer& getBuffer(Core::BufferHandle handle) const;
 
 		private:
 			/**
@@ -232,7 +232,7 @@ namespace Flint
 			 * @param multisample The multisample count.
 			 * @return The Vulkan sample count.
 			 */
-			[[nodiscard]] VkSampleCountFlagBits GetSampleCountFlagBits(Multisample multisample);
+			[[nodiscard]] VkSampleCountFlagBits GetSampleCountFlagBits(Core::Multisample multisample);
 
 			/**
 			 * Get the Vulkan image format from pixel format.
@@ -240,7 +240,7 @@ namespace Flint
 			 * @param format The pixel format.
 			 * @return The Vulkan format.
 			 */
-			[[nodiscard]] VkFormat GetImageFormat(PixelFormat format);
+			[[nodiscard]] VkFormat GetImageFormat(Core::PixelFormat format);
 
 			/**
 			 * Get the pixel format from the Vulkan image format.
@@ -248,7 +248,7 @@ namespace Flint
 			 * @param format The Vulkan format.
 			 * @return The pixel format.
 			 */
-			[[nodiscard]] PixelFormat GetPixelFormat(VkFormat format);
+			[[nodiscard]] Core::PixelFormat GetPixelFormat(VkFormat format);
 
 			/**
 			 * Get the pipeline stage flags from access flags.
@@ -289,7 +289,7 @@ namespace Flint
 			 * @param type The flint descriptor type.
 			 * @return The Vulkan descriptor type.
 			 */
-			[[nodiscard]] VkDescriptorType GetDescriptorType(ResourceType type);
+			[[nodiscard]] VkDescriptorType GetDescriptorType(Core::ResourceType type);
 
 			/**
 			 * Get the size from a format.
@@ -305,7 +305,7 @@ namespace Flint
 			 * @param type The type of the attribute.
 			 * @return The Vulkan format.
 			 */
-			[[nodiscard]] VkFormat GetVkFormat(Flint::DataType type);
+			[[nodiscard]] VkFormat GetVkFormat(Flint::Core::DataType type);
 		}
 	}
 }

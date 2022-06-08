@@ -19,8 +19,6 @@ add_library(
 
 	"Source/Utility/Hasher.cpp"
 
-	"Source/Shaders/Shader.cpp"
-
 	"Instance.hpp" 
 	"Device.hpp" 
 	"FObject.hpp"
@@ -33,6 +31,8 @@ add_library(
 	"Types.hpp"
 	"Backend.hpp" 
 	"StaticInitializer.hpp"
+	"Program.hpp"
+	"RasterizingProgram.hpp"
 	
 	"Errors/AssetError.hpp"
 	"Errors/BackendError.hpp" 
@@ -48,9 +48,6 @@ add_library(
 	"EventSystem/Mouse.hpp"
 
 	"Utility/Hasher.hpp" 
-
-	"Shaders/Shader.hpp"
-	"Shaders/VertexShader.hpp"
 )
 
 # Set the include directories.

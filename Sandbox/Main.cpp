@@ -24,9 +24,11 @@ constexpr auto Validation = false;
 
 #endif
 
+static Flint::EventSystem g_EventSystem;
+
 int main()
 {
-	auto engine = Flint::GraphicsEngine("Sandbox", 1, Validation, Flint::BackendAPI::Vulkan);
+	auto engine = Flint::GraphicsEngine("Sandbox", 1, Validation, Flint::Core::BackendAPI::Vulkan);
 	auto device = engine.createDevice();
 	auto window = engine.createWindow(device.get(), "Sandbox");
 
@@ -35,27 +37,26 @@ int main()
 		camera.m_MovementBias = 50;
 
 		Flint::FrameTimer timer;
-		Flint::EventSystem eventSystem;
 
 		const auto windowHandle = window.get();
-		while (!eventSystem.shouldClose())
+		while (!g_EventSystem.shouldClose())
 		{
 			auto update = engine.updateWindow(windowHandle);
 			const auto duration = timer.tick();
-			const auto events = eventSystem.poll();
+			const auto events = g_EventSystem.poll();
 
 			if (events == Flint::EventType::Keyboard)
 			{
-				if (eventSystem.keyboard().m_KeyW)
+				if (g_EventSystem.keyboard().m_KeyW)
 					camera.moveForward(duration.count());
 
-				if (eventSystem.keyboard().m_KeyS)
+				if (g_EventSystem.keyboard().m_KeyS)
 					camera.moveBackward(duration.count());
 
-				if (eventSystem.keyboard().m_KeyA)
+				if (g_EventSystem.keyboard().m_KeyA)
 					camera.moveLeft(duration.count());
 
-				if (eventSystem.keyboard().m_KeyD)
+				if (g_EventSystem.keyboard().m_KeyD)
 					camera.moveRight(duration.count());
 			}
 

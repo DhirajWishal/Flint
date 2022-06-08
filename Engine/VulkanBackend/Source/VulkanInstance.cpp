@@ -203,7 +203,7 @@ namespace Flint
 	namespace VulkanBackend
 	{
 		VulkanInstance::VulkanInstance(std::string&& applicationName, uint32_t applicationVersion, bool enableValidation)
-			: Instance(std::move(applicationName), applicationVersion, BackendAPI::Vulkan, enableValidation)
+			: Instance(std::move(applicationName), applicationVersion, Core::BackendAPI::Vulkan, enableValidation)
 		{
 			// Construct the static initializer.
 			static StaticInitializer initializer;

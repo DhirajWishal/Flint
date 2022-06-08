@@ -22,7 +22,7 @@ namespace Flint
 		 * Vulkan instance class.
 		 * This class contains the Vulkan instance and all it's related information.
 		 */
-		class VulkanInstance final : public Instance
+		class VulkanInstance final : public Core::Instance
 		{
 		public:
 			/**

@@ -29,7 +29,7 @@ namespace Flint
 			 * @param inputBindings The input bindings of the vertex shader.
 			 * @param inputAttributes The input attributes of the vertex shader.
 			 */
-			explicit VulkanGraphicsPipeline(VulkanDevice& device, VulkanRasterizer& rasterizer, const RasterizingPipelineSpecification& specification, std::vector<VkVertexInputBindingDescription>&& inputBindings, std::vector<VkVertexInputAttributeDescription>&& inputAttributes);
+			explicit VulkanGraphicsPipeline(VulkanDevice& device, VulkanRasterizer& rasterizer, const Core::RasterizingPipelineSpecification& specification, std::vector<VkVertexInputBindingDescription>&& inputBindings, std::vector<VkVertexInputAttributeDescription>&& inputAttributes);
 
 			/**
 			 * Destructor.
@@ -50,7 +50,7 @@ namespace Flint
 			 * @param layoutBinding The descriptor set layout bindings.
 			 * @param pushConstants The push constants.
 			 */
-			void resolveShader(const Shader& code, VkShaderStageFlagBits stageFlag, std::vector<VkDescriptorSetLayoutBinding>& layoutBindings, std::vector<VkPushConstantRange>& pushConstants);
+			//void resolveShader(const Shader& code, VkShaderStageFlagBits stageFlag, std::vector<VkDescriptorSetLayoutBinding>& layoutBindings, std::vector<VkPushConstantRange>& pushConstants);
 
 			/**
 			 * Create the pipeline layout.
@@ -64,7 +64,7 @@ namespace Flint
 			 *
 			 * @param specification The pipeline specification.
 			 */
-			void setupDefaults(const RasterizingPipelineSpecification& specification);
+			void setupDefaults(const Core::RasterizingPipelineSpecification& specification);
 
 			/**
 			 * Create the pipeline.

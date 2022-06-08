@@ -8,7 +8,7 @@
 
 namespace Flint
 {
-	GraphicsEngine::GraphicsEngine(std::string&& applicationName, uint32_t applicationVersion, bool enableValidation, BackendAPI backendAPI)
+	GraphicsEngine::GraphicsEngine(std::string&& applicationName, uint32_t applicationVersion, bool enableValidation, Core::BackendAPI backendAPI)
 	{
 		// Setup the create instance command.
 		Commands::CreateInstance createInstance;
@@ -20,7 +20,7 @@ namespace Flint
 		auto instanceFuture = createInstance.m_Promise.get_future();
 
 		// Create the worker.
-		if (backendAPI == BackendAPI::Vulkan)
+		if (backendAPI == Core::BackendAPI::Vulkan)
 			m_WorkerThread = std::jthread(VulkanBackend::Worker, std::reference_wrapper(m_ConditionalVariable), std::reference_wrapper(m_ResouceMutex), std::reference_wrapper(m_Commands), std::move(createInstance));
 		else
 			throw InvalidBackend("The provided backend API is not supported!");
@@ -38,9 +38,9 @@ namespace Flint
 		m_WorkerThread.join();
 	}
 
-	Flint::BackendAPI GraphicsEngine::GetSupportedBackends()
+	Flint::Core::BackendAPI GraphicsEngine::GetSupportedBackends()
 	{
-		return BackendAPI::Vulkan;
+		return Core::BackendAPI::Vulkan;
 	}
 
 	std::future<Flint::DeviceHandle> GraphicsEngine::createDevice()

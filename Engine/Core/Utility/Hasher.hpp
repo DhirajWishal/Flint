@@ -13,7 +13,7 @@ namespace Flint
 	 * @param table The resource binding table.
 	 * @return The hash value.
 	 */
-	[[nodiscard]] uint64_t GenerateHash(const ResourceBindingTable& table);
+	[[nodiscard]] uint64_t GenerateHash(const Core::ResourceBindingTable& table);
 
 	/**
 	 * Generate hash for the rasterizing pipeline specification.
@@ -22,7 +22,7 @@ namespace Flint
 	 * @param specification The pipeline specification.
 	 * @return The hash value.
 	 */
-	[[nodiscard]] uint64_t GenerateHash(const RasterizingPipelineSpecification& specification);
+	[[nodiscard]] uint64_t GenerateHash(const Core::RasterizingPipelineSpecification& specification);
 
 	/**
 	 * Generate hash for the vertex descriptor.
@@ -30,5 +30,5 @@ namespace Flint
 	 * @param descriptor The vertex descriptor.
 	 * @return The hash.
 	 */
-	[[nodiscard]] uint64_t GenerateHash(const VertexDescriptor& descriptor);
+	[[nodiscard]] uint64_t GenerateHash(const Core::VertexDescriptor& descriptor);
 }

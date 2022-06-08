@@ -7,20 +7,23 @@
 
 namespace Flint
 {
-	/**
-	 * Ray tracer class.
-	 * This class performs ray tracing to the bound entities.
-	 */
-	template<class TDevice>
-	class RayTracer : public RenderTarget<TDevice>
+	namespace Core
 	{
-	public:
-		// We are using the same constructor(s) as the super class.
-		using RenderTarget<TDevice>::RenderTarget;
-		
 		/**
-		 * Virtual default destructor.
+		 * Ray tracer class.
+		 * This class performs ray tracing to the bound entities.
 		 */
-		virtual ~RayTracer() = default;
-	};
+		template<class TDevice>
+		class RayTracer : public RenderTarget<TDevice>
+		{
+		public:
+			// We are using the same constructor(s) as the super class.
+			using RenderTarget<TDevice>::RenderTarget;
+
+			/**
+			 * Virtual default destructor.
+			 */
+			virtual ~RayTracer() = default;
+		};
+	}
 }

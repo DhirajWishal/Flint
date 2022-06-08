@@ -16,7 +16,7 @@ namespace Flint
 			, m_CommandStorage(commands)
 			, m_Lock(m_ResouceMutex)
 		{
-			createInstance.m_Promise.set_value(IntToEnum<InstanceHandle>(reinterpret_cast<std::underlying_type_t<InstanceHandle>>(&m_Instance)));
+			createInstance.m_Promise.set_value(Core::IntToEnum<InstanceHandle>(reinterpret_cast<std::underlying_type_t<InstanceHandle>>(&m_Instance)));
 		}
 		catch (...)
 		{
@@ -125,19 +125,19 @@ namespace Flint
 
 		void VulkanBackendHandler::createDevice(Commands::CreateDevice&& command)
 		{
-			command.m_Promise.set_value(IntToEnum<DeviceHandle>(m_pDevices.emplace(std::make_unique<VulkanDevice>(m_Instance)).first));
+			command.m_Promise.set_value(Core::IntToEnum<DeviceHandle>(m_pDevices.emplace(std::make_unique<VulkanDevice>(m_Instance)).first));
 		}
 
 		void VulkanBackendHandler::destroyDevice(Commands::DestroyDevice&& command)
 		{
-			m_pDevices.remove(EnumToInt(command.m_DeviceHandle));
+			m_pDevices.remove(Core::EnumToInt(command.m_DeviceHandle));
 			command.m_Promise.set_value();
 		}
 
 		void VulkanBackendHandler::createWindow(Commands::CreateWindow&& command)
 		{
-			auto& device = *m_pDevices[EnumToInt(command.m_DeviceHandle)];
-			command.m_Promise.set_value(IntToEnum<WindowHandle>(
+			auto& device = *m_pDevices[Core::EnumToInt(command.m_DeviceHandle)];
+			command.m_Promise.set_value(Core::IntToEnum<WindowHandle>(
 				m_pWindows.emplace(
 					std::make_unique<VulkanWindow>(
 						device,
@@ -150,7 +150,7 @@ namespace Flint
 
 		void VulkanBackendHandler::updateWindow(Commands::UpdateWindow&& command)
 		{
-			auto& window = *m_pWindows[EnumToInt(command.m_WindowHandle)];
+			auto& window = *m_pWindows[Core::EnumToInt(command.m_WindowHandle)];
 			window.update();
 
 			command.m_Promise.set_value();
@@ -158,15 +158,15 @@ namespace Flint
 
 		void VulkanBackendHandler::destroyWindow(Commands::DestroyWindow&& command)
 		{
-			m_pWindows.remove(EnumToInt(command.m_WindowHandle));
+			m_pWindows.remove(Core::EnumToInt(command.m_WindowHandle));
 			command.m_Promise.set_value();
 		}
 
 		void VulkanBackendHandler::createRasterizer(Commands::CreateRasterizer&& command)
 		{
-			auto& device = *m_pDevices[EnumToInt(command.m_DeviceHandle)];
+			auto& device = *m_pDevices[Core::EnumToInt(command.m_DeviceHandle)];
 			command.m_Promise.set_value(
-				IntToEnum<RasterizerHandle>(
+				Core::IntToEnum<RasterizerHandle>(
 					m_pRasterizers.emplace(
 						std::make_unique<VulkanRasterizer>(
 							device,
@@ -182,7 +182,7 @@ namespace Flint
 
 		void VulkanBackendHandler::destroyRasterizer(Commands::DestroyRasterizer&& command)
 		{
-			m_pRasterizers.remove(EnumToInt(command.m_RasterizerHandle));
+			m_pRasterizers.remove(Core::EnumToInt(command.m_RasterizerHandle));
 			command.m_Promise.set_value();
 		}
 	}

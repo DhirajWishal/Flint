@@ -25,7 +25,7 @@ namespace Flint
 		 * @param enableValidation Whether or not to enable backend validation.
 		 * @param backendAPI The backend API to use. Note that this is highly platform specific! If multiple is provided, the best is selected (which will be Vulkan ofc :))
 		 */
-		explicit GraphicsEngine(std::string&& applicationName, uint32_t applicationVersion, bool enableValidation, BackendAPI backendAPI);
+		explicit GraphicsEngine(std::string&& applicationName, uint32_t applicationVersion, bool enableValidation, Core::BackendAPI backendAPI);
 
 		/**
 		 * Destructor.
@@ -37,7 +37,7 @@ namespace Flint
 		 *
 		 * @return The Backend API.
 		 */
-		[[nodiscard]] static BackendAPI GetSupportedBackends();
+		[[nodiscard]] static Core::BackendAPI GetSupportedBackends();
 
 	public:
 		/**
