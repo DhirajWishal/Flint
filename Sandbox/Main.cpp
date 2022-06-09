@@ -35,14 +35,14 @@ int main()
 
 		{
 			auto window = Flint::Backend::Window(device, "Sandbox");
-			auto camera = Flint::MonoCamera(glm::vec3(0.0f), window.getWidth(), window.getHeight());
+			auto camera = Flint::MonoCamera(glm::vec3(0.0f), 1280, 720);
 			camera.m_MovementBias = 50;
 
 			Flint::FrameTimer timer;
 
 			auto program = Flint::Backend::RasterizingProgram(device, "Shaders/Debugging/vert.spv", "Shaders/Debugging/frag.spv");
 			auto rasterizer = Flint::Backend::Rasterizer(device, camera, window.getFrameCount(), { Flint::Core::Defaults::ColorAttachmentDescription, Flint::Core::Defaults::DepthAttachmentDescription });
-			window.attach(&rasterizer, 0);
+			window.attach(rasterizer, 0);
 
 			while (!g_EventSystem.shouldClose())
 			{
@@ -64,7 +64,7 @@ int main()
 						camera.moveRight(duration.count());
 				}
 
-				//spdlog::info("Frame rate: {}", Flint::FrameTimer::FramesPerSecond(duration), " ns");
+				spdlog::info("Frame rate: {}", Flint::FrameTimer::FramesPerSecond(duration), " ns");
 				camera.update();
 				rasterizer.update();
 				window.update();

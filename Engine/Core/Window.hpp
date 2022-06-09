@@ -50,10 +50,10 @@ namespace Flint
 			 * 
 			 * If the render target attachment's size is not equal to the window, then it will scale it down accordingly.
 			 *
-			 * @param pRenderTarget The render target dependency.
+			 * @param renderTarget The render target dependency.
 			 * @param attachment The render target's attachment to copy.
 			 */
-			void attach(const RenderTarget<TDevice, TAttachment>* pRenderTarget, uint32_t attachment) { m_Dependency = std::make_pair(pRenderTarget, attachment); }
+			void attach(const RenderTarget<TDevice, TAttachment>& renderTarget, uint32_t attachment) { m_Dependency = std::make_pair(&renderTarget, attachment); }
 
 			/**
 			 * Get the title of the window.

@@ -134,9 +134,9 @@ namespace Flint
 			void recreate();
 
 			/**
-			 * Submit the frame to the GPU.
+			 * Copy the dependency and submit the frame to the GPU.
 			 */
-			void submitFrame();
+			void copyAndSubmitFrame();
 
 			/**
 			 * Present the images to the user.

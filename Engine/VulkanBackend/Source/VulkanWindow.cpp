@@ -95,7 +95,7 @@ namespace Flint
 			// We need to skip things if we're running this function for the first time.
 			if (!m_FirstTime)
 			{
-				submitFrame();
+				copyAndSubmitFrame();
 				present();
 			}
 
@@ -468,7 +468,7 @@ namespace Flint
 			m_pCommandBuffers->resetIndex();
 		}
 
-		void VulkanWindow::submitFrame()
+		void VulkanWindow::copyAndSubmitFrame()
 		{
 			// Begin the command buffer recording.
 			m_pCommandBuffers->begin();
