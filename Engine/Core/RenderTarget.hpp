@@ -4,6 +4,7 @@
 #pragma once
 
 #include "RenderTargetAttachment.hpp"
+#include "Camera/Camera.hpp"
 
 namespace Flint
 {
@@ -22,15 +23,19 @@ namespace Flint
 			 * Explicit constructor.
 			 *
 			 * @param device The device reference.
-			 * @param width The width of the render target.
-			 * @param height The height of the render target.
+			 * @param camera The camera from which all the models are drawn from.
 			 * @param frameCount The number of frames in the render target. This is usually set automatically by the Window.
 			 * @param attachmentDescriptions The attachment descriptions.
 			 * @param multisample The multisample count. Default is One.
 			 * @param exclusiveBuffering Whether or not to use one buffer/ attachment per frame. Default is false.
 			 */
-			explicit RenderTarget(TDevice& device, uint32_t width, uint32_t height, uint32_t frameCount, std::vector<AttachmentDescription>&& attachmentDescriptions, Multisample multisample = Multisample::One, bool exclusiveBuffering = false)
-				: DeviceBoundObject<TDevice>(device), m_AttachmentDescriptions(std::move(attachmentDescriptions)), m_Width(width), m_Height(height), m_FrameCount(frameCount), m_Multisample(multisample), m_ExclusiveBuffering(exclusiveBuffering) {}
+			explicit RenderTarget(TDevice& device, Camera& camera, uint32_t frameCount, std::vector<AttachmentDescription>&& attachmentDescriptions, Multisample multisample = Multisample::One, bool exclusiveBuffering = false)
+				: DeviceBoundObject<TDevice>(device)
+				, m_Camera(camera)
+				, m_AttachmentDescriptions(std::move(attachmentDescriptions))
+				, m_FrameCount(frameCount)
+				, m_Multisample(multisample)
+				, m_ExclusiveBuffering(exclusiveBuffering) {}
 
 			/**
 			 * Default virtual destructor.
@@ -44,12 +49,10 @@ namespace Flint
 			virtual void update() = 0;
 
 			/**
-			 * Resize the render target.
-			 *
-			 * @param width The width of the render target.
-			 * @param height The height of the render target.
+			 * Update the render target extent.
+			 * This needs to be called if the camera's frame extents are altered.
 			 */
-			virtual void resize(uint32_t width, uint32_t height) = 0;
+			virtual void updateExtent() = 0;
 
 			/**
 			 * Get the render target attachment at a given index.
@@ -72,14 +75,14 @@ namespace Flint
 			 *
 			 * @return The width.
 			 */
-			[[nodiscard]] uint32_t getWidth() const { return m_Width; }
+			[[nodiscard]] uint32_t getWidth() const { return m_Camera.getFrameWidth(); }
 
 			/**
 			 * Get the height of the render target.
 			 *
 			 * @return The height.
 			 */
-			[[nodiscard]] uint32_t getHeight() const { return m_Height; }
+			[[nodiscard]] uint32_t getHeight() const { return m_Camera.getFrameHeight(); }
 
 			/**
 			 * Get the number of frames in the render target.
@@ -104,8 +107,7 @@ namespace Flint
 		protected:
 			std::vector<AttachmentDescription> m_AttachmentDescriptions;
 
-			uint32_t m_Width = 0;
-			uint32_t m_Height = 0;
+			Camera& m_Camera;
 
 			const uint32_t m_FrameCount = 0;
 			uint32_t m_FrameIndex = 0;

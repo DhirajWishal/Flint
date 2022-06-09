@@ -1,14 +1,14 @@
 // Copyright 2021-2022 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#include "Engine/Camera/MonoCamera.hpp"
+#include "Core/Camera/MonoCamera.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 
 namespace Flint
 {
-	MonoCamera::MonoCamera(const glm::vec3 position, const float aspectRatio)
-		: Camera(position, aspectRatio)
+	MonoCamera::MonoCamera(const glm::vec3 position, const uint32_t frameWidth, const uint32_t frameHeight)
+		: Camera(position, frameWidth, frameHeight)
 	{
 		m_Matrix.m_Projection = glm::perspective(glm::radians(m_FieldOfView), m_AspectRatio, m_NearPlane, m_FarPlane);
 		m_Matrix.m_Projection[1][1] *= -1.0f;

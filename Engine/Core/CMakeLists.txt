@@ -13,6 +13,9 @@ add_library(
 	FlintCore
 	STATIC
 	 
+	"Source/Camera/Camera.cpp" 
+	"Source/Camera/MonoCamera.cpp"
+
 	"Source/StaticInitializer.cpp"
 		
 	"Source/EventSystem/EventSystem.cpp"
@@ -29,10 +32,10 @@ add_library(
 	"RayTracer.hpp"
 	"RenderTargetAttachment.hpp"
 	"Types.hpp"
-	"Backend.hpp" 
 	"StaticInitializer.hpp"
 	"Program.hpp"
 	"RasterizingProgram.hpp"
+	"Buffer.hpp"
 	
 	"Errors/AssetError.hpp"
 	"Errors/BackendError.hpp" 
@@ -42,6 +45,9 @@ add_library(
 	"Containers/SparseArray.hpp"
 	"Containers/BinaryMap.hpp" 
 	"Containers/Reactor.hpp" 
+
+	"Camera/Camera.hpp"
+	"Camera/MonoCamera.hpp"
 
 	"EventSystem/EventSystem.hpp"
 	"EventSystem/Keyboard.hpp"

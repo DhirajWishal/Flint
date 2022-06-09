@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "Core/EventSystem/EventSystem.hpp"
-#include "Engine/Camera/MonoCamera.hpp"
+#include "Core/Camera/MonoCamera.hpp"
 #include "Engine/Utility/FrameTimer.hpp"
 
-#include "Engine/GraphicsEngine.hpp"
+#include "VulkanBackend/Exporter.hpp"
 
 #include <spdlog/spdlog.h>
 #include <spdlog/fmt/chrono.h>
@@ -28,45 +28,50 @@ static Flint::EventSystem g_EventSystem;
 
 int main()
 {
-	auto engine = Flint::GraphicsEngine("Sandbox", 1, Validation, Flint::Core::BackendAPI::Vulkan);
-	auto device = engine.createDevice();
-	auto window = engine.createWindow(device.get(), "Sandbox");
+	auto instance = Flint::Backend::Instance("Sandbox", 1, Validation);
 
 	{
-		auto camera = Flint::MonoCamera(glm::vec3(0.0f), static_cast<float>(1280) / 720);
-		camera.m_MovementBias = 50;
+		auto device = Flint::Backend::Device(instance);
 
-		Flint::FrameTimer timer;
-
-		const auto windowHandle = window.get();
-		while (!g_EventSystem.shouldClose())
 		{
-			auto update = engine.updateWindow(windowHandle);
-			const auto duration = timer.tick();
-			const auto events = g_EventSystem.poll();
+			auto window = Flint::Backend::Window(device, "Sandbox");
+			auto camera = Flint::MonoCamera(glm::vec3(0.0f), window.getWidth(), window.getHeight());
+			camera.m_MovementBias = 50;
 
-			if (events == Flint::EventType::Keyboard)
+			Flint::FrameTimer timer;
+
+			auto program = Flint::Backend::RasterizingProgram(device, "Shaders/Debugging/vert.spv", "Shaders/Debugging/frag.spv");
+			auto rasterizer = Flint::Backend::Rasterizer(device, camera, window.getFrameCount(), { Flint::Core::Defaults::ColorAttachmentDescription, Flint::Core::Defaults::DepthAttachmentDescription });
+			window.attach(&rasterizer, 0);
+
+			while (!g_EventSystem.shouldClose())
 			{
-				if (g_EventSystem.keyboard().m_KeyW)
-					camera.moveForward(duration.count());
+				const auto duration = timer.tick();
+				const auto events = g_EventSystem.poll();
 
-				if (g_EventSystem.keyboard().m_KeyS)
-					camera.moveBackward(duration.count());
+				if (events == Flint::EventType::Keyboard)
+				{
+					if (g_EventSystem.keyboard().m_KeyW)
+						camera.moveForward(duration.count());
 
-				if (g_EventSystem.keyboard().m_KeyA)
-					camera.moveLeft(duration.count());
+					if (g_EventSystem.keyboard().m_KeyS)
+						camera.moveBackward(duration.count());
 
-				if (g_EventSystem.keyboard().m_KeyD)
-					camera.moveRight(duration.count());
+					if (g_EventSystem.keyboard().m_KeyA)
+						camera.moveLeft(duration.count());
+
+					if (g_EventSystem.keyboard().m_KeyD)
+						camera.moveRight(duration.count());
+				}
+
+				//spdlog::info("Frame rate: {}", Flint::FrameTimer::FramesPerSecond(duration), " ns");
+				camera.update();
+				rasterizer.update();
+				window.update();
 			}
 
-			spdlog::info("Frame rate: {}", Flint::FrameTimer::FramesPerSecond(duration), " ns");
-
-			update.wait();
-			camera.update();
+			const auto ss = timer.tick();
 		}
-
-		const auto ss = timer.tick();
 	}
 
 	return 0;

@@ -45,13 +45,15 @@ namespace Flint
 			virtual void update() = 0;
 
 			/**
-			 * Add a dependency to the window.
-			 * This dependency will be copied to the frame.
+			 * Attach a dependency to the window.
+			 * The contents of the dependency will be copied to the window when updating.
+			 * 
+			 * If the render target attachment's size is not equal to the window, then it will scale it down accordingly.
 			 *
 			 * @param pRenderTarget The render target dependency.
 			 * @param attachment The render target's attachment to copy.
 			 */
-			void setDependency(const RenderTarget<TDevice, TAttachment>* pRenderTarget, uint32_t attachment) { m_Dependency = std::make_pair(pRenderTarget, attachment); }
+			void attach(const RenderTarget<TDevice, TAttachment>* pRenderTarget, uint32_t attachment) { m_Dependency = std::make_pair(pRenderTarget, attachment); }
 
 			/**
 			 * Get the title of the window.

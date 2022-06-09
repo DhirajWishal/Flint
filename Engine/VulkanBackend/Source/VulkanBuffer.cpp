@@ -9,40 +9,64 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanBuffer::VulkanBuffer(VulkanDevice& device, uint64_t size, BufferType type)
-			: m_Device(device), m_Size(size), m_Type(type)
+		VulkanBuffer::VulkanBuffer(VulkanDevice& device, uint64_t size, Core::BufferUsage usage)
+			: Buffer(device, size, usage)
 		{
 			// Validate the inputs.
 			if (m_Size == 0)
 				throw BackendError("Invalid buffer size!");
 
+			VkBufferUsageFlags bufferUsage = 0;
 			VmaAllocationCreateFlags vmaFlags = 0;
-			auto memoryUsage = VMA_MEMORY_USAGE_UNKNOWN;
+			VmaMemoryUsage memoryUsage = VMA_MEMORY_USAGE_UNKNOWN;
 
-			// Setup memory usage.
-			switch (m_Type)
+			// Setup usage.
+			switch (usage)
 			{
-			case BufferType::Vertex:
-			case BufferType::Index:
+			case Core::BufferUsage::Vertex:
+				bufferUsage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 				memoryUsage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
 				break;
 
-			case BufferType::ShallowVertex:
-			case BufferType::ShallowIndex:
+			case Core::BufferUsage::Index:
+				bufferUsage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 				memoryUsage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
+				break;
+
+			case Core::BufferUsage::ShallowVertex:
+				bufferUsage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 				vmaFlags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
-				break;
-
-			case BufferType::Storage:
 				memoryUsage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
-				vmaFlags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
 				break;
 
-			case BufferType::Uniform:
-			case BufferType::General:
-			case BufferType::Staging:
+			case Core::BufferUsage::ShallowIndex:
+				bufferUsage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+				vmaFlags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
+				memoryUsage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
+				break;
+
+			case Core::BufferUsage::Uniform:
+				bufferUsage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+				vmaFlags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
 				memoryUsage = VMA_MEMORY_USAGE_AUTO_PREFER_HOST;
+				break;
+
+			case Core::BufferUsage::Storage:
+				bufferUsage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 				vmaFlags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
+				memoryUsage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
+				break;
+
+			case Core::BufferUsage::General:
+				bufferUsage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+				vmaFlags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
+				memoryUsage = VMA_MEMORY_USAGE_AUTO_PREFER_HOST;
+				break;
+
+			case Core::BufferUsage::Staging:
+				bufferUsage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+				vmaFlags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
+				memoryUsage = VMA_MEMORY_USAGE_AUTO_PREFER_HOST;
 				break;
 
 			default:
@@ -55,7 +79,7 @@ namespace Flint
 			crateInfo.pNext = nullptr;
 			crateInfo.flags = 0;
 			crateInfo.size = m_Size;
-			crateInfo.usage = static_cast<VkBufferUsageFlags>(m_Type);
+			crateInfo.usage = bufferUsage;
 			crateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 			crateInfo.queueFamilyIndexCount = 0;
 			crateInfo.pQueueFamilyIndices = nullptr;
@@ -64,7 +88,7 @@ namespace Flint
 			vmaAllocationCreateInfo.flags = vmaFlags;
 			vmaAllocationCreateInfo.usage = memoryUsage;
 
-			FLINT_VK_ASSERT(vmaCreateBuffer(m_Device.getAllocator(), &crateInfo, &vmaAllocationCreateInfo, &m_Buffer, &m_Allocation, nullptr), "Failed to create the buffer!");
+			FLINT_VK_ASSERT(vmaCreateBuffer(getDevice().getAllocator(), &crateInfo, &vmaAllocationCreateInfo, &m_Buffer, &m_Allocation, nullptr), "Failed to create the buffer!");
 
 			// Set the descriptor buffer info.
 			m_DescriptorBufferInfo.buffer = m_Buffer;
@@ -74,13 +98,13 @@ namespace Flint
 
 		VulkanBuffer::~VulkanBuffer()
 		{
-			vmaDestroyBuffer(m_Device.getAllocator(), m_Buffer, m_Allocation);
+			vmaDestroyBuffer(getDevice().getAllocator(), m_Buffer, m_Allocation);
 		}
 
 		std::byte* VulkanBuffer::mapMemory()
 		{
 			std::byte* pDataPointer = nullptr;
-			FLINT_VK_ASSERT(vmaMapMemory(m_Device.getAllocator(), m_Allocation, reinterpret_cast<void**>(&pDataPointer)), "Failed to map the buffer memory!");
+			FLINT_VK_ASSERT(vmaMapMemory(getDevice().getAllocator(), m_Allocation, reinterpret_cast<void**>(&pDataPointer)), "Failed to map the buffer memory!");
 
 			m_IsMapped = true;
 			return pDataPointer;
@@ -91,7 +115,7 @@ namespace Flint
 			// We only need to unmap if we have mapped the memory.
 			if (m_IsMapped)
 			{
-				vmaUnmapMemory(m_Device.getAllocator(), m_Allocation);
+				vmaUnmapMemory(getDevice().getAllocator(), m_Allocation);
 				m_IsMapped = false;
 			}
 		}
@@ -110,7 +134,7 @@ namespace Flint
 
 
 			// Copy the buffer.
-			auto vCommandBuffer = m_Device.getUtilityCommandBuffer();
+			auto vCommandBuffer = getDevice().getUtilityCommandBuffer();
 			vCommandBuffer.begin();
 			vCommandBuffer.copyBuffer(buffer.m_Buffer, buffer.getSize(), srcOffset, m_Buffer, dstOffset);
 			vCommandBuffer.end();

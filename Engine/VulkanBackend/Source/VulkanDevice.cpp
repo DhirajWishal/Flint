@@ -3,10 +3,7 @@
 
 #include "VulkanBackend/VulkanDevice.hpp"
 #include "VulkanBackend/VulkanMacros.hpp"
-#include "VulkanBackend/VulkanWindow.hpp"
-#include "VulkanBackend/VulkanRasterizer.hpp"
 #include "VulkanBackend/VulkanCommandBuffers.hpp"
-#include "VulkanBackend/VulkanBuffer.hpp"
 
 #include <set>
 #include <array>
@@ -149,8 +146,6 @@ namespace Flint
 			// Destroy the defaults.
 			delete m_pUtilityCommandBuffer;
 
-			m_Buffers.clear();
-
 			// Destroy the VMA allocator.
 			destroyVMAAllocator();
 
@@ -182,59 +177,9 @@ namespace Flint
 			return Core::Multisample::One;
 		}
 
-		Flint::Core::BufferHandle VulkanDevice::createBuffer(uint64_t size, Core::BufferUsage usage)
-		{
-			// Resolve the buffer usages.
-			BufferType type = BufferType::Staging;
-			if ((usage & Core::BufferUsage::Uniform) == Core::BufferUsage::Uniform && (usage & Core::BufferUsage::Storage) == Core::BufferUsage::Storage)
-				type = BufferType::General;
-
-			else if ((usage & Core::BufferUsage::Uniform) == Core::BufferUsage::Uniform)
-				type = BufferType::Uniform;
-
-			else if ((usage & Core::BufferUsage::Storage) == Core::BufferUsage::Storage)
-				type = BufferType::Storage;
-
-			return Core::BufferHandle(m_Buffers.emplace(*this, size, type).first);
-		}
-
-		void VulkanDevice::copyToBuffer(Core::BufferHandle handle, const std::byte* pData, uint64_t size, uint64_t offset /*= 0*/)
-		{
-			auto& buffer = getBuffer(handle);
-			auto pDestination = buffer.mapMemory();
-
-#ifdef FLINT_PLATFORM_WINDOWS
-			std::copy_n(std::execution::unseq, pData, size, pDestination);
-
-#else
-			std::copy_n(pData, size, pDestination);
-
-#endif
-
-			buffer.unmapMemory();
-		}
-
 		Flint::Core::ImageHandle VulkanDevice::createTextureImage(std::filesystem::path&& path, Core::ImageUsage usage)
 		{
 			return Core::ImageHandle();
-		}
-
-		Flint::VulkanBackend::VulkanBuffer& VulkanDevice::getBuffer(Core::BufferHandle handle)
-		{
-			const auto index = Core::EnumToInt(handle);
-			if (m_Buffers.contains(index))
-				return m_Buffers[index];
-
-			throw BackendError("A buffer does not exist for the given handle!");
-		}
-
-		const Flint::VulkanBackend::VulkanBuffer& VulkanDevice::getBuffer(Core::BufferHandle handle) const
-		{
-			const auto index = Core::EnumToInt(handle);
-			if (m_Buffers.contains(index))
-				return m_Buffers[index];
-
-			throw BackendError("A buffer does not exist for the given handle!");
 		}
 
 		void VulkanDevice::selectPhysicalDevice()

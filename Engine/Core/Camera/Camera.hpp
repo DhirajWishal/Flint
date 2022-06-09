@@ -18,10 +18,11 @@ namespace Flint
 		 * Constructor.
 		 *
 		 * @param position The camera position in the 3D world.
-		 * @param aspectRatio The camera's aspect ratio.
+		 * @param frameWidth The camera frame width.
+		 * @param frameWHeight The camera frame height.
 		 * @param fieldOfView The camera's field of view. Default is 60.0f.
 		 */
-		explicit Camera(const glm::vec3 position, const float aspectRatio, const float fieldOfView = 60.0f);
+		explicit Camera(const glm::vec3 position, const uint32_t frameWidth, const uint32_t frameHeight, const float fieldOfView = 60.0f);
 
 		/**
 		 * Move the camera forward.
@@ -98,12 +99,29 @@ namespace Flint
 		 */
 		virtual void update() = 0;
 
+		/**
+		 * Get the camera frame's width.
+		 *
+		 * @return The width.
+		 */
+		[[nodiscard]] uint32_t getFrameWidth() const { return m_FrameWidth; }
+
+		/**
+		 * Get the camera frame's height.
+		 *
+		 * @return The height.
+		 */
+		[[nodiscard]] uint32_t getFrameHeight() const { return m_FrameHeight; }
+
 	public:
 		glm::vec3 m_Position = glm::vec3(0.0f, 1.0f, 0.0f);
 		glm::vec3 m_Up = glm::vec3(0.0f, 1.0f, 0.0f);
 		glm::vec3 m_Front = glm::vec3(0.0f, 0.0f, -1.0f);
 		glm::vec3 m_Right = glm::vec3(1.0f, 0.0f, 0.0f);
 		glm::vec3 m_WorldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+		uint32_t m_FrameWidth = 0;
+		uint32_t m_FrameHeight = 0;
 
 		float m_MovementBias = 0.005f;
 		float m_RotationBias = 0.001f;	// Radians per second.

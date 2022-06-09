@@ -66,25 +66,6 @@ namespace Flint
 			[[nodiscard]] Core::Multisample getMaximumMultisample() const override;
 
 			/**
-			 * Create a new buffer.
-			 *
-			 * @param size The size of the buffer.
-			 * @param usage The buffer usage.
-			 * @return The buffer handle.
-			 */
-			[[nodiscard]] Core::BufferHandle createBuffer(uint64_t size, Core::BufferUsage usage) override;
-
-			/**
-			 * Copy data to a buffer.
-			 *
-			 * @param handle The buffer handle.
-			 * @param pData The data to copy.
-			 * @param size The size of the data to copy.
-			 * @param offset The buffer's offset to copy to.
-			 */
-			[[nodiscard]] void copyToBuffer(Core::BufferHandle handle, const std::byte* pData, uint64_t size, uint64_t offset = 0) override;
-
-			/**
 			 * Create a new texture image.
 			 *
 			 * @param path The path to the texture file.
@@ -163,20 +144,6 @@ namespace Flint
 			 */
 			[[nodiscard]] const VulkanCommandBuffers& getUtilityCommandBuffer() const { return *m_pUtilityCommandBuffer; }
 
-			/**
-			 * Get the Vulkan buffer using the handle.
-			 *
-			 * @return The buffer.
-			 */
-			[[nodiscard]] VulkanBuffer& getBuffer(Core::BufferHandle handle);
-
-			/**
-			 * Get the Vulkan buffer using the handle.
-			 *
-			 * @return The buffer.
-			 */
-			[[nodiscard]] const VulkanBuffer& getBuffer(Core::BufferHandle handle) const;
-
 		private:
 			/**
 			 * Select the best physical device for the engine.
@@ -205,8 +172,6 @@ namespace Flint
 
 		private:
 			VkPhysicalDeviceProperties m_PhysicalDeviceProperties = {};
-
-			SparseArray<VulkanBuffer, uint32_t> m_Buffers;
 
 			VolkDeviceTable m_DeviceTable = {};
 

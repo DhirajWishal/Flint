@@ -22,7 +22,7 @@ namespace Flint
 			 *
 			 * @param device The device reference.
 			 */
-			explicit Program(TDevice& device) : DeviceBoundObject(device) {}
+			explicit Program(TDevice& device) : DeviceBoundObject<TDevice>(device) {}
 
 			/**
 			 * Virtual default destructor.

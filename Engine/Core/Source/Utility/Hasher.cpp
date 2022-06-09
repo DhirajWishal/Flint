@@ -12,13 +12,13 @@ namespace Flint
 	{
 		// Generate the hashes for the bindings.
 		std::vector<XXH64_hash_t> inputBindingHash;
-		inputBindingHash.reserve(table.m_Images.size() + table.m_Buffers.size());
+		//inputBindingHash.reserve(table.m_Images.size() + table.m_Buffers.size());
 
 		for (const auto& [binding, images] : table.m_Images)
 			inputBindingHash.emplace_back(XXH64(images.data(), sizeof(Core::ImageHandle) * images.size(), 0));
 
-		for (const auto& [binding, buffers] : table.m_Buffers)
-			inputBindingHash.emplace_back(XXH64(buffers.data(), sizeof(Core::BufferHandle) * buffers.size(), 0));
+		//for (const auto& [binding, buffers] : table.m_Buffers)
+		//	inputBindingHash.emplace_back(XXH64(buffers.data(), sizeof(Core::BufferHandle) * buffers.size(), 0));
 
 		// Finally combine all of them.
 		return static_cast<uint64_t>(XXH64(inputBindingHash.data(), sizeof(XXH64_hash_t) * inputBindingHash.size(), 0));

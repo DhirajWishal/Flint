@@ -248,23 +248,6 @@ namespace Flint
 		}
 
 		/**
-		 * Buffer usage enum.
-		 */
-		enum class BufferUsage : uint8_t
-		{
-			Uniform = 1 << 0,
-			Storage = 1 << 1,
-		};
-
-		FLINT_DEFINE_ENUM_AND_OR(BufferUsage);
-
-		/**
-		 * Buffer handle enum.
-		 * This is used to uniquely identify a buffer which is bound to a device.
-		 */
-		FLINT_DEFINE_HANDLE(BufferHandle);
-
-		/**
 		 * Image usage enum.
 		 */
 		enum class ImageUsage : uint8_t
@@ -293,7 +276,6 @@ namespace Flint
 
 		enum class ImageViewType : uint8_t
 		{
-
 		};
 
 		/**
@@ -327,11 +309,11 @@ namespace Flint
 			 * @param binding The shader binding to which the buffer is bound to.
 			 * @param handle The buffer handle.
 			 */
-			void bind(uint32_t binding, BufferHandle handle) { m_Buffers[binding].emplace_back(handle); }
+			//void bind(uint32_t binding, BufferHandle handle) { m_Buffers[binding].emplace_back(handle); }
 
 		public:
 			BinaryMap<uint32_t, std::vector<ImageHandle>> m_Images;
-			BinaryMap<uint32_t, std::vector<BufferHandle>> m_Buffers;
+			//BinaryMap<uint32_t, std::vector<BufferHandle>> m_Buffers;
 		};
 
 		/**

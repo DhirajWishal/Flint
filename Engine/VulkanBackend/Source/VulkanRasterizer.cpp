@@ -12,8 +12,8 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanRasterizer::VulkanRasterizer(VulkanDevice& device, uint32_t width, uint32_t height, uint32_t frameCount, std::vector<Core::AttachmentDescription>&& attachmentDescriptions, Core::Multisample multisample /*= Multisample::One*/, bool exclusiveBuffering /*= false*/)
-			: Rasterizer(device, width, height, frameCount, std::move(attachmentDescriptions), multisample, exclusiveBuffering)
+		VulkanRasterizer::VulkanRasterizer(VulkanDevice& device, Camera& camera, uint32_t frameCount, std::vector<Core::AttachmentDescription>&& attachmentDescriptions, Core::Multisample multisample /*= Multisample::One*/, bool exclusiveBuffering /*= false*/)
+			: Rasterizer(device, camera, frameCount, std::move(attachmentDescriptions), multisample, exclusiveBuffering)
 		{
 			// Create the attachments.
 			createAttachments();
@@ -69,17 +69,10 @@ namespace Flint
 			m_pCommandBuffers->next();
 		}
 
-		void VulkanRasterizer::resize(uint32_t width, uint32_t height)
+		void VulkanRasterizer::updateExtent()
 		{
-			// Return if we have the same width and height.
-			if (getWidth() == width && getHeight() == height)
-				return;
-
 			// Wait idle to finish everything we have prior to this.
 			getDevice().waitIdle();
-
-			m_Width = width;
-			m_Height = height;
 
 			// Destroy the previous attachments.
 			m_pAttachments.clear();
@@ -129,8 +122,8 @@ namespace Flint
 							pAttachment.emplace_back(
 								std::make_unique<VulkanColorAttachment>(
 									getDevice(),
-									m_Width,
-									m_Height,
+									getWidth(),
+									getHeight(),
 									Utility::GetPixelFormat(
 										Utility::FindSupportedFormat(
 											getDevice(),
@@ -145,7 +138,7 @@ namespace Flint
 							);
 						}
 						else
-							pAttachment.emplace_back(std::make_unique<VulkanColorAttachment>(getDevice(), m_Width, m_Height, attachment.m_Format, m_Multisample));
+							pAttachment.emplace_back(std::make_unique<VulkanColorAttachment>(getDevice(), getWidth(), getHeight(), attachment.m_Format, m_Multisample));
 					}
 					else
 					{
@@ -155,8 +148,8 @@ namespace Flint
 							pAttachment.emplace_back(
 								std::make_unique<VulkanDepthAttachment>(
 									getDevice(),
-									m_Width,
-									m_Height,
+									getWidth(),
+									getHeight(),
 									Utility::GetPixelFormat(
 										Utility::FindSupportedFormat(
 											getDevice(),
@@ -171,7 +164,7 @@ namespace Flint
 							);
 						}
 						else
-							pAttachment.emplace_back(std::make_unique<VulkanDepthAttachment>(getDevice(), m_Width, m_Height, attachment.m_Format, m_Multisample));
+							pAttachment.emplace_back(std::make_unique<VulkanDepthAttachment>(getDevice(), getWidth(), getHeight(), attachment.m_Format, m_Multisample));
 					}
 				}
 			}

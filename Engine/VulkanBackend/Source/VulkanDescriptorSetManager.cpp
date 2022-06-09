@@ -144,37 +144,37 @@ namespace Flint
 			}
 
 			// Resolve buffers.
-			for (const auto& [binding, buffers] : table.m_Buffers)
-			{
-				const auto bufferCount = static_cast<uint32_t>(buffers.size());
-				for (uint32_t i = 0; i < bufferCount; i++)
-				{
-					// Setup write info.
-					auto& writeDescriptorSet = writeDescriptorSets.emplace_back();
-					writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-					writeDescriptorSet.pNext = nullptr;
-					writeDescriptorSet.dstSet = descriptorSets.front();
-					writeDescriptorSet.dstBinding = binding;
-					writeDescriptorSet.descriptorCount = bufferCount;
-					writeDescriptorSet.descriptorType = m_DescriptorTypeMap[binding];
-					writeDescriptorSet.dstArrayElement = i;
-					writeDescriptorSet.pBufferInfo = m_Device.getBuffer(buffers[i]).getDescriptorBufferInfo();
-					writeDescriptorSet.pImageInfo = nullptr;
-					writeDescriptorSet.pTexelBufferView = nullptr;
-
-					// Setup copy info.
-					auto& copySet = copyDescriptorSets.emplace_back();
-					copySet.sType = VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET;
-					copySet.pNext = nullptr;
-					copySet.dstSet = 0;
-					copySet.srcSet = descriptorSets.front();
-					copySet.descriptorCount = bufferCount;
-					copySet.dstBinding = binding;
-					copySet.dstArrayElement = i;
-					copySet.srcBinding = binding;
-					copySet.srcArrayElement = i;
-				}
-			}
+			//for (const auto& [binding, buffers] : table.m_Buffers)
+			//{
+			//	const auto bufferCount = static_cast<uint32_t>(buffers.size());
+			//	for (uint32_t i = 0; i < bufferCount; i++)
+			//	{
+			//		// Setup write info.
+			//		auto& writeDescriptorSet = writeDescriptorSets.emplace_back();
+			//		writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			//		writeDescriptorSet.pNext = nullptr;
+			//		writeDescriptorSet.dstSet = descriptorSets.front();
+			//		writeDescriptorSet.dstBinding = binding;
+			//		writeDescriptorSet.descriptorCount = bufferCount;
+			//		writeDescriptorSet.descriptorType = m_DescriptorTypeMap[binding];
+			//		writeDescriptorSet.dstArrayElement = i;
+			//		writeDescriptorSet.pBufferInfo = m_Device.getBuffer(buffers[i]).getDescriptorBufferInfo();
+			//		writeDescriptorSet.pImageInfo = nullptr;
+			//		writeDescriptorSet.pTexelBufferView = nullptr;
+			//
+			//		// Setup copy info.
+			//		auto& copySet = copyDescriptorSets.emplace_back();
+			//		copySet.sType = VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET;
+			//		copySet.pNext = nullptr;
+			//		copySet.dstSet = 0;
+			//		copySet.srcSet = descriptorSets.front();
+			//		copySet.descriptorCount = bufferCount;
+			//		copySet.dstBinding = binding;
+			//		copySet.dstArrayElement = i;
+			//		copySet.srcBinding = binding;
+			//		copySet.srcArrayElement = i;
+			//	}
+			//}
 
 			// Update the descriptor sets with the data.
 			m_Device.getDeviceTable().vkUpdateDescriptorSets(m_Device.getLogicalDevice(), static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);

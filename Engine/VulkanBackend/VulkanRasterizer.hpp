@@ -25,14 +25,13 @@ namespace Flint
 			 * Explicit constructor.
 			 *
 			 * @param device The device reference.
-			 * @param width The width of the render target.
-			 * @param height The height of the render target.
+			 * @param camera The camera which is used to render all the models from.
 			 * @param frameCount The number of frames in the render target. This is usually set automatically by the Window.
 			 * @param attachmentDescriptions The attachment descriptions.
 			 * @param multisample The multisample count. Default is One.
 			 * @param exclusiveBuffering Whether or not to use one buffer/ attachment per frame. Default is false.
 			 */
-			explicit VulkanRasterizer(VulkanDevice& device, uint32_t width, uint32_t height, uint32_t frameCount, std::vector<Core::AttachmentDescription>&& attachmentDescriptions, Core::Multisample multisample = Core::Multisample::One, bool exclusiveBuffering = false);
+			explicit VulkanRasterizer(VulkanDevice& device, Camera& camera, uint32_t frameCount, std::vector<Core::AttachmentDescription>&& attachmentDescriptions, Core::Multisample multisample = Core::Multisample::One, bool exclusiveBuffering = false);
 
 			/**
 			 * Destructor.
@@ -46,12 +45,10 @@ namespace Flint
 			void update() override;
 
 			/**
-			 * Resize the render target.
-			 *
-			 * @param width The width of the render target.
-			 * @param height The height of the render target.
+			 * Update the render target extent.
+			 * This needs to be called if the camera's frame extents are altered.
 			 */
-			void resize(uint32_t width, uint32_t height) override;
+			void updateExtent() override;
 
 			/**
 			 * Get the render target attachment at a given index.

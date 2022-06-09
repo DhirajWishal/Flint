@@ -29,9 +29,10 @@ namespace Flint
 		 * Constructor.
 		 *
 		 * @param position The camera position in the 3D world.
-		 * @pram aspectRatio The camera's aspect ratio.
+		 * @param frameWidth The camera frame width.
+		 * @param frameWHeight The camera frame height.
 		 */
-		explicit MonoCamera(const glm::vec3 position, const float aspectRatio);
+		explicit MonoCamera(const glm::vec3 position, const uint32_t frameWidth, const uint32_t frameHeight);
 
 		/**
 		 * Update the matrices.
@@ -44,11 +45,11 @@ namespace Flint
 		 * @param device The device which owns the buffer.
 		 * @param buffer The buffer to copy the data to.
 		 */
-		template<class TDevice>
-		void copyToBuffer(TDevice& device, Core::BufferHandle buffer) const
-		{
-			device.copyToBuffer(buffer, reinterpret_cast<const std::byte*>(&m_Matrix), sizeof(Matrix));
-		}
+		 //template<class TDevice>
+		 //void copyToBuffer(TDevice& device, Core::BufferHandle buffer) const
+		 //{
+		 //	device.copyToBuffer(buffer, reinterpret_cast<const std::byte*>(&m_Matrix), sizeof(Matrix));
+		 //}
 
 	public:
 		Matrix m_Matrix;
