@@ -14,10 +14,10 @@ namespace Flint
 		class VulkanRasterizer;
 
 		/**
-		 * Vulkan graphics pipeline class.
+		 * Vulkan rasterizing pipeline class.
 		 * This pipeline is used to perform raster graphics.
 		 */
-		class VulkanGraphicsPipeline final : public VulkanPipeline, public VulkanDescriptorSetManager
+		class VulkanRasterizingPipeline final : public VulkanPipeline, public VulkanDescriptorSetManager
 		{
 		public:
 			/**
@@ -29,12 +29,12 @@ namespace Flint
 			 * @param inputBindings The input bindings of the vertex shader.
 			 * @param inputAttributes The input attributes of the vertex shader.
 			 */
-			explicit VulkanGraphicsPipeline(VulkanDevice& device, VulkanRasterizer& rasterizer, const Core::RasterizingPipelineSpecification& specification, std::vector<VkVertexInputBindingDescription>&& inputBindings, std::vector<VkVertexInputAttributeDescription>&& inputAttributes);
+			explicit VulkanRasterizingPipeline(VulkanDevice& device, VulkanRasterizer& rasterizer, const Core::RasterizingPipelineSpecification& specification, std::vector<VkVertexInputBindingDescription>&& inputBindings, std::vector<VkVertexInputAttributeDescription>&& inputAttributes);
 
 			/**
 			 * Destructor.
 			 */
-			~VulkanGraphicsPipeline() override;
+			~VulkanRasterizingPipeline() override;
 
 			/**
 			 * Recreate the pipeline.
@@ -50,13 +50,13 @@ namespace Flint
 			 * @param layoutBinding The descriptor set layout bindings.
 			 * @param pushConstants The push constants.
 			 */
-			//void resolveShader(const Shader& code, VkShaderStageFlagBits stageFlag, std::vector<VkDescriptorSetLayoutBinding>& layoutBindings, std::vector<VkPushConstantRange>& pushConstants);
+			 //void resolveShader(const Shader& code, VkShaderStageFlagBits stageFlag, std::vector<VkDescriptorSetLayoutBinding>& layoutBindings, std::vector<VkPushConstantRange>& pushConstants);
 
-			/**
-			 * Create the pipeline layout.
-			 *
-			 * @param pushConstants The push constants to bind.
-			 */
+			 /**
+			  * Create the pipeline layout.
+			  *
+			  * @param pushConstants The push constants to bind.
+			  */
 			void createPipelineLayout(std::vector<VkPushConstantRange>&& pushConstants);
 
 			/**

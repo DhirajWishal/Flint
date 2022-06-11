@@ -9,7 +9,7 @@
 #include "VulkanDevice.hpp"
 #include "VulkanCommandBuffers.hpp"
 #include "VulkanRenderTargetAttachment.hpp"
-#include "VulkanGraphicsPipeline.hpp"
+#include "VulkanRasterizingPipeline.hpp"
 
 namespace Flint
 {

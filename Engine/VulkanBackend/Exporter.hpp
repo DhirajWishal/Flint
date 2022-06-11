@@ -6,24 +6,34 @@
 #include "VulkanInstance.hpp"
 #include "VulkanDevice.hpp"
 #include "VulkanWindow.hpp"
-#include "VulkanRasterizer.hpp"
+
 #include "VulkanRasterizingProgram.hpp"
+
+#include "VulkanRasterizer.hpp"
+#include "VulkanRayTracer.hpp"
+
+#include "VulkanRasterizingPipeline.hpp"
+#include "VulkanRayTracingPipeline.hpp"
 
 #include "VulkanColorAttachment.hpp"
 #include "VulkanDepthAttachment.hpp"
+#include "VulkanStorageAttachment.hpp"
 
 namespace Flint
 {
-	namespace Backend
-	{
-		using Instance = VulkanBackend::VulkanInstance;
-		using Device = VulkanBackend::VulkanDevice;
-		using Window = VulkanBackend::VulkanWindow;
-		using Rasterizer = VulkanBackend::VulkanRasterizer;
-		using RasterizingProgram = VulkanBackend::VulkanRasterizingProgram;
+	using Instance = VulkanBackend::VulkanInstance;
+	using Device = VulkanBackend::VulkanDevice;
+	using Window = VulkanBackend::VulkanWindow;
 
-		using ColorAttachment = VulkanBackend::VulkanColorAttachment;
-		using DepthAttachment = VulkanBackend::VulkanDepthAttachment;
+	using RasterizingProgram = VulkanBackend::VulkanRasterizingProgram;
 
-	}
+	using Rasterizer = VulkanBackend::VulkanRasterizer;
+	using RayTracer = VulkanBackend::VulkanRayTracer;
+
+	using RasterizingPipeline = VulkanBackend::VulkanRasterizingPipeline;
+	using RayTracingPipeline = VulkanBackend::VulkanRayTracingPipeline;
+
+	using ColorAttachment = VulkanBackend::VulkanColorAttachment;
+	using DepthAttachment = VulkanBackend::VulkanDepthAttachment;
+	using StorageAttachment = VulkanBackend::VulkanStorageAttachment;
 }

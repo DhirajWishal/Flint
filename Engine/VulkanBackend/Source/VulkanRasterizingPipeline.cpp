@@ -1,7 +1,7 @@
 // Copyright 2021-2022 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#include "VulkanBackend/VulkanGraphicsPipeline.hpp"
+#include "VulkanBackend/VulkanRasterizingPipeline.hpp"
 #include "VulkanBackend/VulkanRasterizer.hpp"
 #include "VulkanBackend/VulkanMacros.hpp"
 
@@ -279,7 +279,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanGraphicsPipeline::VulkanGraphicsPipeline(VulkanDevice& device, VulkanRasterizer& rasterizer, const Core::RasterizingPipelineSpecification& specification, std::vector<VkVertexInputBindingDescription>&& inputBindings, std::vector<VkVertexInputAttributeDescription>&& inputAttributes)
+		VulkanRasterizingPipeline::VulkanRasterizingPipeline(VulkanDevice& device, VulkanRasterizer& rasterizer, const Core::RasterizingPipelineSpecification& specification, std::vector<VkVertexInputBindingDescription>&& inputBindings, std::vector<VkVertexInputAttributeDescription>&& inputAttributes)
 			: VulkanPipeline(device, specification.m_CacheFile), VulkanDescriptorSetManager(device, rasterizer.getFrameCount()), m_Rasterizer(rasterizer), m_VertexBindings(std::move(inputBindings)), m_VertexAttributes(std::move(inputAttributes))
 		{
 			// Resolve shader information.
@@ -305,18 +305,18 @@ namespace Flint
 			createPipeline();
 		}
 
-		VulkanGraphicsPipeline::~VulkanGraphicsPipeline()
+		VulkanRasterizingPipeline::~VulkanRasterizingPipeline()
 		{
 			destroyShaders();
 		}
 
-		void VulkanGraphicsPipeline::recreate()
+		void VulkanRasterizingPipeline::recreate()
 		{
 			getDevice().getDeviceTable().vkDestroyPipeline(getDevice().getLogicalDevice(), m_Pipeline, nullptr);
 			createPipeline();
 		}
 
-		//void VulkanGraphicsPipeline::resolveShader(const Shader& code, VkShaderStageFlagBits stageFlag, std::vector<VkDescriptorSetLayoutBinding>& layoutBindings, std::vector<VkPushConstantRange>& pushConstants)
+		//void VulkanRasterizingPipeline::resolveShader(const Shader& code, VkShaderStageFlagBits stageFlag, std::vector<VkDescriptorSetLayoutBinding>& layoutBindings, std::vector<VkPushConstantRange>& pushConstants)
 		//{
 		//	// Resolve the descriptors.
 		//	for (const auto& binding : code.getBindings())
@@ -364,7 +364,7 @@ namespace Flint
 		//	stageInfo.pName = code.getEntryPoint().data();
 		//}
 
-		void VulkanGraphicsPipeline::createPipelineLayout(std::vector<VkPushConstantRange>&& pushConstants)
+		void VulkanRasterizingPipeline::createPipelineLayout(std::vector<VkPushConstantRange>&& pushConstants)
 		{
 			VkPipelineLayoutCreateInfo createInfo = {};
 			createInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -378,7 +378,7 @@ namespace Flint
 			FLINT_VK_ASSERT(getDevice().getDeviceTable().vkCreatePipelineLayout(getDevice().getLogicalDevice(), &createInfo, nullptr, &m_PipelineLayout), "Failed to create the pipeline layout!");
 		}
 
-		void VulkanGraphicsPipeline::setupDefaults(const Core::RasterizingPipelineSpecification& specification)
+		void VulkanRasterizingPipeline::setupDefaults(const Core::RasterizingPipelineSpecification& specification)
 		{
 			// Setup the input bindings.
 			m_VertexInputStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -480,7 +480,7 @@ namespace Flint
 			m_DynamicStateCreateInfo.pDynamicStates = m_DynamicStates.data();
 		}
 
-		void VulkanGraphicsPipeline::createPipeline()
+		void VulkanRasterizingPipeline::createPipeline()
 		{
 			// Resolve viewport state.
 			VkRect2D rect2D = {};
@@ -530,7 +530,7 @@ namespace Flint
 			FLINT_VK_ASSERT(getDevice().getDeviceTable().vkCreateGraphicsPipelines(getDevice().getLogicalDevice(), m_PipelineCache, 1, &createInfo, nullptr, &m_Pipeline), "Failed to create the pipeline!");
 		}
 
-		void VulkanGraphicsPipeline::destroyShaders()
+		void VulkanRasterizingPipeline::destroyShaders()
 		{
 			for (const auto& shaders : m_ShaderStageCreateInfo)
 				getDevice().getDeviceTable().vkDestroyShaderModule(getDevice().getLogicalDevice(), shaders.module, nullptr);

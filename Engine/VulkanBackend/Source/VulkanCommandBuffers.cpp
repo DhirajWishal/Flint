@@ -251,12 +251,12 @@ namespace Flint
 			m_Device.getDeviceTable().vkCmdCopyBuffer(m_CurrentCommandBuffer, srcBuffer, dstBuffer, 1, &bufferCopy);
 		}
 
-		void VulkanCommandBuffers::bindGraphicsPipeline(const VulkanGraphicsPipeline& pipeline) const noexcept
+		void VulkanCommandBuffers::bindGraphicsPipeline(const VulkanRasterizingPipeline& pipeline) const noexcept
 		{
 			m_Device.getDeviceTable().vkCmdBindPipeline(m_CurrentCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getPipeline());
 		}
 
-		void VulkanCommandBuffers::bindDescriptor(const VulkanGraphicsPipeline& pipeline, VkDescriptorSet descriptorSet) const noexcept
+		void VulkanCommandBuffers::bindDescriptor(const VulkanRasterizingPipeline& pipeline, VkDescriptorSet descriptorSet) const noexcept
 		{
 			m_Device.getDeviceTable().vkCmdBindDescriptorSets(m_CurrentCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getPipelineLayout(), 0, 1, &descriptorSet, 0, nullptr);
 		}

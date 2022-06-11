@@ -91,8 +91,9 @@ namespace Flint
 		 */
 		enum class AttachmentType : uint8_t
 		{
-			Color,
-			Depth
+			Color,	// This is used for rasterizing.
+			Depth,	// This is used for rasterizing.
+			Storage	// This is used for ray tracing.
 		};
 
 		/**
@@ -309,7 +310,7 @@ namespace Flint
 			 * @param binding The shader binding to which the buffer is bound to.
 			 * @param handle The buffer handle.
 			 */
-			//void bind(uint32_t binding, BufferHandle handle) { m_Buffers[binding].emplace_back(handle); }
+			 //void bind(uint32_t binding, BufferHandle handle) { m_Buffers[binding].emplace_back(handle); }
 
 		public:
 			BinaryMap<uint32_t, std::vector<ImageHandle>> m_Images;

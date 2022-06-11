@@ -23,11 +23,13 @@ add_library(
 	"Source/VulkanDepthAttachment.cpp" 
 	"Source/VulkanRenderTargetAttachment.cpp"
 	"Source/VulkanPipeline.cpp" 
-	"Source/VulkanGraphicsPipeline.cpp"
+	"Source/VulkanRasterizingPipeline.cpp"
 	"Source/VulkanDescriptorSetManager.cpp"
 	"Source/VulkanBuffer.cpp"
-	
+	"Source/VulkanRayTracer.cpp"	
 	"Source/VulkanRasterizingProgram.cpp"
+	"Source/VulkanStorageAttachment.cpp"
+	"Source/VulkanRayTracingPipeline.cpp"
 	
 	"VulkanInstance.hpp"
 	"VulkanMacros.hpp"
@@ -38,11 +40,13 @@ add_library(
 	"VulkanColorAttachment.hpp" 
 	"VulkanDepthAttachment.hpp"
 	"VulkanRenderTargetAttachment.hpp"
-	"VulkanGraphicsPipeline.hpp" 
+	"VulkanRasterizingPipeline.hpp" 
 	"VulkanPipeline.hpp"
 	"VulkanDescriptorSetManager.hpp" 
 	"VulkanBuffer.hpp"
 	"VulkanRasterizingProgram.hpp"
+	"VulkanRayTracer.hpp"
+	"VulkanStorageAttachment.hpp"
 
 	"Exporter.hpp"
 )

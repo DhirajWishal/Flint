@@ -14,7 +14,7 @@ namespace Flint
 		class VulkanWindow;
 		class VulkanRasterizer;
 		class VulkanGeometryStore;
-		class VulkanGraphicsPipeline;
+		class VulkanRasterizingPipeline;
 
 		/**
 		 * Vulkan command buffers class.
@@ -117,7 +117,7 @@ namespace Flint
 			 *
 			 * @param pipeline The pipeline to bind.
 			 */
-			void bindGraphicsPipeline(const VulkanGraphicsPipeline& pipeline) const noexcept;
+			void bindGraphicsPipeline(const VulkanRasterizingPipeline& pipeline) const noexcept;
 
 			/**
 			 * Bind a graphics descriptor to the command buffer.
@@ -125,7 +125,7 @@ namespace Flint
 			 * @param pipeline The pipeline to which the descriptor is bound to.
 			 * @param descriptorSet The descriptor set to bind.
 			 */
-			void bindDescriptor(const VulkanGraphicsPipeline& pipeline, VkDescriptorSet descriptorSet) const noexcept;
+			void bindDescriptor(const VulkanRasterizingPipeline& pipeline, VkDescriptorSet descriptorSet) const noexcept;
 			/**
 			 * End recording.
 			 */

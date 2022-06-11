@@ -26,16 +26,12 @@ namespace Flint
 			 * @param camera The camera from which all the models are drawn from.
 			 * @param frameCount The number of frames in the render target. This is usually set automatically by the Window.
 			 * @param attachmentDescriptions The attachment descriptions.
-			 * @param multisample The multisample count. Default is One.
-			 * @param exclusiveBuffering Whether or not to use one buffer/ attachment per frame. Default is false.
 			 */
-			explicit RenderTarget(TDevice& device, Camera& camera, uint32_t frameCount, std::vector<AttachmentDescription>&& attachmentDescriptions, Multisample multisample = Multisample::One, bool exclusiveBuffering = false)
+			explicit RenderTarget(TDevice& device, Camera& camera, uint32_t frameCount, std::vector<AttachmentDescription>&& attachmentDescriptions)
 				: DeviceBoundObject<TDevice>(device)
 				, m_Camera(camera)
-				, m_AttachmentDescriptions(std::move(attachmentDescriptions))
 				, m_FrameCount(frameCount)
-				, m_Multisample(multisample)
-				, m_ExclusiveBuffering(exclusiveBuffering) {}
+				, m_AttachmentDescriptions(std::move(attachmentDescriptions)) {}
 
 			/**
 			 * Default virtual destructor.
@@ -85,18 +81,18 @@ namespace Flint
 			[[nodiscard]] uint32_t getHeight() const { return m_Camera.getFrameHeight(); }
 
 			/**
-			 * Get the number of frames in the render target.
+			 * Get the frame count.
 			 *
 			 * @return The frame count.
 			 */
-			[[nodiscard]] uint32_t getFrameCount() const { return m_FrameCount; }
+			[[nodsicard]] uint32_t getFrameCount() const { return m_FrameCount; }
 
 			/**
-			 * Get the multisample count.
+			 * Get the current frame index.
 			 *
-			 * @return The multisample count.
+			 * @return The frame index.
 			 */
-			[[nodiscard]] Multisample getMultisample() const { return m_Multisample; }
+			[[nodsicard]] uint32_t getFrameIndex() const { return m_FrameIndex; }
 
 		protected:
 			/**
@@ -111,9 +107,6 @@ namespace Flint
 
 			const uint32_t m_FrameCount = 0;
 			uint32_t m_FrameIndex = 0;
-
-			const Multisample m_Multisample = Multisample::One;
-			const bool m_ExclusiveBuffering = false;
 		};
 	}
 }

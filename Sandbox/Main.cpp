@@ -28,22 +28,24 @@ static Flint::EventSystem g_EventSystem;
 
 int main()
 {
-	auto instance = Flint::Backend::Instance("Sandbox", 1, Validation);
+	auto instance = Flint::Instance("Sandbox", 1, Validation);
 
 	{
-		auto device = Flint::Backend::Device(instance);
+		auto device = Flint::Device(instance);
 
 		{
-			auto window = Flint::Backend::Window(device, "Sandbox");
+			auto window = Flint::Window(device, "Sandbox");
 			auto camera = Flint::MonoCamera(glm::vec3(0.0f), 1280, 720);
 			camera.m_MovementBias = 50;
 
+			auto program = Flint::RasterizingProgram(device, "Shaders/Debugging/vert.spv", "Shaders/Debugging/frag.spv");
+			auto rasterizer = Flint::Rasterizer(device, camera, window.getFrameCount(), { Flint::Core::Defaults::ColorAttachmentDescription, Flint::Core::Defaults::DepthAttachmentDescription });
+			auto rayTracer = Flint::RayTracer(device, camera, window.getFrameCount());
+
+			window.attach(rasterizer);
+			//window.attach(rayTracer);
+
 			Flint::FrameTimer timer;
-
-			auto program = Flint::Backend::RasterizingProgram(device, "Shaders/Debugging/vert.spv", "Shaders/Debugging/frag.spv");
-			auto rasterizer = Flint::Backend::Rasterizer(device, camera, window.getFrameCount(), { Flint::Core::Defaults::ColorAttachmentDescription, Flint::Core::Defaults::DepthAttachmentDescription });
-			window.attach(rasterizer, 0);
-
 			while (!g_EventSystem.shouldClose())
 			{
 				const auto duration = timer.tick();
@@ -66,7 +68,8 @@ int main()
 
 				spdlog::info("Frame rate: {}", Flint::FrameTimer::FramesPerSecond(duration), " ns");
 				camera.update();
-				rasterizer.update();
+				rasterizer.update();	// Even though the rasterizer is attached as a dependency, we still need to manually update it.
+				rayTracer.update();
 				window.update();
 			}
 
