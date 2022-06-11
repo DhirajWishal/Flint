@@ -92,9 +92,6 @@ namespace Flint
 			beginInfo.flags = 0;
 			beginInfo.pInheritanceInfo = pInheritanceInfo;
 
-			// Finish previous execution before we run this.
-			finishExecution();
-
 			// Now we can create the command buffer.
 			FLINT_VK_ASSERT(m_Device.getDeviceTable().vkBeginCommandBuffer(m_CurrentCommandBuffer, &beginInfo), "Failed to begin command buffer recording!");
 			m_IsRecording = true;
@@ -356,6 +353,10 @@ namespace Flint
 
 		void VulkanCommandBuffers::finishExecution()
 		{
+			// End recording if we are in the recording stage.
+			if (isRecording())
+				return;
+
 			auto& fence = m_CommandFences[m_CurrentIndex];
 
 			// If the current fence is not free, we can wait.

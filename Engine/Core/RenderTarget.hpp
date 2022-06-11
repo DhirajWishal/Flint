@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "Graphical.hpp"
 #include "RenderTargetAttachment.hpp"
 #include "Camera/Camera.hpp"
 
@@ -16,7 +17,7 @@ namespace Flint
 		 * purposes.
 		 */
 		template<class TDevice, class TAttachment>
-		class RenderTarget : public DeviceBoundObject<TDevice>
+		class RenderTarget : public DeviceBoundObject<TDevice>, public Graphical
 		{
 		public:
 			/**
@@ -29,20 +30,14 @@ namespace Flint
 			 */
 			explicit RenderTarget(TDevice& device, Camera& camera, uint32_t frameCount, std::vector<AttachmentDescription>&& attachmentDescriptions)
 				: DeviceBoundObject<TDevice>(device)
+				, Graphical(frameCount)
 				, m_Camera(camera)
-				, m_FrameCount(frameCount)
 				, m_AttachmentDescriptions(std::move(attachmentDescriptions)) {}
 
 			/**
 			 * Default virtual destructor.
 			 */
 			virtual ~RenderTarget() = default;
-
-			/**
-			 * Update the render target.
-			 * This will perform whatever operation that should be done.
-			 */
-			virtual void update() = 0;
 
 			/**
 			 * Update the render target extent.
@@ -78,35 +73,12 @@ namespace Flint
 			 *
 			 * @return The height.
 			 */
-			[[nodiscard]] uint32_t getHeight() const { return m_Camera.getFrameHeight(); }
-
-			/**
-			 * Get the frame count.
-			 *
-			 * @return The frame count.
-			 */
-			[[nodsicard]] uint32_t getFrameCount() const { return m_FrameCount; }
-
-			/**
-			 * Get the current frame index.
-			 *
-			 * @return The frame index.
-			 */
-			[[nodsicard]] uint32_t getFrameIndex() const { return m_FrameIndex; }
-
-		protected:
-			/**
-			 * Increment the frame index to the next one.
-			 */
-			void incrementFrameIndex() { m_FrameIndex = ++m_FrameIndex % m_FrameCount; }
+			[[nodiscard]] uint32_t getHeight() const { return m_Camera.getFrameHeight(); }			
 
 		protected:
 			std::vector<AttachmentDescription> m_AttachmentDescriptions;
 
 			Camera& m_Camera;
-
-			const uint32_t m_FrameCount = 0;
-			uint32_t m_FrameIndex = 0;
 		};
 	}
 }

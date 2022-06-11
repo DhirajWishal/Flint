@@ -36,6 +36,7 @@ add_library(
 	"Program.hpp"
 	"RasterizingProgram.hpp"
 	"Buffer.hpp"
+	"Graphical.hpp"
 	
 	"Errors/AssetError.hpp"
 	"Errors/BackendError.hpp" 

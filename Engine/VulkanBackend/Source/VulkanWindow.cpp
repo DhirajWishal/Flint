@@ -45,6 +45,7 @@ namespace Flint
 
 			// Get the best buffer count.
 			m_FrameCount = getBestBufferCount();
+			notifyUpdated();
 
 			// Create the command buffer.
 			m_pCommandBuffers = std::make_unique<VulkanCommandBuffers>(device, m_FrameCount);
@@ -471,80 +472,89 @@ namespace Flint
 		void VulkanWindow::copyAndSubmitFrame()
 		{
 			// Begin the command buffer recording.
-			m_pCommandBuffers->begin();
+			m_pCommandBuffers->finishExecution();
 
-			// If we have a dependency, let's copy it.
-			if (m_Dependency.first)
+			// Update ONLY if we have anything to update.
+			if (needToUpdate())
 			{
-				auto pAttachment = m_Dependency.first->getAttachment(m_Dependency.second).as<VulkanRenderTargetAttachment>();
-				const auto currentSwapchainImage = m_SwapchainImages[m_FrameIndex];
+				m_pCommandBuffers->begin();
 
-				VkImageSubresourceLayers subresourceLayers = {};
-				subresourceLayers.baseArrayLayer = 0;
-				subresourceLayers.layerCount = 1;
-				subresourceLayers.mipLevel = 0;
-				subresourceLayers.aspectMask = pAttachment->getType() == Core::AttachmentType::Color ? VK_IMAGE_ASPECT_COLOR_BIT : VK_IMAGE_ASPECT_DEPTH_BIT;
-
-				// Prepare to transfer.
-				m_pCommandBuffers->changeImageLayout(pAttachment->getImage(), pAttachment->getLayout(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, subresourceLayers.aspectMask);
-				m_pCommandBuffers->changeImageLayout(currentSwapchainImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_ASPECT_COLOR_BIT);
-
-				// If the attachment's size is not equal to the size of the window, we need to either upscale or downscale the image.
-				if (pAttachment->getWidth() != getWidth() || pAttachment->getHeight() != getHeight())
+				// If we have a dependency, let's copy it.
+				if (m_Dependency.first)
 				{
-					// Later we can use an upscaling technology like DLSS or FidelityFX.
+					auto pAttachment = m_Dependency.first->getAttachment(m_Dependency.second).as<VulkanRenderTargetAttachment>();
+					const auto currentSwapchainImage = m_SwapchainImages[m_FrameIndex];
 
-					VkImageBlit imageBlit = {};
-					imageBlit.srcOffsets[0].z = imageBlit.srcOffsets[0].y = imageBlit.srcOffsets[0].x = 0;
-					imageBlit.srcOffsets[1].x = static_cast<int32_t>(pAttachment->getWidth());
-					imageBlit.srcOffsets[1].y = static_cast<int32_t>(pAttachment->getHeight());
-					imageBlit.srcOffsets[1].z = 1;
-					imageBlit.srcSubresource = subresourceLayers;
-					imageBlit.dstOffsets[0].z = imageBlit.dstOffsets[0].y = imageBlit.dstOffsets[0].x = 0;
-					imageBlit.dstOffsets[1].x = static_cast<int32_t>(getWidth());
-					imageBlit.dstOffsets[1].y = static_cast<int32_t>(getHeight());
-					imageBlit.dstOffsets[1].z = 1;
-					imageBlit.dstSubresource = subresourceLayers;
+					VkImageSubresourceLayers subresourceLayers = {};
+					subresourceLayers.baseArrayLayer = 0;
+					subresourceLayers.layerCount = 1;
+					subresourceLayers.mipLevel = 0;
+					subresourceLayers.aspectMask = pAttachment->getType() == Core::AttachmentType::Color ? VK_IMAGE_ASPECT_COLOR_BIT : VK_IMAGE_ASPECT_DEPTH_BIT;
 
-					// Copy the image.
-					getDevice().getDeviceTable().vkCmdBlitImage(m_pCommandBuffers->getCurrentBuffer(), pAttachment->getImage(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, currentSwapchainImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &imageBlit, VK_FILTER_LINEAR);
+					// Prepare to transfer.
+					m_pCommandBuffers->changeImageLayout(pAttachment->getImage(), pAttachment->getLayout(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, subresourceLayers.aspectMask);
+					m_pCommandBuffers->changeImageLayout(currentSwapchainImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_ASPECT_COLOR_BIT);
+
+					// If the attachment's size is not equal to the size of the window, we need to either upscale or downscale the image.
+					if (pAttachment->getWidth() != getWidth() || pAttachment->getHeight() != getHeight())
+					{
+						// Later we can use an upscaling technology like DLSS or FidelityFX.
+
+						VkImageBlit imageBlit = {};
+						imageBlit.srcOffsets[0].z = imageBlit.srcOffsets[0].y = imageBlit.srcOffsets[0].x = 0;
+						imageBlit.srcOffsets[1].x = static_cast<int32_t>(pAttachment->getWidth());
+						imageBlit.srcOffsets[1].y = static_cast<int32_t>(pAttachment->getHeight());
+						imageBlit.srcOffsets[1].z = 1;
+						imageBlit.srcSubresource = subresourceLayers;
+						imageBlit.dstOffsets[0].z = imageBlit.dstOffsets[0].y = imageBlit.dstOffsets[0].x = 0;
+						imageBlit.dstOffsets[1].x = static_cast<int32_t>(getWidth());
+						imageBlit.dstOffsets[1].y = static_cast<int32_t>(getHeight());
+						imageBlit.dstOffsets[1].z = 1;
+						imageBlit.dstSubresource = subresourceLayers;
+
+						// Copy the image.
+						getDevice().getDeviceTable().vkCmdBlitImage(m_pCommandBuffers->getCurrentBuffer(), pAttachment->getImage(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, currentSwapchainImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &imageBlit, VK_FILTER_LINEAR);
+					}
+
+					// Else we can just perform a copy.
+					else
+					{
+						VkImageCopy imageCopy = {};
+						imageCopy.srcOffset.z = imageCopy.srcOffset.y = imageCopy.srcOffset.x = 0;
+						imageCopy.srcSubresource = subresourceLayers;
+						imageCopy.dstOffset.z = imageCopy.dstOffset.y = imageCopy.dstOffset.x = 0;
+						imageCopy.dstSubresource = subresourceLayers;
+						imageCopy.extent.width = pAttachment->getWidth();
+						imageCopy.extent.height = pAttachment->getHeight();
+						imageCopy.extent.depth = 1;
+
+						// Copy the image.
+						getDevice().getDeviceTable().vkCmdCopyImage(m_pCommandBuffers->getCurrentBuffer(), pAttachment->getImage(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, currentSwapchainImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &imageCopy);
+					}
+
+					// Change back to previous.
+					m_pCommandBuffers->changeImageLayout(pAttachment->getImage(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, pAttachment->getLayout(), subresourceLayers.aspectMask);
+					m_pCommandBuffers->changeImageLayout(currentSwapchainImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_ASPECT_COLOR_BIT);
 				}
 
-				// Else we can just perform a copy.
-				else
-				{
-					VkImageCopy imageCopy = {};
-					imageCopy.srcOffset.z = imageCopy.srcOffset.y = imageCopy.srcOffset.x = 0;
-					imageCopy.srcSubresource = subresourceLayers;
-					imageCopy.dstOffset.z = imageCopy.dstOffset.y = imageCopy.dstOffset.x = 0;
-					imageCopy.dstSubresource = subresourceLayers;
-					imageCopy.extent.width = pAttachment->getWidth();
-					imageCopy.extent.height = pAttachment->getHeight();
-					imageCopy.extent.depth = 1;
+				// Bind the window.
+				VkClearValue clearValue = {};
+				clearValue.color.float32[0] = 0.0f;
+				clearValue.color.float32[1] = 0.0f;
+				clearValue.color.float32[2] = 0.0f;
+				clearValue.color.float32[3] = 1.0f;
 
-					// Copy the image.
-					getDevice().getDeviceTable().vkCmdCopyImage(m_pCommandBuffers->getCurrentBuffer(), pAttachment->getImage(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, currentSwapchainImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &imageCopy);
-				}
+				m_pCommandBuffers->bindWindow(*this, clearValue);
 
-				// Change back to previous.
-				m_pCommandBuffers->changeImageLayout(pAttachment->getImage(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, pAttachment->getLayout(), subresourceLayers.aspectMask);
-				m_pCommandBuffers->changeImageLayout(currentSwapchainImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_ASPECT_COLOR_BIT);
+				// Unbind the window.
+				m_pCommandBuffers->unbindWindow();
+
+				// End the command buffer recording.
+				m_pCommandBuffers->end();
+
+				// Reduce the variable.
+				notifyUpdated();
 			}
-
-			// Bind the window.
-			VkClearValue clearValue = {};
-			clearValue.color.float32[0] = 0.0f;
-			clearValue.color.float32[1] = 0.0f;
-			clearValue.color.float32[2] = 0.0f;
-			clearValue.color.float32[3] = 1.0f;
-
-			m_pCommandBuffers->bindWindow(*this, clearValue);
-
-			// Unbind the window.
-			m_pCommandBuffers->unbindWindow();
-
-			// End the command buffer recording.
-			m_pCommandBuffers->end();
 
 			// Submit the commands to the GPU.
 			m_pCommandBuffers->submit(m_RenderFinishedSemaphores[m_FrameIndex], m_InFlightSemaphores[m_FrameIndex]);

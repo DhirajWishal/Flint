@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "Graphical.hpp"
 #include "RenderTarget.hpp"
 #include "StaticInitializer.hpp"
 
@@ -15,7 +16,7 @@ namespace Flint
 		 * This is a special class, as it contains all the processing stages and finally renders the image to the user using the window created as specified.
 		 */
 		template<class TDevice, class TAttachment>
-		class Window : public DeviceBoundObject<TDevice>
+		class Window : public DeviceBoundObject<TDevice>, public Graphical
 		{
 		public:
 			/**
@@ -39,12 +40,6 @@ namespace Flint
 			virtual ~Window() = default;
 
 			/**
-			 * Update the window.
-			 * This will end the previous frame (if it's not the first frame), and begin the next frame. The user can update all the resources after this call.
-			 */
-			virtual void update() = 0;
-
-			/**
 			 * Attach a dependency to the window.
 			 * The contents of the dependency will be copied to the window when updating.
 			 *
@@ -53,7 +48,7 @@ namespace Flint
 			 * @param renderTarget The render target dependency.
 			 * @param attachment The render target's attachment to copy. Default is 0.
 			 */
-			void attach(const RenderTarget<TDevice, TAttachment>& renderTarget, uint32_t attachment = 0) { m_Dependency = std::make_pair(&renderTarget, attachment); }
+			void attach(const RenderTarget<TDevice, TAttachment>& renderTarget, uint32_t attachment = 0) { m_Dependency = std::make_pair(&renderTarget, attachment); notifyUpdated(); }
 
 			/**
 			 * Get the title of the window.
@@ -76,13 +71,6 @@ namespace Flint
 			 */
 			[[nodiscard]] uint32_t getHeight() const { return m_Height; }
 
-			/**
-			 * Get the internal frame count.
-			 *
-			 * @return The frame count.
-			 */
-			[[nodiscard]] uint32_t getFrameCount() const { return m_FrameCount; }
-
 		private:
 			std::string m_Title;
 
@@ -91,7 +79,6 @@ namespace Flint
 
 			uint32_t m_Width = 0;
 			uint32_t m_Height = 0;
-			uint32_t m_FrameCount = 0;
 		};
 	}
 }

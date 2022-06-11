@@ -43,26 +43,35 @@ namespace Flint
 		void VulkanRasterizer::update()
 		{
 			// Begin the command buffer.
-			m_pCommandBuffers->begin();
+			m_pCommandBuffers->finishExecution();
 
-			// Bind the rasterizer.
-			VkClearValue colorClearValue = {};
-			colorClearValue.color.float32[0] = 1.0f;
-			colorClearValue.color.float32[1] = 1.0f;
-			colorClearValue.color.float32[2] = 1.0f;
-			colorClearValue.color.float32[3] = 1.0f;
+			// Update everything ONLY if we have anything to update.
+			if (needToUpdate())
+			{
+				m_pCommandBuffers->begin();
 
-			VkClearValue depthClearValue = {};
-			depthClearValue.depthStencil.depth = 1.0f;
-			depthClearValue.depthStencil.stencil = 0;
+				// Bind the rasterizer.
+				VkClearValue colorClearValue = {};
+				colorClearValue.color.float32[0] = 1.0f;
+				colorClearValue.color.float32[1] = 1.0f;
+				colorClearValue.color.float32[2] = 1.0f;
+				colorClearValue.color.float32[3] = 1.0f;
 
-			m_pCommandBuffers->bindRenderTarget(*this, { colorClearValue, depthClearValue });
+				VkClearValue depthClearValue = {};
+				depthClearValue.depthStencil.depth = 1.0f;
+				depthClearValue.depthStencil.stencil = 0;
 
-			// Unbind the rasterizer.
-			m_pCommandBuffers->unbindRenderTarget();
+				m_pCommandBuffers->bindRenderTarget(*this, { colorClearValue, depthClearValue });
 
-			// End the command buffer.
-			m_pCommandBuffers->end();
+				// Unbind the rasterizer.
+				m_pCommandBuffers->unbindRenderTarget();
+
+				// End the command buffer.
+				m_pCommandBuffers->end();
+
+				// Reduce the variable.
+				notifyUpdated();
+			}
 
 			// Submit and get the next command buffer.
 			m_pCommandBuffers->submitGraphics();

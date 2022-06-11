@@ -60,6 +60,7 @@ namespace Flint
 
 			/**
 			 * Begin the command buffer.
+			 * Make sure that the command buffer has finished it's execution before calling this. It can be done by calling 'finishExecution()'
 			 *
 			 * @param pInheritanceInfo The inheritance info to pass down to the command buffer. Default is nullptr.
 			 */

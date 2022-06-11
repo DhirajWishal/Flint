@@ -66,7 +66,7 @@ int main()
 						camera.moveRight(duration.count());
 				}
 
-				spdlog::info("Frame rate: {}", Flint::FrameTimer::FramesPerSecond(duration), " ns");
+				//spdlog::info("Frame rate: {}", Flint::FrameTimer::FramesPerSecond(duration), " ns");
 				camera.update();
 				rasterizer.update();	// Even though the rasterizer is attached as a dependency, we still need to manually update it.
 				rayTracer.update();
@@ -79,3 +79,24 @@ int main()
 
 	return 0;
 }
+
+/**
+ * auto engine = Flint::Engine("Sandbox", 1, Validation);
+ * auto device = engine.createDevice();
+ *
+ * auto window = device.createWindow("Sandbox");
+ *
+ * auto camera = Flint::MonoCamera(glm::vec3(0.0f), 1280, 720);
+ *
+ * auto program = device.createRasterizingProgram("vert.spv", "frag.spv");
+ * auto rasterizer = device.createRasterizer(camera, window.getFrameCount(), { Flint::Core::Defaults::ColorAttachmentDescription, Flint::Core::Defaults::DepthAttachmentDescription });
+ * auto rayTracer = device.createRayTracer(camera, window.getFramecount());
+ *
+ * window.attach(rasterizer);
+ *
+ * auto model = device.loadModel("sponza.gltf");
+ * 
+ * auto pipeline = rasterizer.createPipeline(program, getSpecification());
+ * auto instance = pipeline.instance(model);
+ * auto firstInstance = instance.add(position(), rotation(), scale());
+ */
