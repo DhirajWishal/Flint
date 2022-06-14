@@ -63,12 +63,8 @@ namespace Flint
 		class Program : public DeviceBoundObject<TDevice>
 		{
 		public:
-			/**
-			 * Explicit constructor.
-			 *
-			 * @param device The device reference.
-			 */
-			explicit Program(TDevice& device) : DeviceBoundObject<TDevice>(device) {}
+			// Using the same constructor as the super class.
+			using DeviceBoundObject<TDevice>::DeviceBoundObject;
 
 			/**
 			 * Virtual default destructor.

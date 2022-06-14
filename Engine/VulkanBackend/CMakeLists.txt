@@ -30,6 +30,7 @@ add_library(
 	"Source/VulkanRasterizingProgram.cpp"
 	"Source/VulkanStorageAttachment.cpp"
 	"Source/VulkanRayTracingPipeline.cpp"
+	"Source/VulkanStaticModel.cpp"
 	
 	"VulkanInstance.hpp"
 	"VulkanMacros.hpp"
@@ -47,6 +48,7 @@ add_library(
 	"VulkanRasterizingProgram.hpp"
 	"VulkanRayTracer.hpp"
 	"VulkanStorageAttachment.hpp"
+	"VulkanStaticModel.hpp"
 
 	"Exporter.hpp"
 )

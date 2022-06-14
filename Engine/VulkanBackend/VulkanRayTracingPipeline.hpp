@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "Core/RayTracingPipeline.hpp"
 #include "VulkanPipeline.hpp"
 #include "VulkanDescriptorSetManager.hpp"
 
@@ -13,7 +14,7 @@ namespace Flint
 		/**
 		 * Vulkan ray tracing pipeline.
 		 */
-		class VulkanRayTracingPipeline final : public VulkanPipeline
+		class VulkanRayTracingPipeline final : public Core::RayTracingPipeline<VulkanDevice>, public VulkanPipeline
 		{
 		public:
 			/**

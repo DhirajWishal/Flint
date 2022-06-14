@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Core/Rasterizer.hpp"
+#include "Core/RasterizingPipeline.hpp"
 #include "VulkanPipeline.hpp"
 #include "VulkanDescriptorSetManager.hpp"
 
@@ -17,7 +17,7 @@ namespace Flint
 		 * Vulkan rasterizing pipeline class.
 		 * This pipeline is used to perform raster graphics.
 		 */
-		class VulkanRasterizingPipeline final : public VulkanPipeline, public VulkanDescriptorSetManager
+		class VulkanRasterizingPipeline final : public Core::RasterizingPipeline<VulkanDevice, VulkanRasterizer>, public VulkanPipeline, public VulkanDescriptorSetManager
 		{
 		public:
 			/**
@@ -26,10 +26,8 @@ namespace Flint
 			 * @param device The device to which the pipeline is bound to.
 			 * @param rasterizer The rasterizer to which the pipeline is bound to.
 			 * @param specification The pipeline specification.
-			 * @param inputBindings The input bindings of the vertex shader.
-			 * @param inputAttributes The input attributes of the vertex shader.
 			 */
-			explicit VulkanRasterizingPipeline(VulkanDevice& device, VulkanRasterizer& rasterizer, const Core::RasterizingPipelineSpecification& specification, std::vector<VkVertexInputBindingDescription>&& inputBindings, std::vector<VkVertexInputAttributeDescription>&& inputAttributes);
+			explicit VulkanRasterizingPipeline(VulkanDevice& device, VulkanRasterizer& rasterizer, const Core::RasterizingPipelineSpecification& specification);
 
 			/**
 			 * Destructor.
@@ -91,8 +89,6 @@ namespace Flint
 			std::vector<VkVertexInputBindingDescription> m_VertexBindings = {};
 			std::vector<VkVertexInputAttributeDescription> m_VertexAttributes = {};
 			std::vector<VkDynamicState> m_DynamicStates = {};
-
-			VulkanRasterizer& m_Rasterizer;
 		};
 	}
 }

@@ -16,7 +16,6 @@ namespace Flint
 	{
 		class VulkanCommandBuffers;
 		class VulkanGeometryStore;
-		class VulkanBuffer;
 
 		/**
 		 * Vulkan engine class.

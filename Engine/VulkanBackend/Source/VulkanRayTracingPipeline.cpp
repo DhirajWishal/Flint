@@ -9,7 +9,8 @@ namespace Flint
 	namespace VulkanBackend
 	{
 		VulkanRayTracingPipeline::VulkanRayTracingPipeline(VulkanDevice& device, std::filesystem::path&& cacheFile)
-			: VulkanPipeline(device, cacheFile)
+			: RayTracingPipeline(device)
+			, VulkanPipeline(device, cacheFile)
 		{
 
 		}

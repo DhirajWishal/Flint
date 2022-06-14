@@ -279,8 +279,10 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanRasterizingPipeline::VulkanRasterizingPipeline(VulkanDevice& device, VulkanRasterizer& rasterizer, const Core::RasterizingPipelineSpecification& specification, std::vector<VkVertexInputBindingDescription>&& inputBindings, std::vector<VkVertexInputAttributeDescription>&& inputAttributes)
-			: VulkanPipeline(device, specification.m_CacheFile), VulkanDescriptorSetManager(device, rasterizer.getFrameCount()), m_Rasterizer(rasterizer), m_VertexBindings(std::move(inputBindings)), m_VertexAttributes(std::move(inputAttributes))
+		VulkanRasterizingPipeline::VulkanRasterizingPipeline(VulkanDevice& device, VulkanRasterizer& rasterizer, const Core::RasterizingPipelineSpecification& specification)
+			: RasterizingPipeline(device, rasterizer, specification)
+			, VulkanPipeline(device, specification.m_CacheFile)
+			, VulkanDescriptorSetManager(device, rasterizer.getFrameCount())
 		{
 			// Resolve shader information.
 			std::vector<VkDescriptorSetLayoutBinding> layoutBindings;

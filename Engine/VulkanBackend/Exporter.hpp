@@ -19,6 +19,10 @@
 #include "VulkanDepthAttachment.hpp"
 #include "VulkanStorageAttachment.hpp"
 
+#include "VulkanStaticModel.hpp"
+
+#include "VulkanBuffer.hpp"
+
 namespace Flint
 {
 	using Instance = VulkanBackend::VulkanInstance;
@@ -36,4 +40,8 @@ namespace Flint
 	using ColorAttachment = VulkanBackend::VulkanColorAttachment;
 	using DepthAttachment = VulkanBackend::VulkanDepthAttachment;
 	using StorageAttachment = VulkanBackend::VulkanStorageAttachment;
+
+	using StaticModel = VulkanBackend::VulkanStaticModel;
+
+	using Buffer = VulkanBackend::VulkanBuffer;
 }

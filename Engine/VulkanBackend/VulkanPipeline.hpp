@@ -33,20 +33,6 @@ namespace Flint
 			virtual ~VulkanPipeline();
 
 			/**
-			 * Get the engine.
-			 *
-			 * @return The Vulkan engine.
-			 */
-			[[nodiscard]] VulkanDevice& getDevice() noexcept { return m_Device; }
-
-			/**
-			 * Get the engine.
-			 *
-			 * @return The Vulkan engine.
-			 */
-			[[nodiscard]] const VulkanDevice& getDevice() const noexcept { return m_Device; }
-
-			/**
 			 * Get the backend pipeline handle.
 			 *
 			 * @return The pipeline.
@@ -72,11 +58,12 @@ namespace Flint
 			 */
 			void saveCache();
 
-		protected:
+		private:
 			std::filesystem::path m_CacheFile;
 
 			VulkanDevice& m_Device;
 
+		protected:
 			VkPipeline m_Pipeline = VK_NULL_HANDLE;
 			VkPipelineLayout m_PipelineLayout = VK_NULL_HANDLE;
 			VkPipelineCache m_PipelineCache = VK_NULL_HANDLE;

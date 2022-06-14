@@ -37,6 +37,10 @@ add_library(
 	"RasterizingProgram.hpp"
 	"Buffer.hpp"
 	"Graphical.hpp"
+	"StaticModel.hpp"
+	"Pipeline.hpp"
+	"RasterizingPipeline.hpp"
+	"RayTracingPipeline.hpp"
 	
 	"Errors/AssetError.hpp"
 	"Errors/BackendError.hpp" 

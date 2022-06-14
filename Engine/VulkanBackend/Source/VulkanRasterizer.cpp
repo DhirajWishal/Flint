@@ -98,6 +98,7 @@ namespace Flint
 			// Reset the indexes.
 			m_FrameIndex = 0;
 			m_pCommandBuffers->resetIndex();
+			toggleNeedToUpdate();
 		}
 
 		Flint::VulkanBackend::VulkanRenderTargetAttachment& VulkanRasterizer::getAttachment(uint32_t index)

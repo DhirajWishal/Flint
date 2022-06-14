@@ -467,6 +467,7 @@ namespace Flint
 			m_ImageIndex = 0;
 			m_FirstTime = true;
 			m_pCommandBuffers->resetIndex();
+			toggleNeedToUpdate();
 		}
 
 		void VulkanWindow::copyAndSubmitFrame()

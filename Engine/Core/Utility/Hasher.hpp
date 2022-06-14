@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Core/Rasterizer.hpp"
+#include "Core/RasterizingPipeline.hpp"
 
 namespace Flint
 {
