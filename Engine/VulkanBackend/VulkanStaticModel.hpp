@@ -4,9 +4,7 @@
 #pragma once
 
 #include "Core/StaticModel.hpp"
-
-#include "VulkanBuffer.hpp"
-#include "VulkanDevice.hpp"
+#include "VulkanVertexStorage.hpp"
 
 namespace Flint
 {
@@ -37,7 +35,7 @@ namespace Flint
 			void terminate() override;
 
 		private:
-			std::unique_ptr<VulkanBuffer> m_pVertexBuffer = nullptr;
+			VulkanVertexStorage m_VertexStorage;
 			std::unique_ptr<VulkanBuffer> m_pIndexBuffer = nullptr;
 		};
 	}

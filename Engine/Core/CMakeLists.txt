@@ -42,6 +42,7 @@ add_library(
 	"RasterizingPipeline.hpp"
 	"RayTracingPipeline.hpp"
 	"ComputePipeline.hpp"
+	"VertexStorage.hpp"
 	
 	"Errors/AssetError.hpp"
 	"Errors/BackendError.hpp" 

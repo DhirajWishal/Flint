@@ -19,6 +19,7 @@
 #include "VulkanDepthAttachment.hpp"
 #include "VulkanStorageAttachment.hpp"
 
+#include "VulkanVertexStorage.hpp"
 #include "VulkanStaticModel.hpp"
 
 #include "VulkanBuffer.hpp"
@@ -41,6 +42,7 @@ namespace Flint
 	using DepthAttachment = VulkanBackend::VulkanDepthAttachment;
 	using StorageAttachment = VulkanBackend::VulkanStorageAttachment;
 
+	using VertexStorage = VulkanBackend::VulkanVertexStorage;
 	using StaticModel = VulkanBackend::VulkanStaticModel;
 
 	using Buffer = VulkanBackend::VulkanBuffer;

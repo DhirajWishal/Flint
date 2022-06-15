@@ -26,7 +26,7 @@ namespace Flint
 
 		/**
 		 * Terminate function.
-		 * This function is used to terminate object.
+		 * This function is used to terminate the object.
 		 */
 		virtual void terminate() = 0;
 

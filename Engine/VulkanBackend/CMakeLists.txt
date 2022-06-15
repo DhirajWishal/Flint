@@ -49,9 +49,10 @@ add_library(
 	"VulkanRayTracer.hpp"
 	"VulkanStorageAttachment.hpp"
 	"VulkanStaticModel.hpp"
+	"VulkanVertexStorage.hpp"
 
 	"Exporter.hpp"
-)
+ "Source/VulkanVertexStorage.cpp")
 
 # Set the include directories.
 target_include_directories(

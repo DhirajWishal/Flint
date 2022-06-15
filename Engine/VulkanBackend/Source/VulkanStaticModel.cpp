@@ -10,6 +10,7 @@ namespace Flint
 	{
 		VulkanStaticModel::VulkanStaticModel(VulkanDevice& device, std::filesystem::path&& assetFile)
 			: StaticModel(device, std::move(assetFile))
+			, m_VertexStorage(device)
 		{
 			// Make sure to set the object as valid.
 			validate();
