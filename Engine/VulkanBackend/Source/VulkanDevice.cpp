@@ -136,9 +136,17 @@ namespace Flint
 
 			// Create the defaults.
 			m_pUtilityCommandBuffer = new VulkanCommandBuffers(*this);
+
+			// Make sure to set the object as valid.
+			validate();
 		}
 
 		VulkanDevice::~VulkanDevice()
+		{
+			FLINT_TERMINATE_IF_VALID;
+		}
+
+		void VulkanDevice::terminate()
 		{
 			// Wait idle to make sure that we don't have anything running at the moment.
 			waitIdle();
@@ -151,6 +159,8 @@ namespace Flint
 
 			// Destroy the logical device.
 			destroyLogicalDevice();
+
+			invalidate();
 		}
 
 		void VulkanDevice::waitIdle()

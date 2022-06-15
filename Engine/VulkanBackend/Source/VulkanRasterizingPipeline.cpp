@@ -305,11 +305,20 @@ namespace Flint
 
 			// Finally create the pipeline.
 			createPipeline();
+
+			// Make sure to set the object as valid.
+			validate();
 		}
 
 		VulkanRasterizingPipeline::~VulkanRasterizingPipeline()
 		{
+			FLINT_TERMINATE_IF_VALID;
+		}
+
+		void VulkanRasterizingPipeline::terminate()
+		{
 			destroyShaders();
+			invalidate();
 		}
 
 		void VulkanRasterizingPipeline::recreate()

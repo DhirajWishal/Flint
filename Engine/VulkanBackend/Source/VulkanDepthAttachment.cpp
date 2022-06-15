@@ -16,10 +16,20 @@ namespace Flint
 
 			// Create the image view.
 			createImageView(VK_IMAGE_ASPECT_DEPTH_BIT);
+
+			// Make sure to set the object as valid.
+			validate();
 		}
 
 		VulkanDepthAttachment::~VulkanDepthAttachment()
 		{
+			FLINT_TERMINATE_IF_VALID;
+		}
+
+		void VulkanDepthAttachment::terminate()
+		{
+			clear();
+			invalidate();
 		}
 
 		VkAttachmentDescription VulkanDepthAttachment::getAttachmentDescription() const

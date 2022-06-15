@@ -101,15 +101,25 @@ namespace Flint
 
 			if (!m_FragmentShader.empty())
 				m_FragmentShaderModule = createShaderModule(m_FragmentShader, VK_SHADER_STAGE_FRAGMENT_BIT, layoutBindings, poolSizes, pushConstants);
+
+			// Make sure to set the object as valid.
+			validate();
 		}
 
 		VulkanRasterizingProgram::~VulkanRasterizingProgram()
+		{
+			FLINT_TERMINATE_IF_VALID;
+		}
+
+		void VulkanRasterizingProgram::terminate()
 		{
 			if (m_VertexShaderModule)
 				getDevice().getDeviceTable().vkDestroyShaderModule(getDevice().getLogicalDevice(), m_VertexShaderModule, nullptr);
 
 			if (m_FragmentShaderModule)
 				getDevice().getDeviceTable().vkDestroyShaderModule(getDevice().getLogicalDevice(), m_FragmentShaderModule, nullptr);
+
+			invalidate();
 		}
 
 		VkShaderModule VulkanRasterizingProgram::createShaderModule(const std::filesystem::path& shaderPath, VkShaderStageFlags stageFlags, std::unordered_map<uint32_t, std::vector<VkDescriptorSetLayoutBinding>>& bindingMap, std::vector<VkDescriptorPoolSize>& poolSizes, std::vector<VkPushConstantRange>& pushConstants)

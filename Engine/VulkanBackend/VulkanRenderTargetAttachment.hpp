@@ -79,6 +79,11 @@ namespace Flint
 			 */
 			void createImageView(VkImageAspectFlags aspectFlags);
 
+			/**
+			 * Clear the internal contents.
+			 */
+			void clear();
+
 		private:
 			/**
 			 * Destroy the image.

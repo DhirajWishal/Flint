@@ -26,18 +26,34 @@ namespace Flint
 
 			// Create the command buffers.
 			m_pCommandBuffers = std::make_unique<VulkanCommandBuffers>(getDevice(), frameCount);
+
+			// Make sure to set the object as valid.
+			validate();
 		}
 
 		VulkanRasterizer::~VulkanRasterizer()
 		{
+			FLINT_TERMINATE_IF_VALID;
+		}
+
+		void VulkanRasterizer::terminate()
+		{
 			// Wait idle to finish everything we have prior to this.
 			getDevice().waitIdle();
+
+			// Destroy the command buffer.
+			m_pCommandBuffers.reset();
+
+			// Destroy the attachments.
+			m_pAttachments.clear();
 
 			// Destroy the frame buffers.
 			destroyFramebuffers();
 
 			// Destroy render pass.
 			destroyRenderPass();
+
+			invalidate();
 		}
 
 		void VulkanRasterizer::update()

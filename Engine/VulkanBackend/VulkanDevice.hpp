@@ -46,6 +46,11 @@ namespace Flint
 			~VulkanDevice() override;
 
 			/**
+			 * Terminate the object.
+			 */
+			void terminate() override;
+
+			/**
 			 * Wait till all the commands have finished execution.
 			 */
 			void waitIdle() override;

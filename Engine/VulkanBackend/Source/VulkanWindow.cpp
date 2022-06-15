@@ -61,12 +61,23 @@ namespace Flint
 
 			// Create the semaphores.
 			createSyncObjects();
+
+			// Make sure to set the object as valid.
+			validate();
 		}
 
 		VulkanWindow::~VulkanWindow()
 		{
+			FLINT_TERMINATE_IF_VALID;
+		}
+
+		void VulkanWindow::terminate()
+		{
 			// Wait till we finish whatever we are running.
 			getDevice().waitIdle();
+
+			// Destroy the command buffers.
+			m_pCommandBuffers.reset();
 
 			// Destroy the semaphores.
 			destroySyncObjects();
@@ -85,6 +96,8 @@ namespace Flint
 
 			// Destroy the SDL window.
 			SDL_DestroyWindow(m_pWindow);
+
+			invalidate();
 		}
 
 		void VulkanWindow::update()

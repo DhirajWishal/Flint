@@ -39,6 +39,11 @@ namespace Flint
 			~VulkanRasterizer() override;
 
 			/**
+			 * Terminate the object.
+			 */
+			void terminate() override;
+
+			/**
 			 * Update the render target.
 			 * This will perform whatever operation that should be done.
 			 */

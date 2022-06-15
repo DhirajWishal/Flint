@@ -33,6 +33,11 @@ namespace Flint
 			~VulkanColorAttachment() override;
 
 			/**
+			 * Terminate the object.
+			 */
+			void terminate() override;
+
+			/**
 			 * Get the attachment description.
 			 *
 			 * @return The attachment description.

@@ -42,6 +42,11 @@ namespace Flint
 			 */
 			~VulkanRasterizingProgram() override;
 
+			/**
+			 * Terminate the object.
+			 */
+			void terminate() override;
+
 		private:
 			/**
 			 * Create a shader module.

@@ -31,6 +31,11 @@ namespace Flint
 			 */
 			~VulkanStaticModel() override;
 
+			/**
+			 * Terminate the object.
+			 */
+			void terminate() override;
+
 		private:
 			std::unique_ptr<VulkanBuffer> m_pVertexBuffer = nullptr;
 			std::unique_ptr<VulkanBuffer> m_pIndexBuffer = nullptr;

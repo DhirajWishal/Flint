@@ -16,10 +16,20 @@ namespace Flint
 
 			// Create the image view.
 			createImageView(VK_IMAGE_ASPECT_COLOR_BIT);
+
+			// Make sure to set the object as valid.
+			validate();
 		}
 
 		VulkanColorAttachment::~VulkanColorAttachment()
 		{
+			FLINT_TERMINATE_IF_VALID;
+		}
+
+		void VulkanColorAttachment::terminate()
+		{
+			clear();
+			invalidate();
 		}
 
 		VkAttachmentDescription VulkanColorAttachment::getAttachmentDescription() const

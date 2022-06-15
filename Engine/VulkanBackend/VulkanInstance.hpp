@@ -40,6 +40,11 @@ namespace Flint
 			~VulkanInstance() override;
 
 			/**
+			 * Terminate the object.
+			 */
+			void terminate() override;
+
+			/**
 			 * Get all the stored validation layer.
 			 *
 			 * @retrun The validation layers.

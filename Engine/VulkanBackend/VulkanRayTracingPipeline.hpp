@@ -29,6 +29,11 @@ namespace Flint
 			 * Destructor.
 			 */
 			~VulkanRayTracingPipeline() override;
+
+			/**
+			 * Terminate the object.
+			 */
+			void terminate() override;
 		};
 	}
 }

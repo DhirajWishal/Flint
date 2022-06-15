@@ -10,11 +10,9 @@ namespace Flint
 	{
 		VulkanRenderTargetAttachment::~VulkanRenderTargetAttachment()
 		{
-			// Destroy the image view.
-			destroyImageView();
-
-			// Destroy image.
-			destroyImage();
+			// Clear everything if the object is valid.
+			if (m_IsValid)
+				clear();
 		}
 
 		void VulkanRenderTargetAttachment::createImage(VkImageUsageFlags usageFlags, VkImageTiling tiling)
@@ -70,6 +68,15 @@ namespace Flint
 			imageViewCreateInfo.subresourceRange.layerCount = 1;
 
 			FLINT_VK_ASSERT(getDevice().getDeviceTable().vkCreateImageView(getDevice().getLogicalDevice(), &imageViewCreateInfo, nullptr, &m_ImageView), "Failed to create the image view!");
+		}
+
+		void VulkanRenderTargetAttachment::clear()
+		{
+			// Destroy the image view.
+			destroyImageView();
+
+			// Destroy image.
+			destroyImage();
 		}
 
 		void VulkanRenderTargetAttachment::destroyImage()

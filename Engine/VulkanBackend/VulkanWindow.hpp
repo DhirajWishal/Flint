@@ -39,6 +39,11 @@ namespace Flint
 			~VulkanWindow() override;
 
 			/**
+			 * Terminate the object.
+			 */
+			void terminate() override;
+
+			/**
 			 * Update the window and all the graphics.
 			 * This will process all the nodes and will send the final image to the surface.
 			 */

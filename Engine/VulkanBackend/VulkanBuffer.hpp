@@ -31,6 +31,11 @@ namespace Flint
 			~VulkanBuffer() override;
 
 			/**
+			 * Terminate the object.
+			 */
+			void terminate() override;
+
+			/**
 			 * Map the buffer memory to the local address space.
 			 *
 			 * @return The byte pointer.

@@ -214,9 +214,17 @@ namespace Flint
 			// Create the debugger if needed.
 			if (isValidationEnabled())
 				createDebugger();
+
+			// Make sure to set the object as valid.
+			validate();
 		}
 
 		VulkanInstance::~VulkanInstance()
+		{
+			FLINT_TERMINATE_IF_VALID;
+		}
+
+		void VulkanInstance::terminate()
 		{
 			// Destroy the debugger if necessary.
 			if (isValidationEnabled())
@@ -224,6 +232,8 @@ namespace Flint
 
 			// Destroy the instance.
 			destroyInstance();
+
+			invalidate();
 		}
 
 		void VulkanInstance::createInstance()

@@ -35,6 +35,11 @@ namespace Flint
 			~VulkanRasterizingPipeline() override;
 
 			/**
+			 * Terminate the object.
+			 */
+			void terminate() override;
+
+			/**
 			 * Recreate the pipeline.
 			 */
 			void recreate();

@@ -11,12 +11,18 @@ namespace Flint
 		VulkanStaticModel::VulkanStaticModel(VulkanDevice& device, std::filesystem::path&& assetFile)
 			: StaticModel(device, std::move(assetFile))
 		{
-
+			// Make sure to set the object as valid.
+			validate();
 		}
 
 		VulkanStaticModel::~VulkanStaticModel()
 		{
+			FLINT_TERMINATE_IF_VALID;
+		}
 
+		void VulkanStaticModel::terminate()
+		{
+			invalidate();
 		}
 	}
 }

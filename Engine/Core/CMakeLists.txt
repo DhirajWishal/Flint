@@ -41,6 +41,7 @@ add_library(
 	"Pipeline.hpp"
 	"RasterizingPipeline.hpp"
 	"RayTracingPipeline.hpp"
+	"ComputePipeline.hpp"
 	
 	"Errors/AssetError.hpp"
 	"Errors/BackendError.hpp" 

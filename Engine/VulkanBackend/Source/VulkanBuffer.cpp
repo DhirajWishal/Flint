@@ -94,11 +94,20 @@ namespace Flint
 			m_DescriptorBufferInfo.buffer = m_Buffer;
 			m_DescriptorBufferInfo.offset = 0;
 			m_DescriptorBufferInfo.range = m_Size;
+
+			// Make sure to set the object as valid.
+			validate();
 		}
 
 		VulkanBuffer::~VulkanBuffer()
 		{
+			FLINT_TERMINATE_IF_VALID;
+		}
+
+		void VulkanBuffer::terminate()
+		{
 			vmaDestroyBuffer(getDevice().getAllocator(), m_Buffer, m_Allocation);
+			invalidate();
 		}
 
 		std::byte* VulkanBuffer::mapMemory()

@@ -12,12 +12,18 @@ namespace Flint
 			: RayTracingPipeline(device)
 			, VulkanPipeline(device, cacheFile)
 		{
-
+			// Make sure to set the object as valid.
+			validate();
 		}
 
 		VulkanRayTracingPipeline::~VulkanRayTracingPipeline()
 		{
+			FLINT_TERMINATE_IF_VALID;
+		}
 
+		void VulkanRayTracingPipeline::terminate()
+		{
+			invalidate();
 		}
 	}
 }

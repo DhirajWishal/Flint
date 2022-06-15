@@ -13,12 +13,22 @@ namespace Flint
 		{
 			// Setup the attachments.
 			createAttachments();
+
+			// Make sure to set the object as valid.
+			validate();
 		}
 
 		VulkanRayTracer::~VulkanRayTracer()
 		{
+			FLINT_TERMINATE_IF_VALID;
+		}
+
+		void VulkanRayTracer::terminate()
+		{
 			// Destroy the attachments.
 			m_pStorageAttachments.clear();
+
+			invalidate();
 		}
 
 		void VulkanRayTracer::update()
