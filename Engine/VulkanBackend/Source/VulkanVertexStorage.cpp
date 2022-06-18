@@ -8,7 +8,7 @@ namespace Flint
 	namespace VulkanBackend
 	{
 		VulkanVertexStorage::VulkanVertexStorage(VulkanDevice& device)
-			: DeviceBoundObject(device)
+			: VertexStorage(device)
 		{
 			validate();
 		}

@@ -3,12 +3,11 @@
 
 #pragma once
 
+#include "Core/CommandBuffers.hpp"
 #include "VulkanDevice.hpp"
 
 namespace Flint
 {
-	class Mesh;
-
 	namespace VulkanBackend
 	{
 		class VulkanWindow;
@@ -20,7 +19,7 @@ namespace Flint
 		 * Vulkan command buffers class.
 		 * This contains the command buffers needed for certain actions.
 		 */
-		class VulkanCommandBuffers final
+		class VulkanCommandBuffers final : public Core::CommandBuffers<VulkanDevice>
 		{
 			/**
 			 * Fence structure.
@@ -56,7 +55,12 @@ namespace Flint
 			/**
 			 * Destructor.
 			 */
-			~VulkanCommandBuffers();
+			~VulkanCommandBuffers() override;
+
+			/**
+			 * Terminate the object.
+			 */
+			void terminate() override;
 
 			/**
 			 * Begin the command buffer.
@@ -127,6 +131,7 @@ namespace Flint
 			 * @param descriptorSet The descriptor set to bind.
 			 */
 			void bindDescriptor(const VulkanRasterizingPipeline& pipeline, VkDescriptorSet descriptorSet) const noexcept;
+
 			/**
 			 * End recording.
 			 */
@@ -210,7 +215,6 @@ namespace Flint
 			std::vector<VkCommandBuffer> m_CommandBuffers;
 			std::vector<Fence> m_CommandFences;
 
-			VulkanDevice& m_Device;
 			VkCommandPool m_CommandPool = VK_NULL_HANDLE;
 			VkCommandBuffer m_CurrentCommandBuffer = VK_NULL_HANDLE;
 

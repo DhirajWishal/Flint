@@ -26,24 +26,33 @@
 
 namespace Flint
 {
-	using Instance = VulkanBackend::VulkanInstance;
-	using Device = VulkanBackend::VulkanDevice;
-	using Window = VulkanBackend::VulkanWindow;
+	/**
+	 * Vulkan backend exported namespace.
+	 * This namespace contains all the Vulkan objects.
+	 *
+	 * Note that most of the objects here have additional functions, which are backend dependent. Make sure to use only the super class's functions to interact with it.
+	 */
+	namespace Backend
+	{
+		using Instance = VulkanBackend::VulkanInstance;
+		using Device = VulkanBackend::VulkanDevice;
+		using Window = VulkanBackend::VulkanWindow;
 
-	using RasterizingProgram = VulkanBackend::VulkanRasterizingProgram;
+		using RasterizingProgram = VulkanBackend::VulkanRasterizingProgram;
 
-	using Rasterizer = VulkanBackend::VulkanRasterizer;
-	using RayTracer = VulkanBackend::VulkanRayTracer;
+		using Rasterizer = VulkanBackend::VulkanRasterizer;
+		using RayTracer = VulkanBackend::VulkanRayTracer;
 
-	using RasterizingPipeline = VulkanBackend::VulkanRasterizingPipeline;
-	using RayTracingPipeline = VulkanBackend::VulkanRayTracingPipeline;
+		using RasterizingPipeline = VulkanBackend::VulkanRasterizingPipeline;
+		using RayTracingPipeline = VulkanBackend::VulkanRayTracingPipeline;
 
-	using ColorAttachment = VulkanBackend::VulkanColorAttachment;
-	using DepthAttachment = VulkanBackend::VulkanDepthAttachment;
-	using StorageAttachment = VulkanBackend::VulkanStorageAttachment;
+		using ColorAttachment = VulkanBackend::VulkanColorAttachment;
+		using DepthAttachment = VulkanBackend::VulkanDepthAttachment;
+		using StorageAttachment = VulkanBackend::VulkanStorageAttachment;
 
-	using VertexStorage = VulkanBackend::VulkanVertexStorage;
-	using StaticModel = VulkanBackend::VulkanStaticModel;
+		using VertexStorage = VulkanBackend::VulkanVertexStorage;
+		using StaticModel = VulkanBackend::VulkanStaticModel;
 
-	using Buffer = VulkanBackend::VulkanBuffer;
+		using Buffer = VulkanBackend::VulkanBuffer;
+	}
 }

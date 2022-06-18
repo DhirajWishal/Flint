@@ -13,17 +13,23 @@ add_library(
 	FlintEngine
 	STATIC
 
+	"Source/Engine.cpp"
+
 	"Source/Utility/FrameTimer.cpp"
 
 	"Source/ShaderFactory/ShaderBuilder.cpp"
 	
+	"Backend.hpp"
+	"Engine.hpp"
+	"Scene.hpp"
+
 	"Utility/FrameTimer.hpp"
 
 	"ShaderFactory/ShaderBuilder.hpp"
 	"ShaderFactory/ShaderBuildError.hpp"
 
 	"Errors/InvalidBackend.hpp"
-)
+  )
 
 # Set the include directories.
 target_include_directories(

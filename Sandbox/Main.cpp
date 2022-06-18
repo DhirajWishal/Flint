@@ -28,16 +28,16 @@ static Flint::EventSystem g_EventSystem;
 
 int main()
 {
-	auto instance = Flint::Instance("Sandbox", 1, Validation);
-	auto device = Flint::Device(instance);
+	auto instance = Flint::Backend::Instance("Sandbox", 1, Validation);
+	auto device = Flint::Backend::Device(instance);
 
-	auto window = Flint::Window(device, "Sandbox");
+	auto window = Flint::Backend::Window(device, "Sandbox");
 	auto camera = Flint::MonoCamera(glm::vec3(0.0f), 1280, 720);
 	camera.m_MovementBias = 50;
 
-	auto program = Flint::RasterizingProgram(device, "Shaders/Debugging/vert.spv", "Shaders/Debugging/frag.spv");
-	auto rasterizer = Flint::Rasterizer(device, camera, window.getFrameCount(), { Flint::Core::Defaults::ColorAttachmentDescription, Flint::Core::Defaults::DepthAttachmentDescription });
-	auto rayTracer = Flint::RayTracer(device, camera, window.getFrameCount());
+	auto program = Flint::Backend::RasterizingProgram(device, "Shaders/Debugging/vert.spv", "Shaders/Debugging/frag.spv");
+	auto rasterizer = Flint::Backend::Rasterizer(device, camera, window.getFrameCount(), { Flint::Core::Defaults::ColorAttachmentDescription, Flint::Core::Defaults::DepthAttachmentDescription });
+	auto rayTracer = Flint::Backend::RayTracer(device, camera, window.getFrameCount());
 
 	window.attach(rasterizer);
 	//window.attach(rayTracer);
@@ -88,19 +88,32 @@ int main()
  * auto engine = Flint::Engine("Sandbox", 1, Validation);
  * auto device = engine.createDevice();
  *
- * auto window = device.createWindow("Sandbox");
+ * auto scene = device.createScene(width, height);
+ * auto window = device.createWindow(width, height);
  *
- * auto camera = Flint::MonoCamera(glm::vec3(0.0f), 1280, 720);
+ * auto entity = scene.spawnEntity();
+ * entity.attachStaticModel("sponza.gltf");
  *
- * auto program = device.createRasterizingProgram("vert.spv", "frag.spv");
- * auto rasterizer = device.createRasterizer(camera, window.getFrameCount(), { Flint::Core::Defaults::ColorAttachmentDescription, Flint::Core::Defaults::DepthAttachmentDescription });
- * auto rayTracer = device.createRayTracer(camera, window.getFramecount());
+ * entity.instance(position, rotation, scale);		// First instance.
+ * entity.instance(position2, rotation2, scale2);	// Second instance.
+ * 
+ * auto light = scene.setPointLight(position);
+ * light.setColor(lightColor);
+ * 
+ * window.attach(scene);
  *
- * window.attach(rasterizer);
+ * while(window.update())
+ * {
+ *		auto events = Flint::EventSystem::Poll();
  *
- * auto model = device.loadModel("sponza.gltf");
+ *		// Handle event stuff here.
  *
- * auto pipeline = rasterizer.createPipeline(program, getSpecification());
- * auto instance = pipeline.instance(model);
- * auto firstInstance = instance.add(position(), rotation(), scale());
+ *		scene.update();
+ * }
+ * 
+ * window.destroy();
+ * scene.destroy();
+ * 
+ * device.destroy();
+ * instance.destroy();
  */

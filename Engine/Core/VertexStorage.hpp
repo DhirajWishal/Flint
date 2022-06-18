@@ -37,6 +37,9 @@ namespace Flint
 			 * Default virtual destructor.
 			 */
 			virtual ~VertexStorage() = default;
+
+		protected:
+			const VertexMemoryType m_MemoryType = VertexMemoryType::Exclusive;
 		};
 	}
 }
