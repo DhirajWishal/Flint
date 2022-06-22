@@ -6,6 +6,8 @@
 #include "Instance.hpp"
 #include "Types.hpp"
 
+#include "Camera/Camera.hpp"
+
 #include <vector>
 #include <filesystem>
 
@@ -13,6 +15,11 @@ namespace Flint
 {
 	namespace Core
 	{
+		class Buffer;
+		class Rasterizer;
+		class RayTracer;
+		class Window;
+
 		/**
 		 * Device class.
 		 * This class contains everything that's needed for a single device instance.
@@ -39,6 +46,46 @@ namespace Flint
 			 * Halt the device till all the commands and everything else is executed.
 			 */
 			virtual void waitIdle() = 0;
+
+			/**
+			 * Create a new buffer.
+			 *
+			 * @param size The size of the buffer.
+			 * @param usage The buffer usage.
+			 * @return The buffer pointer.
+			 */
+			[[nodiscrad]] virtual std::shared_ptr<Buffer> createBuffer(uint64_t size, BufferUsage usage) = 0;
+
+			/**
+			 * Create a new rasterizer.
+			 *
+			 * @param camera The camera from which all the models are drawn from.
+			 * @param frameCount The number of frames in the render target. This is usually set automatically by the Window.
+			 * @param attachmentDescriptions The attachment descriptions.
+			 * @param multisample The multisample count. Default is One.
+			 * @param exclusiveBuffering Whether or not to use one buffer/ attachment per frame. Default is false.
+			 * @return The rasterizer pointer.
+			 */
+			[[nodiscard]] virtual std::shared_ptr<Rasterizer> createRasterizer(Camera& camera, uint32_t frameCount, std::vector<AttachmentDescription>&& attachmentDescriptions, Multisample multisample = Multisample::One, bool exclusiveBuffering = false) = 0;
+
+			/**
+			 * Create a new ray tracer.
+			 *
+			 * @param camera The camera reference which is used to generate the images using.
+			 * @param frameCount The number of frames to use.
+			 * @return The ray tracer pointer.
+			 */
+			[[nodiscard]] virtual std::shared_ptr<RayTracer> createRayTracer(Camera& camera, uint32_t frameCount) = 0;
+
+			/**
+			 * Create a new window.
+			 *
+			 * @param title The window title.
+			 * @param width The width of the window. If set to 0 then the window is opened maximized. If set to -1, the window is open in full screen mode.
+			 * @param height The height of the window. Same as the width, if set to 0 then the window is opened maximized. If set to -1, the window is open in full screen mode.
+			 * @return The window pointer.
+			 */
+			[[nodiscard]] virtual std::shared_ptr<Window> createWindow(std::string&& title, uint32_t width = -1, uint32_t height = -1) = 0;
 
 			/**
 			 * Get the best depth pixel format.

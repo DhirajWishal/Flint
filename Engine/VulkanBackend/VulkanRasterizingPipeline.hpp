@@ -24,10 +24,10 @@ namespace Flint
 			 * Explicit constructor.
 			 *
 			 * @param pDevice The device to which the pipeline is bound to.
-			 * @param rasterizer The rasterizer to which the pipeline is bound to.
+			 * @param pRasterizer The rasterizer to which the pipeline is bound to.
 			 * @param specification The pipeline specification.
 			 */
-			explicit VulkanRasterizingPipeline(const std::shared_ptr<VulkanDevice>& pDevice, VulkanRasterizer& rasterizer, const Core::RasterizingPipelineSpecification& specification);
+			explicit VulkanRasterizingPipeline(const std::shared_ptr<VulkanDevice>& pDevice, const std::shared_ptr<VulkanRasterizer>& pRasterizer, const Core::RasterizingPipelineSpecification& specification);
 
 			/**
 			 * Destructor.

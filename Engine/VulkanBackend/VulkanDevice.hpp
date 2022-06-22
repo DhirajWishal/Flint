@@ -46,6 +46,46 @@ namespace Flint
 			~VulkanDevice() override;
 
 			/**
+			 * Create a new buffer.
+			 *
+			 * @param size The size of the buffer.
+			 * @param usage The buffer usage.
+			 * @return The buffer pointer.
+			 */
+			[[nodiscrad]] std::shared_ptr<Core::Buffer> createBuffer(uint64_t size, Core::BufferUsage usage) override;
+
+			/**
+			 * Create a new rasterizer.
+			 *
+			 * @param camera The camera from which all the models are drawn from.
+			 * @param frameCount The number of frames in the render target. This is usually set automatically by the Window.
+			 * @param attachmentDescriptions The attachment descriptions.
+			 * @param multisample The multisample count. Default is One.
+			 * @param exclusiveBuffering Whether or not to use one buffer/ attachment per frame. Default is false.
+			 * @return The rasterizer pointer.
+			 */
+			[[nodiscard]] std::shared_ptr<Core::Rasterizer> createRasterizer(Camera& camera, uint32_t frameCount, std::vector<Core::AttachmentDescription>&& attachmentDescriptions, Core::Multisample multisample = Core::Multisample::One, bool exclusiveBuffering = false) override;
+
+			/**
+			 * Create a new ray tracer.
+			 *
+			 * @param camera The camera reference which is used to generate the images using.
+			 * @param frameCount The number of frames to use.
+			 * @return The ray tracer pointer.
+			 */
+			[[nodiscard]] std::shared_ptr<Core::RayTracer> createRayTracer(Camera& camera, uint32_t frameCount) override;
+
+			/**
+			 * Create a new window.
+			 *
+			 * @param title The window title.
+			 * @param width The width of the window. If set to 0 then the window is opened maximized. If set to -1, the window is open in full screen mode.
+			 * @param height The height of the window. Same as the width, if set to 0 then the window is opened maximized. If set to -1, the window is open in full screen mode.
+			 * @return The window pointer.
+			 */
+			[[nodiscard]] std::shared_ptr<Core::Window> createWindow(std::string&& title, uint32_t width = -1, uint32_t height = -1) override;
+
+			/**
 			 * Terminate the object.
 			 */
 			void terminate() override;
@@ -134,20 +174,6 @@ namespace Flint
 			 */
 			[[nodiscard]] VmaAllocator getAllocator() const { return m_Allocator; }
 
-			/**
-			 * Get the utility command buffer.
-			 *
-			 * @return The command buffer reference.
-			 */
-			[[nodiscard]] VulkanCommandBuffers& getUtilityCommandBuffer() { return *m_pUtilityCommandBuffer; }
-
-			/**
-			 * Get the utility command buffer.
-			 *
-			 * @return The const command buffer reference.
-			 */
-			[[nodiscard]] const VulkanCommandBuffers& getUtilityCommandBuffer() const { return *m_pUtilityCommandBuffer; }
-
 		private:
 			/**
 			 * Select the best physical device for the engine.
@@ -180,8 +206,6 @@ namespace Flint
 			VolkDeviceTable m_DeviceTable = {};
 
 			std::vector<const char*> m_DeviceExtensions;
-
-			VulkanCommandBuffers* m_pUtilityCommandBuffer = nullptr;
 
 			VulkanQueue m_GraphicsQueue;
 			VulkanQueue m_ComputeQueue;

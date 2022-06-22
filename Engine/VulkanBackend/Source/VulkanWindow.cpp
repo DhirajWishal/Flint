@@ -466,7 +466,7 @@ namespace Flint
 
 			// Make sure to destroy the old surface!
 			clearSwapchain();
-			vkDestroySurfaceKHR(getDevice().as<VulkanDevice>()->getInstance().getInstance(), m_Surface, nullptr);
+			vkDestroySurfaceKHR(getDevice().as<VulkanDevice>()->getInstance().as<VulkanInstance>()->getInstance(), m_Surface, nullptr);
 
 			// Now we can redo it.
 			createSurface();

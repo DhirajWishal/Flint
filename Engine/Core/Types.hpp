@@ -249,6 +249,36 @@ namespace Flint
 		}
 
 		/**
+		 * Buffer usage enum.
+		 */
+		enum class BufferUsage : uint8_t
+		{
+			// Used to store vertex data. Note that in order to supply data to this type, we need a staging buffer.
+			Vertex = 1 << 0,
+
+			// Used to store index data. Note that in order to supply data to this type, we need a staging buffer.
+			Index = 1 << 1,
+
+			// Used to store vertex data. Note that unlike the other, this can directly receive data.
+			ShallowVertex = 1 << 2,
+
+			// Used to store index data. Note that unlike the other, this can directly receive data.
+			ShallowIndex = 1 << 3,
+
+			// Used to store uniform data.
+			Uniform = 1 << 4,
+
+			// Used to store data from the shader.
+			Storage = 1 << 5,
+
+			// Used for both uniform and storage purposes.
+			General = Uniform | Storage,
+
+			// Used for data transferring purposes.
+			Staging = 1 << 6
+		};
+
+		/**
 		 * Image usage enum.
 		 */
 		enum class ImageUsage : uint8_t

@@ -5,7 +5,6 @@
 
 #include "Graphical.hpp"
 #include "RenderTargetAttachment.hpp"
-#include "Camera/Camera.hpp"
 
 namespace Flint
 {

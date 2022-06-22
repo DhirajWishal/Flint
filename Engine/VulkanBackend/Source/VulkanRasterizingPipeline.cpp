@@ -279,10 +279,10 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanRasterizingPipeline::VulkanRasterizingPipeline(const std::shared_ptr<VulkanDevice>& pDevice, VulkanRasterizer& rasterizer, const Core::RasterizingPipelineSpecification& specification)
-			: RasterizingPipeline(pDevice, rasterizer, specification)
+		VulkanRasterizingPipeline::VulkanRasterizingPipeline(const std::shared_ptr<VulkanDevice>& pDevice, const std::shared_ptr<VulkanRasterizer>& pRasterizer, const Core::RasterizingPipelineSpecification& specification)
+			: RasterizingPipeline(std::static_pointer_cast<Core::Device>(pDevice), std::static_pointer_cast<Core::Rasterizer>(pRasterizer), specification)
 			, VulkanPipeline(pDevice, specification.m_CacheFile)
-			, VulkanDescriptorSetManager(pDevice, rasterizer.getFrameCount())
+			, VulkanDescriptorSetManager(pDevice, pRasterizer->getFrameCount())
 		{
 			// Resolve shader information.
 			std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
@@ -469,7 +469,7 @@ namespace Flint
 			m_MultisampleStateCreateInfo.alphaToOneEnable = GET_VK_BOOL(specification.m_EnableAlphaToOne);
 			m_MultisampleStateCreateInfo.minSampleShading = specification.m_MinSampleShading;
 			m_MultisampleStateCreateInfo.pSampleMask;	// TODO
-			m_MultisampleStateCreateInfo.rasterizationSamples = Utility::GetSampleCountFlagBits(m_Rasterizer.getMultisample());
+			m_MultisampleStateCreateInfo.rasterizationSamples = Utility::GetSampleCountFlagBits(m_pRasterizer->getMultisample());
 			m_MultisampleStateCreateInfo.sampleShadingEnable = GET_VK_BOOL(specification.m_EnableSampleShading);
 
 			// Depth stencil state.
@@ -495,8 +495,8 @@ namespace Flint
 		{
 			// Resolve viewport state.
 			VkRect2D rect2D = {};
-			rect2D.extent.width = m_Rasterizer.getWidth();
-			rect2D.extent.height = m_Rasterizer.getHeight();
+			rect2D.extent.width = m_pRasterizer->getWidth();
+			rect2D.extent.height = m_pRasterizer->getHeight();
 			rect2D.offset = { 0, 0 };
 
 			VkViewport viewport = {};
@@ -533,7 +533,7 @@ namespace Flint
 			createInfo.pColorBlendState = &m_ColorBlendStateCreateInfo;
 			createInfo.pDynamicState = &m_DynamicStateCreateInfo;
 			createInfo.layout = m_PipelineLayout;
-			createInfo.renderPass = m_Rasterizer.getRenderPass();
+			createInfo.renderPass = m_pRasterizer->as<VulkanRasterizer>()->getRenderPass();
 			createInfo.subpass = 0;	// TODO
 			createInfo.basePipelineHandle = VK_NULL_HANDLE;
 			createInfo.basePipelineIndex = 0;

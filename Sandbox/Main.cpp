@@ -4,11 +4,11 @@
 #include "Core/EventSystem/EventSystem.hpp"
 #include "Core/Camera/MonoCamera.hpp"
 #include "Engine/Utility/FrameTimer.hpp"
+#include "Engine/Engine.hpp"
 
-#include "VulkanBackend/Exporter.hpp"
-
-#include <spdlog/spdlog.h>
-#include <spdlog/fmt/chrono.h>
+#include "Core/Window.hpp"
+#include "Core/Rasterizer.hpp"
+#include "Core/RayTracer.hpp"
 
 #ifdef FLINT_DEBUG
 constexpr auto Validation = true;
@@ -28,18 +28,18 @@ static Flint::EventSystem g_EventSystem;
 
 int main()
 {
-	auto instance = Flint::Backend::Instance("Sandbox", 1, Validation);
-	auto device = Flint::Backend::Device(instance);
+	auto instance = Flint::CreateInstance("Sandbox", 1, Validation);
+	auto device = instance->createDevice();
 
-	auto window = Flint::Backend::Window(device, "Sandbox");
+	auto window = device->createWindow("Sandbox");
 	auto camera = Flint::MonoCamera(glm::vec3(0.0f), 1280, 720);
 	camera.m_MovementBias = 50;
 
-	auto program = Flint::Backend::RasterizingProgram(device, "Shaders/Debugging/vert.spv", "Shaders/Debugging/frag.spv");
-	auto rasterizer = Flint::Backend::Rasterizer(device, camera, window.getFrameCount(), { Flint::Core::Defaults::ColorAttachmentDescription, Flint::Core::Defaults::DepthAttachmentDescription });
-	auto rayTracer = Flint::Backend::RayTracer(device, camera, window.getFrameCount());
+	//auto program = Flint::Backend::RasterizingProgram(device, "Shaders/Debugging/vert.spv", "Shaders/Debugging/frag.spv");
+	auto rasterizer = device->createRasterizer(camera, window->getFrameCount(), { Flint::Core::Defaults::ColorAttachmentDescription, Flint::Core::Defaults::DepthAttachmentDescription });
+	auto rayTracer = device->createRayTracer(camera, window->getFrameCount());
 
-	window.attach(rasterizer);
+	window->attach(rasterizer);
 	//window.attach(rayTracer);
 
 	Flint::FrameTimer timer;
@@ -65,21 +65,21 @@ int main()
 
 		//spdlog::info("Frame rate: {}", Flint::FrameTimer::FramesPerSecond(duration), " ns");
 		camera.update();
-		rasterizer.update();	// Even though the rasterizer is attached as a dependency, we still need to manually update it.
-		rayTracer.update();
-		window.update();
+		rasterizer->update();	// Even though the rasterizer is attached as a dependency, we still need to manually update it.
+		rayTracer->update();
+		window->update();
 	}
 
 	const auto ss = timer.tick();
 
-	rayTracer.terminate();
-	rasterizer.terminate();
-	program.terminate();
+	rayTracer->terminate();
+	rasterizer->terminate();
+	//program.terminate();
 
-	window.terminate();
+	window->terminate();
 
-	device.terminate();
-	instance.terminate();
+	device->terminate();
+	instance->terminate();
 
 	return 0;
 }
@@ -96,10 +96,10 @@ int main()
  *
  * entity.instance(position, rotation, scale);		// First instance.
  * entity.instance(position2, rotation2, scale2);	// Second instance.
- * 
+ *
  * auto light = scene.setPointLight(position);
  * light.setColor(lightColor);
- * 
+ *
  * window.attach(scene);
  *
  * while(window.update())
@@ -110,10 +110,10 @@ int main()
  *
  *		scene.update();
  * }
- * 
+ *
  * window.destroy();
  * scene.destroy();
- * 
+ *
  * device.destroy();
  * instance.destroy();
  */

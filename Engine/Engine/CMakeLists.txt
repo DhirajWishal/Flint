@@ -19,8 +19,6 @@ add_library(
 
 	"Source/ShaderFactory/ShaderBuilder.cpp"
 
-	"Source/Vulkan/VulkanEngine.cpp"
-	
 	"Engine.hpp"
 	"Scene.hpp"
 
@@ -30,8 +28,6 @@ add_library(
 	"ShaderFactory/ShaderBuildError.hpp"
 
 	"Errors/InvalidBackend.hpp"
-   
-	"Vulkan/VulkanEngine.hpp"
 )
 
 # Set the include directories.

@@ -74,7 +74,7 @@ namespace Flint
 			std::string m_Title;
 
 		protected:
-			std::pair<const std::shared_ptr<RenderTarget>, uint32_t> m_Dependency;
+			std::pair<std::shared_ptr<RenderTarget>, uint32_t> m_Dependency;
 
 			uint32_t m_Width = 0;
 			uint32_t m_Height = 0;

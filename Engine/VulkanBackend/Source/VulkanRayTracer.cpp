@@ -9,7 +9,7 @@ namespace Flint
 	namespace VulkanBackend
 	{
 		VulkanRayTracer::VulkanRayTracer(const std::shared_ptr<VulkanDevice>& pDevice, Camera& camera, uint32_t frameCount)
-			: Core::RayTracer(pDevice, camera, frameCount, { Core::Defaults::ColorAttachmentDescription })
+			: Core::RayTracer(pDevice, camera, frameCount)
 		{
 			// Setup the attachments.
 			createAttachments();
@@ -58,12 +58,12 @@ namespace Flint
 			{
 				m_pStorageAttachments.emplace_back(
 					std::make_unique<VulkanStorageAttachment>(
-						getDevice(),
+						getDevicePointerAs<VulkanDevice>(),
 						getWidth(),
 						getHeight(),
 						Utility::GetPixelFormat(
 							Utility::FindSupportedFormat(
-								getDevice(),
+								getDevice().as<VulkanDevice>(),
 								{ VK_FORMAT_R8G8B8A8_UNORM },
 								VK_IMAGE_TILING_OPTIMAL,
 								VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT |

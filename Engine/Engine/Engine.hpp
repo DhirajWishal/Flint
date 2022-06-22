@@ -3,7 +3,8 @@
 
 #pragma once
 
-#include "Scene.hpp"
+//#include "Scene.hpp"
+#include "Core/Instance.hpp"
 
 #include <string>
 #include <memory>
@@ -46,5 +47,15 @@ namespace Flint
 	 * @param enableBackendValidation Whether or not to enable backend validation. Turn this to true ONLY in the debug build.
 	 * @return The created engine pointer.
 	 */
-	std::shared_ptr<Engine> CreateEngine(std::string&& applicationName, uint32_t applicationVersion, bool enableBackendValidation);
+	[[nodiscard]] std::shared_ptr<Engine> CreateEngine(std::string&& applicationName, uint32_t applicationVersion, bool enableBackendValidation);
+
+	/**
+	 * Create a new instance.
+	 *
+	 * @param applicationName The name of the application.
+	 * @param applicationVersion The version of the application.
+	 * @param enableBackendValidation Whether or not to enable backend validation. Turn this to true ONLY in the debug build.
+	 * @return The created instance pointer.
+	 */
+	[[nodiscard]] std::shared_ptr<Core::Instance> CreateInstance(std::string&& applicationName, uint32_t applicationVersion, bool enableBackendValidation);
 }

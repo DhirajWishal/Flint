@@ -3,6 +3,7 @@
 
 #include "VulkanBackend/VulkanInstance.hpp"
 #include "VulkanBackend/VulkanMacros.hpp"
+#include "VulkanBackend/VulkanDevice.hpp"
 
 #include <sstream>
 
@@ -222,6 +223,11 @@ namespace Flint
 		VulkanInstance::~VulkanInstance()
 		{
 			FLINT_TERMINATE_IF_VALID;
+		}
+
+		std::shared_ptr<Flint::Core::Device> VulkanInstance::createDevice()
+		{
+			return std::make_shared<VulkanDevice>(shared_from_this());
 		}
 
 		void VulkanInstance::terminate()

@@ -14,6 +14,8 @@ namespace Flint
 {
 	namespace Core
 	{
+		class Device;
+
 		/**
 		 * Backend API enum.
 		 */
@@ -52,6 +54,13 @@ namespace Flint
 			 * Virtual destructor.
 			 */
 			virtual ~Instance() = default;
+
+			/**
+			 * Create a new device.
+			 *
+			 * @return The device pointer.
+			 */
+			[[nodiscard]] virtual std::shared_ptr<Device> createDevice() = 0;
 
 			/**
 			 * Get the backend API.

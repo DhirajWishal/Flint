@@ -25,7 +25,7 @@ namespace Flint
 			createFramebuffers();
 
 			// Create the command buffers.
-			m_pCommandBuffers = std::make_unique<VulkanCommandBuffers>(getDevice(), frameCount);
+			m_pCommandBuffers = std::make_unique<VulkanCommandBuffers>(getDevicePointerAs<VulkanDevice>(), frameCount);
 
 			// Make sure to set the object as valid.
 			validate();
@@ -147,12 +147,12 @@ namespace Flint
 							// Find the best color format and return it.
 							pAttachment.emplace_back(
 								std::make_unique<VulkanColorAttachment>(
-									getDevice(),
+									getDevicePointerAs<VulkanDevice>(),
 									getWidth(),
 									getHeight(),
 									Utility::GetPixelFormat(
 										Utility::FindSupportedFormat(
-											getDevice(),
+											getDevice().as<VulkanDevice>(),
 											{ VK_FORMAT_R8G8B8A8_UNORM },
 											VK_IMAGE_TILING_OPTIMAL,
 											VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT |
@@ -164,7 +164,7 @@ namespace Flint
 							);
 						}
 						else
-							pAttachment.emplace_back(std::make_unique<VulkanColorAttachment>(getDevice(), getWidth(), getHeight(), attachment.m_Format, m_Multisample));
+							pAttachment.emplace_back(std::make_unique<VulkanColorAttachment>(getDevicePointerAs<VulkanDevice>(), getWidth(), getHeight(), attachment.m_Format, m_Multisample));
 					}
 					else
 					{
@@ -173,12 +173,12 @@ namespace Flint
 							// Find the best depth format and return it.
 							pAttachment.emplace_back(
 								std::make_unique<VulkanDepthAttachment>(
-									getDevice(),
+								 getDevicePointerAs<VulkanDevice>(),
 									getWidth(),
 									getHeight(),
 									Utility::GetPixelFormat(
 										Utility::FindSupportedFormat(
-											getDevice(),
+											getDevice().as<VulkanDevice>(),
 											{ VK_FORMAT_D16_UNORM, VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
 											VK_IMAGE_TILING_OPTIMAL,
 											VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT |
@@ -190,7 +190,7 @@ namespace Flint
 							);
 						}
 						else
-							pAttachment.emplace_back(std::make_unique<VulkanDepthAttachment>(getDevice(), getWidth(), getHeight(), attachment.m_Format, m_Multisample));
+							pAttachment.emplace_back(std::make_unique<VulkanDepthAttachment>(getDevicePointerAs<VulkanDevice>(), getWidth(), getHeight(), attachment.m_Format, m_Multisample));
 					}
 				}
 			}

@@ -143,7 +143,7 @@ namespace Flint
 
 
 			// Copy the buffer.
-			auto vCommandBuffer = getDevice().as<VulkanDevice>()->getUtilityCommandBuffer();
+			auto vCommandBuffer = VulkanCommandBuffers(getDevicePointerAs<VulkanDevice>());
 			vCommandBuffer.begin();
 			vCommandBuffer.copyBuffer(buffer.as<VulkanBuffer>()->m_Buffer, buffer.getSize(), srcOffset, m_Buffer, dstOffset);
 			vCommandBuffer.end();

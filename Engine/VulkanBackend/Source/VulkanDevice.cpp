@@ -4,6 +4,10 @@
 #include "VulkanBackend/VulkanDevice.hpp"
 #include "VulkanBackend/VulkanMacros.hpp"
 #include "VulkanBackend/VulkanCommandBuffers.hpp"
+#include "VulkanBackend/VulkanBuffer.hpp"
+#include "VulkanBackend/VulkanRasterizer.hpp"
+#include "VulkanBackend/VulkanRayTracer.hpp"
+#include "VulkanBackend/VulkanWindow.hpp"
 
 #include <set>
 #include <array>
@@ -134,9 +138,6 @@ namespace Flint
 			// Create the VMA allocator.
 			createVMAAllocator();
 
-			// Create the defaults.
-			m_pUtilityCommandBuffer = new VulkanCommandBuffers(shared_from_this());
-
 			// Make sure to set the object as valid.
 			validate();
 		}
@@ -146,13 +147,30 @@ namespace Flint
 			FLINT_TERMINATE_IF_VALID;
 		}
 
+		std::shared_ptr<Flint::Core::Buffer> VulkanDevice::createBuffer(uint64_t size, Core::BufferUsage usage)
+		{
+			return std::make_shared<VulkanBuffer>(shared_from_this(), size, usage);
+		}
+
+		std::shared_ptr<Flint::Core::Rasterizer> VulkanDevice::createRasterizer(Camera& camera, uint32_t frameCount, std::vector<Core::AttachmentDescription>&& attachmentDescriptions, Core::Multisample multisample /*= Core::Multisample::One*/, bool exclusiveBuffering /*= false*/)
+		{
+			return std::make_shared<VulkanRasterizer>(shared_from_this(), camera, frameCount, std::move(attachmentDescriptions), multisample, exclusiveBuffering);
+		}
+
+		std::shared_ptr<Flint::Core::RayTracer> VulkanDevice::createRayTracer(Camera& camera, uint32_t frameCount)
+		{
+			return std::make_shared<VulkanRayTracer>(shared_from_this(), camera, frameCount);
+		}
+
+		std::shared_ptr<Flint::Core::Window> VulkanDevice::createWindow(std::string&& title, uint32_t width /*= -1*/, uint32_t height /*= -1*/)
+		{
+			return std::make_shared<VulkanWindow>(shared_from_this(), std::move(title), width, height);
+		}
+
 		void VulkanDevice::terminate()
 		{
 			// Wait idle to make sure that we don't have anything running at the moment.
 			waitIdle();
-
-			// Destroy the defaults.
-			delete m_pUtilityCommandBuffer;
 
 			// Destroy the VMA allocator.
 			destroyVMAAllocator();
