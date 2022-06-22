@@ -59,12 +59,11 @@ namespace Flint
 		 * Program class.
 		 * Flint uses programs to optimize shaders and resources which are bound to them so that we don't need to create unnecessary resources. They are also used to create pipelines.
 		 */
-		template<class TDevice>
-		class Program : public DeviceBoundObject<TDevice>
+		class Program : public DeviceBoundObject
 		{
 		public:
 			// Using the same constructor as the super class.
-			using DeviceBoundObject<TDevice>::DeviceBoundObject;
+			using DeviceBoundObject::DeviceBoundObject;
 
 			/**
 			 * Virtual default destructor.

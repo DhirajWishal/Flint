@@ -13,12 +13,11 @@ namespace Flint
 		 * Compute pipeline class.
 		 * This class is used to perform compute operations.
 		 */
-		template<class TDevice>
-		class ComputePipeline : public Pipeline<TDevice>
+		class ComputePipeline : public Pipeline
 		{
 		public:
 			// Using the same constructor as the super class.
-			using Pipeline<TDevice>::Pipeline;
+			using Pipeline::Pipeline;
 
 			/**
 			 * Default virtual destructor.

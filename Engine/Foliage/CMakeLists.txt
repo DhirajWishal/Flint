@@ -13,10 +13,10 @@ add_library(
 	FlintFoliageEngine
 	STATIC
 
-	"Source/FoliageEngine.cpp"
+	"Source/FoliageScene.cpp"
 
-	"FoliageEngine.hpp"
-  )
+	"FoliageScene.hpp"
+)
 
 # Set the include directories.
 target_include_directories(

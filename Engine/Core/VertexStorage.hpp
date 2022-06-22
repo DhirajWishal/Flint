@@ -26,12 +26,11 @@ namespace Flint
 		 * Vertex storage class.
 		 * This class is used to store vertex information about a single geometry.
 		 */
-		template<class TDevice>
-		class VertexStorage : public DeviceBoundObject<TDevice>
+		class VertexStorage : public DeviceBoundObject
 		{
 		public:
 			// Using the same constructor as the super class.
-			using DeviceBoundObject<TDevice>::DeviceBoundObject;
+			using DeviceBoundObject::DeviceBoundObject;
 
 			/**
 			 * Default virtual destructor.

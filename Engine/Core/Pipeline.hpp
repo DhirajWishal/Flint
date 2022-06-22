@@ -15,12 +15,11 @@ namespace Flint
 		 *
 		 * Pipelines are used for rendering (ray tracing and raster graphics) and compute operations.
 		 */
-		template<class TDevice>
-		class Pipeline : public DeviceBoundObject<TDevice>
+		class Pipeline : public DeviceBoundObject
 		{
 		public:
 			// Use the same constructor as the super class.
-			using DeviceBoundObject<TDevice>::DeviceBoundObject;
+			using DeviceBoundObject::DeviceBoundObject;
 
 			/**
 			 * Default virtual destructor.

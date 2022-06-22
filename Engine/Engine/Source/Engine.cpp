@@ -3,27 +3,18 @@
 
 #include "Engine/Engine.hpp"
 
+#ifdef FLINT_PLATFORM_WINDOWS
+#include "Engine/Vulkan/VulkanEngine.hpp"
+
+#endif
+
 namespace Flint
 {
-	Engine::Engine(std::string&& applicationName, uint32_t applicationVersion, bool enableBackendValidation)
-		: m_Instance(std::move(applicationName), applicationVersion, enableBackendValidation)
-		, m_Device(m_Instance)
+	std::shared_ptr<Flint::Engine> CreateEngine(std::string&& applicationName, uint32_t applicationVersion, bool enableBackendValidation)
 	{
+#ifdef FLINT_PLATFORM_WINDOWS
+		return std::make_shared<VulkanEngine>(std::move(applicationName), applicationVersion, enableBackendValidation);
 
-	}
-
-	Engine::~Engine()
-	{
-		if (m_Device.isValid())
-			m_Device.terminate();
-
-		if (m_Instance.isValid())
-			m_Instance.terminate();
-	}
-
-	void Engine::destroy()
-	{
-		m_Device.terminate();
-		m_Instance.terminate();
+#endif
 	}
 }

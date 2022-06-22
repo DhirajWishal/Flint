@@ -16,22 +16,21 @@ namespace Flint
 		 * Rasterizer class.
 		 * This class performs rasterization to the bound entities.
 		 */
-		template<class TDevice, class TAttachment>
-		class Rasterizer : public RenderTarget<TDevice, TAttachment>
+		class Rasterizer : public RenderTarget
 		{
 		public:
 			/**
 			 * Explicit constructor.
 			 *
-			 * @param device The device reference.
+			 * @param pDevice The device reference.
 			 * @param camera The camera from which all the models are drawn from.
 			 * @param frameCount The number of frames in the render target. This is usually set automatically by the Window.
 			 * @param attachmentDescriptions The attachment descriptions.
 			 * @param multisample The multisample count. Default is One.
 			 * @param exclusiveBuffering Whether or not to use one buffer/ attachment per frame. Default is false.
 			 */
-			explicit Rasterizer(TDevice& device, Camera& camera, uint32_t frameCount, std::vector<AttachmentDescription>&& attachmentDescriptions, Multisample multisample = Multisample::One, bool exclusiveBuffering = false)
-				: RenderTarget<TDevice, TAttachment>(device, camera, frameCount, std::move(attachmentDescriptions))
+			explicit Rasterizer(const std::shared_ptr<Device>& pDevice, Camera& camera, uint32_t frameCount, std::vector<AttachmentDescription>&& attachmentDescriptions, Multisample multisample = Multisample::One, bool exclusiveBuffering = false)
+				: RenderTarget(pDevice, camera, frameCount, std::move(attachmentDescriptions))
 				, m_Multisample(multisample)
 				, m_ExclusiveBuffering(exclusiveBuffering) {}
 

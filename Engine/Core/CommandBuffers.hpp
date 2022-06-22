@@ -15,17 +15,16 @@ namespace Flint
 		 *
 		 * This object can contain multiple backend command buffer handles.
 		 */
-		template<class TDevice>
-		class CommandBuffers : public DeviceBoundObject<TDevice>
+		class CommandBuffers : public DeviceBoundObject
 		{
 		public:
 			/**
 			 * Explicit constructor.
 			 *
-			 * @param device The device to which the commands are submitted.
+			 * @param pDevice The device to which the commands are submitted.
 			 * @param bufferCount The number of buffer primitives.
 			 */
-			explicit CommandBuffers(TDevice& device, uint32_t bufferCount = 1) : DeviceBoundObject<TDevice>(device), m_BufferCount(bufferCount) {}
+			explicit CommandBuffers(const std::shared_ptr<Device>& pDevice, uint32_t bufferCount = 1) : DeviceBoundObject(pDevice), m_BufferCount(bufferCount) {}
 
 			/**
 			 * Default virtual destructor.

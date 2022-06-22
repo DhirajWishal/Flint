@@ -13,12 +13,11 @@ namespace Flint
 		 * Ray tracing pipeline class.
 		 * This pipeline is used to perform ray tracing.
 		 */
-		template<class TDevice>
-		class RayTracingPipeline : public Pipeline<TDevice>
+		class RayTracingPipeline : public Pipeline
 		{
 		public:
 			// Using the same constructor as the super class.
-			using Pipeline<TDevice>::Pipeline;
+			using Pipeline::Pipeline;
 
 			/**
 			 * Default virtual destructor.

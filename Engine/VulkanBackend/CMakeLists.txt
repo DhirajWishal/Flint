@@ -31,6 +31,7 @@ add_library(
 	"Source/VulkanStorageAttachment.cpp"
 	"Source/VulkanRayTracingPipeline.cpp"
 	"Source/VulkanStaticModel.cpp"
+	"Source/VulkanVertexStorage.cpp"
 	
 	"VulkanInstance.hpp"
 	"VulkanMacros.hpp"
@@ -52,18 +53,16 @@ add_library(
 	"VulkanVertexStorage.hpp"
 
 	"Exporter.hpp"
- "Source/VulkanVertexStorage.cpp")
+)
 
 # Set the include directories.
 target_include_directories(
 	VulkanBackend 
-	PUBLIC 
 
-	${VULKAN_HEADERS_INCLUDE_DIR} 
-	${VOLK_INCLUDE_DIR} 
-	${VMA_INCLUDE_DIR} 
-	${SPIRV_REFLECT_INCLUDE_DIR}
-	${SPDLOG_INCLUDE_DIR}
+	PUBLIC ${VULKAN_HEADERS_INCLUDE_DIR} 
+	PUBLIC ${VOLK_INCLUDE_DIR} 
+	PUBLIC ${VMA_INCLUDE_DIR} 
+	PRIVATE ${SPIRV_REFLECT_INCLUDE_DIR}
 )
 
 # Add the target links.

@@ -279,19 +279,18 @@ namespace Flint
 		 * Rasterizing pipeline class.
 		 * This class is used to perform rasterizing graphics.
 		 */
-		template<class TDevice, class TRasterizer>
-		class RasterizingPipeline : public Pipeline<TDevice>
+		class RasterizingPipeline : public Pipeline
 		{
 		public:
 			/**
 			 * Explicit constructor.
 			 *
-			 * @param device The device to which the pipeline is bound to.
-			 * @param rasterizer The parent rasterizer.
+			 * @param pDevice The device to which the pipeline is bound to.
+			 * @param pRasterizer The parent rasterizer.
 			 * @param specification The pipeline specification.
 			 */
-			explicit RasterizingPipeline(TDevice& device, TRasterizer& rasterizer, const RasterizingPipelineSpecification& specification)
-				: Pipeline<TDevice>(device), m_Rasterizer(rasterizer), m_Specification(specification) {}
+			explicit RasterizingPipeline(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Rasterizer>& pRasterizer, const RasterizingPipelineSpecification& specification)
+				: Pipeline(pDevice), m_pRasterizer(pRasterizer), m_Specification(specification) {}
 
 			/**
 			 * Default virtual destructor.
@@ -303,14 +302,14 @@ namespace Flint
 			 *
 			 * @return The rasterizer reference.
 			 */
-			[[nodiscard]] const TRasterizer& getRasterizer() const { return m_Rasterizer; }
+			[[nodiscard]] const Rasterizer& getRasterizer() const { return *m_pRasterizer; }
 
 			/**
 			 * Get the parent rasterizer.
 			 *
 			 * @return The rasterizer reference.
 			 */
-			[[nodiscard]] TRasterizer& getRasterizer() { return m_Rasterizer; }
+			[[nodiscard]] Rasterizer& getRasterizer() { return *m_pRasterizer; }
 
 			/**
 			 * Get the pipeline specification.
@@ -320,7 +319,7 @@ namespace Flint
 			[[nodiscard]] const RasterizingPipelineSpecification& getSpecification() const { return m_Specification; }
 
 		protected:
-			TRasterizer& m_Rasterizer;
+			std::shared_ptr<Rasterizer> m_pRasterizer = nullptr;
 			RasterizingPipelineSpecification m_Specification;
 		};
 	}

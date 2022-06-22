@@ -13,16 +13,15 @@ namespace Flint
 		 * Device bound object class.
 		 * This class is the base class for all the device bound objects.
 		 */
-		template<class TDevice>
 		class DeviceBoundObject : public FObject
 		{
 		public:
 			/**
 			 * Explicit constructor.
 			 *
-			 * @param device The device reference.
+			 * @param pDevice The device reference.
 			 */
-			explicit DeviceBoundObject(TDevice& device) : m_Device(device) {}
+			explicit DeviceBoundObject(const std::shared_ptr<Device>& pDevice) : m_pDevice(pDevice) {}
 
 			/**
 			 * Default virtual destructor.
@@ -34,17 +33,17 @@ namespace Flint
 			 *
 			 * @return The device reference.
 			 */
-			[[nodiscard]] TDevice& getDevice() { return m_Device; }
+			[[nodiscard]] Device& getDevice() { return *m_pDevice; }
 
 			/**
 			 * Get the device to which this object is bound to.
 			 *
 			 * @return The const device reference.
 			 */
-			[[nodiscard]] const TDevice& getDevice() const { return m_Device; }
+			[[nodiscard]] const Device& getDevice() const { return *m_pDevice; }
 
 		private:
-			TDevice& m_Device;
+			std::shared_ptr<Device> m_pDevice = nullptr;
 		};
 	}
 }

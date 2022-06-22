@@ -16,7 +16,7 @@ add_executable(
 )
 
 # Add the optick static library as a target link.
-target_link_libraries(Sandbox FlintEngine)
+target_link_libraries(Sandbox FlintFoliageEngine)
 
 # Make sure to specify the C++ standard to C++20.
 set_property(TARGET Sandbox PROPERTY CXX_STANDARD 20)

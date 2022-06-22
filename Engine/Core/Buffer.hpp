@@ -43,18 +43,17 @@ namespace Flint
 		 * Buffer class.
 		 * This class is used to store information about a single pool of memory.
 		 */
-		template<class TDerived, class TDevice>
-		class Buffer : public DeviceBoundObject<TDevice>
+		class Buffer : public DeviceBoundObject
 		{
 		public:
 			/**
 			 * Explicit constructor.
 			 *
-			 * @param device The device to which the buffer is bound to.
+			 * @param pDevice The device to which the buffer is bound to.
 			 * @param size The buffer's size.
 			 * @param usage The buffer's usage.
 			 */
-			explicit Buffer(TDevice& device, uint64_t size, BufferUsage usage) : DeviceBoundObject<TDevice>(device), m_Size(size), m_Usage(usage) {}
+			explicit Buffer(const std::shared_ptr<Device>& pDevice, uint64_t size, BufferUsage usage) : DeviceBoundObject(pDevice), m_Size(size), m_Usage(usage) {}
 
 			/**
 			 * Default virtual destructor.
@@ -80,7 +79,7 @@ namespace Flint
 			 * @param srcOffset The offset of the source buffer to copy from.
 			 * @param dstOffset The offset of the destination (this) buffer to copy to.
 			 */
-			virtual void copyFrom(const TDerived& buffer, uint64_t srcOffset = 0, uint64_t dstOffset = 0) = 0;
+			virtual void copyFrom(const Buffer& buffer, uint64_t srcOffset = 0, uint64_t dstOffset = 0) = 0;
 
 			/**
 			 * Get the buffer's size.

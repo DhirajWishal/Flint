@@ -13,22 +13,21 @@ namespace Flint
 		 * Render target attachment class.
 		 * This class contains information about a single render target attachment image.
 		 */
-		template<class TDevice>
-		class RenderTargetAttachment : public DeviceBoundObject<TDevice>
+		class RenderTargetAttachment : public DeviceBoundObject
 		{
 		public:
 			/**
 			 * Explicit constructor.
 			 *
-			 * @param device The device reference.
+			 * @param pDevice The device reference.
 			 * @param width The width of the attachment.
 			 * @param height The height of the attachment.
 			 * @param type The type of the attachment.
 			 * @param format The format of the attachment.
 			 * @param multisample The multisample count to use.
 			 */
-			explicit RenderTargetAttachment(TDevice& device, uint32_t width, uint32_t height, AttachmentType type, PixelFormat format, Multisample multisample)
-				: DeviceBoundObject<TDevice>(device), m_Width(width), m_Height(height), m_Type(type), m_Format(format), m_Multisample(multisample) {}
+			explicit RenderTargetAttachment(const std::shared_ptr<Device>& pDevice, uint32_t width, uint32_t height, AttachmentType type, PixelFormat format, Multisample multisample)
+				: DeviceBoundObject(pDevice), m_Width(width), m_Height(height), m_Type(type), m_Format(format), m_Multisample(multisample) {}
 
 			/**
 			 * Default virtual destructor.

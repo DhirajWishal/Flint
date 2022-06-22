@@ -20,16 +20,15 @@ namespace Flint
 		 * Usually an application requires just one instance of this class. But the user isn't restricted to do that in any way. But make sure that the devices are destroyed before
 		 * destroying the instance which is used to create this.
 		 */
-		template<class TInstance>
 		class Device : public FObject
 		{
 		public:
 			/**
 			 * Explicit constructor.
 			 *
-			 * @param instance The instance to create the device with.
+			 * @param pInstance The instance to create the device with.
 			 */
-			explicit Device(TInstance& instance) : m_Instance(instance) {}
+			explicit Device(const std::shared_ptr<Instance>& pInstance) : m_pInstance(pInstance) {}
 
 			/**
 			 * Default virtual destructor.
@@ -60,14 +59,14 @@ namespace Flint
 			 *
 			 * @return The instance reference.
 			 */
-			[[nodiscard]] TInstance& getInstance() { return m_Instance; }
+			[[nodiscard]] Instance& getInstance() { return *m_pInstance; }
 
 			/**
 			 * Get the instance.
 			 *
 			 * @return The const instance reference.
 			 */
-			[[nodiscard]] const TInstance& getInstance() const { return m_Instance; }
+			[[nodiscard]] const Instance& getInstance() const { return *m_pInstance; }
 
 			/**
 			 * Create a new texture image.
@@ -78,7 +77,7 @@ namespace Flint
 			[[nodiscard]] virtual ImageHandle createTextureImage(std::filesystem::path&& path, ImageUsage usage) = 0;
 
 		private:
-			TInstance& m_Instance;
+			std::shared_ptr<Instance> m_pInstance = nullptr;
 		};
 	}
 }
