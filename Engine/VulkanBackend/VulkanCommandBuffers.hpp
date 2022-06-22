@@ -19,7 +19,7 @@ namespace Flint
 		 * Vulkan command buffers class.
 		 * This contains the command buffers needed for certain actions.
 		 */
-		class VulkanCommandBuffers final : public Core::CommandBuffers<VulkanDevice>
+		class VulkanCommandBuffers final : public Core::CommandBuffers
 		{
 			/**
 			 * Fence structure.
@@ -41,7 +41,7 @@ namespace Flint
 			 * @param bufferCount The number of command buffers.
 			 * @param level The command buffer level. Default is primary.
 			 */
-			explicit VulkanCommandBuffers(VulkanDevice& device, uint32_t bufferCount, VkCommandBufferLevel level = VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+			explicit VulkanCommandBuffers(const std::shared_ptr<VulkanDevice>& pDevice, uint32_t bufferCount, VkCommandBufferLevel level = VK_COMMAND_BUFFER_LEVEL_PRIMARY);
 
 			/**
 			 * Explicit constructor.
@@ -50,7 +50,7 @@ namespace Flint
 			 * @param device The device to which the command buffer is bound to.
 			 * @param level The command buffer level. Default is primary.
 			 */
-			explicit VulkanCommandBuffers(VulkanDevice& device, VkCommandBufferLevel level = VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+			explicit VulkanCommandBuffers(const std::shared_ptr<VulkanDevice>& pDevice, VkCommandBufferLevel level = VK_COMMAND_BUFFER_LEVEL_PRIMARY);
 
 			/**
 			 * Destructor.

@@ -20,7 +20,7 @@ namespace Flint
 		/**
 		 * Vulkan engine class.
 		 */
-		class VulkanDevice final : public Core::Device<VulkanInstance>
+		class VulkanDevice final : public std::enable_shared_from_this<VulkanDevice>, public Core::Device
 		{
 			/**
 			 * Vulkan queue structure.
@@ -36,9 +36,9 @@ namespace Flint
 			/**
 			 * Explicit constructor.
 			 *
-			 * @param instance The instance used to create the object.
+			 * @param pInstance The instance used to create the object.
 			 */
-			explicit VulkanDevice(VulkanInstance& instance);
+			explicit VulkanDevice(const std::shared_ptr<VulkanInstance>& pInstance);
 
 			/**
 			 * Destructor.
@@ -236,7 +236,7 @@ namespace Flint
 			 * @param features The format features.
 			 *
 			 */
-			[[nodiscard]] VkFormat FindSupportedFormat(const VulkanDevice& device, const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+			[[nodiscard]] VkFormat FindSupportedFormat(const VulkanDevice* pDevice, const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
 
 			/**
 			 * Check if a format has the stencil component.
@@ -250,7 +250,7 @@ namespace Flint
 			 *
 			 * @param device The Vulkan engine.
 			 */
-			[[nodiscard]] VkFormat FindDepthFormat(const VulkanDevice& device);
+			[[nodiscard]] VkFormat FindDepthFormat(const VulkanDevice* pDevice);
 
 			/**
 			 * Get the descriptor type.

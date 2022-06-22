@@ -25,7 +25,7 @@ namespace Flint
 			 * @param format The format of the attachment.
 			 * @param multisample The multisample count to use.
 			 */
-			explicit VulkanDepthAttachment(VulkanDevice& device, uint32_t width, uint32_t height, Core::PixelFormat format, Core::Multisample multisample);
+			explicit VulkanDepthAttachment(const std::shared_ptr<VulkanDevice>& pDevice, uint32_t width, uint32_t height, Core::PixelFormat format, Core::Multisample multisample);
 
 			/**
 			 * Destructor.

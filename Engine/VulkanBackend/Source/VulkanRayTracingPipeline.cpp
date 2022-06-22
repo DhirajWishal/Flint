@@ -8,9 +8,9 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanRayTracingPipeline::VulkanRayTracingPipeline(VulkanDevice& device, std::filesystem::path&& cacheFile)
-			: RayTracingPipeline(device)
-			, VulkanPipeline(device, cacheFile)
+		VulkanRayTracingPipeline::VulkanRayTracingPipeline(const std::shared_ptr<VulkanDevice>& pDevice, std::filesystem::path&& cacheFile)
+			: RayTracingPipeline(pDevice)
+			, VulkanPipeline(pDevice, cacheFile)
 		{
 			// Make sure to set the object as valid.
 			validate();

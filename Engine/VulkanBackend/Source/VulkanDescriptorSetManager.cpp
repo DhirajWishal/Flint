@@ -10,14 +10,14 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanDescriptorSetManager::VulkanDescriptorSetManager(VulkanDevice& device, uint8_t frameCount)
-			: m_Device(device), m_FrameCount(frameCount)
+		VulkanDescriptorSetManager::VulkanDescriptorSetManager(const std::shared_ptr<VulkanDevice>& pDevice, uint8_t frameCount)
+			: m_pDevice(pDevice), m_FrameCount(frameCount)
 		{
 		}
 
 		VulkanDescriptorSetManager::~VulkanDescriptorSetManager()
 		{
-			m_Device.getDeviceTable().vkDestroyDescriptorSetLayout(m_Device.getLogicalDevice(), m_DescriptorSetLayout, nullptr);
+			m_pDevice->getDeviceTable().vkDestroyDescriptorSetLayout(m_Device.getLogicalDevice(), m_DescriptorSetLayout, nullptr);
 
 			if (m_DescriptorPool != VK_NULL_HANDLE)
 				m_Device.getDeviceTable().vkDestroyDescriptorPool(m_Device.getLogicalDevice(), m_DescriptorPool, nullptr);

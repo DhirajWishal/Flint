@@ -18,9 +18,9 @@ namespace Flint
 			/**
 			 * Explicit constructor.
 			 *
-			 * @param device The device reference.
+			 * @param pDevice The device reference.
 			 */
-			explicit VulkanImage(VulkanDevice& device);
+			explicit VulkanImage(const std::shared_ptr<VulkanDevice>& pDevice);
 
 		private:
 			VulkanDevice& m_Device;

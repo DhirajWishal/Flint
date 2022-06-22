@@ -13,16 +13,16 @@ namespace Flint
 		/**
 		 * Vulkan static model class.
 		 */
-		class VulkanStaticModel final : public Core::StaticModel<VulkanDevice>
+		class VulkanStaticModel final : public Core::StaticModel
 		{
 		public:
 			/**
 			 * Explicit constructor.
 			 *
-			 * @param device The device reference.
+			 * @param pDevice The device reference.
 			 * @param assetFile The asset file to load the data from.
 			 */
-			explicit VulkanStaticModel(VulkanDevice& device, std::filesystem::path&& assetFile);
+			explicit VulkanStaticModel(const std::shared_ptr<VulkanDevice>& pDevice, std::filesystem::path&& assetFile);
 
 			/**
 			 * Destructor.

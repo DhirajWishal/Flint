@@ -17,17 +17,17 @@ namespace Flint
 		 * Vulkan rasterizing pipeline class.
 		 * This pipeline is used to perform raster graphics.
 		 */
-		class VulkanRasterizingPipeline final : public Core::RasterizingPipeline<VulkanDevice, VulkanRasterizer>, public VulkanPipeline, public VulkanDescriptorSetManager
+		class VulkanRasterizingPipeline final : public Core::RasterizingPipeline, public VulkanPipeline, public VulkanDescriptorSetManager
 		{
 		public:
 			/**
 			 * Explicit constructor.
 			 *
-			 * @param device The device to which the pipeline is bound to.
+			 * @param pDevice The device to which the pipeline is bound to.
 			 * @param rasterizer The rasterizer to which the pipeline is bound to.
 			 * @param specification The pipeline specification.
 			 */
-			explicit VulkanRasterizingPipeline(VulkanDevice& device, VulkanRasterizer& rasterizer, const Core::RasterizingPipelineSpecification& specification);
+			explicit VulkanRasterizingPipeline(const std::shared_ptr<VulkanDevice>& pDevice, VulkanRasterizer& rasterizer, const Core::RasterizingPipelineSpecification& specification);
 
 			/**
 			 * Destructor.

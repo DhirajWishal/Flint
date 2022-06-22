@@ -12,8 +12,8 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanRasterizer::VulkanRasterizer(VulkanDevice& device, Camera& camera, uint32_t frameCount, std::vector<Core::AttachmentDescription>&& attachmentDescriptions, Core::Multisample multisample /*= Multisample::One*/, bool exclusiveBuffering /*= false*/)
-			: Rasterizer(device, camera, frameCount, std::move(attachmentDescriptions), multisample, exclusiveBuffering)
+		VulkanRasterizer::VulkanRasterizer(const std::shared_ptr<VulkanDevice>& pDevice, Camera& camera, uint32_t frameCount, std::vector<Core::AttachmentDescription>&& attachmentDescriptions, Core::Multisample multisample /*= Multisample::One*/, bool exclusiveBuffering /*= false*/)
+			: Rasterizer(pDevice, camera, frameCount, std::move(attachmentDescriptions), multisample, exclusiveBuffering)
 		{
 			// Create the attachments.
 			createAttachments();
@@ -39,7 +39,7 @@ namespace Flint
 		void VulkanRasterizer::terminate()
 		{
 			// Wait idle to finish everything we have prior to this.
-			getDevice().waitIdle();
+			getDevice().as<VulkanDevice>()->waitIdle();
 
 			// Destroy the command buffer.
 			m_pCommandBuffers.reset();
@@ -97,7 +97,7 @@ namespace Flint
 		void VulkanRasterizer::updateExtent()
 		{
 			// Wait idle to finish everything we have prior to this.
-			getDevice().waitIdle();
+			getDevice().as<VulkanDevice>()->waitIdle();
 
 			// Destroy the previous attachments.
 			m_pAttachments.clear();
@@ -271,12 +271,12 @@ namespace Flint
 			renderPassCreateInfo.dependencyCount = 2;
 			renderPassCreateInfo.pDependencies = subpassDependencies.data();
 
-			FLINT_VK_ASSERT(getDevice().getDeviceTable().vkCreateRenderPass(getDevice().getLogicalDevice(), &renderPassCreateInfo, nullptr, &m_RenderPass), "Failed to create render pass!");
+			FLINT_VK_ASSERT(getDevice().as<VulkanDevice>()->getDeviceTable().vkCreateRenderPass(getDevice().as<VulkanDevice>()->getLogicalDevice(), &renderPassCreateInfo, nullptr, &m_RenderPass), "Failed to create render pass!");
 		}
 
 		void VulkanRasterizer::destroyRenderPass()
 		{
-			getDevice().getDeviceTable().vkDestroyRenderPass(getDevice().getLogicalDevice(), m_RenderPass, nullptr);
+			getDevice().as<VulkanDevice>()->getDeviceTable().vkDestroyRenderPass(getDevice().as<VulkanDevice>()->getLogicalDevice(), m_RenderPass, nullptr);
 		}
 
 		void VulkanRasterizer::createFramebuffers()
@@ -303,14 +303,14 @@ namespace Flint
 				frameBufferCreateInfo.attachmentCount = static_cast<uint32_t>(imageViews.size());
 				frameBufferCreateInfo.pAttachments = imageViews.data();
 
-				FLINT_VK_ASSERT(getDevice().getDeviceTable().vkCreateFramebuffer(getDevice().getLogicalDevice(), &frameBufferCreateInfo, nullptr, &m_Framebuffers[i]), "Failed to create the frame buffer!");
+				FLINT_VK_ASSERT(getDevice().as<VulkanDevice>()->getDeviceTable().vkCreateFramebuffer(getDevice().as<VulkanDevice>()->getLogicalDevice(), &frameBufferCreateInfo, nullptr, &m_Framebuffers[i]), "Failed to create the frame buffer!");
 			}
 		}
 
 		void VulkanRasterizer::destroyFramebuffers()
 		{
 			for (const auto framebuffer : m_Framebuffers)
-				getDevice().getDeviceTable().vkDestroyFramebuffer(getDevice().getLogicalDevice(), framebuffer, nullptr);
+				getDevice().as<VulkanDevice>()->getDeviceTable().vkDestroyFramebuffer(getDevice().as<VulkanDevice>()->getLogicalDevice(), framebuffer, nullptr);
 		}
 	}
 }

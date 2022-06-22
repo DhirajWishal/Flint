@@ -279,10 +279,10 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanRasterizingPipeline::VulkanRasterizingPipeline(VulkanDevice& device, VulkanRasterizer& rasterizer, const Core::RasterizingPipelineSpecification& specification)
-			: RasterizingPipeline(device, rasterizer, specification)
-			, VulkanPipeline(device, specification.m_CacheFile)
-			, VulkanDescriptorSetManager(device, rasterizer.getFrameCount())
+		VulkanRasterizingPipeline::VulkanRasterizingPipeline(const std::shared_ptr<VulkanDevice>& pDevice, VulkanRasterizer& rasterizer, const Core::RasterizingPipelineSpecification& specification)
+			: RasterizingPipeline(pDevice, rasterizer, specification)
+			, VulkanPipeline(pDevice, specification.m_CacheFile)
+			, VulkanDescriptorSetManager(pDevice, rasterizer.getFrameCount())
 		{
 			// Resolve shader information.
 			std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
@@ -323,7 +323,7 @@ namespace Flint
 
 		void VulkanRasterizingPipeline::recreate()
 		{
-			getDevice().getDeviceTable().vkDestroyPipeline(getDevice().getLogicalDevice(), m_Pipeline, nullptr);
+			getDevice().as<VulkanDevice>()->getDeviceTable().vkDestroyPipeline(getDevice().as<VulkanDevice>()->getLogicalDevice(), m_Pipeline, nullptr);
 			createPipeline();
 		}
 
@@ -362,7 +362,7 @@ namespace Flint
 		//	createInfo.pCode = code.getCode().data();
 		//
 		//	VkShaderModule shaderModule = VK_NULL_HANDLE;
-		//	FLINT_VK_ASSERT(getDevice().getDeviceTable().vkCreateShaderModule(getDevice().getLogicalDevice(), &createInfo, nullptr, &shaderModule), "Failed to create the shader module!");
+		//	FLINT_VK_ASSERT(getDevice().as<VulkanDevice>()->getDeviceTable().vkCreateShaderModule(getDevice().as<VulkanDevice>()->getLogicalDevice(), &createInfo, nullptr, &shaderModule), "Failed to create the shader module!");
 		//
 		//	// Create the shader stage info.
 		//	auto& stageInfo = m_ShaderStageCreateInfo.emplace_back();
@@ -386,7 +386,7 @@ namespace Flint
 			createInfo.setLayoutCount = 1;
 			createInfo.pSetLayouts = &m_DescriptorSetLayout;
 
-			FLINT_VK_ASSERT(getDevice().getDeviceTable().vkCreatePipelineLayout(getDevice().getLogicalDevice(), &createInfo, nullptr, &m_PipelineLayout), "Failed to create the pipeline layout!");
+			FLINT_VK_ASSERT(getDevice().as<VulkanDevice>()->getDeviceTable().vkCreatePipelineLayout(getDevice().as<VulkanDevice>()->getLogicalDevice(), &createInfo, nullptr, &m_PipelineLayout), "Failed to create the pipeline layout!");
 		}
 
 		void VulkanRasterizingPipeline::setupDefaults(const Core::RasterizingPipelineSpecification& specification)
@@ -538,13 +538,13 @@ namespace Flint
 			createInfo.basePipelineHandle = VK_NULL_HANDLE;
 			createInfo.basePipelineIndex = 0;
 
-			FLINT_VK_ASSERT(getDevice().getDeviceTable().vkCreateGraphicsPipelines(getDevice().getLogicalDevice(), m_PipelineCache, 1, &createInfo, nullptr, &m_Pipeline), "Failed to create the pipeline!");
+			FLINT_VK_ASSERT(getDevice().as<VulkanDevice>()->getDeviceTable().vkCreateGraphicsPipelines(getDevice().as<VulkanDevice>()->getLogicalDevice(), m_PipelineCache, 1, &createInfo, nullptr, &m_Pipeline), "Failed to create the pipeline!");
 		}
 
 		void VulkanRasterizingPipeline::destroyShaders()
 		{
 			for (const auto& shaders : m_ShaderStageCreateInfo)
-				getDevice().getDeviceTable().vkDestroyShaderModule(getDevice().getLogicalDevice(), shaders.module, nullptr);
+				getDevice().as<VulkanDevice>()->getDeviceTable().vkDestroyShaderModule(getDevice().as<VulkanDevice>()->getLogicalDevice(), shaders.module, nullptr);
 		}
 	}
 }

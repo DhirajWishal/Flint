@@ -7,8 +7,8 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanVertexStorage::VulkanVertexStorage(VulkanDevice& device)
-			: VertexStorage(device)
+		VulkanVertexStorage::VulkanVertexStorage(const std::shared_ptr<VulkanDevice>& pDevice)
+			: VertexStorage(pDevice)
 		{
 			validate();
 		}

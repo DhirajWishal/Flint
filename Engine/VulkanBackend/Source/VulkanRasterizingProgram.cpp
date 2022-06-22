@@ -88,8 +88,8 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanRasterizingProgram::VulkanRasterizingProgram(VulkanDevice& device, std::filesystem::path&& vertexShader, std::filesystem::path&& fragmetShader)
-			: RasterizingProgram(device, std::move(vertexShader), std::move(fragmetShader))
+		VulkanRasterizingProgram::VulkanRasterizingProgram(const std::shared_ptr<VulkanDevice>& pDevice, std::filesystem::path&& vertexShader, std::filesystem::path&& fragmetShader)
+			: RasterizingProgram(pDevice, std::move(vertexShader), std::move(fragmetShader))
 		{
 			std::unordered_map<uint32_t, std::vector<VkDescriptorSetLayoutBinding>> layoutBindings;
 			std::vector<VkDescriptorPoolSize> poolSizes;
@@ -114,10 +114,10 @@ namespace Flint
 		void VulkanRasterizingProgram::terminate()
 		{
 			if (m_VertexShaderModule)
-				getDevice().getDeviceTable().vkDestroyShaderModule(getDevice().getLogicalDevice(), m_VertexShaderModule, nullptr);
+				getDevice().as<VulkanDevice>()->getDeviceTable().vkDestroyShaderModule(getDevice().as<VulkanDevice>()->getLogicalDevice(), m_VertexShaderModule, nullptr);
 
 			if (m_FragmentShaderModule)
-				getDevice().getDeviceTable().vkDestroyShaderModule(getDevice().getLogicalDevice(), m_FragmentShaderModule, nullptr);
+				getDevice().as<VulkanDevice>()->getDeviceTable().vkDestroyShaderModule(getDevice().as<VulkanDevice>()->getLogicalDevice(), m_FragmentShaderModule, nullptr);
 
 			invalidate();
 		}
@@ -219,7 +219,7 @@ namespace Flint
 			createInfo.pCode = shaderCode.data();
 
 			VkShaderModule shaderModule = VK_NULL_HANDLE;
-			FLINT_VK_ASSERT(getDevice().getDeviceTable().vkCreateShaderModule(getDevice().getLogicalDevice(), &createInfo, nullptr, &shaderModule), "Failed to create the shader module!");
+			FLINT_VK_ASSERT(getDevice().as<VulkanDevice>()->getDeviceTable().vkCreateShaderModule(getDevice().as<VulkanDevice>()->getLogicalDevice(), &createInfo, nullptr, &shaderModule), "Failed to create the shader module!");
 
 			return shaderModule;
 		}

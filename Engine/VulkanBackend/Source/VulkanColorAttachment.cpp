@@ -8,8 +8,8 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanColorAttachment::VulkanColorAttachment(VulkanDevice& device, uint32_t width, uint32_t height, Core::PixelFormat format, Core::Multisample multisample)
-			: VulkanRenderTargetAttachment(device, width, height, Core::AttachmentType::Color, format, multisample)
+		VulkanColorAttachment::VulkanColorAttachment(const std::shared_ptr<VulkanDevice>& pDevice, uint32_t width, uint32_t height, Core::PixelFormat format, Core::Multisample multisample)
+			: VulkanRenderTargetAttachment(pDevice, width, height, Core::AttachmentType::Color, format, multisample)
 		{
 			// Create the image.
 			createImage(VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_IMAGE_TILING_OPTIMAL);

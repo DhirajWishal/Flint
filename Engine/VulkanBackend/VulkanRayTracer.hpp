@@ -15,17 +15,17 @@ namespace Flint
 		 * Vulkan ray tracer class.
 		 * This object is used to perform ray tracing.
 		 */
-		class VulkanRayTracer final : public Core::RayTracer<VulkanDevice, VulkanRenderTargetAttachment>
+		class VulkanRayTracer final : public Core::RayTracer
 		{
 		public:
 			/**
 			 * Explicit constructor.
 			 *
-			 * @param device The device reference.
+			 * @param pDevice The device reference.
 			 * @param camera The camera reference.
 			 * @param frameCount The number of frames to record.
 			 */
-			explicit VulkanRayTracer(VulkanDevice& device, Camera& camera, uint32_t frameCount);
+			explicit VulkanRayTracer(const std::shared_ptr<VulkanDevice>& pDevice, Camera& camera, uint32_t frameCount);
 
 			/**
 			 * Destructor.

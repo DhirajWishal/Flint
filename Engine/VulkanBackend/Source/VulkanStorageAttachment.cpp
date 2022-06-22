@@ -8,8 +8,8 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanStorageAttachment::VulkanStorageAttachment(VulkanDevice& device, uint32_t width, uint32_t height, Core::PixelFormat format)
-			: VulkanRenderTargetAttachment(device, width, height, Core::AttachmentType::Color, format, Core::Multisample::One)
+		VulkanStorageAttachment::VulkanStorageAttachment(const std::shared_ptr<VulkanDevice>& pDevice, uint32_t width, uint32_t height, Core::PixelFormat format)
+			: VulkanRenderTargetAttachment(pDevice, width, height, Core::AttachmentType::Color, format, Core::Multisample::One)
 		{
 			// Create the image.
 			createImage(VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_TILING_OPTIMAL);

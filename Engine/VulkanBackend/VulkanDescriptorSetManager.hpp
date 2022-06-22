@@ -48,7 +48,7 @@ namespace Flint
 			 *
 			 * @param device The device to which the manager is bound to.
 			 */
-			explicit VulkanDescriptorSetManager(VulkanDevice& device, uint8_t frameCount);
+			explicit VulkanDescriptorSetManager(const std::shared_ptr<VulkanDevice>& pDevice, uint8_t frameCount);
 
 			/**
 			 * Destructor.
@@ -90,7 +90,7 @@ namespace Flint
 			VkDescriptorPool m_DescriptorPool = VK_NULL_HANDLE;
 
 		private:
-			VulkanDevice& m_Device;
+			std::shared_ptr<VulkanDevice> m_pDevice = nullptr;
 			const uint8_t m_FrameCount = 0;
 		};
 	}

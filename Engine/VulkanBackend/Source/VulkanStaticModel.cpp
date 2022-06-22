@@ -8,9 +8,9 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanStaticModel::VulkanStaticModel(VulkanDevice& device, std::filesystem::path&& assetFile)
-			: StaticModel(device, std::move(assetFile))
-			, m_VertexStorage(device)
+		VulkanStaticModel::VulkanStaticModel(const std::shared_ptr<VulkanDevice>& pDevice, std::filesystem::path&& assetFile)
+			: StaticModel(pDevice, std::move(assetFile))
+			, m_VertexStorage(pDevice)
 		{
 			// Make sure to set the object as valid.
 			validate();

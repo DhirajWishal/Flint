@@ -15,7 +15,7 @@ namespace Flint
 		/**
 		 * Vulkan rasterizing program class.
 		 */
-		class VulkanRasterizingProgram final : public Core::RasterizingProgram<VulkanDevice>
+		class VulkanRasterizingProgram final : public Core::RasterizingProgram
 		{
 			/**
 			 * Vertex shader input structure.
@@ -31,11 +31,11 @@ namespace Flint
 			/**
 			 * Explicit constructor.
 			 *
-			 * @param device The device to which the program is bound to.
+			 * @param pDevice The device to which the program is bound to.
 			 * @param vertexShader The vertex shader source file.
 			 * @param fragmentShader The fragment shader source file.
 			 */
-			explicit VulkanRasterizingProgram(VulkanDevice& device, std::filesystem::path&& vertexShader, std::filesystem::path&& fragmetShader);
+			explicit VulkanRasterizingProgram(const std::shared_ptr<VulkanDevice>& pDevice, std::filesystem::path&& vertexShader, std::filesystem::path&& fragmetShader);
 
 			/**
 			 * Destructor.

@@ -8,8 +8,8 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanRayTracer::VulkanRayTracer(VulkanDevice& device, Camera& camera, uint32_t frameCount)
-			: Core::RayTracer<VulkanDevice, VulkanRenderTargetAttachment>(device, camera, frameCount, { Core::Defaults::ColorAttachmentDescription })
+		VulkanRayTracer::VulkanRayTracer(const std::shared_ptr<VulkanDevice>& pDevice, Camera& camera, uint32_t frameCount)
+			: Core::RayTracer(pDevice, camera, frameCount, { Core::Defaults::ColorAttachmentDescription })
 		{
 			// Setup the attachments.
 			createAttachments();

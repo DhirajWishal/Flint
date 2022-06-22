@@ -21,10 +21,10 @@ namespace Flint
 			/**
 			 * Explicit constructor.
 			 *
-			 * @param device The Vulkan engine.
+			 * @param pDevice The Vulkan engine.
 			 * @param cacheFile The cache file name.
 			 */
-			explicit VulkanPipeline(VulkanDevice& device, const std::filesystem::path& cacheFile);
+			explicit VulkanPipeline(const std::shared_ptr<VulkanDevice>& pDevice, const std::filesystem::path& cacheFile);
 
 			/**
 			 * Virtual destructor.
@@ -61,7 +61,7 @@ namespace Flint
 		private:
 			std::filesystem::path m_CacheFile;
 
-			VulkanDevice& m_Device;
+			std::shared_ptr<VulkanDevice> m_pDevice = nullptr;
 
 		protected:
 			VkPipeline m_Pipeline = VK_NULL_HANDLE;

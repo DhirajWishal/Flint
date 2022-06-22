@@ -19,12 +19,12 @@ namespace Flint
 			/**
 			 * Explicit constructor.
 			 *
-			 * @param device The device reference.
+			 * @param pDevice The device reference.
 			 * @param width The width of the attachment.
 			 * @param height The height of the attachment.
 			 * @param format The format of the attachment.
 			 */
-			explicit VulkanStorageAttachment(VulkanDevice& device, uint32_t width, uint32_t height, Core::PixelFormat format);
+			explicit VulkanStorageAttachment(const std::shared_ptr<VulkanDevice>& pDevice, uint32_t width, uint32_t height, Core::PixelFormat format);
 
 			/**
 			 * Destructor.

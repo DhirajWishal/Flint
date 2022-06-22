@@ -122,8 +122,8 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanDevice::VulkanDevice(VulkanInstance& instance)
-			: Device(instance)
+		VulkanDevice::VulkanDevice(const std::shared_ptr<VulkanInstance>& pInstance)
+			: Device(pInstance)
 		{
 			// Select a physical device.
 			selectPhysicalDevice();
@@ -135,7 +135,7 @@ namespace Flint
 			createVMAAllocator();
 
 			// Create the defaults.
-			m_pUtilityCommandBuffer = new VulkanCommandBuffers(*this);
+			m_pUtilityCommandBuffer = new VulkanCommandBuffers(shared_from_this());
 
 			// Make sure to set the object as valid.
 			validate();
@@ -170,7 +170,7 @@ namespace Flint
 
 		Flint::Core::PixelFormat VulkanDevice::getBestDepthFormat() const
 		{
-			return Utility::GetPixelFormat(Utility::FindDepthFormat(*this));
+			return Utility::GetPixelFormat(Utility::FindDepthFormat(this));
 		}
 
 		Flint::Core::Multisample VulkanDevice::getMaximumMultisample() const
@@ -200,14 +200,14 @@ namespace Flint
 
 			// Enumerate physical devices.
 			uint32_t deviceCount = 0;
-			FLINT_VK_ASSERT(vkEnumeratePhysicalDevices(getInstance().getInstance(), &deviceCount, nullptr), "Failed to enumerate physical devices.");
+			FLINT_VK_ASSERT(vkEnumeratePhysicalDevices(getInstance().as<VulkanInstance>()->getInstance(), &deviceCount, nullptr), "Failed to enumerate physical devices.");
 
 			// Throw an error if there are no physical devices available.
 			if (deviceCount == 0)
 				throw BackendError("No physical devices found!");
 
 			std::vector<VkPhysicalDevice> candidates(deviceCount);
-			FLINT_VK_ASSERT(vkEnumeratePhysicalDevices(getInstance().getInstance(), &deviceCount, candidates.data()), "Failed to enumerate physical devices.");
+			FLINT_VK_ASSERT(vkEnumeratePhysicalDevices(getInstance().as<VulkanInstance>()->getInstance(), &deviceCount, candidates.data()), "Failed to enumerate physical devices.");
 
 			struct Candidate { VkPhysicalDeviceProperties m_Properties; VkPhysicalDevice m_Candidate; };
 			std::array<Candidate, 6> priorityMap = { Candidate() };
@@ -324,11 +324,11 @@ namespace Flint
 			deviceCreateInfo.ppEnabledExtensionNames = m_DeviceExtensions.data();
 			deviceCreateInfo.pEnabledFeatures = &features;
 
-			if (getInstance().isValidationEnabled())
+			if (getInstance().as<VulkanInstance>()->isValidationEnabled())
 			{
 				// Get the validation layers and initialize it.
-				deviceCreateInfo.enabledLayerCount = static_cast<uint32_t>(getInstance().getValidationLayers().size());
-				deviceCreateInfo.ppEnabledLayerNames = getInstance().getValidationLayers().data();
+				deviceCreateInfo.enabledLayerCount = static_cast<uint32_t>(getInstance().as<VulkanInstance>()->getValidationLayers().size());
+				deviceCreateInfo.ppEnabledLayerNames = getInstance().as<VulkanInstance>()->getValidationLayers().data();
 			}
 
 			// Create the device.
@@ -385,7 +385,7 @@ namespace Flint
 			createInfo.physicalDevice = m_PhysicalDevice;
 			createInfo.device = m_LogicalDevice;
 			createInfo.pVulkanFunctions = &functions;
-			createInfo.instance = getInstance().getInstance();
+			createInfo.instance = getInstance().as<VulkanInstance>()->getInstance();
 			createInfo.vulkanApiVersion = VulkanVersion;
 
 			// Create the allocator.
@@ -520,12 +520,12 @@ namespace Flint
 				}
 			}
 
-			VkFormat FindSupportedFormat(const VulkanDevice& device, const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features)
+			VkFormat FindSupportedFormat(const VulkanDevice* pDevice, const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features)
 			{
 				for (VkFormat format : candidates)
 				{
 					VkFormatProperties props = {};
-					vkGetPhysicalDeviceFormatProperties(device.getPhysicalDevice(), format, &props);
+					vkGetPhysicalDeviceFormatProperties(pDevice->getPhysicalDevice(), format, &props);
 
 					if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features)
 						return format;
@@ -542,10 +542,10 @@ namespace Flint
 				return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT;
 			}
 
-			VkFormat FindDepthFormat(const VulkanDevice& device)
+			VkFormat FindDepthFormat(const VulkanDevice* pDevice)
 			{
 				return FindSupportedFormat(
-					device,
+					pDevice,
 					{ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
 					VK_IMAGE_TILING_OPTIMAL,
 					VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT

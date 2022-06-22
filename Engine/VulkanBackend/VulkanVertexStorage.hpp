@@ -15,15 +15,15 @@ namespace Flint
 		/**
 		 * Vulkan vertex storage class.
 		 */
-		class VulkanVertexStorage final : public Core::VertexStorage<VulkanDevice>
+		class VulkanVertexStorage final : public Core::VertexStorage
 		{
 		public:
 			/**
 			 * Explicit constructor.
 			 *
-			 * @param device The device reference.
+			 * @param pDevice The device reference.
 			 */
-			explicit VulkanVertexStorage(VulkanDevice& device);
+			explicit VulkanVertexStorage(const std::shared_ptr<VulkanDevice>& pDevice);
 
 			/**
 			 * Destructor.
