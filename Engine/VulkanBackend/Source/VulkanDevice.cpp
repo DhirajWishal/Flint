@@ -8,6 +8,7 @@
 #include "VulkanBackend/VulkanRasterizer.hpp"
 #include "VulkanBackend/VulkanRayTracer.hpp"
 #include "VulkanBackend/VulkanWindow.hpp"
+#include "VulkanBackend/VulkanRasterizingProgram.hpp"
 
 #include <set>
 #include <array>
@@ -165,6 +166,11 @@ namespace Flint
 		std::shared_ptr<Flint::Window> VulkanDevice::createWindow(std::string&& title, uint32_t width /*= -1*/, uint32_t height /*= -1*/)
 		{
 			return std::make_shared<VulkanWindow>(shared_from_this(), std::move(title), width, height);
+		}
+
+		std::shared_ptr<Flint::RasterizingProgram> VulkanDevice::createRasterizingProgram(ShaderCode&& vertexShader, ShaderCode&& fragementShader)
+		{
+			return std::make_shared<VulkanRasterizingProgram>(shared_from_this(), std::move(vertexShader), std::move(fragementShader));
 		}
 
 		void VulkanDevice::terminate()

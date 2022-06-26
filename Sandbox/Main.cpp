@@ -4,11 +4,12 @@
 #include "Core/EventSystem/EventSystem.hpp"
 #include "Core/Camera/MonoCamera.hpp"
 #include "Engine/Utility/FrameTimer.hpp"
-#include "Engine/Engine.hpp"
+#include "Engine/Flint.hpp"
 
 #include "Core/Window.hpp"
 #include "Core/Rasterizer.hpp"
 #include "Core/RayTracer.hpp"
+#include "Core/RasterizingProgram.hpp"
 
 #ifdef FLINT_DEBUG
 constexpr auto Validation = true;
@@ -34,7 +35,7 @@ int main()
 	auto camera = Flint::MonoCamera(glm::vec3(0.0f), 1280, 720);
 	camera.m_MovementBias = 50;
 
-	//auto program = Flint::Backend::RasterizingProgram(device, "Shaders/Debugging/vert.spv", "Shaders/Debugging/frag.spv");
+	auto program = device->createRasterizingProgram(Flint::ShaderCode("Shaders/Debugging/vert.spv"), Flint::ShaderCode("Shaders/Debugging/frag.spv"));
 	auto window = device->createWindow("Sandbox");
 	auto rasterizer = device->createRasterizer(camera, window->getFrameCount(), { Flint::Defaults::ColorAttachmentDescription, Flint::Defaults::DepthAttachmentDescription });
 	auto rayTracer = device->createRayTracer(camera, window->getFrameCount());
@@ -50,16 +51,16 @@ int main()
 
 		if (events == Flint::EventType::Keyboard)
 		{
-			if (g_EventSystem.keyboard().m_KeyW)
+			if (g_EventSystem.getKeyboard().m_KeyW)
 				camera.moveForward(duration.count());
 
-			if (g_EventSystem.keyboard().m_KeyS)
+			if (g_EventSystem.getKeyboard().m_KeyS)
 				camera.moveBackward(duration.count());
 
-			if (g_EventSystem.keyboard().m_KeyA)
+			if (g_EventSystem.getKeyboard().m_KeyA)
 				camera.moveLeft(duration.count());
 
-			if (g_EventSystem.keyboard().m_KeyD)
+			if (g_EventSystem.getKeyboard().m_KeyD)
 				camera.moveRight(duration.count());
 		}
 
@@ -74,7 +75,7 @@ int main()
 
 	rayTracer->terminate();
 	rasterizer->terminate();
-	//program.terminate();
+	program->terminate();
 
 	window->terminate();
 

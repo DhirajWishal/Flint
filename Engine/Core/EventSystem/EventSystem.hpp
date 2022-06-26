@@ -45,14 +45,14 @@ namespace Flint
 		 *
 		 * @return The keyboard.
 		 */
-		[[nodiscard]] const Keyboard& keyboard() const { return m_Keyboard; }
+		[[nodiscard]] const Keyboard& getKeyboard() const { return m_Keyboard; }
 
 		/**
 		 * Get the mouse from the system.
 		 *
 		 * @return The mouse.
 		 */
-		[[nodiscard]] const Mouse& mouse() const { return m_Mouse; }
+		[[nodiscard]] const Mouse& getMouse() const { return m_Mouse; }
 
 		/**
 		 * Check if the application should close.

@@ -32,10 +32,10 @@ namespace Flint
 			 * Explicit constructor.
 			 *
 			 * @param pDevice The device to which the program is bound to.
-			 * @param vertexShader The vertex shader source file.
-			 * @param fragmentShader The fragment shader source file.
+			 * @param vertexShader The vertex shader source.
+			 * @param fragmentShader The fragment shader source.
 			 */
-			explicit VulkanRasterizingProgram(const std::shared_ptr<VulkanDevice>& pDevice, std::filesystem::path&& vertexShader, std::filesystem::path&& fragmetShader);
+			explicit VulkanRasterizingProgram(const std::shared_ptr<VulkanDevice>& pDevice, ShaderCode&& vertexShader, ShaderCode&& fragmetShader);
 
 			/**
 			 * Destructor.
@@ -51,14 +51,14 @@ namespace Flint
 			/**
 			 * Create a shader module.
 			 *
-			 * @param shaderPath The shader source path.
+			 * @param shader The shader source.
 			 * @param stageFlags The shader stage flags.
 			 * @param bindingMap The layout binding map.
 			 * @param poolSizes The pool sizes.
 			 * @param pushConstants The shader push constants.
 			 * @return The created shader module.
 			 */
-			[[nodiscard]] VkShaderModule createShaderModule(const std::filesystem::path& shaderPath, VkShaderStageFlags stageFlags, std::unordered_map<uint32_t, std::vector<VkDescriptorSetLayoutBinding>>& bindingMap, std::vector<VkDescriptorPoolSize>& poolSizes, std::vector<VkPushConstantRange>& pushConstants);
+			[[nodiscard]] VkShaderModule createShaderModule(const ShaderCode& shader, VkShaderStageFlags stageFlags, std::unordered_map<uint32_t, std::vector<VkDescriptorSetLayoutBinding>>& bindingMap, std::vector<VkDescriptorPoolSize>& poolSizes, std::vector<VkPushConstantRange>& pushConstants);
 
 		private:
 			SparseArray<VkDescriptorSet> m_DescriptorSets;

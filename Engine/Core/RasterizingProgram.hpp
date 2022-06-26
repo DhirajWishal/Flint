@@ -4,6 +4,7 @@
 #pragma once
 
 #include "Program.hpp"
+#include "ShaderCode.hpp"
 
 namespace Flint
 {
@@ -18,10 +19,10 @@ namespace Flint
 		 * Explicit constructor.
 		 *
 		 * @param pDevice The device to which the program is bound to.
-		 * @param vertexShader The vertex shader source file.
-		 * @param fragmentShader The fragment shader source file.
+		 * @param vertexShader The vertex shader source.
+		 * @param fragmentShader The fragment shader source.
 		 */
-		explicit RasterizingProgram(const std::shared_ptr<Device>& pDevice, std::filesystem::path&& vertexShader, std::filesystem::path&& fragementShader)
+		explicit RasterizingProgram(const std::shared_ptr<Device>& pDevice, ShaderCode&& vertexShader, ShaderCode&& fragementShader)
 			: Program(pDevice), m_VertexShader(std::move(vertexShader)), m_FragmentShader(std::move(fragementShader)) {}
 
 		/**
@@ -34,17 +35,17 @@ namespace Flint
 		 *
 		 * @return The shader path.
 		 */
-		[[nodsicard]] const std::filesystem::path& getVertexShaderPath() const { return m_VertexShader; }
+		[[nodsicard]] const ShaderCode& getVertexShaderPath() const { return m_VertexShader; }
 
 		/**
 		 * Get the fragment shader path.
 		 *
 		 * @return The shader path.
 		 */
-		[[nodsicard]] const std::filesystem::path& getFragmentShaderPath() const { return m_FragmentShader; }
+		[[nodsicard]] const ShaderCode& getFragmentShaderPath() const { return m_FragmentShader; }
 
 	protected:
-		std::filesystem::path m_VertexShader;
-		std::filesystem::path m_FragmentShader;
+		ShaderCode m_VertexShader;
+		ShaderCode m_FragmentShader;
 	};
 }

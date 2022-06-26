@@ -147,7 +147,6 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Engine)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/Sandbox)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/Engine/Core)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/Engine/Engine)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/Engine/Foliage)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/Engine/VulkanBackend)
 
 # Set the startup project for Visual Studio and set multi processor compilation for other projects that we build.

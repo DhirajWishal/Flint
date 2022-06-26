@@ -86,6 +86,15 @@ namespace Flint
 			[[nodiscard]] std::shared_ptr<Window> createWindow(std::string&& title, uint32_t width = -1, uint32_t height = -1) override;
 
 			/**
+			 * Create a new rasterizing program.
+			 *
+			 * @param vertexShader The vertex shader code.
+			 * @param fragmentShader The fragment shader code.
+			 * @return The rasterizing program pointer.
+			 */
+			[[nodiscard]] std::shared_ptr<RasterizingProgram> createRasterizingProgram(ShaderCode&& vertexShader, ShaderCode&& fragementShader) override;
+
+			/**
 			 * Terminate the object.
 			 */
 			void terminate() override;

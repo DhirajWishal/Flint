@@ -5,11 +5,9 @@
 
 #include "Instance.hpp"
 #include "Types.hpp"
+#include "ShaderCode.hpp"
 
 #include "Camera/Camera.hpp"
-
-#include <vector>
-#include <filesystem>
 
 namespace Flint
 {
@@ -17,6 +15,7 @@ namespace Flint
 	class Rasterizer;
 	class RayTracer;
 	class Window;
+	class RasterizingProgram;
 
 	/**
 	 * Device class.
@@ -84,6 +83,15 @@ namespace Flint
 		 * @return The window pointer.
 		 */
 		[[nodiscard]] virtual std::shared_ptr<Window> createWindow(std::string&& title, uint32_t width = -1, uint32_t height = -1) = 0;
+
+		/**
+		 * Create a new rasterizing program.
+		 *
+		 * @param vertexShader The vertex shader code.
+		 * @param fragmentShader The fragment shader code.
+		 * @return The rasterizing program pointer.
+		 */
+		[[nodiscard]] virtual std::shared_ptr<RasterizingProgram> createRasterizingProgram(ShaderCode&& vertexShader, ShaderCode&& fragementShader) = 0;
 
 		/**
 		 * Get the best depth pixel format.

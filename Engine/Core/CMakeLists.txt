@@ -17,6 +17,7 @@ add_library(
 	"Source/Camera/MonoCamera.cpp"
 
 	"Source/StaticInitializer.cpp"
+	"Source/ShaderCode.cpp"
 		
 	"Source/EventSystem/EventSystem.cpp"
 
@@ -44,6 +45,7 @@ add_library(
 	"ComputePipeline.hpp"
 	"VertexStorage.hpp"
 	"CommandBuffers.hpp"
+	"ShaderCode.hpp"
 	
 	"Errors/AssetError.hpp"
 	"Errors/BackendError.hpp" 

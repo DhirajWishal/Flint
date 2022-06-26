@@ -13,14 +13,13 @@ add_library(
 	FlintEngine
 	STATIC
 
-	"Source/Engine.cpp"
+	"Source/Flint.cpp"
 
 	"Source/Utility/FrameTimer.cpp"
 
 	"Source/ShaderFactory/ShaderBuilder.cpp"
 
-	"Engine.hpp"
-	"Scene.hpp"
+	"Flint.hpp"
 
 	"Utility/FrameTimer.hpp"
 

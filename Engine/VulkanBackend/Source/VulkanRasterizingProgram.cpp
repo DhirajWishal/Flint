@@ -7,8 +7,6 @@
 #include <spirv_reflect.h>
 #include <spdlog/spdlog.h>
 
-#include <fstream>
-
 namespace /* anonymous */
 {
 	/**
@@ -88,7 +86,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanRasterizingProgram::VulkanRasterizingProgram(const std::shared_ptr<VulkanDevice>& pDevice, std::filesystem::path&& vertexShader, std::filesystem::path&& fragmetShader)
+		VulkanRasterizingProgram::VulkanRasterizingProgram(const std::shared_ptr<VulkanDevice>& pDevice, ShaderCode&& vertexShader, ShaderCode&& fragmetShader)
 			: RasterizingProgram(pDevice, std::move(vertexShader), std::move(fragmetShader))
 		{
 			std::unordered_map<uint32_t, std::vector<VkDescriptorSetLayoutBinding>> layoutBindings;
@@ -122,22 +120,9 @@ namespace Flint
 			invalidate();
 		}
 
-		VkShaderModule VulkanRasterizingProgram::createShaderModule(const std::filesystem::path& shaderPath, VkShaderStageFlags stageFlags, std::unordered_map<uint32_t, std::vector<VkDescriptorSetLayoutBinding>>& bindingMap, std::vector<VkDescriptorPoolSize>& poolSizes, std::vector<VkPushConstantRange>& pushConstants)
+		VkShaderModule VulkanRasterizingProgram::createShaderModule(const ShaderCode& shader, VkShaderStageFlags stageFlags, std::unordered_map<uint32_t, std::vector<VkDescriptorSetLayoutBinding>>& bindingMap, std::vector<VkDescriptorPoolSize>& poolSizes, std::vector<VkPushConstantRange>& pushConstants)
 		{
-			// Load the shader code and perform reflection over it.
-			std::fstream shaderSource = std::fstream(shaderPath, std::ios::binary | std::ios::in | std::ios::ate);
-
-			// Validate the shader file.
-			if (!shaderSource.is_open())
-				throw BackendError("Failed to load the shader file!");
-
-			const auto shaderSize = shaderSource.tellg();
-			shaderSource.seekg(0);
-
-			// Load the shader's content.
-			std::vector<uint32_t> shaderCode(shaderSize);
-			shaderSource.read(reinterpret_cast<char*>(shaderCode.data()), shaderSize);
-			shaderSource.close();
+			const auto& shaderCode = shader.get();
 
 			// Prepare the shader code for reflection.
 			const auto reflectionSource = std::vector<uint32_t>(shaderCode.begin(), shaderCode.begin() + (shaderCode.size() / 4));
@@ -215,7 +200,7 @@ namespace Flint
 			createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
 			createInfo.flags = 0;
 			createInfo.pNext = nullptr;
-			createInfo.codeSize = shaderSize;
+			createInfo.codeSize = shader.getSize();
 			createInfo.pCode = shaderCode.data();
 
 			VkShaderModule shaderModule = VK_NULL_HANDLE;
