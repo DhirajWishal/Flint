@@ -15,7 +15,7 @@ namespace Flint
 		/**
 		 * Vulkan rasterizing program class.
 		 */
-		class VulkanRasterizingProgram final : public Core::RasterizingProgram
+		class VulkanRasterizingProgram final : public RasterizingProgram
 		{
 			/**
 			 * Vertex shader input structure.

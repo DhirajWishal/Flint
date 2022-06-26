@@ -28,7 +28,7 @@ namespace Flint
 		 * @param type The type of the input.
 		 * @param name The name of the input.
 		 */
-		void addInput(uint32_t location, Core::DataType type, std::string&& name);
+		void addInput(uint32_t location, DataType type, std::string&& name);
 
 		/**
 		 * Add a shader output to the builder.
@@ -37,7 +37,7 @@ namespace Flint
 		 * @param type The type of the output.
 		 * @param name The name of the output.
 		 */
-		void addOutput(uint32_t location, Core::DataType type, std::string&& name);
+		void addOutput(uint32_t location, DataType type, std::string&& name);
 
 		/**
 		 * Compile the shader code and get the SPIR-V data.

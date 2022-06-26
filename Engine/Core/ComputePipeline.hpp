@@ -7,22 +7,19 @@
 
 namespace Flint
 {
-	namespace Core
+	/**
+	 * Compute pipeline class.
+	 * This class is used to perform compute operations.
+	 */
+	class ComputePipeline : public Pipeline
 	{
-		/**
-		 * Compute pipeline class.
-		 * This class is used to perform compute operations.
-		 */
-		class ComputePipeline : public Pipeline
-		{
-		public:
-			// Using the same constructor as the super class.
-			using Pipeline::Pipeline;
+	public:
+		// Using the same constructor as the super class.
+		using Pipeline::Pipeline;
 
-			/**
-			 * Default virtual destructor.
-			 */
-			virtual ~ComputePipeline() = default;
-		};
-	}
+		/**
+		 * Default virtual destructor.
+		 */
+		virtual ~ComputePipeline() = default;
+	};
 }

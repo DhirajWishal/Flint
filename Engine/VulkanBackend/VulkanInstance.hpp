@@ -22,7 +22,7 @@ namespace Flint
 		 * Vulkan instance class.
 		 * This class contains the Vulkan instance and all it's related information.
 		 */
-		class VulkanInstance final : public std::enable_shared_from_this<VulkanInstance>, public Core::Instance
+		class VulkanInstance final : public std::enable_shared_from_this<VulkanInstance>, public Instance
 		{
 		public:
 			/**
@@ -44,7 +44,7 @@ namespace Flint
 			 *
 			 * @return The device pointer.
 			 */
-			[[nodiscard]] std::shared_ptr<Core::Device> createDevice() override;
+			[[nodiscard]] std::shared_ptr<Device> createDevice() override;
 
 			/**
 			 * Terminate the object.

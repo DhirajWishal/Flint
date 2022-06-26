@@ -14,30 +14,30 @@ namespace /* anonymous */
 	 * @param type The data type.
 	 * @return The string.
 	 */
-	[[nodiscard]] std::string DataTypeToString(Flint::Core::DataType type)
+	[[nodiscard]] std::string DataTypeToString(Flint::DataType type)
 	{
 		switch (type)
 		{
-		case Flint::Core::DataType::Float:
+		case Flint::DataType::Float:
 			return "float";
 
-		case Flint::Core::DataType::Vec2_8:
-		case Flint::Core::DataType::Vec2_16:
-		case Flint::Core::DataType::Vec2_32:
-		case Flint::Core::DataType::Vec2_64:
+		case Flint::DataType::Vec2_8:
+		case Flint::DataType::Vec2_16:
+		case Flint::DataType::Vec2_32:
+		case Flint::DataType::Vec2_64:
 			return "vec2";
 
-		case Flint::Core::DataType::Vec3_8:
-		case Flint::Core::DataType::Vec3_16:
-		case Flint::Core::DataType::Vec3_32:
-		case Flint::Core::DataType::Vec3_64:
+		case Flint::DataType::Vec3_8:
+		case Flint::DataType::Vec3_16:
+		case Flint::DataType::Vec3_32:
+		case Flint::DataType::Vec3_64:
 			return "vec3";
 
-		case Flint::Core::DataType::Vec4_8:
-		case Flint::Core::DataType::Vec4_16:
-		case Flint::Core::DataType::Vec4_32:
-		case Flint::Core::DataType::Vec4_64:
-		case Flint::Core::DataType::Max:
+		case Flint::DataType::Vec4_8:
+		case Flint::DataType::Vec4_16:
+		case Flint::DataType::Vec4_32:
+		case Flint::DataType::Vec4_64:
+		case Flint::DataType::Max:
 			return "vec4";
 
 		default:
@@ -48,12 +48,12 @@ namespace /* anonymous */
 
 namespace Flint
 {
-	void ShaderBuilder::addInput(uint32_t location, Core::DataType type, std::string&& name)
+	void ShaderBuilder::addInput(uint32_t location, DataType type, std::string&& name)
 	{
 		m_Inputs.emplace_back("layout(location = " + std::to_string(location) + ") in " + DataTypeToString(type) + name);
 	}
 
-	void ShaderBuilder::addOutput(uint32_t location, Core::DataType type, std::string&& name)
+	void ShaderBuilder::addOutput(uint32_t location, DataType type, std::string&& name)
 	{
 		m_Outputs.emplace_back("layout(location = " + std::to_string(location) + ") out " + DataTypeToString(type) + name);
 	}

@@ -12,7 +12,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanRasterizer::VulkanRasterizer(const std::shared_ptr<VulkanDevice>& pDevice, Camera& camera, uint32_t frameCount, std::vector<Core::AttachmentDescription>&& attachmentDescriptions, Core::Multisample multisample /*= Multisample::One*/, bool exclusiveBuffering /*= false*/)
+		VulkanRasterizer::VulkanRasterizer(const std::shared_ptr<VulkanDevice>& pDevice, Camera& camera, uint32_t frameCount, std::vector<AttachmentDescription>&& attachmentDescriptions, Multisample multisample /*= Multisample::One*/, bool exclusiveBuffering /*= false*/)
 			: Rasterizer(pDevice, camera, frameCount, std::move(attachmentDescriptions), multisample, exclusiveBuffering)
 		{
 			// Create the attachments.
@@ -140,9 +140,9 @@ namespace Flint
 			{
 				for (const auto attachment : m_AttachmentDescriptions)
 				{
-					if (attachment.m_Type == Core::AttachmentType::Color)
+					if (attachment.m_Type == AttachmentType::Color)
 					{
-						if (attachment.m_Format == Core::PixelFormat::Undefined)
+						if (attachment.m_Format == PixelFormat::Undefined)
 						{
 							// Find the best color format and return it.
 							pAttachment.emplace_back(
@@ -168,7 +168,7 @@ namespace Flint
 					}
 					else
 					{
-						if (attachment.m_Format == Core::PixelFormat::Undefined)
+						if (attachment.m_Format == PixelFormat::Undefined)
 						{
 							// Find the best depth format and return it.
 							pAttachment.emplace_back(
@@ -213,7 +213,7 @@ namespace Flint
 				attachmentDescriptions.emplace_back(pVulkanAttachment->getAttachmentDescription());
 
 				// Add it as a color attachment if its a color attachment. If not, as a depth attachment.
-				if (pVulkanAttachment->getType() == Core::AttachmentType::Color)
+				if (pVulkanAttachment->getType() == AttachmentType::Color)
 				{
 					attachmentReference.layout = pVulkanAttachment->getLayout();
 					colorAttachments.emplace_back(attachmentReference);

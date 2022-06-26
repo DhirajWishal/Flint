@@ -19,7 +19,7 @@ namespace Flint
 		 * Vulkan command buffers class.
 		 * This contains the command buffers needed for certain actions.
 		 */
-		class VulkanCommandBuffers final : public Core::CommandBuffers
+		class VulkanCommandBuffers final : public CommandBuffers
 		{
 			/**
 			 * Fence structure.

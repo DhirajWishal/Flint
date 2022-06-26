@@ -14,7 +14,7 @@ namespace Flint
 		/**
 		 * Vulkan ray tracing pipeline.
 		 */
-		class VulkanRayTracingPipeline final : public Core::RayTracingPipeline, public VulkanPipeline
+		class VulkanRayTracingPipeline final : public RayTracingPipeline, public VulkanPipeline
 		{
 		public:
 			/**

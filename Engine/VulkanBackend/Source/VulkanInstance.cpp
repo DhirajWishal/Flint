@@ -204,7 +204,7 @@ namespace Flint
 	namespace VulkanBackend
 	{
 		VulkanInstance::VulkanInstance(std::string&& applicationName, uint32_t applicationVersion, bool enableValidation)
-			: Instance(std::move(applicationName), applicationVersion, Core::BackendAPI::Vulkan, enableValidation)
+			: Instance(std::move(applicationName), applicationVersion, BackendAPI::Vulkan, enableValidation)
 		{
 			// Construct the static initializer.
 			static StaticInitializer initializer;
@@ -225,7 +225,7 @@ namespace Flint
 			FLINT_TERMINATE_IF_VALID;
 		}
 
-		std::shared_ptr<Flint::Core::Device> VulkanInstance::createDevice()
+		std::shared_ptr<Flint::Device> VulkanInstance::createDevice()
 		{
 			return std::make_shared<VulkanDevice>(shared_from_this());
 		}

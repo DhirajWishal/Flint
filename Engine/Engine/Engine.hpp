@@ -4,7 +4,7 @@
 #pragma once
 
 //#include "Scene.hpp"
-#include "Core/Instance.hpp"
+#include "Core/Device.hpp"
 
 #include <string>
 #include <memory>
@@ -25,17 +25,19 @@ namespace Flint
 		 * @param applicationVersion The version of the application.
 		 * @param enableBackendValidation Whether or not to enable backend validation. Turn this to true ONLY in the debug build.
 		 */
-		explicit Engine(const std::string& applicationName, uint32_t applicationVersion, bool enableBackendValidation) {}
+		explicit Engine(const std::string& applicationName, uint32_t applicationVersion, bool enableBackendValidation);
 
 		/**
-		 * Virtual destructor.
+		 * Create the engine.
+		 *
+		 * @param applicationName The name of the application.
+		 * @param applicationVersion The version of the application.
+		 * @param enableBackendValidation Whether or not to enable backend validation. Turn this to true ONLY in the debug build.
 		 */
-		virtual ~Engine() {}
+		static void Create(const std::string& applicationName, uint32_t applicationVersion, bool enableBackendValidation);
 
-		/**
-		 * Destroy the engine instance.
-		 */
-		virtual void destroy() = 0;
+	private:
+		std::shared_ptr<Device> m_pDevice = nullptr;
 	};
 
 	/**
@@ -57,5 +59,5 @@ namespace Flint
 	 * @param enableBackendValidation Whether or not to enable backend validation. Turn this to true ONLY in the debug build.
 	 * @return The created instance pointer.
 	 */
-	[[nodiscard]] std::shared_ptr<Core::Instance> CreateInstance(std::string&& applicationName, uint32_t applicationVersion, bool enableBackendValidation);
+	[[nodiscard]] std::shared_ptr<Instance> CreateInstance(std::string&& applicationName, uint32_t applicationVersion, bool enableBackendValidation);
 }

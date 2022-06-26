@@ -9,7 +9,7 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanBuffer::VulkanBuffer(const std::shared_ptr<VulkanDevice>& pDevice, uint64_t size, Core::BufferUsage usage)
+		VulkanBuffer::VulkanBuffer(const std::shared_ptr<VulkanDevice>& pDevice, uint64_t size, BufferUsage usage)
 			: Buffer(pDevice, size, usage)
 		{
 			// Validate the inputs.
@@ -23,47 +23,47 @@ namespace Flint
 			// Setup usage.
 			switch (usage)
 			{
-			case Core::BufferUsage::Vertex:
+			case BufferUsage::Vertex:
 				bufferUsage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 				memoryUsage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
 				break;
 
-			case Core::BufferUsage::Index:
+			case BufferUsage::Index:
 				bufferUsage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 				memoryUsage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
 				break;
 
-			case Core::BufferUsage::ShallowVertex:
+			case BufferUsage::ShallowVertex:
 				bufferUsage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 				vmaFlags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
 				memoryUsage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
 				break;
 
-			case Core::BufferUsage::ShallowIndex:
+			case BufferUsage::ShallowIndex:
 				bufferUsage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 				vmaFlags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
 				memoryUsage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
 				break;
 
-			case Core::BufferUsage::Uniform:
+			case BufferUsage::Uniform:
 				bufferUsage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 				vmaFlags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
 				memoryUsage = VMA_MEMORY_USAGE_AUTO_PREFER_HOST;
 				break;
 
-			case Core::BufferUsage::Storage:
+			case BufferUsage::Storage:
 				bufferUsage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 				vmaFlags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
 				memoryUsage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
 				break;
 
-			case Core::BufferUsage::General:
+			case BufferUsage::General:
 				bufferUsage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 				vmaFlags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
 				memoryUsage = VMA_MEMORY_USAGE_AUTO_PREFER_HOST;
 				break;
 
-			case Core::BufferUsage::Staging:
+			case BufferUsage::Staging:
 				bufferUsage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 				vmaFlags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
 				memoryUsage = VMA_MEMORY_USAGE_AUTO_PREFER_HOST;
@@ -129,7 +129,7 @@ namespace Flint
 			}
 		}
 
-		void VulkanBuffer::copyFrom(const Core::Buffer& buffer, uint64_t srcOffset /*= 0*/, uint64_t dstOffset /*= 0*/)
+		void VulkanBuffer::copyFrom(const Buffer& buffer, uint64_t srcOffset /*= 0*/, uint64_t dstOffset /*= 0*/)
 		{
 			// Validate the incoming buffer and offsets.
 			if (buffer.getSize() + dstOffset > m_Size)

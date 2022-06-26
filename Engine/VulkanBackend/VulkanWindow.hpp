@@ -20,7 +20,7 @@ namespace Flint
 		 * The processing pipeline goes like this,
 		 *		Processing stage 1 > Processing stage 2 > Processing stage 3 > Copy color attachment 1 to Swapchain > Present the swapchain.
 		 */
-		class VulkanWindow final : public Core::Window
+		class VulkanWindow final : public Window
 		{
 		public:
 			/**

@@ -15,7 +15,7 @@ namespace Flint
 		 * Vulkan ray tracer class.
 		 * This object is used to perform ray tracing.
 		 */
-		class VulkanRayTracer final : public Core::RayTracer
+		class VulkanRayTracer final : public RayTracer
 		{
 		public:
 			/**

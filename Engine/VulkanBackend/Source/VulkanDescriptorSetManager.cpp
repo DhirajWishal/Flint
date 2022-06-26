@@ -40,7 +40,7 @@ namespace Flint
 			FLINT_VK_ASSERT(m_pDevice->getDeviceTable().vkCreateDescriptorSetLayout(m_pDevice->getLogicalDevice(), &createInfo, nullptr, &m_DescriptorSetLayout), "Failed to create the descriptor set layout!");
 		}
 
-		void VulkanDescriptorSetManager::registerTable(const Core::ResourceBindingTable& table)
+		void VulkanDescriptorSetManager::registerTable(const ResourceBindingTable& table)
 		{
 			const auto tableHash = GenerateHash(table);
 
@@ -199,7 +199,7 @@ namespace Flint
 			m_DescriptorSets.emplace(tableHash, DescriptorSet(std::move(copyDescriptorSets), std::move(descriptorSets)));
 		}
 
-		VkDescriptorSet VulkanDescriptorSetManager::getDescriptorSet(const Core::ResourceBindingTable& table, uint32_t frameIndex) const
+		VkDescriptorSet VulkanDescriptorSetManager::getDescriptorSet(const ResourceBindingTable& table, uint32_t frameIndex) const
 		{
 			return m_DescriptorSets.at(GenerateHash(table)).m_DescriptorSets[frameIndex];
 		}

@@ -18,7 +18,7 @@ namespace Flint
 		/**
 		 * Vulkan rasterizer class.
 		 */
-		class VulkanRasterizer final : public Core::Rasterizer
+		class VulkanRasterizer final : public Rasterizer
 		{
 		public:
 			/**
@@ -31,7 +31,7 @@ namespace Flint
 			 * @param multisample The multisample count. Default is One.
 			 * @param exclusiveBuffering Whether or not to use one buffer/ attachment per frame. Default is false.
 			 */
-			explicit VulkanRasterizer(const std::shared_ptr<VulkanDevice>& pDevice, Camera& camera, uint32_t frameCount, std::vector<Core::AttachmentDescription>&& attachmentDescriptions, Core::Multisample multisample = Core::Multisample::One, bool exclusiveBuffering = false);
+			explicit VulkanRasterizer(const std::shared_ptr<VulkanDevice>& pDevice, Camera& camera, uint32_t frameCount, std::vector<AttachmentDescription>&& attachmentDescriptions, Multisample multisample = Multisample::One, bool exclusiveBuffering = false);
 
 			/**
 			 * Destructor.

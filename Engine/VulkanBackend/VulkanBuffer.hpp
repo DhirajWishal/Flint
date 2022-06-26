@@ -13,7 +13,7 @@ namespace Flint
 		/**
 		 * Vulkan buffer class.
 		 */
-		class VulkanBuffer final : public Core::Buffer
+		class VulkanBuffer final : public Buffer
 		{
 		public:
 			/**
@@ -23,7 +23,7 @@ namespace Flint
 			 * @param size The size of the buffer.
 			 * @param usage The buffer usage.
 			 */
-			explicit VulkanBuffer(const std::shared_ptr<VulkanDevice>& pDevice, uint64_t size, Core::BufferUsage usage);
+			explicit VulkanBuffer(const std::shared_ptr<VulkanDevice>& pDevice, uint64_t size, BufferUsage usage);
 
 			/**
 			 * Destructor.
@@ -54,7 +54,7 @@ namespace Flint
 			 * @param srcOffset The offset of the source buffer to copy from.
 			 * @param dstOffset The offset of the destination (this) buffer to copy to.
 			 */
-			void copyFrom(const Core::Buffer& buffer, uint64_t srcOffset = 0, uint64_t dstOffset = 0) override;
+			void copyFrom(const Buffer& buffer, uint64_t srcOffset = 0, uint64_t dstOffset = 0) override;
 
 			/**
 			 * Get the Vulkan buffer handle.

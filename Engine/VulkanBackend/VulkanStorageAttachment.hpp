@@ -24,7 +24,7 @@ namespace Flint
 			 * @param height The height of the attachment.
 			 * @param format The format of the attachment.
 			 */
-			explicit VulkanStorageAttachment(const std::shared_ptr<VulkanDevice>& pDevice, uint32_t width, uint32_t height, Core::PixelFormat format);
+			explicit VulkanStorageAttachment(const std::shared_ptr<VulkanDevice>& pDevice, uint32_t width, uint32_t height, PixelFormat format);
 
 			/**
 			 * Destructor.

@@ -31,12 +31,12 @@ int main()
 	auto instance = Flint::CreateInstance("Sandbox", 1, Validation);
 	auto device = instance->createDevice();
 
-	auto window = device->createWindow("Sandbox");
 	auto camera = Flint::MonoCamera(glm::vec3(0.0f), 1280, 720);
 	camera.m_MovementBias = 50;
 
 	//auto program = Flint::Backend::RasterizingProgram(device, "Shaders/Debugging/vert.spv", "Shaders/Debugging/frag.spv");
-	auto rasterizer = device->createRasterizer(camera, window->getFrameCount(), { Flint::Core::Defaults::ColorAttachmentDescription, Flint::Core::Defaults::DepthAttachmentDescription });
+	auto window = device->createWindow("Sandbox");
+	auto rasterizer = device->createRasterizer(camera, window->getFrameCount(), { Flint::Defaults::ColorAttachmentDescription, Flint::Defaults::DepthAttachmentDescription });
 	auto rayTracer = device->createRayTracer(camera, window->getFrameCount());
 
 	window->attach(rasterizer);
@@ -83,37 +83,3 @@ int main()
 
 	return 0;
 }
-
-/**
- * auto engine = Flint::Engine("Sandbox", 1, Validation);
- * auto device = engine.createDevice();
- *
- * auto scene = device.createScene(width, height);
- * auto window = device.createWindow(width, height);
- *
- * auto entity = scene.spawnEntity();
- * entity.attachStaticModel("sponza.gltf");
- *
- * entity.instance(position, rotation, scale);		// First instance.
- * entity.instance(position2, rotation2, scale2);	// Second instance.
- *
- * auto light = scene.setPointLight(position);
- * light.setColor(lightColor);
- *
- * window.attach(scene);
- *
- * while(window.update())
- * {
- *		auto events = Flint::EventSystem::Poll();
- *
- *		// Handle event stuff here.
- *
- *		scene.update();
- * }
- *
- * window.destroy();
- * scene.destroy();
- *
- * device.destroy();
- * instance.destroy();
- */

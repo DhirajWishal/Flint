@@ -7,22 +7,19 @@
 
 namespace Flint
 {
-	namespace Core
+	/**
+	 * Ray tracing pipeline class.
+	 * This pipeline is used to perform ray tracing.
+	 */
+	class RayTracingPipeline : public Pipeline
 	{
-		/**
-		 * Ray tracing pipeline class.
-		 * This pipeline is used to perform ray tracing.
-		 */
-		class RayTracingPipeline : public Pipeline
-		{
-		public:
-			// Using the same constructor as the super class.
-			using Pipeline::Pipeline;
+	public:
+		// Using the same constructor as the super class.
+		using Pipeline::Pipeline;
 
-			/**
-			 * Default virtual destructor.
-			 */
-			virtual ~RayTracingPipeline() = default;
-		};
-	}
+		/**
+		 * Default virtual destructor.
+		 */
+		virtual ~RayTracingPipeline() = default;
+	};
 }

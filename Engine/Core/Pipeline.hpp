@@ -7,24 +7,21 @@
 
 namespace Flint
 {
-	namespace Core
+	/**
+	 * Pipeline class.
+	 * This is the base class for all the supported pipelines in the engine.
+	 *
+	 * Pipelines are used for rendering (ray tracing and raster graphics) and compute operations.
+	 */
+	class Pipeline : public DeviceBoundObject
 	{
-		/**
-		 * Pipeline class.
-		 * This is the base class for all the supported pipelines in the engine.
-		 *
-		 * Pipelines are used for rendering (ray tracing and raster graphics) and compute operations.
-		 */
-		class Pipeline : public DeviceBoundObject
-		{
-		public:
-			// Use the same constructor as the super class.
-			using DeviceBoundObject::DeviceBoundObject;
+	public:
+		// Use the same constructor as the super class.
+		using DeviceBoundObject::DeviceBoundObject;
 
-			/**
-			 * Default virtual destructor.
-			 */
-			virtual ~Pipeline() = default;
-		};
-	}
+		/**
+		 * Default virtual destructor.
+		 */
+		virtual ~Pipeline() = default;
+	};
 }

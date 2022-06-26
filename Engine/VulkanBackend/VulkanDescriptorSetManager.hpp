@@ -68,7 +68,7 @@ namespace Flint
 			 *
 			 * @param table The table to register.
 			 */
-			void registerTable(const Core::ResourceBindingTable& table);
+			void registerTable(const ResourceBindingTable& table);
 
 			/**
 			 * Get the descriptor set from the manager.
@@ -78,7 +78,7 @@ namespace Flint
 			 * @param frameIndex The frame index of the descriptor.
 			 * @return The descriptor set.
 			 */
-			[[nodiscard]] VkDescriptorSet getDescriptorSet(const Core::ResourceBindingTable& table, uint32_t frameIndex) const;
+			[[nodiscard]] VkDescriptorSet getDescriptorSet(const ResourceBindingTable& table, uint32_t frameIndex) const;
 
 		protected:
 			std::vector<VkDescriptorPoolSize> m_PoolSizes;

@@ -13,7 +13,7 @@ namespace Flint
 		/**
 		 * Vulkan static model class.
 		 */
-		class VulkanStaticModel final : public Core::StaticModel
+		class VulkanStaticModel final : public StaticModel
 		{
 		public:
 			/**

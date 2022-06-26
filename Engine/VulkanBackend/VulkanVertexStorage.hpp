@@ -15,7 +15,7 @@ namespace Flint
 		/**
 		 * Vulkan vertex storage class.
 		 */
-		class VulkanVertexStorage final : public Core::VertexStorage
+		class VulkanVertexStorage final : public VertexStorage
 		{
 		public:
 			/**

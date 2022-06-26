@@ -9,7 +9,7 @@ namespace Flint
 	namespace VulkanBackend
 	{
 		VulkanRayTracer::VulkanRayTracer(const std::shared_ptr<VulkanDevice>& pDevice, Camera& camera, uint32_t frameCount)
-			: Core::RayTracer(pDevice, camera, frameCount)
+			: RayTracer(pDevice, camera, frameCount)
 		{
 			// Setup the attachments.
 			createAttachments();

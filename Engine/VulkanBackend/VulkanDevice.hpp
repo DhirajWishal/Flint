@@ -20,7 +20,7 @@ namespace Flint
 		/**
 		 * Vulkan engine class.
 		 */
-		class VulkanDevice final : public std::enable_shared_from_this<VulkanDevice>, public Core::Device
+		class VulkanDevice final : public std::enable_shared_from_this<VulkanDevice>, public Device
 		{
 			/**
 			 * Vulkan queue structure.
@@ -52,7 +52,7 @@ namespace Flint
 			 * @param usage The buffer usage.
 			 * @return The buffer pointer.
 			 */
-			[[nodiscrad]] std::shared_ptr<Core::Buffer> createBuffer(uint64_t size, Core::BufferUsage usage) override;
+			[[nodiscrad]] std::shared_ptr<Buffer> createBuffer(uint64_t size, BufferUsage usage) override;
 
 			/**
 			 * Create a new rasterizer.
@@ -64,7 +64,7 @@ namespace Flint
 			 * @param exclusiveBuffering Whether or not to use one buffer/ attachment per frame. Default is false.
 			 * @return The rasterizer pointer.
 			 */
-			[[nodiscard]] std::shared_ptr<Core::Rasterizer> createRasterizer(Camera& camera, uint32_t frameCount, std::vector<Core::AttachmentDescription>&& attachmentDescriptions, Core::Multisample multisample = Core::Multisample::One, bool exclusiveBuffering = false) override;
+			[[nodiscard]] std::shared_ptr<Rasterizer> createRasterizer(Camera& camera, uint32_t frameCount, std::vector<AttachmentDescription>&& attachmentDescriptions, Multisample multisample = Multisample::One, bool exclusiveBuffering = false) override;
 
 			/**
 			 * Create a new ray tracer.
@@ -73,7 +73,7 @@ namespace Flint
 			 * @param frameCount The number of frames to use.
 			 * @return The ray tracer pointer.
 			 */
-			[[nodiscard]] std::shared_ptr<Core::RayTracer> createRayTracer(Camera& camera, uint32_t frameCount) override;
+			[[nodiscard]] std::shared_ptr<RayTracer> createRayTracer(Camera& camera, uint32_t frameCount) override;
 
 			/**
 			 * Create a new window.
@@ -83,7 +83,7 @@ namespace Flint
 			 * @param height The height of the window. Same as the width, if set to 0 then the window is opened maximized. If set to -1, the window is open in full screen mode.
 			 * @return The window pointer.
 			 */
-			[[nodiscard]] std::shared_ptr<Core::Window> createWindow(std::string&& title, uint32_t width = -1, uint32_t height = -1) override;
+			[[nodiscard]] std::shared_ptr<Window> createWindow(std::string&& title, uint32_t width = -1, uint32_t height = -1) override;
 
 			/**
 			 * Terminate the object.
@@ -100,14 +100,14 @@ namespace Flint
 			 *
 			 * @return The pixel format.
 			 */
-			[[nodiscard]] Core::PixelFormat getBestDepthFormat() const override;
+			[[nodiscard]] PixelFormat getBestDepthFormat() const override;
 
 			/**
 			 * Get the max supported multisample count.
 			 *
 			 * @return The multisample count.
 			 */
-			[[nodiscard]] Core::Multisample getMaximumMultisample() const override;
+			[[nodiscard]] Multisample getMaximumMultisample() const override;
 
 			/**
 			 * Create a new texture image.
@@ -115,7 +115,7 @@ namespace Flint
 			 * @param path The path to the texture file.
 			 * @param usage The image usage.
 			 */
-			[[nodiscard]] Core::ImageHandle createTextureImage(std::filesystem::path&& path, Core::ImageUsage usage) override;
+			[[nodiscard]] ImageHandle createTextureImage(std::filesystem::path&& path, ImageUsage usage) override;
 
 		public:
 			/**
@@ -225,7 +225,7 @@ namespace Flint
 			 * @param multisample The multisample count.
 			 * @return The Vulkan sample count.
 			 */
-			[[nodiscard]] VkSampleCountFlagBits GetSampleCountFlagBits(Core::Multisample multisample);
+			[[nodiscard]] VkSampleCountFlagBits GetSampleCountFlagBits(Multisample multisample);
 
 			/**
 			 * Get the Vulkan image format from pixel format.
@@ -233,7 +233,7 @@ namespace Flint
 			 * @param format The pixel format.
 			 * @return The Vulkan format.
 			 */
-			[[nodiscard]] VkFormat GetImageFormat(Core::PixelFormat format);
+			[[nodiscard]] VkFormat GetImageFormat(PixelFormat format);
 
 			/**
 			 * Get the pixel format from the Vulkan image format.
@@ -241,7 +241,7 @@ namespace Flint
 			 * @param format The Vulkan format.
 			 * @return The pixel format.
 			 */
-			[[nodiscard]] Core::PixelFormat GetPixelFormat(VkFormat format);
+			[[nodiscard]] PixelFormat GetPixelFormat(VkFormat format);
 
 			/**
 			 * Get the pipeline stage flags from access flags.
@@ -282,7 +282,7 @@ namespace Flint
 			 * @param type The flint descriptor type.
 			 * @return The Vulkan descriptor type.
 			 */
-			[[nodiscard]] VkDescriptorType GetDescriptorType(Core::ResourceType type);
+			[[nodiscard]] VkDescriptorType GetDescriptorType(ResourceType type);
 
 			/**
 			 * Get the size from a format.
@@ -298,7 +298,7 @@ namespace Flint
 			 * @param type The type of the attribute.
 			 * @return The Vulkan format.
 			 */
-			[[nodiscard]] VkFormat GetVkFormat(Flint::Core::DataType type);
+			[[nodiscard]] VkFormat GetVkFormat(Flint::DataType type);
 		}
 	}
 }

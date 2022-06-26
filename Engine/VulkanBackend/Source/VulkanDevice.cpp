@@ -147,22 +147,22 @@ namespace Flint
 			FLINT_TERMINATE_IF_VALID;
 		}
 
-		std::shared_ptr<Flint::Core::Buffer> VulkanDevice::createBuffer(uint64_t size, Core::BufferUsage usage)
+		std::shared_ptr<Flint::Buffer> VulkanDevice::createBuffer(uint64_t size, BufferUsage usage)
 		{
 			return std::make_shared<VulkanBuffer>(shared_from_this(), size, usage);
 		}
 
-		std::shared_ptr<Flint::Core::Rasterizer> VulkanDevice::createRasterizer(Camera& camera, uint32_t frameCount, std::vector<Core::AttachmentDescription>&& attachmentDescriptions, Core::Multisample multisample /*= Core::Multisample::One*/, bool exclusiveBuffering /*= false*/)
+		std::shared_ptr<Flint::Rasterizer> VulkanDevice::createRasterizer(Camera& camera, uint32_t frameCount, std::vector<AttachmentDescription>&& attachmentDescriptions, Multisample multisample /*= Multisample::One*/, bool exclusiveBuffering /*= false*/)
 		{
 			return std::make_shared<VulkanRasterizer>(shared_from_this(), camera, frameCount, std::move(attachmentDescriptions), multisample, exclusiveBuffering);
 		}
 
-		std::shared_ptr<Flint::Core::RayTracer> VulkanDevice::createRayTracer(Camera& camera, uint32_t frameCount)
+		std::shared_ptr<Flint::RayTracer> VulkanDevice::createRayTracer(Camera& camera, uint32_t frameCount)
 		{
 			return std::make_shared<VulkanRayTracer>(shared_from_this(), camera, frameCount);
 		}
 
-		std::shared_ptr<Flint::Core::Window> VulkanDevice::createWindow(std::string&& title, uint32_t width /*= -1*/, uint32_t height /*= -1*/)
+		std::shared_ptr<Flint::Window> VulkanDevice::createWindow(std::string&& title, uint32_t width /*= -1*/, uint32_t height /*= -1*/)
 		{
 			return std::make_shared<VulkanWindow>(shared_from_this(), std::move(title), width, height);
 		}
@@ -186,28 +186,28 @@ namespace Flint
 			FLINT_VK_ASSERT(getDeviceTable().vkDeviceWaitIdle(m_LogicalDevice), "Failed to wait idle!");
 		}
 
-		Flint::Core::PixelFormat VulkanDevice::getBestDepthFormat() const
+		Flint::PixelFormat VulkanDevice::getBestDepthFormat() const
 		{
 			return Utility::GetPixelFormat(Utility::FindDepthFormat(this));
 		}
 
-		Flint::Core::Multisample VulkanDevice::getMaximumMultisample() const
+		Flint::Multisample VulkanDevice::getMaximumMultisample() const
 		{
 			const VkSampleCountFlags counts = m_PhysicalDeviceProperties.limits.framebufferColorSampleCounts & m_PhysicalDeviceProperties.limits.framebufferDepthSampleCounts;
 
-			if (counts & VK_SAMPLE_COUNT_64_BIT)	return Core::Multisample::SixtyFour;
-			if (counts & VK_SAMPLE_COUNT_32_BIT)	return Core::Multisample::ThirtyTwo;
-			if (counts & VK_SAMPLE_COUNT_16_BIT)	return Core::Multisample::Sixteen;
-			if (counts & VK_SAMPLE_COUNT_8_BIT)		return Core::Multisample::Eight;
-			if (counts & VK_SAMPLE_COUNT_4_BIT)		return Core::Multisample::Four;
-			if (counts & VK_SAMPLE_COUNT_2_BIT)		return Core::Multisample::Two;
+			if (counts & VK_SAMPLE_COUNT_64_BIT)	return Multisample::SixtyFour;
+			if (counts & VK_SAMPLE_COUNT_32_BIT)	return Multisample::ThirtyTwo;
+			if (counts & VK_SAMPLE_COUNT_16_BIT)	return Multisample::Sixteen;
+			if (counts & VK_SAMPLE_COUNT_8_BIT)		return Multisample::Eight;
+			if (counts & VK_SAMPLE_COUNT_4_BIT)		return Multisample::Four;
+			if (counts & VK_SAMPLE_COUNT_2_BIT)		return Multisample::Two;
 
-			return Core::Multisample::One;
+			return Multisample::One;
 		}
 
-		Flint::Core::ImageHandle VulkanDevice::createTextureImage(std::filesystem::path&& path, Core::ImageUsage usage)
+		Flint::ImageHandle VulkanDevice::createTextureImage(std::filesystem::path&& path, ImageUsage usage)
 		{
-			return Core::ImageHandle();
+			return ImageHandle();
 		}
 
 		void VulkanDevice::selectPhysicalDevice()
@@ -417,89 +417,89 @@ namespace Flint
 
 		namespace Utility
 		{
-			VkSampleCountFlagBits GetSampleCountFlagBits(Core::Multisample multisample)
+			VkSampleCountFlagBits GetSampleCountFlagBits(Multisample multisample)
 			{
 				switch (multisample)
 				{
-				case Flint::Core::Multisample::One:								return VK_SAMPLE_COUNT_1_BIT;
-				case Flint::Core::Multisample::Two:								return VK_SAMPLE_COUNT_2_BIT;
-				case Flint::Core::Multisample::Four:							return VK_SAMPLE_COUNT_4_BIT;
-				case Flint::Core::Multisample::Eight:							return VK_SAMPLE_COUNT_8_BIT;
-				case Flint::Core::Multisample::Sixteen:							return VK_SAMPLE_COUNT_16_BIT;
-				case Flint::Core::Multisample::ThirtyTwo:						return VK_SAMPLE_COUNT_32_BIT;
-				case Flint::Core::Multisample::SixtyFour:						return VK_SAMPLE_COUNT_64_BIT;
+				case Flint::Multisample::One:								return VK_SAMPLE_COUNT_1_BIT;
+				case Flint::Multisample::Two:								return VK_SAMPLE_COUNT_2_BIT;
+				case Flint::Multisample::Four:							return VK_SAMPLE_COUNT_4_BIT;
+				case Flint::Multisample::Eight:							return VK_SAMPLE_COUNT_8_BIT;
+				case Flint::Multisample::Sixteen:							return VK_SAMPLE_COUNT_16_BIT;
+				case Flint::Multisample::ThirtyTwo:						return VK_SAMPLE_COUNT_32_BIT;
+				case Flint::Multisample::SixtyFour:						return VK_SAMPLE_COUNT_64_BIT;
 				default:														return VK_SAMPLE_COUNT_1_BIT;
 				}
 			}
 
-			VkFormat GetImageFormat(Core::PixelFormat format)
+			VkFormat GetImageFormat(PixelFormat format)
 			{
 				switch (format)
 				{
-				case Core::PixelFormat::Undefined:								return VK_FORMAT_UNDEFINED;
-				case Core::PixelFormat::R8_SRGB:								return VK_FORMAT_R8_SRGB;
-				case Core::PixelFormat::R8G8_SRGB:								return VK_FORMAT_R8G8_SRGB;
-				case Core::PixelFormat::R8G8B8_SRGB:							return VK_FORMAT_R8G8B8_SRGB;
-				case Core::PixelFormat::R8G8B8A8_SRGB:							return VK_FORMAT_R8G8B8A8_SRGB;
-				case Core::PixelFormat::R8_UNORMAL:								return VK_FORMAT_R8_UNORM;
-				case Core::PixelFormat::R8G8_UNORMAL:							return VK_FORMAT_R8G8_UNORM;
-				case Core::PixelFormat::R8G8B8_UNORMAL:							return VK_FORMAT_R8G8B8_UNORM;
-				case Core::PixelFormat::R8G8B8A8_UNORMAL:						return VK_FORMAT_R8G8B8A8_UNORM;
-				case Core::PixelFormat::B8G8R8_SRGB:							return VK_FORMAT_B8G8R8_SRGB;
-				case Core::PixelFormat::B8G8R8A8_SRGB:							return VK_FORMAT_B8G8R8A8_SRGB;
-				case Core::PixelFormat::B8G8R8_UNORMAL:							return VK_FORMAT_B8G8R8_UNORM;
-				case Core::PixelFormat::B8G8R8A8_UNORMAL:						return VK_FORMAT_B8G8R8A8_UNORM;
-				case Core::PixelFormat::R16_SFLOAT:								return VK_FORMAT_R16_SFLOAT;
-				case Core::PixelFormat::R16G16_SFLOAT:							return VK_FORMAT_R16G16_SFLOAT;
-				case Core::PixelFormat::R16G16B16_SFLOAT:						return VK_FORMAT_R16G16B16_SFLOAT;
-				case Core::PixelFormat::R16G16B16A16_SFLOAT:					return VK_FORMAT_R16G16B16A16_SFLOAT;
-				case Core::PixelFormat::R32_SFLOAT:								return VK_FORMAT_R32_SFLOAT;
-				case Core::PixelFormat::R32G32_SFLOAT:							return VK_FORMAT_R32G32_SFLOAT;
-				case Core::PixelFormat::R32G32B32_SFLOAT:						return VK_FORMAT_R32G32B32_SFLOAT;
-				case Core::PixelFormat::R32G32B32A32_SFLOAT:					return VK_FORMAT_R32G32B32A32_SFLOAT;
-				case Core::PixelFormat::D16_SINT:								return VK_FORMAT_D16_UNORM;
-				case Core::PixelFormat::D32_SFLOAT:								return VK_FORMAT_D32_SFLOAT;
-				case Core::PixelFormat::S8_UINT:								return VK_FORMAT_S8_UINT;
-				case Core::PixelFormat::D16_UNORMAL_S8_UINT:					return VK_FORMAT_D16_UNORM_S8_UINT;
-				case Core::PixelFormat::D24_UNORMAL_S8_UINT:					return VK_FORMAT_D24_UNORM_S8_UINT;
-				case Core::PixelFormat::D32_SFLOAT_S8_UINT:						return VK_FORMAT_D32_SFLOAT_S8_UINT;
+				case PixelFormat::Undefined:								return VK_FORMAT_UNDEFINED;
+				case PixelFormat::R8_SRGB:								return VK_FORMAT_R8_SRGB;
+				case PixelFormat::R8G8_SRGB:								return VK_FORMAT_R8G8_SRGB;
+				case PixelFormat::R8G8B8_SRGB:							return VK_FORMAT_R8G8B8_SRGB;
+				case PixelFormat::R8G8B8A8_SRGB:							return VK_FORMAT_R8G8B8A8_SRGB;
+				case PixelFormat::R8_UNORMAL:								return VK_FORMAT_R8_UNORM;
+				case PixelFormat::R8G8_UNORMAL:							return VK_FORMAT_R8G8_UNORM;
+				case PixelFormat::R8G8B8_UNORMAL:							return VK_FORMAT_R8G8B8_UNORM;
+				case PixelFormat::R8G8B8A8_UNORMAL:						return VK_FORMAT_R8G8B8A8_UNORM;
+				case PixelFormat::B8G8R8_SRGB:							return VK_FORMAT_B8G8R8_SRGB;
+				case PixelFormat::B8G8R8A8_SRGB:							return VK_FORMAT_B8G8R8A8_SRGB;
+				case PixelFormat::B8G8R8_UNORMAL:							return VK_FORMAT_B8G8R8_UNORM;
+				case PixelFormat::B8G8R8A8_UNORMAL:						return VK_FORMAT_B8G8R8A8_UNORM;
+				case PixelFormat::R16_SFLOAT:								return VK_FORMAT_R16_SFLOAT;
+				case PixelFormat::R16G16_SFLOAT:							return VK_FORMAT_R16G16_SFLOAT;
+				case PixelFormat::R16G16B16_SFLOAT:						return VK_FORMAT_R16G16B16_SFLOAT;
+				case PixelFormat::R16G16B16A16_SFLOAT:					return VK_FORMAT_R16G16B16A16_SFLOAT;
+				case PixelFormat::R32_SFLOAT:								return VK_FORMAT_R32_SFLOAT;
+				case PixelFormat::R32G32_SFLOAT:							return VK_FORMAT_R32G32_SFLOAT;
+				case PixelFormat::R32G32B32_SFLOAT:						return VK_FORMAT_R32G32B32_SFLOAT;
+				case PixelFormat::R32G32B32A32_SFLOAT:					return VK_FORMAT_R32G32B32A32_SFLOAT;
+				case PixelFormat::D16_SINT:								return VK_FORMAT_D16_UNORM;
+				case PixelFormat::D32_SFLOAT:								return VK_FORMAT_D32_SFLOAT;
+				case PixelFormat::S8_UINT:								return VK_FORMAT_S8_UINT;
+				case PixelFormat::D16_UNORMAL_S8_UINT:					return VK_FORMAT_D16_UNORM_S8_UINT;
+				case PixelFormat::D24_UNORMAL_S8_UINT:					return VK_FORMAT_D24_UNORM_S8_UINT;
+				case PixelFormat::D32_SFLOAT_S8_UINT:						return VK_FORMAT_D32_SFLOAT_S8_UINT;
 				default:														throw BackendError("Invalid pixel format!");
 				}
 
 				return VK_FORMAT_UNDEFINED;
 			}
 
-			Core::PixelFormat GetPixelFormat(VkFormat format)
+			PixelFormat GetPixelFormat(VkFormat format)
 			{
 				switch (format)
 				{
-				case VK_FORMAT_UNDEFINED:										return Core::PixelFormat::Undefined;
-				case VK_FORMAT_R8_SRGB:											return Core::PixelFormat::R8_SRGB;
-				case VK_FORMAT_R8G8_SRGB:										return Core::PixelFormat::R8G8_SRGB;
-				case VK_FORMAT_R8G8B8_SRGB:										return Core::PixelFormat::R8G8B8_SRGB;
-				case VK_FORMAT_R8G8B8A8_SRGB:									return Core::PixelFormat::R8G8B8A8_SRGB;
-				case VK_FORMAT_R8_UNORM:										return Core::PixelFormat::R8_UNORMAL;
-				case VK_FORMAT_R8G8_UNORM:										return Core::PixelFormat::R8G8_UNORMAL;
-				case VK_FORMAT_R8G8B8_UNORM:									return Core::PixelFormat::R8G8B8_UNORMAL;
-				case VK_FORMAT_R8G8B8A8_UNORM:									return Core::PixelFormat::R8G8B8A8_UNORMAL;
-				case VK_FORMAT_B8G8R8_SRGB:										return Core::PixelFormat::B8G8R8_SRGB;
-				case VK_FORMAT_B8G8R8A8_SRGB:									return Core::PixelFormat::B8G8R8A8_SRGB;
-				case VK_FORMAT_B8G8R8_UNORM:									return Core::PixelFormat::B8G8R8_UNORMAL;
-				case VK_FORMAT_B8G8R8A8_UNORM:									return Core::PixelFormat::B8G8R8A8_UNORMAL;
-				case VK_FORMAT_R16_SFLOAT:										return Core::PixelFormat::R16_SFLOAT;
-				case VK_FORMAT_R16G16_SFLOAT:									return Core::PixelFormat::R16G16_SFLOAT;
-				case VK_FORMAT_R16G16B16_SFLOAT:								return Core::PixelFormat::R16G16B16_SFLOAT;
-				case VK_FORMAT_R16G16B16A16_SFLOAT:								return Core::PixelFormat::R16G16B16A16_SFLOAT;
-				case VK_FORMAT_R32_SFLOAT:										return Core::PixelFormat::R32_SFLOAT;
-				case VK_FORMAT_R32G32_SFLOAT:									return Core::PixelFormat::R32G32_SFLOAT;
-				case VK_FORMAT_R32G32B32_SFLOAT:								return Core::PixelFormat::R32G32B32_SFLOAT;
-				case VK_FORMAT_R32G32B32A32_SFLOAT:								return Core::PixelFormat::R32G32B32A32_SFLOAT;
-				case VK_FORMAT_D16_UNORM:										return Core::PixelFormat::D16_SINT;
-				case VK_FORMAT_D32_SFLOAT:										return Core::PixelFormat::D32_SFLOAT;
+				case VK_FORMAT_UNDEFINED:										return PixelFormat::Undefined;
+				case VK_FORMAT_R8_SRGB:											return PixelFormat::R8_SRGB;
+				case VK_FORMAT_R8G8_SRGB:										return PixelFormat::R8G8_SRGB;
+				case VK_FORMAT_R8G8B8_SRGB:										return PixelFormat::R8G8B8_SRGB;
+				case VK_FORMAT_R8G8B8A8_SRGB:									return PixelFormat::R8G8B8A8_SRGB;
+				case VK_FORMAT_R8_UNORM:										return PixelFormat::R8_UNORMAL;
+				case VK_FORMAT_R8G8_UNORM:										return PixelFormat::R8G8_UNORMAL;
+				case VK_FORMAT_R8G8B8_UNORM:									return PixelFormat::R8G8B8_UNORMAL;
+				case VK_FORMAT_R8G8B8A8_UNORM:									return PixelFormat::R8G8B8A8_UNORMAL;
+				case VK_FORMAT_B8G8R8_SRGB:										return PixelFormat::B8G8R8_SRGB;
+				case VK_FORMAT_B8G8R8A8_SRGB:									return PixelFormat::B8G8R8A8_SRGB;
+				case VK_FORMAT_B8G8R8_UNORM:									return PixelFormat::B8G8R8_UNORMAL;
+				case VK_FORMAT_B8G8R8A8_UNORM:									return PixelFormat::B8G8R8A8_UNORMAL;
+				case VK_FORMAT_R16_SFLOAT:										return PixelFormat::R16_SFLOAT;
+				case VK_FORMAT_R16G16_SFLOAT:									return PixelFormat::R16G16_SFLOAT;
+				case VK_FORMAT_R16G16B16_SFLOAT:								return PixelFormat::R16G16B16_SFLOAT;
+				case VK_FORMAT_R16G16B16A16_SFLOAT:								return PixelFormat::R16G16B16A16_SFLOAT;
+				case VK_FORMAT_R32_SFLOAT:										return PixelFormat::R32_SFLOAT;
+				case VK_FORMAT_R32G32_SFLOAT:									return PixelFormat::R32G32_SFLOAT;
+				case VK_FORMAT_R32G32B32_SFLOAT:								return PixelFormat::R32G32B32_SFLOAT;
+				case VK_FORMAT_R32G32B32A32_SFLOAT:								return PixelFormat::R32G32B32A32_SFLOAT;
+				case VK_FORMAT_D16_UNORM:										return PixelFormat::D16_SINT;
+				case VK_FORMAT_D32_SFLOAT:										return PixelFormat::D32_SFLOAT;
 				default:														throw BackendError("Unsupported format!");
 				}
 
-				return Core::PixelFormat::Undefined;
+				return PixelFormat::Undefined;
 			}
 
 			VkPipelineStageFlags GetPipelineStageFlags(VkAccessFlags flags)
@@ -570,22 +570,22 @@ namespace Flint
 				);
 			}
 
-			VkDescriptorType GetDescriptorType(Flint::Core::ResourceType type)
+			VkDescriptorType GetDescriptorType(Flint::ResourceType type)
 			{
 				switch (type)
 				{
-				case Flint::Core::ResourceType::Sampler:						return VK_DESCRIPTOR_TYPE_SAMPLER;
-				case Flint::Core::ResourceType::CombinedImageSampler:			return VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-				case Flint::Core::ResourceType::SampledImage:					return VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
-				case Flint::Core::ResourceType::StorageImage:					return VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
-				case Flint::Core::ResourceType::UniformTexelBuffer:				return VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER;
-				case Flint::Core::ResourceType::StorageTexelBuffer:				return VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER;
-				case Flint::Core::ResourceType::UniformBuffer:					return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-				case Flint::Core::ResourceType::StorageBuffer:					return VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-				case Flint::Core::ResourceType::DynamicUniformBuffer:			return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
-				case Flint::Core::ResourceType::DynamicStorageBuffer:			return VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC;
-				case Flint::Core::ResourceType::InputAttachment:				return VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
-				case Flint::Core::ResourceType::AccelerationStructure:			return VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR;
+				case Flint::ResourceType::Sampler:						return VK_DESCRIPTOR_TYPE_SAMPLER;
+				case Flint::ResourceType::CombinedImageSampler:			return VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+				case Flint::ResourceType::SampledImage:					return VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+				case Flint::ResourceType::StorageImage:					return VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+				case Flint::ResourceType::UniformTexelBuffer:				return VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER;
+				case Flint::ResourceType::StorageTexelBuffer:				return VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER;
+				case Flint::ResourceType::UniformBuffer:					return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+				case Flint::ResourceType::StorageBuffer:					return VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+				case Flint::ResourceType::DynamicUniformBuffer:			return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+				case Flint::ResourceType::DynamicStorageBuffer:			return VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC;
+				case Flint::ResourceType::InputAttachment:				return VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
+				case Flint::ResourceType::AccelerationStructure:			return VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR;
 				default:														throw Flint::BackendError("Invalid or Undefined shader resource type!");
 				}
 			}
@@ -861,23 +861,23 @@ namespace Flint
 				return 0;
 			}
 
-			VkFormat GetVkFormat(Flint::Core::DataType type)
+			VkFormat GetVkFormat(Flint::DataType type)
 			{
 				switch (type)
 				{
-				case Flint::Core::DataType::Float:								return VK_FORMAT_R32_SFLOAT;
-				case Flint::Core::DataType::Vec2_8:								return VK_FORMAT_R8G8_UINT;
-				case Flint::Core::DataType::Vec2_16:							return VK_FORMAT_R16G16_SFLOAT;
-				case Flint::Core::DataType::Vec2_32:							return VK_FORMAT_R32G32_SFLOAT;
-				case Flint::Core::DataType::Vec2_64:							return VK_FORMAT_R64G64_SFLOAT;
-				case Flint::Core::DataType::Vec3_8:								return VK_FORMAT_R8G8B8_UINT;
-				case Flint::Core::DataType::Vec3_16:							return VK_FORMAT_R16G16B16_SFLOAT;
-				case Flint::Core::DataType::Vec3_32:							return VK_FORMAT_R32G32B32_SFLOAT;
-				case Flint::Core::DataType::Vec3_64:							return VK_FORMAT_R64G64B64_SFLOAT;
-				case Flint::Core::DataType::Vec4_8:								return VK_FORMAT_R8G8B8A8_UINT;
-				case Flint::Core::DataType::Vec4_16:							return VK_FORMAT_R16G16B16A16_SFLOAT;
-				case Flint::Core::DataType::Vec4_32:							return VK_FORMAT_R32G32B32A32_SFLOAT;
-				case Flint::Core::DataType::Vec4_64:							return VK_FORMAT_R64G64B64A64_SFLOAT;
+				case Flint::DataType::Float:								return VK_FORMAT_R32_SFLOAT;
+				case Flint::DataType::Vec2_8:								return VK_FORMAT_R8G8_UINT;
+				case Flint::DataType::Vec2_16:							return VK_FORMAT_R16G16_SFLOAT;
+				case Flint::DataType::Vec2_32:							return VK_FORMAT_R32G32_SFLOAT;
+				case Flint::DataType::Vec2_64:							return VK_FORMAT_R64G64_SFLOAT;
+				case Flint::DataType::Vec3_8:								return VK_FORMAT_R8G8B8_UINT;
+				case Flint::DataType::Vec3_16:							return VK_FORMAT_R16G16B16_SFLOAT;
+				case Flint::DataType::Vec3_32:							return VK_FORMAT_R32G32B32_SFLOAT;
+				case Flint::DataType::Vec3_64:							return VK_FORMAT_R64G64B64_SFLOAT;
+				case Flint::DataType::Vec4_8:								return VK_FORMAT_R8G8B8A8_UINT;
+				case Flint::DataType::Vec4_16:							return VK_FORMAT_R16G16B16A16_SFLOAT;
+				case Flint::DataType::Vec4_32:							return VK_FORMAT_R32G32B32A32_SFLOAT;
+				case Flint::DataType::Vec4_64:							return VK_FORMAT_R64G64B64A64_SFLOAT;
 				default:														throw Flint::BackendError("Invalid vertex attribute type!");
 				}
 			}
