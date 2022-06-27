@@ -10,6 +10,7 @@
 #include "Core/Rasterizer.hpp"
 #include "Core/RayTracer.hpp"
 #include "Core/RasterizingProgram.hpp"
+#include "Core/StaticModel.hpp"
 
 #ifdef FLINT_DEBUG
 constexpr auto Validation = true;
@@ -39,9 +40,10 @@ int main()
 	auto window = device->createWindow("Sandbox");
 	auto rasterizer = device->createRasterizer(camera, window->getFrameCount(), { Flint::Defaults::ColorAttachmentDescription, Flint::Defaults::DepthAttachmentDescription });
 	auto rayTracer = device->createRayTracer(camera, window->getFrameCount());
+	auto model = device->createStaticModel(std::filesystem::path(FLINT_GLTF_ASSET_PATH) / "Sponza" / "glTF" / "Sponza.gltf");
 
-	window->attach(rasterizer);
-	//window.attach(rayTracer);
+	//window->attach(rasterizer);
+	window->attach(rayTracer);
 
 	Flint::FrameTimer timer;
 	while (!g_EventSystem.shouldClose())
@@ -73,6 +75,7 @@ int main()
 
 	const auto ss = timer.tick();
 
+	model->terminate();
 	rayTracer->terminate();
 	rasterizer->terminate();
 	program->terminate();

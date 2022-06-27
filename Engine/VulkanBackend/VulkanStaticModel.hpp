@@ -35,8 +35,14 @@ namespace Flint
 			void terminate() override;
 
 		private:
+			/**
+			 * Load the model data.
+			 */
+			void loadData();
+
+		private:
 			VulkanVertexStorage m_VertexStorage;
-			std::unique_ptr<VulkanBuffer> m_pIndexBuffer = nullptr;
+			std::shared_ptr<VulkanBuffer> m_pIndexBuffer = nullptr;
 		};
 	}
 }

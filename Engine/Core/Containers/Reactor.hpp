@@ -3,8 +3,11 @@
 
 #pragma once
 
+#include <queue>
+#include <mutex>
 #include <thread>
 #include <functional>
+#include <condition_variable>
 
 namespace Flint
 {
@@ -15,13 +18,35 @@ namespace Flint
 	{
 	public:
 		/**
-		 * Explicit constructor.
-		 *
-		 * @param thread The thread to run.
+		 * Default constructor.
 		 */
-		explicit Reactor(std::jthread&& thread) : m_WorkerThread(thread) {}
+		Reactor();
+
+		/**
+		 * Default destructor.
+		 */
+		~Reactor();
+
+		/**
+		 * Issue a new command to the reactor.
+		 *
+		 * @param function The function to run on the other thread.
+		 */
+		void issueCommand(std::function<void()>&& function);
 
 	private:
-		std::jthread m_WorkerThread;
+		/**
+		 * Worker function.
+		 * This function is run on the worker thread.
+		 */
+		void worker();
+
+	private:
+		std::jthread m_Worker;
+		std::queue<std::function<void()>> m_Functions;
+		std::condition_variable m_Conditional;
+		std::mutex m_Mutex;
+
+		bool m_bShouldRun = true;
 	};
 }

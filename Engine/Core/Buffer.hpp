@@ -24,6 +24,16 @@ namespace Flint
 		explicit Buffer(const std::shared_ptr<Device>& pDevice, uint64_t size, BufferUsage usage) : DeviceBoundObject(pDevice), m_Size(size), m_Usage(usage) {}
 
 		/**
+		 * Explicit constructor.
+		 *
+		 * @param pDevice The device to which the buffer is bound to.
+		 * @param size The buffer's size.
+		 * @param usage The buffer's usage.
+		 * @param pDataStore The data store pointer to copy everything from. Make sure that the raw buffer's size is the same or more than the buffer's size.
+		 */
+		explicit Buffer(const std::shared_ptr<Device>& pDevice, uint64_t size, BufferUsage usage, const std::byte* pDataStore) : DeviceBoundObject(pDevice), m_Size(size), m_Usage(usage) {}
+
+		/**
 		 * Default virtual destructor.
 		 */
 		virtual ~Buffer() = default;
@@ -41,13 +51,23 @@ namespace Flint
 		virtual void unmapMemory() = 0;
 
 		/**
+		 * Copy data from a raw data pointer.
+		 *
+		 * @param pData The data pointer.
+		 * @param size The size of the data to be copied.
+		 * @param srcOffset The data source's offset.
+		 * @param dstOffset The data destination's (this) offset.
+		 */
+		virtual void copyFrom(const std::byte* pData, uint64_t size, uint64_t srcOffset = 0, uint64_t dstOffset = 0) = 0;
+
+		/**
 		 * Copy content from another buffer to this.
 		 *
-		 * @param buffer The other buffer to copy from.
+		 * @param pBuffer The other buffer to copy from.
 		 * @param srcOffset The offset of the source buffer to copy from.
 		 * @param dstOffset The offset of the destination (this) buffer to copy to.
 		 */
-		virtual void copyFrom(const Buffer& buffer, uint64_t srcOffset = 0, uint64_t dstOffset = 0) = 0;
+		virtual void copyFrom(const Buffer* pBuffer, uint64_t srcOffset = 0, uint64_t dstOffset = 0) = 0;
 
 		/**
 		 * Get the buffer's size.

@@ -25,6 +25,9 @@ namespace Flint
 
 		void VulkanRayTracer::terminate()
 		{
+			// Wait idle to finish everything we have prior to this.
+			getDevice().as<VulkanDevice>()->waitIdle();
+
 			// Destroy the attachments.
 			m_pStorageAttachments.clear();
 

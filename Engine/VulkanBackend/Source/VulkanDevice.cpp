@@ -9,6 +9,7 @@
 #include "VulkanBackend/VulkanRayTracer.hpp"
 #include "VulkanBackend/VulkanWindow.hpp"
 #include "VulkanBackend/VulkanRasterizingProgram.hpp"
+#include "VulkanBackend/VulkanStaticModel.hpp"
 
 #include <set>
 #include <array>
@@ -153,6 +154,11 @@ namespace Flint
 			return std::make_shared<VulkanBuffer>(shared_from_this(), size, usage);
 		}
 
+		std::shared_ptr<Flint::Buffer> VulkanDevice::createBuffer(uint64_t size, BufferUsage usage, const std::byte* pDataStore)
+		{
+			return std::make_shared<VulkanBuffer>(shared_from_this(), size, usage, pDataStore);
+		}
+
 		std::shared_ptr<Flint::Rasterizer> VulkanDevice::createRasterizer(Camera& camera, uint32_t frameCount, std::vector<AttachmentDescription>&& attachmentDescriptions, Multisample multisample /*= Multisample::One*/, bool exclusiveBuffering /*= false*/)
 		{
 			return std::make_shared<VulkanRasterizer>(shared_from_this(), camera, frameCount, std::move(attachmentDescriptions), multisample, exclusiveBuffering);
@@ -171,6 +177,11 @@ namespace Flint
 		std::shared_ptr<Flint::RasterizingProgram> VulkanDevice::createRasterizingProgram(ShaderCode&& vertexShader, ShaderCode&& fragementShader)
 		{
 			return std::make_shared<VulkanRasterizingProgram>(shared_from_this(), std::move(vertexShader), std::move(fragementShader));
+		}
+
+		std::shared_ptr<Flint::StaticModel> VulkanDevice::createStaticModel(std::filesystem::path&& assetFile)
+		{
+			return std::make_shared<VulkanStaticModel>(shared_from_this(), std::move(assetFile));
 		}
 
 		void VulkanDevice::terminate()

@@ -55,6 +55,16 @@ namespace Flint
 			[[nodiscrad]] std::shared_ptr<Buffer> createBuffer(uint64_t size, BufferUsage usage) override;
 
 			/**
+			 * Create a new buffer.
+			 *
+			 * @param size The size of the buffer.
+			 * @param usage The buffer usage.
+			 * @param pDataStore The data store pointer to copy everything from. Make sure that the raw buffer's size is the same or more than the buffer's size.
+			 * @return The buffer pointer.
+			 */
+			[[nodiscrad]] std::shared_ptr<Buffer> createBuffer(uint64_t size, BufferUsage usage, const std::byte* pDataStore) override;
+
+			/**
 			 * Create a new rasterizer.
 			 *
 			 * @param camera The camera from which all the models are drawn from.
@@ -93,6 +103,14 @@ namespace Flint
 			 * @return The rasterizing program pointer.
 			 */
 			[[nodiscard]] std::shared_ptr<RasterizingProgram> createRasterizingProgram(ShaderCode&& vertexShader, ShaderCode&& fragementShader) override;
+
+			/**
+			 * Create a new static model.
+			 *
+			 * @param assetFile The asset file to load the data from.
+			 * @return The loaded static model.
+			 */
+			[[nodiscard]] std::shared_ptr<StaticModel> createStaticModel(std::filesystem::path&& assetFile) override;
 
 			/**
 			 * Terminate the object.

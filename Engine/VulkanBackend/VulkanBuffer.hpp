@@ -26,6 +26,16 @@ namespace Flint
 			explicit VulkanBuffer(const std::shared_ptr<VulkanDevice>& pDevice, uint64_t size, BufferUsage usage);
 
 			/**
+			 * Explicit constructor.
+			 *
+			 * @param pDevice The device to which the buffer is bound to.
+			 * @param size The buffer's size.
+			 * @param usage The buffer's usage.
+			 * @param pDataStore The data store pointer to copy everything from. Make sure that the raw buffer's size is the same or more than the buffer's size.
+			 */
+			explicit VulkanBuffer(const std::shared_ptr<VulkanDevice>& pDevice, uint64_t size, BufferUsage usage, const std::byte* pDataStore);
+
+			/**
 			 * Destructor.
 			 */
 			~VulkanBuffer() override;
@@ -48,13 +58,34 @@ namespace Flint
 			void unmapMemory() override;
 
 			/**
+			 * Copy data from a raw data pointer.
+			 *
+			 * @param pData The data pointer.
+			 * @param size The size of the data to be copied.
+			 * @param srcOffset The data source's offset.
+			 * @param dstOffset The data destination's (this) offset.
+			 */
+			void copyFrom(const std::byte* pData, uint64_t size, uint64_t srcOffset = 0, uint64_t dstOffset = 0) override;
+
+			/**
 			 * Copy content from another buffer to this.
 			 *
-			 * @param buffer The other buffer to copy from.
+			 * @param pBuffer The other buffer to copy from.
 			 * @param srcOffset The offset of the source buffer to copy from.
 			 * @param dstOffset The offset of the destination (this) buffer to copy to.
 			 */
-			void copyFrom(const Buffer& buffer, uint64_t srcOffset = 0, uint64_t dstOffset = 0) override;
+			void copyFrom(const Buffer* pBuffer, uint64_t srcOffset = 0, uint64_t dstOffset = 0) override;
+
+			/**
+			 * Copy content from another buffer to this.
+			 * This will record the copy command and store it in the command buffer.
+			 *
+			 * @param pCommandBuffer The command buffer to record the command in.
+			 * @param pBuffer The other buffer to copy from.
+			 * @param srcOffset The data source's offset.
+			 * @param dstOffset The data destination's (this) offset.
+			 */
+			void copyFromBatched(VulkanCommandBuffers* pCommandBuffer, const Buffer* pBuffer, uint64_t srcOffset = 0, uint64_t dstOffset = 0);
 
 			/**
 			 * Get the Vulkan buffer handle.
@@ -69,6 +100,12 @@ namespace Flint
 			 * @return The buffer info pointer.
 			 */
 			[[nodiscard]] const VkDescriptorBufferInfo* getDescriptorBufferInfo() const { return &m_DescriptorBufferInfo; }
+
+		private:
+			/**
+			 * Create the buffer and validate this object.
+			 */
+			void createBufferAndValidate();
 
 		private:
 			VkDescriptorBufferInfo m_DescriptorBufferInfo = {};

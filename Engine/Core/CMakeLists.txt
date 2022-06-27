@@ -55,6 +55,7 @@ add_library(
 	"Containers/SparseArray.hpp"
 	"Containers/BinaryMap.hpp" 
 	"Containers/Reactor.hpp" 
+	"Containers/WorkerGroup.hpp" 
 
 	"Camera/Camera.hpp"
 	"Camera/MonoCamera.hpp"
@@ -64,7 +65,7 @@ add_library(
 	"EventSystem/Mouse.hpp"
 
 	"Utility/Hasher.hpp" 
-)
+ "Source/Containers/Reactor.cpp")
 
 # Set the include directories.
 target_include_directories(

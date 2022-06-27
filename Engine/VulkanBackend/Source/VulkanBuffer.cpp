@@ -5,12 +5,121 @@
 #include "VulkanBackend/VulkanMacros.hpp"
 #include "VulkanBackend/VulkanCommandBuffers.hpp"
 
+#ifdef FLINT_PLATFORM_WINDOWS
+#	include <execution>
+
+#endif
+
 namespace Flint
 {
 	namespace VulkanBackend
 	{
 		VulkanBuffer::VulkanBuffer(const std::shared_ptr<VulkanDevice>& pDevice, uint64_t size, BufferUsage usage)
 			: Buffer(pDevice, size, usage)
+		{
+			createBufferAndValidate();
+		}
+
+		VulkanBuffer::VulkanBuffer(const std::shared_ptr<VulkanDevice>& pDevice, uint64_t size, BufferUsage usage, const std::byte* pDataStore)
+			: Buffer(pDevice, size, usage)
+		{
+			// Validate if we can copy the data or not.
+			if (usage == BufferUsage::Vertex || usage == BufferUsage::Index)
+				throw BackendError("Cannot copy the given data! Make sure that the buffer usage is mappable in order to be copied.");
+
+			createBufferAndValidate();
+			copyFrom(pDataStore, m_Size, 0, 0);
+		}
+
+		VulkanBuffer::~VulkanBuffer()
+		{
+			FLINT_TERMINATE_IF_VALID;
+		}
+
+		void VulkanBuffer::terminate()
+		{
+			vmaDestroyBuffer(getDevice().as<VulkanDevice>()->getAllocator(), m_Buffer, m_Allocation);
+			invalidate();
+		}
+
+		std::byte* VulkanBuffer::mapMemory()
+		{
+			std::byte* pDataPointer = nullptr;
+			FLINT_VK_ASSERT(vmaMapMemory(getDevice().as<VulkanDevice>()->getAllocator(), m_Allocation, reinterpret_cast<void**>(&pDataPointer)), "Failed to map the buffer memory!");
+
+			m_IsMapped = true;
+			return pDataPointer;
+		}
+
+		void VulkanBuffer::unmapMemory()
+		{
+			// We only need to unmap if we have mapped the memory.
+			if (m_IsMapped)
+			{
+				vmaUnmapMemory(getDevice().as<VulkanDevice>()->getAllocator(), m_Allocation);
+				m_IsMapped = false;
+			}
+		}
+
+		void VulkanBuffer::copyFrom(const std::byte* pData, uint64_t size, uint64_t srcOffset /*= 0*/, uint64_t dstOffset /*= 0*/)
+		{
+			const auto copySize = size - srcOffset;
+			const auto destinationSize = getSize() - dstOffset;
+
+			// Validate the incoming buffer and offsets.
+			if (copySize > destinationSize)
+				throw BackendError("The data to be copied cannot be stored within this buffer!");
+
+			else if (srcOffset > size)
+				throw BackendError("Invalid source offset!");
+
+			else if (dstOffset > m_Size)
+				throw BackendError("Invalid destination offset!");
+
+			auto pSource = pData + srcOffset;
+			auto pDestination = mapMemory() + dstOffset;
+
+#ifdef FLINT_PLATFORM_WINDOWS
+			std::copy_n(std::execution::unseq, pSource, size, pDestination);
+#else
+			std::copy_n(pSource, size, pDestination);
+
+#endif
+			unmapMemory();
+		}
+
+		void VulkanBuffer::copyFrom(const Buffer* pBuffer, uint64_t srcOffset /*= 0*/, uint64_t dstOffset /*= 0*/)
+		{
+			// Setup the command buffer and copy.
+			auto vCommandBuffer = VulkanCommandBuffers(getDevicePointerAs<VulkanDevice>());
+			vCommandBuffer.begin();
+
+			copyFromBatched(&vCommandBuffer, pBuffer, srcOffset, dstOffset);
+
+			vCommandBuffer.end();
+			vCommandBuffer.submitTransfer();
+			vCommandBuffer.finishExecution();
+		}
+
+		void VulkanBuffer::copyFromBatched(VulkanCommandBuffers* pCommandBuffer, const Buffer* pBuffer, uint64_t srcOffset /*= 0*/, uint64_t dstOffset /*= 0*/)
+		{
+			const auto copySize = pBuffer->getSize() - srcOffset;
+			const auto destinationSize = getSize() - dstOffset;
+
+			// Validate the incoming buffer and offsets.
+			if (copySize > destinationSize)
+				throw BackendError("The data to be copied cannot be stored within this buffer!");
+
+			else if (srcOffset > pBuffer->getSize())
+				throw BackendError("Invalid source offset!");
+
+			else if (dstOffset > m_Size)
+				throw BackendError("Invalid destination offset!");
+
+			pCommandBuffer->copyBuffer(pBuffer->as<VulkanBuffer>()->m_Buffer, copySize, srcOffset, m_Buffer, dstOffset);
+		}
+
+		void VulkanBuffer::createBufferAndValidate()
 		{
 			// Validate the inputs.
 			if (m_Size == 0)
@@ -21,15 +130,15 @@ namespace Flint
 			VmaMemoryUsage memoryUsage = VMA_MEMORY_USAGE_UNKNOWN;
 
 			// Setup usage.
-			switch (usage)
+			switch (m_Usage)
 			{
 			case BufferUsage::Vertex:
-				bufferUsage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+				bufferUsage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 				memoryUsage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
 				break;
 
 			case BufferUsage::Index:
-				bufferUsage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+				bufferUsage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 				memoryUsage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
 				break;
 
@@ -97,57 +206,6 @@ namespace Flint
 
 			// Make sure to set the object as valid.
 			validate();
-		}
-
-		VulkanBuffer::~VulkanBuffer()
-		{
-			FLINT_TERMINATE_IF_VALID;
-		}
-
-		void VulkanBuffer::terminate()
-		{
-			vmaDestroyBuffer(getDevice().as<VulkanDevice>()->getAllocator(), m_Buffer, m_Allocation);
-			invalidate();
-		}
-
-		std::byte* VulkanBuffer::mapMemory()
-		{
-			std::byte* pDataPointer = nullptr;
-			FLINT_VK_ASSERT(vmaMapMemory(getDevice().as<VulkanDevice>()->getAllocator(), m_Allocation, reinterpret_cast<void**>(&pDataPointer)), "Failed to map the buffer memory!");
-
-			m_IsMapped = true;
-			return pDataPointer;
-		}
-
-		void VulkanBuffer::unmapMemory()
-		{
-			// We only need to unmap if we have mapped the memory.
-			if (m_IsMapped)
-			{
-				vmaUnmapMemory(getDevice().as<VulkanDevice>()->getAllocator(), m_Allocation);
-				m_IsMapped = false;
-			}
-		}
-
-		void VulkanBuffer::copyFrom(const Buffer& buffer, uint64_t srcOffset /*= 0*/, uint64_t dstOffset /*= 0*/)
-		{
-			// Validate the incoming buffer and offsets.
-			if (buffer.getSize() + dstOffset > m_Size)
-				throw BackendError("The source buffer size is larger than what's available!");
-
-			else if (m_Size + dstOffset > m_Size)
-				throw BackendError("Invalid source offset!");
-
-			else if (buffer.getSize() + dstOffset > buffer.getSize())
-				throw BackendError("Invalid destination offset!");
-
-
-			// Copy the buffer.
-			auto vCommandBuffer = VulkanCommandBuffers(getDevicePointerAs<VulkanDevice>());
-			vCommandBuffer.begin();
-			vCommandBuffer.copyBuffer(buffer.as<VulkanBuffer>()->m_Buffer, buffer.getSize(), srcOffset, m_Buffer, dstOffset);
-			vCommandBuffer.end();
-			vCommandBuffer.submitTransfer();
 		}
 	}
 }

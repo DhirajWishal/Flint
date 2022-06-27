@@ -35,69 +35,34 @@ namespace Flint
 			 */
 			void terminate() override;
 
+			/**
+			 * Insert data to the vertex storage.
+			 *
+			 * @param attribute The attribute type of the data.
+			 * @param pStaggingBuffer The stagging buffer pointer to copy the data from.
+			 * @return The offset at which the newly inserted data are stored.
+			 */
+			[[nodiscard]] uint64_t insert(VertexAttribute attribute, const Buffer* pStaggingBuffer) override;
+
 		public:
 			/**
-			 * Get the buffer containing positional data.
+			 * Get the buffer containing required data.
 			 *
+			 * @param attribute The attribute to access.
 			 * @return The buffer pointer.
 			 */
-			[[nodiscard]] VulkanBuffer* getPositionBuffer() { return m_Positions.get(); }
+			[[nodiscard]] VulkanBuffer* getBuffer(VertexAttribute attribute) { return m_pBuffers[EnumToInt(attribute)].get(); }
 
 			/**
-			 * Get the buffer containing positional data.
+			 * Get the buffer containing required data.
 			 *
+			 * @param attribute The attribute to access.
 			 * @return The buffer pointer.
 			 */
-			[[nodiscard]] const VulkanBuffer* getPositionBuffer() const { return m_Positions.get(); }
-
-
-			/**
-			 * Get the buffer containing normal data.
-			 *
-			 * @return The buffer pointer.
-			 */
-			[[nodiscard]] VulkanBuffer* getNormalBuffer() { return m_Normals.get(); }
-
-			/**
-			 * Get the buffer containing normal data.
-			 *
-			 * @return The buffer pointer.
-			 */
-			[[nodiscard]] const VulkanBuffer* getNormalBuffer() const { return m_Normals.get(); }
-
-			/**
-			 * Get the buffer containing texture coordinate data.
-			 *
-			 * @return The buffer pointer.
-			 */
-			[[nodiscard]] VulkanBuffer* getTextureCoordinateBuffer() { return m_TextureCoordinates.get(); }
-
-			/**
-			 * Get the buffer containing texture coordinate data.
-			 *
-			 * @return The buffer pointer.
-			 */
-			[[nodiscard]] const VulkanBuffer* getTextureCoordinateBuffer() const { return m_TextureCoordinates.get(); }
-
-			/**
-			 * Get the buffer containing color data.
-			 *
-			 * @return The buffer pointer.
-			 */
-			[[nodiscard]] VulkanBuffer* getColorBuffer() { return m_Colors.get(); }
-
-			/**
-			 * Get the buffer containing color data.
-			 *
-			 * @return The buffer pointer.
-			 */
-			[[nodiscard]] const VulkanBuffer* getColorBuffer() const { return m_Colors.get(); }
+			[[nodiscard]] const VulkanBuffer* getBuffer(VertexAttribute attribute) const { return m_pBuffers[EnumToInt(attribute)].get(); }
 
 		private:
-			std::unique_ptr<VulkanBuffer> m_Positions = nullptr;
-			std::unique_ptr<VulkanBuffer> m_Normals = nullptr;
-			std::unique_ptr<VulkanBuffer> m_TextureCoordinates = nullptr;
-			std::unique_ptr<VulkanBuffer> m_Colors = nullptr;
+			std::array<std::shared_ptr<VulkanBuffer>, EnumToInt(VertexAttribute::Max)> m_pBuffers;
 		};
 	}
 }

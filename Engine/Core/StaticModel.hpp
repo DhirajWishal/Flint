@@ -10,18 +10,30 @@
 namespace Flint
 {
 	/**
-	 * Static mesh structure.
+	 * Static mesh class.
 	 */
-	struct StaticMesh final
+	class StaticMesh final
 	{
+	public:
+		/**
+		 * Attribute date array.
+		 * This contains the size and offset of each attribute in the buffer.
+		 */
+		struct AttributeData
+		{
+			uint8_t m_Stride = 0;	// Bytes.
+			uint64_t m_Size = 0;	// Count.
+			uint64_t m_Offset = 0;	// Bytes.
+		};
+
+	public:
+		std::array<AttributeData, EnumToInt(VertexAttribute::Max)> m_VertexData;
+
 		std::string m_Name;
 
 		uint64_t m_ResourceHash = 0;	// This is used to uniquely identify the mesh's resources when drawing.
 
-		uint64_t m_VertexOffset = 0;	// Bytes
 		uint64_t m_IndexOffset = 0;		// Bytes
-
-		uint32_t m_VertexCount = 0;		// Count
 		uint32_t m_IndexCount = 0;		// Count
 	};
 
@@ -31,17 +43,6 @@ namespace Flint
 	 */
 	class StaticModel : public DeviceBoundObject
 	{
-		/**
-		 * Vertex structure.
-		 * This structure contains information stored in a single vertex.
-		 */
-		struct Vertex final
-		{
-			glm::vec3 m_Position = glm::vec3(1.0f);
-			glm::vec3 m_Normal = glm::vec3(1.0f);
-			glm::vec2 m_TextureCoordinates = glm::vec2(0.0f);
-		};
-
 	public:
 		/**
 		 * Explicit constructor.

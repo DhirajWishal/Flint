@@ -16,6 +16,7 @@ namespace Flint
 	class RayTracer;
 	class Window;
 	class RasterizingProgram;
+	class StaticModel;
 
 	/**
 	 * Device class.
@@ -52,6 +53,16 @@ namespace Flint
 		 * @return The buffer pointer.
 		 */
 		[[nodiscrad]] virtual std::shared_ptr<Buffer> createBuffer(uint64_t size, BufferUsage usage) = 0;
+
+		/**
+		 * Create a new buffer.
+		 *
+		 * @param size The size of the buffer.
+		 * @param usage The buffer usage.
+		 * @param pDataStore The data store pointer to copy everything from. Make sure that the raw buffer's size is the same or more than the buffer's size.
+		 * @return The buffer pointer.
+		 */
+		[[nodiscrad]] virtual std::shared_ptr<Buffer> createBuffer(uint64_t size, BufferUsage usage, const std::byte* pDataStore) = 0;
 
 		/**
 		 * Create a new rasterizer.
@@ -92,6 +103,14 @@ namespace Flint
 		 * @return The rasterizing program pointer.
 		 */
 		[[nodiscard]] virtual std::shared_ptr<RasterizingProgram> createRasterizingProgram(ShaderCode&& vertexShader, ShaderCode&& fragementShader) = 0;
+
+		/**
+		 * Create a new static model.
+		 *
+		 * @param assetFile The asset file to load the data from.
+		 * @return The loaded static model.
+		 */
+		[[nodiscard]] virtual std::shared_ptr<StaticModel> createStaticModel(std::filesystem::path&& assetFile) = 0;
 
 		/**
 		 * Get the best depth pixel format.

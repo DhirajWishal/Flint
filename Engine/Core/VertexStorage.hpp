@@ -35,6 +35,15 @@ namespace Flint
 		 */
 		virtual ~VertexStorage() = default;
 
+		/**
+		 * Insert data to the vertex storage.
+		 *
+		 * @param attribute The attribute type of the data.
+		 * @param pStaggingBuffer The stagging buffer pointer to copy the data from.
+		 * @return The offset at which the newly inserted data are stored.
+		 */
+		virtual [[nodiscard]] uint64_t insert(VertexAttribute attribute, const Buffer* pStaggingBuffer) = 0;
+
 	protected:
 		const VertexMemoryType m_MemoryType = VertexMemoryType::Exclusive;
 	};
