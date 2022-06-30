@@ -312,7 +312,7 @@ namespace Flint
 			// Setup the queue families.
 			m_GraphicsQueue.m_Family = GetQueueFamily(m_PhysicalDevice, VK_QUEUE_GRAPHICS_BIT);
 			m_ComputeQueue.m_Family = GetQueueFamily(m_PhysicalDevice, VK_QUEUE_COMPUTE_BIT);
-			m_TransferQueue.m_Family = GetQueueFamily(m_PhysicalDevice, VK_QUEUE_TRANSFER_BIT);			
+			m_TransferQueue.m_Family = GetQueueFamily(m_PhysicalDevice, VK_QUEUE_TRANSFER_BIT);
 		}
 
 		void VulkanDevice::createLogicalDevice()
@@ -348,6 +348,8 @@ namespace Flint
 			features.geometryShader = VK_TRUE;
 			//features.vertexInputDynamicState = VK_TRUE;
 
+
+
 			// Setup the device create info.
 			VkDeviceCreateInfo deviceCreateInfo = {};
 			deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
@@ -361,6 +363,22 @@ namespace Flint
 			deviceCreateInfo.ppEnabledExtensionNames = m_DeviceExtensions.data();
 			deviceCreateInfo.pEnabledFeatures = &features;
 
+			// Enable the vertex input dynamic state if available.
+			VkPhysicalDeviceVertexInputDynamicStateFeaturesEXT enableVertexInputDynamicState = {};
+			enableVertexInputDynamicState.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_INPUT_DYNAMIC_STATE_FEATURES_EXT;
+			enableVertexInputDynamicState.pNext = nullptr;
+			enableVertexInputDynamicState.vertexInputDynamicState = VK_TRUE;
+
+			VkPhysicalDeviceFeatures2 physicalDeviceFeatures2 = {};
+			physicalDeviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+			physicalDeviceFeatures2.pNext = &enableVertexInputDynamicState;
+
+			vkGetPhysicalDeviceFeatures2(m_PhysicalDevice, &physicalDeviceFeatures2);
+
+			if (enableVertexInputDynamicState.vertexInputDynamicState)
+				deviceCreateInfo.pNext = &enableVertexInputDynamicState;
+
+			// Enable validation if requested.
 			if (getInstance().as<VulkanInstance>()->isValidationEnabled())
 			{
 				// Get the validation layers and initialize it.

@@ -30,7 +30,6 @@ namespace Flint
 
 		// Generate the hash for the whole structure.
 		const XXH64_hash_t hashes[] = {
-			XXH64(specification.m_CacheFile.native().data(), sizeof(PathCharacterType) * specification.m_CacheFile.native().size(), 0),
 			XXH64(reinterpret_cast<const std::byte*>(&specification) + offsetof(RasterizingPipelineSpecification, m_ColorBlendConstants), sizeof(RasterizingPipelineSpecification) - offsetof(RasterizingPipelineSpecification, m_ColorBlendConstants), 0),
 		};
 

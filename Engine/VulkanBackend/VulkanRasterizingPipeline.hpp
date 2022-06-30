@@ -59,23 +59,6 @@ namespace Flint
 
 		private:
 			/**
-			 * Resolve the shader information.
-			 *
-			 * @param code The shader code.
-			 * @param stageFlag The shader stage flag.
-			 * @param layoutBinding The descriptor set layout bindings.
-			 * @param pushConstants The push constants.
-			 */
-			 //void resolveShader(const Shader& code, VkShaderStageFlagBits stageFlag, std::vector<VkDescriptorSetLayoutBinding>& layoutBindings, std::vector<VkPushConstantRange>& pushConstants);
-
-			/**
-			 * Create the pipeline layout.
-			 *
-			 * @param pushConstants The push constants to bind.
-			 */
-			void createPipelineLayout(std::vector<VkPushConstantRange>&& pushConstants);
-
-			/**
 			 * Setup the default structures.
 			 *
 			 * @param specification The pipeline specification.

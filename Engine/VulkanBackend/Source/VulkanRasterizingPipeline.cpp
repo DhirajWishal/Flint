@@ -290,22 +290,6 @@ namespace Flint
 			// Load the cache if possible.
 			loadCache();
 
-			// Resolve shader information.
-			std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
-			std::vector<VkPushConstantRange> pushConstants;
-
-			// Resolve the information in the vertex shader.
-			//resolveShader(specification.m_VertexShader, VK_SHADER_STAGE_VERTEX_BIT, layoutBindings, pushConstants);
-
-			// Resolve the information in the fragment shader.
-			//resolveShader(specification.m_FragmentShader, VK_SHADER_STAGE_FRAGMENT_BIT, layoutBindings, pushConstants);
-
-			// Create the descriptor set layout.
-			setup(std::move(layoutBindings));
-
-			// Create the pipeline layouts.
-			createPipelineLayout(std::move(pushConstants));
-
 			// Setup the defaults.
 			setupDefaults(std::move(specification));
 
@@ -371,70 +355,11 @@ namespace Flint
 				m_pCacheHandler->store(buffer);
 		}
 
-		//void VulkanRasterizingPipeline::resolveShader(const Shader& code, VkShaderStageFlagBits stageFlag, std::vector<VkDescriptorSetLayoutBinding>& layoutBindings, std::vector<VkPushConstantRange>& pushConstants)
-		//{
-		//	// Resolve the descriptors.
-		//	for (const auto& binding : code.getBindings())
-		//	{
-		//		auto& layoutBinding = layoutBindings.emplace_back();
-		//		layoutBinding.binding = binding.m_Binding;
-		//		layoutBinding.descriptorCount = binding.m_Count;
-		//		layoutBinding.descriptorType = Utility::GetDescriptorType(binding.m_Type);
-		//		layoutBinding.pImmutableSamplers = nullptr;
-		//		layoutBinding.stageFlags = stageFlag;
-		//
-		//		auto& poolSize = m_PoolSizes.emplace_back();
-		//		poolSize.descriptorCount = layoutBinding.descriptorCount;
-		//		poolSize.type = layoutBinding.descriptorType;
-		//	}
-		//
-		//	// Resolve the push constants.
-		//	for (const auto& constant : code.getPushConstants())
-		//	{
-		//		auto& pushConstant = pushConstants.emplace_back();
-		//		pushConstant.stageFlags = stageFlag;
-		//		pushConstant.size = constant.m_Size;
-		//		pushConstant.offset = constant.m_Offset;
-		//	}
-		//
-		//	// Create the shader module.
-		//	VkShaderModuleCreateInfo createInfo = {};
-		//	createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-		//	createInfo.pNext = nullptr;
-		//	createInfo.flags = 0;
-		//	createInfo.codeSize = code.getCode().size();
-		//	createInfo.pCode = code.getCode().data();
-		//
-		//	VkShaderModule shaderModule = VK_NULL_HANDLE;
-		//	FLINT_VK_ASSERT(getDevice().as<VulkanDevice>()->getDeviceTable().vkCreateShaderModule(getDevice().as<VulkanDevice>()->getLogicalDevice(), &createInfo, nullptr, &shaderModule), "Failed to create the shader module!");
-		//
-		//	// Create the shader stage info.
-		//	auto& stageInfo = m_ShaderStageCreateInfo.emplace_back();
-		//	stageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-		//	stageInfo.pNext = nullptr;
-		//	stageInfo.flags = 0;
-		//	stageInfo.stage = stageFlag;
-		//	stageInfo.module = shaderModule;
-		//	stageInfo.pSpecializationInfo = nullptr;
-		//	stageInfo.pName = code.getEntryPoint().data();
-		//}
-
-		void VulkanRasterizingPipeline::createPipelineLayout(std::vector<VkPushConstantRange>&& pushConstants)
-		{
-			VkPipelineLayoutCreateInfo createInfo = {};
-			createInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-			createInfo.pNext = nullptr;
-			createInfo.flags = 0;
-			createInfo.pushConstantRangeCount = static_cast<uint32_t>(pushConstants.size());
-			createInfo.pPushConstantRanges = pushConstants.data();
-			createInfo.setLayoutCount = 1;
-			createInfo.pSetLayouts = &m_DescriptorSetLayout;
-
-			FLINT_VK_ASSERT(getDevice().as<VulkanDevice>()->getDeviceTable().vkCreatePipelineLayout(getDevice().as<VulkanDevice>()->getLogicalDevice(), &createInfo, nullptr, &m_PipelineLayout), "Failed to create the pipeline layout!");
-		}
-
 		void VulkanRasterizingPipeline::setupDefaults(const RasterizingPipelineSpecification& specification)
 		{
+			// Setup the shader stages.
+			m_ShaderStageCreateInfo = getProgram()->as<VulkanRasterizingProgram>()->getPipelineShaderStageCreateInfos();
+
 			// Setup the input bindings.
 			m_VertexInputStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 			m_VertexInputStateCreateInfo.pNext = nullptr;
@@ -576,7 +501,7 @@ namespace Flint
 			createInfo.pDepthStencilState = &m_DepthStencilStateCreateInfo;
 			createInfo.pColorBlendState = &m_ColorBlendStateCreateInfo;
 			createInfo.pDynamicState = &m_DynamicStateCreateInfo;
-			createInfo.layout = m_PipelineLayout;
+			createInfo.layout = m_pProgram->as<VulkanRasterizingProgram>()->getPipelineLayout();
 			createInfo.renderPass = m_pRasterizer->as<VulkanRasterizer>()->getRenderPass();
 			createInfo.subpass = 0;	// TODO
 			createInfo.basePipelineHandle = VK_NULL_HANDLE;

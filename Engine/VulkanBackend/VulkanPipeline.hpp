@@ -38,19 +38,11 @@ namespace Flint
 			 */
 			[[nodiscard]] VkPipeline getPipeline() const noexcept { return m_Pipeline; }
 
-			/**
-			 * Get the pipeline layout.
-			 *
-			 * @return The pipeline layout.
-			 */
-			[[nodiscard]] VkPipelineLayout getPipelineLayout() const noexcept { return m_PipelineLayout; }
-
 		private:
 			std::shared_ptr<VulkanDevice> m_pDevice = nullptr;
 
 		protected:
 			VkPipeline m_Pipeline = VK_NULL_HANDLE;
-			VkPipelineLayout m_PipelineLayout = VK_NULL_HANDLE;
 			VkPipelineCache m_PipelineCache = VK_NULL_HANDLE;
 		};
 	}

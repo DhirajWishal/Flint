@@ -5,6 +5,8 @@
 #include "VulkanBackend/VulkanMacros.hpp"
 #include "VulkanBackend/VulkanWindow.hpp"
 #include "VulkanBackend/VulkanRasterizer.hpp"
+#include "VulkanBackend/VulkanRasterizingPipeline.hpp"
+#include "VulkanBackend/VulkanRasterizingProgram.hpp"
 
 namespace Flint
 {
@@ -266,7 +268,7 @@ namespace Flint
 
 		void VulkanCommandBuffers::bindDescriptor(const VulkanRasterizingPipeline& pipeline, VkDescriptorSet descriptorSet) const noexcept
 		{
-			getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdBindDescriptorSets(m_CurrentCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getPipelineLayout(), 0, 1, &descriptorSet, 0, nullptr);
+			getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdBindDescriptorSets(m_CurrentCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getProgram()->as<VulkanRasterizingProgram>()->getPipelineLayout(), 0, 1, &descriptorSet, 0, nullptr);
 		}
 
 		void VulkanCommandBuffers::end()

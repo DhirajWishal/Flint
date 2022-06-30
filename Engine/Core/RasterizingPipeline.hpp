@@ -6,6 +6,8 @@
 #include "Pipeline.hpp"
 #include "RasterizingProgram.hpp"
 
+#include "Errors/InvalidArgumentError.hpp"
+
 #include <functional>
 
 namespace Flint
@@ -292,7 +294,12 @@ namespace Flint
 		 * @param pCacheHandler The pipeline cache handler. Default is nullptr.
 		 */
 		explicit RasterizingPipeline(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Rasterizer>& pRasterizer, const std::shared_ptr<RasterizingProgram>& pProgram, const RasterizingPipelineSpecification& specification, std::unique_ptr<PipelineCacheHandler>&& pCacheHandler = nullptr)
-			: Pipeline(pDevice, std::move(pCacheHandler)), m_pRasterizer(pRasterizer), m_pProgram(pProgram), m_Specification(specification) {}
+			: Pipeline(pDevice, std::move(pCacheHandler)), m_pRasterizer(pRasterizer), m_pProgram(pProgram), m_Specification(specification)
+		{
+			// Validate the program pointer.
+			if (!pProgram)
+				throw InvalidArgumentError("Program pointer should not be null!");
+		}
 
 		/**
 		 * Default virtual destructor.
@@ -319,6 +326,13 @@ namespace Flint
 		 * @return The specification reference.
 		 */
 		[[nodiscard]] const RasterizingPipelineSpecification& getSpecification() const { return m_Specification; }
+
+		/**
+		 * Get the program pointer.
+		 *
+		 * @return The pointer.
+		 */
+		[[nodiscard]] const RasterizingProgram* getProgram() const { return m_pProgram.get(); }
 
 	protected:
 		std::shared_ptr<Rasterizer> m_pRasterizer = nullptr;

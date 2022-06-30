@@ -20,6 +20,7 @@ add_library(
 
 	"Source/StaticInitializer.cpp"
 	"Source/ShaderCode.cpp"
+	"Source/PipelineCacheHandler.cpp"
 		
 	"Source/EventSystem/EventSystem.cpp"
 
@@ -52,6 +53,7 @@ add_library(
 	
 	"Errors/AssetError.hpp"
 	"Errors/BackendError.hpp" 
+	"Errors/InvalidArgumentError.hpp" 
 	
 	"Containers/Bitset.hpp" 
 	"Containers/FlatSet.hpp" 
@@ -68,7 +70,7 @@ add_library(
 	"EventSystem/Mouse.hpp"
 
 	"Utility/Hasher.hpp" 
- "Source/PipelineCacheHandler.cpp")
+)
 
 # Set the include directories.
 target_include_directories(

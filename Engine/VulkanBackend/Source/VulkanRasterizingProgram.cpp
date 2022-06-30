@@ -227,6 +227,15 @@ namespace Flint
 			VkShaderModule shaderModule = VK_NULL_HANDLE;
 			FLINT_VK_ASSERT(getDevice().as<VulkanDevice>()->getDeviceTable().vkCreateShaderModule(getDevice().as<VulkanDevice>()->getLogicalDevice(), &createInfo, nullptr, &shaderModule), "Failed to create the shader module!");
 
+			auto& shaderStage = m_ShaderStageCreateInfos.emplace_back();
+			shaderStage.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+			shaderStage.flags = 0;
+			shaderStage.pNext = nullptr;
+			shaderStage.module = shaderModule;
+			shaderStage.pSpecializationInfo = nullptr;
+			shaderStage.stage = static_cast<VkShaderStageFlagBits>(stageFlags);
+			shaderStage.pName = "main";
+
 			return shaderModule;
 		}
 

@@ -57,6 +57,20 @@ namespace Flint
 			 */
 			void terminate() override;
 
+			/**
+			 * Get the pipeline layout.
+			 *
+			 * @return The pipeline layout.
+			 */
+			[[nodiscard]] VkPipelineLayout getPipelineLayout() const { return m_PipelineLayout; }
+
+			/**
+			 * Get the shader stage create info structures.
+			 *
+			 * @return The structure vector.
+			 */
+			[[nodiscard]] const std::vector<VkPipelineShaderStageCreateInfo>& getPipelineShaderStageCreateInfos() const { return m_ShaderStageCreateInfos; }
+
 		private:
 			/**
 			 * Create a shader module.
@@ -88,6 +102,7 @@ namespace Flint
 			SparseArray<VkDescriptorSet> m_DescriptorSets;
 			std::vector<VertexInput> m_VertexInputs;
 			std::vector<InstanceInput> m_InstanceInputs;
+			std::vector<VkPipelineShaderStageCreateInfo> m_ShaderStageCreateInfos;
 
 			VkShaderModule m_VertexShaderModule = VK_NULL_HANDLE;
 			VkShaderModule m_FragmentShaderModule = VK_NULL_HANDLE;

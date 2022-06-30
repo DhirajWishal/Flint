@@ -6,6 +6,7 @@
 #include "VulkanBackend/VulkanColorAttachment.hpp"
 #include "VulkanBackend/VulkanDepthAttachment.hpp"
 #include "VulkanBackend/VulkanRasterizingPipeline.hpp"
+#include "VulkanBackend/VulkanRasterizingProgram.hpp"
 
 #include "Core/Utility/Hasher.hpp"
 
@@ -130,7 +131,7 @@ namespace Flint
 
 		std::shared_ptr<Flint::RasterizingPipeline> VulkanRasterizer::createPipeline(const std::shared_ptr<RasterizingProgram>& pRasterizingProgram, const RasterizingPipelineSpecification& specification, std::unique_ptr<PipelineCacheHandler>&& pCacheHandler /*= nullptr*/)
 		{
-			return std::make_shared<VulkanRasterizingPipeline>(getDevice(), shared_from_this(), pRasterizingProgram, specification, std::move(pCacheHandler));
+			return std::make_shared<VulkanRasterizingPipeline>(getDevicePointerAs<VulkanDevice>(), shared_from_this(), std::static_pointer_cast<VulkanRasterizingProgram>(pRasterizingProgram), specification, std::move(pCacheHandler));
 		}
 
 		void VulkanRasterizer::createAttachments()

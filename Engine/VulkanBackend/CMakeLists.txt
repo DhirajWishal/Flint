@@ -51,7 +51,6 @@ add_library(
 	"VulkanStorageAttachment.hpp"
 	"VulkanStaticModel.hpp"
 	"VulkanVertexStorage.hpp"
-
 	"Exporter.hpp"
 )
 
