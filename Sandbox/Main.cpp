@@ -26,7 +26,19 @@ constexpr auto Validation = false;
 
 #endif
 
+// Global event system instance.
 static Flint::EventSystem g_EventSystem;
+
+/**
+ * Get the default pipeline specification.
+ *
+ * @return The specification.
+ */
+[[nodiscard]] Flint::RasterizingPipelineSpecification GetDefaultSpecification()
+{
+	Flint::RasterizingPipelineSpecification specification;
+	return specification;
+}
 
 int main()
 {
@@ -42,12 +54,14 @@ int main()
 	auto rayTracer = device->createRayTracer(camera, window->getFrameCount());
 	auto model = device->createStaticModel(std::filesystem::path(FLINT_GLTF_ASSET_PATH) / "Sponza" / "glTF" / "Sponza.gltf");
 
+	auto defaultPipeline = rasterizer->createPipeline(program, GetDefaultSpecification(), std::make_unique<Flint::Defaults::FilePipelineCacheHandler>("Cache/default.fpc"));
+
 	// auto occlusionPipeline = rasterizer->createPipeline(occlusionProgram, getOcclusionSpecification());
 	// auto drawEntry = occlusionPipeline->register(model);
 	// drawEntry->instance(position(), rotation(), scale());
 
-	//window->attach(rasterizer);
-	window->attach(rayTracer);
+	window->attach(rasterizer);
+	//window->attach(rayTracer);
 
 	Flint::FrameTimer timer;
 	while (!g_EventSystem.shouldClose())
@@ -79,6 +93,7 @@ int main()
 
 	const auto ss = timer.tick();
 
+	defaultPipeline->terminate();
 	model->terminate();
 	rayTracer->terminate();
 	rasterizer->terminate();

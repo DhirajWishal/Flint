@@ -89,7 +89,7 @@ namespace Flint
 		VulkanRasterizingProgram::VulkanRasterizingProgram(const std::shared_ptr<VulkanDevice>& pDevice, ShaderCode&& vertexShader, ShaderCode&& fragmetShader)
 			: RasterizingProgram(pDevice, std::move(vertexShader), std::move(fragmetShader))
 		{
-			std::unordered_map<uint32_t, std::vector<VkDescriptorSetLayoutBinding>> layoutBindings;
+			std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
 			std::vector<VkDescriptorPoolSize> poolSizes;
 			std::vector<VkPushConstantRange> pushConstants;
 
@@ -99,6 +99,10 @@ namespace Flint
 
 			if (!m_FragmentShader.empty())
 				m_FragmentShaderModule = createShaderModule(m_FragmentShader, VK_SHADER_STAGE_FRAGMENT_BIT, layoutBindings, poolSizes, pushConstants);
+
+			// Create the descriptor set layout and the pipeline layout.
+			createDescriptorSetLayout(std::move(layoutBindings));
+			createPipelineLayout(std::move(pushConstants));
 
 			// Make sure to set the object as valid.
 			validate();
@@ -117,10 +121,13 @@ namespace Flint
 			if (m_FragmentShaderModule)
 				getDevice().as<VulkanDevice>()->getDeviceTable().vkDestroyShaderModule(getDevice().as<VulkanDevice>()->getLogicalDevice(), m_FragmentShaderModule, nullptr);
 
+			getDevice().as<VulkanDevice>()->getDeviceTable().vkDestroyDescriptorSetLayout(getDevice().as<VulkanDevice>()->getLogicalDevice(), m_DescriptorSetLayout, nullptr);
+			getDevice().as<VulkanDevice>()->getDeviceTable().vkDestroyPipelineLayout(getDevice().as<VulkanDevice>()->getLogicalDevice(), m_PipelineLayout, nullptr);
+
 			invalidate();
 		}
 
-		VkShaderModule VulkanRasterizingProgram::createShaderModule(const ShaderCode& shader, VkShaderStageFlags stageFlags, std::unordered_map<uint32_t, std::vector<VkDescriptorSetLayoutBinding>>& bindingMap, std::vector<VkDescriptorPoolSize>& poolSizes, std::vector<VkPushConstantRange>& pushConstants)
+		VkShaderModule VulkanRasterizingProgram::createShaderModule(const ShaderCode& shader, VkShaderStageFlags stageFlags, std::vector<VkDescriptorSetLayoutBinding>& bindings, std::vector<VkDescriptorPoolSize>& poolSizes, std::vector<VkPushConstantRange>& pushConstants)
 		{
 			const auto& shaderCode = shader.get();
 
@@ -178,7 +185,7 @@ namespace Flint
 				// Iterate over the resources and setup the bindings.
 				for (const auto& pResource : pBindings)
 				{
-					auto& binding = bindingMap[pResource->set].emplace_back();
+					auto& binding = bindings.emplace_back();
 					binding.binding = pResource->binding;
 					binding.descriptorCount = pResource->count;
 					binding.descriptorType = GetDescriptorType(pResource->descriptor_type);
@@ -221,6 +228,32 @@ namespace Flint
 			FLINT_VK_ASSERT(getDevice().as<VulkanDevice>()->getDeviceTable().vkCreateShaderModule(getDevice().as<VulkanDevice>()->getLogicalDevice(), &createInfo, nullptr, &shaderModule), "Failed to create the shader module!");
 
 			return shaderModule;
+		}
+
+		void VulkanRasterizingProgram::createDescriptorSetLayout(std::vector<VkDescriptorSetLayoutBinding>&& bindings)
+		{
+			VkDescriptorSetLayoutCreateInfo createInfo = {};
+			createInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+			createInfo.flags = 0;
+			createInfo.pNext = nullptr;
+			createInfo.bindingCount = static_cast<uint32_t>(bindings.size());
+			createInfo.pBindings = bindings.data();
+
+			FLINT_VK_ASSERT(getDevice().as<VulkanDevice>()->getDeviceTable().vkCreateDescriptorSetLayout(getDevice().as<VulkanDevice>()->getLogicalDevice(), &createInfo, nullptr, &m_DescriptorSetLayout), "Failed to create the descriptor set layout!");
+		}
+
+		void VulkanRasterizingProgram::createPipelineLayout(std::vector<VkPushConstantRange>&& pushConstants)
+		{
+			VkPipelineLayoutCreateInfo createInfo = {};
+			createInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+			createInfo.flags = 0;
+			createInfo.pNext = nullptr;
+			createInfo.pushConstantRangeCount = static_cast<uint32_t>(pushConstants.size());
+			createInfo.pPushConstantRanges = pushConstants.data();
+			createInfo.setLayoutCount = 1;
+			createInfo.pSetLayouts = &m_DescriptorSetLayout;
+
+			FLINT_VK_ASSERT(getDevice().as<VulkanDevice>()->getDeviceTable().vkCreatePipelineLayout(getDevice().as<VulkanDevice>()->getLogicalDevice(), &createInfo, nullptr, &m_PipelineLayout), "Failed to create the pipeline layout!");
 		}
 	}
 }

@@ -12,6 +12,7 @@ namespace Flint
 	namespace VulkanBackend
 	{
 		class VulkanRasterizer;
+		class VulkanRasterizingProgram;
 
 		/**
 		 * Vulkan rasterizing pipeline class.
@@ -25,9 +26,11 @@ namespace Flint
 			 *
 			 * @param pDevice The device to which the pipeline is bound to.
 			 * @param pRasterizer The rasterizer to which the pipeline is bound to.
+			 * @param pProgram The rasterizing program used in the pipeline.
 			 * @param specification The pipeline specification.
+			 * @param pCacheHandler The pipeline cache handler. Default is nullptr.
 			 */
-			explicit VulkanRasterizingPipeline(const std::shared_ptr<VulkanDevice>& pDevice, const std::shared_ptr<VulkanRasterizer>& pRasterizer, const RasterizingPipelineSpecification& specification);
+			explicit VulkanRasterizingPipeline(const std::shared_ptr<VulkanDevice>& pDevice, const std::shared_ptr<VulkanRasterizer>& pRasterizer, const std::shared_ptr<VulkanRasterizingProgram>& pProgram, const RasterizingPipelineSpecification& specification, std::unique_ptr<PipelineCacheHandler>&& pCacheHandler = nullptr);
 
 			/**
 			 * Destructor.
@@ -44,6 +47,16 @@ namespace Flint
 			 */
 			void recreate();
 
+			/**
+			 * Load the pipeline cache from the handler if possible.
+			 */
+			void loadCache() override;
+
+			/**
+			 * Save the pipeline cache from the handler if possible.
+			 */
+			void saveCache() override;
+
 		private:
 			/**
 			 * Resolve the shader information.
@@ -55,11 +68,11 @@ namespace Flint
 			 */
 			 //void resolveShader(const Shader& code, VkShaderStageFlagBits stageFlag, std::vector<VkDescriptorSetLayoutBinding>& layoutBindings, std::vector<VkPushConstantRange>& pushConstants);
 
-			 /**
-			  * Create the pipeline layout.
-			  *
-			  * @param pushConstants The push constants to bind.
-			  */
+			/**
+			 * Create the pipeline layout.
+			 *
+			 * @param pushConstants The push constants to bind.
+			 */
 			void createPipelineLayout(std::vector<VkPushConstantRange>&& pushConstants);
 
 			/**

@@ -68,7 +68,7 @@ add_library(
 	"EventSystem/Mouse.hpp"
 
 	"Utility/Hasher.hpp" 
-)
+ "Source/PipelineCacheHandler.cpp")
 
 # Set the include directories.
 target_include_directories(

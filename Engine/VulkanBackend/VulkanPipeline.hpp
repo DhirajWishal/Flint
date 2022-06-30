@@ -22,9 +22,8 @@ namespace Flint
 			 * Explicit constructor.
 			 *
 			 * @param pDevice The Vulkan engine.
-			 * @param cacheFile The cache file name.
 			 */
-			explicit VulkanPipeline(const std::shared_ptr<VulkanDevice>& pDevice, const std::filesystem::path& cacheFile);
+			explicit VulkanPipeline(const std::shared_ptr<VulkanDevice>& pDevice);
 
 			/**
 			 * Virtual destructor.
@@ -47,20 +46,6 @@ namespace Flint
 			[[nodiscard]] VkPipelineLayout getPipelineLayout() const noexcept { return m_PipelineLayout; }
 
 		private:
-			/**
-			 * Load the pipeline cache from the file.
-			 */
-			void loadCache();
-
-		protected:
-			/**
-			 * Save the pipeline cache to the file.
-			 */
-			void saveCache();
-
-		private:
-			std::filesystem::path m_CacheFile;
-
 			std::shared_ptr<VulkanDevice> m_pDevice = nullptr;
 
 		protected:

@@ -21,9 +21,9 @@ namespace Flint
 			 * Explicit constructor.
 			 *
 			 * @param pDevice The device to which the pipeline is bound to.
-			 * @param cacheFile The cache file to save the pipeline cache to.
+			 * @param pCacheHandler The pipeline cache handler used to handle the pipeline cache. Default is nullptr.
 			 */
-			explicit VulkanRayTracingPipeline(const std::shared_ptr<VulkanDevice>& pDevice, std::filesystem::path&& cacheFile);
+			explicit VulkanRayTracingPipeline(const std::shared_ptr<VulkanDevice>& pDevice, std::unique_ptr<PipelineCacheHandler>&& pCacheHandler = nullptr);
 
 			/**
 			 * Destructor.
@@ -34,6 +34,16 @@ namespace Flint
 			 * Terminate the object.
 			 */
 			void terminate() override;
+
+			/**
+			 * Load the pipeline cache from the handler if possible.
+			 */
+			void loadCache() override;
+
+			/**
+			 * Save the pipeline cache from the handler if possible.
+			 */
+			void saveCache() override;
 		};
 	}
 }

@@ -18,7 +18,7 @@ namespace Flint
 		/**
 		 * Vulkan rasterizer class.
 		 */
-		class VulkanRasterizer final : public Rasterizer
+		class VulkanRasterizer final : public std::enable_shared_from_this<VulkanRasterizer>, public Rasterizer
 		{
 		public:
 			/**
@@ -76,9 +76,10 @@ namespace Flint
 			 *
 			 * @param pRasterizingProgram The rasterizing program pointer.
 			 * @param specification The pipeline specification.
+			 * @param pCacheHandler The pipeline cache handler. Default is nullptr.
 			 * @return The created pipeline pointer.
 			 */
-			[[nodiscard]] std::shared_ptr<RasterizingPipeline> createPipeline(const std::shared_ptr<RasterizingProgram>& pRasterizingProgram, const RasterizingPipelineSpecification& specification) override;
+			[[nodiscard]] std::shared_ptr<RasterizingPipeline> createPipeline(const std::shared_ptr<RasterizingProgram>& pRasterizingProgram, const RasterizingPipelineSpecification& specification, std::unique_ptr<PipelineCacheHandler>&& pCacheHandler = nullptr) override;
 
 			/**
 			 * Get the render pass.

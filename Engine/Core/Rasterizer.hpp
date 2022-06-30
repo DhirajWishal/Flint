@@ -6,7 +6,6 @@
 #include "RenderTarget.hpp"
 #include "Types.hpp"
 
-#include "RasterizingProgram.hpp"
 #include "RasterizingPipeline.hpp"
 
 namespace Flint
@@ -50,9 +49,10 @@ namespace Flint
 		 *
 		 * @param pRasterizingProgram The rasterizing program pointer.
 		 * @param specification The pipeline specification.
+		 * @param pCacheHandler The pipeline cache handler. Default is nullptr.
 		 * @return The created pipeline pointer.
 		 */
-		[[nodiscard]] virtual std::shared_ptr<RasterizingPipeline> createPipeline(const std::shared_ptr<RasterizingProgram>& pRasterizingProgram, const RasterizingPipelineSpecification& specification) = 0;
+		[[nodiscard]] virtual std::shared_ptr<RasterizingPipeline> createPipeline(const std::shared_ptr<RasterizingProgram>& pRasterizingProgram, const RasterizingPipelineSpecification& specification, std::unique_ptr<PipelineCacheHandler>&& pCacheHandler = nullptr) = 0;
 
 	protected:
 		const Multisample m_Multisample = Multisample::One;

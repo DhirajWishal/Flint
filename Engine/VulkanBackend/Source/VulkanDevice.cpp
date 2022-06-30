@@ -232,6 +232,7 @@ namespace Flint
 			// Set up the device extensions.
 			m_DeviceExtensions.emplace_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
 			m_DeviceExtensions.emplace_back(VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME);
+			m_DeviceExtensions.emplace_back(VK_EXT_VERTEX_INPUT_DYNAMIC_STATE_EXTENSION_NAME);
 
 			// Enumerate physical devices.
 			uint32_t deviceCount = 0;
@@ -311,7 +312,7 @@ namespace Flint
 			// Setup the queue families.
 			m_GraphicsQueue.m_Family = GetQueueFamily(m_PhysicalDevice, VK_QUEUE_GRAPHICS_BIT);
 			m_ComputeQueue.m_Family = GetQueueFamily(m_PhysicalDevice, VK_QUEUE_COMPUTE_BIT);
-			m_TransferQueue.m_Family = GetQueueFamily(m_PhysicalDevice, VK_QUEUE_TRANSFER_BIT);
+			m_TransferQueue.m_Family = GetQueueFamily(m_PhysicalDevice, VK_QUEUE_TRANSFER_BIT);			
 		}
 
 		void VulkanDevice::createLogicalDevice()
@@ -345,6 +346,7 @@ namespace Flint
 			features.sampleRateShading = VK_TRUE;
 			features.tessellationShader = VK_TRUE;
 			features.geometryShader = VK_TRUE;
+			//features.vertexInputDynamicState = VK_TRUE;
 
 			// Setup the device create info.
 			VkDeviceCreateInfo deviceCreateInfo = {};

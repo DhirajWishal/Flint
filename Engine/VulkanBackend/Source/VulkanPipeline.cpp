@@ -10,77 +10,17 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanPipeline::VulkanPipeline(const std::shared_ptr<VulkanDevice>& pDevice, const std::filesystem::path& cacheFile)
-			: m_CacheFile(cacheFile), m_pDevice(pDevice)
+		VulkanPipeline::VulkanPipeline(const std::shared_ptr<VulkanDevice>& pDevice)
+			: m_pDevice(pDevice)
 		{
-			// Load the cache if possible.
-			loadCache();
 		}
 
 		VulkanPipeline::~VulkanPipeline()
 		{
-			// Save the cache before we leave.
-			saveCache();
-
 			// Destroy the resources.
 			m_pDevice->getDeviceTable().vkDestroyPipeline(m_pDevice->getLogicalDevice(), m_Pipeline, nullptr);
 			m_pDevice->getDeviceTable().vkDestroyPipelineCache(m_pDevice->getLogicalDevice(), m_PipelineCache, nullptr);
 			m_pDevice->getDeviceTable().vkDestroyPipelineLayout(m_pDevice->getLogicalDevice(), m_PipelineLayout, nullptr);
-		}
-
-		void VulkanPipeline::loadCache()
-		{
-			// Load data from file.
-			std::fstream cacheFile(m_CacheFile, std::ios::in | std::ios::ate | std::ios::binary);
-
-			uint64_t size = 0;
-			std::unique_ptr<uint8_t[]> buffer;
-
-			// If file does not exist, return without an issue.
-			if (cacheFile.is_open())
-			{
-				size = cacheFile.tellg();
-				cacheFile.seekg(0);
-
-				buffer = std::make_unique<uint8_t[]>(size);
-				cacheFile.read(reinterpret_cast<char*>(buffer.get()), size);
-
-				cacheFile.close();
-			}
-
-			// Create the pipeline cache.
-			VkPipelineCacheCreateInfo createInfo = {};
-			createInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
-			createInfo.pNext = VK_NULL_HANDLE;
-			createInfo.flags = 0;
-			createInfo.initialDataSize = size;
-			createInfo.pInitialData = buffer.get();
-
-			FLINT_VK_ASSERT(m_pDevice->getDeviceTable().vkCreatePipelineCache(m_pDevice->getLogicalDevice(), &createInfo, nullptr, &m_PipelineCache), "Failed to create the pipeline cache!");
-		}
-
-		void VulkanPipeline::saveCache()
-		{
-			// Return if we don't have anything to save.
-			if (m_PipelineCache == VK_NULL_HANDLE)
-				return;
-
-			// Load cache data.
-			size_t cacheSize = 0;
-			FLINT_VK_ASSERT(m_pDevice->getDeviceTable().vkGetPipelineCacheData(m_pDevice->getLogicalDevice(), m_PipelineCache, &cacheSize, nullptr), "Failed to get the pipeline cache size!");
-
-			auto buffer = std::make_unique<uint8_t[]>(cacheSize);
-			FLINT_VK_ASSERT(m_pDevice->getDeviceTable().vkGetPipelineCacheData(m_pDevice->getLogicalDevice(), m_PipelineCache, &cacheSize, buffer.get()), "Failed to get the pipeline cache data!");
-
-			// Write to file.
-			std::fstream cacheFile(m_CacheFile, std::ios::out | std::ios::binary);
-
-			// Write the data if we were able to open the file.
-			if (cacheFile.is_open())
-				cacheFile.write(reinterpret_cast<char*>(buffer.get()), cacheSize);
-
-			cacheFile.flush();
-			cacheFile.close();
 		}
 	}
 }

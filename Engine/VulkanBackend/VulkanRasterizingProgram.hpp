@@ -63,22 +63,36 @@ namespace Flint
 			 *
 			 * @param shader The shader source.
 			 * @param stageFlags The shader stage flags.
-			 * @param bindingMap The layout binding map.
+			 * @param bindings The layout bindings.
 			 * @param poolSizes The pool sizes.
 			 * @param pushConstants The shader push constants.
 			 * @return The created shader module.
 			 */
-			[[nodiscard]] VkShaderModule createShaderModule(const ShaderCode& shader, VkShaderStageFlags stageFlags, std::unordered_map<uint32_t, std::vector<VkDescriptorSetLayoutBinding>>& bindingMap, std::vector<VkDescriptorPoolSize>& poolSizes, std::vector<VkPushConstantRange>& pushConstants);
+			[[nodiscard]] VkShaderModule createShaderModule(const ShaderCode& shader, VkShaderStageFlags stageFlags, std::vector<VkDescriptorSetLayoutBinding>& bindings, std::vector<VkDescriptorPoolSize>& poolSizes, std::vector<VkPushConstantRange>& pushConstants);
+
+			/**
+			 * Create the descriptor set layout.
+			 *
+			 * @param bindings The descriptor set layout bindings.
+			 */
+			void createDescriptorSetLayout(std::vector<VkDescriptorSetLayoutBinding>&& bindings);
+
+			/**
+			 * Create the pipeline layouts.
+			 *
+			 * @param pushConstants The push constants used by the shader.
+			 */
+			void createPipelineLayout(std::vector<VkPushConstantRange>&& pushConstants);
 
 		private:
 			SparseArray<VkDescriptorSet> m_DescriptorSets;
-			std::vector<VkDescriptorSetLayout> m_SetLayouts;
 			std::vector<VertexInput> m_VertexInputs;
 			std::vector<InstanceInput> m_InstanceInputs;
 
 			VkShaderModule m_VertexShaderModule = VK_NULL_HANDLE;
 			VkShaderModule m_FragmentShaderModule = VK_NULL_HANDLE;
 
+			VkDescriptorSetLayout m_DescriptorSetLayout = VK_NULL_HANDLE;
 			VkPipelineLayout m_PipelineLayout = VK_NULL_HANDLE;
 			VkDescriptorPool m_DescriptorPool = VK_NULL_HANDLE;
 		};

@@ -4,6 +4,7 @@
 #include "VulkanBackend/VulkanRasterizingPipeline.hpp"
 #include "VulkanBackend/VulkanRasterizer.hpp"
 #include "VulkanBackend/VulkanMacros.hpp"
+#include "VulkanBackend/VulkanRasterizingProgram.hpp"
 
 #ifdef FLINT_PLATFORM_WINDOWS
 #	include <execution>
@@ -156,6 +157,8 @@ namespace /* anonymous */
 		if ((flags & Flint::DynamicStateFlags::BlendConstants) == Flint::DynamicStateFlags::BlendConstants) states.emplace_back(VK_DYNAMIC_STATE_BLEND_CONSTANTS);
 		if ((flags & Flint::DynamicStateFlags::DepthBounds) == Flint::DynamicStateFlags::DepthBounds) states.emplace_back(VK_DYNAMIC_STATE_DEPTH_BOUNDS);
 
+
+		states.emplace_back(VK_DYNAMIC_STATE_VERTEX_INPUT_EXT);	// This is needed for the input bindings.
 		return states;
 	}
 
@@ -279,11 +282,14 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanRasterizingPipeline::VulkanRasterizingPipeline(const std::shared_ptr<VulkanDevice>& pDevice, const std::shared_ptr<VulkanRasterizer>& pRasterizer, const RasterizingPipelineSpecification& specification)
-			: RasterizingPipeline(std::static_pointer_cast<Device>(pDevice), std::static_pointer_cast<Rasterizer>(pRasterizer), specification)
-			, VulkanPipeline(pDevice, specification.m_CacheFile)
+		VulkanRasterizingPipeline::VulkanRasterizingPipeline(const std::shared_ptr<VulkanDevice>& pDevice, const std::shared_ptr<VulkanRasterizer>& pRasterizer, const std::shared_ptr<VulkanRasterizingProgram>& pProgram, const RasterizingPipelineSpecification& specification, std::unique_ptr<PipelineCacheHandler>&& pCacheHandler /*= nullptr*/)
+			: RasterizingPipeline(pDevice, pRasterizer, pProgram, specification, std::move(pCacheHandler))
+			, VulkanPipeline(pDevice)
 			, VulkanDescriptorSetManager(pDevice, pRasterizer->getFrameCount())
 		{
+			// Load the cache if possible.
+			loadCache();
+
 			// Resolve shader information.
 			std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
 			std::vector<VkPushConstantRange> pushConstants;
@@ -317,6 +323,7 @@ namespace Flint
 
 		void VulkanRasterizingPipeline::terminate()
 		{
+			saveCache();
 			destroyShaders();
 			invalidate();
 		}
@@ -325,6 +332,43 @@ namespace Flint
 		{
 			getDevice().as<VulkanDevice>()->getDeviceTable().vkDestroyPipeline(getDevice().as<VulkanDevice>()->getLogicalDevice(), m_Pipeline, nullptr);
 			createPipeline();
+		}
+
+		void VulkanRasterizingPipeline::loadCache()
+		{
+			std::vector<std::byte> buffer;
+
+			// Load the cache if possible.
+			if (m_pCacheHandler)
+				buffer = m_pCacheHandler->load();
+
+			// Create the pipeline cache.
+			VkPipelineCacheCreateInfo createInfo = {};
+			createInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
+			createInfo.pNext = VK_NULL_HANDLE;
+			createInfo.flags = 0;
+			createInfo.initialDataSize = buffer.size();
+			createInfo.pInitialData = buffer.data();
+
+			FLINT_VK_ASSERT(getDevicePointerAs<VulkanDevice>()->getDeviceTable().vkCreatePipelineCache(getDevicePointerAs<VulkanDevice>()->getLogicalDevice(), &createInfo, nullptr, &m_PipelineCache), "Failed to create the pipeline cache!");
+		}
+
+		void VulkanRasterizingPipeline::saveCache()
+		{
+			// Return if we don't have anything to save.
+			if (m_PipelineCache == VK_NULL_HANDLE)
+				return;
+
+			// Load cache data.
+			size_t cacheSize = 0;
+			FLINT_VK_ASSERT(getDevicePointerAs<VulkanDevice>()->getDeviceTable().vkGetPipelineCacheData(getDevicePointerAs<VulkanDevice>()->getLogicalDevice(), m_PipelineCache, &cacheSize, nullptr), "Failed to get the pipeline cache size!");
+
+			auto buffer = std::vector<std::byte>(cacheSize);
+			FLINT_VK_ASSERT(getDevicePointerAs<VulkanDevice>()->getDeviceTable().vkGetPipelineCacheData(getDevicePointerAs<VulkanDevice>()->getLogicalDevice(), m_PipelineCache, &cacheSize, buffer.data()), "Failed to get the pipeline cache data!");
+
+			// Store the cache if possible.
+			if (m_pCacheHandler)
+				m_pCacheHandler->store(buffer);
 		}
 
 		//void VulkanRasterizingPipeline::resolveShader(const Shader& code, VkShaderStageFlagBits stageFlag, std::vector<VkDescriptorSetLayoutBinding>& layoutBindings, std::vector<VkPushConstantRange>& pushConstants)
