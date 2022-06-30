@@ -15,7 +15,7 @@ namespace Flint
 		{
 		}
 
-		VulkanPipeline::~VulkanPipeline()
+		void VulkanPipeline::destroy()
 		{
 			// Destroy the resources.
 			m_pDevice->getDeviceTable().vkDestroyPipeline(m_pDevice->getLogicalDevice(), m_Pipeline, nullptr);

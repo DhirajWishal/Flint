@@ -285,7 +285,6 @@ namespace Flint
 		VulkanRasterizingPipeline::VulkanRasterizingPipeline(const std::shared_ptr<VulkanDevice>& pDevice, const std::shared_ptr<VulkanRasterizer>& pRasterizer, const std::shared_ptr<VulkanRasterizingProgram>& pProgram, const RasterizingPipelineSpecification& specification, std::unique_ptr<PipelineCacheHandler>&& pCacheHandler /*= nullptr*/)
 			: RasterizingPipeline(pDevice, pRasterizer, pProgram, specification, std::move(pCacheHandler))
 			, VulkanPipeline(pDevice)
-			, VulkanDescriptorSetManager(pDevice, pRasterizer->getFrameCount())
 		{
 			// Load the cache if possible.
 			loadCache();
@@ -308,7 +307,7 @@ namespace Flint
 		void VulkanRasterizingPipeline::terminate()
 		{
 			saveCache();
-			destroyShaders();
+			destroy();
 			invalidate();
 		}
 
@@ -508,12 +507,6 @@ namespace Flint
 			createInfo.basePipelineIndex = 0;
 
 			FLINT_VK_ASSERT(getDevice().as<VulkanDevice>()->getDeviceTable().vkCreateGraphicsPipelines(getDevice().as<VulkanDevice>()->getLogicalDevice(), m_PipelineCache, 1, &createInfo, nullptr, &m_Pipeline), "Failed to create the pipeline!");
-		}
-
-		void VulkanRasterizingPipeline::destroyShaders()
-		{
-			for (const auto& shaders : m_ShaderStageCreateInfo)
-				getDevice().as<VulkanDevice>()->getDeviceTable().vkDestroyShaderModule(getDevice().as<VulkanDevice>()->getLogicalDevice(), shaders.module, nullptr);
 		}
 	}
 }

@@ -26,10 +26,14 @@ namespace Flint
 			explicit VulkanPipeline(const std::shared_ptr<VulkanDevice>& pDevice);
 
 			/**
-			 * Virtual destructor.
-			 * Note that this will also destroy the pipeline, pipeline layout and the cache.
+			 * Default virtual destructor.
 			 */
-			virtual ~VulkanPipeline();
+			virtual ~VulkanPipeline() = default;
+
+			/**
+			 * Destroy the pipeline.
+			 */
+			void destroy();
 
 			/**
 			 * Get the backend pipeline handle.

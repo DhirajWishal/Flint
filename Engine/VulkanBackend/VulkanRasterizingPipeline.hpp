@@ -18,7 +18,7 @@ namespace Flint
 		 * Vulkan rasterizing pipeline class.
 		 * This pipeline is used to perform raster graphics.
 		 */
-		class VulkanRasterizingPipeline final : public RasterizingPipeline, public VulkanPipeline, public VulkanDescriptorSetManager
+		class VulkanRasterizingPipeline final : public RasterizingPipeline, public VulkanPipeline
 		{
 		public:
 			/**
@@ -69,11 +69,6 @@ namespace Flint
 			 * Create the pipeline.
 			 */
 			void createPipeline();
-
-			/**
-			 * Destroy the created shaders.
-			 */
-			void destroyShaders();
 
 		private:
 			VkPipelineVertexInputStateCreateInfo m_VertexInputStateCreateInfo = {};
