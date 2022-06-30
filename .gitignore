@@ -346,3 +346,5 @@ Source/**/*.cmake
 CMakeCache.txt
 cmake_install.cmake
 out/
+CMakeSettings.json
+CppProperties.json
