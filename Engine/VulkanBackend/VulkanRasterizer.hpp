@@ -72,6 +72,15 @@ namespace Flint
 			[[nodiscard]] const VulkanRenderTargetAttachment& getAttachment(uint32_t index) const override;
 
 			/**
+			 * Create a new rasterizing pipeline.
+			 *
+			 * @param pRasterizingProgram The rasterizing program pointer.
+			 * @param specification The pipeline specification.
+			 * @return The created pipeline pointer.
+			 */
+			[[nodiscard]] std::shared_ptr<RasterizingPipeline> createPipeline(const std::shared_ptr<RasterizingProgram>& pRasterizingProgram, const RasterizingPipelineSpecification& specification) override;
+
+			/**
 			 * Get the render pass.
 			 *
 			 * @return The render pass.

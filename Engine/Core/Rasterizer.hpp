@@ -6,7 +6,8 @@
 #include "RenderTarget.hpp"
 #include "Types.hpp"
 
-#include <functional>
+#include "RasterizingProgram.hpp"
+#include "RasterizingPipeline.hpp"
 
 namespace Flint
 {
@@ -43,6 +44,15 @@ namespace Flint
 		 * @return The multisample count.
 		 */
 		[[nodiscard]] Multisample getMultisample() const { return m_Multisample; }
+
+		/**
+		 * Create a new rasterizing pipeline.
+		 *
+		 * @param pRasterizingProgram The rasterizing program pointer.
+		 * @param specification The pipeline specification.
+		 * @return The created pipeline pointer.
+		 */
+		[[nodiscard]] virtual std::shared_ptr<RasterizingPipeline> createPipeline(const std::shared_ptr<RasterizingProgram>& pRasterizingProgram, const RasterizingPipelineSpecification& specification) = 0;
 
 	protected:
 		const Multisample m_Multisample = Multisample::One;

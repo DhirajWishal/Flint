@@ -14,8 +14,13 @@ namespace Flint
 	class RayTracingPipeline : public Pipeline
 	{
 	public:
-		// Using the same constructor as the super class.
-		using Pipeline::Pipeline;
+		/**
+		 * Explicit constructor.
+		 *
+		 * @param pDevice The device pointer.
+		 * @param pCacheHandler The pipeline cache handler used to handle the pipeline cache. Default is nullptr.
+		 */
+		explicit RayTracingPipeline(const std::shared_ptr<Device>& pDevice, std::unique_ptr<PipelineCacheHandler>&& pCacheHandler = nullptr) : Pipeline(pDevice, std::move(pCacheHandler)) {}
 
 		/**
 		 * Default virtual destructor.

@@ -18,13 +18,23 @@ namespace Flint
 		class VulkanRasterizingProgram final : public RasterizingProgram
 		{
 			/**
-			 * Vertex shader input structure.
+			 * Vertex input structure.
 			 * This contains information about a single vertex input.
 			 */
-			struct VertexShaderInput final
+			struct VertexInput final
 			{
-				uint32_t m_Location = 0;
 				VkFormat m_Format = VK_FORMAT_UNDEFINED;
+				VertexAttribute m_Attribute = VertexAttribute::Max;
+			};
+
+			/**
+			 * Instance input structure.
+			 * This structure contains information about a single instance input attribute.
+			 */
+			struct InstanceInput final
+			{
+				VkFormat m_Format = VK_FORMAT_UNDEFINED;
+				InstanceAttribute m_Attribute = InstanceAttribute::Max;
 			};
 
 		public:
@@ -63,7 +73,8 @@ namespace Flint
 		private:
 			SparseArray<VkDescriptorSet> m_DescriptorSets;
 			std::vector<VkDescriptorSetLayout> m_SetLayouts;
-			std::vector<VertexShaderInput> m_VertexShaderInputs;
+			std::vector<VertexInput> m_VertexInputs;
+			std::vector<InstanceInput> m_InstanceInputs;
 
 			VkShaderModule m_VertexShaderModule = VK_NULL_HANDLE;
 			VkShaderModule m_FragmentShaderModule = VK_NULL_HANDLE;

@@ -127,6 +127,11 @@ namespace Flint
 			return *m_pAttachments[m_ExclusiveBuffering * m_FrameIndex][index];
 		}
 
+		std::shared_ptr<Flint::RasterizingPipeline> VulkanRasterizer::createPipeline(const std::shared_ptr<RasterizingProgram>& pRasterizingProgram, const RasterizingPipelineSpecification& specification)
+		{
+			return nullptr;
+		}
+
 		void VulkanRasterizer::createAttachments()
 		{
 			if (m_ExclusiveBuffering)
@@ -173,7 +178,7 @@ namespace Flint
 							// Find the best depth format and return it.
 							pAttachment.emplace_back(
 								std::make_unique<VulkanDepthAttachment>(
-								 getDevicePointerAs<VulkanDevice>(),
+									getDevicePointerAs<VulkanDevice>(),
 									getWidth(),
 									getHeight(),
 									Utility::GetPixelFormat(

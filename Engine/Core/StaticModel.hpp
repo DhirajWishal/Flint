@@ -5,8 +5,6 @@
 
 #include "Buffer.hpp"
 
-#include <glm/glm.hpp>
-
 namespace Flint
 {
 	/**
@@ -34,7 +32,7 @@ namespace Flint
 		uint64_t m_ResourceHash = 0;	// This is used to uniquely identify the mesh's resources when drawing.
 
 		uint64_t m_IndexOffset = 0;		// Bytes
-		uint32_t m_IndexCount = 0;		// Count
+		uint64_t m_IndexCount = 0;		// Count
 	};
 
 	/**
@@ -57,9 +55,15 @@ namespace Flint
 		 */
 		virtual ~StaticModel() = default;
 
-	protected:
-		std::filesystem::path m_AssetPath;
+		/**
+		 * Get the meshes from the model.
+		 *
+		 * @return The loaded meshes.
+		 */
+		[[nodiscard]] const std::vector<StaticMesh>& getMeshes() const { return m_Meshes; }
 
+	protected:
+		const std::filesystem::path m_AssetPath;
 		std::vector<StaticMesh> m_Meshes;
 	};
 }

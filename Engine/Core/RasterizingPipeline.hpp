@@ -4,10 +4,13 @@
 #pragma once
 
 #include "Pipeline.hpp"
-#include "Rasterizer.hpp"
+
+#include <functional>
 
 namespace Flint
 {
+	class Rasterizer;
+
 	/**
 	 * Pipeline primitive topology.
 	 * This describes how the vertexes are connected.
@@ -242,6 +245,10 @@ namespace Flint
 	{
 		std::filesystem::path m_CacheFile;	// This file is used to store the pipeline cache. Make sure that a file is specified else the backend will throw an exception.
 
+		// This defines which vertex attribute is bound to which location. 
+		// The locations/ bindings are organized in the same order they appear in the vector.
+		std::vector<VertexAttribute> m_VertexAttributeTable;
+
 		std::vector<ColorBlendAttachment> m_ColorBlendAttachments = { ColorBlendAttachment() };
 
 		float m_ColorBlendConstants[4] = {};
@@ -286,9 +293,10 @@ namespace Flint
 		 * @param pDevice The device to which the pipeline is bound to.
 		 * @param pRasterizer The parent rasterizer.
 		 * @param specification The pipeline specification.
+		 * @param pCacheHandler The pipeline cache handler. Default is nullptr.
 		 */
-		explicit RasterizingPipeline(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Rasterizer>& pRasterizer, const RasterizingPipelineSpecification& specification)
-			: Pipeline(pDevice), m_pRasterizer(pRasterizer), m_Specification(specification) {}
+		explicit RasterizingPipeline(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Rasterizer>& pRasterizer, const RasterizingPipelineSpecification& specification, std::unique_ptr<PipelineCacheHandler>&& pCacheHandler = nullptr)
+			: Pipeline(pDevice, std::move(pCacheHandler)), m_pRasterizer(pRasterizer), m_Specification(specification) {}
 
 		/**
 		 * Default virtual destructor.

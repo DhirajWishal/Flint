@@ -139,17 +139,31 @@ namespace Flint
 				std::vector<SpvReflectInterfaceVariable*> pInputs(variableCount);
 				ValidateReflection(spvReflectEnumerateInputVariables(&reflectionModule, &variableCount, pInputs.data()));
 
-				m_VertexShaderInputs.reserve(pInputs.size());
-
 				// Iterate through the attributes and load them.
 				for (auto& pResource : pInputs)
 				{
 					if (pResource->format == SpvReflectFormat::SPV_REFLECT_FORMAT_UNDEFINED || pResource->built_in != -1)
 						continue;
 
-					auto& attribute = m_VertexShaderInputs.emplace_back();
-					attribute.m_Location = pResource->location;
-					attribute.m_Format = GetFormat(pResource->format);
+					// Store the input as a vertex input if the location is in the vertex attribute range. 
+					if (pResource->location < EnumToInt(VertexAttribute::Max))
+					{
+						auto& input = m_VertexInputs.emplace_back();
+						input.m_Format = GetFormat(pResource->format);
+						input.m_Attribute = static_cast<VertexAttribute>(pResource->location);
+					}
+
+					// If not and if the location is within the instance attribute range, it's considered to be an instance input.
+					else if (pResource->location < EnumToInt(InstanceAttribute::Max))
+					{
+						auto& input = m_InstanceInputs.emplace_back();
+						input.m_Format = GetFormat(pResource->format);
+						input.m_Attribute = static_cast<InstanceAttribute>(pResource->location);
+					}
+
+					//  Else we throw an error.
+					else
+						throw BackendError("Invalid Vertex shader input found!");
 				}
 			}
 

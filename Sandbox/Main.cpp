@@ -42,6 +42,10 @@ int main()
 	auto rayTracer = device->createRayTracer(camera, window->getFrameCount());
 	auto model = device->createStaticModel(std::filesystem::path(FLINT_GLTF_ASSET_PATH) / "Sponza" / "glTF" / "Sponza.gltf");
 
+	// auto occlusionPipeline = rasterizer->createPipeline(occlusionProgram, getOcclusionSpecification());
+	// auto drawEntry = occlusionPipeline->register(model);
+	// drawEntry->instance(position(), rotation(), scale());
+
 	//window->attach(rasterizer);
 	window->attach(rayTracer);
 

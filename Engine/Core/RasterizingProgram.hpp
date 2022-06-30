@@ -11,6 +11,43 @@ namespace Flint
 	/**
 	 * Rasterizing program class.
 	 * This class contains the rasterizing pipeline's program which can be passed to pipelines.
+	 *
+	 * The vertex shader inputs need to have the proper layout locations to make sure that the bound resources are correct.
+	 * The locations and attributes are specified below.
+	 *  __________ __________________
+	 * | Location | Vertex Attribute |
+	 * |__________|__________________|
+	 * |    0     |     Position     |
+	 * |    1     |     Normal       |
+	 * |    2     |     Tangent      |
+	 * |    3     |     BiTangent    |
+	 * |    4     |     Color0       |
+	 * |    5     |     Color1       |
+	 * |    6     |     Color2       |
+	 * |    7     |     Color3       |
+	 * |    8     |     Color4       |
+	 * |    9     |     Color5       |
+	 * |    10    |     Color6       |
+	 * |    11    |     Color7       |
+	 * |    12    |     Texture0     |
+	 * |    13    |     Texture1     |
+	 * |    14    |     Texture2     |
+	 * |    15    |     Texture3     |
+	 * |    16    |     Texture4     |
+	 * |    17    |     Texture5     |
+	 * |    18    |     Texture6     |
+	 * |    19    |     Texture7     |
+	 * |__________|__________________|
+	 *
+	 * Instance attributes follow a similar structure.
+	 *  __________ ____________________
+	 * | Location | Instance Attribute |
+	 * |__________|____________________|
+	 * |    20    |     InstanceID     |
+	 * |    21    |     Position       |
+	 * |    22    |     Rotation       |
+	 * |    23    |     Scale          |
+	 * |__________|____________________|
 	 */
 	class RasterizingProgram : public Program
 	{

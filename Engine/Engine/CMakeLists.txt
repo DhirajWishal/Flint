@@ -26,8 +26,11 @@ add_library(
 	"ShaderFactory/ShaderBuilder.hpp"
 	"ShaderFactory/ShaderBuildError.hpp"
 
+	"Packager/Package.hpp"
+	"Packager/PackageEntry.hpp"
+
 	"Errors/InvalidBackend.hpp"
-)
+ "Source/Packager/Package.cpp")
 
 # Set the include directories.
 target_include_directories(

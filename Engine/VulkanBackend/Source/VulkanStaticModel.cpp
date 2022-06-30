@@ -83,7 +83,7 @@ namespace Flint
 				auto& mesh = m_Meshes.emplace_back();
 				mesh.m_Name = pMesh->mName.C_Str();
 
-				// Load the vertex data.
+				// Load the normals if possible.
 				if (pMesh->HasNormals())
 				{
 					auto& normalData = mesh.m_VertexData[EnumToInt(VertexAttribute::Normal)];
@@ -103,14 +103,17 @@ namespace Flint
 					vertexData.m_Offset = CopyToStorage(VertexAttribute::Position, &m_VertexStorage, vertexData.m_Size, reinterpret_cast<const std::byte*>(pMesh->mVertices));
 				}
 
+				// Load the tangents and bi-tangents if possible.
 				if (pMesh->HasTangentsAndBitangents())
 				{
+					// Load the tangent data.
 					auto& tangentData = mesh.m_VertexData[EnumToInt(VertexAttribute::Tangent)];
 
 					tangentData.m_Stride = sizeof(aiVector3D);
 					tangentData.m_Size = pMesh->mNumVertices * sizeof(aiVector3D);
 					tangentData.m_Offset = CopyToStorage(VertexAttribute::Tangent, &m_VertexStorage, tangentData.m_Size, reinterpret_cast<const std::byte*>(pMesh->mTangents));
 
+					// Load the bi-tangent data.
 					auto& biTangentData = mesh.m_VertexData[EnumToInt(VertexAttribute::BiTangent)];
 
 					biTangentData.m_Stride = sizeof(aiVector3D);
@@ -118,6 +121,7 @@ namespace Flint
 					biTangentData.m_Offset = CopyToStorage(VertexAttribute::BiTangent, &m_VertexStorage, biTangentData.m_Size, reinterpret_cast<const std::byte*>(pMesh->mBitangents));
 				}
 
+				// Load the texture coordinates if possible.
 				for (uint32_t t = 0; t < AI_MAX_NUMBER_OF_TEXTURECOORDS; t++)
 				{
 					if (pMesh->HasTextureCoords(t))
@@ -130,6 +134,7 @@ namespace Flint
 					}
 				}
 
+				// Load the vertex colors if possible.
 				for (uint32_t c = 0; c < AI_MAX_NUMBER_OF_COLOR_SETS; c++)
 				{
 					if (pMesh->HasVertexColors(c))
@@ -142,12 +147,12 @@ namespace Flint
 					}
 				}
 
-				mesh.m_IndexOffset = indices.size() * sizeof(uint32_t);
-				mesh.m_IndexCount = indices.size();
-
-				// Load the index data.
+				// Load the index data if possible.
 				if (pMesh->HasFaces())
 				{
+					mesh.m_IndexOffset = indices.size() * sizeof(uint32_t);
+					mesh.m_IndexCount = indices.size();
+
 					for (uint32_t f = 0; f < pMesh->mNumFaces; f++)
 					{
 						const auto face = pMesh->mFaces[f];
@@ -155,9 +160,9 @@ namespace Flint
 						for (uint32_t index = 0; index < face.mNumIndices; index++)
 							indices.emplace_back(face.mIndices[index]);
 					}
-				}
 
-				mesh.m_IndexCount = indices.size() - mesh.m_IndexCount;
+					mesh.m_IndexCount = indices.size() - mesh.m_IndexCount;
+				}
 			}
 
 			// Finally, copy the index data to a staging buffer, and copy it to the final index buffer.

@@ -16,6 +16,8 @@ add_library(
 	"Source/Camera/Camera.cpp" 
 	"Source/Camera/MonoCamera.cpp"
 
+	"Source/Containers/Reactor.cpp"
+
 	"Source/StaticInitializer.cpp"
 	"Source/ShaderCode.cpp"
 		
@@ -46,6 +48,7 @@ add_library(
 	"VertexStorage.hpp"
 	"CommandBuffers.hpp"
 	"ShaderCode.hpp"
+	"PipelineCacheHandler.hpp"
 	
 	"Errors/AssetError.hpp"
 	"Errors/BackendError.hpp" 
@@ -65,7 +68,7 @@ add_library(
 	"EventSystem/Mouse.hpp"
 
 	"Utility/Hasher.hpp" 
- "Source/Containers/Reactor.cpp")
+)
 
 # Set the include directories.
 target_include_directories(

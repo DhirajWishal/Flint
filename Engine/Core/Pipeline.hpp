@@ -4,6 +4,7 @@
 #pragma once
 
 #include "DeviceBoundObject.hpp"
+#include "PipelineCacheHandler.hpp"
 
 namespace Flint
 {
@@ -16,12 +17,21 @@ namespace Flint
 	class Pipeline : public DeviceBoundObject
 	{
 	public:
-		// Use the same constructor as the super class.
-		using DeviceBoundObject::DeviceBoundObject;
+		/**
+		 * Explicit constructor.
+		 *
+		 * @param pDevice The device pointer.
+		 * @param pCacheHandler The pipeline cache handler used to handle the pipeline cache. Default is nullptr.
+		 */
+		explicit Pipeline(const std::shared_ptr<Device>& pDevice, std::unique_ptr<PipelineCacheHandler>&& pCacheHandler = nullptr)
+			: DeviceBoundObject(pDevice), m_pCacheHandler(std::move(pCacheHandler)) {}
 
 		/**
 		 * Default virtual destructor.
 		 */
 		virtual ~Pipeline() = default;
+
+	protected:
+		std::unique_ptr<PipelineCacheHandler> m_pCacheHandler = nullptr;
 	};
 }
