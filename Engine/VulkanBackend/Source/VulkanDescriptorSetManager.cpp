@@ -4,7 +4,6 @@
 #include "VulkanBackend/VulkanDescriptorSetManager.hpp"
 #include "VulkanBackend/VulkanMacros.hpp"
 #include "VulkanBackend/VulkanBuffer.hpp"
-#include "Core/Utility/Hasher.hpp"
 
 namespace Flint
 {
@@ -15,34 +14,25 @@ namespace Flint
 		{
 		}
 
-		VulkanDescriptorSetManager::~VulkanDescriptorSetManager()
+		void VulkanDescriptorSetManager::destroy()
 		{
-			m_pDevice->getDeviceTable().vkDestroyDescriptorSetLayout(m_pDevice->getLogicalDevice(), m_DescriptorSetLayout, nullptr);
-
 			if (m_DescriptorPool != VK_NULL_HANDLE)
 				m_pDevice->getDeviceTable().vkDestroyDescriptorPool(m_pDevice->getLogicalDevice(), m_DescriptorPool, nullptr);
 		}
 
-		void VulkanDescriptorSetManager::setup(std::vector<VkDescriptorSetLayoutBinding>&& layoutBindings)
+		void VulkanDescriptorSetManager::setup(const std::vector<VkDescriptorSetLayoutBinding>& layoutBindings, const std::vector<VkDescriptorPoolSize>& poolSizes, VkDescriptorSetLayout layout)
 		{
 			// Create the descriptor type map.
 			for (const auto& binding : layoutBindings)
 				m_DescriptorTypeMap[binding.binding] = binding.descriptorType;
 
-			// Create the layout.
-			VkDescriptorSetLayoutCreateInfo createInfo = {};
-			createInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-			createInfo.pNext = nullptr;
-			createInfo.flags = 0;
-			createInfo.bindingCount = static_cast<uint32_t>(layoutBindings.size());
-			createInfo.pBindings = layoutBindings.data();
-
-			FLINT_VK_ASSERT(m_pDevice->getDeviceTable().vkCreateDescriptorSetLayout(m_pDevice->getLogicalDevice(), &createInfo, nullptr, &m_DescriptorSetLayout), "Failed to create the descriptor set layout!");
+			m_PoolSizes = std::move(poolSizes);
+			m_DescriptorSetLayout = layout;
 		}
 
-		void VulkanDescriptorSetManager::registerTable(const ResourceBindingTable& table)
+		void VulkanDescriptorSetManager::registerTable(const MeshBindingTable& table)
 		{
-			const auto tableHash = GenerateHash(table);
+			const auto tableHash = table.generateHash();
 
 			// Return if the table is registered.
 			if (m_DescriptorSets.contains(tableHash))
@@ -107,47 +97,10 @@ namespace Flint
 			std::vector<VkCopyDescriptorSet> copyDescriptorSets;
 
 			// Resolve the images.
-			for (const auto& [binding, images] : table.m_Images)
-			{
-				const auto imageCount = static_cast<uint32_t>(images.size());
-				for (uint32_t i = 0; i < imageCount; i++)
-				{
-					// Setup write info.
-					auto& writeDescriptorSet = writeDescriptorSets.emplace_back();
-					writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-					writeDescriptorSet.pNext = nullptr;
-					writeDescriptorSet.dstSet = descriptorSets.front();
-					writeDescriptorSet.dstBinding = binding;
-					writeDescriptorSet.descriptorCount = imageCount;
-					writeDescriptorSet.descriptorType = m_DescriptorTypeMap[binding];
-					writeDescriptorSet.pBufferInfo = nullptr;
-					writeDescriptorSet.pTexelBufferView = nullptr;
-					writeDescriptorSet.dstArrayElement = i;
-
-					writeDescriptorSet.pImageInfo = new VkDescriptorImageInfo;
-					writeDescriptorSet.pImageInfo->imageLayout;
-					writeDescriptorSet.pImageInfo->imageView;
-					writeDescriptorSet.pImageInfo->sampler;
-
-					// Setup copy info.
-					auto& copySet = copyDescriptorSets.emplace_back();
-					copySet.sType = VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET;
-					copySet.pNext = nullptr;
-					copySet.dstSet = 0;
-					copySet.srcSet = descriptorSets.front();
-					copySet.descriptorCount = imageCount;
-					copySet.dstBinding = binding;
-					copySet.dstArrayElement = i;
-					copySet.srcBinding = binding;
-					copySet.srcArrayElement = i;
-				}
-			}
-
-			// Resolve buffers.
-			//for (const auto& [binding, buffers] : table.m_Buffers)
+			//for (const auto& [binding, images] : table.m_Images)
 			//{
-			//	const auto bufferCount = static_cast<uint32_t>(buffers.size());
-			//	for (uint32_t i = 0; i < bufferCount; i++)
+			//	const auto imageCount = static_cast<uint32_t>(images.size());
+			//	for (uint32_t i = 0; i < imageCount; i++)
 			//	{
 			//		// Setup write info.
 			//		auto& writeDescriptorSet = writeDescriptorSets.emplace_back();
@@ -155,12 +108,16 @@ namespace Flint
 			//		writeDescriptorSet.pNext = nullptr;
 			//		writeDescriptorSet.dstSet = descriptorSets.front();
 			//		writeDescriptorSet.dstBinding = binding;
-			//		writeDescriptorSet.descriptorCount = bufferCount;
+			//		writeDescriptorSet.descriptorCount = imageCount;
 			//		writeDescriptorSet.descriptorType = m_DescriptorTypeMap[binding];
-			//		writeDescriptorSet.dstArrayElement = i;
-			//		writeDescriptorSet.pBufferInfo = m_pDevice->getBuffer(buffers[i]).getDescriptorBufferInfo();
-			//		writeDescriptorSet.pImageInfo = nullptr;
+			//		writeDescriptorSet.pBufferInfo = nullptr;
 			//		writeDescriptorSet.pTexelBufferView = nullptr;
+			//		writeDescriptorSet.dstArrayElement = i;
+			//
+			//		writeDescriptorSet.pImageInfo = new VkDescriptorImageInfo;
+			//		writeDescriptorSet.pImageInfo->imageLayout;
+			//		writeDescriptorSet.pImageInfo->imageView;
+			//		writeDescriptorSet.pImageInfo->sampler;
 			//
 			//		// Setup copy info.
 			//		auto& copySet = copyDescriptorSets.emplace_back();
@@ -168,13 +125,42 @@ namespace Flint
 			//		copySet.pNext = nullptr;
 			//		copySet.dstSet = 0;
 			//		copySet.srcSet = descriptorSets.front();
-			//		copySet.descriptorCount = bufferCount;
+			//		copySet.descriptorCount = imageCount;
 			//		copySet.dstBinding = binding;
 			//		copySet.dstArrayElement = i;
 			//		copySet.srcBinding = binding;
 			//		copySet.srcArrayElement = i;
 			//	}
 			//}
+
+			// Resolve buffers.
+			for (const auto& [binding, buffers] : table.getBuffers())
+			{
+				// Setup write info.
+				auto& writeDescriptorSet = writeDescriptorSets.emplace_back();
+				writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+				writeDescriptorSet.pNext = nullptr;
+				writeDescriptorSet.dstSet = descriptorSets.front();
+				writeDescriptorSet.dstBinding = binding;
+				writeDescriptorSet.descriptorCount = 1;
+				writeDescriptorSet.descriptorType = m_DescriptorTypeMap[binding];
+				writeDescriptorSet.dstArrayElement = 0;
+				writeDescriptorSet.pBufferInfo = buffers->as<VulkanBuffer>()->getDescriptorBufferInfo();
+				writeDescriptorSet.pImageInfo = nullptr;
+				writeDescriptorSet.pTexelBufferView = nullptr;
+
+				// Setup copy info.
+				auto& copySet = copyDescriptorSets.emplace_back();
+				copySet.sType = VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET;
+				copySet.pNext = nullptr;
+				copySet.dstSet = 0;
+				copySet.srcSet = descriptorSets.front();
+				copySet.descriptorCount = 1;
+				copySet.dstBinding = binding;
+				copySet.dstArrayElement = 0;
+				copySet.srcBinding = binding;
+				copySet.srcArrayElement = 0;
+			}
 
 			// Update the descriptor sets with the data.
 			m_pDevice->getDeviceTable().vkUpdateDescriptorSets(m_pDevice->getLogicalDevice(), static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
@@ -199,9 +185,9 @@ namespace Flint
 			m_DescriptorSets.emplace(tableHash, DescriptorSet(std::move(copyDescriptorSets), std::move(descriptorSets)));
 		}
 
-		VkDescriptorSet VulkanDescriptorSetManager::getDescriptorSet(const ResourceBindingTable& table, uint32_t frameIndex) const
+		VkDescriptorSet VulkanDescriptorSetManager::getDescriptorSet(uint64_t hash, uint32_t frameIndex) const
 		{
-			return m_DescriptorSets.at(GenerateHash(table)).m_DescriptorSets[frameIndex];
+			return m_DescriptorSets.at(hash).m_DescriptorSets[frameIndex];
 		}
 	}
 }

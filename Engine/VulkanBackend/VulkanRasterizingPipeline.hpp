@@ -5,6 +5,7 @@
 
 #include "Core/RasterizingPipeline.hpp"
 #include "VulkanDevice.hpp"
+#include "VulkanDescriptorSetManager.hpp"
 
 namespace Flint
 {
@@ -61,9 +62,10 @@ namespace Flint
 			 * Attach a static model to the pipeline to render.
 			 *
 			 * @param pModel The model to attach.
+			 * @param binder The mesh binder used to bind resources to meshes.
 			 * @return The draw entry for the model.
 			 */
-			[[nodiscard]] std::shared_ptr<DrawEntry> attach(const std::shared_ptr<StaticModel>& pModel) override;
+			[[nodiscard]] std::shared_ptr<DrawEntry> attach(const std::shared_ptr<StaticModel>& pModel, ResourceBinder&& binder) override;
 
 			/**
 			 * Load the pipeline cache from the handler if possible.
@@ -100,6 +102,7 @@ namespace Flint
 
 		private:
 			std::unordered_map<uint64_t, Pipeline> m_Pipelines;
+			VulkanDescriptorSetManager m_DescriptorSetManager;
 
 			VkPipelineVertexInputStateCreateInfo m_VertexInputStateCreateInfo = {};
 			VkPipelineInputAssemblyStateCreateInfo m_InputAssemblyStateCreateInfo = {};

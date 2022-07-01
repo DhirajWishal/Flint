@@ -222,11 +222,6 @@ namespace Flint
 			return Multisample::One;
 		}
 
-		Flint::ImageHandle VulkanDevice::createTextureImage(std::filesystem::path&& path, ImageUsage usage)
-		{
-			return ImageHandle();
-		}
-
 		void VulkanDevice::selectPhysicalDevice()
 		{
 			// Set up the device extensions.

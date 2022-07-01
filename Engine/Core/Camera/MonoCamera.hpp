@@ -40,16 +40,19 @@ namespace Flint
 		void update() override;
 
 		/**
+		 * Create a uniform buffer required to store the camera's matrix.
+		 *
+		 * @param pDevice The device pointer.
+		 * @return The buffer pointer.
+		 */
+		[[nodiscard]] std::shared_ptr<Buffer> createBuffer(const std::shared_ptr<Device>& pDevice) const;
+
+		/**
 		 * Copy the matrix to a uniform buffer.
 		 *
-		 * @param device The device which owns the buffer.
-		 * @param buffer The buffer to copy the data to.
+		 * @param pBuffer The buffer to copy the data to.
 		 */
-		 //template<class TDevice>
-		 //void copyToBuffer(const std::shared_ptr<Device>& pDevice, BufferHandle buffer) const
-		 //{
-		 //	device.copyToBuffer(buffer, reinterpret_cast<const std::byte*>(&m_Matrix), sizeof(Matrix));
-		 //}
+		void copyToBuffer(const std::shared_ptr<Buffer>& pBuffer) const;
 
 	public:
 		Matrix m_Matrix;

@@ -7,6 +7,7 @@
 #include "RasterizingProgram.hpp"
 #include "StaticModel.hpp"
 #include "DrawEntry.hpp"
+#include "MeshBindingTable.hpp"
 
 #include "Errors/InvalidArgumentError.hpp"
 
@@ -280,6 +281,17 @@ namespace Flint
 	};
 
 	/**
+	 * Resource binder function type.
+	 * This function is called upon all the meshes to configure their resource bindings.
+	 *
+	 * @param model The model to which the mesh belongs to.
+	 * @param mesh The current mesh.
+	 * @param bindingMap The program's binding map.
+	 * @return The mesh binding table filled by the user.
+	 */
+	using ResourceBinder = std::function<MeshBindingTable(const StaticModel& model, const StaticMesh& mesh, const BindingMap& bindingMap)>;
+
+	/**
 	 * Rasterizing pipeline class.
 	 * This class is used to perform rasterizing graphics.
 	 */
@@ -312,9 +324,10 @@ namespace Flint
 		 * Attach a static model to the pipeline to render.
 		 *
 		 * @param pModel The model to attach.
+		 * @param binder The mesh binder used to bind resources to meshes.
 		 * @return The draw entry for the model.
 		 */
-		[[nodiscard]] virtual std::shared_ptr<DrawEntry> attach(const std::shared_ptr<StaticModel>& pModel) = 0;
+		[[nodiscard]] virtual std::shared_ptr<DrawEntry> attach(const std::shared_ptr<StaticModel>& pModel, ResourceBinder&& binder) = 0;
 
 		/**
 		 * Get the parent rasterizer.

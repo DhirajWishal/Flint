@@ -287,9 +287,13 @@ namespace Flint
 	{
 		VulkanRasterizingPipeline::VulkanRasterizingPipeline(const std::shared_ptr<VulkanDevice>& pDevice, const std::shared_ptr<VulkanRasterizer>& pRasterizer, const std::shared_ptr<VulkanRasterizingProgram>& pProgram, const RasterizingPipelineSpecification& specification, std::unique_ptr<PipelineCacheHandler>&& pCacheHandler /*= nullptr*/)
 			: RasterizingPipeline(pDevice, pRasterizer, pProgram, specification, std::move(pCacheHandler))
+			, m_DescriptorSetManager(pDevice, pRasterizer->getFrameCount())
 		{
 			// Setup the defaults.
 			setupDefaults(std::move(specification));
+
+			// Setup the descriptor set manager.
+			m_DescriptorSetManager.setup(pProgram->getLayoutBindings(), pProgram->getPoolSizes(), pProgram->getDescriptorSetLayout());
 
 			// Make sure to set the object as valid.
 			validate();
@@ -309,6 +313,7 @@ namespace Flint
 				getDevice().as<VulkanDevice>()->getDeviceTable().vkDestroyPipelineCache(getDevice().as<VulkanDevice>()->getLogicalDevice(), pipeline.m_PipelineCache, nullptr);
 			}
 
+			m_DescriptorSetManager.destroy();
 			invalidate();
 		}
 
@@ -322,15 +327,19 @@ namespace Flint
 			}
 		}
 
-		std::shared_ptr<Flint::DrawEntry> VulkanRasterizingPipeline::attach(const std::shared_ptr<StaticModel>& pModel)
+		std::shared_ptr<Flint::DrawEntry> VulkanRasterizingPipeline::attach(const std::shared_ptr<StaticModel>& pModel, ResourceBinder&& binder)
 		{
 			const auto pStaticModel = pModel->as<VulkanStaticModel>();
 			const auto vertexInputs = getProgram()->as<VulkanRasterizingProgram>()->getVertexInputs();
+			const auto& bindingMap = getProgram()->getBindingMap();
+
 			auto pEntry = std::make_shared<VulkanRasterizingDrawEntry>(pModel);
 
 			// Iterate over the meshes and create the required pipelines.
 			for (const auto& mesh : pStaticModel->getMeshes())
 			{
+				// Prepare the required resources.
+				const auto bindingTable = binder(*pModel, mesh, bindingMap);
 				const auto inputBindings = pStaticModel->getInputBindingDescriptions(mesh, vertexInputs);
 				const auto inputAttributes = pStaticModel->getInputAttributeDescriptions(mesh, vertexInputs);
 
@@ -365,7 +374,9 @@ namespace Flint
 					m_Pipelines[hash] = pipeline;
 				}
 
-				pEntry->registerMesh(hash);
+				// Setup resources.
+				m_DescriptorSetManager.registerTable(bindingTable);
+				pEntry->registerMesh(hash, bindingTable.generateHash());
 			}
 
 			return pEntry;

@@ -322,64 +322,6 @@ namespace Flint
 	FLINT_DEFINE_ENUM_AND_OR(ImageUsage);
 
 	/**
-	 * Image handle enum.
-	 * This is used to uniquely identify an image which is bound to a device.
-	 */
-	FLINT_DEFINE_HANDLE(ImageHandle);
-
-	/**
-	 * Image view handle enum.
-	 */
-	FLINT_DEFINE_HANDLE(ImageViewHandle);
-
-	/**
-	 * Image sampler handle enum.
-	 */
-	FLINT_DEFINE_HANDLE(ImageSamplerHandle);
-
-	enum class ImageViewType : uint8_t
-	{
-	};
-
-	/**
-	 * Image binding specification.
-	 * This describes how the image should be bound and rendered.
-	 */
-	struct ImageBindingSpecification final
-	{
-
-	};
-
-	/**
-	 * Resource binding table structure.
-	 * This defines which resource is bound to which shader resource, and is used to submit the data to the shaders when drawing.
-	 */
-	struct ResourceBindingTable final
-	{
-		/**
-		 * Bind an image to the table.
-		 * If multiple handles are bound to the same binding, it is considered to be an array.
-		 *
-		 * @param binding The shader binding to which the image is bound to.
-		 * @param handle The image handle.
-		 */
-		void bind(uint32_t binding, ImageHandle handle) { m_Images[binding].emplace_back(handle); }
-
-		/**
-		 * Bind a buffer to the table.
-		 * If multiple handles are bound to the same binding, it is considered to be an array.
-		 *
-		 * @param binding The shader binding to which the buffer is bound to.
-		 * @param handle The buffer handle.
-		 */
-		 //void bind(uint32_t binding, BufferHandle handle) { m_Buffers[binding].emplace_back(handle); }
-
-	public:
-		BinaryMap<uint32_t, std::vector<ImageHandle>> m_Images;
-		//BinaryMap<uint32_t, std::vector<BufferHandle>> m_Buffers;
-	};
-
-	/**
 	 * Shader resource type enum.
 	 */
 	enum class ResourceType : uint8_t

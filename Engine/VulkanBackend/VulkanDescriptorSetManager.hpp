@@ -3,9 +3,8 @@
 
 #pragma once
 
+#include "Core/MeshBindingTable.hpp"
 #include "VulkanDevice.hpp"
-
-#include <unordered_map>
 
 namespace Flint
 {
@@ -51,16 +50,17 @@ namespace Flint
 			explicit VulkanDescriptorSetManager(const std::shared_ptr<VulkanDevice>& pDevice, uint8_t frameCount);
 
 			/**
-			 * Destructor.
+			 * Destroy the manager.
 			 */
-			~VulkanDescriptorSetManager();
+			void destroy();
 
 			/**
 			 * Setup the manager.
 			 *
-			 * @param layoutBindings The layout bindings.
+			 * @param poolSizes The descriptor pool sizes.
+			 * @param layout The descriptor set layout to use.
 			 */
-			void setup(std::vector<VkDescriptorSetLayoutBinding>&& layoutBindings);
+			void setup(const std::vector<VkDescriptorSetLayoutBinding>& layoutBindings, const std::vector<VkDescriptorPoolSize>& poolSizes, VkDescriptorSetLayout layout);
 
 			/**
 			 * Register a table to the manager.
@@ -68,17 +68,17 @@ namespace Flint
 			 *
 			 * @param table The table to register.
 			 */
-			void registerTable(const ResourceBindingTable& table);
+			void registerTable(const MeshBindingTable& table);
 
 			/**
 			 * Get the descriptor set from the manager.
 			 * Note that this will not create new descriptor sets.
 			 *
-			 * @param table the table to get the descriptor set from.
+			 * @param hash The table hash to get the descriptor set from.
 			 * @param frameIndex The frame index of the descriptor.
 			 * @return The descriptor set.
 			 */
-			[[nodiscard]] VkDescriptorSet getDescriptorSet(const ResourceBindingTable& table, uint32_t frameIndex) const;
+			[[nodiscard]] VkDescriptorSet getDescriptorSet(uint64_t hash, uint32_t frameIndex) const;
 
 		protected:
 			std::vector<VkDescriptorPoolSize> m_PoolSizes;

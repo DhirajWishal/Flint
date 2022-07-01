@@ -22,6 +22,7 @@ namespace Flint
 			struct MeshDrawer final
 			{
 				uint64_t m_PipelineHash = 0;
+				uint64_t m_ResourceHash = 0;
 			};
 
 		public:
@@ -46,8 +47,9 @@ namespace Flint
 			 * Register a mesh to the entry.
 			 *
 			 * @param pipelineHash The pipeline hash used to render.
+			 * @param resourceHash The resource hash used to properly bind the requested resources.
 			 */
-			void registerMesh(uint64_t pipelineHash);
+			void registerMesh(uint64_t pipelineHash, uint64_t resourceHash);
 
 		private:
 			std::vector<MeshDrawer> m_MeshDrawers;

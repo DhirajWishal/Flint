@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "Core/Camera/MonoCamera.hpp"
+#include "Core/Buffer.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -30,4 +31,18 @@ namespace Flint
 		m_Matrix.m_Projection = glm::perspective(glm::radians(m_FieldOfView), m_AspectRatio, m_NearPlane, m_FarPlane);
 		m_Matrix.m_Projection[1][1] *= -1.0f;
 	}
+
+	std::shared_ptr<Flint::Buffer> MonoCamera::createBuffer(const std::shared_ptr<Device>& pDevice) const
+	{
+		return pDevice->createBuffer(sizeof(Matrix), BufferUsage::Uniform);
+	}
+
+	void MonoCamera::copyToBuffer(const std::shared_ptr<Buffer>& pBuffer) const
+	{
+		auto pMemory = pBuffer->mapMemory();
+
+		std::copy_n(reinterpret_cast<const std::byte*>(&m_Matrix), sizeof(Matrix), pMemory);
+		pBuffer->unmapMemory();
+	}
+
 }

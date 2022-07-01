@@ -140,14 +140,6 @@ namespace Flint
 		 */
 		[[nodiscard]] const Instance& getInstance() const { return *m_pInstance; }
 
-		/**
-		 * Create a new texture image.
-		 *
-		 * @param path The path to the texture file.
-		 * @param usage The image usage.
-		 */
-		[[nodiscard]] virtual ImageHandle createTextureImage(std::filesystem::path&& path, ImageUsage usage) = 0;
-
 	private:
 		std::shared_ptr<Instance> m_pInstance = nullptr;
 	};

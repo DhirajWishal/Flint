@@ -18,9 +18,9 @@ namespace Flint
 			return instance;
 		}
 
-		void VulkanRasterizingDrawEntry::registerMesh(uint64_t pipelineHash)
+		void VulkanRasterizingDrawEntry::registerMesh(uint64_t pipelineHash, uint64_t resourceHash)
 		{
-			m_MeshDrawers.emplace_back(pipelineHash);
+			m_MeshDrawers.emplace_back(pipelineHash, resourceHash);
 		}
 	}
 }

@@ -136,14 +136,6 @@ namespace Flint
 			 */
 			[[nodiscard]] Multisample getMaximumMultisample() const override;
 
-			/**
-			 * Create a new texture image.
-			 *
-			 * @param path The path to the texture file.
-			 * @param usage The image usage.
-			 */
-			[[nodiscard]] ImageHandle createTextureImage(std::filesystem::path&& path, ImageUsage usage) override;
-
 		public:
 			/**
 			 * Get the physical device properties.

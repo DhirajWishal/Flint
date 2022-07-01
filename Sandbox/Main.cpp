@@ -54,8 +54,17 @@ int main()
 	auto rayTracer = device->createRayTracer(camera, window->getFrameCount());
 	auto model = device->createStaticModel(std::filesystem::path(FLINT_GLTF_ASSET_PATH) / "Sponza" / "glTF" / "Sponza.gltf");
 
+	auto cameraBuffer = camera.createBuffer(device);
 	auto defaultPipeline = rasterizer->createPipeline(program, GetDefaultSpecification(), std::make_unique<Flint::Defaults::FilePipelineCacheHandler>("PipelineCache/"));
-	auto drawEntry = defaultPipeline->attach(model);
+	auto drawEntry = defaultPipeline->attach(model, [cameraBuffer](auto& model, auto& mesh, auto& binder)
+		{
+			Flint::MeshBindingTable table;
+			table.bind(0, cameraBuffer);
+
+			return table;
+		}
+	);
+	auto firstInstance = drawEntry->instance();	// First instance.
 
 	// auto occlusionPipeline = rasterizer->createPipeline(occlusionProgram, getOcclusionSpecification());
 	// auto drawEntry = occlusionPipeline->register(model);
@@ -87,6 +96,8 @@ int main()
 
 		//spdlog::info("Frame rate: {}", Flint::FrameTimer::FramesPerSecond(duration), " ns");
 		camera.update();
+		camera.copyToBuffer(cameraBuffer);
+
 		rasterizer->update();	// Even though the rasterizer is attached as a dependency, we still need to manually update it.
 		rayTracer->update();
 		window->update();
@@ -94,6 +105,7 @@ int main()
 
 	const auto ss = timer.tick();
 
+	cameraBuffer->terminate();
 	defaultPipeline->terminate();
 	model->terminate();
 	rayTracer->terminate();

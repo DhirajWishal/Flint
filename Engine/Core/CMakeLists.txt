@@ -21,10 +21,9 @@ add_library(
 	"Source/StaticInitializer.cpp"
 	"Source/ShaderCode.cpp"
 	"Source/PipelineCacheHandler.cpp"
+	"Source/MeshBindingTable.cpp"
 		
 	"Source/EventSystem/EventSystem.cpp"
-
-	"Source/Utility/Hasher.cpp"
 
 	"Instance.hpp" 
 	"Device.hpp" 
@@ -52,6 +51,7 @@ add_library(
 	"PipelineCacheHandler.hpp"
 	"DrawEntry.hpp"
 	"Entity.hpp"
+	"MeshBindingTable.hpp"
 	
 	"Errors/AssetError.hpp"
 	"Errors/BackendError.hpp" 
@@ -70,8 +70,6 @@ add_library(
 	"EventSystem/EventSystem.hpp"
 	"EventSystem/Keyboard.hpp"
 	"EventSystem/Mouse.hpp"
-
-	"Utility/Hasher.hpp" 
 )
 
 # Set the include directories.

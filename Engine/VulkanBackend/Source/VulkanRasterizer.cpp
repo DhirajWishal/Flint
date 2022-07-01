@@ -8,8 +8,6 @@
 #include "VulkanBackend/VulkanRasterizingPipeline.hpp"
 #include "VulkanBackend/VulkanRasterizingProgram.hpp"
 
-#include "Core/Utility/Hasher.hpp"
-
 namespace Flint
 {
 	namespace VulkanBackend

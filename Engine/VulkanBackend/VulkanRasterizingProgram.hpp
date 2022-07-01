@@ -45,11 +45,32 @@ namespace Flint
 			[[nodiscard]] VkPipelineLayout getPipelineLayout() const { return m_PipelineLayout; }
 
 			/**
+			 * Get the descriptor set layout.
+			 *
+			 * @return The descriptor set layout.
+			 */
+			[[nodiscard]] VkDescriptorSetLayout getDescriptorSetLayout() const { return m_DescriptorSetLayout; }
+
+			/**
 			 * Get the shader stage create info structures.
 			 *
 			 * @return The structure vector.
 			 */
 			[[nodiscard]] const std::vector<VkPipelineShaderStageCreateInfo>& getPipelineShaderStageCreateInfos() const { return m_ShaderStageCreateInfos; }
+
+			/**
+			 * Get the descriptor layout bindings.
+			 *
+			 * @return The bindings.
+			 */
+			[[nodsicard]] const std::vector<VkDescriptorSetLayoutBinding>& getLayoutBindings() const { return m_LayoutBindings; }
+
+			/**
+			 * Get the descriptor pool sizes.
+			 *
+			 * @return The sizes.
+			 */
+			[[nodsicard]] const std::vector<VkDescriptorPoolSize>& getPoolSizes() const { return m_PoolSizes; }
 
 		private:
 			/**
@@ -57,19 +78,15 @@ namespace Flint
 			 *
 			 * @param shader The shader source.
 			 * @param stageFlags The shader stage flags.
-			 * @param bindings The layout bindings.
-			 * @param poolSizes The pool sizes.
 			 * @param pushConstants The shader push constants.
 			 * @return The created shader module.
 			 */
-			[[nodiscard]] VkShaderModule createShaderModule(const ShaderCode& shader, VkShaderStageFlags stageFlags, std::vector<VkDescriptorSetLayoutBinding>& bindings, std::vector<VkDescriptorPoolSize>& poolSizes, std::vector<VkPushConstantRange>& pushConstants);
+			[[nodiscard]] VkShaderModule createShaderModule(const ShaderCode& shader, VkShaderStageFlags stageFlags, std::vector<VkPushConstantRange>& pushConstants);
 
 			/**
 			 * Create the descriptor set layout.
-			 *
-			 * @param bindings The descriptor set layout bindings.
 			 */
-			void createDescriptorSetLayout(std::vector<VkDescriptorSetLayoutBinding>&& bindings);
+			void createDescriptorSetLayout();
 
 			/**
 			 * Create the pipeline layouts.
@@ -80,14 +97,16 @@ namespace Flint
 
 		private:
 			SparseArray<VkDescriptorSet> m_DescriptorSets;
+
 			std::vector<VkPipelineShaderStageCreateInfo> m_ShaderStageCreateInfos;
+			std::vector<VkDescriptorSetLayoutBinding> m_LayoutBindings;
+			std::vector<VkDescriptorPoolSize> m_PoolSizes;
 
 			VkShaderModule m_VertexShaderModule = VK_NULL_HANDLE;
 			VkShaderModule m_FragmentShaderModule = VK_NULL_HANDLE;
 
 			VkDescriptorSetLayout m_DescriptorSetLayout = VK_NULL_HANDLE;
 			VkPipelineLayout m_PipelineLayout = VK_NULL_HANDLE;
-			VkDescriptorPool m_DescriptorPool = VK_NULL_HANDLE;
 		};
 	}
 }

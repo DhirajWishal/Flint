@@ -70,6 +70,32 @@ namespace /* anonymous */
 	}
 
 	/**
+	 * Get the binging type from the reflection type.
+	 *
+	 * @parma type The reflection type.
+	 * @return The binding type.
+	 */
+	Flint::ResourceType GetResourceType(SpvReflectDescriptorType type)
+	{
+		switch (type)
+		{
+		case SPV_REFLECT_DESCRIPTOR_TYPE_SAMPLER:								return Flint::ResourceType::Sampler;
+		case SPV_REFLECT_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER:				return Flint::ResourceType::CombinedImageSampler;
+		case SPV_REFLECT_DESCRIPTOR_TYPE_SAMPLED_IMAGE:							return Flint::ResourceType::SampledImage;
+		case SPV_REFLECT_DESCRIPTOR_TYPE_STORAGE_IMAGE:							return Flint::ResourceType::StorageImage;
+		case SPV_REFLECT_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER:					return Flint::ResourceType::UniformTexelBuffer;
+		case SPV_REFLECT_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER:					return Flint::ResourceType::StorageTexelBuffer;
+		case SPV_REFLECT_DESCRIPTOR_TYPE_UNIFORM_BUFFER:						return Flint::ResourceType::UniformBuffer;
+		case SPV_REFLECT_DESCRIPTOR_TYPE_STORAGE_BUFFER:						return Flint::ResourceType::StorageBuffer;
+		case SPV_REFLECT_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC:				return Flint::ResourceType::DynamicUniformBuffer;
+		case SPV_REFLECT_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC:				return Flint::ResourceType::DynamicStorageBuffer;
+		case SPV_REFLECT_DESCRIPTOR_TYPE_INPUT_ATTACHMENT:						return Flint::ResourceType::InputAttachment;
+		case SPV_REFLECT_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR:			return Flint::ResourceType::AccelerationStructure;
+		default:																spdlog::error("Invalid resource type!"); return Flint::ResourceType::UniformBuffer;
+		}
+	}
+
+	/**
 	 * Get the Vulkan format from the reflection format.
 	 *
 	 * @param format The reflection format.
@@ -89,19 +115,17 @@ namespace Flint
 		VulkanRasterizingProgram::VulkanRasterizingProgram(const std::shared_ptr<VulkanDevice>& pDevice, ShaderCode&& vertexShader, ShaderCode&& fragmetShader)
 			: RasterizingProgram(pDevice, std::move(vertexShader), std::move(fragmetShader))
 		{
-			std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
-			std::vector<VkDescriptorPoolSize> poolSizes;
 			std::vector<VkPushConstantRange> pushConstants;
 
 			// Create the shader modules.
 			if (!m_VertexShader.empty())
-				m_VertexShaderModule = createShaderModule(m_VertexShader, VK_SHADER_STAGE_VERTEX_BIT, layoutBindings, poolSizes, pushConstants);
+				m_VertexShaderModule = createShaderModule(m_VertexShader, VK_SHADER_STAGE_VERTEX_BIT, pushConstants);
 
 			if (!m_FragmentShader.empty())
-				m_FragmentShaderModule = createShaderModule(m_FragmentShader, VK_SHADER_STAGE_FRAGMENT_BIT, layoutBindings, poolSizes, pushConstants);
+				m_FragmentShaderModule = createShaderModule(m_FragmentShader, VK_SHADER_STAGE_FRAGMENT_BIT, pushConstants);
 
 			// Create the descriptor set layout and the pipeline layout.
-			createDescriptorSetLayout(std::move(layoutBindings));
+			createDescriptorSetLayout();
 			createPipelineLayout(std::move(pushConstants));
 
 			// Make sure to set the object as valid.
@@ -127,7 +151,7 @@ namespace Flint
 			invalidate();
 		}
 
-		VkShaderModule VulkanRasterizingProgram::createShaderModule(const ShaderCode& shader, VkShaderStageFlags stageFlags, std::vector<VkDescriptorSetLayoutBinding>& bindings, std::vector<VkDescriptorPoolSize>& poolSizes, std::vector<VkPushConstantRange>& pushConstants)
+		VkShaderModule VulkanRasterizingProgram::createShaderModule(const ShaderCode& shader, VkShaderStageFlags stageFlags, std::vector<VkPushConstantRange>& pushConstants)
 		{
 			const auto& shaderCode = shader.get();
 
@@ -185,16 +209,18 @@ namespace Flint
 				// Iterate over the resources and setup the bindings.
 				for (const auto& pResource : pBindings)
 				{
-					auto& binding = bindings.emplace_back();
+					auto& binding = m_LayoutBindings.emplace_back();
 					binding.binding = pResource->binding;
 					binding.descriptorCount = pResource->count;
 					binding.descriptorType = GetDescriptorType(pResource->descriptor_type);
 					binding.pImmutableSamplers = nullptr;
 					binding.stageFlags = stageFlags;
 
-					auto& poolSize = poolSizes.emplace_back();
+					auto& poolSize = m_PoolSizes.emplace_back();
 					poolSize.descriptorCount = pResource->count;
 					poolSize.type = binding.descriptorType;
+
+					m_BindingMap.registerBinding(pResource->binding, GetResourceType(pResource->descriptor_type));
 				}
 			}
 
@@ -239,14 +265,14 @@ namespace Flint
 			return shaderModule;
 		}
 
-		void VulkanRasterizingProgram::createDescriptorSetLayout(std::vector<VkDescriptorSetLayoutBinding>&& bindings)
+		void VulkanRasterizingProgram::createDescriptorSetLayout()
 		{
 			VkDescriptorSetLayoutCreateInfo createInfo = {};
 			createInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 			createInfo.flags = 0;
 			createInfo.pNext = nullptr;
-			createInfo.bindingCount = static_cast<uint32_t>(bindings.size());
-			createInfo.pBindings = bindings.data();
+			createInfo.bindingCount = static_cast<uint32_t>(m_LayoutBindings.size());
+			createInfo.pBindings = m_LayoutBindings.data();
 
 			FLINT_VK_ASSERT(getDevice().as<VulkanDevice>()->getDeviceTable().vkCreateDescriptorSetLayout(getDevice().as<VulkanDevice>()->getLogicalDevice(), &createInfo, nullptr, &m_DescriptorSetLayout), "Failed to create the descriptor set layout!");
 		}
