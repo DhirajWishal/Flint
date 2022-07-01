@@ -50,6 +50,8 @@ add_library(
 	"CommandBuffers.hpp"
 	"ShaderCode.hpp"
 	"PipelineCacheHandler.hpp"
+	"DrawEntry.hpp"
+	"Entity.hpp"
 	
 	"Errors/AssetError.hpp"
 	"Errors/BackendError.hpp" 
@@ -76,7 +78,7 @@ add_library(
 target_include_directories(
 	FlintCore 
 	
-	PRIVATE ${XXHASH_INCLUDE_DIR} 
+	PUBLIC ${XXHASH_INCLUDE_DIR} 
 	PUBLIC ${OPTICK_INCLUDE_DIR} 
 	PUBLIC ${GLM_INCLUDE_DIR} 
 	PRIVATE ${ASSIMP_INCLUDE_DIR} 

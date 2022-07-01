@@ -4,8 +4,7 @@
 #pragma once
 
 #include "Core/RayTracingPipeline.hpp"
-#include "VulkanPipeline.hpp"
-#include "VulkanDescriptorSetManager.hpp"
+#include "VulkanDevice.hpp"
 
 namespace Flint
 {
@@ -14,7 +13,7 @@ namespace Flint
 		/**
 		 * Vulkan ray tracing pipeline.
 		 */
-		class VulkanRayTracingPipeline final : public RayTracingPipeline, public VulkanPipeline
+		class VulkanRayTracingPipeline final : public RayTracingPipeline
 		{
 		public:
 			/**
@@ -37,13 +36,19 @@ namespace Flint
 
 			/**
 			 * Load the pipeline cache from the handler if possible.
+			 *
+			 * @param identifier The pipeline identifier.
+			 * @return The loaded pipeline cache.
 			 */
-			void loadCache() override;
+			[[nodiscard]] VkPipelineCache loadCache(uint64_t identifier) const;
 
 			/**
 			 * Save the pipeline cache from the handler if possible.
+			 *
+			 * @param identifier The pipeline identifier.
+			 * @param cache The pipeline cache to save.
 			 */
-			void saveCache() override;
+			void saveCache(uint64_t identifier, VkPipelineCache cache) const;
 		};
 	}
 }

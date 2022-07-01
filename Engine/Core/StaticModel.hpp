@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Buffer.hpp"
+#include "Entity.hpp"
 
 namespace Flint
 {
@@ -39,7 +39,7 @@ namespace Flint
 	 * Static model class.
 	 * This contains an asset which does not contain any animations.
 	 */
-	class StaticModel : public DeviceBoundObject
+	class StaticModel : public Entity
 	{
 	public:
 		/**
@@ -48,7 +48,7 @@ namespace Flint
 		 * @param pDevice The device reference.
 		 * @param assetFile The asset file to load the data from.
 		 */
-		explicit StaticModel(const std::shared_ptr<Device>& pDevice, std::filesystem::path&& assetFile) : DeviceBoundObject(pDevice), m_AssetPath(std::move(assetFile)) {}
+		explicit StaticModel(const std::shared_ptr<Device>& pDevice, std::filesystem::path&& assetFile) : Entity(pDevice), m_AssetPath(std::move(assetFile)) {}
 
 		/**
 		 * Default virtual destructor.

@@ -34,6 +34,24 @@ namespace Flint
 			 */
 			void terminate() override;
 
+			/**
+			 * Get the input binding descriptions for this model.
+			 *
+			 * @param mesh To mesh to get the descriptions from.
+			 * @param inputs The inputs that we want to access.
+			 * @reutrn The binding descriptions.
+			 */
+			[[nodiscard]] std::vector<VkVertexInputBindingDescription> getInputBindingDescriptions(const StaticMesh& mesh, const std::vector<VertexInput>& inputs) const;
+
+			/**
+			 * Get the input attribute descriptions for this model.
+			 *
+			 * @param mesh To mesh to get the descriptions from.
+			 * @param inputs The inputs that we want to access.
+			 * @reutrn The attribute descriptions.
+			 */
+			[[nodiscard]] std::vector<VkVertexInputAttributeDescription> getInputAttributeDescriptions(const StaticMesh& mesh, const std::vector<VertexInput>& inputs) const;
+
 		private:
 			/**
 			 * Load the model data.

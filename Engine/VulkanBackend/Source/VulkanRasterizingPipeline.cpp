@@ -5,6 +5,11 @@
 #include "VulkanBackend/VulkanRasterizer.hpp"
 #include "VulkanBackend/VulkanMacros.hpp"
 #include "VulkanBackend/VulkanRasterizingProgram.hpp"
+#include "VulkanBackend/VulkanRasterizingDrawEntry.hpp"
+#include "VulkanBackend/VulkanStaticModel.hpp"
+
+#define XXH_INLINE_ALL
+#include <xxhash.h>
 
 #ifdef FLINT_PLATFORM_WINDOWS
 #	include <execution>
@@ -157,8 +162,6 @@ namespace /* anonymous */
 		if ((flags & Flint::DynamicStateFlags::BlendConstants) == Flint::DynamicStateFlags::BlendConstants) states.emplace_back(VK_DYNAMIC_STATE_BLEND_CONSTANTS);
 		if ((flags & Flint::DynamicStateFlags::DepthBounds) == Flint::DynamicStateFlags::DepthBounds) states.emplace_back(VK_DYNAMIC_STATE_DEPTH_BOUNDS);
 
-
-		states.emplace_back(VK_DYNAMIC_STATE_VERTEX_INPUT_EXT);	// This is needed for the input bindings.
 		return states;
 	}
 
@@ -284,16 +287,9 @@ namespace Flint
 	{
 		VulkanRasterizingPipeline::VulkanRasterizingPipeline(const std::shared_ptr<VulkanDevice>& pDevice, const std::shared_ptr<VulkanRasterizer>& pRasterizer, const std::shared_ptr<VulkanRasterizingProgram>& pProgram, const RasterizingPipelineSpecification& specification, std::unique_ptr<PipelineCacheHandler>&& pCacheHandler /*= nullptr*/)
 			: RasterizingPipeline(pDevice, pRasterizer, pProgram, specification, std::move(pCacheHandler))
-			, VulkanPipeline(pDevice)
 		{
-			// Load the cache if possible.
-			loadCache();
-
 			// Setup the defaults.
 			setupDefaults(std::move(specification));
-
-			// Finally create the pipeline.
-			createPipeline();
 
 			// Make sure to set the object as valid.
 			validate();
@@ -306,24 +302,82 @@ namespace Flint
 
 		void VulkanRasterizingPipeline::terminate()
 		{
-			saveCache();
-			destroy();
+			for (const auto& [hash, pipeline] : m_Pipelines)
+			{
+				saveCache(hash, pipeline.m_PipelineCache);
+				getDevice().as<VulkanDevice>()->getDeviceTable().vkDestroyPipeline(getDevice().as<VulkanDevice>()->getLogicalDevice(), pipeline.m_Pipeline, nullptr);
+				getDevice().as<VulkanDevice>()->getDeviceTable().vkDestroyPipelineCache(getDevice().as<VulkanDevice>()->getLogicalDevice(), pipeline.m_PipelineCache, nullptr);
+			}
+
 			invalidate();
 		}
 
 		void VulkanRasterizingPipeline::recreate()
 		{
-			getDevice().as<VulkanDevice>()->getDeviceTable().vkDestroyPipeline(getDevice().as<VulkanDevice>()->getLogicalDevice(), m_Pipeline, nullptr);
-			createPipeline();
+			// Recreate everything again.
+			for (auto& [hash, pipeline] : m_Pipelines)
+			{
+				getDevice().as<VulkanDevice>()->getDeviceTable().vkDestroyPipeline(getDevice().as<VulkanDevice>()->getLogicalDevice(), pipeline.m_Pipeline, nullptr);
+				pipeline.m_Pipeline = createVariation(pipeline.m_InputState, pipeline.m_PipelineCache);
+			}
 		}
 
-		void VulkanRasterizingPipeline::loadCache()
+		std::shared_ptr<Flint::DrawEntry> VulkanRasterizingPipeline::attach(const std::shared_ptr<StaticModel>& pModel)
+		{
+			const auto pStaticModel = pModel->as<VulkanStaticModel>();
+			const auto vertexInputs = getProgram()->as<VulkanRasterizingProgram>()->getVertexInputs();
+			auto pEntry = std::make_shared<VulkanRasterizingDrawEntry>(pModel);
+
+			// Iterate over the meshes and create the required pipelines.
+			for (const auto& mesh : pStaticModel->getMeshes())
+			{
+				const auto inputBindings = pStaticModel->getInputBindingDescriptions(mesh, vertexInputs);
+				const auto inputAttributes = pStaticModel->getInputAttributeDescriptions(mesh, vertexInputs);
+
+				// Check if the input bindings and attributes have everything we need.
+				if (inputBindings.size() != vertexInputs.size() || inputAttributes.size() != vertexInputs.size())
+					throw BackendError("The mesh does not contain all the vertex attributes this pipeline requires!");
+
+				// Generate the hash which is used to uniquely identify the pipeline.
+				const XXH64_hash_t hashes[] = {
+					XXH64(inputBindings.data(), sizeof(VkVertexInputBindingDescription) * inputBindings.size(), 0),
+					XXH64(inputAttributes.data(), sizeof(VkVertexInputAttributeDescription) * inputAttributes.size(), 0),
+				};
+
+				const auto hash = static_cast<uint64_t>(XXH64(hashes, sizeof(hashes), 0));
+
+				// Check and create the pipeline if not available.
+				if (!m_Pipelines.contains(hash))
+				{
+					Pipeline pipeline = {};
+					pipeline.m_InputState.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+					pipeline.m_InputState.flags = 0;
+					pipeline.m_InputState.pNext = nullptr;
+					pipeline.m_InputState.vertexBindingDescriptionCount = static_cast<uint32_t>(inputBindings.size());
+					pipeline.m_InputState.pVertexBindingDescriptions = inputBindings.data();
+					pipeline.m_InputState.vertexAttributeDescriptionCount = static_cast<uint32_t>(inputAttributes.size());
+					pipeline.m_InputState.pVertexAttributeDescriptions = inputAttributes.data();
+
+					pipeline.m_PipelineCache = loadCache(hash);
+					pipeline.m_Pipeline = createVariation(pipeline.m_InputState, pipeline.m_PipelineCache);
+					saveCache(hash, pipeline.m_PipelineCache);
+
+					m_Pipelines[hash] = pipeline;
+				}
+
+				pEntry->registerMesh(hash);
+			}
+
+			return pEntry;
+		}
+
+		VkPipelineCache VulkanRasterizingPipeline::loadCache(uint64_t identifier) const
 		{
 			std::vector<std::byte> buffer;
 
 			// Load the cache if possible.
 			if (m_pCacheHandler)
-				buffer = m_pCacheHandler->load();
+				buffer = m_pCacheHandler->load(identifier);
 
 			// Create the pipeline cache.
 			VkPipelineCacheCreateInfo createInfo = {};
@@ -333,25 +387,28 @@ namespace Flint
 			createInfo.initialDataSize = buffer.size();
 			createInfo.pInitialData = buffer.data();
 
-			FLINT_VK_ASSERT(getDevicePointerAs<VulkanDevice>()->getDeviceTable().vkCreatePipelineCache(getDevicePointerAs<VulkanDevice>()->getLogicalDevice(), &createInfo, nullptr, &m_PipelineCache), "Failed to create the pipeline cache!");
+			VkPipelineCache pipelineCache = VK_NULL_HANDLE;
+			FLINT_VK_ASSERT(getDevicePointerAs<VulkanDevice>()->getDeviceTable().vkCreatePipelineCache(getDevicePointerAs<VulkanDevice>()->getLogicalDevice(), &createInfo, nullptr, &pipelineCache), "Failed to create the pipeline cache!");
+
+			return pipelineCache;
 		}
 
-		void VulkanRasterizingPipeline::saveCache()
+		void VulkanRasterizingPipeline::saveCache(uint64_t identifier, VkPipelineCache cache) const
 		{
 			// Return if we don't have anything to save.
-			if (m_PipelineCache == VK_NULL_HANDLE)
+			if (cache == VK_NULL_HANDLE)
 				return;
 
 			// Load cache data.
 			size_t cacheSize = 0;
-			FLINT_VK_ASSERT(getDevicePointerAs<VulkanDevice>()->getDeviceTable().vkGetPipelineCacheData(getDevicePointerAs<VulkanDevice>()->getLogicalDevice(), m_PipelineCache, &cacheSize, nullptr), "Failed to get the pipeline cache size!");
+			FLINT_VK_ASSERT(getDevicePointerAs<VulkanDevice>()->getDeviceTable().vkGetPipelineCacheData(getDevicePointerAs<VulkanDevice>()->getLogicalDevice(), cache, &cacheSize, nullptr), "Failed to get the pipeline cache size!");
 
 			auto buffer = std::vector<std::byte>(cacheSize);
-			FLINT_VK_ASSERT(getDevicePointerAs<VulkanDevice>()->getDeviceTable().vkGetPipelineCacheData(getDevicePointerAs<VulkanDevice>()->getLogicalDevice(), m_PipelineCache, &cacheSize, buffer.data()), "Failed to get the pipeline cache data!");
+			FLINT_VK_ASSERT(getDevicePointerAs<VulkanDevice>()->getDeviceTable().vkGetPipelineCacheData(getDevicePointerAs<VulkanDevice>()->getLogicalDevice(), cache, &cacheSize, buffer.data()), "Failed to get the pipeline cache data!");
 
 			// Store the cache if possible.
 			if (m_pCacheHandler)
-				m_pCacheHandler->store(buffer);
+				m_pCacheHandler->store(identifier, buffer);
 		}
 
 		void VulkanRasterizingPipeline::setupDefaults(const RasterizingPipelineSpecification& specification)
@@ -459,7 +516,7 @@ namespace Flint
 			m_DynamicStateCreateInfo.pDynamicStates = m_DynamicStates.data();
 		}
 
-		void VulkanRasterizingPipeline::createPipeline()
+		VkPipeline VulkanRasterizingPipeline::createVariation(const VkPipelineVertexInputStateCreateInfo& inputState, VkPipelineCache cache)
 		{
 			// Resolve viewport state.
 			VkRect2D rect2D = {};
@@ -491,7 +548,7 @@ namespace Flint
 			createInfo.flags = 0;
 			createInfo.stageCount = static_cast<uint32_t>(m_ShaderStageCreateInfo.size());
 			createInfo.pStages = m_ShaderStageCreateInfo.data();
-			createInfo.pVertexInputState = &m_VertexInputStateCreateInfo;
+			createInfo.pVertexInputState = &inputState;
 			createInfo.pInputAssemblyState = &m_InputAssemblyStateCreateInfo;
 			createInfo.pTessellationState = &m_TessellationStateCreateInfo;
 			createInfo.pViewportState = &viewportStateCreateInfo;
@@ -506,7 +563,10 @@ namespace Flint
 			createInfo.basePipelineHandle = VK_NULL_HANDLE;
 			createInfo.basePipelineIndex = 0;
 
-			FLINT_VK_ASSERT(getDevice().as<VulkanDevice>()->getDeviceTable().vkCreateGraphicsPipelines(getDevice().as<VulkanDevice>()->getLogicalDevice(), m_PipelineCache, 1, &createInfo, nullptr, &m_Pipeline), "Failed to create the pipeline!");
+			VkPipeline pipeline = VK_NULL_HANDLE;
+			FLINT_VK_ASSERT(getDevice().as<VulkanDevice>()->getDeviceTable().vkCreateGraphicsPipelines(getDevice().as<VulkanDevice>()->getLogicalDevice(), cache, 1, &createInfo, nullptr, &pipeline), "Failed to create the pipeline!");
+
+			return pipeline;
 		}
 	}
 }

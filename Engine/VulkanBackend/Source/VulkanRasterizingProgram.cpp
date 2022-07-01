@@ -156,7 +156,7 @@ namespace Flint
 					if (pResource->location < EnumToInt(VertexAttribute::Max))
 					{
 						auto& input = m_VertexInputs.emplace_back();
-						input.m_Format = GetFormat(pResource->format);
+						input.m_Components = std::max(pResource->type_description->traits.numeric.vector.component_count, 1u);
 						input.m_Attribute = static_cast<VertexAttribute>(pResource->location);
 					}
 
@@ -164,7 +164,7 @@ namespace Flint
 					else if (pResource->location < EnumToInt(InstanceAttribute::Max))
 					{
 						auto& input = m_InstanceInputs.emplace_back();
-						input.m_Format = GetFormat(pResource->format);
+						input.m_Components = std::max(pResource->type_description->traits.numeric.vector.component_count, 1u);
 						input.m_Attribute = static_cast<InstanceAttribute>(pResource->location);
 					}
 

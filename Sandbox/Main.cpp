@@ -54,7 +54,8 @@ int main()
 	auto rayTracer = device->createRayTracer(camera, window->getFrameCount());
 	auto model = device->createStaticModel(std::filesystem::path(FLINT_GLTF_ASSET_PATH) / "Sponza" / "glTF" / "Sponza.gltf");
 
-	auto defaultPipeline = rasterizer->createPipeline(program, GetDefaultSpecification(), std::make_unique<Flint::Defaults::FilePipelineCacheHandler>("Cache/default.fpc"));
+	auto defaultPipeline = rasterizer->createPipeline(program, GetDefaultSpecification(), std::make_unique<Flint::Defaults::FilePipelineCacheHandler>("PipelineCache/"));
+	auto drawEntry = defaultPipeline->attach(model);
 
 	// auto occlusionPipeline = rasterizer->createPipeline(occlusionProgram, getOcclusionSpecification());
 	// auto drawEntry = occlusionPipeline->register(model);

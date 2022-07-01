@@ -28,16 +28,18 @@ namespace Flint
 		/**
 		 * Store the cache data.
 		 *
+		 * @param identifier The pipeline identifier.
 		 * @param bytes The cache data to store.
 		 */
-		virtual void store(const std::vector<std::byte>& bytes) = 0;
+		virtual void store(uint64_t identifier, const std::vector<std::byte>& bytes) = 0;
 
 		/**
 		 * Load cache data.
 		 *
+		 * @param identifier The pipeline identifier.
 		 * @return The loaded cache data.
 		 */
-		[[nodiscard]] virtual std::vector<std::byte> load() = 0;
+		[[nodiscard]] virtual std::vector<std::byte> load(uint64_t identifier) = 0;
 	};
 
 	namespace Defaults
@@ -52,26 +54,28 @@ namespace Flint
 			/**
 			 * Explicit constructor.
 			 *
-			 * @param path The file path of the cache file.
+			 * @param path The file path to store the cache. Make sure that it is a directory, not a file.
 			 */
-			explicit FilePipelineCacheHandler(std::filesystem::path&& path) : m_CacheFile(std::move(path)) {}
+			explicit FilePipelineCacheHandler(std::filesystem::path&& path);
 
 			/**
 			 * Store the cache data.
 			 *
+			 * @param identifier The pipeline identifier.
 			 * @param bytes The cache data to store.
 			 */
-			void store(const std::vector<std::byte>& bytes) override;
+			void store(uint64_t identifier, const std::vector<std::byte>& bytes) override;
 
 			/**
 			 * Load cache data.
 			 *
+			 * @param identifier The pipeline identifier.
 			 * @return The loaded cache data.
 			 */
-			[[nodiscard]] std::vector<std::byte> load() override;
+			[[nodiscard]] std::vector<std::byte> load(uint64_t identifier) override;
 
 		private:
-			const std::filesystem::path m_CacheFile;
+			const std::filesystem::path m_CacheFilePath;
 		};
 	}
 }

@@ -232,7 +232,6 @@ namespace Flint
 			// Set up the device extensions.
 			m_DeviceExtensions.emplace_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
 			m_DeviceExtensions.emplace_back(VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME);
-			m_DeviceExtensions.emplace_back(VK_EXT_VERTEX_INPUT_DYNAMIC_STATE_EXTENSION_NAME);
 
 			// Enumerate physical devices.
 			uint32_t deviceCount = 0;
@@ -346,9 +345,6 @@ namespace Flint
 			features.sampleRateShading = VK_TRUE;
 			features.tessellationShader = VK_TRUE;
 			features.geometryShader = VK_TRUE;
-			//features.vertexInputDynamicState = VK_TRUE;
-
-
 
 			// Setup the device create info.
 			VkDeviceCreateInfo deviceCreateInfo = {};
@@ -362,21 +358,6 @@ namespace Flint
 			deviceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(m_DeviceExtensions.size());
 			deviceCreateInfo.ppEnabledExtensionNames = m_DeviceExtensions.data();
 			deviceCreateInfo.pEnabledFeatures = &features;
-
-			// Enable the vertex input dynamic state if available.
-			VkPhysicalDeviceVertexInputDynamicStateFeaturesEXT enableVertexInputDynamicState = {};
-			enableVertexInputDynamicState.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_INPUT_DYNAMIC_STATE_FEATURES_EXT;
-			enableVertexInputDynamicState.pNext = nullptr;
-			enableVertexInputDynamicState.vertexInputDynamicState = VK_TRUE;
-
-			VkPhysicalDeviceFeatures2 physicalDeviceFeatures2 = {};
-			physicalDeviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
-			physicalDeviceFeatures2.pNext = &enableVertexInputDynamicState;
-
-			vkGetPhysicalDeviceFeatures2(m_PhysicalDevice, &physicalDeviceFeatures2);
-
-			if (enableVertexInputDynamicState.vertexInputDynamicState)
-				deviceCreateInfo.pNext = &enableVertexInputDynamicState;
 
 			// Enable validation if requested.
 			if (getInstance().as<VulkanInstance>()->isValidationEnabled())

@@ -22,7 +22,6 @@ add_library(
 	"Source/VulkanColorAttachment.cpp" 
 	"Source/VulkanDepthAttachment.cpp" 
 	"Source/VulkanRenderTargetAttachment.cpp"
-	"Source/VulkanPipeline.cpp" 
 	"Source/VulkanRasterizingPipeline.cpp"
 	"Source/VulkanDescriptorSetManager.cpp"
 	"Source/VulkanBuffer.cpp"
@@ -32,6 +31,7 @@ add_library(
 	"Source/VulkanRayTracingPipeline.cpp"
 	"Source/VulkanStaticModel.cpp"
 	"Source/VulkanVertexStorage.cpp"
+	"Source/VulkanRasterizingDrawEntry.cpp"
 	
 	"VulkanInstance.hpp"
 	"VulkanMacros.hpp"
@@ -43,7 +43,6 @@ add_library(
 	"VulkanDepthAttachment.hpp"
 	"VulkanRenderTargetAttachment.hpp"
 	"VulkanRasterizingPipeline.hpp" 
-	"VulkanPipeline.hpp"
 	"VulkanDescriptorSetManager.hpp" 
 	"VulkanBuffer.hpp"
 	"VulkanRasterizingProgram.hpp"
@@ -51,7 +50,7 @@ add_library(
 	"VulkanStorageAttachment.hpp"
 	"VulkanStaticModel.hpp"
 	"VulkanVertexStorage.hpp"
-	"Exporter.hpp"
+	"VulkanRasterizingDrawEntry.hpp"
 )
 
 # Set the include directories.

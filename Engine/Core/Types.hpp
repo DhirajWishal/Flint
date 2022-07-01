@@ -211,14 +211,38 @@ namespace Flint
 	using VertexDescriptor = std::array<DataType, EnumToInt(VertexAttribute::Max)>;
 
 	/**
+	 * Vertex attribute bits type.
+	 * This is used primarily to quickly check if a vertex attribute is available.
+	 */
+	using VertexAttributeBits = uint32_t;
+
+	/**
+	 * Get the vertex attribute's bit value.
+	 *
+	 * @param attribute The vertex attribute to get the bit value of.
+	 * @return The bit value.
+	 */
+	constexpr VertexAttributeBits GetVertexAttributeBit(const VertexAttribute attribute) { return 1 << EnumToInt(attribute); }
+
+	/**
+	 * Vertex input structure.
+	 * This contains information about a single vertex input.
+	 */
+	struct VertexInput final
+	{
+		uint8_t m_Components = 1;	// This specifies the number of components in the type. For example, vec3 = 3, vec2 = 2, float = 1.
+		VertexAttribute m_Attribute = VertexAttribute::Max;
+	};
+
+	/**
 	 * Instance attribute enum.
 	 */
 	enum class InstanceAttribute : uint8_t
 	{
+		InstanceID,
 		Position,
 		Rotation,
 		Scale,
-		GeometryID,
 
 		Max
 	};
@@ -228,6 +252,16 @@ namespace Flint
 	 * This defines all the types in an instance.
 	 */
 	using InstanceDescriptor = std::array<DataType, EnumToInt(InstanceAttribute::Max)>;
+
+	/**
+	 * Instance input structure.
+	 * This structure contains information about a single instance input attribute.
+	 */
+	struct InstanceInput final
+	{
+		uint8_t m_Components = 1;	// This specifies the number of components in the type. For example, vec3 = 3, vec2 = 2, float = 1.
+		InstanceAttribute m_Attribute = InstanceAttribute::Max;
+	};
 
 	/**
 	 * Get the stride from the vertex or instance descriptor.

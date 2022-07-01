@@ -10,14 +10,28 @@ namespace Flint
 {
 	namespace Defaults
 	{
-		void FilePipelineCacheHandler::store(const std::vector<std::byte>& bytes)
+
+		FilePipelineCacheHandler::FilePipelineCacheHandler(std::filesystem::path&& path)
+			: m_CacheFilePath(std::move(path))
+		{
+			// Validate the path.
+			if (m_CacheFilePath.has_filename())
+				throw AssetError("Invlaid path provided! Make sure that the path leads to a directory, not to a file.");
+
+			// If the directory does not exist, let's make it.
+			if (!std::filesystem::exists(m_CacheFilePath))
+				std::filesystem::create_directories(m_CacheFilePath);
+		}
+
+		void FilePipelineCacheHandler::store(uint64_t identifier, const std::vector<std::byte>& bytes)
 		{
 			// Return if we don't have anything to save.
 			if (bytes.empty())
 				return;
 
 			// Write to file.
-			std::fstream cacheFile(m_CacheFile, std::ios::out | std::ios::binary);
+			const auto filename = std::to_string(identifier) + ".fpc";
+			std::fstream cacheFile(m_CacheFilePath / filename, std::ios::out | std::ios::binary);
 
 			// Write the data if we were able to open the file.
 			if (cacheFile.is_open())
@@ -27,18 +41,18 @@ namespace Flint
 			cacheFile.close();
 		}
 
-		std::vector<std::byte> FilePipelineCacheHandler::load()
+		std::vector<std::byte> FilePipelineCacheHandler::load(uint64_t identifier)
 		{
 			// Load data from file.
-			std::fstream cacheFile(m_CacheFile, std::ios::in | std::ios::ate | std::ios::binary);
+			const auto filename = std::to_string(identifier) + ".fpc";
+			std::fstream cacheFile(m_CacheFilePath / filename, std::ios::in | std::ios::ate | std::ios::binary);
 
-			uint64_t size = 0;
 			std::vector<std::byte> buffer;
 
 			// If file does not exist, return without an issue.
 			if (cacheFile.is_open())
 			{
-				size = cacheFile.tellg();
+				const auto size = cacheFile.tellg();
 				cacheFile.seekg(0);
 
 				buffer.resize(size);

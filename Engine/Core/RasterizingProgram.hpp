@@ -81,8 +81,25 @@ namespace Flint
 		 */
 		[[nodsicard]] const ShaderCode& getFragmentShaderPath() const { return m_FragmentShader; }
 
+		/**
+		 * Get the vertex inputs.
+		 *
+		 * @return The vertex inputs.
+		 */
+		[[nodsicard]] const std::vector<VertexInput>& getVertexInputs() const { return m_VertexInputs; }
+
+		/**
+		 * Get the instance inputs.
+		 *
+		 * @return The instance inputs.
+		 */
+		[[nodsicard]] const std::vector<InstanceInput>& getInstanceInputs() const { return m_InstanceInputs; }
+
 	protected:
 		ShaderCode m_VertexShader;
 		ShaderCode m_FragmentShader;
+
+		std::vector<VertexInput> m_VertexInputs;
+		std::vector<InstanceInput> m_InstanceInputs;
 	};
 }

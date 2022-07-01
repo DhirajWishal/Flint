@@ -31,16 +31,6 @@ namespace Flint
 		 */
 		virtual ~Pipeline() = default;
 
-		/**
-		 * Load the pipeline cache from the handler if possible.
-		 */
-		virtual void loadCache() = 0;
-
-		/**
-		 * Save the pipeline cache from the handler if possible.
-		 */
-		virtual void saveCache() = 0;
-
 	protected:
 		std::unique_ptr<PipelineCacheHandler> m_pCacheHandler = nullptr;
 	};

@@ -26,6 +26,47 @@ namespace /* anonymous */
 		auto pVertexData = pStorage->getDevice().createBuffer(size, Flint::BufferUsage::Staging, pData);
 		return pStorage->insert(attribute, pVertexData.get());
 	}
+
+	/**
+	 * Get the Vulkan format from the attribute.
+	 *
+	 * @param attribute The attribute to get the format from.
+	 * @return The format.
+	 */
+	VkFormat GetAttributeFormat(Flint::VertexAttribute attribute)
+	{
+		switch (attribute)
+		{
+		case Flint::VertexAttribute::Position:
+		case Flint::VertexAttribute::Normal:
+		case Flint::VertexAttribute::Tangent:
+		case Flint::VertexAttribute::BiTangent:
+			return VK_FORMAT_R32G32B32_SFLOAT;
+
+		case Flint::VertexAttribute::Color0:
+		case Flint::VertexAttribute::Color1:
+		case Flint::VertexAttribute::Color2:
+		case Flint::VertexAttribute::Color3:
+		case Flint::VertexAttribute::Color4:
+		case Flint::VertexAttribute::Color5:
+		case Flint::VertexAttribute::Color6:
+		case Flint::VertexAttribute::Color7:
+			return VK_FORMAT_R32G32B32A32_SFLOAT;
+
+		case Flint::VertexAttribute::Texture0:
+		case Flint::VertexAttribute::Texture1:
+		case Flint::VertexAttribute::Texture2:
+		case Flint::VertexAttribute::Texture3:
+		case Flint::VertexAttribute::Texture4:
+		case Flint::VertexAttribute::Texture5:
+		case Flint::VertexAttribute::Texture6:
+		case Flint::VertexAttribute::Texture7:
+			return VK_FORMAT_R32G32_SFLOAT;
+
+		default:
+			throw Flint::BackendError("Invalid attribute type!");
+		}
+	}
 }
 
 namespace Flint
@@ -53,6 +94,50 @@ namespace Flint
 			m_VertexStorage.terminate();
 			m_pIndexBuffer->terminate();
 			invalidate();
+		}
+
+		std::vector<VkVertexInputBindingDescription> VulkanStaticModel::getInputBindingDescriptions(const StaticMesh& mesh, const std::vector<VertexInput>& inputs) const
+		{
+			std::vector<VkVertexInputBindingDescription> descriptions;
+
+			// Iterate over the vertex data and get the binding descriptions.
+			uint32_t binding = 0;
+			for (const auto input : inputs)
+			{
+				const auto data = mesh.m_VertexData[EnumToInt(input.m_Attribute)];
+				if (data.m_Stride > 0)
+				{
+					auto& description = descriptions.emplace_back();
+					description.stride = data.m_Stride;
+					description.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+					description.binding = binding++;
+				}
+			}
+
+			return descriptions;
+		}
+
+		std::vector<VkVertexInputAttributeDescription> VulkanStaticModel::getInputAttributeDescriptions(const StaticMesh& mesh, const std::vector<VertexInput>& inputs) const
+		{
+			std::vector<VkVertexInputAttributeDescription> descriptions;
+
+			// Iterate over the vertex data and get the binding descriptions.
+			uint32_t binding = 0;
+			for (const auto input : inputs)
+			{
+				const auto i = EnumToInt(input.m_Attribute);
+				const auto data = mesh.m_VertexData[i];
+				if (data.m_Stride > 0)
+				{
+					auto& description = descriptions.emplace_back();
+					description.offset = 0;
+					description.format = GetAttributeFormat(input.m_Attribute);
+					description.location = i;
+					description.binding = binding++;
+				}
+			}
+
+			return descriptions;
 		}
 
 		void VulkanStaticModel::loadData()
@@ -128,7 +213,7 @@ namespace Flint
 					{
 						auto& textureData = mesh.m_VertexData[EnumToInt(VertexAttribute::Texture0) + t];
 
-						textureData.m_Stride = sizeof(aiVector3D);
+						textureData.m_Stride = sizeof(aiVector2D);
 						textureData.m_Size = pMesh->mNumVertices * sizeof(aiVector3D);
 						textureData.m_Offset = CopyToStorage(static_cast<VertexAttribute>(EnumToInt(VertexAttribute::Texture0) + t), &m_VertexStorage, textureData.m_Size, reinterpret_cast<const std::byte*>(pMesh->mTextureCoords[t]));
 					}

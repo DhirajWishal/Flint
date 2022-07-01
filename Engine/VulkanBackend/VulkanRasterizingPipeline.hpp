@@ -4,8 +4,7 @@
 #pragma once
 
 #include "Core/RasterizingPipeline.hpp"
-#include "VulkanPipeline.hpp"
-#include "VulkanDescriptorSetManager.hpp"
+#include "VulkanDevice.hpp"
 
 namespace Flint
 {
@@ -18,8 +17,19 @@ namespace Flint
 		 * Vulkan rasterizing pipeline class.
 		 * This pipeline is used to perform raster graphics.
 		 */
-		class VulkanRasterizingPipeline final : public RasterizingPipeline, public VulkanPipeline
+		class VulkanRasterizingPipeline final : public RasterizingPipeline
 		{
+			/**
+			 * Pipeline structure.
+			 * This contains information regarding a single pipeline.
+			 */
+			struct Pipeline final
+			{
+				VkPipelineVertexInputStateCreateInfo m_InputState = {};
+				VkPipeline m_Pipeline = VK_NULL_HANDLE;
+				VkPipelineCache m_PipelineCache = VK_NULL_HANDLE;
+			};
+
 		public:
 			/**
 			 * Explicit constructor.
@@ -48,14 +58,28 @@ namespace Flint
 			void recreate();
 
 			/**
-			 * Load the pipeline cache from the handler if possible.
+			 * Attach a static model to the pipeline to render.
+			 *
+			 * @param pModel The model to attach.
+			 * @return The draw entry for the model.
 			 */
-			void loadCache() override;
+			[[nodiscard]] std::shared_ptr<DrawEntry> attach(const std::shared_ptr<StaticModel>& pModel) override;
+
+			/**
+			 * Load the pipeline cache from the handler if possible.
+			 *
+			 * @param identifier The pipeline identifier.
+			 * @return The loaded pipeline cache.
+			 */
+			[[nodiscard]] VkPipelineCache loadCache(uint64_t identifier) const;
 
 			/**
 			 * Save the pipeline cache from the handler if possible.
+			 *
+			 * @param identifier The pipeline identifier.
+			 * @param cache The pipeline cache to save.
 			 */
-			void saveCache() override;
+			void saveCache(uint64_t identifier, VkPipelineCache cache) const;
 
 		private:
 			/**
@@ -66,11 +90,17 @@ namespace Flint
 			void setupDefaults(const RasterizingPipelineSpecification& specification);
 
 			/**
-			 * Create the pipeline.
+			 * Create the pipeline variation as required by a model.
+			 *
+			 * @param inputState The pipeline input state.
+			 * @param cache The pipeline cache.
+			 * @return The created pipeline.
 			 */
-			void createPipeline();
+			[[nodiscard]] VkPipeline createVariation(const VkPipelineVertexInputStateCreateInfo& inputState, VkPipelineCache cache);
 
 		private:
+			std::unordered_map<uint64_t, Pipeline> m_Pipelines;
+
 			VkPipelineVertexInputStateCreateInfo m_VertexInputStateCreateInfo = {};
 			VkPipelineInputAssemblyStateCreateInfo m_InputAssemblyStateCreateInfo = {};
 			VkPipelineTessellationStateCreateInfo m_TessellationStateCreateInfo = {};

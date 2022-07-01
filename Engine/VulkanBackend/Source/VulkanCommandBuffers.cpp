@@ -263,7 +263,7 @@ namespace Flint
 
 		void VulkanCommandBuffers::bindGraphicsPipeline(const VulkanRasterizingPipeline& pipeline) const noexcept
 		{
-			getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdBindPipeline(m_CurrentCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getPipeline());
+			//getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdBindPipeline(m_CurrentCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getPipeline());
 		}
 
 		void VulkanCommandBuffers::bindDescriptor(const VulkanRasterizingPipeline& pipeline, VkDescriptorSet descriptorSet) const noexcept

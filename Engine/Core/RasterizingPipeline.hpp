@@ -5,6 +5,8 @@
 
 #include "Pipeline.hpp"
 #include "RasterizingProgram.hpp"
+#include "StaticModel.hpp"
+#include "DrawEntry.hpp"
 
 #include "Errors/InvalidArgumentError.hpp"
 
@@ -305,6 +307,14 @@ namespace Flint
 		 * Default virtual destructor.
 		 */
 		virtual ~RasterizingPipeline() = default;
+
+		/**
+		 * Attach a static model to the pipeline to render.
+		 *
+		 * @param pModel The model to attach.
+		 * @return The draw entry for the model.
+		 */
+		[[nodiscard]] virtual std::shared_ptr<DrawEntry> attach(const std::shared_ptr<StaticModel>& pModel) = 0;
 
 		/**
 		 * Get the parent rasterizer.
