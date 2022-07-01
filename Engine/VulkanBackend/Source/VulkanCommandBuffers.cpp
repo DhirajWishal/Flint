@@ -7,6 +7,8 @@
 #include "VulkanBackend/VulkanRasterizer.hpp"
 #include "VulkanBackend/VulkanRasterizingPipeline.hpp"
 #include "VulkanBackend/VulkanRasterizingProgram.hpp"
+#include "VulkanBackend/VulkanRasterizingDrawEntry.hpp"
+#include "VulkanBackend/VulkanVertexStorage.hpp"
 
 namespace Flint
 {
@@ -261,14 +263,41 @@ namespace Flint
 			getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdCopyBuffer(m_CurrentCommandBuffer, srcBuffer, dstBuffer, 1, &bufferCopy);
 		}
 
-		void VulkanCommandBuffers::bindGraphicsPipeline(const VulkanRasterizingPipeline& pipeline) const noexcept
+		void VulkanCommandBuffers::bindRasterizingPipeline(VkPipeline pipeline) const noexcept
 		{
-			//getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdBindPipeline(m_CurrentCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getPipeline());
+			getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdBindPipeline(m_CurrentCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
 		}
 
-		void VulkanCommandBuffers::bindDescriptor(const VulkanRasterizingPipeline& pipeline, VkDescriptorSet descriptorSet) const noexcept
+		void VulkanCommandBuffers::bindVertexBuffers(const VulkanVertexStorage& vertexStorage, const std::vector<VertexInput>& inputs) const noexcept
 		{
-			getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdBindDescriptorSets(m_CurrentCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getProgram()->as<VulkanRasterizingProgram>()->getPipelineLayout(), 0, 1, &descriptorSet, 0, nullptr);
+			std::vector<VkBuffer> buffers;
+			buffers.reserve(inputs.size());
+
+			for (const auto& input : inputs)
+			{
+				const auto& pBuffer = vertexStorage.getBuffer(input.m_Attribute);
+
+				if (pBuffer)
+					buffers.emplace_back(pBuffer->getBuffer());
+			}
+
+			const auto offsets = std::vector<VkDeviceSize>(buffers.size(), 0);
+			getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdBindVertexBuffers(m_CurrentCommandBuffer, 0, static_cast<uint32_t>(buffers.size()), buffers.data(), offsets.data());
+		}
+
+		void VulkanCommandBuffers::bindIndexBuffer(const VkBuffer buffer) const noexcept
+		{
+			getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdBindIndexBuffer(m_CurrentCommandBuffer, buffer, 0, VK_INDEX_TYPE_UINT32);
+		}
+
+		void VulkanCommandBuffers::drawIndexed(uint64_t indexCount, uint64_t indexOffset, uint64_t instanceCount) const noexcept
+		{
+			getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdDrawIndexed(m_CurrentCommandBuffer, static_cast<uint32_t>(indexCount), static_cast<uint32_t>(instanceCount), static_cast<uint32_t>(indexOffset), 0, 0);
+		}
+
+		void VulkanCommandBuffers::bindDescriptor(const VulkanRasterizingPipeline* pPipeline, VkDescriptorSet descriptorSet) const noexcept
+		{
+			getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdBindDescriptorSets(m_CurrentCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pPipeline->getProgram()->as<VulkanRasterizingProgram>()->getPipelineLayout(), 0, 1, &descriptorSet, 0, nullptr);
 		}
 
 		void VulkanCommandBuffers::end()

@@ -18,7 +18,7 @@ namespace Flint
 		 * Vulkan rasterizing pipeline class.
 		 * This pipeline is used to perform raster graphics.
 		 */
-		class VulkanRasterizingPipeline final : public RasterizingPipeline
+		class VulkanRasterizingPipeline final : public std::enable_shared_from_this<VulkanRasterizingPipeline>, public RasterizingPipeline
 		{
 			/**
 			 * Pipeline structure.
@@ -30,6 +30,8 @@ namespace Flint
 				VkPipeline m_Pipeline = VK_NULL_HANDLE;
 				VkPipelineCache m_PipelineCache = VK_NULL_HANDLE;
 			};
+
+			using DrawCall = std::function<void(const VulkanCommandBuffers&, uint32_t)>;
 
 		public:
 			/**
@@ -83,6 +85,41 @@ namespace Flint
 			 */
 			void saveCache(uint64_t identifier, VkPipelineCache cache) const;
 
+			/**
+			 * Notify the render target to update.
+			 */
+			void notifyRenderTarget();
+
+			/**
+			 * Get the draw entries.
+			 *
+			 * @return The draw entries.
+			 */
+			[[nodiscard]] const std::vector<std::shared_ptr<DrawEntry>>& getDrawEntries() const { return m_pDrawEntries; }
+
+			/**
+			 * Get the descriptor set manager.
+			 *
+			 * @return The descriptor set manager.
+			 */
+			[[nodiscard]] const VulkanDescriptorSetManager& getDescriptorSetManager() const { return m_DescriptorSetManager; }
+
+			/**
+			 * Issue all the draw calls.
+			 *
+			 * @param commandBuffers The command buffers to record the commands.
+			 * @param frameIndex The current frame index.
+			 */
+			void issueDrawCalls(const VulkanCommandBuffers& commandBuffers, uint32_t frameIndex) const;
+
+			/**
+			 * Get the pipeline handle.
+			 *
+			 * @param identifier The pipeline identifier.
+			 * @return The Vulkan pipeline handle.
+			 */
+			[[nodiscard]] VkPipeline getPipelineHandle(uint64_t identifier) const { return m_Pipelines.at(identifier).m_Pipeline; }
+
 		private:
 			/**
 			 * Setup the default structures.
@@ -118,6 +155,9 @@ namespace Flint
 			std::vector<VkVertexInputBindingDescription> m_VertexBindings = {};
 			std::vector<VkVertexInputAttributeDescription> m_VertexAttributes = {};
 			std::vector<VkDynamicState> m_DynamicStates = {};
+
+			std::vector<std::shared_ptr<DrawEntry>> m_pDrawEntries;
+			std::vector<DrawCall> m_DrawCalls;
 		};
 	}
 }

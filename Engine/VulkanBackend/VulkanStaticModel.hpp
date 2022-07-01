@@ -52,6 +52,20 @@ namespace Flint
 			 */
 			[[nodiscard]] std::vector<VkVertexInputAttributeDescription> getInputAttributeDescriptions(const StaticMesh& mesh, const std::vector<VertexInput>& inputs) const;
 
+			/**
+			 * Get the vertex storage.
+			 *
+			 * @return The vertex storage.
+			 */
+			[[nodiscard]] const VulkanVertexStorage& getVertexStorage() const { return m_VertexStorage; }
+
+			/**
+			 * Get the index buffer handle.
+			 *
+			 * @return The buffer handle.
+			 */
+			[[nodiscard]] const VkBuffer getIndexBufferHandle() const { return m_pIndexBuffer->getBuffer(); }
+
 		private:
 			/**
 			 * Load the model data.

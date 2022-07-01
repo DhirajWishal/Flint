@@ -51,12 +51,12 @@ namespace Flint
 		 */
 		[[nodsicard]] uint32_t getFrameIndex() const { return m_FrameIndex; }
 
-	protected:
 		/**
 		 * Notify that everything needs to be updated once more.
 		 */
 		void toggleNeedToUpdate() { m_NeedToUpdate = m_FrameCount; }
 
+	protected:
 		/**
 		 * Notify a single frame is updated.
 		 */

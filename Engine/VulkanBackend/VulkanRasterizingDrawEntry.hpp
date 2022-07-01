@@ -10,6 +10,8 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
+		class VulkanRasterizingPipeline;
+
 		/**
 		 * Vulkan rasterizing draw entry class.
 		 */
@@ -30,8 +32,9 @@ namespace Flint
 			 * Explicit constructor.
 			 *
 			 * @param pEntity The entity pointer.
+			 * @param pPipeline The pipeline to which the object is bound to.
 			 */
-			explicit VulkanRasterizingDrawEntry(const std::shared_ptr<Entity>& pEntity) : DrawEntry(pEntity) {}
+			explicit VulkanRasterizingDrawEntry(const std::shared_ptr<Entity>& pEntity, const std::shared_ptr<VulkanRasterizingPipeline>& pPipeline) : DrawEntry(pEntity), m_pPipeline(pPipeline) {}
 
 			/**
 			 * Create a new draw instance.
@@ -51,7 +54,15 @@ namespace Flint
 			 */
 			void registerMesh(uint64_t pipelineHash, uint64_t resourceHash);
 
+			/**
+			 * Get the mesh drawers.
+			 *
+			 * @return The mesh drawers.
+			 */
+			[[nodiscard]] const std::vector<MeshDrawer>& getMeshDrawers() const { return m_MeshDrawers; }
+
 		private:
+			std::shared_ptr<VulkanRasterizingPipeline> m_pPipeline = nullptr;
 			std::vector<MeshDrawer> m_MeshDrawers;
 			uint32_t m_Index = 0;
 		};

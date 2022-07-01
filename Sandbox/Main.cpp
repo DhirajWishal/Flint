@@ -105,6 +105,8 @@ int main()
 
 	const auto ss = timer.tick();
 
+	device->waitIdle();	// Wait till we finish prior things before we proceed.
+
 	cameraBuffer->terminate();
 	defaultPipeline->terminate();
 	model->terminate();

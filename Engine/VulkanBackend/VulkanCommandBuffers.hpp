@@ -12,8 +12,8 @@ namespace Flint
 	{
 		class VulkanWindow;
 		class VulkanRasterizer;
-		class VulkanGeometryStore;
 		class VulkanRasterizingPipeline;
+		class VulkanVertexStorage;
 
 		/**
 		 * Vulkan command buffers class.
@@ -118,19 +118,43 @@ namespace Flint
 			void copyBuffer(VkBuffer srcBuffer, uint64_t size, uint64_t srcOffset, VkBuffer dstBuffer, uint64_t dstOffset) const noexcept;
 
 			/**
-			 * Bind a graphics pipeline to the command buffer.
+			 * Bind a rasterizing pipeline to the command buffer.
 			 *
 			 * @param pipeline The pipeline to bind.
 			 */
-			void bindGraphicsPipeline(const VulkanRasterizingPipeline& pipeline) const noexcept;
+			void bindRasterizingPipeline(VkPipeline pipeline) const noexcept;
+
+			/**
+			 * Bind vertex buffers to this command buffer.
+			 *
+			 * @param vertexStorage The vertex storage to bind.
+			 * @param inputs The required inputs.
+			 */
+			void bindVertexBuffers(const VulkanVertexStorage& vertexStorage, const std::vector<VertexInput>& inputs) const noexcept;
+
+			/**
+			 * Bind a n index buffer to this command buffer.
+			 *
+			 * @param buffer The buffer to bind.
+			 */
+			void bindIndexBuffer(const VkBuffer buffer) const noexcept;
+
+			/**
+			 * Draw using an index buffer.
+			 *
+			 * @param indexCount The number of indexes to draw.
+			 * @param indexOffset The index offset of the mesh.
+			 * @param instanceCount The number of instances to draw.
+			 */
+			void drawIndexed(uint64_t indexCount, uint64_t indexOffset, uint64_t instanceCount) const noexcept;
 
 			/**
 			 * Bind a graphics descriptor to the command buffer.
 			 *
-			 * @param pipeline The pipeline to which the descriptor is bound to.
+			 * @param pPipeline The pipeline to which the descriptor is bound to.
 			 * @param descriptorSet The descriptor set to bind.
 			 */
-			void bindDescriptor(const VulkanRasterizingPipeline& pipeline, VkDescriptorSet descriptorSet) const noexcept;
+			void bindDescriptor(const VulkanRasterizingPipeline* pPipeline, VkDescriptorSet descriptorSet) const noexcept;
 
 			/**
 			 * End recording.

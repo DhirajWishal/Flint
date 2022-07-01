@@ -124,6 +124,8 @@ namespace Flint
 		private:
 			std::vector<std::vector<std::unique_ptr<VulkanRenderTargetAttachment>>> m_pAttachments;
 
+			std::vector<std::shared_ptr<VulkanRasterizingPipeline>> m_pPipelines;
+
 			std::vector<VkFramebuffer> m_Framebuffers;
 			std::unique_ptr<VulkanCommandBuffers> m_pCommandBuffers = nullptr;
 

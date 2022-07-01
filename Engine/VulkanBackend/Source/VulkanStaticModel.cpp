@@ -104,7 +104,8 @@ namespace Flint
 			uint32_t binding = 0;
 			for (const auto input : inputs)
 			{
-				const auto data = mesh.m_VertexData[EnumToInt(input.m_Attribute)];
+				const auto i = EnumToInt(input.m_Attribute);
+				const auto data = mesh.m_VertexData[i];
 				if (data.m_Stride > 0)
 				{
 					auto& description = descriptions.emplace_back();
@@ -167,6 +168,7 @@ namespace Flint
 
 				auto& mesh = m_Meshes.emplace_back();
 				mesh.m_Name = pMesh->mName.C_Str();
+				mesh.m_VertexCount = pMesh->mNumVertices;
 
 				// Load the normals if possible.
 				if (pMesh->HasNormals())
@@ -235,8 +237,7 @@ namespace Flint
 				// Load the index data if possible.
 				if (pMesh->HasFaces())
 				{
-					mesh.m_IndexOffset = indices.size() * sizeof(uint32_t);
-					mesh.m_IndexCount = indices.size();
+					mesh.m_IndexOffset = indices.size();
 
 					for (uint32_t f = 0; f < pMesh->mNumFaces; f++)
 					{
@@ -246,7 +247,7 @@ namespace Flint
 							indices.emplace_back(face.mIndices[index]);
 					}
 
-					mesh.m_IndexCount = indices.size() - mesh.m_IndexCount;
+					mesh.m_IndexCount = indices.size() - mesh.m_IndexOffset;
 				}
 			}
 

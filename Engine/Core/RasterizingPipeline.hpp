@@ -332,16 +332,16 @@ namespace Flint
 		/**
 		 * Get the parent rasterizer.
 		 *
-		 * @return The rasterizer reference.
+		 * @return The rasterizer pointer.
 		 */
-		[[nodiscard]] const Rasterizer& getRasterizer() const { return *m_pRasterizer; }
+		[[nodiscard]] const Rasterizer* getRasterizer() const { return m_pRasterizer.get(); }
 
 		/**
 		 * Get the parent rasterizer.
 		 *
-		 * @return The rasterizer reference.
+		 * @return The rasterizer pointer.
 		 */
-		[[nodiscard]] Rasterizer& getRasterizer() { return *m_pRasterizer; }
+		[[nodiscard]] Rasterizer* getRasterizer() { return m_pRasterizer.get(); }
 
 		/**
 		 * Get the pipeline specification.

@@ -79,6 +79,10 @@ namespace Flint
 
 				m_pCommandBuffers->bindRenderTarget(*this, { colorClearValue, depthClearValue });
 
+				// Bind the pipelines.
+				for (const auto& pPipeline : m_pPipelines)
+					pPipeline->issueDrawCalls(*m_pCommandBuffers, m_FrameIndex);
+
 				// Unbind the rasterizer.
 				m_pCommandBuffers->unbindRenderTarget();
 
@@ -111,6 +115,10 @@ namespace Flint
 			createRenderPass();
 			createFramebuffers();
 
+			// Update the pipelines.
+			for (auto& pPipeline : m_pPipelines)
+				pPipeline->recreate();
+
 			// Reset the indexes.
 			m_FrameIndex = 0;
 			m_pCommandBuffers->resetIndex();
@@ -129,7 +137,15 @@ namespace Flint
 
 		std::shared_ptr<Flint::RasterizingPipeline> VulkanRasterizer::createPipeline(const std::shared_ptr<RasterizingProgram>& pRasterizingProgram, const RasterizingPipelineSpecification& specification, std::unique_ptr<PipelineCacheHandler>&& pCacheHandler /*= nullptr*/)
 		{
-			return std::make_shared<VulkanRasterizingPipeline>(getDevicePointerAs<VulkanDevice>(), shared_from_this(), std::static_pointer_cast<VulkanRasterizingProgram>(pRasterizingProgram), specification, std::move(pCacheHandler));
+			return m_pPipelines.emplace_back(
+				std::make_shared<VulkanRasterizingPipeline>(
+					getDevicePointerAs<VulkanDevice>(),
+					shared_from_this(),
+					std::static_pointer_cast<VulkanRasterizingProgram>(pRasterizingProgram),
+					specification,
+					std::move(pCacheHandler)
+					)
+			);
 		}
 
 		void VulkanRasterizer::createAttachments()

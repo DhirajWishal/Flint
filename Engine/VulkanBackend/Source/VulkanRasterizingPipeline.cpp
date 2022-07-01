@@ -7,6 +7,7 @@
 #include "VulkanBackend/VulkanRasterizingProgram.hpp"
 #include "VulkanBackend/VulkanRasterizingDrawEntry.hpp"
 #include "VulkanBackend/VulkanStaticModel.hpp"
+#include "VulkanBackend/VulkanCommandBuffers.hpp"
 
 #define XXH_INLINE_ALL
 #include <xxhash.h>
@@ -333,7 +334,7 @@ namespace Flint
 			const auto vertexInputs = getProgram()->as<VulkanRasterizingProgram>()->getVertexInputs();
 			const auto& bindingMap = getProgram()->getBindingMap();
 
-			auto pEntry = std::make_shared<VulkanRasterizingDrawEntry>(pModel);
+			auto pEntry = std::make_shared<VulkanRasterizingDrawEntry>(pModel, shared_from_this());
 
 			// Iterate over the meshes and create the required pipelines.
 			for (const auto& mesh : pStaticModel->getMeshes())
@@ -379,7 +380,27 @@ namespace Flint
 				pEntry->registerMesh(hash, bindingTable.generateHash());
 			}
 
-			return pEntry;
+			// Register the draw call callback.
+			m_DrawCalls.emplace_back([this, pEntry, vertexInputs, pModel](const VulkanCommandBuffers& commandBuffers, uint32_t frameIndexs)
+				{
+					const auto pStaticModel = pModel->as<VulkanStaticModel>();
+					commandBuffers.bindVertexBuffers(pStaticModel->getVertexStorage(), vertexInputs);
+					commandBuffers.bindIndexBuffer(pStaticModel->getIndexBufferHandle());
+
+					const auto& meshDrawers = pEntry->getMeshDrawers();
+					for (uint32_t i = 0; i < meshDrawers.size(); i++)
+					{
+						const auto meshDrawer = meshDrawers[i];
+						const auto& mesh = pStaticModel->getMeshes()[i];
+
+						commandBuffers.bindRasterizingPipeline(getPipelineHandle(meshDrawer.m_PipelineHash));
+						commandBuffers.bindDescriptor(this, getDescriptorSetManager().getDescriptorSet(meshDrawers[i].m_ResourceHash, frameIndexs));
+						commandBuffers.drawIndexed(mesh.m_IndexCount, mesh.m_IndexOffset, pEntry->getInstanceCount());
+					}
+				}
+			);
+
+			return m_pDrawEntries.emplace_back(pEntry);
 		}
 
 		VkPipelineCache VulkanRasterizingPipeline::loadCache(uint64_t identifier) const
@@ -420,6 +441,17 @@ namespace Flint
 			// Store the cache if possible.
 			if (m_pCacheHandler)
 				m_pCacheHandler->store(identifier, buffer);
+		}
+
+		void VulkanRasterizingPipeline::notifyRenderTarget()
+		{
+			getRasterizer()->toggleNeedToUpdate();
+		}
+
+		void VulkanRasterizingPipeline::issueDrawCalls(const VulkanCommandBuffers& commandBuffers, uint32_t frameIndex) const
+		{
+			for (const auto& drawCall : m_DrawCalls)
+				drawCall(commandBuffers, frameIndex);
 		}
 
 		void VulkanRasterizingPipeline::setupDefaults(const RasterizingPipelineSpecification& specification)

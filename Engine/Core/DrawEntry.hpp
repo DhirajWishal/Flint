@@ -58,6 +58,13 @@ namespace Flint
 		 */
 		[[nodiscard]] const std::vector<DrawInstance>& getDrawInstances() const { return m_DrawInstances; }
 
+		/**
+		 * Get the number of instances to draw.
+		 *
+		 * @return The instance count.
+		 */
+		[[nodiscard]] uint64_t getInstanceCount() const { return m_DrawInstances.size(); }
+
 	protected:
 		std::shared_ptr<Entity> m_pEntity = nullptr;
 		std::vector<DrawInstance> m_DrawInstances;

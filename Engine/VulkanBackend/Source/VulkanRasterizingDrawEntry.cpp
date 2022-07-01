@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "VulkanBackend/VulkanRasterizingDrawEntry.hpp"
+#include "VulkanBackend/VulkanRasterizingPipeline.hpp"
 
 namespace Flint
 {
@@ -20,6 +21,7 @@ namespace Flint
 
 		void VulkanRasterizingDrawEntry::registerMesh(uint64_t pipelineHash, uint64_t resourceHash)
 		{
+			m_pPipeline->notifyRenderTarget();
 			m_MeshDrawers.emplace_back(pipelineHash, resourceHash);
 		}
 	}
