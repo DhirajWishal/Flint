@@ -183,6 +183,7 @@ namespace Flint
 			std::vector<uint32_t> indices;
 
 			// Load the meshes.
+			uint64_t vertexCount = 0;
 			for (uint32_t i = 0; i < pScene->mNumMeshes; i++)
 			{
 				const auto pMesh = pScene->mMeshes[i];
@@ -190,6 +191,7 @@ namespace Flint
 				auto& mesh = m_Meshes.emplace_back();
 				mesh.m_Name = pMesh->mName.C_Str();
 				mesh.m_VertexCount = pMesh->mNumVertices;
+				mesh.m_VertexOffset = vertexCount;
 
 				// Load the normals if possible.
 				if (pMesh->HasNormals())
@@ -236,9 +238,14 @@ namespace Flint
 					{
 						auto& textureData = mesh.m_VertexData[EnumToInt(VertexAttribute::Texture0) + t];
 
+						std::vector<aiVector2D> textureCoordinates;
+						textureCoordinates.reserve(pMesh->mNumVertices);
+
+						std::for_each_n(pMesh->mTextureCoords[t], pMesh->mNumVertices, [&textureCoordinates](const aiVector3D& vec) mutable { textureCoordinates.emplace_back(vec.x, vec.y); });
+
 						textureData.m_Stride = sizeof(aiVector2D);
-						textureData.m_Size = pMesh->mNumVertices * sizeof(aiVector3D);
-						textureData.m_Offset = CopyToStorage(static_cast<VertexAttribute>(EnumToInt(VertexAttribute::Texture0) + t), &m_VertexStorage, textureData.m_Size, reinterpret_cast<const std::byte*>(pMesh->mTextureCoords[t]));
+						textureData.m_Size = pMesh->mNumVertices * sizeof(aiVector2D);
+						textureData.m_Offset = CopyToStorage(static_cast<VertexAttribute>(EnumToInt(VertexAttribute::Texture0) + t), &m_VertexStorage, textureData.m_Size, reinterpret_cast<const std::byte*>(textureCoordinates.data()));
 					}
 				}
 
@@ -285,6 +292,9 @@ namespace Flint
 				mesh.m_TexturePaths[EnumToInt(TextureType::NormalClearCoat)] = GetTexturePath(basePath, pMaterial, AI_MATKEY_CLEARCOAT_NORMAL_TEXTURE);
 				mesh.m_TexturePaths[EnumToInt(TextureType::Transmission)] = GetTexturePath(basePath, pMaterial, AI_MATKEY_TRANSMISSION_TEXTURE);
 				mesh.m_TexturePaths[EnumToInt(TextureType::VolumeThickness)] = GetTexturePath(basePath, pMaterial, AI_MATKEY_VOLUME_THICKNESS_TEXTURE);
+
+				// Increment the vertex count.
+				vertexCount += pMesh->mNumVertices;
 			}
 
 			// Finally, copy the index data to a staging buffer, and copy it to the final index buffer.

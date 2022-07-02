@@ -316,9 +316,9 @@ namespace Flint
 			getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdBindIndexBuffer(m_CurrentCommandBuffer, buffer, 0, VK_INDEX_TYPE_UINT32);
 		}
 
-		void VulkanCommandBuffers::drawIndexed(uint64_t indexCount, uint64_t indexOffset, uint64_t instanceCount) const noexcept
+		void VulkanCommandBuffers::drawIndexed(uint64_t indexCount, uint64_t indexOffset, uint64_t instanceCount, uint64_t vertexOffset) const noexcept
 		{
-			getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdDrawIndexed(m_CurrentCommandBuffer, static_cast<uint32_t>(indexCount), static_cast<uint32_t>(instanceCount), static_cast<uint32_t>(indexOffset), 0, 0);
+			getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdDrawIndexed(m_CurrentCommandBuffer, static_cast<uint32_t>(indexCount), static_cast<uint32_t>(instanceCount), static_cast<uint32_t>(indexOffset), static_cast<int32_t>(vertexOffset), 0);
 		}
 
 		void VulkanCommandBuffers::bindDescriptor(const VulkanRasterizingPipeline* pPipeline, VkDescriptorSet descriptorSet) const noexcept

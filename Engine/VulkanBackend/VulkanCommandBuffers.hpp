@@ -175,8 +175,9 @@ namespace Flint
 			 * @param indexCount The number of indexes to draw.
 			 * @param indexOffset The index offset of the mesh.
 			 * @param instanceCount The number of instances to draw.
+			 * @param vertexOffset The vertex offset to draw in.
 			 */
-			void drawIndexed(uint64_t indexCount, uint64_t indexOffset, uint64_t instanceCount) const noexcept;
+			void drawIndexed(uint64_t indexCount, uint64_t indexOffset, uint64_t instanceCount, uint64_t vertexOffset) const noexcept;
 
 			/**
 			 * Bind a graphics descriptor to the command buffer.

@@ -49,6 +49,7 @@ int main()
 
 	auto camera = Flint::MonoCamera(glm::vec3(0.0f), 1280, 720);
 	camera.m_MovementBias = 50;
+	camera.m_RotationBias = 50;
 
 	auto program = device->createRasterizingProgram(Flint::ShaderCode("Shaders/Debugging/vert.spv"), Flint::ShaderCode("Shaders/Debugging/frag.spv"));
 	auto window = device->createWindow("Sandbox");
@@ -119,6 +120,18 @@ int main()
 
 			if (g_EventSystem.getKeyboard().m_KeyD)
 				camera.moveRight(duration.count());
+
+			if (g_EventSystem.getKeyboard().m_Up)
+				camera.rotateUp(duration.count());
+
+			if (g_EventSystem.getKeyboard().m_Down)
+				camera.rotateDown(duration.count());
+
+			if (g_EventSystem.getKeyboard().m_Left)
+				camera.rotateLeft(duration.count());
+
+			if (g_EventSystem.getKeyboard().m_Right)
+				camera.rotateRight(duration.count());
 		}
 
 		//spdlog::info("Frame rate: {}", Flint::FrameTimer::FramesPerSecond(duration), " ns");

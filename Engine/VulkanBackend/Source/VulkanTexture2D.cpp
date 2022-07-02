@@ -98,7 +98,7 @@ namespace Flint
 
 		void VulkanTexture2D::copyFrom(const std::byte* pDataStore)
 		{
-			auto pBuffer = getDevicePointerAs<VulkanDevice>()->createBuffer(static_cast<uint64_t>(m_Width) * m_Height * GetPixelSize(m_Format), BufferUsage::Staging);
+			auto pBuffer = getDevicePointerAs<VulkanDevice>()->createBuffer(static_cast<uint64_t>(m_Width) * m_Height * GetPixelSize(m_Format), BufferUsage::Staging, pDataStore);
 			copyFrom(pBuffer.get());
 		}
 

@@ -5,6 +5,11 @@
 #include "VulkanBackend/VulkanMacros.hpp"
 #include "VulkanBackend/VulkanCommandBuffers.hpp"
 
+#ifdef FLINT_PLATFORM_WINDOWS
+#	include <execution>
+
+#endif
+
 namespace Flint
 {
 	namespace VulkanBackend
@@ -76,8 +81,13 @@ namespace Flint
 
 			auto pSource = pData + srcOffset;
 			auto pDestination = mapMemory() + dstOffset;
+
+#ifdef FLINT_PLATFORM_WINDOWS
+			std::copy_n(std::execution::unseq, pSource, size, pDestination);
+#else
 			std::copy_n(pSource, size, pDestination);
 
+#endif
 			unmapMemory();
 		}
 

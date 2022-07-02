@@ -407,7 +407,7 @@ namespace Flint
 
 						commandBuffers.bindRasterizingPipeline(getPipelineHandle(meshDrawer.m_PipelineHash));
 						commandBuffers.bindDescriptor(this, getDescriptorSetManager().getDescriptorSet(meshDrawers[i].m_ResourceHash, frameIndex));
-						commandBuffers.drawIndexed(mesh.m_IndexCount, mesh.m_IndexOffset, pEntry->getInstanceCount());
+						commandBuffers.drawIndexed(mesh.m_IndexCount, mesh.m_IndexOffset, pEntry->getInstanceCount(), mesh.m_VertexOffset);
 					}
 				}
 			);

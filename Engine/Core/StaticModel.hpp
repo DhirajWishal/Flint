@@ -51,6 +51,7 @@ namespace Flint
 		std::string m_Name;
 
 		uint64_t m_VertexCount = 0;		// Count.
+		uint64_t m_VertexOffset = 0;	// Count.
 
 		uint64_t m_IndexOffset = 0;		// Bytes.
 		uint64_t m_IndexCount = 0;		// Count.

@@ -124,7 +124,7 @@ namespace Flint
 		uint32_t m_FrameHeight = 0;
 
 		float m_MovementBias = 0.005f;
-		float m_RotationBias = 0.001f;	// Radians per second.
+		float m_RotationBias = 0.005f;	// Radians per second.
 
 		float m_FieldOfView = 60.0f;
 		float m_AspectRatio = 0.0f;
