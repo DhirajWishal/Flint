@@ -22,9 +22,9 @@ namespace Flint
 			 * @param pDevice The device pointer.
 			 * @param width The width of the texture.
 			 * @param height The height of the texture.
-			 * @param mipLevels The texture's mip levels. If this is set to 0 (default), the best value is set.
 			 * @param usage The texture usage.
 			 * @param format The texture's pixel format.
+			 * @param mipLevels The texture's mip levels. If this is set to 0 (default), the best value is set.
 			 * @param multisampleCount The multisample count of the image. Default is one.
 			 * @param pDataStore The data store pointer to load the data from. Default is nullptr.
 			 */
@@ -39,6 +39,13 @@ namespace Flint
 			 * Terminate this object.
 			 */
 			void terminate() override;
+
+			/**
+			 * Create the image view for the current texture.
+			 *
+			 * @return The texture view.
+			 */
+			[[nodiscard]] std::shared_ptr<TextureView> createView() override;
 
 			/**
 			 * Copy the texture image to a buffer.
@@ -67,7 +74,14 @@ namespace Flint
 			 *
 			 * @param pTexture The texture object pointer to copy from.
 			 */
-			void copyFrom(const Texture2D* pTexutre) override;
+			void copyFrom(const Texture* pTexutre) override;
+
+			/**
+			 * Get the image handle.
+			 *
+			 * @return The Vulkan handle.
+			 */
+			[[nodiscard]] VkImage getImageHandle() const { return m_Image; };
 
 		private:
 			/**
@@ -93,7 +107,7 @@ namespace Flint
 			void createImageAndAllocator();
 
 		private:
-			VkImage m_vImage = VK_NULL_HANDLE;
+			VkImage m_Image = VK_NULL_HANDLE;
 			VmaAllocation m_Allocation = nullptr;
 
 			VkImageLayout m_CurrentLayout = VK_IMAGE_LAYOUT_UNDEFINED;

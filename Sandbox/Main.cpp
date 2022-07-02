@@ -12,7 +12,7 @@
 
 #include "Engine/Utility/FrameTimer.hpp"
 #include "Engine/Flint.hpp"
-#include "Engine/AssetRegistry.hpp"
+#include "Engine/StaticStorage.hpp"
 
 #ifdef FLINT_DEBUG
 constexpr auto Validation = true;
@@ -30,7 +30,6 @@ constexpr auto Validation = false;
 
 // Globals.
 static Flint::EventSystem g_EventSystem;
-static Flint::AssetRegistry g_AssetRegistry;
 
 /**
  * Get the default pipeline specification.
@@ -69,13 +68,22 @@ int main()
 			const auto texturePathString = texturePath.string();
 
 			// Load the texture file if we haven't already.
-			if (!g_AssetRegistry.isRegistered<Flint::Texture2D>(texturePathString) && texturePath.has_filename())
-				g_AssetRegistry.registerAsset(texturePathString, Flint::Texture2D::LoadFromFile(device, texturePath, Flint::ImageUsage::Graphics));
+			if (!Flint::StaticStorage<std::shared_ptr<Flint::Texture2D>>::Contains(texturePathString) && texturePath.has_filename())
+			{
+				auto pTexture = Flint::Texture2D::LoadFromFile(device, texturePath, Flint::ImageUsage::Graphics);
+				Flint::StaticStorage<std::shared_ptr<Flint::Texture2D>>::Set(texturePathString, pTexture);
+				Flint::StaticStorage<std::shared_ptr<Flint::TextureView>>::Set(texturePathString, pTexture->createView());
+			}
 
 			// Now we can bind if possible.
-			if (g_AssetRegistry.isRegistered<Flint::Texture2D>(texturePathString))
+			if (Flint::StaticStorage<std::shared_ptr<Flint::Texture2D>>::Contains(texturePathString))
 			{
-				auto pTexture = g_AssetRegistry.getAsset<Flint::Texture2D>(texturePathString);
+				auto pTexture = Flint::StaticStorage<std::shared_ptr<Flint::Texture2D>>::Get(texturePathString);
+
+				// Create the view if not available.
+				if (!Flint::StaticStorage<std::shared_ptr<Flint::TextureView>>::Contains(texturePathString))
+					Flint::StaticStorage<std::shared_ptr<Flint::TextureView>>::Set(texturePathString, pTexture->createView());
+
 				//table.bind(1, pTexture->createSampler(getSamplerSpecification()), pTexture->craeteView(viewType));
 			}
 

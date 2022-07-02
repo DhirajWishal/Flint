@@ -5,6 +5,7 @@
 #include "VulkanBackend/VulkanMacros.hpp"
 #include "VulkanBackend/VulkanCommandBuffers.hpp"
 #include "VulkanBackend/VulkanBuffer.hpp"
+#include "VulkanBackend/VulkanTexture2DView.hpp"
 
 namespace Flint
 {
@@ -28,8 +29,13 @@ namespace Flint
 
 		void VulkanTexture2D::terminate()
 		{
-			vmaDestroyImage(getDevice().as<VulkanDevice>()->getAllocator(), m_vImage, m_Allocation);
+			vmaDestroyImage(getDevice().as<VulkanDevice>()->getAllocator(), m_Image, m_Allocation);
 			invalidate();
+		}
+
+		std::shared_ptr<Flint::TextureView> VulkanTexture2D::createView()
+		{
+			return std::make_shared<VulkanTexture2DView>(getDevicePointerAs<VulkanDevice>(), shared_from_this());
 		}
 
 		std::shared_ptr<Flint::Buffer> VulkanTexture2D::toBuffer() const
@@ -64,7 +70,7 @@ namespace Flint
 			copyFrom(pBuffer.get());
 		}
 
-		void VulkanTexture2D::copyFrom(const Texture2D* pTexutre)
+		void VulkanTexture2D::copyFrom(const Texture* pTexutre)
 		{
 			auto commandBuffers = VulkanCommandBuffers(getDevicePointerAs<VulkanDevice>());
 			commandBuffers.begin();
@@ -87,9 +93,9 @@ namespace Flint
 			subresource.mipLevel = 0;
 
 			auto pBuffer = getDevicePointerAs<VulkanDevice>()->createBuffer(static_cast<uint64_t>(m_Width) * m_Height * GetPixelSize(m_Format), BufferUsage::Staging);
-			commandBuffers.changeImageLayout(m_vImage, m_CurrentLayout, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_ASPECT_COLOR_BIT);
-			commandBuffers.copyImageToBuffer(m_vImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, { m_Width, m_Height, 1 }, { 0, 0, 0 }, subresource, pBuffer->as<VulkanBuffer>()->getBuffer(), 0, m_Height, m_Width);
-			commandBuffers.changeImageLayout(m_vImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, m_CurrentLayout == VK_IMAGE_LAYOUT_UNDEFINED ? VK_IMAGE_LAYOUT_GENERAL : m_CurrentLayout, subresource.aspectMask);
+			commandBuffers.changeImageLayout(m_Image, m_CurrentLayout, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_ASPECT_COLOR_BIT);
+			commandBuffers.copyImageToBuffer(m_Image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, { m_Width, m_Height, 1 }, { 0, 0, 0 }, subresource, pBuffer->as<VulkanBuffer>()->getBuffer(), 0, m_Height, m_Width);
+			commandBuffers.changeImageLayout(m_Image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, m_CurrentLayout == VK_IMAGE_LAYOUT_UNDEFINED ? VK_IMAGE_LAYOUT_GENERAL : m_CurrentLayout, subresource.aspectMask);
 
 			return pBuffer;
 		}
@@ -102,9 +108,9 @@ namespace Flint
 			subresource.layerCount = 1;
 			subresource.mipLevel = 0;
 
-			commandBuffers.changeImageLayout(m_vImage, m_CurrentLayout, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_ASPECT_COLOR_BIT);
-			commandBuffers.copyBufferToImage(pBuffer->as<VulkanBuffer>()->getBuffer(), 0, m_Height, m_Width, m_vImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, { m_Width, m_Height, 1 }, { 0, 0, 0 }, subresource);
-			commandBuffers.changeImageLayout(m_vImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, m_CurrentLayout == VK_IMAGE_LAYOUT_UNDEFINED ? VK_IMAGE_LAYOUT_GENERAL : m_CurrentLayout, subresource.aspectMask);
+			commandBuffers.changeImageLayout(m_Image, m_CurrentLayout, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_ASPECT_COLOR_BIT);
+			commandBuffers.copyBufferToImage(pBuffer->as<VulkanBuffer>()->getBuffer(), 0, m_Height, m_Width, m_Image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, { m_Width, m_Height, 1 }, { 0, 0, 0 }, subresource);
+			commandBuffers.changeImageLayout(m_Image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, m_CurrentLayout == VK_IMAGE_LAYOUT_UNDEFINED ? VK_IMAGE_LAYOUT_GENERAL : m_CurrentLayout, subresource.aspectMask);
 		}
 
 		void VulkanTexture2D::createImageAndAllocator()
@@ -140,7 +146,7 @@ namespace Flint
 			VmaAllocationCreateInfo allocationCreateInfo = {};
 			allocationCreateInfo.usage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
 
-			FLINT_VK_ASSERT(vmaCreateImage(getDevice().as<VulkanDevice>()->getAllocator(), &createInfo, &allocationCreateInfo, &m_vImage, &m_Allocation, nullptr), "Failed to create the image!");
+			FLINT_VK_ASSERT(vmaCreateImage(getDevice().as<VulkanDevice>()->getAllocator(), &createInfo, &allocationCreateInfo, &m_Image, &m_Allocation, nullptr), "Failed to create the image!");
 
 			// Make sure to validate!
 			validate();

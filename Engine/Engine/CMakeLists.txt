@@ -23,6 +23,7 @@ add_library(
 
 	"Flint.hpp"
 	"AssetRegistry.hpp"
+	"StaticStorage.hpp"
 
 	"Utility/FrameTimer.hpp"
 

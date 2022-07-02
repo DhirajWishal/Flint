@@ -6,6 +6,8 @@
 #include "Core/Texture2D.hpp"
 #include "Core/Errors/InvalidArgumentError.hpp"
 
+#include <unordered_map>
+
 namespace Flint
 {
 	/**

@@ -109,9 +109,9 @@ namespace Flint
 		 *
 		 * @param width The width of the image.
 		 * @param height The height of the image.
-		 * @param mipLevels The texture's mip levels. If this is set to 0 (default), the best value is set.
 		 * @param usage The image usage.
 		 * @param format The image's pixel format.
+		 * @param mipLevels The texture's mip levels. If this is set to 0 (default), the best value is set.
 		 * @param multisampleCount The multisample count of the image. Default is one.
 		 * @param pDataStore The data store pointer to load the data from. Default is nullptr.
 		 * @return The created texture pointer.

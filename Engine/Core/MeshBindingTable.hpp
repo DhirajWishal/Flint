@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Buffer.hpp"
+#include "TextureView.hpp"
 
 #include <variant>
 #include <unordered_map>
@@ -29,6 +29,14 @@ namespace Flint
 		 * @param pBuffer The buffer to bind.
 		 */
 		void bind(uint32_t binding, const std::shared_ptr<Buffer>& pBuffer);
+
+		/**
+		 * Bind an image to the required binding.
+		 *
+		 * @param binding The buffer's binding.
+		 * @param pView The image view to bind.
+		 */
+		void bind(uint32_t binding, const std::shared_ptr<TextureView>& pView);
 
 		/**
 		 * Generate the hash for this table.

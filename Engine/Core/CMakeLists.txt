@@ -32,6 +32,8 @@ add_library(
 	"Source/RasterizingPipeline.cpp"
 	"Source/RenderTargetAttachment.cpp"
 	"Source/Window.cpp"
+	"Source/Texture.cpp"
+	"Source/TextureView.cpp"
 		
 	"Source/EventSystem/EventSystem.cpp"
 
@@ -65,6 +67,8 @@ add_library(
 	"Entity.hpp"
 	"MeshBindingTable.hpp"
 	"Texture2D.hpp"
+	"Texture.hpp"
+	"TextureView.hpp"
 	
 	"Errors/AssetError.hpp"
 	"Errors/BackendError.hpp" 
