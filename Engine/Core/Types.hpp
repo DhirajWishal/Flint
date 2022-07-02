@@ -416,4 +416,94 @@ namespace Flint
 	};
 
 	FLINT_DEFINE_ENUM_AND_OR(Multisample);
+
+	/**
+	 * Address mode enum.
+	 */
+	enum class AddressMode : uint8_t
+	{
+		Repeat,
+		MirroredRepeat,
+		ClampToEdge,
+		ClampToBorder,
+		MirrorClampToEdge,
+	};
+
+	/**
+	 * Border color enum.
+	 */
+	enum class BorderColor : uint8_t
+	{
+		TransparentBlackFLOAT,
+		TransparentBlackINT,
+		OpaqueBlackFLOAT,
+		OpaqueBlackINT,
+		OpaqueWhiteFLOAT,
+		OpaqueWhiteINT,
+	};
+
+	/**
+	 * Compare operator enum.
+	 */
+	enum class CompareOperator : uint8_t
+	{
+		Never,
+		Less,
+		Equal,
+		LessOrEqual,
+		Greater,
+		NotEqual,
+		GreaterOrEqual,
+		Always,
+	};
+
+	/**
+	 * Image filter enum.
+	 */
+	enum class ImageFilter : uint8_t
+	{
+		Nearest,
+		Linear,
+		CubicImage,
+	};
+
+	/**
+	 *Image mip map mode enum.
+	 */
+	enum class ImageMipMapMode : uint8_t
+	{
+		Nearest,
+		Linear,
+	};
+
+	/**
+	 * Texture sampler specification structure.
+	 */
+	struct TextureSamplerSpecification
+	{
+		// If set to 0.0f, the maximum supported will be set.
+		float mMaxAnisotrophy = 0.0f;
+
+		float mMaxLevelOfDetail = 0.0f;
+		float mMinLevelOfDetail = 0.0f;
+
+		float mMipLODBias = 0.0f;
+
+		AddressMode mAddressModeU = AddressMode::Repeat;
+		AddressMode mAddressModeV = AddressMode::Repeat;
+		AddressMode mAddressModeW = AddressMode::Repeat;
+
+		BorderColor mBorderColor = BorderColor::OpaqueWhiteFLOAT;
+
+		CompareOperator mCompareOperator = CompareOperator::Always;
+
+		ImageFilter mImageMagificationFilter = ImageFilter::Linear;
+		ImageFilter mImageMinificationFilter = ImageFilter::Linear;
+
+		ImageMipMapMode mMipMapMode = ImageMipMapMode::Linear;
+
+		bool bEnableAnisotropy = true;
+		bool bEnableCompare = false;
+		bool bEnableUnnormalizedCoordinates = false;
+	};
 }

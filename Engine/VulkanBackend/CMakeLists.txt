@@ -55,7 +55,8 @@ add_library(
 	"VulkanRasterizingDrawEntry.hpp"
 	"VulkanTexture2D.hpp"
 	"VulkanTexture2DView.hpp"
-)
+	"VulkanTextureSampler.hpp"
+ "Source/VulkanTextureSampler.cpp")
 
 # Set the include directories.
 target_include_directories(

@@ -103,8 +103,10 @@ namespace Flint
 			 * @param currentLayout The current layout of the image.
 			 * @param newLayout The new layout to change to.
 			 * @param aspectFlags The image aspect flags.
+			 * @param mipLevels The image mip levels. Default is 1.
+			 * @param layers The image layers. Default is 1.
 			 */
-			void changeImageLayout(VkImage image, VkImageLayout currentLayout, VkImageLayout newLayout, VkImageAspectFlags aspectFlags) const;
+			void changeImageLayout(VkImage image, VkImageLayout currentLayout, VkImageLayout newLayout, VkImageAspectFlags aspectFlags, uint32_t mipLevels = 1, uint32_t layers = 1) const;
 
 			/**
 			 * Copy content from one buffer to another.

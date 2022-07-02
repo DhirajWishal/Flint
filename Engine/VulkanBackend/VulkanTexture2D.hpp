@@ -100,6 +100,11 @@ namespace Flint
 			 */
 			void copyFromBatched(const VulkanCommandBuffers& commandBuffers, const Buffer* pBuffer);
 
+			/**
+			 * Generate the mipmaps if required.
+			 */
+			void generateMipMaps();
+
 		private:
 			/**
 			 * Create the image and allocator.

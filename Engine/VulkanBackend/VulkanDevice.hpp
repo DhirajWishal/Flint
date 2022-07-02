@@ -9,6 +9,7 @@
 #include "VulkanInstance.hpp"
 
 #include <vk_mem_alloc.h>
+#include <unordered_map>
 
 namespace Flint
 {
@@ -16,6 +17,7 @@ namespace Flint
 	{
 		class VulkanCommandBuffers;
 		class VulkanGeometryStore;
+		class VulkanTextureSampler;
 
 		/**
 		 * Vulkan engine class.
@@ -116,6 +118,15 @@ namespace Flint
 			 * @return The created texture pointer.
 			 */
 			[[nodiscard]] std::shared_ptr<Texture2D> createTexture2D(uint32_t width, uint32_t height, ImageUsage usage, PixelFormat format, uint32_t mipLevels = 0, Multisample multisampleCount = Multisample::One, const std::byte* pDataStore = nullptr) override;
+
+			/**
+			 * Create a new texture sampler.
+			 * Note that we are caching this to make sure that we don't waste resources.
+			 *
+			 * @param specification The sampler specification.
+			 * @return The sampler pointer.
+			 */
+			[[nodiscard]] std::shared_ptr<TextureSampler> createTextureSampler(TextureSamplerSpecification&& specification) override;
 
 			/**
 			 * Terminate the object.
@@ -225,6 +236,8 @@ namespace Flint
 			void destroyVMAAllocator();
 
 		private:
+			std::unordered_map<uint64_t, std::shared_ptr<VulkanTextureSampler>> m_Samplers;
+
 			VkPhysicalDeviceProperties m_PhysicalDeviceProperties = {};
 
 			VolkDeviceTable m_DeviceTable = {};

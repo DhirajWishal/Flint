@@ -11,6 +11,10 @@
 #include "VulkanBackend/VulkanRasterizingProgram.hpp"
 #include "VulkanBackend/VulkanStaticModel.hpp"
 #include "VUlkanBackend/VulkanTexture2D.hpp"
+#include "VUlkanBackend/VulkanTextureSampler.hpp"
+
+#define XXH_INLINE_ALL
+#include <xxhash.h>
 
 #include <set>
 #include <array>
@@ -185,10 +189,22 @@ namespace Flint
 			return std::make_shared<VulkanTexture2D>(shared_from_this(), width, height, usage, format, mipLevels, multisampleCount, pDataStore);
 		}
 
+		std::shared_ptr<Flint::TextureSampler> VulkanDevice::createTextureSampler(TextureSamplerSpecification&& specification)
+		{
+			const auto hash = static_cast<uint64_t>(XXH64(&specification, sizeof(TextureSamplerSpecification), 0));
+			if (!m_Samplers.contains(hash))
+				m_Samplers[hash] = std::make_shared<VulkanTextureSampler>(shared_from_this(), std::move(specification));
+
+			return m_Samplers[hash];
+		}
+
 		void VulkanDevice::terminate()
 		{
 			// Wait idle to make sure that we don't have anything running at the moment.
 			waitIdle();
+
+			// Terminate the samplers.
+			m_Samplers.clear();
 
 			// Destroy the VMA allocator.
 			destroyVMAAllocator();

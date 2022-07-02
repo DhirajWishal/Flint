@@ -4,6 +4,8 @@
 #include "VulkanBackend/VulkanDescriptorSetManager.hpp"
 #include "VulkanBackend/VulkanMacros.hpp"
 #include "VulkanBackend/VulkanBuffer.hpp"
+#include "VulkanBackend/VulkanTextureSampler.hpp"
+#include "VulkanBackend/VulkanTexture2DView.hpp"
 
 namespace Flint
 {
@@ -97,41 +99,38 @@ namespace Flint
 			std::vector<VkCopyDescriptorSet> copyDescriptorSets;
 
 			// Resolve the images.
-			//for (const auto& [binding, images] : table.m_Images)
-			//{
-			//	const auto imageCount = static_cast<uint32_t>(images.size());
-			//	for (uint32_t i = 0; i < imageCount; i++)
-			//	{
-			//		// Setup write info.
-			//		auto& writeDescriptorSet = writeDescriptorSets.emplace_back();
-			//		writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-			//		writeDescriptorSet.pNext = nullptr;
-			//		writeDescriptorSet.dstSet = descriptorSets.front();
-			//		writeDescriptorSet.dstBinding = binding;
-			//		writeDescriptorSet.descriptorCount = imageCount;
-			//		writeDescriptorSet.descriptorType = m_DescriptorTypeMap[binding];
-			//		writeDescriptorSet.pBufferInfo = nullptr;
-			//		writeDescriptorSet.pTexelBufferView = nullptr;
-			//		writeDescriptorSet.dstArrayElement = i;
-			//
-			//		writeDescriptorSet.pImageInfo = new VkDescriptorImageInfo;
-			//		writeDescriptorSet.pImageInfo->imageLayout;
-			//		writeDescriptorSet.pImageInfo->imageView;
-			//		writeDescriptorSet.pImageInfo->sampler;
-			//
-			//		// Setup copy info.
-			//		auto& copySet = copyDescriptorSets.emplace_back();
-			//		copySet.sType = VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET;
-			//		copySet.pNext = nullptr;
-			//		copySet.dstSet = 0;
-			//		copySet.srcSet = descriptorSets.front();
-			//		copySet.descriptorCount = imageCount;
-			//		copySet.dstBinding = binding;
-			//		copySet.dstArrayElement = i;
-			//		copySet.srcBinding = binding;
-			//		copySet.srcArrayElement = i;
-			//	}
-			//}
+			for (const auto& [binding, image] : table.getImages())
+			{
+				// Setup write info.
+				auto& writeDescriptorSet = writeDescriptorSets.emplace_back();
+				writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+				writeDescriptorSet.pNext = nullptr;
+				writeDescriptorSet.dstSet = descriptorSets.front();
+				writeDescriptorSet.dstBinding = binding;
+				writeDescriptorSet.descriptorCount = 1;
+				writeDescriptorSet.descriptorType = m_DescriptorTypeMap[binding];
+				writeDescriptorSet.pBufferInfo = nullptr;
+				writeDescriptorSet.pTexelBufferView = nullptr;
+				writeDescriptorSet.dstArrayElement = 0;
+
+				auto pImageInfo = new VkDescriptorImageInfo;
+				pImageInfo->imageLayout = image.m_ImageUsage == ImageUsage::Graphics ? VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL : VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+				pImageInfo->imageView = image.m_pTextureView->as<VulkanTexture2DView>()->getViewHandle();
+				pImageInfo->sampler = image.m_pTextureSampler->as<VulkanTextureSampler>()->getSamplerHandle();
+				writeDescriptorSet.pImageInfo = pImageInfo;
+
+				// Setup copy info.
+				auto& copySet = copyDescriptorSets.emplace_back();
+				copySet.sType = VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET;
+				copySet.pNext = nullptr;
+				copySet.dstSet = VK_NULL_HANDLE;
+				copySet.srcSet = descriptorSets.front();
+				copySet.descriptorCount = 1;
+				copySet.dstBinding = binding;
+				copySet.dstArrayElement = 0;
+				copySet.srcBinding = binding;
+				copySet.srcArrayElement = 0;
+			}
 
 			// Resolve buffers.
 			for (const auto& [binding, buffers] : table.getBuffers())
@@ -153,7 +152,7 @@ namespace Flint
 				auto& copySet = copyDescriptorSets.emplace_back();
 				copySet.sType = VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET;
 				copySet.pNext = nullptr;
-				copySet.dstSet = 0;
+				copySet.dstSet = VK_NULL_HANDLE;
 				copySet.srcSet = descriptorSets.front();
 				copySet.descriptorCount = 1;
 				copySet.dstBinding = binding;

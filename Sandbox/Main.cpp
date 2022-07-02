@@ -84,7 +84,8 @@ int main()
 				if (!Flint::StaticStorage<std::shared_ptr<Flint::TextureView>>::Contains(texturePathString))
 					Flint::StaticStorage<std::shared_ptr<Flint::TextureView>>::Set(texturePathString, pTexture->createView());
 
-				//table.bind(1, pTexture->createSampler(getSamplerSpecification()), pTexture->craeteView(viewType));
+				// Internally it caches so we don't need to store things anywhere.
+				table.bind(1, Flint::StaticStorage<std::shared_ptr<Flint::TextureView>>::Get(texturePathString), device->createTextureSampler(Flint::TextureSamplerSpecification()), Flint::ImageUsage::Graphics);
 			}
 
 			return table;
@@ -132,6 +133,9 @@ int main()
 	const auto ss = timer.tick();
 
 	device->waitIdle();	// Wait till we finish prior things before we proceed.
+
+	Flint::StaticStorage<std::shared_ptr<Flint::Texture2D>>::Clear();
+	Flint::StaticStorage<std::shared_ptr<Flint::TextureView>>::Clear();
 
 	cameraBuffer->terminate();
 	defaultPipeline->terminate();

@@ -20,6 +20,38 @@ namespace Flint
 			// Copy data if provided.
 			if (pDataStore)
 				copyFrom(pDataStore);
+
+			// Generate the mipmaps if required.
+			if (m_MipLevels > 1)
+				generateMipMaps();
+
+			// Else transfer the layout to shader read only if usage is graphics.
+			else if (usage == ImageUsage::Graphics)
+			{
+				auto commandBuffers = VulkanCommandBuffers(pDevice);
+				commandBuffers.begin();
+
+				commandBuffers.changeImageLayout(m_Image, m_CurrentLayout, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_ASPECT_COLOR_BIT, m_MipLevels);
+				m_CurrentLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+				commandBuffers.end();
+				commandBuffers.submitTransfer();
+				commandBuffers.finishExecution();
+			}
+
+			// Else if we need the image for storage, let's prepare it.
+			else if (usage == ImageUsage::Storage)
+			{
+				auto commandBuffers = VulkanCommandBuffers(pDevice);
+				commandBuffers.begin();
+
+				commandBuffers.changeImageLayout(m_Image, m_CurrentLayout, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_ASPECT_COLOR_BIT, m_MipLevels);
+				m_CurrentLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+				commandBuffers.end();
+				commandBuffers.submitTransfer();
+				commandBuffers.finishExecution();
+			}
 		}
 
 		VulkanTexture2D::~VulkanTexture2D()
@@ -93,9 +125,9 @@ namespace Flint
 			subresource.mipLevel = 0;
 
 			auto pBuffer = getDevicePointerAs<VulkanDevice>()->createBuffer(static_cast<uint64_t>(m_Width) * m_Height * GetPixelSize(m_Format), BufferUsage::Staging);
-			commandBuffers.changeImageLayout(m_Image, m_CurrentLayout, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_ASPECT_COLOR_BIT);
+			commandBuffers.changeImageLayout(m_Image, m_CurrentLayout, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_ASPECT_COLOR_BIT, m_MipLevels);
 			commandBuffers.copyImageToBuffer(m_Image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, { m_Width, m_Height, 1 }, { 0, 0, 0 }, subresource, pBuffer->as<VulkanBuffer>()->getBuffer(), 0, m_Height, m_Width);
-			commandBuffers.changeImageLayout(m_Image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, m_CurrentLayout == VK_IMAGE_LAYOUT_UNDEFINED ? VK_IMAGE_LAYOUT_GENERAL : m_CurrentLayout, subresource.aspectMask);
+			commandBuffers.changeImageLayout(m_Image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, m_CurrentLayout == VK_IMAGE_LAYOUT_UNDEFINED ? VK_IMAGE_LAYOUT_GENERAL : m_CurrentLayout, subresource.aspectMask, m_MipLevels);
 
 			return pBuffer;
 		}
@@ -108,9 +140,102 @@ namespace Flint
 			subresource.layerCount = 1;
 			subresource.mipLevel = 0;
 
-			commandBuffers.changeImageLayout(m_Image, m_CurrentLayout, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_ASPECT_COLOR_BIT);
+			commandBuffers.changeImageLayout(m_Image, m_CurrentLayout, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_ASPECT_COLOR_BIT, m_MipLevels);
 			commandBuffers.copyBufferToImage(pBuffer->as<VulkanBuffer>()->getBuffer(), 0, m_Height, m_Width, m_Image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, { m_Width, m_Height, 1 }, { 0, 0, 0 }, subresource);
-			commandBuffers.changeImageLayout(m_Image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, m_CurrentLayout == VK_IMAGE_LAYOUT_UNDEFINED ? VK_IMAGE_LAYOUT_GENERAL : m_CurrentLayout, subresource.aspectMask);
+			commandBuffers.changeImageLayout(m_Image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, m_CurrentLayout == VK_IMAGE_LAYOUT_UNDEFINED ? VK_IMAGE_LAYOUT_GENERAL : m_CurrentLayout, subresource.aspectMask, m_MipLevels);
+		}
+
+		void VulkanTexture2D::generateMipMaps()
+		{
+			auto pVulkanDevice = getDevicePointerAs<VulkanDevice>();
+			auto commandBuffers = VulkanCommandBuffers(pVulkanDevice);
+			commandBuffers.begin();
+
+			if (m_CurrentLayout != VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
+			{
+				commandBuffers.changeImageLayout(m_Image, m_CurrentLayout, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_ASPECT_COLOR_BIT, m_MipLevels);
+				m_CurrentLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+			}
+
+			VkImageMemoryBarrier barrier{};
+			barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+			barrier.image = m_Image;
+			barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+			barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+			barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			barrier.subresourceRange.layerCount = 1;
+			barrier.subresourceRange.levelCount = 1;
+			barrier.subresourceRange.baseArrayLayer = 0;
+
+			int32_t mipWidth = static_cast<int32_t>(m_Width);
+			int32_t mipHeight = static_cast<int32_t>(m_Height);
+			int32_t mipDepth = 1;
+
+			for (uint32_t j = 1; j < m_MipLevels; j++)
+			{
+				barrier.subresourceRange.baseMipLevel = j - 1;
+				barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+				barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+				barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+				barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+
+				pVulkanDevice->getDeviceTable().vkCmdPipelineBarrier(commandBuffers.getCurrentBuffer(),
+					VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0,
+					0, nullptr,
+					0, nullptr,
+					1, &barrier);
+
+				VkImageBlit blit{};
+				blit.srcOffsets[0] = { 0, 0, 0 };
+				blit.srcOffsets[1] = { mipWidth, mipHeight, mipDepth };
+				blit.srcSubresource.aspectMask = barrier.subresourceRange.aspectMask;
+				blit.srcSubresource.mipLevel = j - 1;
+				blit.srcSubresource.baseArrayLayer = 0;
+				blit.srcSubresource.layerCount = 1;
+				blit.dstOffsets[0] = { 0, 0, 0 };
+				blit.dstOffsets[1] = { mipWidth > 1 ? mipWidth / 2 : 1, mipHeight > 1 ? mipHeight / 2 : 1, mipDepth > 1 ? mipDepth / 2 : 1 };
+				blit.dstSubresource.aspectMask = barrier.subresourceRange.aspectMask;
+				blit.dstSubresource.mipLevel = j;
+				blit.dstSubresource.baseArrayLayer = 0;
+				blit.dstSubresource.layerCount = 1;
+
+				pVulkanDevice->getDeviceTable().vkCmdBlitImage(commandBuffers.getCurrentBuffer(),
+					m_Image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+					m_Image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+					1, &blit,
+					VK_FILTER_LINEAR);
+
+				barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+				barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+				barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+				barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+				pVulkanDevice->getDeviceTable().vkCmdPipelineBarrier(commandBuffers.getCurrentBuffer(),
+					VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0,
+					0, nullptr,
+					0, nullptr,
+					1, &barrier);
+
+				if (mipWidth > 1) mipWidth /= 2;
+				if (mipHeight > 1) mipHeight /= 2;
+				if (mipDepth > 1) mipDepth /= 2;
+			}
+
+			barrier.subresourceRange.baseMipLevel = m_MipLevels - 1;
+			barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+			barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+			barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+			pVulkanDevice->getDeviceTable().vkCmdPipelineBarrier(commandBuffers.getCurrentBuffer(),
+				VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0,
+				0, nullptr,
+				0, nullptr,
+				1, &barrier);
+
+			commandBuffers.end();
+			commandBuffers.submitTransfer();
+			commandBuffers.finishExecution();
 		}
 
 		void VulkanTexture2D::createImageAndAllocator()

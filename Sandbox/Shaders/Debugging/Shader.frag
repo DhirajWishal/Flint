@@ -1,8 +1,12 @@
 #version 450
 
+layout (location = 0) in vec2 inTexCoordinates;
+
 layout (location = 0) out vec4 FragColor;
+
+layout (binding = 1) uniform sampler2D image;
 
 void main()
 {    
-    FragColor = vec4(vec3(0.0f), 1.0f);
+   FragColor = texture(image, inTexCoordinates);
 }

@@ -34,6 +34,13 @@ namespace Flint
 			 */
 			void terminate() override;
 
+			/**
+			 * Get the view handle.
+			 *
+			 * @return The Vulkan handle.
+			 */
+			[[nodiscard]] VkImageView getViewHandle() const { return m_ImageView; }
+
 		private:
 			VkImageView m_ImageView = VK_NULL_HANDLE;
 		};

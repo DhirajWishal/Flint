@@ -81,6 +81,11 @@ namespace Flint
 		 */
 		static bool Contains(const std::string& identifier) { return Get().getStorage().contains(identifier); }
 
+		/**
+		 * clear everything that's stored.
+		 */
+		static void Clear() { Get().getStorage().clear(); }
+
 	private:
 		std::unordered_map<std::string, Type> m_Storage;
 	};

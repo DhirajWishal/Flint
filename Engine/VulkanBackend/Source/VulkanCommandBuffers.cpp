@@ -150,7 +150,7 @@ namespace Flint
 			getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdEndRenderPass(m_CurrentCommandBuffer);
 		}
 
-		void VulkanCommandBuffers::changeImageLayout(VkImage image, VkImageLayout currentLayout, VkImageLayout newLayout, VkImageAspectFlags aspectFlags) const
+		void VulkanCommandBuffers::changeImageLayout(VkImage image, VkImageLayout currentLayout, VkImageLayout newLayout, VkImageAspectFlags aspectFlags, uint32_t mipLevels /*= 1*/, uint32_t layers /*= 1*/) const
 		{
 			// Create the memory barrier.
 			VkImageMemoryBarrier memorybarrier = {};
@@ -164,9 +164,9 @@ namespace Flint
 			memorybarrier.image = image;
 			memorybarrier.subresourceRange.aspectMask = aspectFlags;
 			memorybarrier.subresourceRange.baseMipLevel = 0;
-			memorybarrier.subresourceRange.levelCount = 1;
+			memorybarrier.subresourceRange.levelCount = mipLevels;
 			memorybarrier.subresourceRange.baseArrayLayer = 0;
-			memorybarrier.subresourceRange.layerCount = 1;
+			memorybarrier.subresourceRange.layerCount = layers;
 
 			// Resolve the source access masks.
 			switch (currentLayout)

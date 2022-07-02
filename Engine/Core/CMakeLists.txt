@@ -69,6 +69,7 @@ add_library(
 	"Texture2D.hpp"
 	"Texture.hpp"
 	"TextureView.hpp"
+	"TextureSampler.hpp"
 	
 	"Errors/AssetError.hpp"
 	"Errors/BackendError.hpp" 

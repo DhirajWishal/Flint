@@ -18,6 +18,7 @@ namespace Flint
 	class RasterizingProgram;
 	class StaticModel;
 	class Texture2D;
+	class TextureSampler;
 
 	/**
 	 * Device class.
@@ -117,6 +118,14 @@ namespace Flint
 		 * @return The created texture pointer.
 		 */
 		[[nodiscard]] virtual std::shared_ptr<Texture2D> createTexture2D(uint32_t width, uint32_t height, ImageUsage usage, PixelFormat format, uint32_t mipLevels = 0, Multisample multisampleCount = Multisample::One, const std::byte* pDataStore = nullptr) = 0;
+
+		/**
+		 * Create a new texture sampler.
+		 *
+		 * @param specification The sampler specification.
+		 * @return The sampler pointer.
+		 */
+		[[nodiscard]] virtual std::shared_ptr<TextureSampler> createTextureSampler(TextureSamplerSpecification&& specification) = 0;
 
 		/**
 		 * Get the best depth pixel format.
