@@ -14,21 +14,24 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		VulkanBuffer::VulkanBuffer(const std::shared_ptr<VulkanDevice>& pDevice, uint64_t size, BufferUsage usage)
+		VulkanBuffer::VulkanBuffer(const std::shared_ptr<VulkanDevice>& pDevice, uint64_t size, BufferUsage usage, const std::byte* pDataStore /*= nullptr*/)
 			: Buffer(pDevice, size, usage)
 		{
+			// Create the buffer.
 			createBufferAndValidate();
-		}
 
-		VulkanBuffer::VulkanBuffer(const std::shared_ptr<VulkanDevice>& pDevice, uint64_t size, BufferUsage usage, const std::byte* pDataStore)
-			: Buffer(pDevice, size, usage)
-		{
-			// Validate if we can copy the data or not.
-			if (usage == BufferUsage::Vertex || usage == BufferUsage::Index)
-				throw BackendError("Cannot copy the given data! Make sure that the buffer usage is mappable in order to be copied.");
-
-			createBufferAndValidate();
-			copyFrom(pDataStore, m_Size, 0, 0);
+			// Try and copy the data if the user wants us to.
+			if (pDataStore)
+			{
+				// If we can't directly copy, we need to copy it to a staging buffer before we copy it to this.
+				if (usage == BufferUsage::Vertex || usage == BufferUsage::Index)
+				{
+					auto buffer = VulkanBuffer(pDevice, size, BufferUsage::Staging, pDataStore);
+					copyFrom(&buffer);
+				}
+				else
+					copyFrom(pDataStore, m_Size, 0, 0);
+			}
 		}
 
 		VulkanBuffer::~VulkanBuffer()

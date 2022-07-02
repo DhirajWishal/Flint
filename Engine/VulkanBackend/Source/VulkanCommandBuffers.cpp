@@ -263,6 +263,32 @@ namespace Flint
 			getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdCopyBuffer(m_CurrentCommandBuffer, srcBuffer, dstBuffer, 1, &bufferCopy);
 		}
 
+		void VulkanCommandBuffers::copyBufferToImage(VkBuffer srcBuffer, uint64_t bufferOffset, uint32_t bufferHeight, uint32_t bufferWidth, VkImage dstImage, VkImageLayout layout, VkExtent3D imageExtent, VkOffset3D imageOffset, VkImageSubresourceLayers imageSubresource) const noexcept
+		{
+			VkBufferImageCopy imageCopy = {};
+			imageCopy.imageExtent = imageExtent;
+			imageCopy.imageOffset = imageOffset;
+			imageCopy.imageSubresource = imageSubresource;
+			imageCopy.bufferOffset = bufferOffset;
+			imageCopy.bufferImageHeight = bufferHeight;
+			imageCopy.bufferRowLength = bufferWidth;
+
+			getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdCopyBufferToImage(m_CurrentCommandBuffer, srcBuffer, dstImage, layout, 1, &imageCopy);
+		}
+
+		void VulkanCommandBuffers::copyImageToBuffer(VkImage srcImage, VkImageLayout layout, VkExtent3D imageExtent, VkOffset3D imageOffset, VkImageSubresourceLayers imageSubresource, VkBuffer dstBuffer, uint64_t bufferOffset, uint32_t bufferHeight, uint32_t bufferWidth) const noexcept
+		{
+			VkBufferImageCopy imageCopy = {};
+			imageCopy.imageExtent = imageExtent;
+			imageCopy.imageOffset = imageOffset;
+			imageCopy.imageSubresource = imageSubresource;
+			imageCopy.bufferOffset = bufferOffset;
+			imageCopy.bufferImageHeight = bufferHeight;
+			imageCopy.bufferRowLength = bufferWidth;
+
+			getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdCopyImageToBuffer(m_CurrentCommandBuffer, srcImage, layout, dstBuffer, 1, &imageCopy);
+		}
+
 		void VulkanCommandBuffers::bindRasterizingPipeline(VkPipeline pipeline) const noexcept
 		{
 			getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdBindPipeline(m_CurrentCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);

@@ -106,6 +106,9 @@ add_library(
 	${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/volk/volk.c
 )
 
+# Add the STB submodule include directory.
+set(STB_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/stb)
+
 # We need to set these because, it's not MSVC.
 if(NOT MSVC)
 	set(CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_LINK_EXECUTABLE} -ldl")

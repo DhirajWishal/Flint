@@ -118,6 +118,34 @@ namespace Flint
 			void copyBuffer(VkBuffer srcBuffer, uint64_t size, uint64_t srcOffset, VkBuffer dstBuffer, uint64_t dstOffset) const noexcept;
 
 			/**
+			 * Copy content from a buffer to an image.
+			 *
+			 * @param srcBuffer The source buffer.
+			 * @param bufferHeight The height of the image in the buffer.
+			 * @param bufferWidth The width of the image in the buffer.
+			 * @param dstImage The destination image.
+			 * @param layout The image layout.
+			 * @param imageExtent The image extent.
+			 * @param imageOffset The image offset.
+			 * @param imageSubresource The image subresource layers.
+			 */
+			void copyBufferToImage(VkBuffer srcBuffer, uint64_t bufferOffset, uint32_t bufferHeight, uint32_t bufferWidth, VkImage dstImage, VkImageLayout layout, VkExtent3D imageExtent, VkOffset3D imageOffset, VkImageSubresourceLayers imageSubresource) const noexcept;
+
+			/**
+			 * Copy content from an image to a buffer.
+			 *
+			 * @param srcImage The source image.
+			 * @param layout The image layout.
+			 * @param imageExtent The image extent.
+			 * @param imageOffset The image offset.
+			 * @param imageSubresource The image subresource layers.
+			 * @param dstBuffer The destination buffer.
+			 * @param bufferHeight The height of the image in the buffer.
+			 * @param bufferWidth The width of the image in the buffer.
+			 */
+			void copyImageToBuffer(VkImage srcImage, VkImageLayout layout, VkExtent3D imageExtent, VkOffset3D imageOffset, VkImageSubresourceLayers imageSubresource, VkBuffer dstBuffer, uint64_t bufferOffset, uint32_t bufferHeight, uint32_t bufferWidth) const noexcept;
+
+			/**
 			 * Bind a rasterizing pipeline to the command buffer.
 			 *
 			 * @param pipeline The pipeline to bind.

@@ -35,6 +35,8 @@ add_library(
 		
 	"Source/EventSystem/EventSystem.cpp"
 
+	"Source/ThirdParty/stb_image.cpp"
+
 	"Instance.hpp" 
 	"Device.hpp" 
 	"FObject.hpp"
@@ -93,6 +95,7 @@ target_include_directories(
 	PRIVATE ${ASSIMP_INCLUDE_DIR} 
 	PRIVATE ${SDL_INCLUDE_DIR} 
 	PUBLIC ${SPDLOG_INCLUDE_DIR}
+	PRIVATE ${STB_INCLUDE_DIR} 
 )
 
 # Add the target links.

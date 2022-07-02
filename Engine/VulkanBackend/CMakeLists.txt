@@ -32,6 +32,7 @@ add_library(
 	"Source/VulkanStaticModel.cpp"
 	"Source/VulkanVertexStorage.cpp"
 	"Source/VulkanRasterizingDrawEntry.cpp"
+	"Source/VulkanTexture2D.cpp"
 	
 	"VulkanInstance.hpp"
 	"VulkanMacros.hpp"
@@ -51,6 +52,7 @@ add_library(
 	"VulkanStaticModel.hpp"
 	"VulkanVertexStorage.hpp"
 	"VulkanRasterizingDrawEntry.hpp"
+	"VulkanTexture2D.hpp"
 )
 
 # Set the include directories.

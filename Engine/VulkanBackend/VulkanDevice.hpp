@@ -50,19 +50,10 @@ namespace Flint
 			 *
 			 * @param size The size of the buffer.
 			 * @param usage The buffer usage.
+			 * @param pDataStore The data store pointer to copy everything from. Make sure that the raw buffer's size is the same or more than the buffer's size. Default is nullptr.
 			 * @return The buffer pointer.
 			 */
-			[[nodiscrad]] std::shared_ptr<Buffer> createBuffer(uint64_t size, BufferUsage usage) override;
-
-			/**
-			 * Create a new buffer.
-			 *
-			 * @param size The size of the buffer.
-			 * @param usage The buffer usage.
-			 * @param pDataStore The data store pointer to copy everything from. Make sure that the raw buffer's size is the same or more than the buffer's size.
-			 * @return The buffer pointer.
-			 */
-			[[nodiscrad]] std::shared_ptr<Buffer> createBuffer(uint64_t size, BufferUsage usage, const std::byte* pDataStore) override;
+			[[nodiscrad]] std::shared_ptr<Buffer> createBuffer(uint64_t size, BufferUsage usage, const std::byte* pDataStore = nullptr) override;
 
 			/**
 			 * Create a new rasterizer.
@@ -111,6 +102,20 @@ namespace Flint
 			 * @return The loaded static model.
 			 */
 			[[nodiscard]] std::shared_ptr<StaticModel> createStaticModel(std::filesystem::path&& assetFile) override;
+
+			/**
+			 * Create a new 2D texture image.
+			 *
+			 * @param width The width of the image.
+			 * @param height The height of the image.
+			 * @param mipLevels The texture's mip levels. If this is set to 0 (default), the best value is set.
+			 * @param usage The image usage.
+			 * @param format The image's pixel format.
+			 * @param multisampleCount The multisample count of the image. Default is one.
+			 * @param pDataStore The data store pointer to load the data from. Default is nullptr.
+			 * @return The created texture pointer.
+			 */
+			[[nodiscard]] std::shared_ptr<Texture2D> createTexture2D(uint32_t width, uint32_t height, ImageUsage usage, PixelFormat format, uint32_t mipLevels = 0, Multisample multisampleCount = Multisample::One, const std::byte* pDataStore = nullptr) override;
 
 			/**
 			 * Terminate the object.

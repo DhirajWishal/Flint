@@ -85,6 +85,65 @@ namespace Flint
 	};
 
 	/**
+	 * Get the pixel format's size.
+	 *
+	 * @param format The pixel format.
+	 * @return The size in bytes.
+	 */
+	constexpr uint8_t GetPixelSize(PixelFormat format)
+	{
+		switch (format)
+		{
+		case Flint::PixelFormat::R8_SRGB:
+		case Flint::PixelFormat::R8_UNORMAL:
+		case Flint::PixelFormat::S8_UINT:
+			return 1;
+
+		case Flint::PixelFormat::R8G8_SRGB:
+		case Flint::PixelFormat::R8G8_UNORMAL:
+		case Flint::PixelFormat::R16_SFLOAT:
+		case Flint::PixelFormat::D16_SINT:
+			return 2;
+
+		case Flint::PixelFormat::R8G8B8_SRGB:
+		case Flint::PixelFormat::R8G8B8_UNORMAL:
+		case Flint::PixelFormat::B8G8R8_SRGB:
+		case Flint::PixelFormat::B8G8R8_UNORMAL:
+		case Flint::PixelFormat::D16_UNORMAL_S8_UINT:
+			return 3;
+
+		case Flint::PixelFormat::R8G8B8A8_SRGB:
+		case Flint::PixelFormat::R8G8B8A8_UNORMAL:
+		case Flint::PixelFormat::B8G8R8A8_SRGB:
+		case Flint::PixelFormat::B8G8R8A8_UNORMAL:
+		case Flint::PixelFormat::R16G16_SFLOAT:
+		case Flint::PixelFormat::R32_SFLOAT:
+		case Flint::PixelFormat::D32_SFLOAT:
+		case Flint::PixelFormat::D24_UNORMAL_S8_UINT:
+			return 4;
+
+		case Flint::PixelFormat::D32_SFLOAT_S8_UINT:
+			return 5;
+
+		case Flint::PixelFormat::R16G16B16_SFLOAT:
+			return 6;
+
+		case Flint::PixelFormat::R16G16B16A16_SFLOAT:
+		case Flint::PixelFormat::R32G32_SFLOAT:
+			return 8;
+
+		case Flint::PixelFormat::R32G32B32_SFLOAT:
+			return 12;
+
+		case Flint::PixelFormat::R32G32B32A32_SFLOAT:
+			return 16;
+
+		default:
+			return 0;
+		}
+	}
+
+	/**
 	 * Attachment type enum.
 	 */
 	enum class AttachmentType : uint8_t

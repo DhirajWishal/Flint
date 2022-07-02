@@ -20,18 +20,9 @@ namespace Flint
 		 * @param pDevice The device to which the buffer is bound to.
 		 * @param size The buffer's size.
 		 * @param usage The buffer's usage.
+		 * @param pDataStore The data store pointer to copy everything from. Make sure that the raw buffer's size is the same or more than the buffer's size. Default is nullptr.
 		 */
-		explicit Buffer(const std::shared_ptr<Device>& pDevice, uint64_t size, BufferUsage usage);
-
-		/**
-		 * Explicit constructor.
-		 *
-		 * @param pDevice The device to which the buffer is bound to.
-		 * @param size The buffer's size.
-		 * @param usage The buffer's usage.
-		 * @param pDataStore The data store pointer to copy everything from. Make sure that the raw buffer's size is the same or more than the buffer's size.
-		 */
-		explicit Buffer(const std::shared_ptr<Device>& pDevice, uint64_t size, BufferUsage usage, const std::byte* pDataStore);
+		explicit Buffer(const std::shared_ptr<Device>& pDevice, uint64_t size, BufferUsage usage, const std::byte* pDataStore = nullptr);
 
 		/**
 		 * Default virtual destructor.

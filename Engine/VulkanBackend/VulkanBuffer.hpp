@@ -20,20 +20,11 @@ namespace Flint
 			 * Explicit constructor.
 			 *
 			 * @param pDevice The device to which the buffer is bound to.
-			 * @param size The size of the buffer.
-			 * @param usage The buffer usage.
-			 */
-			explicit VulkanBuffer(const std::shared_ptr<VulkanDevice>& pDevice, uint64_t size, BufferUsage usage);
-
-			/**
-			 * Explicit constructor.
-			 *
-			 * @param pDevice The device to which the buffer is bound to.
 			 * @param size The buffer's size.
 			 * @param usage The buffer's usage.
-			 * @param pDataStore The data store pointer to copy everything from. Make sure that the raw buffer's size is the same or more than the buffer's size.
+			 * @param pDataStore The data store pointer to copy everything from. Make sure that the raw buffer's size is the same or more than the buffer's size. Default is nullptr.
 			 */
-			explicit VulkanBuffer(const std::shared_ptr<VulkanDevice>& pDevice, uint64_t size, BufferUsage usage, const std::byte* pDataStore);
+			explicit VulkanBuffer(const std::shared_ptr<VulkanDevice>& pDevice, uint64_t size, BufferUsage usage, const std::byte* pDataStore = nullptr);
 
 			/**
 			 * Destructor.
