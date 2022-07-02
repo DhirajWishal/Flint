@@ -19,7 +19,7 @@ namespace Flint
 		 *
 		 * @param pDevice The device reference.
 		 */
-		explicit DeviceBoundObject(const std::shared_ptr<Device>& pDevice) : m_pDevice(pDevice) {}
+		explicit DeviceBoundObject(const std::shared_ptr<Device>& pDevice);
 
 		/**
 		 * Default virtual destructor.

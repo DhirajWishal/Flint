@@ -24,8 +24,7 @@ namespace Flint
 		 * @param format The format of the attachment.
 		 * @param multisample The multisample count to use.
 		 */
-		explicit RenderTargetAttachment(const std::shared_ptr<Device>& pDevice, uint32_t width, uint32_t height, AttachmentType type, PixelFormat format, Multisample multisample)
-			: DeviceBoundObject(pDevice), m_Width(width), m_Height(height), m_Type(type), m_Format(format), m_Multisample(multisample) {}
+		explicit RenderTargetAttachment(const std::shared_ptr<Device>& pDevice, uint32_t width, uint32_t height, AttachmentType type, PixelFormat format, Multisample multisample);
 
 		/**
 		 * Default virtual destructor.

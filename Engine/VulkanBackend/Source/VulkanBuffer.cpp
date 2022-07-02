@@ -121,10 +121,6 @@ namespace Flint
 
 		void VulkanBuffer::createBufferAndValidate()
 		{
-			// Validate the inputs.
-			if (m_Size == 0)
-				throw BackendError("Invalid buffer size!");
-
 			VkBufferUsageFlags bufferUsage = 0;
 			VmaAllocationCreateFlags vmaFlags = 0;
 			VmaMemoryUsage memoryUsage = VMA_MEMORY_USAGE_UNKNOWN;

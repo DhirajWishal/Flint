@@ -22,6 +22,16 @@ add_library(
 	"Source/ShaderCode.cpp"
 	"Source/PipelineCacheHandler.cpp"
 	"Source/MeshBindingTable.cpp"
+	"Source/Texture2D.cpp" 
+	"Source/Buffer.cpp"
+	"Source/CommandBuffers.cpp"
+	"Source/Device.cpp"
+	"Source/DeviceBoundObject.cpp"
+	"Source/DrawEntry.cpp"
+	"Source/Graphical.cpp"
+	"Source/RasterizingPipeline.cpp"
+	"Source/RenderTargetAttachment.cpp"
+	"Source/Window.cpp"
 		
 	"Source/EventSystem/EventSystem.cpp"
 
@@ -52,6 +62,7 @@ add_library(
 	"DrawEntry.hpp"
 	"Entity.hpp"
 	"MeshBindingTable.hpp"
+	"Texture2D.hpp"
 	
 	"Errors/AssetError.hpp"
 	"Errors/BackendError.hpp" 

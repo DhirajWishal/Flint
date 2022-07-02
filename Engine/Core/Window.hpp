@@ -5,7 +5,6 @@
 
 #include "Graphical.hpp"
 #include "RenderTarget.hpp"
-#include "StaticInitializer.hpp"
 
 namespace Flint
 {
@@ -24,12 +23,7 @@ namespace Flint
 		 * @param width The width of the window. If set to 0 then the window is opened maximized. If set to -1, the window is open in full screen mode.
 		 * @param height The height of the window. Same as the width, if set to 0 then the window is opened maximized. If set to -1, the window is open in full screen mode.
 		 */
-		explicit Window(const std::shared_ptr<Device>& pDevice, std::string&& title, uint32_t width = -1, uint32_t height = -1)
-			: DeviceBoundObject(pDevice), m_Title(std::move(title)), m_Width(width), m_Height(height)
-		{
-			// Initialize the static content.
-			static StaticInitializer initializer;
-		}
+		explicit Window(const std::shared_ptr<Device>& pDevice, std::string&& title, uint32_t width = -1, uint32_t height = -1);
 
 		/**
 		 * Default virtual destructor.
@@ -45,7 +39,7 @@ namespace Flint
 		 * @param pRenderTarget The render target dependency.
 		 * @param attachment The render target's attachment to copy. Default is 0.
 		 */
-		void attach(const std::shared_ptr<RenderTarget>& pRenderTarget, uint32_t attachment = 0) { m_Dependency = std::make_pair(pRenderTarget, attachment); notifyUpdated(); }
+		void attach(const std::shared_ptr<RenderTarget>& pRenderTarget, uint32_t attachment = 0);
 
 		/**
 		 * Get the title of the window.
@@ -68,10 +62,8 @@ namespace Flint
 		 */
 		[[nodiscard]] uint32_t getHeight() const { return m_Height; }
 
-	private:
-		std::string m_Title;
-
 	protected:
+		std::string m_Title;
 		std::pair<std::shared_ptr<RenderTarget>, uint32_t> m_Dependency;
 
 		uint32_t m_Width = 0;

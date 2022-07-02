@@ -32,7 +32,7 @@ namespace Flint
 		 *
 		 * @param pEntity The entity pointer.
 		 */
-		explicit DrawEntry(const std::shared_ptr<Entity>& pEntity) : m_pEntity(pEntity) {}
+		explicit DrawEntry(const std::shared_ptr<Entity>& pEntity);
 
 		/**
 		 * Create a new draw instance.

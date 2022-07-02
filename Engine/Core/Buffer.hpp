@@ -21,7 +21,7 @@ namespace Flint
 		 * @param size The buffer's size.
 		 * @param usage The buffer's usage.
 		 */
-		explicit Buffer(const std::shared_ptr<Device>& pDevice, uint64_t size, BufferUsage usage) : DeviceBoundObject(pDevice), m_Size(size), m_Usage(usage) {}
+		explicit Buffer(const std::shared_ptr<Device>& pDevice, uint64_t size, BufferUsage usage);
 
 		/**
 		 * Explicit constructor.
@@ -31,7 +31,7 @@ namespace Flint
 		 * @param usage The buffer's usage.
 		 * @param pDataStore The data store pointer to copy everything from. Make sure that the raw buffer's size is the same or more than the buffer's size.
 		 */
-		explicit Buffer(const std::shared_ptr<Device>& pDevice, uint64_t size, BufferUsage usage, const std::byte* pDataStore) : DeviceBoundObject(pDevice), m_Size(size), m_Usage(usage) {}
+		explicit Buffer(const std::shared_ptr<Device>& pDevice, uint64_t size, BufferUsage usage, const std::byte* pDataStore);
 
 		/**
 		 * Default virtual destructor.

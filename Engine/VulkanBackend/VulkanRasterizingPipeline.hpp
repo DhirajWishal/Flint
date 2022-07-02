@@ -26,11 +26,20 @@ namespace Flint
 			 */
 			struct Pipeline final
 			{
-				VkPipelineVertexInputStateCreateInfo m_InputState = {};
+				std::vector<VkVertexInputBindingDescription> m_InputBindings;
+				std::vector<VkVertexInputAttributeDescription> m_InputAttributes;
+
 				VkPipeline m_Pipeline = VK_NULL_HANDLE;
 				VkPipelineCache m_PipelineCache = VK_NULL_HANDLE;
 			};
 
+			/**
+			 * Draw call function type.
+			 * This is used to store draw calls for each model.
+			 *
+			 * @param The command buffers used to record the commands to.
+			 * @param The current frame index.
+			 */
 			using DrawCall = std::function<void(const VulkanCommandBuffers&, uint32_t)>;
 
 		public:
@@ -135,13 +144,12 @@ namespace Flint
 			 * @param cache The pipeline cache.
 			 * @return The created pipeline.
 			 */
-			[[nodiscard]] VkPipeline createVariation(const VkPipelineVertexInputStateCreateInfo& inputState, VkPipelineCache cache);
+			[[nodiscard]] VkPipeline createVariation(VkPipelineVertexInputStateCreateInfo&& inputState, VkPipelineCache cache);
 
 		private:
 			std::unordered_map<uint64_t, Pipeline> m_Pipelines;
 			VulkanDescriptorSetManager m_DescriptorSetManager;
 
-			VkPipelineVertexInputStateCreateInfo m_VertexInputStateCreateInfo = {};
 			VkPipelineInputAssemblyStateCreateInfo m_InputAssemblyStateCreateInfo = {};
 			VkPipelineTessellationStateCreateInfo m_TessellationStateCreateInfo = {};
 			VkPipelineColorBlendStateCreateInfo m_ColorBlendStateCreateInfo = {};
@@ -152,8 +160,6 @@ namespace Flint
 
 			std::vector<VkPipelineColorBlendAttachmentState> m_CBASS = {};
 			std::vector<VkPipelineShaderStageCreateInfo> m_ShaderStageCreateInfo = {};
-			std::vector<VkVertexInputBindingDescription> m_VertexBindings = {};
-			std::vector<VkVertexInputAttributeDescription> m_VertexAttributes = {};
 			std::vector<VkDynamicState> m_DynamicStates = {};
 
 			std::vector<std::shared_ptr<DrawEntry>> m_pDrawEntries;

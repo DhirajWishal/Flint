@@ -22,7 +22,7 @@ namespace Flint
 		 * @param pDevice The device to which the commands are submitted.
 		 * @param bufferCount The number of buffer primitives.
 		 */
-		explicit CommandBuffers(const std::shared_ptr<Device>& pDevice, uint32_t bufferCount = 1) : DeviceBoundObject(pDevice), m_BufferCount(bufferCount) {}
+		explicit CommandBuffers(const std::shared_ptr<Device>& pDevice, uint32_t bufferCount = 1);
 
 		/**
 		 * Default virtual destructor.

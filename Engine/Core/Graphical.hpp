@@ -24,7 +24,7 @@ namespace Flint
 		 *
 		 * @param frameCount The number of frames which are been updated by the graphical object.
 		 */
-		explicit Graphical(uint32_t frameCount) : m_FrameCount(frameCount), m_NeedToUpdate(frameCount) {}
+		explicit Graphical(uint32_t frameCount);
 
 		/**
 		 * Default virtual destructor.

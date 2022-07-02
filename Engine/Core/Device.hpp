@@ -33,7 +33,7 @@ namespace Flint
 		 *
 		 * @param pInstance The instance to create the device with.
 		 */
-		explicit Device(const std::shared_ptr<Instance>& pInstance) : m_pInstance(pInstance) {}
+		explicit Device(const std::shared_ptr<Instance>& pInstance);
 
 		/**
 		 * Default virtual destructor.
