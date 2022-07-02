@@ -4,9 +4,29 @@
 #pragma once
 
 #include "Entity.hpp"
+#include "Texture2D.hpp"
 
 namespace Flint
 {
+	/**
+	 * Texture type enum.
+	 */
+	enum class TextureType : uint8_t
+	{
+		BaseColor,
+		Metalness,
+		Roughness,
+		ColorSheen,
+		RoughnessSheen,
+		ColorClearCoat,
+		RoughnessClearCoat,
+		NormalClearCoat,
+		Transmission,
+		VolumeThickness,
+
+		Max
+	};
+
 	/**
 	 * Static mesh class.
 	 */
@@ -26,6 +46,7 @@ namespace Flint
 
 	public:
 		std::array<AttributeData, EnumToInt(VertexAttribute::Max)> m_VertexData;
+		std::array<std::filesystem::path, EnumToInt(TextureType::Max)> m_TexturePaths;
 
 		std::string m_Name;
 

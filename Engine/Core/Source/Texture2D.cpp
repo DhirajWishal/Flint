@@ -28,7 +28,7 @@ namespace Flint
 			throw InvalidArgumentError("The texture's pixel format should not be undefined!");
 	}
 
-	std::shared_ptr<Flint::Texture2D> Texture2D::LoadFromFile(const std::shared_ptr<Device>& pDevice, std::filesystem::path&& assetFile, ImageUsage usage, Multisample multisampleCount /*= Multisample::One*/)
+	std::shared_ptr<Flint::Texture2D> Texture2D::LoadFromFile(const std::shared_ptr<Device>& pDevice, const std::filesystem::path& assetFile, ImageUsage usage, Multisample multisampleCount /*= Multisample::One*/)
 	{
 		// Load the image.
 		int32_t width, height, channels;

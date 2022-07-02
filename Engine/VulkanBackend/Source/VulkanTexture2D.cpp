@@ -88,7 +88,7 @@ namespace Flint
 
 			auto pBuffer = getDevicePointerAs<VulkanDevice>()->createBuffer(static_cast<uint64_t>(m_Width) * m_Height * GetPixelSize(m_Format), BufferUsage::Staging);
 			commandBuffers.changeImageLayout(m_vImage, m_CurrentLayout, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_ASPECT_COLOR_BIT);
-			commandBuffers.copyImageToBuffer(m_vImage, m_CurrentLayout, { m_Width, m_Height, 1 }, { 0, 0, 0 }, subresource, pBuffer->as<VulkanBuffer>()->getBuffer(), 0, m_Height, m_Width);
+			commandBuffers.copyImageToBuffer(m_vImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, { m_Width, m_Height, 1 }, { 0, 0, 0 }, subresource, pBuffer->as<VulkanBuffer>()->getBuffer(), 0, m_Height, m_Width);
 			commandBuffers.changeImageLayout(m_vImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, m_CurrentLayout == VK_IMAGE_LAYOUT_UNDEFINED ? VK_IMAGE_LAYOUT_GENERAL : m_CurrentLayout, subresource.aspectMask);
 
 			return pBuffer;
@@ -103,7 +103,7 @@ namespace Flint
 			subresource.mipLevel = 0;
 
 			commandBuffers.changeImageLayout(m_vImage, m_CurrentLayout, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_ASPECT_COLOR_BIT);
-			commandBuffers.copyBufferToImage(pBuffer->as<VulkanBuffer>()->getBuffer(), 0, m_Height, m_Width, m_vImage, m_CurrentLayout, { m_Width, m_Height, 1 }, { 0, 0, 0 }, subresource);
+			commandBuffers.copyBufferToImage(pBuffer->as<VulkanBuffer>()->getBuffer(), 0, m_Height, m_Width, m_vImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, { m_Width, m_Height, 1 }, { 0, 0, 0 }, subresource);
 			commandBuffers.changeImageLayout(m_vImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, m_CurrentLayout == VK_IMAGE_LAYOUT_UNDEFINED ? VK_IMAGE_LAYOUT_GENERAL : m_CurrentLayout, subresource.aspectMask);
 		}
 

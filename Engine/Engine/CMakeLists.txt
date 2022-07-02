@@ -19,7 +19,10 @@ add_library(
 
 	"Source/ShaderFactory/ShaderBuilder.cpp"
 
+	"Source/Packager/Package.cpp"
+
 	"Flint.hpp"
+	"AssetRegistry.hpp"
 
 	"Utility/FrameTimer.hpp"
 
@@ -30,7 +33,7 @@ add_library(
 	"Packager/PackageEntry.hpp"
 
 	"Errors/InvalidBackend.hpp"
- "Source/Packager/Package.cpp")
+)
 
 # Set the include directories.
 target_include_directories(

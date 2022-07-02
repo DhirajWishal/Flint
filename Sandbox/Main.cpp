@@ -3,14 +3,16 @@
 
 #include "Core/EventSystem/EventSystem.hpp"
 #include "Core/Camera/MonoCamera.hpp"
-#include "Engine/Utility/FrameTimer.hpp"
-#include "Engine/Flint.hpp"
 
 #include "Core/Window.hpp"
 #include "Core/Rasterizer.hpp"
 #include "Core/RayTracer.hpp"
 #include "Core/RasterizingProgram.hpp"
 #include "Core/StaticModel.hpp"
+
+#include "Engine/Utility/FrameTimer.hpp"
+#include "Engine/Flint.hpp"
+#include "Engine/AssetRegistry.hpp"
 
 #ifdef FLINT_DEBUG
 constexpr auto Validation = true;
@@ -26,8 +28,9 @@ constexpr auto Validation = false;
 
 #endif
 
-// Global event system instance.
+// Globals.
 static Flint::EventSystem g_EventSystem;
+static Flint::AssetRegistry g_AssetRegistry;
 
 /**
  * Get the default pipeline specification.
@@ -56,10 +59,25 @@ int main()
 
 	auto cameraBuffer = camera.createBuffer(device);
 	auto defaultPipeline = rasterizer->createPipeline(program, GetDefaultSpecification(), std::make_unique<Flint::Defaults::FilePipelineCacheHandler>("PipelineCache/"));
-	auto drawEntry = defaultPipeline->attach(model, [cameraBuffer](auto& model, auto& mesh, auto& binder)
+	auto drawEntry = defaultPipeline->attach(model, [cameraBuffer, device](auto& model, const Flint::StaticMesh& mesh, auto& binder)
 		{
 			Flint::MeshBindingTable table;
 			table.bind(0, cameraBuffer);
+
+			constexpr auto textureIndex = Flint::EnumToInt(Flint::TextureType::BaseColor);
+			const auto& texturePath = mesh.m_TexturePaths[textureIndex];
+			const auto texturePathString = texturePath.string();
+
+			// Load the texture file if we haven't already.
+			if (!g_AssetRegistry.isRegistered<Flint::Texture2D>(texturePathString) && texturePath.has_filename())
+				g_AssetRegistry.registerAsset(texturePathString, Flint::Texture2D::LoadFromFile(device, texturePath, Flint::ImageUsage::Graphics));
+
+			// Now we can bind if possible.
+			if (g_AssetRegistry.isRegistered<Flint::Texture2D>(texturePathString))
+			{
+				auto pTexture = g_AssetRegistry.getAsset<Flint::Texture2D>(texturePathString);
+				//table.bind(1, pTexture->createSampler(getSamplerSpecification()), pTexture->craeteView(viewType));
+			}
 
 			return table;
 		}

@@ -3,6 +3,7 @@
 
 #include "VulkanBackend/VulkanStaticModel.hpp"
 #include "VulkanBackend/VulkanMacros.hpp"
+#include "VulkanBackend/VulkanTexture2D.hpp"
 
 #include "Core/Errors/AssetError.hpp"
 
@@ -66,6 +67,24 @@ namespace /* anonymous */
 		default:
 			throw Flint::BackendError("Invalid attribute type!");
 		}
+	}
+
+	/**
+	 * GEt the texture path from the material.
+	 *
+	 * @param basePath The base asset path to index the resources from.
+	 * @paarm pMaterial The material pointer.
+	 * @param type The texture type.
+	 * @param index The texture index.
+	 * @return The texture path.
+	 */
+	std::filesystem::path GetTexturePath(const std::filesystem::path& basePath, const aiMaterial* pMaterial, aiTextureType type, uint32_t index)
+	{
+		aiString path;
+		if (aiReturn_SUCCESS == pMaterial->GetTexture(type, index, &path))
+			return basePath / path.C_Str();
+
+		return {};
 	}
 }
 
@@ -159,6 +178,8 @@ namespace Flint
 			if (!pScene)
 				throw AssetError("Failed to load the specified model!");
 
+			const auto basePath = m_AssetPath.parent_path();
+
 			std::vector<uint32_t> indices;
 
 			// Load the meshes.
@@ -249,6 +270,21 @@ namespace Flint
 
 					mesh.m_IndexCount = indices.size() - mesh.m_IndexOffset;
 				}
+
+				// Load the materials.
+				const auto pMaterial = pScene->mMaterials[pMesh->mMaterialIndex];
+
+				// Get the texture paths.
+				mesh.m_TexturePaths[EnumToInt(TextureType::BaseColor)] = GetTexturePath(basePath, pMaterial, AI_MATKEY_BASE_COLOR_TEXTURE);
+				mesh.m_TexturePaths[EnumToInt(TextureType::Metalness)] = GetTexturePath(basePath, pMaterial, AI_MATKEY_METALLIC_TEXTURE);
+				mesh.m_TexturePaths[EnumToInt(TextureType::Roughness)] = GetTexturePath(basePath, pMaterial, AI_MATKEY_ROUGHNESS_TEXTURE);
+				mesh.m_TexturePaths[EnumToInt(TextureType::ColorSheen)] = GetTexturePath(basePath, pMaterial, AI_MATKEY_SHEEN_COLOR_TEXTURE);
+				mesh.m_TexturePaths[EnumToInt(TextureType::RoughnessSheen)] = GetTexturePath(basePath, pMaterial, AI_MATKEY_SHEEN_ROUGHNESS_TEXTURE);
+				mesh.m_TexturePaths[EnumToInt(TextureType::ColorClearCoat)] = GetTexturePath(basePath, pMaterial, AI_MATKEY_CLEARCOAT_TEXTURE);
+				mesh.m_TexturePaths[EnumToInt(TextureType::RoughnessClearCoat)] = GetTexturePath(basePath, pMaterial, AI_MATKEY_CLEARCOAT_ROUGHNESS_TEXTURE);
+				mesh.m_TexturePaths[EnumToInt(TextureType::NormalClearCoat)] = GetTexturePath(basePath, pMaterial, AI_MATKEY_CLEARCOAT_NORMAL_TEXTURE);
+				mesh.m_TexturePaths[EnumToInt(TextureType::Transmission)] = GetTexturePath(basePath, pMaterial, AI_MATKEY_TRANSMISSION_TEXTURE);
+				mesh.m_TexturePaths[EnumToInt(TextureType::VolumeThickness)] = GetTexturePath(basePath, pMaterial, AI_MATKEY_VOLUME_THICKNESS_TEXTURE);
 			}
 
 			// Finally, copy the index data to a staging buffer, and copy it to the final index buffer.

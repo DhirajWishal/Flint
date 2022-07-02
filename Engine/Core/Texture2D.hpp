@@ -41,7 +41,7 @@ namespace Flint
 		 * @param multisampleCount The multisample count. Default is one.
 		 * @return The texture pointer.
 		 */
-		[[nodiscard]] static std::shared_ptr<Texture2D> LoadFromFile(const std::shared_ptr<Device>& pDevice, std::filesystem::path&& assetFile, ImageUsage usage, Multisample multisampleCount = Multisample::One);
+		[[nodiscard]] static std::shared_ptr<Texture2D> LoadFromFile(const std::shared_ptr<Device>& pDevice, const std::filesystem::path& assetFile, ImageUsage usage, Multisample multisampleCount = Multisample::One);
 
 		/**
 		 * Copy the texture image to a buffer.
