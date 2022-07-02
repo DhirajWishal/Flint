@@ -238,6 +238,7 @@ namespace Flint
 					{
 						auto& textureData = mesh.m_VertexData[EnumToInt(VertexAttribute::Texture0) + t];
 
+						// We have to do this step to make sure that we are only loading the important 2D data, not the 3D storage.
 						std::vector<aiVector2D> textureCoordinates;
 						textureCoordinates.reserve(pMesh->mNumVertices);
 

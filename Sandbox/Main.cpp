@@ -48,7 +48,7 @@ int main()
 	auto device = instance->createDevice();
 
 	auto camera = Flint::MonoCamera(glm::vec3(0.0f), 1280, 720);
-	camera.m_MovementBias = 50;
+	camera.m_MovementBias = 25;
 	camera.m_RotationBias = 50;
 
 	auto program = device->createRasterizingProgram(Flint::ShaderCode("Shaders/Debugging/vert.spv"), Flint::ShaderCode("Shaders/Debugging/frag.spv"));
@@ -101,6 +101,9 @@ int main()
 	window->attach(rasterizer);
 	//window->attach(rayTracer);
 
+	float lastX = 0.0f, lastY = 0.0f;
+	bool firstMouse = true;
+
 	Flint::FrameTimer timer;
 	while (!g_EventSystem.shouldClose())
 	{
@@ -120,18 +123,44 @@ int main()
 
 			if (g_EventSystem.getKeyboard().m_KeyD)
 				camera.moveRight(duration.count());
+		}
+		else if (events == Flint::EventType::Mouse)
+		{
+			if (g_EventSystem.getMouse().m_Left)
+			{
+				auto positionX = g_EventSystem.getMouse().m_PositionX;
+				auto positionY = g_EventSystem.getMouse().m_PositionY;
 
-			if (g_EventSystem.getKeyboard().m_Up)
-				camera.rotateUp(duration.count());
+				positionX *= -1.0f;
+				positionY *= -1.0f;
 
-			if (g_EventSystem.getKeyboard().m_Down)
-				camera.rotateDown(duration.count());
+				if (firstMouse)
+				{
+					lastX = positionX;
+					lastY = positionY;
+					firstMouse = false;
+				}
 
-			if (g_EventSystem.getKeyboard().m_Left)
-				camera.rotateLeft(duration.count());
+				float xoffset = positionX - lastX;
+				float yoffset = lastY - positionY; // reversed since y-coordinates go from bottom to top
 
-			if (g_EventSystem.getKeyboard().m_Right)
-				camera.rotateRight(duration.count());
+				float sensitivity = 0.05f;
+				xoffset *= sensitivity * 0.75f;
+				yoffset *= sensitivity;
+
+				lastX = positionX;
+				lastY = positionY;
+
+				camera.m_Yaw += xoffset;
+				camera.m_Pitch += yoffset;
+
+				if (camera.m_Pitch > 89.0f)
+					camera.m_Pitch = 89.0f;
+				if (camera.m_Pitch < -89.0f)
+					camera.m_Pitch = -89.0f;
+			}
+			else
+				firstMouse = true;
 		}
 
 		//spdlog::info("Frame rate: {}", Flint::FrameTimer::FramesPerSecond(duration), " ns");
