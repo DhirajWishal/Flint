@@ -1,2 +1,1 @@
-Dependencies/ThirdParty/Binaries/shaderc/shaderc_combined.lib filter=lfs diff=lfs merge=lfs -text
-Dependencies/ThirdParty/Binaries/glslang/SPIRV-Tools-opt.lib filter=lfs diff=lfs merge=lfs -text
+Developer/RenderDoc/Capture-03-07-2022-001.rdc filter=lfs diff=lfs merge=lfs -text
