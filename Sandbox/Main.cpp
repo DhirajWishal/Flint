@@ -48,61 +48,80 @@ int main()
 	auto device = instance->createDevice();
 
 	auto camera = Flint::MonoCamera(glm::vec3(0.0f), 1280, 720);
-	camera.m_MovementBias = 25;
-	camera.m_RotationBias = 50;
+	camera.m_MovementBias = 10;
+	//camera.m_RotationBias = 50;
 
-	auto program = device->createRasterizingProgram(Flint::ShaderCode("Shaders/Debugging/vert.spv"), Flint::ShaderCode("Shaders/Debugging/frag.spv"));
-	auto window = device->createWindow("Sandbox");
+	auto program = device->createRasterizingProgram(Flint::ShaderCode("Shaders/Debugging/Shader.vert.spv"), Flint::ShaderCode("Shaders/Debugging/Shader.frag.spv"));
+	auto window = device->createWindow("Sandbox", 1280, 720);
 	auto rasterizer = device->createRasterizer(camera, window->getFrameCount(), { Flint::Defaults::ColorAttachmentDescription, Flint::Defaults::DepthAttachmentDescription });
 	auto rayTracer = device->createRayTracer(camera, window->getFrameCount());
 	auto model = device->createStaticModel(std::filesystem::path(FLINT_GLTF_ASSET_PATH) / "Sponza" / "glTF" / "Sponza.gltf");
 
+	// The default texture to make sure that we have a default one to fall back to.
+	struct { uint8_t r = 255, g = 255, b = 255, a = 255; } defaultImage;
+	auto defaultTexture = device->createTexture2D(1, 1, Flint::ImageUsage::Graphics, Flint::PixelFormat::R8G8B8A8_SRGB, 1, Flint::Multisample::One, reinterpret_cast<const std::byte*>(&defaultImage));
+	Flint::StaticStorage<std::shared_ptr<Flint::Texture2D>>::Set("Default", defaultTexture);
+	Flint::StaticStorage<std::shared_ptr<Flint::TextureView>>::Set("Default", defaultTexture->createView());
+
 	auto cameraBuffer = camera.createBuffer(device);
 	auto defaultPipeline = rasterizer->createPipeline(program, GetDefaultSpecification(), std::make_unique<Flint::Defaults::FilePipelineCacheHandler>("PipelineCache/"));
-	auto drawEntry = defaultPipeline->attach(model, [cameraBuffer, device](auto& model, const Flint::StaticMesh& mesh, auto& binder)
+	auto drawEntry = defaultPipeline->attach(model, [cameraBuffer, device](auto& model, const Flint::StaticMesh& mesh, const Flint::BindingMap& binder)
 		{
 			Flint::MeshBindingTable table;
-			table.bind(0, cameraBuffer);
 
-			constexpr auto textureIndex = Flint::EnumToInt(Flint::TextureType::BaseColor);
-			const auto& texturePath = mesh.m_TexturePaths[textureIndex];
-			const auto texturePathString = texturePath.string();
-
-			// Load the texture file if we haven't already.
-			if (!Flint::StaticStorage<std::shared_ptr<Flint::Texture2D>>::Contains(texturePathString) && texturePath.has_filename())
+			for (const auto& binding : binder.getBindings())
 			{
-				auto pTexture = Flint::Texture2D::LoadFromFile(device, texturePath, Flint::ImageUsage::Graphics);
-				Flint::StaticStorage<std::shared_ptr<Flint::Texture2D>>::Set(texturePathString, pTexture);
-				Flint::StaticStorage<std::shared_ptr<Flint::TextureView>>::Set(texturePathString, pTexture->createView());
-			}
+				if (binding.m_Name == "camera")
+				{
+					table.bind(binding.m_BindingIndex, cameraBuffer);
+				}
+				else if (binding.m_Name == "baseColorTexture")
+				{
+					constexpr auto textureIndex = Flint::EnumToInt(Flint::TextureType::BaseColor);
+					const auto& texturePath = mesh.m_TexturePaths[textureIndex];
+					const auto texturePathString = texturePath.string();
 
-			// Now we can bind if possible.
-			if (Flint::StaticStorage<std::shared_ptr<Flint::Texture2D>>::Contains(texturePathString))
-			{
-				auto pTexture = Flint::StaticStorage<std::shared_ptr<Flint::Texture2D>>::Get(texturePathString);
+					// Load the texture file if we haven't already.
+					if (!Flint::StaticStorage<std::shared_ptr<Flint::Texture2D>>::Contains(texturePathString) && texturePath.has_filename())
+					{
+						auto pTexture = Flint::Texture2D::LoadFromFile(device, texturePath, Flint::ImageUsage::Graphics);
+						Flint::StaticStorage<std::shared_ptr<Flint::Texture2D>>::Set(texturePathString, pTexture);
+						Flint::StaticStorage<std::shared_ptr<Flint::TextureView>>::Set(texturePathString, pTexture->createView());
+					}
 
-				// Create the view if not available.
-				if (!Flint::StaticStorage<std::shared_ptr<Flint::TextureView>>::Contains(texturePathString))
-					Flint::StaticStorage<std::shared_ptr<Flint::TextureView>>::Set(texturePathString, pTexture->createView());
+					// Now we can bind if possible.
+					if (Flint::StaticStorage<std::shared_ptr<Flint::Texture2D>>::Contains(texturePathString))
+					{
+						auto pTexture = Flint::StaticStorage<std::shared_ptr<Flint::Texture2D>>::Get(texturePathString);
 
-				// Internally it caches so we don't need to store things anywhere.
-				table.bind(1, Flint::StaticStorage<std::shared_ptr<Flint::TextureView>>::Get(texturePathString), device->createTextureSampler(Flint::TextureSamplerSpecification()), Flint::ImageUsage::Graphics);
+						// Create the view if not available.
+						if (!Flint::StaticStorage<std::shared_ptr<Flint::TextureView>>::Contains(texturePathString))
+							Flint::StaticStorage<std::shared_ptr<Flint::TextureView>>::Set(texturePathString, pTexture->createView());
+
+						Flint::TextureSamplerSpecification samplerSpecification;
+						samplerSpecification.m_MaxLevelOfDetail = pTexture->getMipLevels();
+
+						// Internally it caches so we don't need to store things anywhere.
+						table.bind(binding.m_BindingIndex, Flint::StaticStorage<std::shared_ptr<Flint::TextureView>>::Get(texturePathString), device->createTextureSampler(std::move(samplerSpecification)), Flint::ImageUsage::Graphics);
+					}
+					else
+					{
+						table.bind(binding.m_BindingIndex, Flint::StaticStorage<std::shared_ptr<Flint::TextureView>>::Get("Default"), device->createTextureSampler(Flint::TextureSamplerSpecification()), Flint::ImageUsage::Graphics);
+					}
+				}
 			}
 
 			return table;
 		}
 	);
-	auto firstInstance = drawEntry->instance();	// First instance.
 
-	// auto occlusionPipeline = rasterizer->createPipeline(occlusionProgram, getOcclusionSpecification());
-	// auto drawEntry = occlusionPipeline->register(model);
-	// drawEntry->instance(position(), rotation(), scale());
+	const auto firstInstance = drawEntry->instance();	// First instance.
 
 	window->attach(rasterizer);
 	//window->attach(rayTracer);
 
-	float lastX = 0.0f, lastY = 0.0f;
 	bool firstMouse = true;
+	float lastX = 0.0f, lastY = 0.0f;
 
 	Flint::FrameTimer timer;
 	while (!g_EventSystem.shouldClose())
@@ -128,11 +147,8 @@ int main()
 		{
 			if (g_EventSystem.getMouse().m_Left)
 			{
-				auto positionX = g_EventSystem.getMouse().m_PositionX;
-				auto positionY = g_EventSystem.getMouse().m_PositionY;
-
-				positionX *= -1.0f;
-				positionY *= -1.0f;
+				const auto positionX = g_EventSystem.getMouse().m_PositionX * -1.0f;
+				const auto positionY = g_EventSystem.getMouse().m_PositionY * -1.0f;
 
 				if (firstMouse)
 				{
@@ -141,12 +157,9 @@ int main()
 					firstMouse = false;
 				}
 
-				float xoffset = positionX - lastX;
-				float yoffset = lastY - positionY; // reversed since y-coordinates go from bottom to top
-
-				float sensitivity = 0.05f;
-				xoffset *= sensitivity * 0.75f;
-				yoffset *= sensitivity;
+				constexpr float sensitivity = 0.05f;
+				const float xoffset = (positionX - lastX) * sensitivity * 0.75f;
+				const float yoffset = (lastY - positionY) * sensitivity; // Reversed since y-coordinates go from bottom to top
 
 				lastX = positionX;
 				lastY = positionY;
@@ -154,10 +167,8 @@ int main()
 				camera.m_Yaw += xoffset;
 				camera.m_Pitch += yoffset;
 
-				if (camera.m_Pitch > 89.0f)
-					camera.m_Pitch = 89.0f;
-				if (camera.m_Pitch < -89.0f)
-					camera.m_Pitch = -89.0f;
+				if (camera.m_Pitch > 89.0f) camera.m_Pitch = 89.0f;
+				if (camera.m_Pitch < -89.0f) camera.m_Pitch = -89.0f;
 			}
 			else
 				firstMouse = true;
@@ -172,13 +183,12 @@ int main()
 		window->update();
 	}
 
-	const auto ss = timer.tick();
-
 	device->waitIdle();	// Wait till we finish prior things before we proceed.
 
 	Flint::StaticStorage<std::shared_ptr<Flint::Texture2D>>::Clear();
 	Flint::StaticStorage<std::shared_ptr<Flint::TextureView>>::Clear();
 
+	defaultTexture->terminate();
 	cameraBuffer->terminate();
 	defaultPipeline->terminate();
 	model->terminate();

@@ -27,10 +27,17 @@ if (MSVC)
 endif ()
 
 # Copy the required files.
-file(COPY Shaders DESTINATION ${CMAKE_BINARY_DIR}/Sandbox)
-
 file(GLOB SDL_BUILDS_TO_COPY "${CMAKE_BINARY_DIR}/ThirdParty/SDL/*")
 file(COPY ${SDL_BUILDS_TO_COPY} DESTINATION ${CMAKE_BINARY_DIR}/Sandbox)
 
 file(GLOB ASSIMP_BUILDS_TO_COPY "${CMAKE_BINARY_DIR}/ThirdParty/assimp/bin/*")
 file(COPY ${ASSIMP_BUILDS_TO_COPY} DESTINATION ${CMAKE_BINARY_DIR}/Sandbox)
+
+# Include the shader compiler.
+include(${CMAKE_CURRENT_SOURCE_DIR}/../Tools/CMake/ShaderCompiler/CMakeLists.txt)
+
+# Setup shader compiler
+set(SHADER_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Shaders)
+set(SHADER_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/Shaders)
+
+CompileShaders(Sandbox ${SHADER_SOURCE_DIR} ${SHADER_BINARY_DIR})
