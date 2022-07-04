@@ -29,6 +29,8 @@ namespace Flint
 
 			// Make sure to set the object as valid.
 			validate();
+
+			toggleNeedToUpdate();
 		}
 
 		VulkanRasterizer::~VulkanRasterizer()
@@ -68,9 +70,9 @@ namespace Flint
 
 				// Bind the rasterizer.
 				VkClearValue colorClearValue = {};
-				colorClearValue.color.float32[0] = 1.0f;
-				colorClearValue.color.float32[1] = 1.0f;
-				colorClearValue.color.float32[2] = 1.0f;
+				colorClearValue.color.float32[0] = 0.0f;
+				colorClearValue.color.float32[1] = 0.0f;
+				colorClearValue.color.float32[2] = 0.0f;
 				colorClearValue.color.float32[3] = 1.0f;
 
 				VkClearValue depthClearValue = {};

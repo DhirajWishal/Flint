@@ -112,23 +112,23 @@ namespace Flint
 			createInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
 			createInfo.flags = 0;
 			createInfo.pNext = nullptr;
-			createInfo.addressModeU = GetAddressMode(m_Specification.mAddressModeU);
-			createInfo.addressModeV = GetAddressMode(m_Specification.mAddressModeV);
-			createInfo.addressModeW = GetAddressMode(m_Specification.mAddressModeW);
-			createInfo.anisotropyEnable = GET_VK_BOOL(m_Specification.bEnableAnisotropy);
-			createInfo.maxAnisotropy = m_Specification.mMaxAnisotrophy;
-			createInfo.borderColor = GetBorderColor(m_Specification.mBorderColor);
-			createInfo.compareEnable = GET_VK_BOOL(m_Specification.bEnableCompare);
-			createInfo.compareOp = GetCompareOperator(m_Specification.mCompareOperator);
-			createInfo.magFilter = GetFilter(m_Specification.mImageMagificationFilter);
-			createInfo.minFilter = GetFilter(m_Specification.mImageMinificationFilter);
-			createInfo.maxLod = m_Specification.mMaxLevelOfDetail;
-			createInfo.minLod = m_Specification.mMinLevelOfDetail;
-			createInfo.mipLodBias = m_Specification.mMipLODBias;
-			createInfo.mipmapMode = GetMipMapMode(m_Specification.mMipMapMode);
-			createInfo.unnormalizedCoordinates = GET_VK_BOOL(m_Specification.bEnableUnnormalizedCoordinates);
+			createInfo.addressModeU = GetAddressMode(m_Specification.m_AddressModeU);
+			createInfo.addressModeV = GetAddressMode(m_Specification.m_AddressModeV);
+			createInfo.addressModeW = GetAddressMode(m_Specification.m_AddressModeW);
+			createInfo.anisotropyEnable = GET_VK_BOOL(m_Specification.m_bEnableAnisotropy);
+			createInfo.maxAnisotropy = m_Specification.m_MaxAnisotrophy;
+			createInfo.borderColor = GetBorderColor(m_Specification.m_BorderColor);
+			createInfo.compareEnable = GET_VK_BOOL(m_Specification.m_bEnableCompare);
+			createInfo.compareOp = GetCompareOperator(m_Specification.m_CompareOperator);
+			createInfo.magFilter = GetFilter(m_Specification.m_ImageMagificationFilter);
+			createInfo.minFilter = GetFilter(m_Specification.m_ImageMinificationFilter);
+			createInfo.maxLod = m_Specification.m_MaxLevelOfDetail;
+			createInfo.minLod = m_Specification.m_MinLevelOfDetail;
+			createInfo.mipLodBias = m_Specification.m_MipLevelOfDetailBias;
+			createInfo.mipmapMode = GetMipMapMode(m_Specification.m_MipMapMode);
+			createInfo.unnormalizedCoordinates = GET_VK_BOOL(m_Specification.m_bEnableUnnormalizedCoordinates);
 
-			if (createInfo.maxAnisotropy == 0.0f && m_Specification.bEnableAnisotropy)
+			if (createInfo.maxAnisotropy == 0.0f && m_Specification.m_bEnableAnisotropy)
 			{
 				VkPhysicalDeviceProperties vProperties = {};
 				vkGetPhysicalDeviceProperties(pDevice->getPhysicalDevice(), &vProperties);

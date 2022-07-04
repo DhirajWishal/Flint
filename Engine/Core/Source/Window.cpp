@@ -17,6 +17,6 @@ namespace Flint
 	void Window::attach(const std::shared_ptr<RenderTarget>& pRenderTarget, uint32_t attachment /*= 0*/)
 	{
 		m_Dependency = std::make_pair(pRenderTarget, attachment);
-		notifyUpdated();
+		toggleNeedToUpdate();
 	}
 }

@@ -482,28 +482,28 @@ namespace Flint
 	struct TextureSamplerSpecification
 	{
 		// If set to 0.0f, the maximum supported will be set.
-		float mMaxAnisotrophy = 0.0f;
+		float m_MaxAnisotrophy = 0.0f;
 
-		float mMaxLevelOfDetail = 0.0f;
-		float mMinLevelOfDetail = 0.0f;
+		float m_MaxLevelOfDetail = 0.0f;
+		float m_MinLevelOfDetail = 0.0f;
 
-		float mMipLODBias = 0.0f;
+		float m_MipLevelOfDetailBias = 0.0f;
 
-		AddressMode mAddressModeU = AddressMode::Repeat;
-		AddressMode mAddressModeV = AddressMode::Repeat;
-		AddressMode mAddressModeW = AddressMode::Repeat;
+		AddressMode m_AddressModeU = AddressMode::Repeat;
+		AddressMode m_AddressModeV = AddressMode::Repeat;
+		AddressMode m_AddressModeW = AddressMode::Repeat;
 
-		BorderColor mBorderColor = BorderColor::OpaqueWhiteFLOAT;
+		BorderColor m_BorderColor = BorderColor::OpaqueWhiteFLOAT;
 
-		CompareOperator mCompareOperator = CompareOperator::Always;
+		CompareOperator m_CompareOperator = CompareOperator::Always;
 
-		ImageFilter mImageMagificationFilter = ImageFilter::Linear;
-		ImageFilter mImageMinificationFilter = ImageFilter::Linear;
+		ImageFilter m_ImageMagificationFilter = ImageFilter::Linear;
+		ImageFilter m_ImageMinificationFilter = ImageFilter::Linear;
 
-		ImageMipMapMode mMipMapMode = ImageMipMapMode::Linear;
+		ImageMipMapMode m_MipMapMode = ImageMipMapMode::Linear;
 
-		bool bEnableAnisotropy = true;
-		bool bEnableCompare = false;
-		bool bEnableUnnormalizedCoordinates = false;
+		bool m_bEnableAnisotropy = true;
+		bool m_bEnableCompare = false;
+		bool m_bEnableUnnormalizedCoordinates = false;
 	};
 }

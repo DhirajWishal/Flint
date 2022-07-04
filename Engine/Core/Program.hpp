@@ -21,6 +21,7 @@ namespace Flint
 		 */
 		struct Binding final
 		{
+			std::string m_Name;
 			uint32_t m_BindingIndex = 0;
 			ResourceType m_Type = ResourceType::Undefined;
 		};
@@ -34,10 +35,11 @@ namespace Flint
 		/**
 		 * Register a new binding.
 		 *
+		 * @param name The name of the binding.
 		 * @param index The binding index.
 		 * @param type The type of the binding.
 		 */
-		void registerBinding(uint32_t index, ResourceType type) { m_Bindings.emplace_back(index, type); }
+		void registerBinding(std::string&& name, uint32_t index, ResourceType type) { m_Bindings.emplace_back(std::move(name), index, type); }
 
 		/**
 		 * Get the bindings.

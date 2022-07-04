@@ -5,7 +5,7 @@
 #include "VulkanBackend/VulkanMacros.hpp"
 #include "VulkanBackend/VulkanBuffer.hpp"
 #include "VulkanBackend/VulkanTextureSampler.hpp"
-#include "VulkanBackend/VulkanTexture2DView.hpp"
+#include "VulkanBackend/VulkanTextureView.hpp"
 
 namespace Flint
 {
@@ -115,7 +115,7 @@ namespace Flint
 
 				auto pImageInfo = new VkDescriptorImageInfo;
 				pImageInfo->imageLayout = image.m_ImageUsage == ImageUsage::Graphics ? VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL : VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-				pImageInfo->imageView = image.m_pTextureView->as<VulkanTexture2DView>()->getViewHandle();
+				pImageInfo->imageView = image.m_pTextureView->as<VulkanTextureView>()->getViewHandle();
 				pImageInfo->sampler = image.m_pTextureSampler->as<VulkanTextureSampler>()->getSamplerHandle();
 				writeDescriptorSet.pImageInfo = pImageInfo;
 

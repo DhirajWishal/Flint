@@ -45,7 +45,7 @@ namespace Flint
 
 			// Get the best buffer count.
 			m_FrameCount = getBestBufferCount();
-			notifyUpdated();
+			toggleNeedToUpdate();
 
 			// Create the command buffer.
 			m_pCommandBuffers = std::make_unique<VulkanCommandBuffers>(pDevice, m_FrameCount);
@@ -499,55 +499,35 @@ namespace Flint
 					auto pAttachment = m_Dependency.first->getAttachment(m_Dependency.second).as<VulkanRenderTargetAttachment>();
 					const auto currentSwapchainImage = m_SwapchainImages[m_FrameIndex];
 
-					VkImageSubresourceLayers subresourceLayers = {};
-					subresourceLayers.baseArrayLayer = 0;
-					subresourceLayers.layerCount = 1;
-					subresourceLayers.mipLevel = 0;
-					subresourceLayers.aspectMask = pAttachment->getType() == AttachmentType::Color ? VK_IMAGE_ASPECT_COLOR_BIT : VK_IMAGE_ASPECT_DEPTH_BIT;
+					// Later we can use an upscaling technology like DLSS or FidelityFX.
+
+					VkImageBlit imageBlit = {};
+					imageBlit.srcOffsets[0].z = imageBlit.srcOffsets[0].y = imageBlit.srcOffsets[0].x = 0;
+					imageBlit.srcOffsets[1].x = static_cast<int32_t>(pAttachment->getWidth());
+					imageBlit.srcOffsets[1].y = static_cast<int32_t>(pAttachment->getHeight());
+					imageBlit.srcOffsets[1].z = 1;
+					imageBlit.srcSubresource.baseArrayLayer = 0;
+					imageBlit.srcSubresource.layerCount = 1;
+					imageBlit.srcSubresource.mipLevel = 0;
+					imageBlit.srcSubresource.aspectMask = pAttachment->getType() == AttachmentType::Color ? VK_IMAGE_ASPECT_COLOR_BIT : VK_IMAGE_ASPECT_DEPTH_BIT;
+					imageBlit.dstOffsets[0].z = imageBlit.dstOffsets[0].y = imageBlit.dstOffsets[0].x = 0;
+					imageBlit.dstOffsets[1].x = static_cast<int32_t>(getWidth());
+					imageBlit.dstOffsets[1].y = static_cast<int32_t>(getHeight());
+					imageBlit.dstOffsets[1].z = 1;
+					imageBlit.dstSubresource.baseArrayLayer = 0;
+					imageBlit.dstSubresource.layerCount = 1;
+					imageBlit.dstSubresource.mipLevel = 0;
+					imageBlit.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 
 					// Prepare to transfer.
-					m_pCommandBuffers->changeImageLayout(pAttachment->getImage(), pAttachment->getLayout(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, subresourceLayers.aspectMask);
+					m_pCommandBuffers->changeImageLayout(pAttachment->getImage(), pAttachment->getLayout(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, imageBlit.srcSubresource.aspectMask);
 					m_pCommandBuffers->changeImageLayout(currentSwapchainImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_ASPECT_COLOR_BIT);
 
-					// If the attachment's size is not equal to the size of the window, we need to either upscale or downscale the image.
-					if (pAttachment->getWidth() != getWidth() || pAttachment->getHeight() != getHeight())
-					{
-						// Later we can use an upscaling technology like DLSS or FidelityFX.
-
-						VkImageBlit imageBlit = {};
-						imageBlit.srcOffsets[0].z = imageBlit.srcOffsets[0].y = imageBlit.srcOffsets[0].x = 0;
-						imageBlit.srcOffsets[1].x = static_cast<int32_t>(pAttachment->getWidth());
-						imageBlit.srcOffsets[1].y = static_cast<int32_t>(pAttachment->getHeight());
-						imageBlit.srcOffsets[1].z = 1;
-						imageBlit.srcSubresource = subresourceLayers;
-						imageBlit.dstOffsets[0].z = imageBlit.dstOffsets[0].y = imageBlit.dstOffsets[0].x = 0;
-						imageBlit.dstOffsets[1].x = static_cast<int32_t>(getWidth());
-						imageBlit.dstOffsets[1].y = static_cast<int32_t>(getHeight());
-						imageBlit.dstOffsets[1].z = 1;
-						imageBlit.dstSubresource = subresourceLayers;
-
-						// Copy the image.
-						getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdBlitImage(m_pCommandBuffers->getCurrentBuffer(), pAttachment->getImage(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, currentSwapchainImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &imageBlit, VK_FILTER_LINEAR);
-					}
-
-					// Else we can just perform a copy.
-					else
-					{
-						VkImageCopy imageCopy = {};
-						imageCopy.srcOffset.z = imageCopy.srcOffset.y = imageCopy.srcOffset.x = 0;
-						imageCopy.srcSubresource = subresourceLayers;
-						imageCopy.dstOffset.z = imageCopy.dstOffset.y = imageCopy.dstOffset.x = 0;
-						imageCopy.dstSubresource = subresourceLayers;
-						imageCopy.extent.width = pAttachment->getWidth();
-						imageCopy.extent.height = pAttachment->getHeight();
-						imageCopy.extent.depth = 1;
-
-						// Copy the image.
-						getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdCopyImage(m_pCommandBuffers->getCurrentBuffer(), pAttachment->getImage(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, currentSwapchainImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &imageCopy);
-					}
+					// Copy the image.
+					getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdBlitImage(m_pCommandBuffers->getCurrentBuffer(), pAttachment->getImage(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, currentSwapchainImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &imageBlit, VK_FILTER_LINEAR);
 
 					// Change back to previous.
-					m_pCommandBuffers->changeImageLayout(pAttachment->getImage(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, pAttachment->getLayout(), subresourceLayers.aspectMask);
+					m_pCommandBuffers->changeImageLayout(pAttachment->getImage(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, pAttachment->getLayout(), imageBlit.srcSubresource.aspectMask);
 					m_pCommandBuffers->changeImageLayout(currentSwapchainImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_ASPECT_COLOR_BIT);
 				}
 

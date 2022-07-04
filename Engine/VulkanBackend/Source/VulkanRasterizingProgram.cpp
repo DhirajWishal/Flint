@@ -220,7 +220,7 @@ namespace Flint
 					poolSize.descriptorCount = pResource->count;
 					poolSize.type = binding.descriptorType;
 
-					m_BindingMap.registerBinding(pResource->binding, GetResourceType(pResource->descriptor_type));
+					m_BindingMap.registerBinding(pResource->name, pResource->binding, GetResourceType(pResource->descriptor_type));
 				}
 			}
 

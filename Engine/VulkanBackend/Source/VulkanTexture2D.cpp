@@ -5,7 +5,7 @@
 #include "VulkanBackend/VulkanMacros.hpp"
 #include "VulkanBackend/VulkanCommandBuffers.hpp"
 #include "VulkanBackend/VulkanBuffer.hpp"
-#include "VulkanBackend/VulkanTexture2DView.hpp"
+#include "VulkanBackend/VulkanTextureView.hpp"
 
 namespace Flint
 {
@@ -67,7 +67,7 @@ namespace Flint
 
 		std::shared_ptr<Flint::TextureView> VulkanTexture2D::createView()
 		{
-			return std::make_shared<VulkanTexture2DView>(getDevicePointerAs<VulkanDevice>(), shared_from_this());
+			return std::make_shared<VulkanTextureView>(getDevicePointerAs<VulkanDevice>(), shared_from_this());
 		}
 
 		std::shared_ptr<Flint::Buffer> VulkanTexture2D::toBuffer() const
