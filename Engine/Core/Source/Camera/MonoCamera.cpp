@@ -4,6 +4,7 @@
 #include "Core/Camera/MonoCamera.hpp"
 #include "Core/Buffer.hpp"
 
+#include <Optick.h>
 #include <glm/gtc/matrix_transform.hpp>
 
 namespace Flint
@@ -17,6 +18,8 @@ namespace Flint
 
 	void MonoCamera::update()
 	{
+		OPTICK_EVENT();
+
 		// Recalculate the vectors.
 		glm::vec3 front;
 		front.x = cos(glm::radians(m_Yaw)) * cos(glm::radians(m_Pitch));
@@ -39,6 +42,8 @@ namespace Flint
 
 	void MonoCamera::copyToBuffer(const std::shared_ptr<Buffer>& pBuffer) const
 	{
+		OPTICK_EVENT();
+
 		auto pMemory = pBuffer->mapMemory();
 
 		std::copy_n(reinterpret_cast<const std::byte*>(&m_Matrix), sizeof(Matrix), pMemory);

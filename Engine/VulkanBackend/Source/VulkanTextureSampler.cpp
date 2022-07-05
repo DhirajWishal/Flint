@@ -4,6 +4,8 @@
 #include "VulkanBackend/VulkanTextureSampler.hpp"
 #include "VulkanBackend/VulkanMacros.hpp"
 
+#include <Optick.h>
+
 namespace /* anonymous */
 {
 	/**
@@ -108,6 +110,8 @@ namespace Flint
 		VulkanTextureSampler::VulkanTextureSampler(const std::shared_ptr<VulkanDevice>& pDevice, TextureSamplerSpecification&& specification)
 			: TextureSampler(pDevice, std::move(specification))
 		{
+			OPTICK_EVENT();
+
 			VkSamplerCreateInfo createInfo = {};
 			createInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
 			createInfo.flags = 0;
@@ -147,6 +151,8 @@ namespace Flint
 
 		void VulkanTextureSampler::terminate()
 		{
+			OPTICK_EVENT();
+
 			getDevice().as<VulkanDevice>()->getDeviceTable().vkDestroySampler(getDevice().as<VulkanDevice>()->getLogicalDevice(), m_Sampler, nullptr);
 			invalidate();
 		}

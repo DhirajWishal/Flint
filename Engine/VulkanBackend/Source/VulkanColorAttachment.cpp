@@ -4,6 +4,8 @@
 #include "VulkanBackend/VulkanColorAttachment.hpp"
 #include "VulkanBackend/VulkanMacros.hpp"
 
+#include <Optick.h>
+
 namespace Flint
 {
 	namespace VulkanBackend
@@ -11,6 +13,8 @@ namespace Flint
 		VulkanColorAttachment::VulkanColorAttachment(const std::shared_ptr<VulkanDevice>& pDevice, uint32_t width, uint32_t height, PixelFormat format, Multisample multisample)
 			: VulkanRenderTargetAttachment(pDevice, width, height, AttachmentType::Color, format, multisample)
 		{
+			OPTICK_EVENT();
+
 			// Create the image.
 			createImage(VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_IMAGE_TILING_OPTIMAL);
 
@@ -28,6 +32,8 @@ namespace Flint
 
 		void VulkanColorAttachment::terminate()
 		{
+			OPTICK_EVENT();
+
 			clear();
 			invalidate();
 		}

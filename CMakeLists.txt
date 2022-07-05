@@ -123,7 +123,7 @@ endif ()
 # Add the Vulkan headers as a target include directory.
 target_include_directories(volk PUBLIC ${VULKAN_HEADERS_INCLUDE_DIR})
 
-# Add spdlog as a third partry library.
+# Add spdlog as a third party library.
 set(SPDLOG_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/spdlog/include)
 
 # Set global compile definitions.

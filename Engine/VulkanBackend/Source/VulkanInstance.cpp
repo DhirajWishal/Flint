@@ -5,14 +5,15 @@
 #include "VulkanBackend/VulkanMacros.hpp"
 #include "VulkanBackend/VulkanDevice.hpp"
 
-#include <sstream>
-
+#include <Optick.h>
 #include <spdlog/spdlog.h>
 
 #if defined(FLINT_PLATFORM_WINDOWS)
 #include <vulkan/vulkan_win32.h>
 
 #endif
+
+#include <sstream>
 
 namespace /* anonymous */
 {
@@ -24,6 +25,8 @@ namespace /* anonymous */
 	 */
 	bool CheckValidationLayerSupport(const std::vector<const char*>& layers)
 	{
+		OPTICK_EVENT();
+
 		uint32_t layerCount = 0;
 		vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
 
@@ -59,6 +62,8 @@ namespace /* anonymous */
 	 */
 	std::vector<const char*> GetRequiredInstanceExtensions(bool enableValidation)
 	{
+		OPTICK_EVENT();
+
 		std::vector<const char*> extensions = { VK_KHR_SURFACE_EXTENSION_NAME , VK_KHR_DISPLAY_EXTENSION_NAME };
 
 #if defined(VK_KHR_ANDROID_SURFACE_EXTENSION_NAME)
@@ -206,6 +211,8 @@ namespace Flint
 		VulkanInstance::VulkanInstance(std::string&& applicationName, uint32_t applicationVersion, bool enableValidation)
 			: Instance(std::move(applicationName), applicationVersion, BackendAPI::Vulkan, enableValidation)
 		{
+			OPTICK_EVENT();
+
 			// Construct the static initializer.
 			static StaticInitializer initializer;
 
@@ -227,11 +234,15 @@ namespace Flint
 
 		std::shared_ptr<Flint::Device> VulkanInstance::createDevice()
 		{
+			OPTICK_EVENT();
+
 			return std::make_shared<VulkanDevice>(shared_from_this());
 		}
 
 		void VulkanInstance::terminate()
 		{
+			OPTICK_EVENT();
+
 			// Destroy the debugger if necessary.
 			if (isValidationEnabled())
 				destroyDebugger();
@@ -244,6 +255,8 @@ namespace Flint
 
 		void VulkanInstance::createInstance()
 		{
+			OPTICK_EVENT();
+
 			// Setup the application information.
 			VkApplicationInfo applicationInfo = {};
 			applicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -292,11 +305,15 @@ namespace Flint
 
 		void VulkanInstance::destroyInstance()
 		{
+			OPTICK_EVENT();
+
 			vkDestroyInstance(m_Instance, nullptr);
 		}
 
 		void VulkanInstance::createDebugger()
 		{
+			OPTICK_EVENT();
+
 			const auto debugMessengerCreateInfo = CreateDebugMessengerCreateInfo();
 			const auto vkCreateDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(m_Instance, "vkCreateDebugUtilsMessengerEXT"));
 			FLINT_VK_ASSERT(vkCreateDebugUtilsMessengerEXT(m_Instance, &debugMessengerCreateInfo, nullptr, &m_DebugMessenger), "Failed to create the debug messenger.");
@@ -304,6 +321,8 @@ namespace Flint
 
 		void VulkanInstance::destroyDebugger()
 		{
+			OPTICK_EVENT();
+
 			const auto vkDestroyDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(m_Instance, "vkDestroyDebugUtilsMessengerEXT"));
 			vkDestroyDebugUtilsMessengerEXT(m_Instance, m_DebugMessenger, nullptr);
 		}

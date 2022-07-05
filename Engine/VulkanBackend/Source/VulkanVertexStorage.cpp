@@ -4,6 +4,8 @@
 #include "VulkanBackend/VulkanVertexStorage.hpp"
 #include "VulkanBackend/VulkanCommandBuffers.hpp"
 
+#include <Optick.h>
+
 namespace Flint
 {
 	namespace VulkanBackend
@@ -21,6 +23,8 @@ namespace Flint
 
 		void VulkanVertexStorage::terminate()
 		{
+			OPTICK_EVENT();
+
 			// Terminate all the buffers.
 			for (const auto& pBuffer : m_pBuffers)
 			{
@@ -33,6 +37,8 @@ namespace Flint
 
 		uint64_t VulkanVertexStorage::insert(VertexAttribute attribute, const Buffer* pStaggingBuffer)
 		{
+			OPTICK_EVENT();
+
 			uint64_t offset = 0;
 
 			// If a buffer already exists, we can move the content from the old buffer to a new one. If not let's create a new one.

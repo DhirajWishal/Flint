@@ -4,6 +4,8 @@
 #include "Core/MeshBindingTable.hpp"
 #include "Core/Errors/InvalidArgumentError.hpp"
 
+#include <Optick.h>
+
 #define XXH_INLINE_ALL
 #include <xxhash.h>
 
@@ -26,6 +28,8 @@ namespace Flint
 
 	uint64_t MeshBindingTable::generateHash() const
 	{
+		OPTICK_EVENT();
+
 		std::vector<uint64_t> hashes;
 		hashes.reserve((m_pBuffers.size() * 2) + (m_Images.size() * 4));
 

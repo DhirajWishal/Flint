@@ -4,6 +4,8 @@
 #include "VulkanBackend/VulkanTextureView.hpp"
 #include "VulkanBackend/VulkanMacros.hpp"
 
+#include <Optick.h>
+
 namespace Flint
 {
 	namespace VulkanBackend
@@ -11,6 +13,8 @@ namespace Flint
 		VulkanTextureView::VulkanTextureView(const std::shared_ptr<VulkanDevice>& pDevice, const std::shared_ptr<VulkanTexture2D>& pTexture)
 			: TextureView(pDevice, pTexture)
 		{
+			OPTICK_EVENT();
+
 			VkImageViewCreateInfo createInfo = {};
 			createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 			createInfo.flags = 0;
@@ -40,6 +44,8 @@ namespace Flint
 
 		void VulkanTextureView::terminate()
 		{
+			OPTICK_EVENT();
+
 			getDevice().as<VulkanDevice>()->getDeviceTable().vkDestroyImageView(getDevice().as<VulkanDevice>()->getLogicalDevice(), m_ImageView, nullptr);
 			invalidate();
 		}

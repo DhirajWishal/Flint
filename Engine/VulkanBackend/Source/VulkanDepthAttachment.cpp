@@ -4,6 +4,8 @@
 #include "VulkanBackend/VulkanDepthAttachment.hpp"
 #include "VulkanBackend/VulkanMacros.hpp"
 
+#include <Optick.h>
+
 namespace Flint
 {
 	namespace VulkanBackend
@@ -11,6 +13,8 @@ namespace Flint
 		VulkanDepthAttachment::VulkanDepthAttachment(const std::shared_ptr<VulkanDevice>& pDevice, uint32_t width, uint32_t height, PixelFormat format, Multisample multisample)
 			: VulkanRenderTargetAttachment(pDevice, width, height, AttachmentType::Depth, format, multisample)
 		{
+			OPTICK_EVENT();
+
 			// Create the image.
 			createImage(VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_IMAGE_TILING_OPTIMAL);
 
@@ -28,6 +32,8 @@ namespace Flint
 
 		void VulkanDepthAttachment::terminate()
 		{
+			OPTICK_EVENT();
+
 			clear();
 			invalidate();
 		}

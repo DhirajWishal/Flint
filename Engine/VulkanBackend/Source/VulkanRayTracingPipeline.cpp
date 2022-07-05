@@ -4,6 +4,8 @@
 #include "VulkanBackend/VulkanRayTracingPipeline.hpp"
 #include "VulkanBackend/VulkanMacros.hpp"
 
+#include <Optick.h>
+
 namespace Flint
 {
 	namespace VulkanBackend
@@ -27,6 +29,8 @@ namespace Flint
 
 		VkPipelineCache VulkanRayTracingPipeline::loadCache(uint64_t identifier) const
 		{
+			OPTICK_EVENT();
+
 			std::vector<std::byte> buffer;
 
 			// Load the cache if possible.
@@ -49,6 +53,8 @@ namespace Flint
 
 		void VulkanRayTracingPipeline::saveCache(uint64_t identifier, VkPipelineCache cache) const
 		{
+			OPTICK_EVENT();
+
 			// Return if we don't have anything to save.
 			if (cache == VK_NULL_HANDLE)
 				return;

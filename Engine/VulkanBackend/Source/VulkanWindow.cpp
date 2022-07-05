@@ -5,9 +5,10 @@
 #include "VulkanBackend/VulkanMacros.hpp"
 #include "VulkanBackend/VulkanRenderTargetAttachment.hpp"
 
-#include <array>
-
+#include <Optick.h>
 #include <SDL_vulkan.h>
+
+#include <array>
 
 namespace Flint
 {
@@ -16,6 +17,8 @@ namespace Flint
 		VulkanWindow::VulkanWindow(const std::shared_ptr<VulkanDevice>& pDevice, std::string&& title, uint32_t width /*= -1*/, uint32_t height /*= -1*/)
 			: Window(pDevice, std::move(title), width, height)
 		{
+			OPTICK_EVENT();
+
 			// Resolve the flags.
 			uint32_t windowFlags = SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE;
 
@@ -73,6 +76,8 @@ namespace Flint
 
 		void VulkanWindow::terminate()
 		{
+			OPTICK_EVENT();
+
 			// Wait till we finish whatever we are running.
 			getDevice().as<VulkanDevice>()->waitIdle();
 
@@ -102,6 +107,8 @@ namespace Flint
 
 		void VulkanWindow::update()
 		{
+			OPTICK_EVENT();
+
 			// If we're minimized, skip.
 			if (SDL_GetWindowFlags(m_pWindow) & SDL_WINDOW_MINIMIZED)
 				return;
@@ -132,6 +139,8 @@ namespace Flint
 
 		uint32_t VulkanWindow::getBestBufferCount() const
 		{
+			OPTICK_EVENT();
+
 			// Get the surface capabilities.
 			VkSurfaceCapabilitiesKHR surfaceCapabilities = {};
 			FLINT_VK_ASSERT(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(getDevice().as<VulkanDevice>()->getPhysicalDevice(), m_Surface, &surfaceCapabilities), "Failed to get the surface capabilities!");
@@ -146,6 +155,8 @@ namespace Flint
 
 		void VulkanWindow::refreshExtent()
 		{
+			OPTICK_EVENT();
+
 			int32_t width = 0, height = 0;
 			SDL_Vulkan_GetDrawableSize(m_pWindow, &width, &height);
 
@@ -155,17 +166,23 @@ namespace Flint
 
 		void VulkanWindow::createSurface()
 		{
+			OPTICK_EVENT();
+
 			if (SDL_Vulkan_CreateSurface(m_pWindow, getDevice().as<VulkanDevice>()->getInstance().as<VulkanInstance>()->getInstance(), &m_Surface) == SDL_FALSE)
 				throw BackendError("Failed to create the window surface!");
 		}
 
 		void VulkanWindow::destroySurface()
 		{
+			OPTICK_EVENT();
+
 			vkDestroySurfaceKHR(getDevice().as<VulkanDevice>()->getInstance().as<VulkanInstance>()->getInstance(), m_Surface, nullptr);
 		}
 
 		void VulkanWindow::clearSwapchain()
 		{
+			OPTICK_EVENT();
+
 			// Terminate the image views.
 			for (auto view : m_SwapchainImageViews)
 				getDevice().as<VulkanDevice>()->getDeviceTable().vkDestroyImageView(getDevice().as<VulkanDevice>()->getLogicalDevice(), view, nullptr);
@@ -181,6 +198,8 @@ namespace Flint
 
 		void VulkanWindow::resolveImageViews()
 		{
+			OPTICK_EVENT();
+
 			VkImageViewCreateInfo viewCreateInfo = {};
 			viewCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 			viewCreateInfo.pNext = VK_NULL_HANDLE;
@@ -207,6 +226,8 @@ namespace Flint
 
 		void VulkanWindow::createSwapchain()
 		{
+			OPTICK_EVENT();
+
 			// Get the surface capabilities.
 			VkSurfaceCapabilitiesKHR surfaceCapabilities = {};
 			FLINT_VK_ASSERT(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(getDevice().as<VulkanDevice>()->getPhysicalDevice(), m_Surface, &surfaceCapabilities), "Failed to get the surface capabilities!");
@@ -314,6 +335,8 @@ namespace Flint
 
 		void VulkanWindow::createSyncObjects()
 		{
+			OPTICK_EVENT();
+
 			VkSemaphoreCreateInfo createInfo = {};
 			createInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 			createInfo.pNext = nullptr;
@@ -333,6 +356,8 @@ namespace Flint
 
 		void VulkanWindow::destroySyncObjects()
 		{
+			OPTICK_EVENT();
+
 			for (uint32_t i = 0; i < m_FrameCount; i++)
 			{
 				getDevice().as<VulkanDevice>()->getDeviceTable().vkDestroySemaphore(getDevice().as<VulkanDevice>()->getLogicalDevice(), m_RenderFinishedSemaphores[i], nullptr);
@@ -342,6 +367,8 @@ namespace Flint
 
 		void VulkanWindow::createRenderPass()
 		{
+			OPTICK_EVENT();
+
 			// Crate attachment descriptions.
 			VkAttachmentDescription attachmentDescription = {};
 			attachmentDescription.flags = 0;
@@ -406,11 +433,15 @@ namespace Flint
 
 		void VulkanWindow::destroyRenderPass()
 		{
+			OPTICK_EVENT();
+
 			getDevice().as<VulkanDevice>()->getDeviceTable().vkDestroyRenderPass(getDevice().as<VulkanDevice>()->getLogicalDevice(), m_RenderPass, nullptr);
 		}
 
 		void VulkanWindow::createFramebuffers()
 		{
+			OPTICK_EVENT();
+
 			VkFramebufferCreateInfo frameBufferCreateInfo = {};
 			frameBufferCreateInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 			frameBufferCreateInfo.pNext = VK_NULL_HANDLE;
@@ -432,12 +463,16 @@ namespace Flint
 
 		void VulkanWindow::destroyFramebuffers()
 		{
+			OPTICK_EVENT();
+
 			for (const auto framebuffer : m_Framebuffers)
 				getDevice().as<VulkanDevice>()->getDeviceTable().vkDestroyFramebuffer(getDevice().as<VulkanDevice>()->getLogicalDevice(), framebuffer, nullptr);
 		}
 
 		void VulkanWindow::recreate()
 		{
+			OPTICK_EVENT();
+
 			// Before we do anything, check if we're minimized.
 			if (SDL_GetWindowFlags(m_pWindow) & SDL_WINDOW_MINIMIZED)
 			{
@@ -481,10 +516,15 @@ namespace Flint
 			m_FirstTime = true;
 			m_pCommandBuffers->resetIndex();
 			toggleNeedToUpdate();
+
+			// Call the resize callback.
+			if (m_ResizeCallback) m_ResizeCallback(m_Width, m_Height);
 		}
 
 		void VulkanWindow::copyAndSubmitFrame()
 		{
+			OPTICK_EVENT();
+
 			// Begin the command buffer recording.
 			m_pCommandBuffers->finishExecution();
 
@@ -562,6 +602,8 @@ namespace Flint
 
 		void VulkanWindow::present()
 		{
+			OPTICK_EVENT();
+
 			VkPresentInfoKHR presentInfo = {};
 			presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 			presentInfo.pNext = nullptr;

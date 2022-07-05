@@ -4,6 +4,8 @@
 #include "Core/PipelineCacheHandler.hpp"
 #include "Core/Errors/AssetError.hpp"
 
+#include <Optick.h>
+
 #include <fstream>
 
 namespace Flint
@@ -25,6 +27,8 @@ namespace Flint
 
 		void FilePipelineCacheHandler::store(uint64_t identifier, const std::vector<std::byte>& bytes)
 		{
+			OPTICK_EVENT();
+
 			// Return if we don't have anything to save.
 			if (bytes.empty())
 				return;
@@ -43,6 +47,8 @@ namespace Flint
 
 		std::vector<std::byte> FilePipelineCacheHandler::load(uint64_t identifier)
 		{
+			OPTICK_EVENT();
+
 			// Load data from file.
 			const auto filename = std::to_string(identifier) + ".fpc";
 			std::fstream cacheFile(m_CacheFilePath / filename, std::ios::in | std::ios::ate | std::ios::binary);

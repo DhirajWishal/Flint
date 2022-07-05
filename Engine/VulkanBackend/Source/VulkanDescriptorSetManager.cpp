@@ -7,6 +7,8 @@
 #include "VulkanBackend/VulkanTextureSampler.hpp"
 #include "VulkanBackend/VulkanTextureView.hpp"
 
+#include <Optick.h>
+
 namespace Flint
 {
 	namespace VulkanBackend
@@ -24,6 +26,8 @@ namespace Flint
 
 		void VulkanDescriptorSetManager::setup(const std::vector<VkDescriptorSetLayoutBinding>& layoutBindings, const std::vector<VkDescriptorPoolSize>& poolSizes, VkDescriptorSetLayout layout)
 		{
+			OPTICK_EVENT();
+
 			// Create the descriptor type map.
 			for (const auto& binding : layoutBindings)
 				m_DescriptorTypeMap[binding.binding] = binding.descriptorType;
@@ -34,6 +38,8 @@ namespace Flint
 
 		void VulkanDescriptorSetManager::registerTable(const MeshBindingTable& table)
 		{
+			OPTICK_EVENT();
+
 			const auto tableHash = table.generateHash();
 
 			// Return if the table is registered.
@@ -186,6 +192,8 @@ namespace Flint
 
 		VkDescriptorSet VulkanDescriptorSetManager::getDescriptorSet(uint64_t hash, uint32_t frameIndex) const
 		{
+			OPTICK_EVENT();
+
 			return m_DescriptorSets.at(hash).m_DescriptorSets[frameIndex];
 		}
 	}

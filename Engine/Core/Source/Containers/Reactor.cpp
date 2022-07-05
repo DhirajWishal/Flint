@@ -3,6 +3,8 @@
 
 #include "Core/Containers/Reactor.hpp"
 
+#include <Optick.h>
+
 namespace Flint
 {
 	Reactor::Reactor()
@@ -38,10 +40,13 @@ namespace Flint
 
 	void Reactor::worker()
 	{
+		OPTICK_THREAD("Reactor Worker Thread");
 		auto lock = std::unique_lock(m_Mutex);
 
 		do
 		{
+			OPTICK_EVENT();
+
 			// Wait until we have something to execute, or if we need to stop execution.
 			m_Conditional.wait(lock, [this]
 				{

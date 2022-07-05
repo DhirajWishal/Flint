@@ -5,6 +5,8 @@
 #include "VulkanBackend/VulkanMacros.hpp"
 #include "VulkanBackend/VulkanCommandBuffers.hpp"
 
+#include <Optick.h>
+
 #ifdef FLINT_PLATFORM_WINDOWS
 #	include <execution>
 
@@ -17,6 +19,8 @@ namespace Flint
 		VulkanBuffer::VulkanBuffer(const std::shared_ptr<VulkanDevice>& pDevice, uint64_t size, BufferUsage usage, const std::byte* pDataStore /*= nullptr*/)
 			: Buffer(pDevice, size, usage)
 		{
+			OPTICK_EVENT();
+
 			// Create the buffer.
 			createBufferAndValidate();
 
@@ -41,12 +45,16 @@ namespace Flint
 
 		void VulkanBuffer::terminate()
 		{
+			OPTICK_EVENT();
+
 			vmaDestroyBuffer(getDevice().as<VulkanDevice>()->getAllocator(), m_Buffer, m_Allocation);
 			invalidate();
 		}
 
 		std::byte* VulkanBuffer::mapMemory()
 		{
+			OPTICK_EVENT();
+
 			std::byte* pDataPointer = nullptr;
 			FLINT_VK_ASSERT(vmaMapMemory(getDevice().as<VulkanDevice>()->getAllocator(), m_Allocation, reinterpret_cast<void**>(&pDataPointer)), "Failed to map the buffer memory!");
 
@@ -56,6 +64,8 @@ namespace Flint
 
 		void VulkanBuffer::unmapMemory()
 		{
+			OPTICK_EVENT();
+
 			// We only need to unmap if we have mapped the memory.
 			if (m_IsMapped)
 			{
@@ -66,6 +76,8 @@ namespace Flint
 
 		void VulkanBuffer::copyFrom(const std::byte* pData, uint64_t size, uint64_t srcOffset /*= 0*/, uint64_t dstOffset /*= 0*/)
 		{
+			OPTICK_EVENT();
+
 			const auto copySize = size - srcOffset;
 			const auto destinationSize = getSize() - dstOffset;
 
@@ -93,6 +105,8 @@ namespace Flint
 
 		void VulkanBuffer::copyFrom(const Buffer* pBuffer, uint64_t srcOffset /*= 0*/, uint64_t dstOffset /*= 0*/)
 		{
+			OPTICK_EVENT();
+
 			// Setup the command buffer and copy.
 			auto vCommandBuffer = VulkanCommandBuffers(getDevicePointerAs<VulkanDevice>());
 			vCommandBuffer.begin();
@@ -106,6 +120,8 @@ namespace Flint
 
 		void VulkanBuffer::copyFromBatched(VulkanCommandBuffers* pCommandBuffer, const Buffer* pBuffer, uint64_t srcOffset /*= 0*/, uint64_t dstOffset /*= 0*/)
 		{
+			OPTICK_EVENT();
+
 			const auto copySize = pBuffer->getSize() - srcOffset;
 			const auto destinationSize = getSize() - dstOffset;
 
@@ -124,6 +140,8 @@ namespace Flint
 
 		void VulkanBuffer::createBufferAndValidate()
 		{
+			OPTICK_EVENT();
+
 			VkBufferUsageFlags bufferUsage = 0;
 			VmaAllocationCreateFlags vmaFlags = 0;
 			VmaMemoryUsage memoryUsage = VMA_MEMORY_USAGE_UNKNOWN;

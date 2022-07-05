@@ -47,15 +47,25 @@ int main()
 	auto instance = Flint::CreateInstance("Sandbox", 1, Validation);
 	auto device = instance->createDevice();
 
-	auto camera = Flint::MonoCamera(glm::vec3(0.0f), 1280, 720);
+	auto window = device->createWindow("Sandbox", 1280, 720);
+	auto camera = Flint::MonoCamera(glm::vec3(0.0f), window->getWidth(), window->getHeight());
 	camera.m_MovementBias = 10;
 	//camera.m_RotationBias = 50;
 
-	auto program = device->createRasterizingProgram(Flint::ShaderCode("Shaders/Debugging/Shader.vert.spv"), Flint::ShaderCode("Shaders/Debugging/Shader.frag.spv"));
-	auto window = device->createWindow("Sandbox", 1280, 720);
 	auto rasterizer = device->createRasterizer(camera, window->getFrameCount(), { Flint::Defaults::ColorAttachmentDescription, Flint::Defaults::DepthAttachmentDescription });
 	auto rayTracer = device->createRayTracer(camera, window->getFrameCount());
 	auto model = device->createStaticModel(std::filesystem::path(FLINT_GLTF_ASSET_PATH) / "Sponza" / "glTF" / "Sponza.gltf");
+
+	// Set the resize callback.
+	window->setResizeCallback([&camera, rasterizer, rayTracer](uint32_t width, uint32_t height)
+		{
+			camera.m_FrameWidth = width;
+			camera.m_FrameHeight = height;
+
+			rasterizer->updateExtent();
+			rayTracer->updateExtent();
+		}
+	);
 
 	// The default texture to make sure that we have a default one to fall back to.
 	struct { uint8_t r = 255, g = 255, b = 255, a = 255; } defaultImage;
@@ -64,6 +74,7 @@ int main()
 	Flint::StaticStorage<std::shared_ptr<Flint::TextureView>>::Set("Default", defaultTexture->createView());
 
 	auto cameraBuffer = camera.createBuffer(device);
+	auto program = device->createRasterizingProgram(Flint::ShaderCode("Shaders/Debugging/Shader.vert.spv"), Flint::ShaderCode("Shaders/Debugging/Shader.frag.spv"));
 	auto defaultPipeline = rasterizer->createPipeline(program, GetDefaultSpecification(), std::make_unique<Flint::Defaults::FilePipelineCacheHandler>("PipelineCache/"));
 	auto drawEntry = defaultPipeline->attach(model, [cameraBuffer, device](auto& model, const Flint::StaticMesh& mesh, const Flint::BindingMap& binder)
 		{
@@ -126,8 +137,8 @@ int main()
 	Flint::FrameTimer timer;
 	while (!g_EventSystem.shouldClose())
 	{
-		const auto duration = timer.tick();
 		const auto events = g_EventSystem.poll();
+		const auto duration = timer.tick();
 
 		if (events == Flint::EventType::Keyboard)
 		{

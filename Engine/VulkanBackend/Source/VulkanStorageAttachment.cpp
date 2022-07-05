@@ -4,6 +4,8 @@
 #include "VulkanBackend/VulkanStorageAttachment.hpp"
 #include "VulkanBackend/VulkanMacros.hpp"
 
+#include <Optick.h>
+
 namespace Flint
 {
 	namespace VulkanBackend
@@ -11,6 +13,8 @@ namespace Flint
 		VulkanStorageAttachment::VulkanStorageAttachment(const std::shared_ptr<VulkanDevice>& pDevice, uint32_t width, uint32_t height, PixelFormat format)
 			: VulkanRenderTargetAttachment(pDevice, width, height, AttachmentType::Color, format, Multisample::One)
 		{
+			OPTICK_EVENT();
+
 			// Create the image.
 			createImage(VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_TILING_OPTIMAL);
 
@@ -28,6 +32,8 @@ namespace Flint
 
 		void VulkanStorageAttachment::terminate()
 		{
+			OPTICK_EVENT();
+
 			clear();
 			invalidate();
 		}

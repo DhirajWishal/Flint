@@ -6,8 +6,18 @@
 #include "Graphical.hpp"
 #include "RenderTarget.hpp"
 
+#include <functional>
+
 namespace Flint
 {
+	/**
+	 * Window resize callback function.
+	 *
+	 * @param The new width of the window.
+	 * @param The new height of the window.
+	 */
+	using WindowResizeCallbackFunction = std::function<void(uint32_t, uint32_t)>;
+
 	/**
 	 * Window class.
 	 * This is a special class, as it contains all the processing stages and finally renders the image to the user using the window created as specified.
@@ -42,6 +52,14 @@ namespace Flint
 		void attach(const std::shared_ptr<RenderTarget>& pRenderTarget, uint32_t attachment = 0);
 
 		/**
+		 * Set the resize callback function.
+		 * This function is called when a resizing of the window occurs.
+		 *
+		 * @param function The callback function.
+		 */
+		void setResizeCallback(WindowResizeCallbackFunction&& function);
+
+		/**
 		 * Get the title of the window.
 		 *
 		 * @return The window title.
@@ -65,6 +83,8 @@ namespace Flint
 	protected:
 		std::string m_Title;
 		std::pair<std::shared_ptr<RenderTarget>, uint32_t> m_Dependency;
+
+		WindowResizeCallbackFunction m_ResizeCallback;
 
 		uint32_t m_Width = 0;
 		uint32_t m_Height = 0;

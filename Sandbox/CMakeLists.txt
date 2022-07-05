@@ -34,7 +34,7 @@ file(GLOB ASSIMP_BUILDS_TO_COPY "${CMAKE_BINARY_DIR}/ThirdParty/assimp/bin/*")
 file(COPY ${ASSIMP_BUILDS_TO_COPY} DESTINATION ${CMAKE_BINARY_DIR}/Sandbox)
 
 # Include the shader compiler.
-include(${CMAKE_CURRENT_SOURCE_DIR}/../Tools/CMake/ShaderCompiler/CMakeLists.txt)
+include(${CMAKE_CURRENT_SOURCE_DIR}/../Tools/CMake/ShaderCompiler.CMake)
 
 # Setup shader compiler
 set(SHADER_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Shaders)

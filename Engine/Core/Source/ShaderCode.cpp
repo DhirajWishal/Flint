@@ -4,6 +4,8 @@
 #include "Core/ShaderCode.hpp"
 #include "Core/Errors/AssetError.hpp"
 
+#include <Optick.h>
+
 #include <fstream>
 
 namespace Flint
@@ -17,6 +19,8 @@ namespace Flint
 
 	ShaderCode::ShaderCode(std::filesystem::path&& file)
 	{
+		OPTICK_EVENT();
+
 		// Load the shader code and perform reflection over it.
 		auto shaderSource = std::fstream(file, std::ios::binary | std::ios::in | std::ios::ate);
 

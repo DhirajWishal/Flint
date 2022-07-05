@@ -4,6 +4,8 @@
 #include "VulkanBackend/VulkanRenderTargetAttachment.hpp"
 #include "VulkanBackend/VulkanMacros.hpp"
 
+#include <Optick.h>
+
 namespace Flint
 {
 	namespace VulkanBackend
@@ -17,6 +19,8 @@ namespace Flint
 
 		void VulkanRenderTargetAttachment::createImage(VkImageUsageFlags usageFlags, VkImageTiling tiling)
 		{
+			OPTICK_EVENT();
+
 			// Setup image create info structure.
 			VkImageCreateInfo imageCreateInfo = {};
 			imageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -50,6 +54,8 @@ namespace Flint
 
 		void VulkanRenderTargetAttachment::createImageView(VkImageAspectFlags aspectFlags)
 		{
+			OPTICK_EVENT();
+
 			VkImageViewCreateInfo imageViewCreateInfo = {};
 			imageViewCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 			imageViewCreateInfo.pNext = nullptr;
@@ -72,6 +78,8 @@ namespace Flint
 
 		void VulkanRenderTargetAttachment::clear()
 		{
+			OPTICK_EVENT();
+
 			// Destroy the image view.
 			destroyImageView();
 
@@ -81,11 +89,15 @@ namespace Flint
 
 		void VulkanRenderTargetAttachment::destroyImage()
 		{
+			OPTICK_EVENT();
+
 			vmaDestroyImage(getDevice().as<VulkanDevice>()->getAllocator(), m_Image, m_Allocation);
 		}
 
 		void VulkanRenderTargetAttachment::destroyImageView()
 		{
+			OPTICK_EVENT();
+
 			getDevice().as<VulkanDevice>()->getDeviceTable().vkDestroyImageView(getDevice().as<VulkanDevice>()->getLogicalDevice(), m_ImageView, nullptr);
 		}
 	}

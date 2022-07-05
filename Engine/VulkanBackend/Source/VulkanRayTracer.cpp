@@ -4,6 +4,8 @@
 #include "VulkanBackend/VulkanRayTracer.hpp"
 #include "VulkanBackend/VulkanMacros.hpp"
 
+#include <Optick.h>
+
 namespace Flint
 {
 	namespace VulkanBackend
@@ -11,6 +13,8 @@ namespace Flint
 		VulkanRayTracer::VulkanRayTracer(const std::shared_ptr<VulkanDevice>& pDevice, Camera& camera, uint32_t frameCount)
 			: RayTracer(pDevice, camera, frameCount)
 		{
+			OPTICK_EVENT();
+
 			// Setup the attachments.
 			createAttachments();
 
@@ -25,6 +29,8 @@ namespace Flint
 
 		void VulkanRayTracer::terminate()
 		{
+			OPTICK_EVENT();
+
 			// Wait idle to finish everything we have prior to this.
 			getDevice().as<VulkanDevice>()->waitIdle();
 
@@ -36,12 +42,12 @@ namespace Flint
 
 		void VulkanRayTracer::update()
 		{
-
+			OPTICK_EVENT();
 		}
 
 		void VulkanRayTracer::updateExtent()
 		{
-
+			OPTICK_EVENT();
 		}
 
 		Flint::VulkanBackend::VulkanRenderTargetAttachment& VulkanRayTracer::getAttachment(uint32_t index)
@@ -56,6 +62,8 @@ namespace Flint
 
 		void VulkanRayTracer::createAttachments()
 		{
+			OPTICK_EVENT();
+
 			m_pStorageAttachments.reserve(m_FrameCount);
 			for (uint32_t i = 0; i < m_FrameCount; i++)
 			{

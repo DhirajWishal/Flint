@@ -7,6 +7,8 @@
 #include "VulkanBackend/VulkanBuffer.hpp"
 #include "VulkanBackend/VulkanTextureView.hpp"
 
+#include <Optick.h>
+
 namespace Flint
 {
 	namespace VulkanBackend
@@ -14,6 +16,8 @@ namespace Flint
 		VulkanTexture2D::VulkanTexture2D(const std::shared_ptr<VulkanDevice>& pDevice, uint32_t width, uint32_t height, ImageUsage usage, PixelFormat format, uint32_t mipLevels /*= 0*/, Multisample multisampleCount /*= Multisample::One*/, const std::byte* pDataStore /*= nullptr*/)
 			: Texture2D(pDevice, width, height, usage, format, mipLevels, multisampleCount, pDataStore)
 		{
+			OPTICK_EVENT();
+
 			// Create the image and allocator.
 			createImageAndAllocator();
 
@@ -61,17 +65,23 @@ namespace Flint
 
 		void VulkanTexture2D::terminate()
 		{
+			OPTICK_EVENT();
+
 			vmaDestroyImage(getDevice().as<VulkanDevice>()->getAllocator(), m_Image, m_Allocation);
 			invalidate();
 		}
 
 		std::shared_ptr<Flint::TextureView> VulkanTexture2D::createView()
 		{
+			OPTICK_EVENT();
+
 			return std::make_shared<VulkanTextureView>(getDevicePointerAs<VulkanDevice>(), shared_from_this());
 		}
 
 		std::shared_ptr<Flint::Buffer> VulkanTexture2D::toBuffer() const
 		{
+			OPTICK_EVENT();
+
 			auto commandBuffers = VulkanCommandBuffers(getDevicePointerAs<VulkanDevice>());
 			commandBuffers.begin();
 
@@ -86,6 +96,8 @@ namespace Flint
 
 		void VulkanTexture2D::copyFrom(const Buffer* pBuffer)
 		{
+			OPTICK_EVENT();
+
 			auto commandBuffers = VulkanCommandBuffers(getDevicePointerAs<VulkanDevice>());
 			commandBuffers.begin();
 
@@ -98,12 +110,16 @@ namespace Flint
 
 		void VulkanTexture2D::copyFrom(const std::byte* pDataStore)
 		{
+			OPTICK_EVENT();
+
 			auto pBuffer = getDevicePointerAs<VulkanDevice>()->createBuffer(static_cast<uint64_t>(m_Width) * m_Height * GetPixelSize(m_Format), BufferUsage::Staging, pDataStore);
 			copyFrom(pBuffer.get());
 		}
 
 		void VulkanTexture2D::copyFrom(const Texture* pTexutre)
 		{
+			OPTICK_EVENT();
+
 			auto commandBuffers = VulkanCommandBuffers(getDevicePointerAs<VulkanDevice>());
 			commandBuffers.begin();
 
@@ -118,6 +134,8 @@ namespace Flint
 
 		std::shared_ptr<Flint::Buffer> VulkanTexture2D::toBufferBatched(const VulkanCommandBuffers& commandBuffers) const
 		{
+			OPTICK_EVENT();
+
 			VkImageSubresourceLayers subresource = {};
 			subresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 			subresource.baseArrayLayer = 0;
@@ -134,6 +152,8 @@ namespace Flint
 
 		void VulkanTexture2D::copyFromBatched(const VulkanCommandBuffers& commandBuffers, const Buffer* pBuffer)
 		{
+			OPTICK_EVENT();
+
 			VkImageSubresourceLayers subresource = {};
 			subresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 			subresource.baseArrayLayer = 0;
@@ -147,6 +167,8 @@ namespace Flint
 
 		void VulkanTexture2D::generateMipMaps()
 		{
+			OPTICK_EVENT();
+
 			auto pVulkanDevice = getDevicePointerAs<VulkanDevice>();
 			auto commandBuffers = VulkanCommandBuffers(pVulkanDevice);
 			commandBuffers.begin();
@@ -240,6 +262,8 @@ namespace Flint
 
 		void VulkanTexture2D::createImageAndAllocator()
 		{
+			OPTICK_EVENT();
+
 			// Resolve the image usage.
 			VkImageUsageFlags usageFlags = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
 

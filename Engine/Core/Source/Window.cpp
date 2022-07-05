@@ -19,4 +19,9 @@ namespace Flint
 		m_Dependency = std::make_pair(pRenderTarget, attachment);
 		toggleNeedToUpdate();
 	}
+
+	void Window::setResizeCallback(WindowResizeCallbackFunction&& function)
+	{
+		m_ResizeCallback = std::move(function);
+	}
 }

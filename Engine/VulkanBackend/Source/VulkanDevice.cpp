@@ -13,6 +13,8 @@
 #include "VUlkanBackend/VulkanTexture2D.hpp"
 #include "VUlkanBackend/VulkanTextureSampler.hpp"
 
+#include <Optick.h>
+
 #define XXH_INLINE_ALL
 #include <xxhash.h>
 
@@ -35,6 +37,8 @@ namespace /* anonymous */
 	 */
 	bool CheckQueueSupport(VkPhysicalDevice physicalDevice, VkQueueFlagBits flag)
 	{
+		OPTICK_EVENT();
+
 		// Get the queue family count.
 		uint32_t queueFamilyCount = 0;
 		vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, nullptr);
@@ -70,6 +74,8 @@ namespace /* anonymous */
 	 */
 	uint32_t GetQueueFamily(VkPhysicalDevice physicalDevice, VkQueueFlagBits flag)
 	{
+		OPTICK_EVENT();
+
 		// Get the queue family count.
 		uint32_t queueFamilyCount = 0;
 		vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, nullptr);
@@ -105,6 +111,8 @@ namespace /* anonymous */
 	 */
 	bool CheckDeviceExtensionSupport(VkPhysicalDevice physicalDevice, const std::vector<const char*>& deviceExtensions)
 	{
+		OPTICK_EVENT();
+
 		// If there are no extension to check, we can just return true.
 		if (deviceExtensions.empty())
 			return true;
@@ -136,6 +144,8 @@ namespace Flint
 		VulkanDevice::VulkanDevice(const std::shared_ptr<VulkanInstance>& pInstance)
 			: Device(pInstance)
 		{
+			OPTICK_EVENT();
+
 			// Select a physical device.
 			selectPhysicalDevice();
 
@@ -156,41 +166,57 @@ namespace Flint
 
 		std::shared_ptr<Flint::Buffer> VulkanDevice::createBuffer(uint64_t size, BufferUsage usage, const std::byte* pDataStore /*= nullptr*/)
 		{
+			OPTICK_EVENT();
+
 			return std::make_shared<VulkanBuffer>(shared_from_this(), size, usage, pDataStore);
 		}
 
 		std::shared_ptr<Flint::Rasterizer> VulkanDevice::createRasterizer(Camera& camera, uint32_t frameCount, std::vector<AttachmentDescription>&& attachmentDescriptions, Multisample multisample /*= Multisample::One*/, bool exclusiveBuffering /*= false*/)
 		{
+			OPTICK_EVENT();
+
 			return std::make_shared<VulkanRasterizer>(shared_from_this(), camera, frameCount, std::move(attachmentDescriptions), multisample, exclusiveBuffering);
 		}
 
 		std::shared_ptr<Flint::RayTracer> VulkanDevice::createRayTracer(Camera& camera, uint32_t frameCount)
 		{
+			OPTICK_EVENT();
+
 			return std::make_shared<VulkanRayTracer>(shared_from_this(), camera, frameCount);
 		}
 
 		std::shared_ptr<Flint::Window> VulkanDevice::createWindow(std::string&& title, uint32_t width /*= -1*/, uint32_t height /*= -1*/)
 		{
+			OPTICK_EVENT();
+
 			return std::make_shared<VulkanWindow>(shared_from_this(), std::move(title), width, height);
 		}
 
 		std::shared_ptr<Flint::RasterizingProgram> VulkanDevice::createRasterizingProgram(ShaderCode&& vertexShader, ShaderCode&& fragementShader)
 		{
+			OPTICK_EVENT();
+
 			return std::make_shared<VulkanRasterizingProgram>(shared_from_this(), std::move(vertexShader), std::move(fragementShader));
 		}
 
 		std::shared_ptr<Flint::StaticModel> VulkanDevice::createStaticModel(std::filesystem::path&& assetFile)
 		{
+			OPTICK_EVENT();
+
 			return std::make_shared<VulkanStaticModel>(shared_from_this(), std::move(assetFile));
 		}
 
 		std::shared_ptr<Flint::Texture2D> VulkanDevice::createTexture2D(uint32_t width, uint32_t height, ImageUsage usage, PixelFormat format, uint32_t mipLevels /*= 0*/, Multisample multisampleCount /*= Multisample::One*/, const std::byte* pDataStore /*= nullptr*/)
 		{
+			OPTICK_EVENT();
+
 			return std::make_shared<VulkanTexture2D>(shared_from_this(), width, height, usage, format, mipLevels, multisampleCount, pDataStore);
 		}
 
 		std::shared_ptr<Flint::TextureSampler> VulkanDevice::createTextureSampler(TextureSamplerSpecification&& specification)
 		{
+			OPTICK_EVENT();
+
 			const auto hash = static_cast<uint64_t>(XXH64(&specification, sizeof(TextureSamplerSpecification), 0));
 			if (!m_Samplers.contains(hash))
 				m_Samplers[hash] = std::make_shared<VulkanTextureSampler>(shared_from_this(), std::move(specification));
@@ -200,6 +226,8 @@ namespace Flint
 
 		void VulkanDevice::terminate()
 		{
+			OPTICK_EVENT();
+
 			// Wait idle to make sure that we don't have anything running at the moment.
 			waitIdle();
 
@@ -217,16 +245,22 @@ namespace Flint
 
 		void VulkanDevice::waitIdle()
 		{
+			OPTICK_EVENT();
+
 			FLINT_VK_ASSERT(getDeviceTable().vkDeviceWaitIdle(m_LogicalDevice), "Failed to wait idle!");
 		}
 
 		Flint::PixelFormat VulkanDevice::getBestDepthFormat() const
 		{
+			OPTICK_EVENT();
+
 			return Utility::GetPixelFormat(Utility::FindDepthFormat(this));
 		}
 
 		Flint::Multisample VulkanDevice::getMaximumMultisample() const
 		{
+			OPTICK_EVENT();
+
 			const VkSampleCountFlags counts = m_PhysicalDeviceProperties.limits.framebufferColorSampleCounts & m_PhysicalDeviceProperties.limits.framebufferDepthSampleCounts;
 
 			if (counts & VK_SAMPLE_COUNT_64_BIT)	return Multisample::SixtyFour;
@@ -241,6 +275,8 @@ namespace Flint
 
 		void VulkanDevice::selectPhysicalDevice()
 		{
+			OPTICK_EVENT();
+
 			// Set up the device extensions.
 			m_DeviceExtensions.emplace_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
 			m_DeviceExtensions.emplace_back(VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME);
@@ -328,6 +364,8 @@ namespace Flint
 
 		void VulkanDevice::createLogicalDevice()
 		{
+			OPTICK_EVENT();
+
 			// Setup device queues.
 			constexpr float priority = 1.0f;
 			std::set<uint32_t> uniqueQueueFamilies = {
@@ -393,11 +431,15 @@ namespace Flint
 
 		void VulkanDevice::destroyLogicalDevice()
 		{
+			OPTICK_EVENT();
+
 			vkDestroyDevice(m_LogicalDevice, nullptr);
 		}
 
 		void VulkanDevice::createVMAAllocator()
 		{
+			OPTICK_EVENT();
+
 			// Setup the Vulkan functions needed by VMA.
 			VmaVulkanFunctions functions = {};
 			functions.vkGetInstanceProcAddr = vkGetInstanceProcAddr;
@@ -442,6 +484,8 @@ namespace Flint
 
 		void VulkanDevice::destroyVMAAllocator()
 		{
+			OPTICK_EVENT();
+
 			vmaDestroyAllocator(m_Allocator);
 		}
 
@@ -574,6 +618,8 @@ namespace Flint
 
 			VkFormat FindSupportedFormat(const VulkanDevice* pDevice, const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features)
 			{
+				OPTICK_EVENT();
+
 				for (VkFormat format : candidates)
 				{
 					VkFormatProperties props = {};
@@ -596,6 +642,8 @@ namespace Flint
 
 			VkFormat FindDepthFormat(const VulkanDevice* pDevice)
 			{
+				OPTICK_EVENT();
+
 				return FindSupportedFormat(
 					pDevice,
 					{ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },

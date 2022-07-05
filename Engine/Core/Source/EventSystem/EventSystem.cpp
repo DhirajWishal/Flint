@@ -4,12 +4,15 @@
 #include "Core/EventSystem/EventSystem.hpp"
 #include "Core/Window.hpp"
 
+#include <Optick.h>
 #include <SDL.h>
 
 namespace Flint
 {
 	EventType EventSystem::poll()
 	{
+		OPTICK_FRAME("Flint Main Thread");
+
 		SDL_Event sdlEvent = {};
 		if (SDL_PollEvent(&sdlEvent))
 		{

@@ -374,8 +374,10 @@ namespace Flint
 	 */
 	enum class ImageUsage : uint8_t
 	{
-		Graphics = 1 << 0,
-		Storage = 1 << 1,
+		Graphics = 1 << 0,			// Can be used as a sampled image.
+		Storage = 1 << 1,			// Can be used for storage purposes.
+		ColorAttachment = 1 << 2,	// Can be used as a color attachment for render targets.
+		DepthAttachment = 1 << 3	// Can be used as a depth attachment for render targets.
 	};
 
 	FLINT_DEFINE_ENUM_AND_OR(ImageUsage);

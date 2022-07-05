@@ -9,6 +9,8 @@
 #include "VulkanBackend/VulkanStaticModel.hpp"
 #include "VulkanBackend/VulkanCommandBuffers.hpp"
 
+#include <Optick.h>
+
 #define XXH_INLINE_ALL
 #include <xxhash.h>
 
@@ -290,6 +292,8 @@ namespace Flint
 			: RasterizingPipeline(pDevice, pRasterizer, pProgram, specification, std::move(pCacheHandler))
 			, m_DescriptorSetManager(pDevice, pRasterizer->getFrameCount())
 		{
+			OPTICK_EVENT();
+
 			// Setup the defaults.
 			setupDefaults(std::move(specification));
 
@@ -307,6 +311,8 @@ namespace Flint
 
 		void VulkanRasterizingPipeline::terminate()
 		{
+			OPTICK_EVENT();
+
 			for (const auto& [hash, pipeline] : m_Pipelines)
 			{
 				saveCache(hash, pipeline.m_PipelineCache);
@@ -320,6 +326,8 @@ namespace Flint
 
 		void VulkanRasterizingPipeline::recreate()
 		{
+			OPTICK_EVENT();
+
 			// Recreate everything again.
 			for (auto& [hash, pipeline] : m_Pipelines)
 			{
@@ -339,6 +347,8 @@ namespace Flint
 
 		std::shared_ptr<Flint::DrawEntry> VulkanRasterizingPipeline::attach(const std::shared_ptr<StaticModel>& pModel, ResourceBinder&& binder)
 		{
+			OPTICK_EVENT();
+
 			const auto pStaticModel = pModel->as<VulkanStaticModel>();
 			const auto vertexInputs = getProgram()->as<VulkanRasterizingProgram>()->getVertexInputs();
 			const auto& bindingMap = getProgram()->getBindingMap();
@@ -417,6 +427,8 @@ namespace Flint
 
 		VkPipelineCache VulkanRasterizingPipeline::loadCache(uint64_t identifier) const
 		{
+			OPTICK_EVENT();
+
 			std::vector<std::byte> buffer;
 
 			// Load the cache if possible.
@@ -439,6 +451,8 @@ namespace Flint
 
 		void VulkanRasterizingPipeline::saveCache(uint64_t identifier, VkPipelineCache cache) const
 		{
+			OPTICK_EVENT();
+
 			// Return if we don't have anything to save.
 			if (cache == VK_NULL_HANDLE)
 				return;
@@ -462,12 +476,16 @@ namespace Flint
 
 		void VulkanRasterizingPipeline::issueDrawCalls(const VulkanCommandBuffers& commandBuffers, uint32_t frameIndex) const
 		{
+			OPTICK_EVENT();
+
 			for (const auto& drawCall : m_DrawCalls)
 				drawCall(commandBuffers, frameIndex);
 		}
 
 		void VulkanRasterizingPipeline::setupDefaults(const RasterizingPipelineSpecification& specification)
 		{
+			OPTICK_EVENT();
+
 			// Setup the shader stages.
 			m_ShaderStageCreateInfo = getProgram()->as<VulkanRasterizingProgram>()->getPipelineShaderStageCreateInfos();
 
@@ -564,6 +582,8 @@ namespace Flint
 
 		VkPipeline VulkanRasterizingPipeline::createVariation(VkPipelineVertexInputStateCreateInfo&& inputState, VkPipelineCache cache)
 		{
+			OPTICK_EVENT();
+
 			// Resolve viewport state.
 			VkRect2D rect2D = {};
 			rect2D.extent.width = m_pRasterizer->getWidth();

@@ -4,6 +4,7 @@
 #include "VulkanBackend/VulkanRasterizingProgram.hpp"
 #include "VulkanBackend/VulkanMacros.hpp"
 
+#include <Optick.h>
 #include <spirv_reflect.h>
 #include <spdlog/spdlog.h>
 
@@ -115,6 +116,8 @@ namespace Flint
 		VulkanRasterizingProgram::VulkanRasterizingProgram(const std::shared_ptr<VulkanDevice>& pDevice, ShaderCode&& vertexShader, ShaderCode&& fragmetShader)
 			: RasterizingProgram(pDevice, std::move(vertexShader), std::move(fragmetShader))
 		{
+			OPTICK_EVENT();
+
 			std::vector<VkPushConstantRange> pushConstants;
 
 			// Create the shader modules.
@@ -139,6 +142,8 @@ namespace Flint
 
 		void VulkanRasterizingProgram::terminate()
 		{
+			OPTICK_EVENT();
+
 			if (m_VertexShaderModule)
 				getDevice().as<VulkanDevice>()->getDeviceTable().vkDestroyShaderModule(getDevice().as<VulkanDevice>()->getLogicalDevice(), m_VertexShaderModule, nullptr);
 
@@ -153,6 +158,8 @@ namespace Flint
 
 		VkShaderModule VulkanRasterizingProgram::createShaderModule(const ShaderCode& shader, VkShaderStageFlags stageFlags, std::vector<VkPushConstantRange>& pushConstants)
 		{
+			OPTICK_EVENT();
+
 			const auto& shaderCode = shader.get();
 
 			// Prepare the shader code for reflection.
@@ -267,6 +274,8 @@ namespace Flint
 
 		void VulkanRasterizingProgram::createDescriptorSetLayout()
 		{
+			OPTICK_EVENT();
+
 			VkDescriptorSetLayoutCreateInfo createInfo = {};
 			createInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 			createInfo.flags = 0;
@@ -279,6 +288,8 @@ namespace Flint
 
 		void VulkanRasterizingProgram::createPipelineLayout(std::vector<VkPushConstantRange>&& pushConstants)
 		{
+			OPTICK_EVENT();
+
 			VkPipelineLayoutCreateInfo createInfo = {};
 			createInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 			createInfo.flags = 0;

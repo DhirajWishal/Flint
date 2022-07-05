@@ -8,6 +8,8 @@
 #include "VulkanBackend/VulkanRasterizingPipeline.hpp"
 #include "VulkanBackend/VulkanRasterizingProgram.hpp"
 
+#include <Optick.h>
+
 namespace Flint
 {
 	namespace VulkanBackend
@@ -15,6 +17,8 @@ namespace Flint
 		VulkanRasterizer::VulkanRasterizer(const std::shared_ptr<VulkanDevice>& pDevice, Camera& camera, uint32_t frameCount, std::vector<AttachmentDescription>&& attachmentDescriptions, Multisample multisample /*= Multisample::One*/, bool exclusiveBuffering /*= false*/)
 			: Rasterizer(pDevice, camera, frameCount, std::move(attachmentDescriptions), multisample, exclusiveBuffering)
 		{
+			OPTICK_EVENT();
+
 			// Create the attachments.
 			createAttachments();
 
@@ -40,6 +44,8 @@ namespace Flint
 
 		void VulkanRasterizer::terminate()
 		{
+			OPTICK_EVENT();
+
 			// Wait idle to finish everything we have prior to this.
 			getDevice().as<VulkanDevice>()->waitIdle();
 
@@ -60,6 +66,8 @@ namespace Flint
 
 		void VulkanRasterizer::update()
 		{
+			OPTICK_EVENT();
+
 			// Begin the command buffer.
 			m_pCommandBuffers->finishExecution();
 
@@ -102,6 +110,8 @@ namespace Flint
 
 		void VulkanRasterizer::updateExtent()
 		{
+			OPTICK_EVENT();
+
 			// Wait idle to finish everything we have prior to this.
 			getDevice().as<VulkanDevice>()->waitIdle();
 
@@ -139,6 +149,8 @@ namespace Flint
 
 		std::shared_ptr<Flint::RasterizingPipeline> VulkanRasterizer::createPipeline(const std::shared_ptr<RasterizingProgram>& pRasterizingProgram, const RasterizingPipelineSpecification& specification, std::unique_ptr<PipelineCacheHandler>&& pCacheHandler /*= nullptr*/)
 		{
+			OPTICK_EVENT();
+
 			return m_pPipelines.emplace_back(
 				std::make_shared<VulkanRasterizingPipeline>(
 					getDevicePointerAs<VulkanDevice>(),
@@ -152,6 +164,8 @@ namespace Flint
 
 		void VulkanRasterizer::createAttachments()
 		{
+			OPTICK_EVENT();
+
 			if (m_ExclusiveBuffering)
 				m_pAttachments.resize(m_FrameCount);
 
@@ -221,6 +235,8 @@ namespace Flint
 
 		void VulkanRasterizer::createRenderPass()
 		{
+			OPTICK_EVENT();
+
 			// Create attachment descriptions and references.
 			std::vector<VkAttachmentReference> colorAttachments;
 			std::vector<VkAttachmentReference> depthAttachments;
@@ -299,11 +315,15 @@ namespace Flint
 
 		void VulkanRasterizer::destroyRenderPass()
 		{
+			OPTICK_EVENT();
+
 			getDevice().as<VulkanDevice>()->getDeviceTable().vkDestroyRenderPass(getDevice().as<VulkanDevice>()->getLogicalDevice(), m_RenderPass, nullptr);
 		}
 
 		void VulkanRasterizer::createFramebuffers()
 		{
+			OPTICK_EVENT();
+
 			VkFramebufferCreateInfo frameBufferCreateInfo = {};
 			frameBufferCreateInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 			frameBufferCreateInfo.pNext = VK_NULL_HANDLE;
@@ -332,6 +352,8 @@ namespace Flint
 
 		void VulkanRasterizer::destroyFramebuffers()
 		{
+			OPTICK_EVENT();
+
 			for (const auto framebuffer : m_Framebuffers)
 				getDevice().as<VulkanDevice>()->getDeviceTable().vkDestroyFramebuffer(getDevice().as<VulkanDevice>()->getLogicalDevice(), framebuffer, nullptr);
 		}

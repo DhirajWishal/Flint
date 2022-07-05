@@ -5,6 +5,7 @@
 #include "Core/Errors/InvalidArgumentError.hpp"
 #include "Core/Errors/AssetError.hpp"
 
+#include <Optick.h>
 #include <stb_image.h>
 
 namespace Flint
@@ -16,6 +17,8 @@ namespace Flint
 
 	std::shared_ptr<Flint::Texture2D> Texture2D::LoadFromFile(const std::shared_ptr<Device>& pDevice, const std::filesystem::path& assetFile, ImageUsage usage, Multisample multisampleCount /*= Multisample::One*/)
 	{
+		OPTICK_EVENT();
+
 		// Load the image.
 		int32_t width, height, channels;
 		const auto pPixelData = reinterpret_cast<std::byte*>(stbi_load(assetFile.string().c_str(), &width, &height, &channels, STBI_rgb_alpha));
