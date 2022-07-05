@@ -10,6 +10,8 @@
 #include "VulkanBackend/VulkanRasterizingDrawEntry.hpp"
 #include "VulkanBackend/VulkanVertexStorage.hpp"
 
+#include "VulkanBackend/VulkanDispatcher.hpp"
+
 #include <Optick.h>
 
 namespace Flint
@@ -29,6 +31,7 @@ namespace Flint
 			commandPoolCreateInfo.queueFamilyIndex = getDevice().as<VulkanDevice>()->getGraphicsQueue().m_Family;
 
 			FLINT_VK_ASSERT(getDevice().as<VulkanDevice>()->getDeviceTable().vkCreateCommandPool(getDevice().as<VulkanDevice>()->getLogicalDevice(), &commandPoolCreateInfo, nullptr, &m_CommandPool), "Failed to create the command pool!");
+			// VulkanDispatcher::Dispatch(pDevice->getDeviceTable().vkCreateCommandPool, pDevice->getLogicalDevice(), &commandPoolCreateInfo, nullptr, &m_CommandPool, "Failed to create the command pool!");
 
 			// Allocate the command buffers.
 			VkCommandBufferAllocateInfo allocateInfo = {};
@@ -40,6 +43,7 @@ namespace Flint
 
 			m_CommandBuffers.resize(bufferCount);
 			FLINT_VK_ASSERT(getDevice().as<VulkanDevice>()->getDeviceTable().vkAllocateCommandBuffers(getDevice().as<VulkanDevice>()->getLogicalDevice(), &allocateInfo, m_CommandBuffers.data()), "Failed to allocate command buffers!");
+			// VulkanAsync::Call(pDevice->getDeviceTable().vkAllocateCommandBuffers, pDevice->getLogicalDevice(), &allocateInfo, m_CommandBuffers.data(), "Failed to allocate command buffers!"
 
 			// Get the current command buffer.
 			m_CurrentCommandBuffer = m_CommandBuffers[m_CurrentIndex];
