@@ -19,7 +19,8 @@ function(CompileShaders SHADER_TARGET SHADER_SOURCE_DIR SHADER_BINARY_DIR)
 		  ${SHADER_SOURCE_DIR}/**/*.task
 		  ${SHADER_SOURCE_DIR}/**/*.rgen
 		  ${SHADER_SOURCE_DIR}/**/*.rchit
-		  ${SHADER_SOURCE_DIR}/**/*.rmiss)
+		  ${SHADER_SOURCE_DIR}/**/*.rmiss
+		)
 
 		add_custom_command(
 			COMMAND ${CMAKE_COMMAND} -E make_directory ${SHADER_BINARY_DIR}
@@ -30,8 +31,10 @@ function(CompileShaders SHADER_TARGET SHADER_SOURCE_DIR SHADER_BINARY_DIR)
 		# Resolve the shader compiler
 		if (MSVC)
 			set(SHADER_COMPILER $ENV{VULKAN_SDK}\\Bin\\glslangValidator)
+
 		else()
 			set(SHADER_COMPILER $ENV{VULKAN_SDK}/bin/glslangValidator)
+
 		endif()
 
 		message("Shader compiler set to " ${SHADER_COMPILER})
@@ -48,6 +51,7 @@ function(CompileShaders SHADER_TARGET SHADER_SOURCE_DIR SHADER_BINARY_DIR)
 			)
 
 			list(APPEND SPV_SHADERS ${SHADER_BINARY_DIR}/${SOURCE_FILE}.spv)
+
 		endforeach()
 
 		add_custom_target(COMPILED_SHADERS ALL DEPENDS ${SPV_SHADERS})
@@ -57,4 +61,5 @@ function(CompileShaders SHADER_TARGET SHADER_SOURCE_DIR SHADER_BINARY_DIR)
 		message(WARNING "The VULKAN_SDK environment variable is not set! Automatic shader compilation is disabled.")
 
 	endif()
+
 endfunction()

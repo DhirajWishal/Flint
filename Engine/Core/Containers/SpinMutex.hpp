@@ -44,13 +44,7 @@ namespace Flint
 		 *
 		 * @return The state.
 		 */
-		[[nodiscard]] bool try_lock()
-		{
-			if (m_State) return false;
-
-			m_State = true;
-			return true;
-		}
+		[[nodiscard]] bool try_lock() { return m_State ? false : m_State = true; }
 
 		/**
 		 * Check if the spin lock is locked.

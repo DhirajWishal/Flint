@@ -136,8 +136,7 @@ namespace /* anonymous */
 		const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
 		void* pUserData)
 	{
-		std::stringstream messageStream;
-		messageStream << "Vulkan Validation Layer " << ": ";
+		std::stringstream messageStream = "Vulkan Validation Layer : ";
 
 		if (messageType & VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT)
 			messageStream << "GENERAL | ";
