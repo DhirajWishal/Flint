@@ -3,7 +3,8 @@
 
 #pragma once
 
-#include <mutex>
+#include "SpinMutex.hpp"
+
 #include <functional>
 
 namespace Flint
@@ -110,6 +111,6 @@ namespace Flint
 
 	private:
 		ValueType m_Variable;
-		std::mutex m_VariableMutex;
+		SpinMutex m_VariableMutex;
 	};
 }

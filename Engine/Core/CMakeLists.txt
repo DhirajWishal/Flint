@@ -81,6 +81,8 @@ add_library(
 	"Containers/BinaryMap.hpp" 
 	"Containers/Reactor.hpp" 
 	"Containers/WorkerGroup.hpp" 
+	"Containers/Synchronized.hpp" 
+	"Containers/SpinMutex.hpp" 
 
 	"Camera/Camera.hpp"
 	"Camera/MonoCamera.hpp"

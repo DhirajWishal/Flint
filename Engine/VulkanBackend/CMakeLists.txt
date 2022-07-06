@@ -35,7 +35,6 @@ add_library(
 	"Source/VulkanTexture2D.cpp"
 	"Source/VulkanTextureView.cpp"
 	"Source/VulkanTextureSampler.cpp"
-	"Source/VulkanDispatcher.cpp"
 	
 	"VulkanInstance.hpp"
 	"VulkanMacros.hpp"
@@ -58,7 +57,6 @@ add_library(
 	"VulkanTexture2D.hpp"
 	"VulkanTextureView.hpp"
 	"VulkanTextureSampler.hpp"
-	"VulkanDispatcher.hpp"
 )
 
 # Set the include directories.
