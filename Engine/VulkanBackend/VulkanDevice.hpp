@@ -20,20 +20,20 @@ namespace Flint
 		class VulkanTextureSampler;
 
 		/**
+		 * Vulkan queue structure.
+		 * This contains all the information about a single queue.
+		 */
+		struct VulkanQueue
+		{
+			VkQueue m_Queue = VK_NULL_HANDLE;
+			uint32_t m_Family = 0;
+		};
+
+		/**
 		 * Vulkan engine class.
 		 */
 		class VulkanDevice final : public std::enable_shared_from_this<VulkanDevice>, public Device
 		{
-			/**
-			 * Vulkan queue structure.
-			 * This contains all the information about a single queue.
-			 */
-			struct VulkanQueue
-			{
-				VkQueue m_Queue = VK_NULL_HANDLE;
-				uint32_t m_Family = 0;
-			};
-
 		public:
 			/**
 			 * Explicit constructor.
@@ -186,21 +186,42 @@ namespace Flint
 			 *
 			 * @return The graphics queue.
 			 */
-			[[nodiscard]] VulkanQueue getGraphicsQueue() const { return m_GraphicsQueue; }
+			[[nodiscard]] Synchronized<VulkanQueue>& getGraphicsQueue() { return m_GraphicsQueue; }
+
+			/**
+			 * Get the graphics queue from the engine.
+			 *
+			 * @return The graphics queue.
+			 */
+			[[nodiscard]] const Synchronized<VulkanQueue>& getGraphicsQueue() const { return m_GraphicsQueue; }
 
 			/**
 			 * Get the compute queue from the engine.
 			 *
 			 * @return The compute queue.
 			 */
-			[[nodiscard]] VulkanQueue getComputeQueue() const { return m_ComputeQueue; }
+			[[nodiscard]] Synchronized<VulkanQueue>& getComputeQueue() { return m_ComputeQueue; }
+
+			/**
+			 * Get the compute queue from the engine.
+			 *
+			 * @return The compute queue.
+			 */
+			[[nodiscard]] const Synchronized<VulkanQueue>& getComputeQueue() const { return m_ComputeQueue; }
 
 			/**
 			 * Get the transfer queue from the engine.
 			 *
 			 * @return The transfer queue.
 			 */
-			[[nodiscard]] VulkanQueue getTransferQueue() const { return m_TransferQueue; }
+			[[nodiscard]] Synchronized<VulkanQueue>& getTransferQueue() { return m_TransferQueue; }
+
+			/**
+			 * Get the transfer queue from the engine.
+			 *
+			 * @return The transfer queue.
+			 */
+			[[nodiscard]] const Synchronized<VulkanQueue>& getTransferQueue() const { return m_TransferQueue; }
 
 			/**
 			 * Get the VMA allocator.
@@ -244,9 +265,9 @@ namespace Flint
 
 			std::vector<const char*> m_DeviceExtensions;
 
-			VulkanQueue m_GraphicsQueue;
-			VulkanQueue m_ComputeQueue;
-			VulkanQueue m_TransferQueue;
+			Synchronized<VulkanQueue> m_GraphicsQueue;
+			Synchronized<VulkanQueue> m_ComputeQueue;
+			Synchronized<VulkanQueue> m_TransferQueue;
 
 			VkPhysicalDevice m_PhysicalDevice = VK_NULL_HANDLE;
 			VkDevice m_LogicalDevice = VK_NULL_HANDLE;

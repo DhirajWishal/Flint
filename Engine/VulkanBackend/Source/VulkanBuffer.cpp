@@ -47,6 +47,10 @@ namespace Flint
 		{
 			OPTICK_EVENT();
 
+			// Unmap if we have mapped.
+			unmapMemory();
+
+			[[maybe_unused]] const auto lock = std::scoped_lock(m_ResouceMutex);
 			vmaDestroyBuffer(getDevice().as<VulkanDevice>()->getAllocator(), m_Buffer, m_Allocation);
 			invalidate();
 		}
@@ -55,11 +59,16 @@ namespace Flint
 		{
 			OPTICK_EVENT();
 
-			std::byte* pDataPointer = nullptr;
-			FLINT_VK_ASSERT(vmaMapMemory(getDevice().as<VulkanDevice>()->getAllocator(), m_Allocation, reinterpret_cast<void**>(&pDataPointer)), "Failed to map the buffer memory!");
+			// Return if we already have mapped.
+			if (!m_IsMapped)
+			{
+				[[maybe_unused]] const auto lock = std::scoped_lock(m_ResouceMutex);
+				FLINT_VK_ASSERT(vmaMapMemory(getDevice().as<VulkanDevice>()->getAllocator(), m_Allocation, reinterpret_cast<void**>(&m_pDataPointer)), "Failed to map the buffer memory!");
 
-			m_IsMapped = true;
-			return pDataPointer;
+				m_IsMapped = true;
+			}
+
+			return m_pDataPointer;
 		}
 
 		void VulkanBuffer::unmapMemory()
@@ -69,8 +78,11 @@ namespace Flint
 			// We only need to unmap if we have mapped the memory.
 			if (m_IsMapped)
 			{
+				[[maybe_unused]] const auto lock = std::scoped_lock(m_ResouceMutex);
 				vmaUnmapMemory(getDevice().as<VulkanDevice>()->getAllocator(), m_Allocation);
+
 				m_IsMapped = false;
+				m_pDataPointer = nullptr;
 			}
 		}
 
@@ -107,6 +119,8 @@ namespace Flint
 		{
 			OPTICK_EVENT();
 
+			[[maybe_unused]] const auto lock = std::scoped_lock(m_ResouceMutex);
+
 			// Setup the command buffer and copy.
 			auto vCommandBuffer = VulkanCommandBuffers(getDevicePointerAs<VulkanDevice>());
 			vCommandBuffer.begin();
@@ -135,6 +149,7 @@ namespace Flint
 			else if (dstOffset > m_Size)
 				throw BackendError("Invalid destination offset!");
 
+			[[maybe_unused]] const auto lock = std::scoped_lock(m_ResouceMutex);
 			pCommandBuffer->copyBuffer(pBuffer->as<VulkanBuffer>()->m_Buffer, copySize, srcOffset, m_Buffer, dstOffset);
 		}
 

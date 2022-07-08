@@ -26,7 +26,7 @@ namespace Flint
 			commandPoolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 			commandPoolCreateInfo.pNext = nullptr;
 			commandPoolCreateInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-			commandPoolCreateInfo.queueFamilyIndex = getDevice().as<VulkanDevice>()->getGraphicsQueue().m_Family;
+			commandPoolCreateInfo.queueFamilyIndex = getDevice().as<VulkanDevice>()->getGraphicsQueue().getUnsafe().m_Family;
 
 			FLINT_VK_ASSERT(getDevice().as<VulkanDevice>()->getDeviceTable().vkCreateCommandPool(getDevice().as<VulkanDevice>()->getLogicalDevice(), &commandPoolCreateInfo, nullptr, &m_CommandPool), "Failed to create the command pool!");
 
@@ -60,7 +60,7 @@ namespace Flint
 			commandPoolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 			commandPoolCreateInfo.pNext = nullptr;
 			commandPoolCreateInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-			commandPoolCreateInfo.queueFamilyIndex = getDevice().as<VulkanDevice>()->getTransferQueue().m_Family;
+			commandPoolCreateInfo.queueFamilyIndex = getDevice().as<VulkanDevice>()->getTransferQueue().getUnsafe().m_Family;
 
 			FLINT_VK_ASSERT(getDevice().as<VulkanDevice>()->getDeviceTable().vkCreateCommandPool(getDevice().as<VulkanDevice>()->getLogicalDevice(), &commandPoolCreateInfo, nullptr, &m_CommandPool), "Failed to create the command pool!");
 
@@ -391,8 +391,14 @@ namespace Flint
 
 			// Submit the queue.
 			auto& fence = m_CommandFences[m_CurrentIndex];
-			FLINT_VK_ASSERT(getDevice().as<VulkanDevice>()->getDeviceTable().vkQueueSubmit(getDevice().as<VulkanDevice>()->getGraphicsQueue().m_Queue, 1, &submitInfo, fence.m_Fence), "Failed to submit the queue!");
 			fence.m_IsFree = false;
+
+			auto pVulkanDevice = getDevice().as<VulkanDevice>();
+			pVulkanDevice->getGraphicsQueue().apply([this, pVulkanDevice, submitInfo, fence](VulkanQueue& queue)
+				{
+					FLINT_VK_ASSERT(pVulkanDevice->getDeviceTable().vkQueueSubmit(queue.m_Queue, 1, &submitInfo, fence.m_Fence), "Failed to submit the queue!");
+				}
+			);
 		}
 
 		void VulkanCommandBuffers::submitGraphics(VkPipelineStageFlags waitStageMask /*= VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT*/)
@@ -414,7 +420,12 @@ namespace Flint
 			auto& fence = m_CommandFences[m_CurrentIndex];
 			fence.m_IsFree = false;
 
-			FLINT_VK_ASSERT(getDevice().as<VulkanDevice>()->getDeviceTable().vkQueueSubmit(getDevice().as<VulkanDevice>()->getGraphicsQueue().m_Queue, 1, &submitInfo, fence.m_Fence), "Failed to submit the queue!");
+			auto pVulkanDevice = getDevice().as<VulkanDevice>();
+			pVulkanDevice->getGraphicsQueue().apply([this, pVulkanDevice, submitInfo, fence](VulkanQueue& queue)
+				{
+					FLINT_VK_ASSERT(pVulkanDevice->getDeviceTable().vkQueueSubmit(queue.m_Queue, 1, &submitInfo, fence.m_Fence), "Failed to submit the queue!");
+				}
+			);
 		}
 
 		void VulkanCommandBuffers::submitTransfer()
@@ -438,7 +449,12 @@ namespace Flint
 			auto& fence = m_CommandFences[m_CurrentIndex];
 			fence.m_IsFree = false;
 
-			FLINT_VK_ASSERT(getDevice().as<VulkanDevice>()->getDeviceTable().vkQueueSubmit(getDevice().as<VulkanDevice>()->getTransferQueue().m_Queue, 1, &submitInfo, fence.m_Fence), "Failed to submit the queue!");
+			auto pVulkanDevice = getDevice().as<VulkanDevice>();
+			pVulkanDevice->getTransferQueue().apply([this, pVulkanDevice, submitInfo, fence](VulkanQueue& queue)
+				{
+					FLINT_VK_ASSERT(pVulkanDevice->getDeviceTable().vkQueueSubmit(queue.m_Queue, 1, &submitInfo, fence.m_Fence), "Failed to submit the queue!");
+				}
+			);
 		}
 
 		void VulkanCommandBuffers::submitCompute()
@@ -462,7 +478,12 @@ namespace Flint
 			auto& fence = m_CommandFences[m_CurrentIndex];
 			fence.m_IsFree = false;
 
-			FLINT_VK_ASSERT(getDevice().as<VulkanDevice>()->getDeviceTable().vkQueueSubmit(getDevice().as<VulkanDevice>()->getComputeQueue().m_Queue, 1, &submitInfo, fence.m_Fence), "Failed to submit the queue!");
+			auto pVulkanDevice = getDevice().as<VulkanDevice>();
+			pVulkanDevice->getComputeQueue().apply([this, pVulkanDevice, submitInfo, fence](VulkanQueue& queue)
+				{
+					FLINT_VK_ASSERT(pVulkanDevice->getDeviceTable().vkQueueSubmit(queue.m_Queue, 1, &submitInfo, fence.m_Fence), "Failed to submit the queue!");
+				}
+			);
 		}
 
 		void VulkanCommandBuffers::finishExecution()

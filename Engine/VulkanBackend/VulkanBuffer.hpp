@@ -6,6 +6,8 @@
 #include "Core/Buffer.hpp"
 #include "VulkanDevice.hpp"
 
+#include <mutex>
+
 namespace Flint
 {
 	namespace VulkanBackend
@@ -99,10 +101,14 @@ namespace Flint
 			void createBufferAndValidate();
 
 		private:
+			std::recursive_mutex m_ResouceMutex;
+
 			VkDescriptorBufferInfo m_DescriptorBufferInfo = {};
 
 			VkBuffer m_Buffer = VK_NULL_HANDLE;
 			VmaAllocation m_Allocation = nullptr;
+
+			std::byte* m_pDataPointer = nullptr;
 
 			bool m_IsMapped = false;
 		};

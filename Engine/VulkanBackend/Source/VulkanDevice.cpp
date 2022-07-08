@@ -357,9 +357,9 @@ namespace Flint
 				throw BackendError("Failed to find a suitable physical device!");
 
 			// Setup the queue families.
-			m_GraphicsQueue.m_Family = GetQueueFamily(m_PhysicalDevice, VK_QUEUE_GRAPHICS_BIT);
-			m_ComputeQueue.m_Family = GetQueueFamily(m_PhysicalDevice, VK_QUEUE_COMPUTE_BIT);
-			m_TransferQueue.m_Family = GetQueueFamily(m_PhysicalDevice, VK_QUEUE_TRANSFER_BIT);
+			m_GraphicsQueue.apply([this](VulkanQueue& queue) { queue.m_Family = GetQueueFamily(m_PhysicalDevice, VK_QUEUE_GRAPHICS_BIT); });
+			m_ComputeQueue.apply([this](VulkanQueue& queue) { queue.m_Family = GetQueueFamily(m_PhysicalDevice, VK_QUEUE_COMPUTE_BIT); });
+			m_TransferQueue.apply([this](VulkanQueue& queue) { queue.m_Family = GetQueueFamily(m_PhysicalDevice, VK_QUEUE_TRANSFER_BIT); });
 		}
 
 		void VulkanDevice::createLogicalDevice()
@@ -369,9 +369,9 @@ namespace Flint
 			// Setup device queues.
 			constexpr float priority = 1.0f;
 			std::set<uint32_t> uniqueQueueFamilies = {
-				m_GraphicsQueue.m_Family,
-				m_ComputeQueue.m_Family,
-				m_TransferQueue.m_Family
+				m_GraphicsQueue.getUnsafe().m_Family,
+				m_ComputeQueue.getUnsafe().m_Family,
+				m_TransferQueue.getUnsafe().m_Family
 			};
 
 			VkDeviceQueueCreateInfo queueCreateInfo = {};
@@ -424,9 +424,9 @@ namespace Flint
 			volkLoadDeviceTable(&m_DeviceTable, m_LogicalDevice);
 
 			// Get the queues.
-			vkGetDeviceQueue(m_LogicalDevice, m_GraphicsQueue.m_Family, 0, &m_GraphicsQueue.m_Queue);
-			vkGetDeviceQueue(m_LogicalDevice, m_ComputeQueue.m_Family, 0, &m_ComputeQueue.m_Queue);
-			vkGetDeviceQueue(m_LogicalDevice, m_TransferQueue.m_Family, 0, &m_TransferQueue.m_Queue);
+			m_GraphicsQueue.apply([this](VulkanQueue& queue) { vkGetDeviceQueue(m_LogicalDevice, queue.m_Family, 0, &queue.m_Queue); });
+			m_ComputeQueue.apply([this](VulkanQueue& queue) { vkGetDeviceQueue(m_LogicalDevice, queue.m_Family, 0, &queue.m_Queue); });
+			m_TransferQueue.apply([this](VulkanQueue& queue) { vkGetDeviceQueue(m_LogicalDevice, queue.m_Family, 0, &queue.m_Queue); });
 		}
 
 		void VulkanDevice::destroyLogicalDevice()

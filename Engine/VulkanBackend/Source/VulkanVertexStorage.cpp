@@ -54,7 +54,7 @@ namespace Flint
 				vCommandBuffer.begin();
 
 				// Copy the buffers.
-				pNewBuffer->copyFromBatched(&vCommandBuffer, pOldBuffer.get(), 0, 0);
+				pNewBuffer->copyFromBatched(&vCommandBuffer, pOldBuffer.get());
 				pNewBuffer->copyFromBatched(&vCommandBuffer, pStaggingBuffer, 0, offset);
 
 				// Submit the command.
@@ -62,15 +62,15 @@ namespace Flint
 				vCommandBuffer.submitTransfer();
 				vCommandBuffer.finishExecution();
 
-				m_pBuffers[EnumToInt(attribute)] = pNewBuffer;
+				m_pBuffers[EnumToInt(attribute)] = std::move(pNewBuffer);
 				pOldBuffer->terminate();
 			}
 			else
 			{
 				auto pNewBuffer = std::static_pointer_cast<VulkanBuffer>(getDevice().createBuffer(pStaggingBuffer->getSize(), BufferUsage::Vertex));
-				pNewBuffer->copyFrom(pStaggingBuffer, 0, 0);
+				pNewBuffer->copyFrom(pStaggingBuffer);
 
-				m_pBuffers[EnumToInt(attribute)] = pNewBuffer;
+				m_pBuffers[EnumToInt(attribute)] = std::move(pNewBuffer);
 			}
 
 			return offset;

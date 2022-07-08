@@ -12,6 +12,9 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include <atomic>
+#include <future>
+
 namespace /* anonymous */
 {
 	/**
@@ -97,17 +100,17 @@ namespace /* anonymous */
 	 *
 	 * @param pMesh The Assimp mesh pointer.
 	 * @param pScene th Assimp scene pointer.
+	 * @param mesh The mesh to load the data to.
 	 * @param storage The vertex storage.
 	 * @param vertexCount The vertex count variable.
 	 * @param indices The index storage.
+	 * @param indicesMutex The mutex used to lock the index storage.
 	 * @param basePath The base path to load the assets from.
-	 * @return The loaded mesh.
 	 */
-	Flint::StaticMesh LoadStaticMesh(const aiMesh* pMesh, const aiScene* pScene, Flint::VulkanBackend::VulkanVertexStorage& storage, uint64_t& vertexCount, std::vector<uint32_t>& indices, const std::filesystem::path& basePath)
+	void LoadStaticMesh(const aiMesh* pMesh, const aiScene* pScene, Flint::StaticMesh& mesh, Flint::VulkanBackend::VulkanVertexStorage& storage, std::atomic<uint64_t>& vertexCount, std::vector<uint32_t>& indices, std::mutex& indicesMutex, const std::filesystem::path& basePath)
 	{
 		OPTICK_EVENT();
 
-		Flint::StaticMesh mesh;
 		mesh.m_Name = pMesh->mName.C_Str();
 		mesh.m_VertexCount = pMesh->mNumVertices;
 		mesh.m_VertexOffset = vertexCount;
@@ -187,6 +190,7 @@ namespace /* anonymous */
 		{
 			mesh.m_IndexOffset = indices.size();
 
+			[[maybe_unused]] const auto lock = std::scoped_lock(indicesMutex);
 			for (uint32_t f = 0; f < pMesh->mNumFaces; f++)
 			{
 				const auto face = pMesh->mFaces[f];
@@ -215,8 +219,6 @@ namespace /* anonymous */
 
 		// Increment the vertex count.
 		vertexCount += pMesh->mNumVertices;
-
-		return mesh;
 	}
 }
 
@@ -323,12 +325,26 @@ namespace Flint
 			const auto basePath = m_AssetPath.parent_path();
 
 			std::vector<uint32_t> indices;
-			m_Meshes.reserve(pScene->mNumMeshes);
+			m_Meshes.resize(pScene->mNumMeshes);
+
+			std::mutex indicesMutex;
 
 			// Load the meshes.
-			uint64_t vertexCount = 0;
-			for (uint32_t i = 0; i < pScene->mNumMeshes; i++)
-				m_Meshes.emplace_back(LoadStaticMesh(pScene->mMeshes[i], pScene, m_VertexStorage, vertexCount, indices, basePath));
+			std::atomic<uint64_t> vertexCount = 0;
+			{
+				std::vector<std::future<void>> meshFutures;
+				for (uint32_t i = 0; i < pScene->mNumMeshes; i++)
+				{
+					meshFutures.emplace_back(
+						std::async(
+							std::launch::async,
+							[this, pScene, i, &vertexCount, &indices, basePath, &indicesMutex]
+							{
+								LoadStaticMesh(pScene->mMeshes[i], pScene, m_Meshes[i], m_VertexStorage, vertexCount, indices, indicesMutex, basePath);
+							})
+					);
+				}
+			}
 
 			// Finally, copy the index data to a staging buffer, and copy it to the final index buffer.
 			auto pIndexData = getDevice().createBuffer(indices.size() * sizeof(uint32_t), BufferUsage::Staging, reinterpret_cast<const std::byte*>(indices.data()));

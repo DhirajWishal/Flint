@@ -4,7 +4,7 @@
 #pragma once
 
 #include "Core/Instance.hpp"
-#include "Core/Containers/SpinMutex.hpp"
+#include "Core/Containers/Synchronized.hpp"
 
 #include <volk.h>
 
@@ -89,7 +89,6 @@ namespace Flint
 			void destroyDebugger();
 
 		private:
-			SpinMutex m_ResouceLock;
 			std::vector<const char*> m_ValidationLayers;
 
 			VkInstance m_Instance = VK_NULL_HANDLE;

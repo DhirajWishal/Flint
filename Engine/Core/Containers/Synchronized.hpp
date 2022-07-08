@@ -3,8 +3,7 @@
 
 #pragma once
 
-#include "SpinMutex.hpp"
-
+#include <mutex>
 #include <functional>
 
 namespace Flint
@@ -39,6 +38,20 @@ namespace Flint
 		Synchronized(ValueType&& variable) : m_Variable(std::move(variable)) {}
 
 		/**
+		 * Get the internally stored mutex.
+		 *
+		 * @return The mutex.
+		 */
+		[[nodiscard]] std::mutex& getMutex() { return m_VariableMutex; }
+
+		/**
+		 * Get the internally stored mutex.
+		 *
+		 * @return The mutex.
+		 */
+		[[nodiscard]] const std::mutex& getMutex() const { return m_VariableMutex; }
+
+		/**
 		 * Call a function after locking/ synchronizing the internal variable.
 		 *
 		 * @param callable The callable to be called.
@@ -58,59 +71,65 @@ namespace Flint
 		 *
 		 * @param value The value to set.
 		 */
-		void set(const ValueType& value) { m_Variable = value; }
+		void set(const ValueType& value) { [[maybe_unused]] auto locker = std::scoped_lock(m_VariableMutex); m_Variable = value; }
 
 		/**
 		 * Set a value to the variable.
 		 *
 		 * @param value The value to set.
 		 */
-		void set(ValueType&& value) { m_Variable = std::move(value); }
+		void set(ValueType&& value) { [[maybe_unused]] auto locker = std::scoped_lock(m_VariableMutex); m_Variable = std::move(value); }
 
 		/**
 		 * Get the internally stored variable.
+		 * Note that this operation is unsafe, meaning that it does not do any resource locking.
 		 *
 		 * @return The variable.
 		 */
-		[[nodiscard]] ValueType& get() { return m_Variable; }
+		[[nodiscard]] ValueType& getUnsafe() { return m_Variable; }
 
 		/**
 		 * Get the internally stored variable.
+		 * Note that this operation is unsafe, meaning that it does not do any resource locking.
 		 *
 		 * @return The variable.
 		 */
-		[[nodiscard]] const ValueType& get() const { return m_Variable; }
+		[[nodiscard]] const ValueType& getUnsafe() const { return m_Variable; }
 
 		/**
 		 * Get the internally stored variable's pointer.
+		 * Note that this operation is unsafe, meaning that it does not do any resource locking.
 		 *
 		 * @return The variable pointer.
 		 */
-		[[nodiscard]] ValueType* pointer() { return &m_Variable; }
+		[[nodiscard]] ValueType* pointerUnsafe() { return &m_Variable; }
 
 		/**
 		 * Get the internally stored variable's pointer.
+		 * Note that this operation is unsafe, meaning that it does not do any resource locking.
 		 *
 		 * @return The variable pointer.
 		 */
-		[[nodiscard]] const ValueType* pointer() const { return &m_Variable; }
+		[[nodiscard]] const ValueType* pointerUnsafe() const { return &m_Variable; }
 
 		/**
-		 * Implicit type cast.
+		 * Value assignment operator.
 		 *
-		 * @return The internally stored variable.
+		 * @param value The value to assign.
+		 * @return This object reference.
 		 */
-		[[nodiscard]] operator ValueType& () { return m_Variable; }
+		Synchronized& operator=(const ValueType& value) { [[maybe_unused]] auto locker = std::scoped_lock(m_VariableMutex); m_Variable = value; return *this; }
 
 		/**
-		 * Implicit type cast.
+		 * Value assignment operator.
 		 *
-		 * @return The internally stored variable.
+		 * @param value The value to assign.
+		 * @return This object reference.
 		 */
-		[[nodiscard]] operator const ValueType& () const { return m_Variable; }
+		Synchronized& operator=(ValueType&& value) { [[maybe_unused]] auto locker = std::scoped_lock(m_VariableMutex); m_Variable = std::move(value); return *this; }
 
 	private:
 		ValueType m_Variable;
-		SpinMutex m_VariableMutex;
+		std::mutex m_VariableMutex;
 	};
 }

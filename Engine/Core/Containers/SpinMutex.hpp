@@ -4,6 +4,7 @@
 #pragma once
 
 #include <atomic>
+#include <thread>
 
 namespace Flint
 {
@@ -16,6 +17,8 @@ namespace Flint
 	 */
 	class SpinMutex
 	{
+		using ValueType = std::thread::id;
+
 	public:
 		/**
 		 * Default constructor.
@@ -23,20 +26,27 @@ namespace Flint
 		SpinMutex() = default;
 
 		/**
+		 * Check if the spin lock is locked.
+		 *
+		 * @return Whether or not it's locked.
+		 */
+		[[nodiscard]] bool is_locked() const { return m_State != std::this_thread::get_id() && m_State != ValueType(); }
+
+		/**
 		 * Wait if it's locked.
 		 */
-		void wait() const { while (m_State); }
+		void wait() const { while (is_locked()); }
 
 		/**
 		 * Lock the spin lock.
 		 * If this is locked by another thread, it will wait till the lock is unlocked.
 		 */
-		void lock() { wait(); m_State = true; }
+		void lock() { wait(); m_State = std::this_thread::get_id(); }
 
 		/**
 		 * Unlock the lock.
 		 */
-		void unlock() { m_State = false; }
+		void unlock() { m_State = ValueType(); }
 
 		/**
 		 * Try and lock.
@@ -44,16 +54,9 @@ namespace Flint
 		 *
 		 * @return The state.
 		 */
-		[[nodiscard]] bool try_lock() { return m_State ? false : m_State = true; }
-
-		/**
-		 * Check if the spin lock is locked.
-		 *
-		 * @return Whether or not it's locked.
-		 */
-		[[nodiscard]] bool is_locked() const { return m_State; }
+		[[nodiscard]] bool try_lock() { return is_locked() ? false : (m_State = std::this_thread::get_id(), true); }
 
 	private:
-		std::atomic_bool m_State;
+		std::atomic<ValueType> m_State;
 	};
 }

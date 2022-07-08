@@ -136,7 +136,8 @@ namespace /* anonymous */
 		const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
 		void* pUserData)
 	{
-		std::stringstream messageStream = "Vulkan Validation Layer : ";
+		std::stringstream messageStream;
+		messageStream << "Vulkan Validation Layer : ";
 
 		if (messageType & VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT)
 			messageStream << "GENERAL | ";
@@ -306,7 +307,6 @@ namespace Flint
 		{
 			OPTICK_EVENT();
 
-			[[maybe_unused]] auto lock = std::scoped_lock(m_ResouceLock);
 			vkDestroyInstance(m_Instance, nullptr);
 		}
 
@@ -324,8 +324,6 @@ namespace Flint
 			OPTICK_EVENT();
 
 			const auto vkDestroyDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(m_Instance, "vkDestroyDebugUtilsMessengerEXT"));
-
-			[[maybe_unused]] auto lock = std::scoped_lock(m_ResouceLock);
 			vkDestroyDebugUtilsMessengerEXT(m_Instance, m_DebugMessenger, nullptr);
 		}
 	}

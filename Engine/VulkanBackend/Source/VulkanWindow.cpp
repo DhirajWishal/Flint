@@ -312,8 +312,8 @@ namespace Flint
 
 			// Resolve the queue families if the two queues are different.
 			uint32_t queueFamilyindices[2] = {
-				getDevice().as<VulkanDevice>()->getGraphicsQueue().m_Family,
-				getDevice().as<VulkanDevice>()->getTransferQueue().m_Family
+				getDevice().as<VulkanDevice>()->getGraphicsQueue().getUnsafe().m_Family,
+				getDevice().as<VulkanDevice>()->getTransferQueue().getUnsafe().m_Family
 			};
 
 			if (queueFamilyindices[0] != queueFamilyindices[1])
@@ -615,12 +615,17 @@ namespace Flint
 			presentInfo.pResults = VK_NULL_HANDLE;
 
 			// Present it to the surface.
-			const auto result = getDevice().as<VulkanDevice>()->getDeviceTable().vkQueuePresentKHR(getDevice().as<VulkanDevice>()->getTransferQueue().m_Queue, &presentInfo);
-			if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
-				recreate();
+			auto pVulkanDevice = getDevice().as<VulkanDevice>();
+			pVulkanDevice->getTransferQueue().apply([this, pVulkanDevice, presentInfo](VulkanQueue& queue)
+				{
+					const auto result = pVulkanDevice->getDeviceTable().vkQueuePresentKHR(queue.m_Queue, &presentInfo);
+					if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
+						recreate();
 
-			else
-				FLINT_VK_ASSERT(result, "Failed to present the swapchain image!");
+					else
+						FLINT_VK_ASSERT(result, "Failed to present the swapchain image!");
+				}
+			);
 		}
 	}
 }
