@@ -11,6 +11,10 @@ namespace Flint
 	/**
 	 * Synchronized class.
 	 * This can be used to synchronize a single object.
+	 *
+	 * Note that the callable should contain an parameter which can be either Type reference, or const Type reference.
+	 * 
+	 * @tparam Type The type to hold internally.
 	 */
 	template<class Type>
 	class Synchronized
@@ -56,7 +60,8 @@ namespace Flint
 		 *
 		 * @param callable The callable to be called.
 		 */
-		void apply(std::function<void(ValueType&)>&& callable) { [[maybe_unused]] auto locker = std::scoped_lock(m_VariableMutex); callable(m_Variable); }
+		template<class Callable>
+		decltype(auto) apply(Callable&& callable) { [[maybe_unused]] auto locker = std::scoped_lock(m_VariableMutex); return callable(m_Variable); }
 
 		/**
 		 * Call a function on the internal variable.
@@ -64,7 +69,8 @@ namespace Flint
 		 *
 		 * @param callable The callable to be called.
 		 */
-		void apply(std::function<void(const ValueType&)>&& callable) const { callable(m_Variable); }
+		template<class Callable>
+		decltype(auto) apply(Callable&& callable) const { return callable(m_Variable); }
 
 		/**
 		 * Set a value to the variable.

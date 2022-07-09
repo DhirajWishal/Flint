@@ -6,6 +6,8 @@
 
 #include <Optick.h>
 
+#include <atomic>
+
 namespace Flint
 {
 	namespace VulkanBackend
@@ -26,10 +28,14 @@ namespace Flint
 			OPTICK_EVENT();
 
 			// Terminate all the buffers.
-			for (const auto& pBuffer : m_pBuffers)
+			for (auto& pBuffer : m_pBuffers)
 			{
-				if (pBuffer)
-					pBuffer->terminate();
+				pBuffer.apply([](std::shared_ptr<VulkanBuffer>& pVertexBuffer)
+					{
+						if (pVertexBuffer)
+							pVertexBuffer->terminate();
+					}
+				);
 			}
 
 			invalidate();
@@ -39,41 +45,41 @@ namespace Flint
 		{
 			OPTICK_EVENT();
 
-			uint64_t offset = 0;
+			return m_pBuffers[EnumToInt(attribute)].apply([this, pStaggingBuffer](std::shared_ptr<VulkanBuffer>& pOldBuffer)
+				{
+					uint64_t offset = 0;
 
-			// If a buffer already exists, we can move the content from the old buffer to a new one. If not let's create a new one.
-			if (m_pBuffers[EnumToInt(attribute)])
-			{
-				const auto pOldBuffer = m_pBuffers[EnumToInt(attribute)];
-				offset = pOldBuffer->getSize();
+					// If a buffer already exists, we can move the content from the old buffer to a new one. If not let's create a new one.
+					if (pOldBuffer)
+					{
+						offset = pOldBuffer->getSize();
 
-				auto pNewBuffer = std::static_pointer_cast<VulkanBuffer>(getDevice().createBuffer(offset + pStaggingBuffer->getSize(), BufferUsage::Vertex));
+						auto pNewBuffer = std::static_pointer_cast<VulkanBuffer>(getDevice().createBuffer(offset + pStaggingBuffer->getSize(), BufferUsage::Vertex));
 
-				// Create the command buffer to copy.
-				auto vCommandBuffer = VulkanCommandBuffers(getDevicePointerAs<VulkanDevice>());
-				vCommandBuffer.begin();
+						// Create the command buffer to copy.
+						auto vCommandBuffer = VulkanCommandBuffers(getDevicePointerAs<VulkanDevice>());
+						vCommandBuffer.begin();
 
-				// Copy the buffers.
-				pNewBuffer->copyFromBatched(&vCommandBuffer, pOldBuffer.get());
-				pNewBuffer->copyFromBatched(&vCommandBuffer, pStaggingBuffer, 0, offset);
+						// Copy the buffers.
+						pNewBuffer->copyFromBatched(&vCommandBuffer, pOldBuffer.get());
+						pNewBuffer->copyFromBatched(&vCommandBuffer, pStaggingBuffer, 0, offset);
 
-				// Submit the command.
-				vCommandBuffer.end();
-				vCommandBuffer.submitTransfer();
-				vCommandBuffer.finishExecution();
+						// Submit the command.
+						vCommandBuffer.end();
+						vCommandBuffer.submitTransfer();
+						vCommandBuffer.finishExecution();
 
-				m_pBuffers[EnumToInt(attribute)] = std::move(pNewBuffer);
-				pOldBuffer->terminate();
-			}
-			else
-			{
-				auto pNewBuffer = std::static_pointer_cast<VulkanBuffer>(getDevice().createBuffer(pStaggingBuffer->getSize(), BufferUsage::Vertex));
-				pNewBuffer->copyFrom(pStaggingBuffer);
+						pOldBuffer = std::move(pNewBuffer);
+					}
+					else
+					{
+						pOldBuffer = std::static_pointer_cast<VulkanBuffer>(getDevice().createBuffer(pStaggingBuffer->getSize(), BufferUsage::Vertex));
+						pOldBuffer->copyFrom(pStaggingBuffer);
+					}
 
-				m_pBuffers[EnumToInt(attribute)] = std::move(pNewBuffer);
-			}
-
-			return offset;
+					return offset;
+				}
+			);
 		}
 	}
 }

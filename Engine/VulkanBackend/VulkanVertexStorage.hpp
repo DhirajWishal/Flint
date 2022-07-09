@@ -51,7 +51,7 @@ namespace Flint
 			 * @param attribute The attribute to access.
 			 * @return The buffer pointer.
 			 */
-			[[nodiscard]] VulkanBuffer* getBuffer(VertexAttribute attribute) { return m_pBuffers[EnumToInt(attribute)].get(); }
+			[[nodiscard]] VulkanBuffer* getBuffer(VertexAttribute attribute) { return m_pBuffers[EnumToInt(attribute)].getUnsafe().get(); }
 
 			/**
 			 * Get the buffer containing required data.
@@ -59,10 +59,10 @@ namespace Flint
 			 * @param attribute The attribute to access.
 			 * @return The buffer pointer.
 			 */
-			[[nodiscard]] const VulkanBuffer* getBuffer(VertexAttribute attribute) const { return m_pBuffers[EnumToInt(attribute)].get(); }
+			[[nodiscard]] const VulkanBuffer* getBuffer(VertexAttribute attribute) const { return m_pBuffers[EnumToInt(attribute)].getUnsafe().get(); }
 
 		private:
-			std::array<std::shared_ptr<VulkanBuffer>, EnumToInt(VertexAttribute::Max)> m_pBuffers;
+			std::array<Synchronized<std::shared_ptr<VulkanBuffer>>, EnumToInt(VertexAttribute::Max)> m_pBuffers;
 		};
 	}
 }

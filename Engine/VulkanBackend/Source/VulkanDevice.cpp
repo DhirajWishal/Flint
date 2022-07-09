@@ -471,7 +471,7 @@ namespace Flint
 
 			// Setup create info.
 			VmaAllocatorCreateInfo createInfo = {};
-			createInfo.flags = 0;
+			createInfo.flags = VMA_ALLOCATOR_CREATE_EXTERNALLY_SYNCHRONIZED_BIT;
 			createInfo.physicalDevice = m_PhysicalDevice;
 			createInfo.device = m_LogicalDevice;
 			createInfo.pVulkanFunctions = &functions;
@@ -479,14 +479,18 @@ namespace Flint
 			createInfo.vulkanApiVersion = VulkanVersion;
 
 			// Create the allocator.
-			FLINT_VK_ASSERT(vmaCreateAllocator(&createInfo, &m_Allocator), "Failed to create the allocator!");
+			m_Allocator.apply([createInfo](VmaAllocator& allocator)
+				{
+					FLINT_VK_ASSERT(vmaCreateAllocator(&createInfo, &allocator), "Failed to create the allocator!");
+				}
+			);
 		}
 
 		void VulkanDevice::destroyVMAAllocator()
 		{
 			OPTICK_EVENT();
 
-			vmaDestroyAllocator(m_Allocator);
+			m_Allocator.apply([](VmaAllocator& allocator) { vmaDestroyAllocator(allocator); });
 		}
 
 		namespace Utility

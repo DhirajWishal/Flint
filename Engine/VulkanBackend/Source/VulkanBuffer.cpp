@@ -51,7 +51,7 @@ namespace Flint
 			unmapMemory();
 
 			[[maybe_unused]] const auto lock = std::scoped_lock(m_ResouceMutex);
-			vmaDestroyBuffer(getDevice().as<VulkanDevice>()->getAllocator(), m_Buffer, m_Allocation);
+			getDevice().as<VulkanDevice>()->getAllocator().apply([this](VmaAllocator& allocator) { vmaDestroyBuffer(allocator, m_Buffer, m_Allocation); });
 			invalidate();
 		}
 
@@ -63,7 +63,11 @@ namespace Flint
 			if (!m_IsMapped)
 			{
 				[[maybe_unused]] const auto lock = std::scoped_lock(m_ResouceMutex);
-				FLINT_VK_ASSERT(vmaMapMemory(getDevice().as<VulkanDevice>()->getAllocator(), m_Allocation, reinterpret_cast<void**>(&m_pDataPointer)), "Failed to map the buffer memory!");
+				getDevice().as<VulkanDevice>()->getAllocator().apply([this](VmaAllocator& allocator)
+					{
+						FLINT_VK_ASSERT(vmaMapMemory(allocator, m_Allocation, reinterpret_cast<void**>(&m_pDataPointer)), "Failed to map the buffer memory!");
+					}
+				);
 
 				m_IsMapped = true;
 			}
@@ -79,7 +83,7 @@ namespace Flint
 			if (m_IsMapped)
 			{
 				[[maybe_unused]] const auto lock = std::scoped_lock(m_ResouceMutex);
-				vmaUnmapMemory(getDevice().as<VulkanDevice>()->getAllocator(), m_Allocation);
+				getDevice().as<VulkanDevice>()->getAllocator().apply([this](VmaAllocator& allocator) { vmaUnmapMemory(allocator, m_Allocation); });
 
 				m_IsMapped = false;
 				m_pDataPointer = nullptr;
@@ -90,6 +94,7 @@ namespace Flint
 		{
 			OPTICK_EVENT();
 
+			[[maybe_unused]] const auto lock = std::scoped_lock(m_ResouceMutex);
 			const auto copySize = size - srcOffset;
 			const auto destinationSize = getSize() - dstOffset;
 
@@ -215,21 +220,25 @@ namespace Flint
 			}
 
 			// Create the buffer.
-			VkBufferCreateInfo crateInfo = {};
-			crateInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-			crateInfo.pNext = nullptr;
-			crateInfo.flags = 0;
-			crateInfo.size = m_Size;
-			crateInfo.usage = bufferUsage;
-			crateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-			crateInfo.queueFamilyIndexCount = 0;
-			crateInfo.pQueueFamilyIndices = nullptr;
+			VkBufferCreateInfo createInfo = {};
+			createInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+			createInfo.pNext = nullptr;
+			createInfo.flags = 0;
+			createInfo.size = m_Size;
+			createInfo.usage = bufferUsage;
+			createInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+			createInfo.queueFamilyIndexCount = 0;
+			createInfo.pQueueFamilyIndices = nullptr;
 
-			VmaAllocationCreateInfo vmaAllocationCreateInfo = {};
-			vmaAllocationCreateInfo.flags = vmaFlags;
-			vmaAllocationCreateInfo.usage = memoryUsage;
+			VmaAllocationCreateInfo allocationCreateInfo = {};
+			allocationCreateInfo.flags = vmaFlags;
+			allocationCreateInfo.usage = memoryUsage;
 
-			FLINT_VK_ASSERT(vmaCreateBuffer(getDevice().as<VulkanDevice>()->getAllocator(), &crateInfo, &vmaAllocationCreateInfo, &m_Buffer, &m_Allocation, nullptr), "Failed to create the buffer!");
+			getDevice().as<VulkanDevice>()->getAllocator().apply([this, createInfo, allocationCreateInfo](VmaAllocator& allocator)
+				{
+					FLINT_VK_ASSERT(vmaCreateBuffer(allocator, &createInfo, &allocationCreateInfo, &m_Buffer, &m_Allocation, nullptr), "Failed to create the buffer!");
+				}
+			);
 
 			// Set the descriptor buffer info.
 			m_DescriptorBufferInfo.buffer = m_Buffer;

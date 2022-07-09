@@ -9,6 +9,7 @@
 #include "VulkanInstance.hpp"
 
 #include <vk_mem_alloc.h>
+
 #include <unordered_map>
 
 namespace Flint
@@ -23,7 +24,7 @@ namespace Flint
 		 * Vulkan queue structure.
 		 * This contains all the information about a single queue.
 		 */
-		struct VulkanQueue
+		struct VulkanQueue final
 		{
 			VkQueue m_Queue = VK_NULL_HANDLE;
 			uint32_t m_Family = 0;
@@ -228,7 +229,14 @@ namespace Flint
 			 *
 			 * @return The allocator.
 			 */
-			[[nodiscard]] VmaAllocator getAllocator() const { return m_Allocator; }
+			[[nodiscard]] Synchronized<VmaAllocator>& getAllocator() { return m_Allocator; }
+
+			/**
+			 * Get the VMA allocator.
+			 *
+			 * @return The allocator.
+			 */
+			[[nodiscard]] const Synchronized<VmaAllocator>& getAllocator() const { return m_Allocator; }
 
 		private:
 			/**
@@ -272,7 +280,7 @@ namespace Flint
 			VkPhysicalDevice m_PhysicalDevice = VK_NULL_HANDLE;
 			VkDevice m_LogicalDevice = VK_NULL_HANDLE;
 
-			VmaAllocator m_Allocator = nullptr;
+			Synchronized<VmaAllocator> m_Allocator = nullptr;
 		};
 
 		namespace Utility

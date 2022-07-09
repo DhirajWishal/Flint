@@ -67,7 +67,7 @@ namespace Flint
 		{
 			OPTICK_EVENT();
 
-			vmaDestroyImage(getDevice().as<VulkanDevice>()->getAllocator(), m_Image, m_Allocation);
+			getDevice().as<VulkanDevice>()->getAllocator().apply([this](VmaAllocator& allocator) { vmaDestroyImage(allocator, m_Image, m_Allocation); });
 			invalidate();
 		}
 
@@ -295,7 +295,11 @@ namespace Flint
 			VmaAllocationCreateInfo allocationCreateInfo = {};
 			allocationCreateInfo.usage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
 
-			FLINT_VK_ASSERT(vmaCreateImage(getDevice().as<VulkanDevice>()->getAllocator(), &createInfo, &allocationCreateInfo, &m_Image, &m_Allocation, nullptr), "Failed to create the image!");
+			getDevice().as<VulkanDevice>()->getAllocator().apply([this, createInfo, allocationCreateInfo](VmaAllocator& allocator)
+				{
+					FLINT_VK_ASSERT(vmaCreateImage(allocator, &createInfo, &allocationCreateInfo, &m_Image, &m_Allocation, nullptr), "Failed to create the image!");
+				}
+			);
 
 			// Make sure to validate!
 			validate();
