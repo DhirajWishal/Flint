@@ -94,7 +94,6 @@ namespace Flint
 		{
 			OPTICK_EVENT();
 
-			[[maybe_unused]] const auto lock = std::scoped_lock(m_ResouceMutex);
 			const auto copySize = size - srcOffset;
 			const auto destinationSize = getSize() - dstOffset;
 

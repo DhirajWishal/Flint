@@ -29,11 +29,23 @@ namespace Flint
 			createFramebuffers();
 
 			// Create the command buffers.
-			m_pCommandBuffers = std::make_unique<VulkanCommandBuffers>(getDevicePointerAs<VulkanDevice>(), frameCount);
+			m_pCommandBuffers = std::make_shared<VulkanCommandBuffers>(getDevicePointerAs<VulkanDevice>(), frameCount);
 
 			// Make sure to set the object as valid.
 			validate();
 
+			// Setup clear values.
+			auto& colorClearValue = m_ClearValues.emplace_back();
+			colorClearValue.color.float32[0] = 0.0f;
+			colorClearValue.color.float32[1] = 0.0f;
+			colorClearValue.color.float32[2] = 0.0f;
+			colorClearValue.color.float32[3] = 1.0f;
+
+			auto& depthClearValue = m_ClearValues.emplace_back();
+			depthClearValue.depthStencil.depth = 1.0f;
+			depthClearValue.depthStencil.stencil = 0;
+
+			// Tell the render target that we need to update everything.
 			toggleNeedToUpdate();
 		}
 
@@ -50,7 +62,7 @@ namespace Flint
 			getDevice().as<VulkanDevice>()->waitIdle();
 
 			// Destroy the command buffer.
-			m_pCommandBuffers.reset();
+			m_pCommandBuffers->terminate();
 
 			// Destroy the attachments.
 			m_pAttachments.clear();
@@ -77,21 +89,20 @@ namespace Flint
 				m_pCommandBuffers->begin();
 
 				// Bind the rasterizer.
-				VkClearValue colorClearValue = {};
-				colorClearValue.color.float32[0] = 0.0f;
-				colorClearValue.color.float32[1] = 0.0f;
-				colorClearValue.color.float32[2] = 0.0f;
-				colorClearValue.color.float32[3] = 1.0f;
+				m_pCommandBuffers->bindRenderTarget(*this, m_ClearValues, VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
-				VkClearValue depthClearValue = {};
-				depthClearValue.depthStencil.depth = 1.0f;
-				depthClearValue.depthStencil.stencil = 0;
-
-				m_pCommandBuffers->bindRenderTarget(*this, { colorClearValue, depthClearValue });
+				VkCommandBufferInheritanceInfo inheritanceInfo = {};
+				inheritanceInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
+				inheritanceInfo.framebuffer = getCurrentFramebuffer();
+				inheritanceInfo.occlusionQueryEnable = VK_FALSE;
+				inheritanceInfo.pipelineStatistics = 0;
+				inheritanceInfo.queryFlags = 0;
+				inheritanceInfo.renderPass = getRenderPass();
+				inheritanceInfo.subpass = 0;
 
 				// Bind the pipelines.
-				for (const auto& pPipeline : m_pPipelines)
-					pPipeline->issueDrawCalls(*m_pCommandBuffers, m_FrameIndex);
+				for (auto& pPipeline : m_pPipelines)
+					pPipeline->draw(inheritanceInfo, m_FrameIndex, m_pPipelines.size() == 1);
 
 				// Unbind the rasterizer.
 				m_pCommandBuffers->unbindRenderTarget();

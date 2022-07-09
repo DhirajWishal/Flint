@@ -84,6 +84,41 @@ namespace Flint
 			validate();
 		}
 
+		VulkanCommandBuffers::VulkanCommandBuffers(const std::shared_ptr<VulkanCommandBuffers>& pParentCommandBuffers)
+			: CommandBuffers(pParentCommandBuffers->getDevicePointer())
+			, m_pParent(pParentCommandBuffers)
+		{
+			OPTICK_EVENT();
+
+			// Create the command pool.
+			VkCommandPoolCreateInfo commandPoolCreateInfo = {};
+			commandPoolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+			commandPoolCreateInfo.pNext = nullptr;
+			commandPoolCreateInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+			commandPoolCreateInfo.queueFamilyIndex = getDevice().as<VulkanDevice>()->getGraphicsQueue().getUnsafe().m_Family;
+
+			FLINT_VK_ASSERT(getDevice().as<VulkanDevice>()->getDeviceTable().vkCreateCommandPool(getDevice().as<VulkanDevice>()->getLogicalDevice(), &commandPoolCreateInfo, nullptr, &m_CommandPool), "Failed to create the command pool!");
+
+			// Allocate the command buffers.
+			VkCommandBufferAllocateInfo allocateInfo = {};
+			allocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+			allocateInfo.pNext = nullptr;
+			allocateInfo.commandPool = m_CommandPool;
+			allocateInfo.level = VK_COMMAND_BUFFER_LEVEL_SECONDARY;
+			allocateInfo.commandBufferCount = pParentCommandBuffers->getBufferCount();
+
+			m_CommandBuffers.resize(allocateInfo.commandBufferCount);
+			FLINT_VK_ASSERT(getDevice().as<VulkanDevice>()->getDeviceTable().vkAllocateCommandBuffers(getDevice().as<VulkanDevice>()->getLogicalDevice(), &allocateInfo, m_CommandBuffers.data()), "Failed to allocate command buffers!");
+
+			// Get the current command buffer.
+			m_CurrentCommandBuffer = m_CommandBuffers[m_CurrentIndex];
+
+			// Create the fences.
+			createFences();
+
+			validate();
+		}
+
 		VulkanCommandBuffers::~VulkanCommandBuffers()
 		{
 			FLINT_TERMINATE_IF_VALID;
@@ -103,7 +138,12 @@ namespace Flint
 			invalidate();
 		}
 
-		void VulkanCommandBuffers::begin(VkCommandBufferInheritanceInfo* pInheritanceInfo)
+		std::shared_ptr<Flint::VulkanBackend::VulkanCommandBuffers> VulkanCommandBuffers::createChild()
+		{
+			return std::make_shared<Flint::VulkanBackend::VulkanCommandBuffers>(shared_from_this());
+		}
+
+		void VulkanCommandBuffers::begin()
 		{
 			OPTICK_EVENT();
 
@@ -115,10 +155,37 @@ namespace Flint
 			beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 			beginInfo.pNext = nullptr;
 			beginInfo.flags = 0;
+			beginInfo.pInheritanceInfo = nullptr;
+
+			// Now we can create the command buffer.
+			m_CurrentCommandBuffer.apply([this, beginInfo](VkCommandBuffer commandBuffer)
+				{
+					FLINT_VK_ASSERT(getDevice().as<VulkanDevice>()->getDeviceTable().vkBeginCommandBuffer(commandBuffer, &beginInfo), "Failed to begin command buffer recording!");
+				}
+			);
+			m_IsRecording = true;
+		}
+
+		void VulkanCommandBuffers::begin(VkCommandBufferInheritanceInfo* pInheritanceInfo)
+		{
+			OPTICK_EVENT();
+
+			// End recording if we are in the recording stage.
+			if (isRecording())
+				end();
+
+			VkCommandBufferBeginInfo beginInfo = {};
+			beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+			beginInfo.pNext = nullptr;
+			beginInfo.flags = VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT;
 			beginInfo.pInheritanceInfo = pInheritanceInfo;
 
 			// Now we can create the command buffer.
-			FLINT_VK_ASSERT(getDevice().as<VulkanDevice>()->getDeviceTable().vkBeginCommandBuffer(m_CurrentCommandBuffer, &beginInfo), "Failed to begin command buffer recording!");
+			m_CurrentCommandBuffer.apply([this, beginInfo](VkCommandBuffer commandBuffer)
+				{
+					FLINT_VK_ASSERT(getDevice().as<VulkanDevice>()->getDeviceTable().vkBeginCommandBuffer(commandBuffer, &beginInfo), "Failed to begin command buffer recording!");
+				}
+			);
 			m_IsRecording = true;
 		}
 
@@ -135,17 +202,22 @@ namespace Flint
 			renderPassBeginInfo.clearValueCount = 1;
 			renderPassBeginInfo.pClearValues = &clearColors;
 
-			getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdBeginRenderPass(m_CurrentCommandBuffer, &renderPassBeginInfo, VkSubpassContents::VK_SUBPASS_CONTENTS_INLINE);
+			//m_CurrentCommandBuffer.apply([this](VkCommandBuffer commandBuffer) {});
+			m_CurrentCommandBuffer.apply([this, renderPassBeginInfo](VkCommandBuffer commandBuffer)
+				{
+					getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VkSubpassContents::VK_SUBPASS_CONTENTS_INLINE);
+				}
+			);
 		}
 
 		void VulkanCommandBuffers::unbindWindow() const
 		{
 			OPTICK_EVENT();
 
-			getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdEndRenderPass(m_CurrentCommandBuffer);
+			m_CurrentCommandBuffer.apply([this](VkCommandBuffer commandBuffer) { getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdEndRenderPass(commandBuffer); });
 		}
 
-		void VulkanCommandBuffers::bindRenderTarget(const VulkanRasterizer& rasterizer, const std::vector<VkClearValue>& clearColors) const noexcept
+		void VulkanCommandBuffers::bindRenderTarget(const VulkanRasterizer& rasterizer, const std::vector<VkClearValue>& clearColors, VkSubpassContents subpassContents /*= VK_SUBPASS_CONTENTS_INLINE*/) const noexcept
 		{
 			OPTICK_EVENT();
 
@@ -158,14 +230,18 @@ namespace Flint
 			renderPassBeginInfo.clearValueCount = static_cast<uint32_t>(clearColors.size());
 			renderPassBeginInfo.pClearValues = clearColors.data();
 
-			getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdBeginRenderPass(m_CurrentCommandBuffer, &renderPassBeginInfo, VkSubpassContents::VK_SUBPASS_CONTENTS_INLINE);
+			m_CurrentCommandBuffer.apply([this, renderPassBeginInfo, subpassContents](VkCommandBuffer commandBuffer)
+				{
+					getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, subpassContents);
+				}
+			);
 		}
 
 		void VulkanCommandBuffers::unbindRenderTarget() const
 		{
 			OPTICK_EVENT();
 
-			getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdEndRenderPass(m_CurrentCommandBuffer);
+			m_CurrentCommandBuffer.apply([this](VkCommandBuffer commandBuffer) { getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdEndRenderPass(commandBuffer); });
 		}
 
 		void VulkanCommandBuffers::changeImageLayout(VkImage image, VkImageLayout currentLayout, VkImageLayout newLayout, VkImageAspectFlags aspectFlags, uint32_t mipLevels /*= 1*/, uint32_t layers /*= 1*/) const
@@ -270,7 +346,11 @@ namespace Flint
 			const auto destinationStage = Utility::GetPipelineStageFlags(memorybarrier.dstAccessMask);
 
 			// Issue the commands. 
-			getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdPipelineBarrier(m_CurrentCommandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &memorybarrier);
+			m_CurrentCommandBuffer.apply([this, sourceStage, destinationStage, memorybarrier](VkCommandBuffer commandBuffer)
+				{
+					getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &memorybarrier);
+				}
+			);
 		}
 
 		void VulkanCommandBuffers::copyBuffer(VkBuffer srcBuffer, uint64_t size, uint64_t srcOffset, VkBuffer dstBuffer, uint64_t dstOffset) const noexcept
@@ -282,7 +362,11 @@ namespace Flint
 			bufferCopy.srcOffset = srcOffset;
 			bufferCopy.dstOffset = dstOffset;
 
-			getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdCopyBuffer(m_CurrentCommandBuffer, srcBuffer, dstBuffer, 1, &bufferCopy);
+			m_CurrentCommandBuffer.apply([this, srcBuffer, dstBuffer, bufferCopy](VkCommandBuffer commandBuffer)
+				{
+					getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &bufferCopy);
+				}
+			);
 		}
 
 		void VulkanCommandBuffers::copyBufferToImage(VkBuffer srcBuffer, uint64_t bufferOffset, uint32_t bufferHeight, uint32_t bufferWidth, VkImage dstImage, VkImageLayout layout, VkExtent3D imageExtent, VkOffset3D imageOffset, VkImageSubresourceLayers imageSubresource) const noexcept
@@ -297,7 +381,11 @@ namespace Flint
 			imageCopy.bufferImageHeight = bufferHeight;
 			imageCopy.bufferRowLength = bufferWidth;
 
-			getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdCopyBufferToImage(m_CurrentCommandBuffer, srcBuffer, dstImage, layout, 1, &imageCopy);
+			m_CurrentCommandBuffer.apply([this, srcBuffer, dstImage, layout, imageCopy](VkCommandBuffer commandBuffer)
+				{
+					getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdCopyBufferToImage(commandBuffer, srcBuffer, dstImage, layout, 1, &imageCopy);
+				}
+			);
 		}
 
 		void VulkanCommandBuffers::copyImageToBuffer(VkImage srcImage, VkImageLayout layout, VkExtent3D imageExtent, VkOffset3D imageOffset, VkImageSubresourceLayers imageSubresource, VkBuffer dstBuffer, uint64_t bufferOffset, uint32_t bufferHeight, uint32_t bufferWidth) const noexcept
@@ -312,14 +400,22 @@ namespace Flint
 			imageCopy.bufferImageHeight = bufferHeight;
 			imageCopy.bufferRowLength = bufferWidth;
 
-			getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdCopyImageToBuffer(m_CurrentCommandBuffer, srcImage, layout, dstBuffer, 1, &imageCopy);
+			m_CurrentCommandBuffer.apply([this, srcImage, layout, dstBuffer, imageCopy](VkCommandBuffer commandBuffer)
+				{
+					getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdCopyImageToBuffer(commandBuffer, srcImage, layout, dstBuffer, 1, &imageCopy);
+				}
+			);
 		}
 
 		void VulkanCommandBuffers::bindRasterizingPipeline(VkPipeline pipeline) const noexcept
 		{
 			OPTICK_EVENT();
 
-			getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdBindPipeline(m_CurrentCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+			m_CurrentCommandBuffer.apply([this, pipeline](VkCommandBuffer commandBuffer)
+				{
+					getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+				}
+			);
 		}
 
 		void VulkanCommandBuffers::bindVertexBuffers(const VulkanVertexStorage& vertexStorage, const std::vector<VertexInput>& inputs) const noexcept
@@ -337,29 +433,57 @@ namespace Flint
 					buffers.emplace_back(pBuffer->getBuffer());
 			}
 
-			const auto offsets = std::vector<VkDeviceSize>(buffers.size(), 0);
-			getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdBindVertexBuffers(m_CurrentCommandBuffer, 0, static_cast<uint32_t>(buffers.size()), buffers.data(), offsets.data());
+			m_CurrentCommandBuffer.apply([this, &buffers](VkCommandBuffer commandBuffer)
+				{
+					const auto offsets = std::vector<VkDeviceSize>(buffers.size(), 0);
+					getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdBindVertexBuffers(commandBuffer, 0, static_cast<uint32_t>(buffers.size()), buffers.data(), offsets.data());
+				}
+			);
 		}
 
 		void VulkanCommandBuffers::bindIndexBuffer(const VkBuffer buffer) const noexcept
 		{
 			OPTICK_EVENT();
 
-			getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdBindIndexBuffer(m_CurrentCommandBuffer, buffer, 0, VK_INDEX_TYPE_UINT32);
+			m_CurrentCommandBuffer.apply([this, buffer](VkCommandBuffer commandBuffer)
+				{
+					getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdBindIndexBuffer(commandBuffer, buffer, 0, VK_INDEX_TYPE_UINT32);
+				}
+			);
 		}
 
 		void VulkanCommandBuffers::drawIndexed(uint64_t indexCount, uint64_t indexOffset, uint64_t instanceCount, uint64_t vertexOffset) const noexcept
 		{
 			OPTICK_EVENT();
 
-			getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdDrawIndexed(m_CurrentCommandBuffer, static_cast<uint32_t>(indexCount), static_cast<uint32_t>(instanceCount), static_cast<uint32_t>(indexOffset), static_cast<int32_t>(vertexOffset), 0);
+			m_CurrentCommandBuffer.apply([this, indexCount, indexOffset, instanceCount, vertexOffset](VkCommandBuffer commandBuffer)
+				{
+					getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indexCount), static_cast<uint32_t>(instanceCount), static_cast<uint32_t>(indexOffset), static_cast<int32_t>(vertexOffset), 0);
+				}
+			);
 		}
 
 		void VulkanCommandBuffers::bindDescriptor(const VulkanRasterizingPipeline* pPipeline, VkDescriptorSet descriptorSet) const noexcept
 		{
 			OPTICK_EVENT();
 
-			getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdBindDescriptorSets(m_CurrentCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pPipeline->getProgram()->as<VulkanRasterizingProgram>()->getPipelineLayout(), 0, 1, &descriptorSet, 0, nullptr);
+			m_CurrentCommandBuffer.apply([this, pPipeline, descriptorSet](VkCommandBuffer commandBuffer)
+				{
+					getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pPipeline->getProgram()->as<VulkanRasterizingProgram>()->getPipelineLayout(), 0, 1, &descriptorSet, 0, nullptr);
+				}
+			);
+		}
+
+		void VulkanCommandBuffers::execute() const noexcept
+		{
+			if (m_pParent)
+			{
+				m_pParent->getCurrentBuffer().apply([this](VkCommandBuffer commandBuffer)
+					{
+						getDevice().as<VulkanDevice>()->getDeviceTable().vkCmdExecuteCommands(commandBuffer, 1, m_CurrentCommandBuffer.pointerUnsafe());
+					}
+				);
+			}
 		}
 
 		void VulkanCommandBuffers::end()
@@ -370,7 +494,7 @@ namespace Flint
 			if (!m_IsRecording)
 				return;
 
-			FLINT_VK_ASSERT(getDevice().as<VulkanDevice>()->getDeviceTable().vkEndCommandBuffer(m_CurrentCommandBuffer), "Failed to end command buffer recording!");
+			m_CurrentCommandBuffer.apply([this](VkCommandBuffer commandBuffer) { FLINT_VK_ASSERT(getDevice().as<VulkanDevice>()->getDeviceTable().vkEndCommandBuffer(commandBuffer), "Failed to end command buffer recording!"); });
 			m_IsRecording = false;
 		}
 
@@ -384,7 +508,7 @@ namespace Flint
 			submitInfo.waitSemaphoreCount = 1;
 			submitInfo.pWaitSemaphores = &inFlightSemaphore;
 			submitInfo.commandBufferCount = 1;
-			submitInfo.pCommandBuffers = &m_CurrentCommandBuffer;
+			submitInfo.pCommandBuffers = m_CurrentCommandBuffer.pointerUnsafe();
 			submitInfo.pWaitDstStageMask = &waitStageMask;
 			submitInfo.signalSemaphoreCount = 1;
 			submitInfo.pSignalSemaphores = &renderFinishedSemaphore;
@@ -411,7 +535,7 @@ namespace Flint
 			submitInfo.waitSemaphoreCount = 0;
 			submitInfo.pWaitSemaphores = nullptr;
 			submitInfo.commandBufferCount = 1;
-			submitInfo.pCommandBuffers = &m_CurrentCommandBuffer;
+			submitInfo.pCommandBuffers = m_CurrentCommandBuffer.pointerUnsafe();
 			submitInfo.pWaitDstStageMask = &waitStageMask;
 			submitInfo.signalSemaphoreCount = 0;
 			submitInfo.pSignalSemaphores = nullptr;
@@ -440,7 +564,7 @@ namespace Flint
 			submitInfo.waitSemaphoreCount = 0;
 			submitInfo.pWaitSemaphores = nullptr;
 			submitInfo.commandBufferCount = 1;
-			submitInfo.pCommandBuffers = &m_CurrentCommandBuffer;
+			submitInfo.pCommandBuffers = m_CurrentCommandBuffer.pointerUnsafe();
 			submitInfo.pWaitDstStageMask = &waitStageMask;
 			submitInfo.signalSemaphoreCount = 0;
 			submitInfo.pSignalSemaphores = nullptr;
@@ -469,7 +593,7 @@ namespace Flint
 			submitInfo.waitSemaphoreCount = 0;
 			submitInfo.pWaitSemaphores = nullptr;
 			submitInfo.commandBufferCount = 1;
-			submitInfo.pCommandBuffers = &m_CurrentCommandBuffer;
+			submitInfo.pCommandBuffers = m_CurrentCommandBuffer.pointerUnsafe();
 			submitInfo.pWaitDstStageMask = &waitStageMask;
 			submitInfo.signalSemaphoreCount = 0;
 			submitInfo.pSignalSemaphores = nullptr;

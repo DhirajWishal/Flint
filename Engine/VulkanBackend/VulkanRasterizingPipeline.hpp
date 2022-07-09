@@ -7,12 +7,15 @@
 #include "VulkanDevice.hpp"
 #include "VulkanDescriptorSetManager.hpp"
 
+#include <thread>
+#include <condition_variable>
+
 namespace Flint
 {
 	namespace VulkanBackend
 	{
 		class VulkanRasterizer;
-		class VulkanRasterizingProgram;	
+		class VulkanRasterizingProgram;
 		class VulkanCommandBuffers;
 
 		/**
@@ -42,6 +45,15 @@ namespace Flint
 			 * @param The current frame index.
 			 */
 			using DrawCall = std::function<void(const VulkanCommandBuffers&, uint32_t)>;
+
+			/**
+			 * Worker payload structure.
+			 */
+			struct WorkerPayload final
+			{
+				VkCommandBufferInheritanceInfo m_InheritanceInfo = {};
+				uint32_t m_FrameIndex = 0;
+			};
 
 		public:
 			/**
@@ -115,6 +127,15 @@ namespace Flint
 			[[nodiscard]] const VulkanDescriptorSetManager& getDescriptorSetManager() const { return m_DescriptorSetManager; }
 
 			/**
+			 * Draw the bind resources.
+			 *
+			 * @param inheritanceInfo The command buffer inheritance info.
+			 * @param frameIndex The current frame index.
+			 * @param shouldWait Whether or not we need to wait till the thread finishes it's execution. Default is false.
+			 */
+			void draw(VkCommandBufferInheritanceInfo inheritanceInfo, uint32_t frameIndex, bool shouldWait = false);
+
+			/**
 			 * Issue all the draw calls.
 			 *
 			 * @param commandBuffers The command buffers to record the commands.
@@ -147,7 +168,24 @@ namespace Flint
 			 */
 			[[nodiscard]] VkPipeline createVariation(VkPipelineVertexInputStateCreateInfo&& inputState, VkPipelineCache cache);
 
+			/**
+			 * Worker function.
+			 * This function is used to bind resources to secondary command buffers.
+			 */
+			void worker();
+
+			/**
+			 * Terminate the worker.
+			 */
+			void terminateWorker();
+
 		private:
+			std::jthread m_WorkerThread;
+			std::condition_variable m_ConditionVariable;
+			std::mutex m_WorkerMutex;
+			std::atomic<bool> m_ShouldRun = true;
+			std::atomic<bool> m_Updated = false;
+
 			std::unordered_map<uint64_t, Pipeline> m_Pipelines;
 			VulkanDescriptorSetManager m_DescriptorSetManager;
 
@@ -158,6 +196,9 @@ namespace Flint
 			VkPipelineMultisampleStateCreateInfo m_MultisampleStateCreateInfo = {};
 			VkPipelineDepthStencilStateCreateInfo m_DepthStencilStateCreateInfo = {};
 			VkPipelineDynamicStateCreateInfo m_DynamicStateCreateInfo = {};
+
+			WorkerPayload m_WorkerPayload = {};
+			std::shared_ptr<VulkanCommandBuffers> m_pSecondaryCommandBuffers = nullptr;
 
 			std::vector<VkPipelineColorBlendAttachmentState> m_CBASS = {};
 			std::vector<VkPipelineShaderStageCreateInfo> m_ShaderStageCreateInfo = {};

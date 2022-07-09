@@ -95,6 +95,20 @@ namespace Flint
 			 */
 			[[nodiscard]] VkFramebuffer getCurrentFramebuffer() const { return m_Framebuffers[m_FrameIndex]; }
 
+			/**
+			 * Get the command buffers.
+			 *
+			 * @return The command buffers pointer.
+			 */
+			[[nodiscard]] VulkanCommandBuffers* getCommandBuffers() { return m_pCommandBuffers.get(); }
+
+			/**
+			 * Get the command buffers.
+			 *
+			 * @return The command buffers pointer.
+			 */
+			[[nodiscard]] const VulkanCommandBuffers* getCommandBuffers() const { return m_pCommandBuffers.get(); }
+
 		private:
 			/**
 			 * Create the attachments.
@@ -126,8 +140,9 @@ namespace Flint
 
 			std::vector<std::shared_ptr<VulkanRasterizingPipeline>> m_pPipelines;
 
+			std::vector<VkClearValue> m_ClearValues;
 			std::vector<VkFramebuffer> m_Framebuffers;
-			std::unique_ptr<VulkanCommandBuffers> m_pCommandBuffers = nullptr;
+			std::shared_ptr<VulkanCommandBuffers> m_pCommandBuffers = nullptr;
 
 			VkRenderPass m_RenderPass = VK_NULL_HANDLE;
 		};

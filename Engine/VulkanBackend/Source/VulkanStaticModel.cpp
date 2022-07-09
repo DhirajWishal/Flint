@@ -320,17 +320,18 @@ namespace Flint
 
 			const auto basePath = m_AssetPath.parent_path();
 
-			std::vector<uint32_t> indices;
-			std::vector<StaticMeshStorage> meshStorages;
-			m_Meshes.resize(pScene->mNumMeshes);
-			meshStorages.resize(pScene->mNumMeshes);
-
 			std::mutex indicesMutex;
+			std::vector<uint32_t> indices;
+			auto meshStorages = std::vector<StaticMeshStorage>(pScene->mNumMeshes);
+			m_Meshes.resize(pScene->mNumMeshes);
+
 
 			// Load the meshes.
-			uint64_t vertexOffset = 0;
 			{
 				std::vector<std::future<void>> meshFutures;
+				meshFutures.reserve(pScene->mNumMeshes);
+
+				uint64_t vertexOffset = 0;
 				for (uint32_t i = 0; i < pScene->mNumMeshes; i++)
 				{
 					meshFutures.emplace_back(
@@ -338,6 +339,7 @@ namespace Flint
 							std::launch::async,
 							[this, pScene, i, vertexOffset, &indices, basePath, &indicesMutex, &meshStorages]
 							{
+								OPTICK_THREAD("Static Mesh Loader");
 								LoadStaticMesh(pScene->mMeshes[i], pScene, m_Meshes[i], meshStorages[i], *getDevice().as<VulkanDevice>(), vertexOffset, indices, indicesMutex, basePath);
 							})
 					);
@@ -358,15 +360,14 @@ namespace Flint
 				mesh.m_VertexData[EnumToInt(VertexAttribute::BiTangent)].m_Offset = m_VertexStorage.insert(VertexAttribute::BiTangent, storage.m_pBiTangentBuffer.get());
 
 				for (uint32_t t = 0; t < AI_MAX_NUMBER_OF_TEXTURECOORDS; t++)
-					mesh.m_VertexData[t].m_Offset = m_VertexStorage.insert(static_cast<Flint::VertexAttribute>(EnumToInt(Flint::VertexAttribute::Texture0) + t), storage.m_pTextureBuffers[t].get());
+					mesh.m_VertexData[EnumToInt(Flint::VertexAttribute::Texture0) + t].m_Offset = m_VertexStorage.insert(static_cast<Flint::VertexAttribute>(EnumToInt(Flint::VertexAttribute::Texture0) + t), storage.m_pTextureBuffers[t].get());
 
 				for (uint32_t c = 0; c < AI_MAX_NUMBER_OF_COLOR_SETS; c++)
-					mesh.m_VertexData[c].m_Offset = m_VertexStorage.insert(static_cast<Flint::VertexAttribute>(EnumToInt(Flint::VertexAttribute::Color0) + c), storage.m_pColorBuffers[c].get());
+					mesh.m_VertexData[EnumToInt(Flint::VertexAttribute::Color0) + c].m_Offset = m_VertexStorage.insert(static_cast<Flint::VertexAttribute>(EnumToInt(Flint::VertexAttribute::Color0) + c), storage.m_pColorBuffers[c].get());
 			}
 
 			// Finally, copy the index data to a staging buffer, and copy it to the final index buffer.
 			auto pIndexData = getDevice().createBuffer(indices.size() * sizeof(uint32_t), BufferUsage::Staging, reinterpret_cast<const std::byte*>(indices.data()));
-			indices.clear();
 
 			m_pIndexBuffer = std::static_pointer_cast<VulkanBuffer>(getDevice().createBuffer(pIndexData->getSize(), BufferUsage::Index));
 			m_pIndexBuffer->copyFrom(pIndexData.get(), 0, 0);

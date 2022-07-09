@@ -201,7 +201,7 @@ namespace Flint
 				barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 				barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
 
-				pVulkanDevice->getDeviceTable().vkCmdPipelineBarrier(commandBuffers.getCurrentBuffer(),
+				pVulkanDevice->getDeviceTable().vkCmdPipelineBarrier(commandBuffers.getCurrentBuffer().getUnsafe(),
 					VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0,
 					0, nullptr,
 					0, nullptr,
@@ -221,7 +221,7 @@ namespace Flint
 				blit.dstSubresource.baseArrayLayer = 0;
 				blit.dstSubresource.layerCount = 1;
 
-				pVulkanDevice->getDeviceTable().vkCmdBlitImage(commandBuffers.getCurrentBuffer(),
+				pVulkanDevice->getDeviceTable().vkCmdBlitImage(commandBuffers.getCurrentBuffer().getUnsafe(),
 					m_Image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
 					m_Image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 					1, &blit,
@@ -232,7 +232,7 @@ namespace Flint
 				barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
 				barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
-				pVulkanDevice->getDeviceTable().vkCmdPipelineBarrier(commandBuffers.getCurrentBuffer(),
+				pVulkanDevice->getDeviceTable().vkCmdPipelineBarrier(commandBuffers.getCurrentBuffer().getUnsafe(),
 					VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0,
 					0, nullptr,
 					0, nullptr,
@@ -249,7 +249,7 @@ namespace Flint
 			barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 			barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
-			pVulkanDevice->getDeviceTable().vkCmdPipelineBarrier(commandBuffers.getCurrentBuffer(),
+			pVulkanDevice->getDeviceTable().vkCmdPipelineBarrier(commandBuffers.getCurrentBuffer().getUnsafe(),
 				VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0,
 				0, nullptr,
 				0, nullptr,

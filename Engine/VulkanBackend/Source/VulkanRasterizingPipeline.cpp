@@ -291,11 +291,13 @@ namespace Flint
 		VulkanRasterizingPipeline::VulkanRasterizingPipeline(const std::shared_ptr<VulkanDevice>& pDevice, const std::shared_ptr<VulkanRasterizer>& pRasterizer, const std::shared_ptr<VulkanRasterizingProgram>& pProgram, const RasterizingPipelineSpecification& specification, std::unique_ptr<PipelineCacheHandler>&& pCacheHandler /*= nullptr*/)
 			: RasterizingPipeline(pDevice, pRasterizer, pProgram, specification, std::move(pCacheHandler))
 			, m_DescriptorSetManager(pDevice, pRasterizer->getFrameCount())
+			, m_WorkerThread(&VulkanRasterizingPipeline::worker, this)
+			, m_pSecondaryCommandBuffers(pRasterizer->getCommandBuffers()->createChild())
 		{
 			OPTICK_EVENT();
 
 			// Setup the defaults.
-			setupDefaults(std::move(specification));
+			setupDefaults(specification);
 
 			// Setup the descriptor set manager.
 			m_DescriptorSetManager.setup(pProgram->getLayoutBindings(), pProgram->getPoolSizes(), pProgram->getDescriptorSetLayout());
@@ -320,7 +322,9 @@ namespace Flint
 				getDevice().as<VulkanDevice>()->getDeviceTable().vkDestroyPipelineCache(getDevice().as<VulkanDevice>()->getLogicalDevice(), pipeline.m_PipelineCache, nullptr);
 			}
 
+			m_pSecondaryCommandBuffers->terminate();
 			m_DescriptorSetManager.destroy();
+			terminateWorker();
 			invalidate();
 		}
 
@@ -472,6 +476,24 @@ namespace Flint
 		void VulkanRasterizingPipeline::notifyRenderTarget()
 		{
 			getRasterizer()->toggleNeedToUpdate();
+		}
+
+		void VulkanRasterizingPipeline::draw(VkCommandBufferInheritanceInfo inheritanceInfo, uint32_t frameIndex, bool shouldWait /*= false*/)
+		{
+			{
+				[[maybe_unused]] const auto lock = std::scoped_lock(m_WorkerMutex);
+				m_WorkerPayload.m_InheritanceInfo = inheritanceInfo;
+				m_WorkerPayload.m_FrameIndex = frameIndex;
+			}
+
+			m_Updated = false;
+			m_ConditionVariable.notify_one();
+
+			if (shouldWait)
+			{
+				auto uniqueLock = std::unique_lock(m_WorkerMutex);
+				m_ConditionVariable.wait(uniqueLock);
+			}
 		}
 
 		void VulkanRasterizingPipeline::issueDrawCalls(const VulkanCommandBuffers& commandBuffers, uint32_t frameIndex) const
@@ -633,6 +655,38 @@ namespace Flint
 			FLINT_VK_ASSERT(getDevice().as<VulkanDevice>()->getDeviceTable().vkCreateGraphicsPipelines(getDevice().as<VulkanDevice>()->getLogicalDevice(), cache, 1, &createInfo, nullptr, &pipeline), "Failed to create the pipeline!");
 
 			return pipeline;
+		}
+
+		void VulkanRasterizingPipeline::worker()
+		{
+			OPTICK_THREAD("Rasterizing Pipeline Worker");
+
+			do
+			{
+				auto uniqueLock = std::unique_lock(m_WorkerMutex);
+				m_ConditionVariable.wait(uniqueLock);
+
+				// Make sure to only run if we need to.
+				if (m_ShouldRun)
+				{
+					m_pSecondaryCommandBuffers->begin(&m_WorkerPayload.m_InheritanceInfo);
+					issueDrawCalls(*m_pSecondaryCommandBuffers, m_WorkerPayload.m_FrameIndex);
+					m_pSecondaryCommandBuffers->end();
+					m_pSecondaryCommandBuffers->execute();
+					m_pSecondaryCommandBuffers->next();
+
+					// Notify that we finished execution.
+					m_ConditionVariable.notify_one();
+				}
+
+			} while (m_ShouldRun);
+		}
+
+		void VulkanRasterizingPipeline::terminateWorker()
+		{
+			m_ShouldRun = false;
+			m_ConditionVariable.notify_one();
+			m_WorkerThread.join();
 		}
 	}
 }

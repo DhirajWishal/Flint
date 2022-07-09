@@ -16,6 +16,7 @@ namespace Flint
 		None,
 		Keyboard,
 		Mouse,
+		Window,
 		Close
 	};
 

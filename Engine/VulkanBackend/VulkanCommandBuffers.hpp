@@ -19,7 +19,7 @@ namespace Flint
 		 * Vulkan command buffers class.
 		 * This contains the command buffers needed for certain actions.
 		 */
-		class VulkanCommandBuffers final : public CommandBuffers
+		class VulkanCommandBuffers final : public std::enable_shared_from_this<VulkanCommandBuffers>, public CommandBuffers
 		{
 			/**
 			 * Fence structure.
@@ -27,7 +27,7 @@ namespace Flint
 			 *
 			 * If a fence is free, we don't need to wait.
 			 */
-			struct Fence
+			struct Fence final
 			{
 				VkFence m_Fence = VK_NULL_HANDLE;
 				bool m_IsFree = true;
@@ -53,6 +53,14 @@ namespace Flint
 			explicit VulkanCommandBuffers(const std::shared_ptr<VulkanDevice>& pDevice, VkCommandBufferLevel level = VK_COMMAND_BUFFER_LEVEL_PRIMARY);
 
 			/**
+			 * Explicit constructor.
+			 * Create the command buffer as a secondary command buffer.
+			 *
+			 * @param pParentCommandBuffers The parent command buffer pointer.
+			 */
+			explicit VulkanCommandBuffers(const std::shared_ptr<VulkanCommandBuffers>& pParentCommandBuffers);
+
+			/**
 			 * Destructor.
 			 */
 			~VulkanCommandBuffers() override;
@@ -63,12 +71,25 @@ namespace Flint
 			void terminate() override;
 
 			/**
+			 * Create child command buffers.
+			 *
+			 * @return The child command buffers.
+			 */
+			[[nodiscard]] std::shared_ptr<VulkanCommandBuffers> createChild();
+
+			/**
+			 * Begin the command buffer.
+			 * Make sure that the command buffer has finished it's execution before calling this. It can be done by calling 'finishExecution()'
+			 */
+			void begin();
+
+			/**
 			 * Begin the command buffer.
 			 * Make sure that the command buffer has finished it's execution before calling this. It can be done by calling 'finishExecution()'
 			 *
-			 * @param pInheritanceInfo The inheritance info to pass down to the command buffer. Default is nullptr.
+			 * @param pInheritanceInfo The inheritance info to pass down to the command buffer.
 			 */
-			void begin(VkCommandBufferInheritanceInfo* pInheritanceInfo = nullptr);
+			void begin(VkCommandBufferInheritanceInfo* pInheritanceInfo);
 
 			/**
 			 * Bind a window to the command buffer.
@@ -88,8 +109,9 @@ namespace Flint
 			 *
 			 * @param rasterizer The rasterizer to bind.
 			 * @param clearColors The clear colors to bind.
+			 * @param subpassContents The subpass contents. Default is VK_SUBPASS_CONTENTS_INLINE.
 			 */
-			void bindRenderTarget(const VulkanRasterizer& rasterizer, const std::vector<VkClearValue>& clearColors) const noexcept;
+			void bindRenderTarget(const VulkanRasterizer& rasterizer, const std::vector<VkClearValue>& clearColors, VkSubpassContents subpassContents = VK_SUBPASS_CONTENTS_INLINE) const noexcept;
 
 			/**
 			 * Unbind the bound render target.
@@ -129,7 +151,7 @@ namespace Flint
 			 * @param layout The image layout.
 			 * @param imageExtent The image extent.
 			 * @param imageOffset The image offset.
-			 * @param imageSubresource The image subresource layers.
+			 * @param imageSubresource The image sub resource layers.
 			 */
 			void copyBufferToImage(VkBuffer srcBuffer, uint64_t bufferOffset, uint32_t bufferHeight, uint32_t bufferWidth, VkImage dstImage, VkImageLayout layout, VkExtent3D imageExtent, VkOffset3D imageOffset, VkImageSubresourceLayers imageSubresource) const noexcept;
 
@@ -140,7 +162,7 @@ namespace Flint
 			 * @param layout The image layout.
 			 * @param imageExtent The image extent.
 			 * @param imageOffset The image offset.
-			 * @param imageSubresource The image subresource layers.
+			 * @param imageSubresource The image sub resource layers.
 			 * @param dstBuffer The destination buffer.
 			 * @param bufferHeight The height of the image in the buffer.
 			 * @param bufferWidth The width of the image in the buffer.
@@ -186,6 +208,11 @@ namespace Flint
 			 * @param descriptorSet The descriptor set to bind.
 			 */
 			void bindDescriptor(const VulkanRasterizingPipeline* pPipeline, VkDescriptorSet descriptorSet) const noexcept;
+
+			/**
+			 * Execute the current commands on the parent command buffer if available.
+			 */
+			void execute() const noexcept;
 
 			/**
 			 * End recording.
@@ -239,7 +266,14 @@ namespace Flint
 			 *
 			 * @return The command buffer.
 			 */
-			[[nodiscard]] VkCommandBuffer getCurrentBuffer() const { return m_CurrentCommandBuffer; }
+			[[nodiscard]] Synchronized<VkCommandBuffer>& getCurrentBuffer() { return m_CurrentCommandBuffer; }
+
+			/**
+			 * Get the current command buffer.
+			 *
+			 * @return The command buffer.
+			 */
+			[[nodiscard]] const Synchronized<VkCommandBuffer>& getCurrentBuffer() const { return m_CurrentCommandBuffer; }
 
 			/**
 			 * Get the current command pool.
@@ -270,8 +304,10 @@ namespace Flint
 			std::vector<VkCommandBuffer> m_CommandBuffers;
 			std::vector<Fence> m_CommandFences;
 
+			std::shared_ptr<VulkanCommandBuffers> m_pParent = nullptr;
+
 			VkCommandPool m_CommandPool = VK_NULL_HANDLE;
-			VkCommandBuffer m_CurrentCommandBuffer = VK_NULL_HANDLE;
+			Synchronized<VkCommandBuffer> m_CurrentCommandBuffer = VK_NULL_HANDLE;
 
 			uint32_t m_CurrentIndex = 0;
 

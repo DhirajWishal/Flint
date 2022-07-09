@@ -41,8 +41,19 @@ namespace Flint
 				break;
 
 			case SDL_WINDOWEVENT:
+			{
 				//const auto pWindow = reinterpret_cast<Window*>(SDL_GetWindowData(SDL_GetWindowFromID(sdlEvent.window.windowID), "this"));
-				break;
+				//SDL_WindowEventID id;
+				//switch (id)
+				//{
+				//case SDL_WINDOWEVENT_CLOSE:
+				//	break;
+				//
+				//default:
+				//	break;
+				//}
+				return EventType::Window;
+			}
 
 			case SDL_SYSWMEVENT:
 				break;

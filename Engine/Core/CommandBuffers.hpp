@@ -29,6 +29,13 @@ namespace Flint
 		 */
 		virtual ~CommandBuffers() = default;
 
+		/**
+		 * Get the command buffer count.
+		 *
+		 * @return The internal buffer count.
+		 */
+		[[nodiscard]] uint32_t getBufferCount() const { return m_BufferCount; }
+
 	protected:
 		const uint32_t m_BufferCount;
 	};
