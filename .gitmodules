@@ -1,27 +1,42 @@
-[submodule "ThirdParty/Assimp"]
-	path = ThirdParty/Assimp
-	url = https://github.com/DhirajWishal/assimp
-[submodule "ThirdParty/glfw"]
-	path = ThirdParty/glfw
-	url = https://github.com/DhirajWishal/glfw
-[submodule "ThirdParty/SPIRV-Reflect"]
-	path = ThirdParty/SPIRV-Reflect
-	url = https://github.com/DhirajWishal/SPIRV-Reflect
-[submodule "ThirdParty/gdown"]
-	path = ThirdParty/gdown
-	url = https://github.com/DhirajWishal/gdown
-[submodule "ThirdParty/premake"]
-	path = ThirdParty/premake
-	url = https://github.com/DhirajWishal/premake-core
-[submodule "ThirdParty/imgui"]
-	path = ThirdParty/imgui
-	url = https://github.com/DhirajWishal/imgui
-[submodule "ThirdParty/ImGuizmo"]
-	path = ThirdParty/ImGuizmo
-	url = https://github.com/DhirajWishal/ImGuizmo
+[submodule "ThirdParty/assimp"]
+	path = ThirdParty/assimp
+	url = https://github.com/assimp/assimp
 [submodule "ThirdParty/glm"]
 	path = ThirdParty/glm
-	url = https://github.com/DhirajWishal/glm
+	url = https://github.com/g-truc/glm
+[submodule "ThirdParty/SPIRV-Reflect"]
+	path = ThirdParty/SPIRV-Reflect
+	url = https://github.com/KhronosGroup/SPIRV-Reflect
+[submodule "ThirdParty/imgui"]
+	path = ThirdParty/imgui
+	url = https://github.com/ocornut/imgui
+[submodule "ThirdParty/volk"]
+	path = ThirdParty/volk
+	url = https://github.com/zeux/volk
+[submodule "ThirdParty/Vulkan-Headers"]
+	path = ThirdParty/Vulkan-Headers
+	url = https://github.com/KhronosGroup/Vulkan-Headers
+[submodule "ThirdParty/VulkanMemoryAllocator"]
+	path = ThirdParty/VulkanMemoryAllocator
+	url = https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator
 [submodule "ThirdParty/xxHash"]
 	path = ThirdParty/xxHash
-	url = https://github.com/DhirajWishal/xxHash
+	url = https://github.com/Cyan4973/xxHash
+[submodule "ThirdParty/optick"]
+	path = ThirdParty/optick
+	url = https://github.com/bombomby/optick
+[submodule "ThirdParty/glTF-Sample-Models"]
+	path = ThirdParty/glTF-Sample-Models
+	url = https://github.com/KhronosGroup/glTF-Sample-Models
+[submodule "ThirdParty/entt"]
+	path = ThirdParty/entt
+	url = https://github.com/skypjack/entt
+[submodule "ThirdParty/SDL"]
+	path = ThirdParty/SDL
+	url = https://github.com/libsdl-org/SDL
+[submodule "ThirdParty/spdlog"]
+	path = ThirdParty/spdlog
+	url = https://github.com/gabime/spdlog
+[submodule "ThirdParty/stb"]
+	path = ThirdParty/stb
+	url = https://github.com/nothings/stb

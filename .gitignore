@@ -332,7 +332,6 @@ ASALocalRun/
 # Other files and folders
 Builds/
 .vscode/
-Demos/**/*.json
 
 *.sln
 *.vcxproj
@@ -340,10 +339,12 @@ Demos/**/*.json
 *.vcxproj.user
 
 Makefile
-Demos/**/Makefile
-Code/**/Makefile
-Workspace/*
-!Workspace/Flint
-!Workspace/Fonts
-!Workspace/Shaders
-!Workspace/Tools
+Source/**/Makefile
+
+CMakeFiles/
+Source/**/*.cmake
+CMakeCache.txt
+cmake_install.cmake
+out/
+CMakeSettings.json
+CppProperties.json
