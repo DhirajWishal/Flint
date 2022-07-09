@@ -10,6 +10,8 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
+		class VulkanCommandBuffers;
+
 		/**
 		 * Vulkan texture 2D class.
 		 */

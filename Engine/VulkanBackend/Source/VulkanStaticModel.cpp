@@ -18,21 +18,19 @@
 namespace /* anonymous */
 {
 	/**
-	 * Copy data to the storage.
-	 *
-	 * @param attribute The type of the attribute data.
-	 * @param pStorage The storage pointer to which the data are saved.
-	 * @param size The size of the data.
-	 * @param pData The data pointer to load the data from.
-	 * @return The offset of the data in the storage.
+	 * Static mesh storage structure.
+	 * This container temporarily stores all the static mesh's data.
 	 */
-	uint64_t CopyToStorage(Flint::VertexAttribute attribute, Flint::VulkanBackend::VulkanVertexStorage* pStorage, uint64_t size, const std::byte* pData)
+	struct StaticMeshStorage final
 	{
-		OPTICK_EVENT();
+		std::array<std::shared_ptr<Flint::VulkanBackend::VulkanBuffer>, AI_MAX_NUMBER_OF_TEXTURECOORDS> m_pTextureBuffers{ nullptr };
+		std::array<std::shared_ptr<Flint::VulkanBackend::VulkanBuffer>, AI_MAX_NUMBER_OF_COLOR_SETS> m_pColorBuffers{ nullptr };
 
-		auto pVertexData = pStorage->getDevice().createBuffer(size, Flint::BufferUsage::Staging, pData);
-		return pStorage->insert(attribute, pVertexData.get());
-	}
+		std::shared_ptr<Flint::VulkanBackend::VulkanBuffer> m_pNormalBuffer = nullptr;
+		std::shared_ptr<Flint::VulkanBackend::VulkanBuffer> m_pPositionBuffer = nullptr;
+		std::shared_ptr<Flint::VulkanBackend::VulkanBuffer> m_pTangentBuffer = nullptr;
+		std::shared_ptr<Flint::VulkanBackend::VulkanBuffer> m_pBiTangentBuffer = nullptr;
+	};
 
 	/**
 	 * Get the Vulkan format from the attribute.
@@ -101,19 +99,20 @@ namespace /* anonymous */
 	 * @param pMesh The Assimp mesh pointer.
 	 * @param pScene th Assimp scene pointer.
 	 * @param mesh The mesh to load the data to.
-	 * @param storage The vertex storage.
-	 * @param vertexCount The vertex count variable.
+	 * @param meshStorage The mesh storage to load all the data to.
+	 * @param device The device to load the data to.
+	 * @param vertexOffset The vertex offset of the current mesh.
 	 * @param indices The index storage.
 	 * @param indicesMutex The mutex used to lock the index storage.
 	 * @param basePath The base path to load the assets from.
 	 */
-	void LoadStaticMesh(const aiMesh* pMesh, const aiScene* pScene, Flint::StaticMesh& mesh, Flint::VulkanBackend::VulkanVertexStorage& storage, std::atomic<uint64_t>& vertexCount, std::vector<uint32_t>& indices, std::mutex& indicesMutex, const std::filesystem::path& basePath)
+	void LoadStaticMesh(const aiMesh* pMesh, const aiScene* pScene, Flint::StaticMesh& mesh, StaticMeshStorage& meshStorage, Flint::VulkanBackend::VulkanDevice& device, uint64_t vertexOffset, std::vector<uint32_t>& indices, std::mutex& indicesMutex, const std::filesystem::path& basePath)
 	{
 		OPTICK_EVENT();
 
 		mesh.m_Name = pMesh->mName.C_Str();
 		mesh.m_VertexCount = pMesh->mNumVertices;
-		mesh.m_VertexOffset = vertexCount;
+		mesh.m_VertexOffset = vertexOffset;
 
 		// Load the normals if possible.
 		if (pMesh->HasNormals())
@@ -122,7 +121,7 @@ namespace /* anonymous */
 
 			normalData.m_Stride = sizeof(aiVector3D);
 			normalData.m_Size = pMesh->mNumVertices * sizeof(aiVector3D);
-			normalData.m_Offset = CopyToStorage(Flint::VertexAttribute::Normal, &storage, normalData.m_Size, reinterpret_cast<const std::byte*>(pMesh->mNormals));
+			meshStorage.m_pNormalBuffer = std::static_pointer_cast<Flint::VulkanBackend::VulkanBuffer>(device.createBuffer(normalData.m_Size, Flint::BufferUsage::Staging, reinterpret_cast<const std::byte*>(pMesh->mNormals)));
 		}
 
 		// Load the positions if possible.
@@ -132,7 +131,7 @@ namespace /* anonymous */
 
 			vertexData.m_Stride = sizeof(aiVector3D);
 			vertexData.m_Size = pMesh->mNumVertices * sizeof(aiVector3D);
-			vertexData.m_Offset = CopyToStorage(Flint::VertexAttribute::Position, &storage, vertexData.m_Size, reinterpret_cast<const std::byte*>(pMesh->mVertices));
+			meshStorage.m_pPositionBuffer = std::static_pointer_cast<Flint::VulkanBackend::VulkanBuffer>(device.createBuffer(vertexData.m_Size, Flint::BufferUsage::Staging, reinterpret_cast<const std::byte*>(pMesh->mVertices)));
 		}
 
 		// Load the tangents and bi-tangents if possible.
@@ -143,14 +142,14 @@ namespace /* anonymous */
 
 			tangentData.m_Stride = sizeof(aiVector3D);
 			tangentData.m_Size = pMesh->mNumVertices * sizeof(aiVector3D);
-			tangentData.m_Offset = CopyToStorage(Flint::VertexAttribute::Tangent, &storage, tangentData.m_Size, reinterpret_cast<const std::byte*>(pMesh->mTangents));
+			meshStorage.m_pTangentBuffer = std::static_pointer_cast<Flint::VulkanBackend::VulkanBuffer>(device.createBuffer(tangentData.m_Size, Flint::BufferUsage::Staging, reinterpret_cast<const std::byte*>(pMesh->mTangents)));
 
 			// Load the bi-tangent data.
 			auto& biTangentData = mesh.m_VertexData[EnumToInt(Flint::VertexAttribute::BiTangent)];
 
 			biTangentData.m_Stride = sizeof(aiVector3D);
 			biTangentData.m_Size = pMesh->mNumVertices * sizeof(aiVector3D);
-			biTangentData.m_Offset = CopyToStorage(Flint::VertexAttribute::BiTangent, &storage, biTangentData.m_Size, reinterpret_cast<const std::byte*>(pMesh->mBitangents));
+			meshStorage.m_pBiTangentBuffer = std::static_pointer_cast<Flint::VulkanBackend::VulkanBuffer>(device.createBuffer(biTangentData.m_Size, Flint::BufferUsage::Staging, reinterpret_cast<const std::byte*>(pMesh->mBitangents)));
 		}
 
 		// Load the texture coordinates if possible.
@@ -168,7 +167,7 @@ namespace /* anonymous */
 
 				textureData.m_Stride = sizeof(aiVector2D);
 				textureData.m_Size = pMesh->mNumVertices * sizeof(aiVector2D);
-				textureData.m_Offset = CopyToStorage(static_cast<Flint::VertexAttribute>(EnumToInt(Flint::VertexAttribute::Texture0) + t), &storage, textureData.m_Size, reinterpret_cast<const std::byte*>(textureCoordinates.data()));
+				meshStorage.m_pTextureBuffers[t] = std::static_pointer_cast<Flint::VulkanBackend::VulkanBuffer>(device.createBuffer(textureData.m_Size, Flint::BufferUsage::Staging, reinterpret_cast<const std::byte*>(textureCoordinates.data())));
 			}
 		}
 
@@ -181,16 +180,16 @@ namespace /* anonymous */
 
 				colorData.m_Stride = sizeof(aiColor4D);
 				colorData.m_Size = pMesh->mNumVertices * sizeof(aiColor4D);
-				colorData.m_Offset = CopyToStorage(static_cast<Flint::VertexAttribute>(EnumToInt(Flint::VertexAttribute::Color0) + c), &storage, colorData.m_Size, reinterpret_cast<const std::byte*>(pMesh->mColors[c]));
+				meshStorage.m_pColorBuffers[c] = std::static_pointer_cast<Flint::VulkanBackend::VulkanBuffer>(device.createBuffer(colorData.m_Size, Flint::BufferUsage::Staging, reinterpret_cast<const std::byte*>(pMesh->mColors[c])));
 			}
 		}
 
 		// Load the index data if possible.
 		if (pMesh->HasFaces())
 		{
+			[[maybe_unused]] const auto lock = std::scoped_lock(indicesMutex);
 			mesh.m_IndexOffset = indices.size();
 
-			[[maybe_unused]] const auto lock = std::scoped_lock(indicesMutex);
 			for (uint32_t f = 0; f < pMesh->mNumFaces; f++)
 			{
 				const auto face = pMesh->mFaces[f];
@@ -216,9 +215,6 @@ namespace /* anonymous */
 		mesh.m_TexturePaths[EnumToInt(Flint::TextureType::NormalClearCoat)] = GetTexturePath(basePath, pMaterial, AI_MATKEY_CLEARCOAT_NORMAL_TEXTURE);
 		mesh.m_TexturePaths[EnumToInt(Flint::TextureType::Transmission)] = GetTexturePath(basePath, pMaterial, AI_MATKEY_TRANSMISSION_TEXTURE);
 		mesh.m_TexturePaths[EnumToInt(Flint::TextureType::VolumeThickness)] = GetTexturePath(basePath, pMaterial, AI_MATKEY_VOLUME_THICKNESS_TEXTURE);
-
-		// Increment the vertex count.
-		vertexCount += pMesh->mNumVertices;
 	}
 }
 
@@ -325,12 +321,14 @@ namespace Flint
 			const auto basePath = m_AssetPath.parent_path();
 
 			std::vector<uint32_t> indices;
+			std::vector<StaticMeshStorage> meshStorages;
 			m_Meshes.resize(pScene->mNumMeshes);
+			meshStorages.resize(pScene->mNumMeshes);
 
 			std::mutex indicesMutex;
 
 			// Load the meshes.
-			std::atomic<uint64_t> vertexCount = 0;
+			uint64_t vertexOffset = 0;
 			{
 				std::vector<std::future<void>> meshFutures;
 				for (uint32_t i = 0; i < pScene->mNumMeshes; i++)
@@ -338,12 +336,32 @@ namespace Flint
 					meshFutures.emplace_back(
 						std::async(
 							std::launch::async,
-							[this, pScene, i, &vertexCount, &indices, basePath, &indicesMutex]
+							[this, pScene, i, vertexOffset, &indices, basePath, &indicesMutex, &meshStorages]
 							{
-								LoadStaticMesh(pScene->mMeshes[i], pScene, m_Meshes[i], m_VertexStorage, vertexCount, indices, indicesMutex, basePath);
+								LoadStaticMesh(pScene->mMeshes[i], pScene, m_Meshes[i], meshStorages[i], *getDevice().as<VulkanDevice>(), vertexOffset, indices, indicesMutex, basePath);
 							})
 					);
+
+					vertexOffset += pScene->mMeshes[i]->mNumVertices;
 				}
+			}
+
+			// Now we can copy the vertex data.
+			for (uint32_t i = 0; i < meshStorages.size(); i++)
+			{
+				const auto& storage = meshStorages[i];
+				auto& mesh = m_Meshes[i];
+
+				mesh.m_VertexData[EnumToInt(VertexAttribute::Position)].m_Offset = m_VertexStorage.insert(VertexAttribute::Position, storage.m_pPositionBuffer.get());
+				mesh.m_VertexData[EnumToInt(VertexAttribute::Normal)].m_Offset = m_VertexStorage.insert(VertexAttribute::Normal, storage.m_pNormalBuffer.get());
+				mesh.m_VertexData[EnumToInt(VertexAttribute::Tangent)].m_Offset = m_VertexStorage.insert(VertexAttribute::Tangent, storage.m_pTangentBuffer.get());
+				mesh.m_VertexData[EnumToInt(VertexAttribute::BiTangent)].m_Offset = m_VertexStorage.insert(VertexAttribute::BiTangent, storage.m_pBiTangentBuffer.get());
+
+				for (uint32_t t = 0; t < AI_MAX_NUMBER_OF_TEXTURECOORDS; t++)
+					mesh.m_VertexData[t].m_Offset = m_VertexStorage.insert(static_cast<Flint::VertexAttribute>(EnumToInt(Flint::VertexAttribute::Texture0) + t), storage.m_pTextureBuffers[t].get());
+
+				for (uint32_t c = 0; c < AI_MAX_NUMBER_OF_COLOR_SETS; c++)
+					mesh.m_VertexData[c].m_Offset = m_VertexStorage.insert(static_cast<Flint::VertexAttribute>(EnumToInt(Flint::VertexAttribute::Color0) + c), storage.m_pColorBuffers[c].get());
 			}
 
 			// Finally, copy the index data to a staging buffer, and copy it to the final index buffer.

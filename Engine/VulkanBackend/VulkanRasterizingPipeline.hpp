@@ -12,7 +12,8 @@ namespace Flint
 	namespace VulkanBackend
 	{
 		class VulkanRasterizer;
-		class VulkanRasterizingProgram;
+		class VulkanRasterizingProgram;	
+		class VulkanCommandBuffers;
 
 		/**
 		 * Vulkan rasterizing pipeline class.

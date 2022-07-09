@@ -16,8 +16,6 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
-		class VulkanCommandBuffers;
-		class VulkanGeometryStore;
 		class VulkanTextureSampler;
 
 		/**

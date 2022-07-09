@@ -45,6 +45,10 @@ namespace Flint
 		{
 			OPTICK_EVENT();
 
+			// Skip if we don't have anything to copy.
+			if (!pStaggingBuffer)
+				return 0;
+
 			return m_pBuffers[EnumToInt(attribute)].apply([this, pStaggingBuffer](std::shared_ptr<VulkanBuffer>& pOldBuffer)
 				{
 					uint64_t offset = 0;

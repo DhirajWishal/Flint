@@ -12,6 +12,8 @@ namespace Flint
 {
 	namespace VulkanBackend
 	{
+		class VulkanCommandBuffers;
+
 		/**
 		 * Vulkan buffer class.
 		 */
