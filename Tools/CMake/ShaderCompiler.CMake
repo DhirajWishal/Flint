@@ -6,6 +6,10 @@
 cmake_minimum_required(VERSION 3.22.2)
 
 # Utility function to generate shaders
+#
+# @param SHADER_TARGET The target project to add the compiled dependency.
+# @param SHADER_SOURCE_DIR The shader file's source directory.
+# @param SHADER_BINARY_DIR The compiled output directory.
 function(CompileShaders SHADER_TARGET SHADER_SOURCE_DIR SHADER_BINARY_DIR)
 	if (DEFINED ENV{VULKAN_SDK})
 		file(GLOB SHADERS RELATIVE ${SHADER_SOURCE_DIR}

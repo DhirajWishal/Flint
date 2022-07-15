@@ -24,10 +24,10 @@ set(VULKAN_HEADERS_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/Vulkan-Hea
 # Set the Vulkan Memory Manager header include directory.
 set(VMA_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/VulkanMemoryAllocator/include)
 
-# Set the xxHash header include directory.
+# Set the entt header include directory.
 set(ENTT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/entt/src)
 
-# Set the entt header include directory.
+# Set the xxHash header include directory.
 set(XXHASH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/xxHash)
 
 # Set up the assimp include, library and binary data.

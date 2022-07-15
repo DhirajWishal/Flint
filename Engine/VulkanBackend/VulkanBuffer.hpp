@@ -103,7 +103,7 @@ namespace Flint
 			void createBufferAndValidate();
 
 		private:
-			std::recursive_mutex m_ResouceMutex;
+			std::mutex m_ResouceMutex;
 
 			VkDescriptorBufferInfo m_DescriptorBufferInfo = {};
 

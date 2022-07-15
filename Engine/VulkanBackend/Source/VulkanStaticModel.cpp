@@ -325,7 +325,6 @@ namespace Flint
 			auto meshStorages = std::vector<StaticMeshStorage>(pScene->mNumMeshes);
 			m_Meshes.resize(pScene->mNumMeshes);
 
-
 			// Load the meshes.
 			{
 				std::vector<std::future<void>> meshFutures;
@@ -351,8 +350,8 @@ namespace Flint
 			// Now we can copy the vertex data.
 			for (uint32_t i = 0; i < meshStorages.size(); i++)
 			{
-				const auto& storage = meshStorages[i];
 				auto& mesh = m_Meshes[i];
+				const auto& storage = meshStorages[i];
 
 				mesh.m_VertexData[EnumToInt(VertexAttribute::Position)].m_Offset = m_VertexStorage.insert(VertexAttribute::Position, storage.m_pPositionBuffer.get());
 				mesh.m_VertexData[EnumToInt(VertexAttribute::Normal)].m_Offset = m_VertexStorage.insert(VertexAttribute::Normal, storage.m_pNormalBuffer.get());
@@ -371,6 +370,8 @@ namespace Flint
 
 			m_pIndexBuffer = std::static_pointer_cast<VulkanBuffer>(getDevice().createBuffer(pIndexData->getSize(), BufferUsage::Index));
 			m_pIndexBuffer->copyFrom(pIndexData.get(), 0, 0);
+
+			// TODO: Export everything to our own optimized binary.
 		}
 	}
 }

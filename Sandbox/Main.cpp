@@ -55,6 +55,7 @@ int main()
 	auto rasterizer = device->createRasterizer(camera, window->getFrameCount(), { Flint::Defaults::ColorAttachmentDescription, Flint::Defaults::DepthAttachmentDescription });
 	auto rayTracer = device->createRayTracer(camera, window->getFrameCount());
 	auto model = device->createStaticModel(std::filesystem::path(FLINT_GLTF_ASSET_PATH) / "Sponza" / "glTF" / "Sponza.gltf");
+	//auto model = device->createStaticModel("E:\\Assets\\Sponza\\Main\\Main\\NewSponza_Main_FBX_ZUp.fbx");
 
 	// Set the resize callback.
 	window->setResizeCallback([&camera, rasterizer, rayTracer](uint32_t width, uint32_t height)

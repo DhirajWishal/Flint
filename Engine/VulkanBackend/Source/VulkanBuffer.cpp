@@ -153,7 +153,6 @@ namespace Flint
 			else if (dstOffset > m_Size)
 				throw BackendError("Invalid destination offset!");
 
-			[[maybe_unused]] const auto lock = std::scoped_lock(m_ResouceMutex);
 			pCommandBuffer->copyBuffer(pBuffer->as<VulkanBuffer>()->m_Buffer, copySize, srcOffset, m_Buffer, dstOffset);
 		}
 
