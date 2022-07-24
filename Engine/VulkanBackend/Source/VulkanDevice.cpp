@@ -424,9 +424,9 @@ namespace Flint
 			volkLoadDeviceTable(&m_DeviceTable, m_LogicalDevice);
 
 			// Get the queues.
-			m_GraphicsQueue.apply([this](VulkanQueue& queue) { vkGetDeviceQueue(m_LogicalDevice, queue.m_Family, 0, &queue.m_Queue); });
-			m_ComputeQueue.apply([this](VulkanQueue& queue) { vkGetDeviceQueue(m_LogicalDevice, queue.m_Family, 0, &queue.m_Queue); });
-			m_TransferQueue.apply([this](VulkanQueue& queue) { vkGetDeviceQueue(m_LogicalDevice, queue.m_Family, 0, &queue.m_Queue); });
+			m_GraphicsQueue.apply([this](VulkanQueue& queue) { m_DeviceTable.vkGetDeviceQueue(m_LogicalDevice, queue.m_Family, 0, &queue.m_Queue); });
+			m_ComputeQueue.apply([this](VulkanQueue& queue) { m_DeviceTable.vkGetDeviceQueue(m_LogicalDevice, queue.m_Family, 0, &queue.m_Queue); });
+			m_TransferQueue.apply([this](VulkanQueue& queue) { m_DeviceTable.vkGetDeviceQueue(m_LogicalDevice, queue.m_Family, 0, &queue.m_Queue); });
 		}
 
 		void VulkanDevice::destroyLogicalDevice()

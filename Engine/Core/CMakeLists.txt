@@ -17,6 +17,7 @@ add_library(
 	"Source/Camera/MonoCamera.cpp"
 
 	"Source/Containers/Reactor.cpp"
+	"Source/Containers/Bytes.cpp"
 
 	"Source/StaticInitializer.cpp"
 	"Source/ShaderCode.cpp"
@@ -83,6 +84,7 @@ add_library(
 	"Containers/WorkerGroup.hpp" 
 	"Containers/Synchronized.hpp" 
 	"Containers/SpinMutex.hpp" 
+	"Containers/Bytes.hpp"
 
 	"Camera/Camera.hpp"
 	"Camera/MonoCamera.hpp"

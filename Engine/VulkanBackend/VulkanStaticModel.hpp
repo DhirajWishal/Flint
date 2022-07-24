@@ -35,6 +35,13 @@ namespace Flint
 			void terminate() override;
 
 			/**
+			 * Compile the loaded data to a compressed binary which can be loaded easily.
+			 *
+			 * @return The compiled binary data.
+			 */
+			[[nodiscard]] std::vector<std::byte> compile() const override;
+
+			/**
 			 * Get the input binding descriptions for this model.
 			 *
 			 * @param mesh To mesh to get the descriptions from.

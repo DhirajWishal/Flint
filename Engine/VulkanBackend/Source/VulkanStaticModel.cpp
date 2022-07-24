@@ -6,6 +6,7 @@
 #include "VulkanBackend/VulkanTexture2D.hpp"
 
 #include "Core/Errors/AssetError.hpp"
+#include "Core/Containers/Bytes.hpp"
 
 #include <Optick.h>
 #include <assimp/Importer.hpp>
@@ -14,6 +15,7 @@
 
 #include <atomic>
 #include <future>
+#include <sstream>
 
 namespace /* anonymous */
 {
@@ -216,6 +218,24 @@ namespace /* anonymous */
 		mesh.m_TexturePaths[EnumToInt(Flint::TextureType::Transmission)] = GetTexturePath(basePath, pMaterial, AI_MATKEY_TRANSMISSION_TEXTURE);
 		mesh.m_TexturePaths[EnumToInt(Flint::TextureType::VolumeThickness)] = GetTexturePath(basePath, pMaterial, AI_MATKEY_VOLUME_THICKNESS_TEXTURE);
 	}
+
+	/**
+	 * Save the integer value as bytes.
+	 *
+	 * @param bytes The bytes to save in.
+	 * @param value The value to store.
+	 */
+	void SaveToBytes(std::vector<std::byte>& bytes, uint64_t value)
+	{
+		//bytes.emplace_back(value >> 56);
+		//bytes.emplace_back(value >> 48);
+		//bytes.emplace_back(value >> 40);
+		//bytes.emplace_back(value >> 32);
+		//bytes.emplace_back(value >> 24);
+		//bytes.emplace_back(value >> 16);
+		//bytes.emplace_back(value >> 8);
+		//bytes.emplace_back(value >> 0);
+	}
 }
 
 namespace Flint
@@ -249,6 +269,34 @@ namespace Flint
 			invalidate();
 		}
 
+		std::vector<std::byte> VulkanStaticModel::compile() const
+		{
+			// The format is as follows.
+			// Special characters: 'F', 'L', 'I', 'N', 'T'  - 5 bytes.
+			// Hash value: 8 bytes.
+			// 
+			// The next comes the payload.
+			// Mesh count: 8 bytes.
+			// 
+			// Position data size: 8 bytes.
+			// Position data.
+			// [This format for all the other vertex attributes, same for index data]
+
+			const uint64_t hashValue = 0;
+			Bytes bytes;
+
+			// Set the special characters.
+			bytes.insert("FLINT");
+
+			// Insert the hash value.
+			bytes.insert(hashValue);
+
+			// Insert the mesh count.
+			bytes.insert(m_Meshes.size());
+
+			return bytes.getStorage();
+		}
+
 		std::vector<VkVertexInputBindingDescription> VulkanStaticModel::getInputBindingDescriptions(const StaticMesh& mesh, const std::vector<VertexInput>& inputs) const
 		{
 			OPTICK_EVENT();
@@ -261,6 +309,7 @@ namespace Flint
 			{
 				const auto i = EnumToInt(input.m_Attribute);
 				const auto data = mesh.m_VertexData[i];
+
 				if (data.m_Stride > 0)
 				{
 					auto& description = descriptions.emplace_back();

@@ -349,8 +349,8 @@ namespace Flint
 			// Iterate over and create the semaphores.
 			for (uint8_t i = 0; i < m_FrameCount; i++)
 			{
-				FLINT_VK_ASSERT(getDevice().as<VulkanDevice>()->getDeviceTable().vkCreateSemaphore(getDevice().as<VulkanDevice>()->getLogicalDevice(), &createInfo, nullptr, &m_RenderFinishedSemaphores.emplace_back()), "Failed to create the frame buffer!");
-				FLINT_VK_ASSERT(getDevice().as<VulkanDevice>()->getDeviceTable().vkCreateSemaphore(getDevice().as<VulkanDevice>()->getLogicalDevice(), &createInfo, nullptr, &m_InFlightSemaphores.emplace_back()), "Failed to create the frame buffer!");
+				FLINT_VK_ASSERT(getDevice().as<VulkanDevice>()->getDeviceTable().vkCreateSemaphore(getDevice().as<VulkanDevice>()->getLogicalDevice(), &createInfo, nullptr, &m_RenderFinishedSemaphores.emplace_back()), "Failed to create the render finished semaphore!");
+				FLINT_VK_ASSERT(getDevice().as<VulkanDevice>()->getDeviceTable().vkCreateSemaphore(getDevice().as<VulkanDevice>()->getLogicalDevice(), &createInfo, nullptr, &m_InFlightSemaphores.emplace_back()), "Failed to create the in flight semaphore!");
 			}
 		}
 

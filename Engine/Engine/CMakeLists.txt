@@ -24,6 +24,10 @@ add_library(
 	"Flint.hpp"
 	"AssetRegistry.hpp"
 	"StaticStorage.hpp"
+	"Scene.hpp"
+	"SceneView.hpp"
+	"Display.hpp"
+	"ExecutionQueue.hpp"
 
 	"Utility/FrameTimer.hpp"
 

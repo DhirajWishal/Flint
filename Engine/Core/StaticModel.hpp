@@ -78,6 +78,13 @@ namespace Flint
 		virtual ~StaticModel() = default;
 
 		/**
+		 * Compile the loaded data to a compressed binary which can be loaded easily.
+		 *
+		 * @return The compiled binary data.
+		 */
+		[[nodiscard]] virtual std::vector<std::byte> compile() const = 0;
+
+		/**
 		 * Get the meshes from the model.
 		 *
 		 * @return The loaded meshes.

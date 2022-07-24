@@ -338,7 +338,7 @@ namespace Flint
 				break;
 
 			default:
-				BackendError("Unsupported layout transition!");
+				throw BackendError("Unsupported layout transition!");
 			}
 
 			// Resolve the pipeline stages.

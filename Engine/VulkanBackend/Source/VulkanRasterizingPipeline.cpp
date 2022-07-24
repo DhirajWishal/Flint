@@ -383,8 +383,8 @@ namespace Flint
 				if (!m_Pipelines.contains(pipelineHash))
 				{
 					Pipeline pipeline = {};
-					pipeline.m_InputBindings = std::move(inputBindings);
-					pipeline.m_InputAttributes = std::move(inputAttributes);
+					pipeline.m_InputBindings = inputBindings;
+					pipeline.m_InputAttributes = inputAttributes;
 
 					VkPipelineVertexInputStateCreateInfo inputState = {};
 					inputState.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
