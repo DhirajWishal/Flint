@@ -279,7 +279,7 @@ namespace Flint
 			}
 
 			// Create the subpass dependencies.
-			std::array<VkSubpassDependency, 2> subpassDependencies;
+			std::array<VkSubpassDependency, 2> subpassDependencies = {};
 			subpassDependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
 			subpassDependencies[0].dstSubpass = 0;
 			subpassDependencies[0].srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;

@@ -90,7 +90,7 @@ namespace Flint
 	 * @param format The pixel format.
 	 * @return The size in bytes.
 	 */
-	constexpr uint8_t GetPixelSize(PixelFormat format)
+	[[nodiscard]] constexpr uint8_t GetPixelSize(PixelFormat format) noexcept
 	{
 		switch (format)
 		{
@@ -183,7 +183,7 @@ namespace Flint
 	 */
 	enum class DataType : uint8_t
 	{
-		None = 0,								// Default type.
+		None = 0,	// Default type.
 
 		Float,		// 32 bit float type.
 
@@ -276,7 +276,7 @@ namespace Flint
 	using VertexAttributeBits = uint32_t;
 
 	/**
-	 * Get the vertex attribute's bit value.
+	 * Get the vertex attribute bit value.
 	 *
 	 * @param attribute The vertex attribute to get the bit value of.
 	 * @return The bit value.
@@ -330,7 +330,7 @@ namespace Flint
 	 * @return The stride (the descriptor size).
 	 */
 	template<uint64_t Size>
-	constexpr uint64_t GetStride(const std::array<DataType, Size>& descriptor) noexcept
+	[[nodiscard]] constexpr uint64_t GetStride(const std::array<DataType, Size>& descriptor) noexcept
 	{
 		uint64_t stride = 0;
 		for (const auto type : descriptor)
@@ -481,7 +481,7 @@ namespace Flint
 	/**
 	 * Texture sampler specification structure.
 	 */
-	struct TextureSamplerSpecification
+	struct TextureSamplerSpecification final
 	{
 		// If set to 0.0f, the maximum supported will be set.
 		float m_MaxAnisotrophy = 0.0f;

@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "Core/Rasterizer.hpp"
-#include "Core/Window.hpp"
+#include "Core/Graphical.hpp"
+#include "Core/CommandBuffers.hpp"
 
 namespace Flint
 {
@@ -23,12 +23,12 @@ namespace Flint
 		 *
 		 * @param pDevice The device to which this object belongs.
 		 */
-		explicit ExecutionQueue(const std::shared_ptr<Device>& pDevice) : DeviceBoundObject(pDevice) {}
+		explicit ExecutionQueue(const std::shared_ptr<Device>& pDevice);
 
 		/**
 		 * Default destructor.
 		 */
-		~ExecutionQueue() = default;
+		~ExecutionQueue() override = default;
 
 		/**
 		 * Add a graphical object to the pipeline.
@@ -40,9 +40,10 @@ namespace Flint
 		/**
 		 * Submit the backend command buffers to the GPU and execute them.
 		 */
-		void execute() {}
+		void execute();
 
 	private:
 		std::vector<std::shared_ptr<Graphical>> m_pGraphicalObjects;
+		std::shared_ptr<CommandBuffers> m_pCommandBuffers;
 	};
 }

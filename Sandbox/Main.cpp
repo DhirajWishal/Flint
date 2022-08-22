@@ -14,6 +14,8 @@
 #include "Engine/Flint.hpp"
 #include "Engine/StaticStorage.hpp"
 
+#include "Tools/TerrainBuilder.hpp"
+
 #ifdef FLINT_DEBUG
 constexpr auto Validation = true;
 
@@ -44,6 +46,9 @@ static Flint::EventSystem g_EventSystem;
 
 int main()
 {
+	auto builder = TerrainBuilder(rand());
+	auto block = builder.update(0, 0);
+
 	auto instance = Flint::CreateInstance("Sandbox", 1, Validation);
 	auto device = instance->createDevice();
 

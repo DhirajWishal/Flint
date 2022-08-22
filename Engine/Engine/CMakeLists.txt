@@ -14,6 +14,7 @@ add_library(
 	STATIC
 
 	"Source/Flint.cpp"
+	"Source/ExecutionQueue.cpp"
 
 	"Source/Utility/FrameTimer.cpp"
 

@@ -128,6 +128,13 @@ namespace Flint
 			[[nodiscard]] std::shared_ptr<TextureSampler> createTextureSampler(TextureSamplerSpecification&& specification) override;
 
 			/**
+			 * Create new command buffers.
+			 *
+			 * @param bufferCount The command buffer count. Default is 1.
+			 */
+			[[nodiscard]] std::shared_ptr<CommandBuffers> createCommandBuffers(uint32_t bufferCount = 1) override;
+
+			/**
 			 * Terminate the object.
 			 */
 			void terminate() override;

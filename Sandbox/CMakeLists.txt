@@ -13,6 +13,9 @@ add_executable(
 	Sandbox
 
 	"Main.cpp"
+
+	"Tools/TerrainBuilder.hpp"
+	"Tools/TerrainBuilder.cpp"
 )
 
 # Add the optick static library as a target link.

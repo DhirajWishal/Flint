@@ -19,6 +19,7 @@ namespace Flint
 	class StaticModel;
 	class Texture2D;
 	class TextureSampler;
+	class CommandBuffers;
 
 	/**
 	 * Device class.
@@ -118,6 +119,13 @@ namespace Flint
 		 * @return The created texture pointer.
 		 */
 		[[nodiscard]] virtual std::shared_ptr<Texture2D> createTexture2D(uint32_t width, uint32_t height, ImageUsage usage, PixelFormat format, uint32_t mipLevels = 0, Multisample multisampleCount = Multisample::One, const std::byte* pDataStore = nullptr) = 0;
+
+		/**
+		 * Create new command buffers.
+		 *
+		 * @param bufferCount The command buffer count. Default is 1.
+		 */
+		[[nodiscard]] virtual std::shared_ptr<CommandBuffers> createCommandBuffers(uint32_t bufferCount = 1) = 0;
 
 		/**
 		 * Create a new texture sampler.

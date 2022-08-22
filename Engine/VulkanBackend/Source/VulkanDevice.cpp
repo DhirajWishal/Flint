@@ -224,6 +224,11 @@ namespace Flint
 			return m_Samplers[hash];
 		}
 
+		std::shared_ptr<Flint::CommandBuffers> VulkanDevice::createCommandBuffers(uint32_t bufferCount /*= 1*/)
+		{
+			return std::make_shared<VulkanCommandBuffers>(shared_from_this(), bufferCount);
+		}
+
 		void VulkanDevice::terminate()
 		{
 			OPTICK_EVENT();
