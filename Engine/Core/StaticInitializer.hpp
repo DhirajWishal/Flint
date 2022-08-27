@@ -5,20 +5,23 @@
 
 namespace Flint
 {
-	/**
-	 * Static initializer struct.
-	 * This structure is used to initialize different things in the engine.
-	 */
-	struct StaticInitializer
+	namespace Backend
 	{
 		/**
-		 * Default constructor.
+		 * Static initializer struct.
+		 * This structure is used to initialize different things in the engine.
 		 */
-		StaticInitializer();
+		struct StaticInitializer
+		{
+			/**
+			 * Default constructor.
+			 */
+			StaticInitializer();
 
-		/**
-		 * Destructor.
-		 */
-		~StaticInitializer();
-	};
+			/**
+			 * Destructor.
+			 */
+			~StaticInitializer();
+		};
+	}
 }

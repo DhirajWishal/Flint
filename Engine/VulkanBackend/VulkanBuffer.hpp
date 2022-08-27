@@ -10,7 +10,7 @@
 
 namespace Flint
 {
-	namespace VulkanBackend
+	namespace Backend
 	{
 		class VulkanCommandBuffers;
 

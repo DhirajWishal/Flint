@@ -8,7 +8,7 @@
 
 namespace Flint
 {
-	namespace VulkanBackend
+	namespace Backend
 	{
 		VulkanRayTracer::VulkanRayTracer(const std::shared_ptr<VulkanDevice>& pDevice, Camera& camera, uint32_t frameCount)
 			: RayTracer(pDevice, camera, frameCount)
@@ -50,12 +50,12 @@ namespace Flint
 			OPTICK_EVENT();
 		}
 
-		Flint::VulkanBackend::VulkanRenderTargetAttachment& VulkanRayTracer::getAttachment(uint32_t index)
+		Flint::Backend::VulkanRenderTargetAttachment& VulkanRayTracer::getAttachment(uint32_t index)
 		{
 			return *m_pStorageAttachments[index];
 		}
 
-		const Flint::VulkanBackend::VulkanRenderTargetAttachment& VulkanRayTracer::getAttachment(uint32_t index) const
+		const Flint::Backend::VulkanRenderTargetAttachment& VulkanRayTracer::getAttachment(uint32_t index) const
 		{
 			return *m_pStorageAttachments[index];
 		}

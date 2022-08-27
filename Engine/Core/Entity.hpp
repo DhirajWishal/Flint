@@ -7,19 +7,22 @@
 
 namespace Flint
 {
-	/**
-	 * Entity class.
-	 * This class is the base class for all the render-able objects, including static models.
-	 */
-	class Entity : public DeviceBoundObject
+	namespace Backend
 	{
-	public:
-		// We're using the same constructor as the super class.
-		using DeviceBoundObject::DeviceBoundObject;
-
 		/**
-		 * Default virtual destructor.
+		 * Entity class.
+		 * This class is the base class for all the render-able objects, including static models.
 		 */
-		virtual ~Entity() = default;
-	};
+		class Entity : public DeviceBoundObject
+		{
+		public:
+			// We're using the same constructor as the super class.
+			using DeviceBoundObject::DeviceBoundObject;
+
+			/**
+			 * Default virtual destructor.
+			 */
+			virtual ~Entity() = default;
+		};
+	}
 }

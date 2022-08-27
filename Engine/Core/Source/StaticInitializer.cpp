@@ -7,15 +7,18 @@
 
 namespace Flint
 {
-	StaticInitializer::StaticInitializer()
+	namespace Backend
 	{
-		// Initialize SDL.
-		SDL_Init(SDL_INIT_VIDEO);
-	}
+		StaticInitializer::StaticInitializer()
+		{
+			// Initialize SDL.
+			SDL_Init(SDL_INIT_VIDEO);
+		}
 
-	StaticInitializer::~StaticInitializer()
-	{
-		// Quit SDL.
-		SDL_Quit();
+		StaticInitializer::~StaticInitializer()
+		{
+			// Quit SDL.
+			SDL_Quit();
+		}
 	}
 }

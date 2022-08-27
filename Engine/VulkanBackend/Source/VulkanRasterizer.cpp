@@ -12,7 +12,7 @@
 
 namespace Flint
 {
-	namespace VulkanBackend
+	namespace Backend
 	{
 		VulkanRasterizer::VulkanRasterizer(const std::shared_ptr<VulkanDevice>& pDevice, Camera& camera, uint32_t frameCount, std::vector<AttachmentDescription>&& attachmentDescriptions, Multisample multisample /*= Multisample::One*/, bool exclusiveBuffering /*= false*/)
 			: Rasterizer(pDevice, camera, frameCount, std::move(attachmentDescriptions), multisample, exclusiveBuffering)
@@ -148,17 +148,17 @@ namespace Flint
 			toggleNeedToUpdate();
 		}
 
-		Flint::VulkanBackend::VulkanRenderTargetAttachment& VulkanRasterizer::getAttachment(uint32_t index)
+		Flint::Backend::VulkanRenderTargetAttachment& VulkanRasterizer::getAttachment(uint32_t index)
 		{
 			return *m_pAttachments[m_ExclusiveBuffering * m_FrameIndex][index];
 		}
 
-		const Flint::VulkanBackend::VulkanRenderTargetAttachment& VulkanRasterizer::getAttachment(uint32_t index) const
+		const Flint::Backend::VulkanRenderTargetAttachment& VulkanRasterizer::getAttachment(uint32_t index) const
 		{
 			return *m_pAttachments[m_ExclusiveBuffering * m_FrameIndex][index];
 		}
 
-		std::shared_ptr<Flint::RasterizingPipeline> VulkanRasterizer::createPipeline(const std::shared_ptr<RasterizingProgram>& pRasterizingProgram, const RasterizingPipelineSpecification& specification, std::unique_ptr<PipelineCacheHandler>&& pCacheHandler /*= nullptr*/)
+		std::shared_ptr<Flint::Backend::RasterizingPipeline> VulkanRasterizer::createPipeline(const std::shared_ptr<RasterizingProgram>& pRasterizingProgram, const RasterizingPipelineSpecification& specification, std::unique_ptr<PipelineCacheHandler>&& pCacheHandler /*= nullptr*/)
 		{
 			OPTICK_EVENT();
 

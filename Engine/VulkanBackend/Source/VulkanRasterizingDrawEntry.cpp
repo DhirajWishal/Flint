@@ -6,9 +6,9 @@
 
 namespace Flint
 {
-	namespace VulkanBackend
+	namespace Backend
 	{
-		Flint::DrawInstance VulkanRasterizingDrawEntry::instance(const glm::vec3& position /*= glm::vec3(0.0f)*/, const glm::vec3& rotation /*= glm::vec3(0.0f)*/, const glm::vec3& scale /*= glm::vec3(1.0f)*/)
+		Flint::Backend::DrawInstance VulkanRasterizingDrawEntry::instance(const glm::vec3& position /*= glm::vec3(0.0f)*/, const glm::vec3& rotation /*= glm::vec3(0.0f)*/, const glm::vec3& scale /*= glm::vec3(1.0f)*/)
 		{
 			auto& instance = m_DrawInstances.emplace_back();
 			instance.m_InstanceID = m_Index++;

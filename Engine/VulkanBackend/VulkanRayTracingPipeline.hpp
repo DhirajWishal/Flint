@@ -8,7 +8,7 @@
 
 namespace Flint
 {
-	namespace VulkanBackend
+	namespace Backend
 	{
 		/**
 		 * Vulkan ray tracing pipeline.

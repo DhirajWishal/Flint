@@ -11,7 +11,7 @@
 
 namespace Flint
 {
-	namespace VulkanBackend
+	namespace Backend
 	{
 		VulkanTexture2D::VulkanTexture2D(const std::shared_ptr<VulkanDevice>& pDevice, uint32_t width, uint32_t height, ImageUsage usage, PixelFormat format, uint32_t mipLevels /*= 0*/, Multisample multisampleCount /*= Multisample::One*/, const std::byte* pDataStore /*= nullptr*/)
 			: Texture2D(pDevice, width, height, usage, format, mipLevels, multisampleCount, pDataStore)
@@ -71,14 +71,14 @@ namespace Flint
 			invalidate();
 		}
 
-		std::shared_ptr<Flint::TextureView> VulkanTexture2D::createView()
+		std::shared_ptr<Flint::Backend::TextureView> VulkanTexture2D::createView()
 		{
 			OPTICK_EVENT();
 
 			return std::make_shared<VulkanTextureView>(getDevicePointerAs<VulkanDevice>(), shared_from_this());
 		}
 
-		std::shared_ptr<Flint::Buffer> VulkanTexture2D::toBuffer() const
+		std::shared_ptr<Flint::Backend::Buffer> VulkanTexture2D::toBuffer() const
 		{
 			OPTICK_EVENT();
 
@@ -132,7 +132,7 @@ namespace Flint
 		}
 
 
-		std::shared_ptr<Flint::Buffer> VulkanTexture2D::toBufferBatched(const VulkanCommandBuffers& commandBuffers) const
+		std::shared_ptr<Flint::Backend::Buffer> VulkanTexture2D::toBufferBatched(const VulkanCommandBuffers& commandBuffers) const
 		{
 			OPTICK_EVENT();
 
@@ -267,10 +267,10 @@ namespace Flint
 			// Resolve the image usage.
 			VkImageUsageFlags usageFlags = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
 
-			if ((m_Usage & ImageUsage::Graphics) == ImageUsage::Graphics)
+			if (m_Usage & ImageUsage::Graphics)
 				usageFlags |= VK_IMAGE_USAGE_SAMPLED_BIT;
 
-			if ((m_Usage & ImageUsage::Storage) == ImageUsage::Storage)
+			if (m_Usage & ImageUsage::Storage)
 				usageFlags |= VK_IMAGE_USAGE_STORAGE_BIT;
 
 			// Create the image.

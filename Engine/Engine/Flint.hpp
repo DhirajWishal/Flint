@@ -15,5 +15,5 @@ namespace Flint
 	 * @param enableBackendValidation Whether or not to enable backend validation. Turn this to true ONLY in the debug build.
 	 * @return The created instance pointer.
 	 */
-	[[nodiscard]] std::shared_ptr<Instance> CreateInstance(std::string&& applicationName, uint32_t applicationVersion, bool enableBackendValidation);
+	[[nodiscard]] std::shared_ptr<Backend::Instance> CreateInstance(std::string&& applicationName, uint32_t applicationVersion, bool enableBackendValidation);
 }

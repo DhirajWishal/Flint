@@ -27,22 +27,22 @@ namespace /* anonymous */
 	 * @param topology The flint primitive topology.
 	 * @return The Vulkan primitive topology.
 	 */
-	VkPrimitiveTopology GetPrimitiveTopology(Flint::PrimitiveTopology topology)
+	VkPrimitiveTopology GetPrimitiveTopology(Flint::Backend::PrimitiveTopology topology)
 	{
 		switch (topology)
 		{
-		case Flint::PrimitiveTopology::PointList:						return VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
-		case Flint::PrimitiveTopology::LineList:						return VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
-		case Flint::PrimitiveTopology::LineStrip:						return VK_PRIMITIVE_TOPOLOGY_LINE_STRIP;
-		case Flint::PrimitiveTopology::TriangleList:					return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-		case Flint::PrimitiveTopology::TriangleStrip:					return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
-		case Flint::PrimitiveTopology::TriangleFan:						return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
-		case Flint::PrimitiveTopology::LineListWithAdjacency:			return VK_PRIMITIVE_TOPOLOGY_LINE_LIST_WITH_ADJACENCY;
-		case Flint::PrimitiveTopology::LineStripWithAdjacency:			return VK_PRIMITIVE_TOPOLOGY_LINE_STRIP_WITH_ADJACENCY;
-		case Flint::PrimitiveTopology::TriangleListWithAdjacency:		return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST_WITH_ADJACENCY;
-		case Flint::PrimitiveTopology::TriangleStripWithAdjacency:		return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP_WITH_ADJACENCY;
-		case Flint::PrimitiveTopology::PatchList:						return VK_PRIMITIVE_TOPOLOGY_PATCH_LIST;
-		default:														throw Flint::BackendError("Invalid or Undefined primitive topology!");
+		case Flint::Backend::PrimitiveTopology::PointList:						return VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
+		case Flint::Backend::PrimitiveTopology::LineList:						return VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
+		case Flint::Backend::PrimitiveTopology::LineStrip:						return VK_PRIMITIVE_TOPOLOGY_LINE_STRIP;
+		case Flint::Backend::PrimitiveTopology::TriangleList:					return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+		case Flint::Backend::PrimitiveTopology::TriangleStrip:					return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
+		case Flint::Backend::PrimitiveTopology::TriangleFan:					return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
+		case Flint::Backend::PrimitiveTopology::LineListWithAdjacency:			return VK_PRIMITIVE_TOPOLOGY_LINE_LIST_WITH_ADJACENCY;
+		case Flint::Backend::PrimitiveTopology::LineStripWithAdjacency:			return VK_PRIMITIVE_TOPOLOGY_LINE_STRIP_WITH_ADJACENCY;
+		case Flint::Backend::PrimitiveTopology::TriangleListWithAdjacency:		return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST_WITH_ADJACENCY;
+		case Flint::Backend::PrimitiveTopology::TriangleStripWithAdjacency:		return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP_WITH_ADJACENCY;
+		case Flint::Backend::PrimitiveTopology::PatchList:						return VK_PRIMITIVE_TOPOLOGY_PATCH_LIST;
+		default:																throw Flint::BackendError("Invalid or Undefined primitive topology!");
 		}
 	}
 
@@ -52,15 +52,15 @@ namespace /* anonymous */
 	 * @param cull The flint cull mode.
 	 * @return The Vulkan cull mode.
 	 */
-	VkCullModeFlags GetCullMode(Flint::CullMode cull)
+	VkCullModeFlags GetCullMode(Flint::Backend::CullMode cull)
 	{
 		switch (cull)
 		{
-		case Flint::CullMode::None:										return VK_CULL_MODE_NONE;
-		case Flint::CullMode::Front:									return VK_CULL_MODE_FRONT_BIT;
-		case Flint::CullMode::Back:										return VK_CULL_MODE_BACK_BIT;
-		case Flint::CullMode::FrontAndBack:								return VK_CULL_MODE_FRONT_AND_BACK;
-		default:														throw Flint::BackendError("Invalid or Undefined cull mode!");
+		case Flint::Backend::CullMode::None:									return VK_CULL_MODE_NONE;
+		case Flint::Backend::CullMode::Front:									return VK_CULL_MODE_FRONT_BIT;
+		case Flint::Backend::CullMode::Back:									return VK_CULL_MODE_BACK_BIT;
+		case Flint::Backend::CullMode::FrontAndBack:							return VK_CULL_MODE_FRONT_AND_BACK;
+		default:																throw Flint::BackendError("Invalid or Undefined cull mode!");
 		}
 	}
 
@@ -70,13 +70,13 @@ namespace /* anonymous */
 	 * @param face The flint front face.
 	 * @return The Vulkan front face.
 	 */
-	VkFrontFace GetFrontFace(Flint::FrontFace face)
+	VkFrontFace GetFrontFace(Flint::Backend::FrontFace face)
 	{
 		switch (face)
 		{
-		case Flint::FrontFace::CounterClockwise:						return VK_FRONT_FACE_COUNTER_CLOCKWISE;
-		case Flint::FrontFace::Clockwise:								return VK_FRONT_FACE_CLOCKWISE;
-		default:														throw Flint::BackendError("Invalid or Undefined front face!");
+		case Flint::Backend::FrontFace::CounterClockwise:						return VK_FRONT_FACE_COUNTER_CLOCKWISE;
+		case Flint::Backend::FrontFace::Clockwise:								return VK_FRONT_FACE_CLOCKWISE;
+		default:																throw Flint::BackendError("Invalid or Undefined front face!");
 		}
 	}
 
@@ -86,14 +86,14 @@ namespace /* anonymous */
 	 * @param mode The flint polygon mode.
 	 * @return The Vulkan polygon mode.
 	 */
-	VkPolygonMode GetPolygonMode(Flint::PolygonMode mode)
+	VkPolygonMode GetPolygonMode(Flint::Backend::PolygonMode mode)
 	{
 		switch (mode)
 		{
-		case Flint::PolygonMode::Fill:									return VK_POLYGON_MODE_FILL;
-		case Flint::PolygonMode::Line:									return VK_POLYGON_MODE_LINE;
-		case Flint::PolygonMode::Point:									return VK_POLYGON_MODE_POINT;
-		default:														throw Flint::BackendError("Invalid or Undefined polygon mode!");
+		case Flint::Backend::PolygonMode::Fill:									return VK_POLYGON_MODE_FILL;
+		case Flint::Backend::PolygonMode::Line:									return VK_POLYGON_MODE_LINE;
+		case Flint::Backend::PolygonMode::Point:								return VK_POLYGON_MODE_POINT;
+		default:																throw Flint::BackendError("Invalid or Undefined polygon mode!");
 		}
 	}
 
@@ -103,27 +103,27 @@ namespace /* anonymous */
 	 * @param logic The flint logic.
 	 * @return The Vulkan logic.
 	 */
-	VkLogicOp GetLogicOp(Flint::ColorBlendLogic logic)
+	VkLogicOp GetLogicOp(Flint::Backend::ColorBlendLogic logic)
 	{
 		switch (logic)
 		{
-		case Flint::ColorBlendLogic::Clear:								return VK_LOGIC_OP_CLEAR;
-		case Flint::ColorBlendLogic::And:								return VK_LOGIC_OP_AND;
-		case Flint::ColorBlendLogic::AndReverse:						return VK_LOGIC_OP_AND_REVERSE;
-		case Flint::ColorBlendLogic::Copy:								return VK_LOGIC_OP_COPY;
-		case Flint::ColorBlendLogic::AndInverted:						return VK_LOGIC_OP_AND_INVERTED;
-		case Flint::ColorBlendLogic::NoOperator:						return VK_LOGIC_OP_NO_OP;
-		case Flint::ColorBlendLogic::XOR:								return VK_LOGIC_OP_XOR;
-		case Flint::ColorBlendLogic::OR:								return VK_LOGIC_OP_OR;
-		case Flint::ColorBlendLogic::NOR:								return VK_LOGIC_OP_NOR;
-		case Flint::ColorBlendLogic::Equivalent:						return VK_LOGIC_OP_EQUIVALENT;
-		case Flint::ColorBlendLogic::Invert:							return VK_LOGIC_OP_INVERT;
-		case Flint::ColorBlendLogic::ReverseOR:							return VK_LOGIC_OP_OR_REVERSE;
-		case Flint::ColorBlendLogic::CopyInverted:						return VK_LOGIC_OP_COPY_INVERTED;
-		case Flint::ColorBlendLogic::InvertedOR:						return VK_LOGIC_OP_OR_INVERTED;
-		case Flint::ColorBlendLogic::NAND:								return VK_LOGIC_OP_NAND;
-		case Flint::ColorBlendLogic::Set:								return VK_LOGIC_OP_SET;
-		default:														throw Flint::BackendError("Invalid or Undefined color blend logic!");
+		case Flint::Backend::ColorBlendLogic::Clear:							return VK_LOGIC_OP_CLEAR;
+		case Flint::Backend::ColorBlendLogic::And:								return VK_LOGIC_OP_AND;
+		case Flint::Backend::ColorBlendLogic::AndReverse:						return VK_LOGIC_OP_AND_REVERSE;
+		case Flint::Backend::ColorBlendLogic::Copy:								return VK_LOGIC_OP_COPY;
+		case Flint::Backend::ColorBlendLogic::AndInverted:						return VK_LOGIC_OP_AND_INVERTED;
+		case Flint::Backend::ColorBlendLogic::NoOperator:						return VK_LOGIC_OP_NO_OP;
+		case Flint::Backend::ColorBlendLogic::XOR:								return VK_LOGIC_OP_XOR;
+		case Flint::Backend::ColorBlendLogic::OR:								return VK_LOGIC_OP_OR;
+		case Flint::Backend::ColorBlendLogic::NOR:								return VK_LOGIC_OP_NOR;
+		case Flint::Backend::ColorBlendLogic::Equivalent:						return VK_LOGIC_OP_EQUIVALENT;
+		case Flint::Backend::ColorBlendLogic::Invert:							return VK_LOGIC_OP_INVERT;
+		case Flint::Backend::ColorBlendLogic::ReverseOR:						return VK_LOGIC_OP_OR_REVERSE;
+		case Flint::Backend::ColorBlendLogic::CopyInverted:						return VK_LOGIC_OP_COPY_INVERTED;
+		case Flint::Backend::ColorBlendLogic::InvertedOR:						return VK_LOGIC_OP_OR_INVERTED;
+		case Flint::Backend::ColorBlendLogic::NAND:								return VK_LOGIC_OP_NAND;
+		case Flint::Backend::ColorBlendLogic::Set:								return VK_LOGIC_OP_SET;
+		default:																throw Flint::BackendError("Invalid or Undefined color blend logic!");
 		}
 	}
 
@@ -133,19 +133,19 @@ namespace /* anonymous */
 	 * @param logic the flint logic.
 	 * @return The Vulkan logic operator.
 	 */
-	VkCompareOp GetCompareOp(Flint::DepthCompareLogic logic)
+	VkCompareOp GetCompareOp(Flint::Backend::DepthCompareLogic logic)
 	{
 		switch (logic)
 		{
-		case Flint::DepthCompareLogic::Never:							return VK_COMPARE_OP_NEVER;
-		case Flint::DepthCompareLogic::Less:							return VK_COMPARE_OP_LESS;
-		case Flint::DepthCompareLogic::Equal:							return VK_COMPARE_OP_EQUAL;
-		case Flint::DepthCompareLogic::LessOrEqual:						return VK_COMPARE_OP_LESS_OR_EQUAL;
-		case Flint::DepthCompareLogic::Greater:							return VK_COMPARE_OP_GREATER;
-		case Flint::DepthCompareLogic::NotEqual:						return VK_COMPARE_OP_NOT_EQUAL;
-		case Flint::DepthCompareLogic::GreaterOrEqual:					return VK_COMPARE_OP_GREATER_OR_EQUAL;
-		case Flint::DepthCompareLogic::Always:							return VK_COMPARE_OP_ALWAYS;
-		default:														throw Flint::BackendError("Invalid or Undefined depth compare logic!");
+		case Flint::Backend::DepthCompareLogic::Never:							return VK_COMPARE_OP_NEVER;
+		case Flint::Backend::DepthCompareLogic::Less:							return VK_COMPARE_OP_LESS;
+		case Flint::Backend::DepthCompareLogic::Equal:							return VK_COMPARE_OP_EQUAL;
+		case Flint::Backend::DepthCompareLogic::LessOrEqual:					return VK_COMPARE_OP_LESS_OR_EQUAL;
+		case Flint::Backend::DepthCompareLogic::Greater:						return VK_COMPARE_OP_GREATER;
+		case Flint::Backend::DepthCompareLogic::NotEqual:						return VK_COMPARE_OP_NOT_EQUAL;
+		case Flint::Backend::DepthCompareLogic::GreaterOrEqual:					return VK_COMPARE_OP_GREATER_OR_EQUAL;
+		case Flint::Backend::DepthCompareLogic::Always:							return VK_COMPARE_OP_ALWAYS;
+		default:																throw Flint::BackendError("Invalid or Undefined depth compare logic!");
 		}
 	}
 
@@ -155,15 +155,15 @@ namespace /* anonymous */
 	 * @param flags The flint flags.
 	 * @return The Vulkan flags.
 	 */
-	std::vector<VkDynamicState> GetDynamicStates(Flint::DynamicStateFlags flags)
+	std::vector<VkDynamicState> GetDynamicStates(Flint::Backend::DynamicStateFlags flags)
 	{
 		std::vector<VkDynamicState> states;
-		if ((flags & Flint::DynamicStateFlags::ViewPort) == Flint::DynamicStateFlags::ViewPort) states.emplace_back(VK_DYNAMIC_STATE_VIEWPORT);
-		if ((flags & Flint::DynamicStateFlags::Scissor) == Flint::DynamicStateFlags::Scissor) states.emplace_back(VK_DYNAMIC_STATE_SCISSOR);
-		if ((flags & Flint::DynamicStateFlags::LineWidth) == Flint::DynamicStateFlags::LineWidth) states.emplace_back(VK_DYNAMIC_STATE_LINE_WIDTH);
-		if ((flags & Flint::DynamicStateFlags::DepthBias) == Flint::DynamicStateFlags::DepthBias) states.emplace_back(VK_DYNAMIC_STATE_DEPTH_BIAS);
-		if ((flags & Flint::DynamicStateFlags::BlendConstants) == Flint::DynamicStateFlags::BlendConstants) states.emplace_back(VK_DYNAMIC_STATE_BLEND_CONSTANTS);
-		if ((flags & Flint::DynamicStateFlags::DepthBounds) == Flint::DynamicStateFlags::DepthBounds) states.emplace_back(VK_DYNAMIC_STATE_DEPTH_BOUNDS);
+		if (flags & Flint::Backend::DynamicStateFlags::ViewPort) states.emplace_back(VK_DYNAMIC_STATE_VIEWPORT);
+		if (flags & Flint::Backend::DynamicStateFlags::Scissor) states.emplace_back(VK_DYNAMIC_STATE_SCISSOR);
+		if (flags & Flint::Backend::DynamicStateFlags::LineWidth) states.emplace_back(VK_DYNAMIC_STATE_LINE_WIDTH);
+		if (flags & Flint::Backend::DynamicStateFlags::DepthBias) states.emplace_back(VK_DYNAMIC_STATE_DEPTH_BIAS);
+		if (flags & Flint::Backend::DynamicStateFlags::BlendConstants) states.emplace_back(VK_DYNAMIC_STATE_BLEND_CONSTANTS);
+		if (flags & Flint::Backend::DynamicStateFlags::DepthBounds) states.emplace_back(VK_DYNAMIC_STATE_DEPTH_BOUNDS);
 
 		return states;
 	}
@@ -174,30 +174,30 @@ namespace /* anonymous */
 	 * @param factor The flint factor.
 	 * @return The Vulkan factor.
 	 */
-	VkBlendFactor GetBlendFactor(Flint::ColorBlendFactor factor)
+	VkBlendFactor GetBlendFactor(Flint::Backend::ColorBlendFactor factor)
 	{
 		switch (factor)
 		{
-		case Flint::ColorBlendFactor::Zero:								return VK_BLEND_FACTOR_ZERO;
-		case Flint::ColorBlendFactor::One:								return VK_BLEND_FACTOR_ONE;
-		case Flint::ColorBlendFactor::SourceColor:						return VK_BLEND_FACTOR_SRC_COLOR;
-		case Flint::ColorBlendFactor::OneMinusSourceColor:				return VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR;
-		case Flint::ColorBlendFactor::DestinationColor:					return VK_BLEND_FACTOR_DST_COLOR;
-		case Flint::ColorBlendFactor::OneMinusDestinationColor:			return VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR;
-		case Flint::ColorBlendFactor::SourceAlpha:						return VK_BLEND_FACTOR_SRC_ALPHA;
-		case Flint::ColorBlendFactor::OneMinusSourceAlpha:				return VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-		case Flint::ColorBlendFactor::DestinationAlpha:					return VK_BLEND_FACTOR_DST_ALPHA;
-		case Flint::ColorBlendFactor::OneMinusDestinationAlpha:			return VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA;
-		case Flint::ColorBlendFactor::ConstantColor:					return VK_BLEND_FACTOR_CONSTANT_COLOR;
-		case Flint::ColorBlendFactor::OneMinusConstantColor:			return VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_COLOR;
-		case Flint::ColorBlendFactor::ConstantAlpha:					return VK_BLEND_FACTOR_CONSTANT_ALPHA;
-		case Flint::ColorBlendFactor::OneMinusConstantAlpha:			return VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_ALPHA;
-		case Flint::ColorBlendFactor::SourceAlphaSaturate:				return VK_BLEND_FACTOR_SRC_ALPHA_SATURATE;
-		case Flint::ColorBlendFactor::SourceOneColor:					return VK_BLEND_FACTOR_SRC1_COLOR;
-		case Flint::ColorBlendFactor::OneMinusSourceOneColor:			return VK_BLEND_FACTOR_ONE_MINUS_SRC1_COLOR;
-		case Flint::ColorBlendFactor::SourceOneAlpha:					return VK_BLEND_FACTOR_SRC1_ALPHA;
-		case Flint::ColorBlendFactor::OneMinusSourceOneAlpha:			return VK_BLEND_FACTOR_ONE_MINUS_SRC1_ALPHA;
-		default:														throw Flint::BackendError("Invalid color blend factor!");
+		case Flint::Backend::ColorBlendFactor::Zero:							return VK_BLEND_FACTOR_ZERO;
+		case Flint::Backend::ColorBlendFactor::One:								return VK_BLEND_FACTOR_ONE;
+		case Flint::Backend::ColorBlendFactor::SourceColor:						return VK_BLEND_FACTOR_SRC_COLOR;
+		case Flint::Backend::ColorBlendFactor::OneMinusSourceColor:				return VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR;
+		case Flint::Backend::ColorBlendFactor::DestinationColor:				return VK_BLEND_FACTOR_DST_COLOR;
+		case Flint::Backend::ColorBlendFactor::OneMinusDestinationColor:		return VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR;
+		case Flint::Backend::ColorBlendFactor::SourceAlpha:						return VK_BLEND_FACTOR_SRC_ALPHA;
+		case Flint::Backend::ColorBlendFactor::OneMinusSourceAlpha:				return VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+		case Flint::Backend::ColorBlendFactor::DestinationAlpha:				return VK_BLEND_FACTOR_DST_ALPHA;
+		case Flint::Backend::ColorBlendFactor::OneMinusDestinationAlpha:		return VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA;
+		case Flint::Backend::ColorBlendFactor::ConstantColor:					return VK_BLEND_FACTOR_CONSTANT_COLOR;
+		case Flint::Backend::ColorBlendFactor::OneMinusConstantColor:			return VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_COLOR;
+		case Flint::Backend::ColorBlendFactor::ConstantAlpha:					return VK_BLEND_FACTOR_CONSTANT_ALPHA;
+		case Flint::Backend::ColorBlendFactor::OneMinusConstantAlpha:			return VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_ALPHA;
+		case Flint::Backend::ColorBlendFactor::SourceAlphaSaturate:				return VK_BLEND_FACTOR_SRC_ALPHA_SATURATE;
+		case Flint::Backend::ColorBlendFactor::SourceOneColor:					return VK_BLEND_FACTOR_SRC1_COLOR;
+		case Flint::Backend::ColorBlendFactor::OneMinusSourceOneColor:			return VK_BLEND_FACTOR_ONE_MINUS_SRC1_COLOR;
+		case Flint::Backend::ColorBlendFactor::SourceOneAlpha:					return VK_BLEND_FACTOR_SRC1_ALPHA;
+		case Flint::Backend::ColorBlendFactor::OneMinusSourceOneAlpha:			return VK_BLEND_FACTOR_ONE_MINUS_SRC1_ALPHA;
+		default:																throw Flint::BackendError("Invalid color blend factor!");
 		}
 	}
 
@@ -207,62 +207,62 @@ namespace /* anonymous */
 	 * @param oprtr The flint operator.
 	 * @return The Vulkan blend operator.
 	 */
-	VkBlendOp GetBlendOp(Flint::ColorBlendOperator oprtr)
+	VkBlendOp GetBlendOp(Flint::Backend::ColorBlendOperator oprtr)
 	{
 		switch (oprtr)
 		{
-		case Flint::ColorBlendOperator::Add:							return VK_BLEND_OP_ADD;
-		case Flint::ColorBlendOperator::Subtract:						return VK_BLEND_OP_SUBTRACT;
-		case Flint::ColorBlendOperator::ReverseSubtract:				return VK_BLEND_OP_REVERSE_SUBTRACT;
-		case Flint::ColorBlendOperator::Minimum:						return VK_BLEND_OP_MIN;
-		case Flint::ColorBlendOperator::Maximum:						return VK_BLEND_OP_MAX;
-		case Flint::ColorBlendOperator::Zero:							return VK_BLEND_OP_ZERO_EXT;
-		case Flint::ColorBlendOperator::Source:							return VK_BLEND_OP_SRC_EXT;
-		case Flint::ColorBlendOperator::Destination:					return VK_BLEND_OP_DST_EXT;
-		case Flint::ColorBlendOperator::SourceOver:						return VK_BLEND_OP_SRC_OVER_EXT;
-		case Flint::ColorBlendOperator::DestinationOver:				return VK_BLEND_OP_DST_OVER_EXT;
-		case Flint::ColorBlendOperator::SourceIn:						return VK_BLEND_OP_SRC_IN_EXT;
-		case Flint::ColorBlendOperator::DestinationIn:					return VK_BLEND_OP_DST_IN_EXT;
-		case Flint::ColorBlendOperator::SouceOut:						return VK_BLEND_OP_SRC_OUT_EXT;
-		case Flint::ColorBlendOperator::DestinationOut:					return VK_BLEND_OP_DST_OUT_EXT;
-		case Flint::ColorBlendOperator::SourceATOP:						return VK_BLEND_OP_SRC_ATOP_EXT;
-		case Flint::ColorBlendOperator::DestinationATOP:				return VK_BLEND_OP_DST_ATOP_EXT;
-		case Flint::ColorBlendOperator::XOR:							return VK_BLEND_OP_XOR_EXT;
-		case Flint::ColorBlendOperator::Multiply:						return VK_BLEND_OP_MULTIPLY_EXT;
-		case Flint::ColorBlendOperator::Screen:							return VK_BLEND_OP_SCREEN_EXT;
-		case Flint::ColorBlendOperator::Overlay:						return VK_BLEND_OP_OVERLAY_EXT;
-		case Flint::ColorBlendOperator::Darken:							return VK_BLEND_OP_DARKEN_EXT;
-		case Flint::ColorBlendOperator::Lighten:						return VK_BLEND_OP_LIGHTEN_EXT;
-		case Flint::ColorBlendOperator::ColorDodge:						return VK_BLEND_OP_COLORDODGE_EXT;
-		case Flint::ColorBlendOperator::ColorBurn:						return VK_BLEND_OP_COLORBURN_EXT;
-		case Flint::ColorBlendOperator::HardLight:						return VK_BLEND_OP_HARDLIGHT_EXT;
-		case Flint::ColorBlendOperator::SoftLight:						return VK_BLEND_OP_SOFTLIGHT_EXT;
-		case Flint::ColorBlendOperator::Difference:						return VK_BLEND_OP_DIFFERENCE_EXT;
-		case Flint::ColorBlendOperator::Exclusion:						return VK_BLEND_OP_EXCLUSION_EXT;
-		case Flint::ColorBlendOperator::Invert:							return VK_BLEND_OP_INVERT_EXT;
-		case Flint::ColorBlendOperator::InvertRGB:						return VK_BLEND_OP_INVERT_RGB_EXT;
-		case Flint::ColorBlendOperator::LinearDodge:					return VK_BLEND_OP_LINEARDODGE_EXT;
-		case Flint::ColorBlendOperator::LinearBurn:						return VK_BLEND_OP_LINEARBURN_EXT;
-		case Flint::ColorBlendOperator::VividLight:						return VK_BLEND_OP_VIVIDLIGHT_EXT;
-		case Flint::ColorBlendOperator::LinearLight:					return VK_BLEND_OP_LINEARLIGHT_EXT;
-		case Flint::ColorBlendOperator::PinLight:						return VK_BLEND_OP_PINLIGHT_EXT;
-		case Flint::ColorBlendOperator::HardMix:						return VK_BLEND_OP_HARDMIX_EXT;
-		case Flint::ColorBlendOperator::HSLHue:							return VK_BLEND_OP_HSL_HUE_EXT;
-		case Flint::ColorBlendOperator::HSLSaturation:					return VK_BLEND_OP_HSL_SATURATION_EXT;
-		case Flint::ColorBlendOperator::HSLColor:						return VK_BLEND_OP_HSL_COLOR_EXT;
-		case Flint::ColorBlendOperator::HSLLuminosity:					return VK_BLEND_OP_HSL_LUMINOSITY_EXT;
-		case Flint::ColorBlendOperator::Plus:							return VK_BLEND_OP_PLUS_EXT;
-		case Flint::ColorBlendOperator::PlusClamped:					return VK_BLEND_OP_PLUS_CLAMPED_EXT;
-		case Flint::ColorBlendOperator::PlusClampedAlpha:				return VK_BLEND_OP_PLUS_CLAMPED_ALPHA_EXT;
-		case Flint::ColorBlendOperator::PlusDarker:						return VK_BLEND_OP_PLUS_DARKER_EXT;
-		case Flint::ColorBlendOperator::Minus:							return VK_BLEND_OP_MINUS_EXT;
-		case Flint::ColorBlendOperator::MinusClamped:					return VK_BLEND_OP_MINUS_CLAMPED_EXT;
-		case Flint::ColorBlendOperator::Contrast:						return VK_BLEND_OP_CONTRAST_EXT;
-		case Flint::ColorBlendOperator::InvertOVG:						return VK_BLEND_OP_INVERT_OVG_EXT;
-		case Flint::ColorBlendOperator::Red:							return VK_BLEND_OP_RED_EXT;
-		case Flint::ColorBlendOperator::Green:							return VK_BLEND_OP_GREEN_EXT;
-		case Flint::ColorBlendOperator::Blue:							return VK_BLEND_OP_BLUE_EXT;
-		default:														throw Flint::BackendError("Invalid color blend operator!");
+		case Flint::Backend::ColorBlendOperator::Add:							return VK_BLEND_OP_ADD;
+		case Flint::Backend::ColorBlendOperator::Subtract:						return VK_BLEND_OP_SUBTRACT;
+		case Flint::Backend::ColorBlendOperator::ReverseSubtract:				return VK_BLEND_OP_REVERSE_SUBTRACT;
+		case Flint::Backend::ColorBlendOperator::Minimum:						return VK_BLEND_OP_MIN;
+		case Flint::Backend::ColorBlendOperator::Maximum:						return VK_BLEND_OP_MAX;
+		case Flint::Backend::ColorBlendOperator::Zero:							return VK_BLEND_OP_ZERO_EXT;
+		case Flint::Backend::ColorBlendOperator::Source:						return VK_BLEND_OP_SRC_EXT;
+		case Flint::Backend::ColorBlendOperator::Destination:					return VK_BLEND_OP_DST_EXT;
+		case Flint::Backend::ColorBlendOperator::SourceOver:					return VK_BLEND_OP_SRC_OVER_EXT;
+		case Flint::Backend::ColorBlendOperator::DestinationOver:				return VK_BLEND_OP_DST_OVER_EXT;
+		case Flint::Backend::ColorBlendOperator::SourceIn:						return VK_BLEND_OP_SRC_IN_EXT;
+		case Flint::Backend::ColorBlendOperator::DestinationIn:					return VK_BLEND_OP_DST_IN_EXT;
+		case Flint::Backend::ColorBlendOperator::SouceOut:						return VK_BLEND_OP_SRC_OUT_EXT;
+		case Flint::Backend::ColorBlendOperator::DestinationOut:				return VK_BLEND_OP_DST_OUT_EXT;
+		case Flint::Backend::ColorBlendOperator::SourceATOP:					return VK_BLEND_OP_SRC_ATOP_EXT;
+		case Flint::Backend::ColorBlendOperator::DestinationATOP:				return VK_BLEND_OP_DST_ATOP_EXT;
+		case Flint::Backend::ColorBlendOperator::XOR:							return VK_BLEND_OP_XOR_EXT;
+		case Flint::Backend::ColorBlendOperator::Multiply:						return VK_BLEND_OP_MULTIPLY_EXT;
+		case Flint::Backend::ColorBlendOperator::Screen:						return VK_BLEND_OP_SCREEN_EXT;
+		case Flint::Backend::ColorBlendOperator::Overlay:						return VK_BLEND_OP_OVERLAY_EXT;
+		case Flint::Backend::ColorBlendOperator::Darken:						return VK_BLEND_OP_DARKEN_EXT;
+		case Flint::Backend::ColorBlendOperator::Lighten:						return VK_BLEND_OP_LIGHTEN_EXT;
+		case Flint::Backend::ColorBlendOperator::ColorDodge:					return VK_BLEND_OP_COLORDODGE_EXT;
+		case Flint::Backend::ColorBlendOperator::ColorBurn:						return VK_BLEND_OP_COLORBURN_EXT;
+		case Flint::Backend::ColorBlendOperator::HardLight:						return VK_BLEND_OP_HARDLIGHT_EXT;
+		case Flint::Backend::ColorBlendOperator::SoftLight:						return VK_BLEND_OP_SOFTLIGHT_EXT;
+		case Flint::Backend::ColorBlendOperator::Difference:					return VK_BLEND_OP_DIFFERENCE_EXT;
+		case Flint::Backend::ColorBlendOperator::Exclusion:						return VK_BLEND_OP_EXCLUSION_EXT;
+		case Flint::Backend::ColorBlendOperator::Invert:						return VK_BLEND_OP_INVERT_EXT;
+		case Flint::Backend::ColorBlendOperator::InvertRGB:						return VK_BLEND_OP_INVERT_RGB_EXT;
+		case Flint::Backend::ColorBlendOperator::LinearDodge:					return VK_BLEND_OP_LINEARDODGE_EXT;
+		case Flint::Backend::ColorBlendOperator::LinearBurn:					return VK_BLEND_OP_LINEARBURN_EXT;
+		case Flint::Backend::ColorBlendOperator::VividLight:					return VK_BLEND_OP_VIVIDLIGHT_EXT;
+		case Flint::Backend::ColorBlendOperator::LinearLight:					return VK_BLEND_OP_LINEARLIGHT_EXT;
+		case Flint::Backend::ColorBlendOperator::PinLight:						return VK_BLEND_OP_PINLIGHT_EXT;
+		case Flint::Backend::ColorBlendOperator::HardMix:						return VK_BLEND_OP_HARDMIX_EXT;
+		case Flint::Backend::ColorBlendOperator::HSLHue:						return VK_BLEND_OP_HSL_HUE_EXT;
+		case Flint::Backend::ColorBlendOperator::HSLSaturation:					return VK_BLEND_OP_HSL_SATURATION_EXT;
+		case Flint::Backend::ColorBlendOperator::HSLColor:						return VK_BLEND_OP_HSL_COLOR_EXT;
+		case Flint::Backend::ColorBlendOperator::HSLLuminosity:					return VK_BLEND_OP_HSL_LUMINOSITY_EXT;
+		case Flint::Backend::ColorBlendOperator::Plus:							return VK_BLEND_OP_PLUS_EXT;
+		case Flint::Backend::ColorBlendOperator::PlusClamped:					return VK_BLEND_OP_PLUS_CLAMPED_EXT;
+		case Flint::Backend::ColorBlendOperator::PlusClampedAlpha:				return VK_BLEND_OP_PLUS_CLAMPED_ALPHA_EXT;
+		case Flint::Backend::ColorBlendOperator::PlusDarker:					return VK_BLEND_OP_PLUS_DARKER_EXT;
+		case Flint::Backend::ColorBlendOperator::Minus:							return VK_BLEND_OP_MINUS_EXT;
+		case Flint::Backend::ColorBlendOperator::MinusClamped:					return VK_BLEND_OP_MINUS_CLAMPED_EXT;
+		case Flint::Backend::ColorBlendOperator::Contrast:						return VK_BLEND_OP_CONTRAST_EXT;
+		case Flint::Backend::ColorBlendOperator::InvertOVG:						return VK_BLEND_OP_INVERT_OVG_EXT;
+		case Flint::Backend::ColorBlendOperator::Red:							return VK_BLEND_OP_RED_EXT;
+		case Flint::Backend::ColorBlendOperator::Green:							return VK_BLEND_OP_GREEN_EXT;
+		case Flint::Backend::ColorBlendOperator::Blue:							return VK_BLEND_OP_BLUE_EXT;
+		default:																throw Flint::BackendError("Invalid color blend operator!");
 		}
 	}
 
@@ -272,13 +272,13 @@ namespace /* anonymous */
 	 * @param mask The color write mask.
 	 * @return The VUlkan mask.
 	 */
-	VkColorComponentFlags GetComponentFlags(Flint::ColorWriteMask mask)
+	VkColorComponentFlags GetComponentFlags(Flint::Backend::ColorWriteMask mask)
 	{
 		VkColorComponentFlags flags = 0;
-		if ((mask & Flint::ColorWriteMask::R) == Flint::ColorWriteMask::R) flags |= VK_COLOR_COMPONENT_R_BIT;
-		if ((mask & Flint::ColorWriteMask::G) == Flint::ColorWriteMask::G) flags |= VK_COLOR_COMPONENT_G_BIT;
-		if ((mask & Flint::ColorWriteMask::B) == Flint::ColorWriteMask::B) flags |= VK_COLOR_COMPONENT_B_BIT;
-		if ((mask & Flint::ColorWriteMask::A) == Flint::ColorWriteMask::A) flags |= VK_COLOR_COMPONENT_A_BIT;
+		if (mask & Flint::Backend::ColorWriteMask::R) flags |= VK_COLOR_COMPONENT_R_BIT;
+		if (mask & Flint::Backend::ColorWriteMask::G) flags |= VK_COLOR_COMPONENT_G_BIT;
+		if (mask & Flint::Backend::ColorWriteMask::B) flags |= VK_COLOR_COMPONENT_B_BIT;
+		if (mask & Flint::Backend::ColorWriteMask::A) flags |= VK_COLOR_COMPONENT_A_BIT;
 
 		return flags;
 	}
@@ -286,7 +286,7 @@ namespace /* anonymous */
 
 namespace Flint
 {
-	namespace VulkanBackend
+	namespace Backend
 	{
 		VulkanRasterizingPipeline::VulkanRasterizingPipeline(const std::shared_ptr<VulkanDevice>& pDevice, const std::shared_ptr<VulkanRasterizer>& pRasterizer, const std::shared_ptr<VulkanRasterizingProgram>& pProgram, const RasterizingPipelineSpecification& specification, std::unique_ptr<PipelineCacheHandler>&& pCacheHandler /*= nullptr*/)
 			: RasterizingPipeline(pDevice, pRasterizer, pProgram, specification, std::move(pCacheHandler))
@@ -349,7 +349,7 @@ namespace Flint
 			}
 		}
 
-		std::shared_ptr<Flint::DrawEntry> VulkanRasterizingPipeline::attach(const std::shared_ptr<StaticModel>& pModel, ResourceBinder&& binder)
+		std::shared_ptr<Flint::Backend::DrawEntry> VulkanRasterizingPipeline::attach(const std::shared_ptr<StaticModel>& pModel, ResourceBinder&& binder)
 		{
 			OPTICK_EVENT();
 

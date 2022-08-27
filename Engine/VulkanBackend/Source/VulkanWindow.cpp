@@ -12,7 +12,7 @@
 
 namespace Flint
 {
-	namespace VulkanBackend
+	namespace Backend
 	{
 		VulkanWindow::VulkanWindow(const std::shared_ptr<VulkanDevice>& pDevice, std::string&& title, uint32_t width /*= -1*/, uint32_t height /*= -1*/)
 			: Window(pDevice, std::move(title), width, height)

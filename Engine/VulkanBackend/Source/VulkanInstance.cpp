@@ -206,7 +206,7 @@ namespace /* anonymous */
 
 namespace Flint
 {
-	namespace VulkanBackend
+	namespace Backend
 	{
 		VulkanInstance::VulkanInstance(std::string&& applicationName, uint32_t applicationVersion, bool enableValidation)
 			: Instance(std::move(applicationName), applicationVersion, BackendAPI::Vulkan, enableValidation)
@@ -232,7 +232,7 @@ namespace Flint
 			FLINT_TERMINATE_IF_VALID;
 		}
 
-		std::shared_ptr<Flint::Device> VulkanInstance::createDevice()
+		std::shared_ptr<Flint::Backend::Device> VulkanInstance::createDevice()
 		{
 			OPTICK_EVENT();
 

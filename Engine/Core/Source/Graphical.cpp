@@ -6,10 +6,13 @@
 
 namespace Flint
 {
-	Graphical::Graphical(uint32_t frameCount)
-		: m_FrameCount(frameCount), m_NeedToUpdate(frameCount)
+	namespace Backend
 	{
-		if (frameCount == 0)
-			throw InvalidArgumentError("The frame count should be grater than 0!");
+		Graphical::Graphical(uint32_t frameCount)
+			: m_FrameCount(frameCount), m_NeedToUpdate(frameCount)
+		{
+			if (frameCount == 0)
+				throw InvalidArgumentError("The frame count should be grater than 0!");
+		}
 	}
 }

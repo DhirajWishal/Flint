@@ -8,7 +8,7 @@
 
 namespace Flint
 {
-	namespace VulkanBackend
+	namespace Backend
 	{
 		VulkanTextureView::VulkanTextureView(const std::shared_ptr<VulkanDevice>& pDevice, const std::shared_ptr<VulkanTexture2D>& pTexture)
 			: TextureView(pDevice, pTexture)

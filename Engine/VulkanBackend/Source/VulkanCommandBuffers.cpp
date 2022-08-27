@@ -14,7 +14,7 @@
 
 namespace Flint
 {
-	namespace VulkanBackend
+	namespace Backend
 	{
 		VulkanCommandBuffers::VulkanCommandBuffers(const std::shared_ptr<VulkanDevice>& pDevice, uint32_t bufferCount, VkCommandBufferLevel level /*= VK_COMMAND_BUFFER_LEVEL_PRIMARY*/)
 			: CommandBuffers(pDevice, bufferCount)
@@ -138,9 +138,9 @@ namespace Flint
 			invalidate();
 		}
 
-		std::shared_ptr<Flint::VulkanBackend::VulkanCommandBuffers> VulkanCommandBuffers::createChild()
+		std::shared_ptr<Flint::Backend::VulkanCommandBuffers> VulkanCommandBuffers::createChild()
 		{
-			return std::make_shared<Flint::VulkanBackend::VulkanCommandBuffers>(shared_from_this());
+			return std::make_shared<Flint::Backend::VulkanCommandBuffers>(shared_from_this());
 		}
 
 		void VulkanCommandBuffers::begin()

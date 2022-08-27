@@ -6,11 +6,13 @@
 
 namespace Flint
 {
-
-	DeviceBoundObject::DeviceBoundObject(const std::shared_ptr<Device>& pDevice)
-		: m_pDevice(pDevice)
+	namespace Backend
 	{
-		if (!pDevice)
-			throw InvalidArgumentError("The device pointer should not be null!");
+		DeviceBoundObject::DeviceBoundObject(const std::shared_ptr<Device>& pDevice)
+			: m_pDevice(pDevice)
+		{
+			if (!pDevice)
+				throw InvalidArgumentError("The device pointer should not be null!");
+		}
 	}
 }

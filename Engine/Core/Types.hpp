@@ -10,7 +10,7 @@
 
 #define FLINT_DEFINE_ENUM_AND_OR(name)																											\
 	constexpr name operator|(const name& lhs, const name& rhs) { return static_cast<name>(::Flint::EnumToInt(lhs) | ::Flint::EnumToInt(rhs)); }	\
-	constexpr name operator&(const name& lhs, const name& rhs) { return static_cast<name>(::Flint::EnumToInt(lhs) & ::Flint::EnumToInt(rhs)); }
+	constexpr bool operator&(const name& lhs, const name& rhs) { return ::Flint::EnumToInt(lhs) & ::Flint::EnumToInt(rhs); }
 
 #define FLINT_DEFINE_HANDLE(name)	enum class name : uintptr_t {}
 
@@ -163,7 +163,7 @@ namespace Flint
 		AttachmentType m_Type = AttachmentType::Color;
 	};
 
-	namespace Defaults
+	namespace Backend::Defaults
 	{
 		/**
 		 * Color attachment description variable.

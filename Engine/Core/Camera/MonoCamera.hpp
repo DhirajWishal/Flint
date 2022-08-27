@@ -45,14 +45,14 @@ namespace Flint
 		 * @param pDevice The device pointer.
 		 * @return The buffer pointer.
 		 */
-		[[nodiscard]] std::shared_ptr<Buffer> createBuffer(const std::shared_ptr<Device>& pDevice) const;
+		[[nodiscard]] std::shared_ptr<Backend::Buffer> createBuffer(const std::shared_ptr<Backend::Device>& pDevice) const;
 
 		/**
 		 * Copy the matrix to a uniform buffer.
 		 *
 		 * @param pBuffer The buffer to copy the data to.
 		 */
-		void copyToBuffer(const std::shared_ptr<Buffer>& pBuffer) const;
+		void copyToBuffer(const std::shared_ptr<Backend::Buffer>& pBuffer) const;
 
 	public:
 		Matrix m_Matrix;

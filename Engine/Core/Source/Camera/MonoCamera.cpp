@@ -35,12 +35,12 @@ namespace Flint
 		m_Matrix.m_Projection[1][1] *= -1.0f;
 	}
 
-	std::shared_ptr<Flint::Buffer> MonoCamera::createBuffer(const std::shared_ptr<Device>& pDevice) const
+	std::shared_ptr<Flint::Backend::Buffer> MonoCamera::createBuffer(const std::shared_ptr<Backend::Device>& pDevice) const
 	{
 		return pDevice->createBuffer(sizeof(Matrix), BufferUsage::Uniform);
 	}
 
-	void MonoCamera::copyToBuffer(const std::shared_ptr<Buffer>& pBuffer) const
+	void MonoCamera::copyToBuffer(const std::shared_ptr<Backend::Buffer>& pBuffer) const
 	{
 		OPTICK_EVENT();
 

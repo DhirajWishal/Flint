@@ -9,7 +9,7 @@
 
 namespace Flint
 {
-	namespace VulkanBackend
+	namespace Backend
 	{
 		/**
 		 * Vulkan ray tracer class.

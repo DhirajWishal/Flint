@@ -25,13 +25,13 @@ namespace /* anonymous */
 	 */
 	struct StaticMeshStorage final
 	{
-		std::array<std::shared_ptr<Flint::VulkanBackend::VulkanBuffer>, AI_MAX_NUMBER_OF_TEXTURECOORDS> m_pTextureBuffers{ nullptr };
-		std::array<std::shared_ptr<Flint::VulkanBackend::VulkanBuffer>, AI_MAX_NUMBER_OF_COLOR_SETS> m_pColorBuffers{ nullptr };
+		std::array<std::shared_ptr<Flint::Backend::VulkanBuffer>, AI_MAX_NUMBER_OF_TEXTURECOORDS> m_pTextureBuffers{ nullptr };
+		std::array<std::shared_ptr<Flint::Backend::VulkanBuffer>, AI_MAX_NUMBER_OF_COLOR_SETS> m_pColorBuffers{ nullptr };
 
-		std::shared_ptr<Flint::VulkanBackend::VulkanBuffer> m_pNormalBuffer = nullptr;
-		std::shared_ptr<Flint::VulkanBackend::VulkanBuffer> m_pPositionBuffer = nullptr;
-		std::shared_ptr<Flint::VulkanBackend::VulkanBuffer> m_pTangentBuffer = nullptr;
-		std::shared_ptr<Flint::VulkanBackend::VulkanBuffer> m_pBiTangentBuffer = nullptr;
+		std::shared_ptr<Flint::Backend::VulkanBuffer> m_pNormalBuffer = nullptr;
+		std::shared_ptr<Flint::Backend::VulkanBuffer> m_pPositionBuffer = nullptr;
+		std::shared_ptr<Flint::Backend::VulkanBuffer> m_pTangentBuffer = nullptr;
+		std::shared_ptr<Flint::Backend::VulkanBuffer> m_pBiTangentBuffer = nullptr;
 	};
 
 	/**
@@ -108,7 +108,7 @@ namespace /* anonymous */
 	 * @param indicesMutex The mutex used to lock the index storage.
 	 * @param basePath The base path to load the assets from.
 	 */
-	void LoadStaticMesh(const aiMesh* pMesh, const aiScene* pScene, Flint::StaticMesh& mesh, StaticMeshStorage& meshStorage, Flint::VulkanBackend::VulkanDevice& device, uint64_t vertexOffset, std::vector<uint32_t>& indices, std::mutex& indicesMutex, const std::filesystem::path& basePath)
+	void LoadStaticMesh(const aiMesh* pMesh, const aiScene* pScene, Flint::Backend::StaticMesh& mesh, StaticMeshStorage& meshStorage, Flint::Backend::VulkanDevice& device, uint64_t vertexOffset, std::vector<uint32_t>& indices, std::mutex& indicesMutex, const std::filesystem::path& basePath)
 	{
 		OPTICK_EVENT();
 
@@ -123,7 +123,7 @@ namespace /* anonymous */
 
 			normalData.m_Stride = sizeof(aiVector3D);
 			normalData.m_Size = pMesh->mNumVertices * sizeof(aiVector3D);
-			meshStorage.m_pNormalBuffer = std::static_pointer_cast<Flint::VulkanBackend::VulkanBuffer>(device.createBuffer(normalData.m_Size, Flint::BufferUsage::Staging, reinterpret_cast<const std::byte*>(pMesh->mNormals)));
+			meshStorage.m_pNormalBuffer = std::static_pointer_cast<Flint::Backend::VulkanBuffer>(device.createBuffer(normalData.m_Size, Flint::BufferUsage::Staging, reinterpret_cast<const std::byte*>(pMesh->mNormals)));
 		}
 
 		// Load the positions if possible.
@@ -133,7 +133,7 @@ namespace /* anonymous */
 
 			vertexData.m_Stride = sizeof(aiVector3D);
 			vertexData.m_Size = pMesh->mNumVertices * sizeof(aiVector3D);
-			meshStorage.m_pPositionBuffer = std::static_pointer_cast<Flint::VulkanBackend::VulkanBuffer>(device.createBuffer(vertexData.m_Size, Flint::BufferUsage::Staging, reinterpret_cast<const std::byte*>(pMesh->mVertices)));
+			meshStorage.m_pPositionBuffer = std::static_pointer_cast<Flint::Backend::VulkanBuffer>(device.createBuffer(vertexData.m_Size, Flint::BufferUsage::Staging, reinterpret_cast<const std::byte*>(pMesh->mVertices)));
 		}
 
 		// Load the tangents and bi-tangents if possible.
@@ -144,14 +144,14 @@ namespace /* anonymous */
 
 			tangentData.m_Stride = sizeof(aiVector3D);
 			tangentData.m_Size = pMesh->mNumVertices * sizeof(aiVector3D);
-			meshStorage.m_pTangentBuffer = std::static_pointer_cast<Flint::VulkanBackend::VulkanBuffer>(device.createBuffer(tangentData.m_Size, Flint::BufferUsage::Staging, reinterpret_cast<const std::byte*>(pMesh->mTangents)));
+			meshStorage.m_pTangentBuffer = std::static_pointer_cast<Flint::Backend::VulkanBuffer>(device.createBuffer(tangentData.m_Size, Flint::BufferUsage::Staging, reinterpret_cast<const std::byte*>(pMesh->mTangents)));
 
 			// Load the bi-tangent data.
 			auto& biTangentData = mesh.m_VertexData[EnumToInt(Flint::VertexAttribute::BiTangent)];
 
 			biTangentData.m_Stride = sizeof(aiVector3D);
 			biTangentData.m_Size = pMesh->mNumVertices * sizeof(aiVector3D);
-			meshStorage.m_pBiTangentBuffer = std::static_pointer_cast<Flint::VulkanBackend::VulkanBuffer>(device.createBuffer(biTangentData.m_Size, Flint::BufferUsage::Staging, reinterpret_cast<const std::byte*>(pMesh->mBitangents)));
+			meshStorage.m_pBiTangentBuffer = std::static_pointer_cast<Flint::Backend::VulkanBuffer>(device.createBuffer(biTangentData.m_Size, Flint::BufferUsage::Staging, reinterpret_cast<const std::byte*>(pMesh->mBitangents)));
 		}
 
 		// Load the texture coordinates if possible.
@@ -169,7 +169,7 @@ namespace /* anonymous */
 
 				textureData.m_Stride = sizeof(aiVector2D);
 				textureData.m_Size = pMesh->mNumVertices * sizeof(aiVector2D);
-				meshStorage.m_pTextureBuffers[t] = std::static_pointer_cast<Flint::VulkanBackend::VulkanBuffer>(device.createBuffer(textureData.m_Size, Flint::BufferUsage::Staging, reinterpret_cast<const std::byte*>(textureCoordinates.data())));
+				meshStorage.m_pTextureBuffers[t] = std::static_pointer_cast<Flint::Backend::VulkanBuffer>(device.createBuffer(textureData.m_Size, Flint::BufferUsage::Staging, reinterpret_cast<const std::byte*>(textureCoordinates.data())));
 			}
 		}
 
@@ -178,11 +178,11 @@ namespace /* anonymous */
 		{
 			if (pMesh->HasVertexColors(c))
 			{
-				auto& colorData = mesh.m_VertexData[EnumToInt(Flint::VertexAttribute::Color0) + c];
+				auto& colorData = mesh.m_VertexData[Flint::EnumToInt(Flint::VertexAttribute::Color0) + c];
 
 				colorData.m_Stride = sizeof(aiColor4D);
 				colorData.m_Size = pMesh->mNumVertices * sizeof(aiColor4D);
-				meshStorage.m_pColorBuffers[c] = std::static_pointer_cast<Flint::VulkanBackend::VulkanBuffer>(device.createBuffer(colorData.m_Size, Flint::BufferUsage::Staging, reinterpret_cast<const std::byte*>(pMesh->mColors[c])));
+				meshStorage.m_pColorBuffers[c] = std::static_pointer_cast<Flint::Backend::VulkanBuffer>(device.createBuffer(colorData.m_Size, Flint::BufferUsage::Staging, reinterpret_cast<const std::byte*>(pMesh->mColors[c])));
 			}
 		}
 
@@ -207,16 +207,16 @@ namespace /* anonymous */
 		const auto pMaterial = pScene->mMaterials[pMesh->mMaterialIndex];
 
 		// Get the texture paths.
-		mesh.m_TexturePaths[EnumToInt(Flint::TextureType::BaseColor)] = GetTexturePath(basePath, pMaterial, AI_MATKEY_BASE_COLOR_TEXTURE);
-		mesh.m_TexturePaths[EnumToInt(Flint::TextureType::Metalness)] = GetTexturePath(basePath, pMaterial, AI_MATKEY_METALLIC_TEXTURE);
-		mesh.m_TexturePaths[EnumToInt(Flint::TextureType::Roughness)] = GetTexturePath(basePath, pMaterial, AI_MATKEY_ROUGHNESS_TEXTURE);
-		mesh.m_TexturePaths[EnumToInt(Flint::TextureType::ColorSheen)] = GetTexturePath(basePath, pMaterial, AI_MATKEY_SHEEN_COLOR_TEXTURE);
-		mesh.m_TexturePaths[EnumToInt(Flint::TextureType::RoughnessSheen)] = GetTexturePath(basePath, pMaterial, AI_MATKEY_SHEEN_ROUGHNESS_TEXTURE);
-		mesh.m_TexturePaths[EnumToInt(Flint::TextureType::ColorClearCoat)] = GetTexturePath(basePath, pMaterial, AI_MATKEY_CLEARCOAT_TEXTURE);
-		mesh.m_TexturePaths[EnumToInt(Flint::TextureType::RoughnessClearCoat)] = GetTexturePath(basePath, pMaterial, AI_MATKEY_CLEARCOAT_ROUGHNESS_TEXTURE);
-		mesh.m_TexturePaths[EnumToInt(Flint::TextureType::NormalClearCoat)] = GetTexturePath(basePath, pMaterial, AI_MATKEY_CLEARCOAT_NORMAL_TEXTURE);
-		mesh.m_TexturePaths[EnumToInt(Flint::TextureType::Transmission)] = GetTexturePath(basePath, pMaterial, AI_MATKEY_TRANSMISSION_TEXTURE);
-		mesh.m_TexturePaths[EnumToInt(Flint::TextureType::VolumeThickness)] = GetTexturePath(basePath, pMaterial, AI_MATKEY_VOLUME_THICKNESS_TEXTURE);
+		mesh.m_TexturePaths[Flint::EnumToInt(Flint::Backend::TextureType::BaseColor)] = GetTexturePath(basePath, pMaterial, AI_MATKEY_BASE_COLOR_TEXTURE);
+		mesh.m_TexturePaths[Flint::EnumToInt(Flint::Backend::TextureType::Metalness)] = GetTexturePath(basePath, pMaterial, AI_MATKEY_METALLIC_TEXTURE);
+		mesh.m_TexturePaths[Flint::EnumToInt(Flint::Backend::TextureType::Roughness)] = GetTexturePath(basePath, pMaterial, AI_MATKEY_ROUGHNESS_TEXTURE);
+		mesh.m_TexturePaths[Flint::EnumToInt(Flint::Backend::TextureType::ColorSheen)] = GetTexturePath(basePath, pMaterial, AI_MATKEY_SHEEN_COLOR_TEXTURE);
+		mesh.m_TexturePaths[Flint::EnumToInt(Flint::Backend::TextureType::RoughnessSheen)] = GetTexturePath(basePath, pMaterial, AI_MATKEY_SHEEN_ROUGHNESS_TEXTURE);
+		mesh.m_TexturePaths[Flint::EnumToInt(Flint::Backend::TextureType::ColorClearCoat)] = GetTexturePath(basePath, pMaterial, AI_MATKEY_CLEARCOAT_TEXTURE);
+		mesh.m_TexturePaths[Flint::EnumToInt(Flint::Backend::TextureType::RoughnessClearCoat)] = GetTexturePath(basePath, pMaterial, AI_MATKEY_CLEARCOAT_ROUGHNESS_TEXTURE);
+		mesh.m_TexturePaths[Flint::EnumToInt(Flint::Backend::TextureType::NormalClearCoat)] = GetTexturePath(basePath, pMaterial, AI_MATKEY_CLEARCOAT_NORMAL_TEXTURE);
+		mesh.m_TexturePaths[Flint::EnumToInt(Flint::Backend::TextureType::Transmission)] = GetTexturePath(basePath, pMaterial, AI_MATKEY_TRANSMISSION_TEXTURE);
+		mesh.m_TexturePaths[Flint::EnumToInt(Flint::Backend::TextureType::VolumeThickness)] = GetTexturePath(basePath, pMaterial, AI_MATKEY_VOLUME_THICKNESS_TEXTURE);
 	}
 
 	/**
@@ -240,7 +240,7 @@ namespace /* anonymous */
 
 namespace Flint
 {
-	namespace VulkanBackend
+	namespace Backend
 	{
 		VulkanStaticModel::VulkanStaticModel(const std::shared_ptr<VulkanDevice>& pDevice, std::filesystem::path&& assetFile)
 			: StaticModel(pDevice, std::move(assetFile))

@@ -8,7 +8,7 @@
 
 namespace Flint
 {
-	namespace VulkanBackend
+	namespace Backend
 	{
 		VulkanColorAttachment::VulkanColorAttachment(const std::shared_ptr<VulkanDevice>& pDevice, uint32_t width, uint32_t height, PixelFormat format, Multisample multisample)
 			: VulkanRenderTargetAttachment(pDevice, width, height, AttachmentType::Color, format, multisample)

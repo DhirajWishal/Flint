@@ -11,7 +11,7 @@
 
 namespace Flint
 {
-	namespace VulkanBackend
+	namespace Backend
 	{
 		VulkanDescriptorSetManager::VulkanDescriptorSetManager(const std::shared_ptr<VulkanDevice>& pDevice, uint8_t frameCount)
 			: m_pDevice(pDevice), m_FrameCount(frameCount)

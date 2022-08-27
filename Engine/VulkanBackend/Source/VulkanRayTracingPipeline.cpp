@@ -8,7 +8,7 @@
 
 namespace Flint
 {
-	namespace VulkanBackend
+	namespace Backend
 	{
 		VulkanRayTracingPipeline::VulkanRayTracingPipeline(const std::shared_ptr<VulkanDevice>& pDevice, std::unique_ptr<PipelineCacheHandler>&& pCacheHandler /*= nullptr*/)
 			: RayTracingPipeline(pDevice, std::move(pCacheHandler))

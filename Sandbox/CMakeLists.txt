@@ -14,8 +14,8 @@ add_executable(
 
 	"Main.cpp"
 
-	"Tools/TerrainBuilder.hpp"
-	"Tools/TerrainBuilder.cpp"
+	"Firefly/TerrainBuilder.hpp"
+	"Firefly/TerrainBuilder.cpp"
 )
 
 # Add the optick static library as a target link.

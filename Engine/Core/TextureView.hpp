@@ -7,27 +7,30 @@
 
 namespace Flint
 {
-	/**
-	 * Texture view class.
-	 * Views can be considered as a way to look at texture memory.
-	 */
-	class TextureView : public DeviceBoundObject
+	namespace Backend
 	{
-	public:
 		/**
-		 * Explicit constructor.
-		 *
-		 * @param pDevice The device pointer.
-		 * @param pTexture The texture pointer.
+		 * Texture view class.
+		 * Views can be considered as a way to look at texture memory.
 		 */
-		explicit TextureView(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Texture>& pTexture);
+		class TextureView : public DeviceBoundObject
+		{
+		public:
+			/**
+			 * Explicit constructor.
+			 *
+			 * @param pDevice The device pointer.
+			 * @param pTexture The texture pointer.
+			 */
+			explicit TextureView(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Texture>& pTexture);
 
-		/**
-		 * Default virtual destructor.
-		 */
-		virtual ~TextureView() = default;
+			/**
+			 * Default virtual destructor.
+			 */
+			virtual ~TextureView() = default;
 
-	protected:
-		std::shared_ptr<Texture> m_pTexture = nullptr;
-	};
+		protected:
+			std::shared_ptr<Texture> m_pTexture = nullptr;
+		};
+	}
 }

@@ -6,10 +6,13 @@
 
 namespace Flint
 {
-	CommandBuffers::CommandBuffers(const std::shared_ptr<Device>& pDevice, uint32_t bufferCount /*= 1*/)
-		: DeviceBoundObject(pDevice), m_BufferCount(bufferCount)
+	namespace Backend
 	{
-		if (bufferCount == 0)
-			throw InvalidArgumentError("The command buffer count should not be 0!");
+		CommandBuffers::CommandBuffers(const std::shared_ptr<Device>& pDevice, uint32_t bufferCount /*= 1*/)
+			: DeviceBoundObject(pDevice), m_BufferCount(bufferCount)
+		{
+			if (bufferCount == 0)
+				throw InvalidArgumentError("The command buffer count should not be 0!");
+		}
 	}
 }

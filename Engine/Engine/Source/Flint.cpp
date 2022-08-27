@@ -10,10 +10,10 @@
 
 namespace Flint
 {
-	std::shared_ptr<Flint::Instance> CreateInstance(std::string&& applicationName, uint32_t applicationVersion, bool enableBackendValidation)
+	std::shared_ptr<Flint::Backend::Instance> CreateInstance(std::string&& applicationName, uint32_t applicationVersion, bool enableBackendValidation)
 	{
 #ifdef FLINT_PLATFORM_WINDOWS
-		return std::make_shared<VulkanBackend::VulkanInstance>(std::move(applicationName), applicationVersion, enableBackendValidation);
+		return std::make_shared<Backend::VulkanInstance>(std::move(applicationName), applicationVersion, enableBackendValidation);
 
 #endif
 	}

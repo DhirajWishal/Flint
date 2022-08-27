@@ -111,7 +111,7 @@ namespace /* anonymous */
 
 namespace Flint
 {
-	namespace VulkanBackend
+	namespace Backend
 	{
 		VulkanRasterizingProgram::VulkanRasterizingProgram(const std::shared_ptr<VulkanDevice>& pDevice, ShaderCode&& vertexShader, ShaderCode&& fragmetShader)
 			: RasterizingProgram(pDevice, std::move(vertexShader), std::move(fragmetShader))

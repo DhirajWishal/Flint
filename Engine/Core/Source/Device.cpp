@@ -6,11 +6,13 @@
 
 namespace Flint
 {
-
-	Device::Device(const std::shared_ptr<Instance>& pInstance)
-		: m_pInstance(pInstance)
+	namespace Backend
 	{
-		if (!pInstance)
-			throw InvalidArgumentError("The instance pointer should not be null!");
+		Device::Device(const std::shared_ptr<Instance>& pInstance)
+			: m_pInstance(pInstance)
+		{
+			if (!pInstance)
+				throw InvalidArgumentError("The instance pointer should not be null!");
+		}
 	}
 }

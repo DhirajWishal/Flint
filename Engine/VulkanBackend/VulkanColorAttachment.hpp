@@ -7,7 +7,7 @@
 
 namespace Flint
 {
-	namespace VulkanBackend
+	namespace Backend
 	{
 		/**
 		 * Vulkan color attachment class.

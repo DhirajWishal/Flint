@@ -12,7 +12,7 @@
 
 namespace Flint
 {
-	namespace VulkanBackend
+	namespace Backend
 	{
 		class VulkanRasterizer;
 		class VulkanRasterizingProgram;

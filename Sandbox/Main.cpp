@@ -14,7 +14,7 @@
 #include "Engine/Flint.hpp"
 #include "Engine/StaticStorage.hpp"
 
-#include "Tools/TerrainBuilder.hpp"
+#include "Firefly/TerrainBuilder.hpp"
 
 #ifdef FLINT_DEBUG
 constexpr auto Validation = true;
@@ -38,9 +38,9 @@ static Flint::EventSystem g_EventSystem;
  *
  * @return The specification.
  */
-[[nodiscard]] Flint::RasterizingPipelineSpecification GetDefaultSpecification()
+[[nodiscard]] Flint::Backend::RasterizingPipelineSpecification GetDefaultSpecification()
 {
-	Flint::RasterizingPipelineSpecification specification;
+	Flint::Backend::RasterizingPipelineSpecification specification;
 	return specification;
 }
 
@@ -57,7 +57,7 @@ int main()
 	camera.m_MovementBias = 10;
 	//camera.m_RotationBias = 50;
 
-	auto rasterizer = device->createRasterizer(camera, window->getFrameCount(), { Flint::Defaults::ColorAttachmentDescription, Flint::Defaults::DepthAttachmentDescription });
+	auto rasterizer = device->createRasterizer(camera, window->getFrameCount(), { Flint::Backend::Defaults::ColorAttachmentDescription, Flint::Backend::Defaults::DepthAttachmentDescription });
 	auto rayTracer = device->createRayTracer(camera, window->getFrameCount());
 	auto model = device->createStaticModel(std::filesystem::path(FLINT_GLTF_ASSET_PATH) / "Sponza" / "glTF" / "Sponza.gltf");
 	//auto model = device->createStaticModel("E:\\Assets\\Sponza\\Main\\Main\\NewSponza_Main_FBX_ZUp.fbx");
@@ -76,15 +76,15 @@ int main()
 	// The default texture to make sure that we have a default one to fall back to.
 	struct { uint8_t r = 255, g = 255, b = 255, a = 255; } defaultImage;
 	auto defaultTexture = device->createTexture2D(1, 1, Flint::ImageUsage::Graphics, Flint::PixelFormat::R8G8B8A8_SRGB, 1, Flint::Multisample::One, reinterpret_cast<const std::byte*>(&defaultImage));
-	Flint::StaticStorage<std::shared_ptr<Flint::Texture2D>>::Set("Default", defaultTexture);
-	Flint::StaticStorage<std::shared_ptr<Flint::TextureView>>::Set("Default", defaultTexture->createView());
+	Flint::StaticStorage<std::shared_ptr<Flint::Backend::Texture2D>>::Set("Default", defaultTexture);
+	Flint::StaticStorage<std::shared_ptr<Flint::Backend::TextureView>>::Set("Default", defaultTexture->createView());
 
 	auto cameraBuffer = camera.createBuffer(device);
-	auto program = device->createRasterizingProgram(Flint::ShaderCode("Shaders/Debugging/Shader.vert.spv"), Flint::ShaderCode("Shaders/Debugging/Shader.frag.spv"));
-	auto defaultPipeline = rasterizer->createPipeline(program, GetDefaultSpecification(), std::make_unique<Flint::Defaults::FilePipelineCacheHandler>("PipelineCache/"));
-	auto drawEntry = defaultPipeline->attach(model, [cameraBuffer, device](auto& model, const Flint::StaticMesh& mesh, const Flint::BindingMap& binder)
+	auto program = device->createRasterizingProgram(Flint::Backend::ShaderCode("Shaders/Debugging/Shader.vert.spv"), Flint::Backend::ShaderCode("Shaders/Debugging/Shader.frag.spv"));
+	auto defaultPipeline = rasterizer->createPipeline(program, GetDefaultSpecification(), std::make_unique<Flint::Backend::Defaults::FilePipelineCacheHandler>("PipelineCache/"));
+	auto drawEntry = defaultPipeline->attach(model, [cameraBuffer, device](auto& model, const Flint::Backend::StaticMesh& mesh, const Flint::Backend::BindingMap& binder)
 		{
-			Flint::MeshBindingTable table;
+			Flint::Backend::MeshBindingTable table;
 
 			for (const auto& binding : binder.getBindings())
 			{
@@ -94,36 +94,36 @@ int main()
 				}
 				else if (binding.m_Name == "baseColorTexture")
 				{
-					constexpr auto textureIndex = Flint::EnumToInt(Flint::TextureType::BaseColor);
+					constexpr auto textureIndex = Flint::EnumToInt(Flint::Backend::TextureType::BaseColor);
 					const auto& texturePath = mesh.m_TexturePaths[textureIndex];
 					const auto texturePathString = texturePath.string();
 
 					// Load the texture file if we haven't already.
-					if (!Flint::StaticStorage<std::shared_ptr<Flint::Texture2D>>::Contains(texturePathString) && texturePath.has_filename())
+					if (!Flint::StaticStorage<std::shared_ptr<Flint::Backend::Texture2D>>::Contains(texturePathString) && texturePath.has_filename())
 					{
-						auto pTexture = Flint::Texture2D::LoadFromFile(device, texturePath, Flint::ImageUsage::Graphics);
-						Flint::StaticStorage<std::shared_ptr<Flint::Texture2D>>::Set(texturePathString, pTexture);
-						Flint::StaticStorage<std::shared_ptr<Flint::TextureView>>::Set(texturePathString, pTexture->createView());
+						auto pTexture = Flint::Backend::Texture2D::LoadFromFile(device, texturePath, Flint::ImageUsage::Graphics);
+						Flint::StaticStorage<std::shared_ptr<Flint::Backend::Texture2D>>::Set(texturePathString, pTexture);
+						Flint::StaticStorage<std::shared_ptr<Flint::Backend::TextureView>>::Set(texturePathString, pTexture->createView());
 					}
 
 					// Now we can bind if possible.
-					if (Flint::StaticStorage<std::shared_ptr<Flint::Texture2D>>::Contains(texturePathString))
+					if (Flint::StaticStorage<std::shared_ptr<Flint::Backend::Texture2D>>::Contains(texturePathString))
 					{
-						auto pTexture = Flint::StaticStorage<std::shared_ptr<Flint::Texture2D>>::Get(texturePathString);
+						auto pTexture = Flint::StaticStorage<std::shared_ptr<Flint::Backend::Texture2D>>::Get(texturePathString);
 
 						// Create the view if not available.
-						if (!Flint::StaticStorage<std::shared_ptr<Flint::TextureView>>::Contains(texturePathString))
-							Flint::StaticStorage<std::shared_ptr<Flint::TextureView>>::Set(texturePathString, pTexture->createView());
+						if (!Flint::StaticStorage<std::shared_ptr<Flint::Backend::TextureView>>::Contains(texturePathString))
+							Flint::StaticStorage<std::shared_ptr<Flint::Backend::TextureView>>::Set(texturePathString, pTexture->createView());
 
 						Flint::TextureSamplerSpecification samplerSpecification;
 						samplerSpecification.m_MaxLevelOfDetail = pTexture->getMipLevels();
 
 						// Internally it caches so we don't need to store things anywhere.
-						table.bind(binding.m_BindingIndex, Flint::StaticStorage<std::shared_ptr<Flint::TextureView>>::Get(texturePathString), device->createTextureSampler(std::move(samplerSpecification)), Flint::ImageUsage::Graphics);
+						table.bind(binding.m_BindingIndex, Flint::StaticStorage<std::shared_ptr<Flint::Backend::TextureView>>::Get(texturePathString), device->createTextureSampler(std::move(samplerSpecification)), Flint::ImageUsage::Graphics);
 					}
 					else
 					{
-						table.bind(binding.m_BindingIndex, Flint::StaticStorage<std::shared_ptr<Flint::TextureView>>::Get("Default"), device->createTextureSampler(Flint::TextureSamplerSpecification()), Flint::ImageUsage::Graphics);
+						table.bind(binding.m_BindingIndex, Flint::StaticStorage<std::shared_ptr<Flint::Backend::TextureView>>::Get("Default"), device->createTextureSampler(Flint::TextureSamplerSpecification()), Flint::ImageUsage::Graphics);
 					}
 				}
 			}
@@ -202,8 +202,8 @@ int main()
 
 	device->waitIdle();	// Wait till we finish prior things before we proceed.
 
-	Flint::StaticStorage<std::shared_ptr<Flint::Texture2D>>::Clear();
-	Flint::StaticStorage<std::shared_ptr<Flint::TextureView>>::Clear();
+	Flint::StaticStorage<std::shared_ptr<Flint::Backend::Texture2D>>::Clear();
+	Flint::StaticStorage<std::shared_ptr<Flint::Backend::TextureView>>::Clear();
 
 	defaultTexture->terminate();
 	cameraBuffer->terminate();

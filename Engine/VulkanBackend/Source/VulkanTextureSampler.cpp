@@ -105,7 +105,7 @@ namespace /* anonymous */
 
 namespace Flint
 {
-	namespace VulkanBackend
+	namespace Backend
 	{
 		VulkanTextureSampler::VulkanTextureSampler(const std::shared_ptr<VulkanDevice>& pDevice, TextureSamplerSpecification&& specification)
 			: TextureSampler(pDevice, std::move(specification))

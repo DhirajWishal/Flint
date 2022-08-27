@@ -6,10 +6,13 @@
 
 namespace Flint
 {
-	TextureView::TextureView(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Texture>& pTexture)
-		: DeviceBoundObject(pDevice), m_pTexture(pTexture)
+	namespace Backend
 	{
-		if (!pTexture)
-			throw InvalidArgumentError("The texture pointer should not be null!");
+		TextureView::TextureView(const std::shared_ptr<Device>& pDevice, const std::shared_ptr<Texture>& pTexture)
+			: DeviceBoundObject(pDevice), m_pTexture(pTexture)
+		{
+			if (!pTexture)
+				throw InvalidArgumentError("The texture pointer should not be null!");
+		}
 	}
 }

@@ -8,7 +8,7 @@
 
 namespace Flint
 {
-	namespace VulkanBackend
+	namespace Backend
 	{
 		VulkanStorageAttachment::VulkanStorageAttachment(const std::shared_ptr<VulkanDevice>& pDevice, uint32_t width, uint32_t height, PixelFormat format)
 			: VulkanRenderTargetAttachment(pDevice, width, height, AttachmentType::Color, format, Multisample::One)

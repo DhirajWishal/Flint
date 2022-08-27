@@ -6,10 +6,13 @@
 
 namespace Flint
 {
-	DrawEntry::DrawEntry(const std::shared_ptr<Entity>& pEntity)
-		: m_pEntity(pEntity)
+	namespace Backend
 	{
-		if (!pEntity)
-			throw InvalidArgumentError("The entity pointer should not be null!");
+		DrawEntry::DrawEntry(const std::shared_ptr<Entity>& pEntity)
+			: m_pEntity(pEntity)
+		{
+			if (!pEntity)
+				throw InvalidArgumentError("The entity pointer should not be null!");
+		}
 	}
 }

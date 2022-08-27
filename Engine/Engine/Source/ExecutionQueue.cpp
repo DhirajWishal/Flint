@@ -5,7 +5,7 @@
 
 namespace Flint
 {
-	ExecutionQueue::ExecutionQueue(const std::shared_ptr<Device>& pDevice)
+	ExecutionQueue::ExecutionQueue(const std::shared_ptr<Backend::Device>& pDevice)
 		: DeviceBoundObject(pDevice), m_pCommandBuffers(pDevice->createCommandBuffers(1))
 	{
 	}

@@ -139,7 +139,7 @@ namespace /* anonymous */
 
 namespace Flint
 {
-	namespace VulkanBackend
+	namespace Backend
 	{
 		VulkanDevice::VulkanDevice(const std::shared_ptr<VulkanInstance>& pInstance)
 			: Device(pInstance)
@@ -164,56 +164,56 @@ namespace Flint
 			FLINT_TERMINATE_IF_VALID;
 		}
 
-		std::shared_ptr<Flint::Buffer> VulkanDevice::createBuffer(uint64_t size, BufferUsage usage, const std::byte* pDataStore /*= nullptr*/)
+		std::shared_ptr<Flint::Backend::Buffer> VulkanDevice::createBuffer(uint64_t size, BufferUsage usage, const std::byte* pDataStore /*= nullptr*/)
 		{
 			OPTICK_EVENT();
 
 			return std::make_shared<VulkanBuffer>(shared_from_this(), size, usage, pDataStore);
 		}
 
-		std::shared_ptr<Flint::Rasterizer> VulkanDevice::createRasterizer(Camera& camera, uint32_t frameCount, std::vector<AttachmentDescription>&& attachmentDescriptions, Multisample multisample /*= Multisample::One*/, bool exclusiveBuffering /*= false*/)
+		std::shared_ptr<Flint::Backend::Rasterizer> VulkanDevice::createRasterizer(Camera& camera, uint32_t frameCount, std::vector<AttachmentDescription>&& attachmentDescriptions, Multisample multisample /*= Multisample::One*/, bool exclusiveBuffering /*= false*/)
 		{
 			OPTICK_EVENT();
 
 			return std::make_shared<VulkanRasterizer>(shared_from_this(), camera, frameCount, std::move(attachmentDescriptions), multisample, exclusiveBuffering);
 		}
 
-		std::shared_ptr<Flint::RayTracer> VulkanDevice::createRayTracer(Camera& camera, uint32_t frameCount)
+		std::shared_ptr<Flint::Backend::RayTracer> VulkanDevice::createRayTracer(Camera& camera, uint32_t frameCount)
 		{
 			OPTICK_EVENT();
 
 			return std::make_shared<VulkanRayTracer>(shared_from_this(), camera, frameCount);
 		}
 
-		std::shared_ptr<Flint::Window> VulkanDevice::createWindow(std::string&& title, uint32_t width /*= -1*/, uint32_t height /*= -1*/)
+		std::shared_ptr<Flint::Backend::Window> VulkanDevice::createWindow(std::string&& title, uint32_t width /*= -1*/, uint32_t height /*= -1*/)
 		{
 			OPTICK_EVENT();
 
 			return std::make_shared<VulkanWindow>(shared_from_this(), std::move(title), width, height);
 		}
 
-		std::shared_ptr<Flint::RasterizingProgram> VulkanDevice::createRasterizingProgram(ShaderCode&& vertexShader, ShaderCode&& fragementShader)
+		std::shared_ptr<Flint::Backend::RasterizingProgram> VulkanDevice::createRasterizingProgram(ShaderCode&& vertexShader, ShaderCode&& fragementShader)
 		{
 			OPTICK_EVENT();
 
 			return std::make_shared<VulkanRasterizingProgram>(shared_from_this(), std::move(vertexShader), std::move(fragementShader));
 		}
 
-		std::shared_ptr<Flint::StaticModel> VulkanDevice::createStaticModel(std::filesystem::path&& assetFile)
+		std::shared_ptr<Flint::Backend::StaticModel> VulkanDevice::createStaticModel(std::filesystem::path&& assetFile)
 		{
 			OPTICK_EVENT();
 
 			return std::make_shared<VulkanStaticModel>(shared_from_this(), std::move(assetFile));
 		}
 
-		std::shared_ptr<Flint::Texture2D> VulkanDevice::createTexture2D(uint32_t width, uint32_t height, ImageUsage usage, PixelFormat format, uint32_t mipLevels /*= 0*/, Multisample multisampleCount /*= Multisample::One*/, const std::byte* pDataStore /*= nullptr*/)
+		std::shared_ptr<Flint::Backend::Texture2D> VulkanDevice::createTexture2D(uint32_t width, uint32_t height, ImageUsage usage, PixelFormat format, uint32_t mipLevels /*= 0*/, Multisample multisampleCount /*= Multisample::One*/, const std::byte* pDataStore /*= nullptr*/)
 		{
 			OPTICK_EVENT();
 
 			return std::make_shared<VulkanTexture2D>(shared_from_this(), width, height, usage, format, mipLevels, multisampleCount, pDataStore);
 		}
 
-		std::shared_ptr<Flint::TextureSampler> VulkanDevice::createTextureSampler(TextureSamplerSpecification&& specification)
+		std::shared_ptr<Flint::Backend::TextureSampler> VulkanDevice::createTextureSampler(TextureSamplerSpecification&& specification)
 		{
 			OPTICK_EVENT();
 
@@ -224,7 +224,7 @@ namespace Flint
 			return m_Samplers[hash];
 		}
 
-		std::shared_ptr<Flint::CommandBuffers> VulkanDevice::createCommandBuffers(uint32_t bufferCount /*= 1*/)
+		std::shared_ptr<Flint::Backend::CommandBuffers> VulkanDevice::createCommandBuffers(uint32_t bufferCount /*= 1*/)
 		{
 			return std::make_shared<VulkanCommandBuffers>(shared_from_this(), bufferCount);
 		}
