@@ -1,18 +1,18 @@
 // Copyright 2021-2022 Dhiraj Wishal
 // SPDX-License-Identifier: Apache-2.0
 
-#include "Core/EventSystem/EventSystem.hpp"
-#include "Core/Camera/MonoCamera.hpp"
+#include "Flint/Core/EventSystem/EventSystem.hpp"
+#include "Flint/Core/Camera/MonoCamera.hpp"
 
-#include "Core/Window.hpp"
-#include "Core/Rasterizer.hpp"
-#include "Core/RayTracer.hpp"
-#include "Core/RasterizingProgram.hpp"
-#include "Core/StaticModel.hpp"
+#include "Flint/Backend/Window.hpp"
+#include "Flint/Backend/Rasterizer.hpp"
+#include "Flint/Backend/RayTracer.hpp"
+#include "Flint/Backend/RasterizingProgram.hpp"
+#include "Flint/Backend/StaticModel.hpp"
 
-#include "Engine/Utility/FrameTimer.hpp"
-#include "Engine/Flint.hpp"
-#include "Engine/StaticStorage.hpp"
+#include "Flint/Engine/Utility/FrameTimer.hpp"
+#include "Flint/Engine/Flint.hpp"
+#include "Flint/Engine/StaticStorage.hpp"
 
 #include "Firefly/TerrainBuilder.hpp"
 

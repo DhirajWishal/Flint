@@ -17,6 +17,9 @@ project(
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(PREDEFINED_TARGETS_FOLDER "PredefinedTargets")
 
+# Set the Flint's include directory.
+set(FLINT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Include)
+
 # Set the basic third party directory variables.
 # Set the Vulkan header include directory.
 set(VULKAN_HEADERS_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/Vulkan-Headers/include)
@@ -147,13 +150,14 @@ add_compile_definitions(
 )
 
 # Set the central include directory.
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Engine)
+include_directories(${FLINT_INCLUDE_DIR})
 
 # Include the main subdirectories.
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/Sandbox)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/Engine/Core)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/Engine/Engine)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/Engine/VulkanBackend)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/Source/Core)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/Source/Backend)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/Source/Engine)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/Source/VulkanBackend)
 
 # Set the startup project for Visual Studio and set multi processor compilation for other projects that we build.
 if (MSVC) 
